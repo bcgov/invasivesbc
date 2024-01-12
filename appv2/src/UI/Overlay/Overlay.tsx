@@ -1,10 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import './Overlay.css';
+import { RENDER_DEBUG } from 'UI/App';
 
 const Overlay = (props) => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%cOverlay render:' + ref.current.toString(), 'color: yellow');
 
   const panelOpen = useSelector((state: any) => state.AppMode.panelOpen);

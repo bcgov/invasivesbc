@@ -3,6 +3,7 @@ import { useMap } from 'react-leaflet';
 import * as L from 'leaflet';
 import 'leaflet.offline';
 import { useSelector } from 'util/use_selector';
+import { RENDER_DEBUG } from 'UI/App';
 
 const MAP_MAX_ZOOM = 30;
 
@@ -10,6 +11,7 @@ const SatAndLabelLayer = React.memo((props) => {
 
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%cSatAndLabelLayer/Basemaps render:' + ref.current.toString(), 'color: yellow');
 
   const baseMapToggle = useSelector((state) => state.Map.baseMapToggle);
@@ -102,6 +104,7 @@ const TopoLayer = React.memo((props) => {
 const OfflineLayers = (props) => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%cOfflineLayers/Basemaps render:' + ref.current.toString(), 'color: yellow');
 
   return (

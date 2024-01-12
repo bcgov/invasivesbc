@@ -145,7 +145,6 @@ export const LeafletCanvasLabel = (props) => {
 
     // console.log('label toggle');
     // console.log(props.labelToggle);
-    console.log('map zoom:' + map.getZoom())
     /*if((props.points?.features?.length > MAX_LABLES_TO_RENDER) && map.getZoom() < 10) {// && map.getZoom() < 13)){
     //if(map.getZoom() < 10 ) {// && map.getZoom() < 13)){
       return

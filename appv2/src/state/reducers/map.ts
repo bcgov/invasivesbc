@@ -59,7 +59,9 @@ import {
   USER_SETTINGS_SET_RECORDSET,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  IAPP_GET_IDS_FOR_RECORDSET_REQUEST
+  IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
+  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+  IAPP_TABLE_ROWS_GET_REQUEST
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -221,6 +223,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       */
     return createNextState(state, (draftState) => {
       switch (action.type) {
+        case IAPP_TABLE_ROWS_GET_REQUEST: 
+        case ACTIVITIES_TABLE_ROWS_GET_REQUEST: {
+          if (!draftState.recordTables?.[action.payload.recordSetID]) {
+            draftState.recordTables[action.payload.recordSetID] = {};
+          }
+          draftState.recordTables[action.payload.recordSetID].loading = true;
+          draftState.recordTables[action.payload.recordSetID].reqCount = draftState.recordTables[action.payload.recordSetID].reqCount ? draftState.recordTables[action.payload.recordSetID].reqCount + 1 : 1;
+          break;
+        }
         case ACTIVITIES_GEOJSON_GET_SUCCESS: {
           //TODO:  Delete this when other refs to it are gone:
           draftState.activitiesGeoJSON = { type: 'FeatureCollection', features: [] }; //action.payload.activitiesGeoJSON;
@@ -254,12 +265,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           }
-          draftState.layers[index].loaded = false;
-          draftState.layers[index].layerState = { 
-            color: '#000000',
-            mapToggle: false,
-            drawOrder: 0
-          };
+          draftState.layers[index].loading = true;
+          draftState.layers[index].reqCount = draftState.layers[index].reqCount ? draftState.layers[index].reqCount + 1 : 1;
+          if(!draftState.layers[index].layerState)
+          {
+            draftState.layers[index].layerState = {
+            color: "blue",
+            drawOrder: 0, 
+            mapToggle: false
+            }
+        }
           break;
         }
         case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
@@ -269,12 +284,22 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'IAPP' });
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           }
-          draftState.layers[index].loaded = false;
-          draftState.layers[index].layerState = { 
+          draftState.layers[index].loading = true;
+          draftState.layers[index].reqCount = draftState.layers[index].reqCount ? draftState.layers[index].reqCount + 1 : 1;
+          if(!draftState.layers[index].layerState)
+          {
+            draftState.layers[index].layerState = {
+            color: "blue",
+            drawOrder: 0, 
+            mapToggle: false
+            }
+        }
+          /*draftState.layers[index].layerState = { 
             color: '#000000',
             mapToggle: false,
             drawOrder: 0
           };
+          */
           break;
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
@@ -283,13 +308,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           draftState.layers[index].IDList = action.payload.IDList;
-          draftState.layers[index].loaded = true;
+          draftState.layers[index].loading = false;
 
           //if (draftState.activitiesGeoJSON?.features?.length > 0) {
           if (draftState.activitiesGeoJSONDict !== undefined) {
             GeoJSONFilterSetForLayer(draftState, state, 'Activity', action.payload.recordSetID, action.payload.IDList);
           } else {
-            console.log('%cno fastmap!!!', 'color: yellow');
           }
           break;
         }
@@ -305,6 +329,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.recordTables[action.payload.recordSetID].page = 0;
           if (!draftState.recordTables?.[action.payload.recordSetID]?.limit)
             draftState.recordTables[action.payload.recordSetID].limit = 20;
+          draftState.recordTables[action.payload.recordSetID].loading = false;
           break;
         }
         case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
@@ -365,7 +390,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           draftState.layers[index].IDList = action.payload.IDList;
-          draftState.layers[index].loaded = true;
+          draftState.layers[index].loading = false;
+
 
           if (draftState.IAPPGeoJSONDict !== undefined) {
             GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
@@ -697,7 +723,6 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP')
   )
     return;
-  console.log('%cGeoJSONFilterSetForLayer', 'color: yellow');
   let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
   const type = draftState.layers[index].type;
 

@@ -10,6 +10,7 @@ import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { useSelector } from 'react-redux';
 import { getPallette } from './AdditionalHelperFunctions';
 import { shallowEqual } from 'react-redux';
+import { RENDER_DEBUG } from 'UI/App';
 
 enum ZoomTypes {
   LOW = 'low',
@@ -99,6 +100,7 @@ export const ActivitiesDonutLayer = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
 
+  if(RENDER_DEBUG)
   console.log(
     '%cActivitiesLayerV2.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey,
     'color: yellow'

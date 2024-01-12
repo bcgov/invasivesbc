@@ -14,6 +14,7 @@ import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { Map } from '@mui/icons-material';
+import { RENDER_DEBUG } from 'UI/App';
 
 const Tab = (props: any) => {
   const ref = useRef(0);
@@ -290,6 +291,7 @@ const LoginOrOutMemo = React.memo((props) => {
 export const Header: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
   const history = useHistory();
 

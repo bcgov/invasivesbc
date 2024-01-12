@@ -79,6 +79,9 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
 
+  const layerReqCount = mapState?.layers?.filter((layer) => {
+    return layer?.recordSetID === action.payload.recordSetID})?.[0]?.reqCount;
+
   try {
     // if mobile or web
     if (true) {
@@ -86,7 +89,8 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
         payload: {
           filterObj: filterObject,
-          recordSetID: action.payload.recordSetID
+          recordSetID: action.payload.recordSetID,
+          reqCount: layerReqCount
         }
       });
     }
@@ -111,13 +115,18 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
     filterObject.limit = 200000;
     filterObject.selectColumns = ['site_id'];
+
+  const layerReqCount = mapState?.layers?.filter((layer) => {
+    return layer?.recordSetID === action.payload.recordSetID})?.[0]?.reqCount;
+
     // if mobile or web
     if (true) {
       yield put({
         type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
         payload: {
           filterObj: filterObject,
-          recordSetID: action.payload.recordSetID
+          recordSetID: action.payload.recordSetID,
+          reqCount: layerReqCount
         }
       });
     }
@@ -174,12 +183,16 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
       ? action.payload.limit
       : mapState.recordTables?.[action.payload.recordSetID]?.limit;
 
+    const reqCount = mapState?.recordTables?.[action.payload.recordSetID]?.reqCount;
+
+
     if (true) {
       yield put({
         type: ACTIVITIES_TABLE_ROWS_GET_ONLINE,
         payload: {
           filterObj: filterObject,
-          recordSetID: action.payload.recordSetID
+          recordSetID: action.payload.recordSetID,
+          reqCount: reqCount
         }
       });
     }
@@ -208,12 +221,14 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
       ? action.payload.limit
       : mapState.recordTables?.[action.payload.recordSetID]?.limit;
     // if mobile or web
+    const reqCount = mapState?.recordTables?.[action.payload.recordSetID]?.reqCount;
     if (true) {
       yield put({
         type: IAPP_TABLE_ROWS_GET_ONLINE,
         payload: {
           filterObj: filterObject,
-          recordSetID: action.payload.recordSetID
+          recordSetID: action.payload.recordSetID,
+          reqCount: reqCount
         }
       });
     }

@@ -570,7 +570,6 @@ function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
 }
 
 function* handle_URL_CHANGE(action) {
-  console.log(JSON.stringify((action, null, 2)));
   const url = action.payload.url;
   const isRecordSet = url.split(':')?.[0]?.includes('/Records/List/Local');
   if (isRecordSet) {
@@ -651,8 +650,6 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
 function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSets = Object.keys(userSettingsState.recordSets);
-  console.log('record sets');
-  console.dir(recordSets);
 
   // current layers
   const layers = yield select((state) => state.Map.layers)
@@ -668,6 +665,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   // combined:
   const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];  
 
+
   let actionsToPut = [];
   allUninitializedLayers.map((layer) => {
     if (layer.recordSetType === 'Activity') {
@@ -677,7 +675,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
     }
 
   });
-  yield all(actionsToPut.map((action) => put(action)));
+  yield all(actionsToPut.map((action) => put(action)))
 }
 
 function* handle_REMOVE_CLIENT_BOUNDARY(action) {

@@ -37,6 +37,9 @@ import AccessRequestPage from './Overlay/AccessRequest/AccessRequestPage';
 import CustomizeLayerMenu from './Map/Buttons/CustomizeLayerDialog';
 import { DrawCustomLayer } from './Map/DrawCustomLayer';
 
+
+export const RENDER_DEBUG = false;
+
 const AppUrlListener: React.FC<any> = () => {
   useEffect(() => {
     CapacitorApp.addListener('appUrlOpen', (event: URLOpenListenerEvent) => {
@@ -54,6 +57,7 @@ const OverlayContentMemo = (props) => {
   //React.memo((props: any) => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%cOverlay content render:' + ref.current.toString(), 'color: yellow');
 
   const overlayMenuOpen = useSelector((state: any) => state.AppMode?.overlay_menu_toggle);
@@ -145,6 +149,7 @@ const OverlayContentMemo = (props) => {
 const App: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
 
   return (
