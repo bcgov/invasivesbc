@@ -10,8 +10,7 @@ const TankMixAccordion = () => {
   const { formDetails } = formDataContext;
 
   const classes = useFormStyles();
-  const tankMixOn = formDetails.form_data.tank_mix === 'true' ? true : false;
-
+  const tankMixOn = formDetails.form_data.tank_mix;
   return (
     <Accordion expanded={tankMixOn} disabled={!tankMixOn}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="tank-mix-content" id="tank-mix-header">
