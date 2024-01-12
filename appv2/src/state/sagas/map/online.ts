@@ -50,28 +50,21 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     s3SignedUrlRequest: false
   });
 
-
   const s3_geojson = networkReturnS3.data.result.rows.map((row) => {
     return row.geojson ? row.geojson : row;
-  })
+  });
 
   const api_geojson = networkReturn3.data.result.rows.map((row) => {
     return row.geojson ? row.geojson : row;
-  })
+  });
 
   const newIds = api_geojson.map((row) => {
     return row?.properties?.id;
-  })
-
+  });
 
   let featureCollection = {
     type: 'FeatureCollection',
-    features: [
-      ...s3_geojson,
-      ...api_geojson.filter((row) => 
-          !newIds.includes(row.properties.id)
-      )
-    ]
+    features: [...s3_geojson, ...api_geojson.filter((row) => !newIds.includes(row.properties.id))]
   };
 
   yield put({
@@ -102,7 +95,6 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
     })
   };
 
-  console.log('%c about to yield', 'color: red')
 
   yield put({
     type: IAPP_GEOJSON_GET_SUCCESS,
@@ -115,7 +107,21 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
 }
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, { filterObjects: [action.payload.filterObj]});
+  let mapState = yield select((state) => state.Map);
+  let reqCount = mapState?.recordTables[action.payload.recordSetID]?.reqCount;
+  if (reqCount !== action.payload.reqCount) {
+    return;
+  }
+
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+    filterObjects: [action.payload.filterObj]
+  });
+
+  mapState = yield select((state) => state.Map);
+  reqCount = mapState?.recordTables[action.payload.recordSetID]?.reqCount;
+  if (reqCount !== action.payload.reqCount) {
+    return;
+  }
 
   if (networkReturn.data.result) {
     yield put({
@@ -137,7 +143,17 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
 }
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj]});
+  let mapState = yield select((state) => state.Map);
+  let reqCount = mapState?.recordTables[action.payload.recordSetID]?.reqCount;
+  if (reqCount !== action.payload.reqCount) {
+    return;
+  }
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
+  mapState = yield select((state) => state.Map);
+  reqCount = mapState?.recordTables[action.payload.recordSetID]?.reqCount;
+  if (reqCount !== action.payload.reqCount) {
+    return;
+  }
 
   if (networkReturn.data.result) {
     yield put({
@@ -159,15 +175,34 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
 }
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
-
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, { filterObjects: [action.payload.filterObj]});
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+    filterObjects: [action.payload.filterObj]
+  });
   //const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
+
+  const mapState = yield select((state) => state.Map);
+  const layerReqCount = mapState?.layers?.filter((layer) => {
+    return layer?.recordSetID === action.payload.recordSetID;
+  })?.[0]?.reqCount;
+
+  if (!layerReqCount === action.payload.layerReqCount) {
+    return;
+  }
 
   if (networkReturn.data.result || networkReturn.data?.data?.result) {
     const list = networkReturn.data?.data?.result ? networkReturn.data?.data?.result : networkReturn.data?.result;
     const IDList = list.map((row) => {
       return row.activity_id;
     });
+
+    const mapState = yield select((state) => state.Map);
+    const layerReqCount = mapState?.layers?.filter((layer) => {
+      return layer?.recordSetID === action.payload.recordSetID;
+    })?.[0]?.reqCount;
+
+    if (!layerReqCount === action.payload.layerReqCount) {
+      return;
+    }
 
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -189,13 +224,29 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
 }
 
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj]})
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
+  const mapState = yield select((state) => state.Map);
+  const layerReqCount = mapState?.layers?.filter((layer) => {
+    return layer?.recordSetID === action.payload.recordSetID;
+  })?.[0]?.reqCount;
+
+  if (!layerReqCount === action.payload.layerReqCount) {
+    return;
+  }
 
   if (networkReturn.data.result || networkReturn.data?.data?.result) {
     const list = networkReturn.data?.data?.result ? networkReturn.data?.data?.result : networkReturn.data?.result;
     const IDList = list?.map((row) => {
       return row.site_id;
     });
+    const mapState = yield select((state) => state.Map);
+    const layerReqCount = mapState?.layers?.filter((layer) => {
+      return layer?.recordSetID === action.payload.recordSetID;
+    })?.[0]?.reqCount;
+
+    if (!layerReqCount === action.payload.layerReqCount) {
+      return;
+    }
 
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,

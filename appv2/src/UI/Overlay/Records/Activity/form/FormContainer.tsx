@@ -39,6 +39,7 @@ import _ from 'lodash';
 const FormContainer: React.FC<any> = (props) => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
 
   const authenticated = useSelector((state) => state.Auth.authenticated);

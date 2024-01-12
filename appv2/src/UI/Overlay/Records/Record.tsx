@@ -8,10 +8,12 @@ import { ActivityForm } from './Activity/Form';
 import { ActivityPhotos } from './Activity/Photos';
 import { OverlayHeader } from '../OverlayHeader';
 import { Alert, Button, Snackbar } from '@mui/material';
+import { RENDER_DEBUG } from 'UI/App';
 
 export const Activity = (props) => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%cActivity  content render:' + ref.current.toString(), 'color: yellow');
 
   const history = useHistory();

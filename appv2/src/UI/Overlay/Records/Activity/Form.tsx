@@ -3,10 +3,12 @@ import FormContainer from './form/FormContainer';
 import { useSelector } from 'react-redux';
 import './Form.css';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import { RENDER_DEBUG } from 'UI/App';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%Activity Form render:' + ref.current.toString(), 'color: yellow');
 
   const { short_id, form_status, activity_type, activity_subtype, form_data, created_by, date_created, updated_by, date_updated, batch_id } =

@@ -34,3 +34,7 @@
   background-color: #fff;
   box-shadow: 1px 1px black;
 }
+
+.leaflet-top {
+  z-index: 9999999999
+}

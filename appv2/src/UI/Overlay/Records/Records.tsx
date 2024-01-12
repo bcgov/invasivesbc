@@ -27,25 +27,23 @@ export const Records = (props) => {
   // before getting the map layers to interact with the list item on hover.
   const recordSets = useSelector((state: any) => state.UserSettings?.recordSets);
 
-  const loaded = useSelector((state: any) => state.Map?.layers?.map((layer) => { return {recordSetID: layer?.recordSetID, loaded: layer?.loaded, type: layer?.type}}));
-  const isActivitiesGeoJSONLoaded = useSelector((state:any)=> state.Map?.activitiesGeoJSONDict !== null);
-  const isIAPPGeoJSONLoaded = useSelector((state:any)=> state.Map?.IAPPGeoJSONDict !== null);
+  const loaded = useSelector((state: any) => state.Map?.layers?.map((layer) => { return {recordSetID: layer?.recordSetID, loading: layer?.loading, type: layer?.type}}));
+  const isActivitiesGeoJSONLoaded = useSelector((state:any)=> state.Map?.activitiesGeoJSONDict !== undefined);
+  const isIAPPGeoJSONLoaded = useSelector((state:any)=> state.Map?.IAPPGeoJSONDict !== undefined);
 
   const [loadMap, setLoadMap] = React.useState({});
 
   useEffect(()=> {
     let rv = {}
+    console.log('geojson loaded', isActivitiesGeoJSONLoaded, isIAPPGeoJSONLoaded)
     loaded.forEach((layer) => {
       const geojson = layer?.type === 'Activity' ? isActivitiesGeoJSONLoaded : isIAPPGeoJSONLoaded
-      rv[layer?.recordSetID] = layer?.loaded  && geojson
+      rv[layer?.recordSetID] = !layer?.loading  && geojson
     })
     setLoadMap(rv)
 
-  }, [JSON.stringify(loaded)])
+  }, [JSON.stringify(loaded), isActivitiesGeoJSONLoaded, isIAPPGeoJSONLoaded])
 
-  loaded.forEach((layer) => {
-    loadMap[layer?.recordSetID] = layer?.loaded
-  })
 
 
   const colours = ['#2A81CB', '#FFD326', '#CB2B3E', '#2AAD27', '#CB8427', '#CAC428', '#9C2BCB', '#7B7B7B', '#3D3D3D'];
