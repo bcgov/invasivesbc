@@ -14,6 +14,7 @@ import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { debounce, set, values } from 'lodash';
 import {
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
@@ -64,8 +65,12 @@ export const RecordSet = (props) => {
                 </Button>{' '}
               </div>
               <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
+            </div>
+          </div>
+          <div className="recordSet_filter_buttons_container">
               <div className="recordSet_clear_filter_button">
                 <Button
+              size={'small'}
                   onClick={() => {
                     dispatch({
                       type: RECORDSET_CLEAR_FILTERS,
@@ -75,11 +80,13 @@ export const RecordSet = (props) => {
                     });
                   }}
                   variant="contained">
+                    Clear Filters
                   <FilterAltOffIcon />
                 </Button>
               </div>
               <div className="recordSet_toggleView_filter_button">
                 <Button
+              size={'small'}
                   onClick={() => {
                     dispatch({
                       type: RECORDSETS_TOGGLE_VIEW_FILTER
@@ -88,12 +95,15 @@ export const RecordSet = (props) => {
                   variant="contained">
                   {viewFilters ? (
                     <>
-                      <VisibilityIcon />
+
+                      Hide Filters
+                      <VisibilityOffIcon />
                       <FilterAltIcon />
                     </>
                   ) : (
                     <>
-                      <VisibilityOffIcon />
+                      Show Filters {(recordSet?.tableFilters?.length || 0) > 0 && `(${recordSet?.tableFilters?.length})`}
+                      <VisibilityIcon />
                       <FilterAltIcon />
                     </>
                   )}
@@ -101,6 +111,7 @@ export const RecordSet = (props) => {
               </div>
               <div className="recordSet_new_filter_button">
                 <Button
+              size={'small'}
                   onClick={() => {
                     dispatch({
                       type: RECORDSET_ADD_FILTER,
@@ -115,11 +126,10 @@ export const RecordSet = (props) => {
                     });
                   }}
                   variant="contained">
-                  + <FilterAltIcon />
+                    Add Filter + <FilterAltIcon />
                 </Button>
               </div>
-              <ExcelExporter setName={props.setID} />
-            </div>
+
           </div>
           <div className="recordSet_filters_container">
             <div className="recordSet_filters">
@@ -142,6 +152,7 @@ export const RecordSet = (props) => {
               ) : (
                 <></>
               )}
+              <ExcelExporter setName={props.setID} />
             </div>
           </div>
           <RecordTable setID={props.setID} />

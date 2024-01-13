@@ -34,10 +34,6 @@ tr {
     background-color: white !important; 
 }
 
-tr:hover {
-    color: black !important;
-    background-color: white !important;
-}
 .leftHeaderCol {
     width: 30%
 }
