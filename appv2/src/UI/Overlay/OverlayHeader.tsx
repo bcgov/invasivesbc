@@ -106,28 +106,29 @@ export const OverlayHeader = (props) => {
       <div></div>
       <div className="overlayMenuResizeButtons">
         <div className="fullScreenOverlayButton">
-          <Button sx={{ height: '20px' }} onClick={maximize} variant="contained">
+          <Button className='leftOverlayResizeButton' sx={{ height: '20px' }} onClick={maximize} variant="contained">
             <ArrowDropUpIcon />
           </Button>
         </div>
 
         <div onMouseDown={onClickDragButton} className="dragMeToResize">
-          <Button sx={{ height: '20px' }} variant="contained">
+          <Button className='centerOverlayResizeButton' sx={{ height: '20px' }} variant="contained">
             <DragHandleIcon />
           </Button>
         </div>
         <div className="minimizeOverlayButton">
-          <Button sx={{ height: '20px' }} onClick={minimize} variant="contained">
+          <Button  className='rightOverlayResizeButton' sx={{ height: '20px' }} onClick={minimize} variant="contained">
             <ArrowDropDownIcon />
           </Button>
         </div>
       </div>
-      <div className="overlay-header-menu-button">
+      <div className="overlay-header-menu-button-container">
         <Route
           path="/Records/Activity:*"
           exact={false}
           render={(props) => {
             return ( <Button
+            className={'overlay-header-menu-button'}
                 sx={{ height: '20px' }}
                 variant="contained"
                 onClick={() => {

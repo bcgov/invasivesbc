@@ -15,6 +15,7 @@ export const Activity = (props) => {
   ref.current += 1;
   if(RENDER_DEBUG)
   console.log('%cActivity  content render:' + ref.current.toString(), 'color: yellow');
+  const urlFromAppModeState = useSelector((state: any) => state.AppMode?.url);
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -67,19 +68,19 @@ export const Activity = (props) => {
         <div className="records__activity_buttons">
           <Button
           variant="contained"
-            className="records__activity__photos_button"
+            className={"records__activity__photos_button " + (urlFromAppModeState?.includes('photos')? ' selectedFormTab' : '')}
             onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/photos')}>
             Photos
           </Button>
           <Button
           variant="contained"
-            className="records__activity__form_button"
+            className={"records__activity__form_button " + (urlFromAppModeState?.includes('form')? ' selectedFormTab' : '')}
             onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/form')}>
             Form
           </Button>
           <Button
           variant="contained"
-            className="records__activity__map_button"
+            className={"records__activity__map_button " + (urlFromAppModeState?.includes('map')? ' selectedFormTab' : '')}
             onClick={() => {
 
 

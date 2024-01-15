@@ -6,10 +6,10 @@
 
 }
 .HeaderBar {
-   height: 7h;
+   height: 5vh;
     cursor: pointer;
     width: 100vw;
-    background-color: #223f75;
+    background-color: #003366;
     /*position: fixed;*/
     z-index: 2147483646;
     /*top: 0;

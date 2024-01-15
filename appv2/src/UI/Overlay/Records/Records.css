@@ -18,30 +18,26 @@
   border-color: green;
   background-color: #fff;
   color: black;
-  overflow: auto
+  overflow: auto;
 }
 
 .record_sets_header_new_set_button {
   margin-left: auto;
-
 }
 
-
-.records_set_left_hand_items{
+.records_set_left_hand_items {
   height: 100%;
 
-  width:25%;
+  width: 25%;
   display: flex;
   flex-direction: row;
   justify-content: left;
-
 }
 .records_set_name {
   height: 100%;
   font-size: small;
   overflow-y: hidden;
-/*  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;*/
-
+  /*  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;*/
 }
 
 .records_set_name_edit {
@@ -50,7 +46,7 @@
   height: 50px;
 }
 
-.records_set_right_hand_items{
+.records_set_right_hand_items {
   height: 100%;
   display: flex;
   width: 75%;
@@ -58,22 +54,21 @@
   justify-content: right;
   overflow-x: hidden;
   overflow-y: hidden;
-
 }
 .records_set_layer_colour {
 }
 
 .record {
   height: 100px;
-  width: 100%; 
+  width: 100%;
 }
 
 .records_activity {
-  color: white
+  color: white;
 }
 
 .records__activity__header {
-  /* same height as the apps header and footer */ 
+  /* same height as the apps header and footer */
   height: 5vh;
   width: 100%;
   border-color: black;
@@ -94,20 +89,30 @@
   flex-grow: 1;
 }
 
+.selectedFormTab {
+  border-bottom-style: solid !important;
+  /*border-radius: 2vh;*/
+  border-width: .5vh !important;
+  border-color: #FCBA19 !important;
+}
 
 .records__activity__photos_button {
   height: 5vh;
   border-color: black;
+  border-radius: 0px !important;
+  background-color: #003366 !important;
 }
 
 .records__activity__form_button {
   height: 5vh;
   border-color: black;
+  border-radius: 0px !important;
+  background-color: #003366 !important;
 }
-
 
 .records__activity__map_button {
   height: 5vh;
   border-color: black;
+  border-radius: 0px !important;
+  background-color: #003366 !important;
 }
-

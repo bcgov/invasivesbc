@@ -109,7 +109,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
         ...styles,
         color: darkTheme ? '#FFF' : '#000',
         ':hover': {
-          backgroundColor: darkTheme ? '#FFF' : '#223f75',
+          backgroundColor: darkTheme ? '#FFF' : '#003366',
           color: darkTheme ? '#424242' : '#FFF'
         }
       };

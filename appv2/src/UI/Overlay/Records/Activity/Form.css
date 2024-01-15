@@ -29,10 +29,11 @@ td {
 
 }
 
-tr {
+/*tr {
     color: black !important;
     background-color: white !important; 
 }
+*/
 
 .leftHeaderCol {
     width: 30%
