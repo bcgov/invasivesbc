@@ -12,6 +12,7 @@ import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import { useHistory } from 'react-router';
+import 'UI/Global.css';
 
 export const WhatsHereButton = (props) => {
   const map = useMap();
@@ -36,6 +37,7 @@ export const WhatsHereButton = (props) => {
           open={show}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
+          classes={{ tooltip: 'toolTip' }}
           title={`What's here?`}
           placement="top-end">
           <span>
@@ -53,7 +55,7 @@ export const WhatsHereButton = (props) => {
                 ((whatsHere as any)?.toggle ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
-                {((whatsHere as any)?.loadingActivities || (whatsHere as any)?.loadingIAPP)?  <HourglassTopIcon /> : <></>}
+              {(whatsHere as any)?.loadingActivities || (whatsHere as any)?.loadingIAPP ? <HourglassTopIcon /> : <></>}
               <DocumentScannerIcon />
             </IconButton>
           </span>

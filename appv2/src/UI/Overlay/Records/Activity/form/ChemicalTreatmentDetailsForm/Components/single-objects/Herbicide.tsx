@@ -158,7 +158,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
         </Typography>
 
         <Tooltip
-          style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+          classes={{ tooltip: 'toolTip' }}
           placement="left"
           title="Choose whether the herbicide being used is liquid or granular">
           <HelpOutlineIcon />
@@ -184,10 +184,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
           }}
         />
 
-        <Tooltip
-          style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-          placement="left"
-          title="Choose which herbicide you are using">
+        <Tooltip placement="left" classes={{ tooltip: 'toolTip' }} title="Choose which herbicide you are using">
           <HelpOutlineIcon />
         </Tooltip>
         <CustomAutoComplete
@@ -212,7 +209,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
         {!tankMixOn && (
           <>
             <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              classes={{ tooltip: 'toolTip' }}
               placement="left"
               title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution. Expressed as the percent of herbicide in the solution.">
               <HelpOutlineIcon />
@@ -241,7 +238,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
         {tankMixOn && (
           <>
             <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              classes={{ tooltip: 'toolTip' }}
               placement="left"
               title="Recommended label rate for herbicide (L/ha) used for this treatment">
               <HelpOutlineIcon />

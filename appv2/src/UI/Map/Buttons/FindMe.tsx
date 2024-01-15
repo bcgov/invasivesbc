@@ -7,7 +7,7 @@ import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'react-redux';
 import { calc_utm } from 'util/utm';
 import { MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING } from 'state/actions';
-
+import 'UI/Global.css';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 
 const baseUrl = window.location.href.split('/home')[0];
@@ -35,6 +35,7 @@ export const FindMeToggle = (props) => {
       <div ref={divRef} className="map-btn">
         <Tooltip
           open={show}
+          classes={{ tooltip: 'toolTip' }}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title="Find Me"

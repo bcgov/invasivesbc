@@ -1,15 +1,16 @@
-import React, { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import * as L from "leaflet";
-import { useMap } from "react-leaflet";
-import { IconButton, Tooltip } from "@mui/material";
-import { toolStyles } from "UI/Styles/ToolStyles";
-import { useSelector } from "util/use_selector";
+import React, { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import * as L from 'leaflet';
+import { useMap } from 'react-leaflet';
+import { IconButton, Tooltip } from '@mui/material';
+import { toolStyles } from 'UI/Styles/ToolStyles';
+import { useSelector } from 'util/use_selector';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
-import { OPEN_NEW_RECORD_MENU, TOGGLE_QUICK_PAN_TO_RECORD } from "state/actions";
-import { useHistory } from "react-router";
+import { OPEN_NEW_RECORD_MENU, TOGGLE_QUICK_PAN_TO_RECORD } from 'state/actions';
+import { useHistory } from 'react-router';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
+import 'UI/Global.css';
 
 export const QuickPanToRecordToggle = (props) => {
   const map = useMap();
@@ -27,14 +28,13 @@ export const QuickPanToRecordToggle = (props) => {
       L.DomEvent.disableScrollPropagation(divRef?.current);
     } catch (e) {}
   }, []);
-  
-  if (map && isAuth ) {
+
+  if (map && isAuth) {
     return (
-      <div
-        ref={divRef}
-        className="map-btn">
+      <div ref={divRef} className="map-btn">
         <Tooltip
           open={show}
+          classes={{ tooltip: 'toolTip' }}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title={`Toggle Quick Pan to Record In Table`}
@@ -42,7 +42,7 @@ export const QuickPanToRecordToggle = (props) => {
           <span>
             <IconButton
               onClick={() => {
-                dispatch({ type: TOGGLE_QUICK_PAN_TO_RECORD  });
+                dispatch({ type: TOGGLE_QUICK_PAN_TO_RECORD });
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
@@ -50,7 +50,7 @@ export const QuickPanToRecordToggle = (props) => {
                 (quickPanToRecord ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
-              <PlaylistPlayIcon/>
+              <PlaylistPlayIcon />
             </IconButton>
           </span>
         </Tooltip>

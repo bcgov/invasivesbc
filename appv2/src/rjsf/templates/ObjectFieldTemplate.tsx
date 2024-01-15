@@ -2,8 +2,9 @@ import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
-import {Grid, Tooltip} from "@mui/material";
-import {canExpand, getTemplate, ObjectFieldTemplateProps} from "@rjsf/utils";
+import { Grid, Tooltip } from '@mui/material';
+import { canExpand, getTemplate, ObjectFieldTemplateProps } from '@rjsf/utils';
+import 'UI/Global.css';
 
 const useStyles = makeStyles({
   root: {
@@ -14,9 +15,8 @@ const useStyles = makeStyles({
 const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
   const classes = useStyles();
 
-
-  const DescriptionField = getTemplate("DescriptionFieldTemplate", props.registry, props.uiSchema);
-  const TitleField = getTemplate("TitleFieldTemplate", props.registry, props.uiSchema);
+  const DescriptionField = getTemplate('DescriptionFieldTemplate', props.registry, props.uiSchema);
+  const TitleField = getTemplate('TitleFieldTemplate', props.registry, props.uiSchema);
 
   return (
     <>
@@ -57,6 +57,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
             <>
               {element.content.props.schema['x-tooltip-text'] && (
                 <Tooltip
+                  classes={{ tooltip: 'toolTip' }}
                   enterTouchDelay={0}
                   title={
                     element.content.props.schema['x-tooltip-text']

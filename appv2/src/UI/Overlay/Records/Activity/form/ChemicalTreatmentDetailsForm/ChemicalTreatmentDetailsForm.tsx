@@ -225,6 +225,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
           <Box className={classes.generalFieldsContainer}>
             <Box className={classes.generalFieldColumn}>
               <Tooltip
+                classes={{ tooltip: 'toolTip' }}
                 style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
                 placement="left"
                 title="Check if there is a mix of herbicides in the tank">
@@ -248,6 +249,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
             </Box>
             <Box className={classes.generalFieldColumn}>
               <Tooltip
+                classes={{ tooltip: 'toolTip' }}
                 style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
                 placement="left"
                 title="Choose treatment application method">
