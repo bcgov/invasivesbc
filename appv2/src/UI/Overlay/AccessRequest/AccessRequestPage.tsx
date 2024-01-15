@@ -90,14 +90,22 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     let requiredFields = [
       { value: firstName, error: setFirstNameErrorText, text: 'Please enter First name ' },
       { value: lastName, error: setLastNameErrorText, text: 'Please enter Last name ' },
-      { value: email, error: setEmailErrorText, text: 'Please enter primary Email ' },
+      { value: email, error: setEmailErrorText, text: 'Please enter primary Email ' }
     ];
     // if not declining check more fields
     if (!decline) {
       requiredFields.push(
         { value: employer, error: setEmployerErrorText, text: 'Please enter Employer ' },
-        { value: fundingAgencies?.join(), error: setFundingAgenciesErrorText, text: 'Please enter 1 or more Funding Agencies ' },
-        { value: requestedRoles?.join(), error: setRequestedRolesErrorText, text: 'Please enter 1 or more Requested Roles ' },
+        {
+          value: fundingAgencies?.join(),
+          error: setFundingAgenciesErrorText,
+          text: 'Please enter 1 or more Funding Agencies '
+        },
+        {
+          value: requestedRoles?.join(),
+          error: setRequestedRolesErrorText,
+          text: 'Please enter 1 or more Requested Roles '
+        }
       );
     }
 
@@ -105,7 +113,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       requiredFields.push({ value: idir, error: setIdirErrorText, text: 'Please enter IDIR name ' });
     } else {
       requiredFields.push({ value: bceid, error: setBceidErrorText, text: 'Please enter BCeID ' });
-
     }
 
     requiredFields.map((field) => {
@@ -249,9 +256,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     fetchEmployers();
     api.getRoles().then((response) => {
       if (userInfo?.requested_roles.indexOf('administrator') == -1)
-        setRoles(response.filter(res => res.role_name.indexOf('administrator') == -1));
-      else
-        setRoles(response);
+        setRoles(response.filter((res) => res.role_name.indexOf('administrator') == -1));
+      else setRoles(response);
     });
   }, []);
 
@@ -269,16 +275,19 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     PaperProps: {
       style: {
         maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
+        width: 250
+      }
+    }
   };
 
-  const getAgencyDescription = (name: string): string => fundingAgenciesList.find(({ code_name }) => code_name === name)?.code_description;
+  const getAgencyDescription = (name: string): string =>
+    fundingAgenciesList.find(({ code_name }) => code_name === name)?.code_description;
 
-  const getEmployerDescription = (name: string): string => employersList.find(({ code_name }) => code_name === name)?.code_description;
+  const getEmployerDescription = (name: string): string =>
+    employersList.find(({ code_name }) => code_name === name)?.code_description;
 
-  const getRoleDescription = (name: string): string => roles.find(({ role_name }) => role_name === name)?.role_description;
+  const getRoleDescription = (name: string): string =>
+    roles.find(({ role_name }) => role_name === name)?.role_description;
 
   const handleRequestedRoleChange = (event: SelectChangeEvent<typeof requestedRoles>) => {
     const {
@@ -289,7 +298,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
 
   const handleFundingAgenciesChange = (event: SelectChangeEvent<typeof fundingAgencies>) => {
     const {
-      target: { value },
+      target: { value }
     } = event;
     setFundingAgencies(typeof value === 'string' ? value.split(',') : value);
   };
@@ -462,11 +471,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                     <Grid item>
                       <Grid container direction="row" spacing={5}>
                         <Grid item>
-                          <Tooltip placement="left" title="Who do you work for?">
+                          <Tooltip classes={{ tooltip: 'toolTip' }} placement="left" title="Who do you work for?">
                             <>
-                              <InputLabel htmlFor="employer">
-                                Employer
-                              </InputLabel>
+                              <InputLabel htmlFor="employer">Employer</InputLabel>
                               <Select
                                 label="Employer"
                                 id="employer"
@@ -485,13 +492,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                     ))}
                                   </Box>
                                 )}
-                                MenuProps={MenuProps}
-                              >
+                                MenuProps={MenuProps}>
                                 {employersList.map((employer) => (
-                                  <MenuItem
-                                    key={employer.code_id}
-                                    value={employer.code_name}
-                                  >
+                                  <MenuItem key={employer.code_id} value={employer.code_name}>
                                     {employer.code_description}
                                   </MenuItem>
                                 ))}
@@ -506,11 +509,10 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item>
                           <Tooltip
                             placement="left"
+                            classes={{ tooltip: 'toolTip' }}
                             title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer.">
                             <>
-                              <InputLabel htmlFor="funding-agency">
-                                Funding Agencies
-                              </InputLabel>
+                              <InputLabel htmlFor="funding-agency">Funding Agencies</InputLabel>
                               <Select
                                 label="Funding Agencies"
                                 id="funding-agency"
@@ -529,13 +531,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                     ))}
                                   </Box>
                                 )}
-                                MenuProps={MenuProps}
-                              >
+                                MenuProps={MenuProps}>
                                 {fundingAgenciesList.map((fundingAgency) => (
-                                  <MenuItem
-                                    key={fundingAgency.code_id}
-                                    value={fundingAgency.code_name}
-                                  >
+                                  <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
                                     {fundingAgency.code_description}
                                   </MenuItem>
                                 ))}
@@ -548,7 +546,10 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                     <Grid item>
                       <Grid container direction="row" spacing={5} style={{ marginBottom: '10px' }}>
                         <Grid item>
-                          <Tooltip placement="left" title="Pesticide Applicator Certificate (PAC) Number">
+                          <Tooltip
+                            classes={{ tooltip: 'toolTip' }}
+                            placement="left"
+                            title="Pesticide Applicator Certificate (PAC) Number">
                             <TextField
                               value={pacNumber}
                               type={'number'}
@@ -568,6 +569,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item>
                           <Tooltip
                             placement="left"
+                            classes={{ tooltip: 'toolTip' }}
                             title="Enter the Service licence Number and Company name separated by a dash and no spaces">
                             <TextField
                               value={psn1}
@@ -582,6 +584,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item>
                           <Tooltip
                             placement="left"
+                            classes={{ tooltip: 'toolTip' }}
                             title="Enter the Service licence Number and Company name separated by a dash and no spaces">
                             <TextField
                               value={psn2}
@@ -599,11 +602,10 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Grid item>
                             <Tooltip
                               placement="left"
+                              classes={{ tooltip: 'toolTip' }}
                               title="Select one or more roles to request.">
                               <>
-                                <InputLabel htmlFor="requested-roles">
-                                  Requested roles
-                              </InputLabel>
+                                <InputLabel htmlFor="requested-roles">Requested roles</InputLabel>
                                 <Select
                                   label="Requested roles"
                                   id="requested-roles"
@@ -622,13 +624,9 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                       ))}
                                     </Box>
                                   )}
-                                  MenuProps={MenuProps}
-                                >
+                                  MenuProps={MenuProps}>
                                   {roles.map((role) => (
-                                    <MenuItem
-                                      key={role.role_id}
-                                      value={role.role_name}
-                                    >
+                                    <MenuItem key={role.role_id} value={role.role_name}>
                                       {role.role_description}
                                     </MenuItem>
                                   ))}
@@ -642,6 +640,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                         <Grid item style={{ marginBottom: '10px', marginTop: '10px' }}>
                           <Tooltip
                             placement="left"
+                            classes={{ tooltip: 'toolTip' }}
                             title="If your employer or agency were not on our lists, please enter it here.">
                             <TextField
                               style={{ width: 640 }}

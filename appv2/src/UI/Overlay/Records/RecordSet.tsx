@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useHistory } from 'react-router';
 import Accordion from '@mui/material/Accordion';
-import { AccordionSummary } from '@mui/material';
+import { AccordionSummary, Tooltip } from '@mui/material';
 import { RecordTable } from './RecordTable';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from './RecordTableHelpers';
 import TextField from '@mui/material/TextField';
@@ -23,7 +23,7 @@ import {
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
-  RECORDSET_UPDATE_FILTER,
+  RECORDSET_UPDATE_FILTER
 } from 'state/actions';
 import { OverlayHeader } from '../OverlayHeader';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
@@ -54,11 +54,9 @@ export const RecordSet = (props) => {
       return (
         <div className="recordSet_container">
           <OverlayHeader />
-          {isTouch && <TouchHoldHandler /> }
+          {isTouch && <TouchHoldHandler />}
           <div className="stickyHeader">
-            <div
-              className="recordSet_header"
-              style={{ backgroundColor: recordSet?.color }}>
+            <div className="recordSet_header" style={{ backgroundColor: recordSet?.color }}>
               <div className="recordSet_back_button">
                 <Button onClick={onClickBackButton} variant="contained">
                   {'< Back'}
@@ -68,9 +66,10 @@ export const RecordSet = (props) => {
             </div>
           </div>
           <div className="recordSet_filter_buttons_container">
-              <div className="recordSet_clear_filter_button">
+            <div className="recordSet_clear_filter_button">
+              <Tooltip classes={{ tooltip: 'toolTip' }} title="Clear all filters and refetch all data for this layer.">
                 <Button
-              size={'small'}
+                  size={'small'}
                   onClick={() => {
                     dispatch({
                       type: RECORDSET_CLEAR_FILTERS,
@@ -80,13 +79,15 @@ export const RecordSet = (props) => {
                     });
                   }}
                   variant="contained">
-                    Clear Filters
+                  Clear Filters
                   <FilterAltOffIcon />
                 </Button>
-              </div>
-              <div className="recordSet_toggleView_filter_button">
+              </Tooltip>
+            </div>
+            <div className="recordSet_toggleView_filter_button">
+              <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle hiding filters - does not toggle applying them.">
                 <Button
-              size={'small'}
+                  size={'small'}
                   onClick={() => {
                     dispatch({
                       type: RECORDSETS_TOGGLE_VIEW_FILTER
@@ -95,30 +96,34 @@ export const RecordSet = (props) => {
                   variant="contained">
                   {viewFilters ? (
                     <>
-
                       Hide Filters
                       <VisibilityOffIcon />
                       <FilterAltIcon />
                     </>
                   ) : (
                     <>
-                      Show Filters {(recordSet?.tableFilters?.length || 0) > 0 && `(${recordSet?.tableFilters?.length})`}
+                      Show Filters{' '}
+                      {(recordSet?.tableFilters?.length || 0) > 0 && `(${recordSet?.tableFilters?.length})`}
                       <VisibilityIcon />
                       <FilterAltIcon />
                     </>
                   )}
                 </Button>
-              </div>
-              <div className="recordSet_new_filter_button">
+              </Tooltip>
+            </div>
+            <div className="recordSet_new_filter_button">
+              <Tooltip
+                classes={{ tooltip: 'toolTip' }}
+                title="Add a new filter, drawn, uploaded KML, or just text search on a field.">
                 <Button
-              size={'small'}
+                  size={'small'}
                   onClick={() => {
                     dispatch({
                       type: RECORDSET_ADD_FILTER,
                       payload: {
                         filterType: 'tableFilter',
                         // short id if activity record set otherwise site_ID
-                        field: tableType === 'Activity' ? 'short_id' : 'site_id' ,
+                        field: tableType === 'Activity' ? 'short_id' : 'site_id',
                         setID: props.setID,
                         operator: 'CONTAINS',
                         blockFetchForNow: true
@@ -126,27 +131,27 @@ export const RecordSet = (props) => {
                     });
                   }}
                   variant="contained">
-                    Add Filter + <FilterAltIcon />
+                  Add Filter + <FilterAltIcon />
                 </Button>
-              </div>
-
+              </Tooltip>
+            </div>
           </div>
           <div className="recordSet_filters_container">
             <div className="recordSet_filters">
               {recordSet?.tableFilters?.length > 0 && viewFilters ? (
                 <table className="recordSetFilterTable">
                   <tbody>
-                  <tr>
-                    <th>Filter type</th>
-                    <th>Operator</th>
-                    <th>Filter On</th>
-                    <th>Value</th>
-                    <th></th>
-                  </tr>
-                  {recordSet?.tableFilters.map((filter: any, i) => {
-                    if(filter.field !== 'form_status')
-                    return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
-                  })}
+                    <tr>
+                      <th>Filter type</th>
+                      <th>Operator</th>
+                      <th>Filter On</th>
+                      <th>Value</th>
+                      <th></th>
+                    </tr>
+                    {recordSet?.tableFilters.map((filter: any, i) => {
+                      if (filter.field !== 'form_status')
+                        return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
+                    })}
                   </tbody>
                 </table>
               ) : (
@@ -168,15 +173,11 @@ const RecordSetFooter = (props) => {
 
   const loading = layer?.loading || recordTable?.loading;
 
-  
-
   const totalRecords = layer?.IDList?.length;
-  const loaded = !loading
+  const loaded = !loading;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
-    totalRecords < firstRowIndex + recordTable?.limit
-      ? totalRecords
-      : firstRowIndex + recordTable?.limit;
+    totalRecords < firstRowIndex + recordTable?.limit ? totalRecords : firstRowIndex + recordTable?.limit;
   let recordDisplayString = 'Loading...';
   if (loaded) {
     if (totalRecords !== undefined && totalRecords > 0 && !isNaN(firstRowIndex) && !isNaN(lastRowIndex)) {
@@ -217,9 +218,7 @@ const RecordSetFooter = (props) => {
       <div className="recordSet_pagePrevious">
         {shouldDisplayPreviousButton ? <ArrowLeftIcon onClick={onClickPrevious} /> : <></>}
       </div>
-      <div className="recordSet_pageOfAndTotal">
-      {recordDisplayString}
-      </div>
+      <div className="recordSet_pageOfAndTotal">{recordDisplayString}</div>
       <div className="recordSet_pageNext">
         {shouldDisplayNextButton ? <ArrowRightIcon onClick={onClickNext} /> : <></>}
       </div>
@@ -235,7 +234,6 @@ const Filter = (props) => {
   const clientBoundariesToDisplay = useSelector((state: any) => state.Map.clientBoundaries)?.map((boundary) => {
     return { label: boundary.title, value: boundary.id };
   });
-  
 
   const filterColumns =
     userSettingsState?.recordSets?.[props.setID].recordSetType === 'Activity'
@@ -365,18 +363,17 @@ const Filter = (props) => {
           key={'filterTypeSelect' + props.name}
           value={filterTypeInState}
           onChange={(e) => {
-
             let payload = {
-                filterType: e.target.value,
-                setID: props.setID,
-                filterID: props.id
-            } as any
+              filterType: e.target.value,
+              setID: props.setID,
+              filterID: props.id
+            } as any;
 
-            if(e.target.value === 'spatialFilterUploaded'){
-              payload.filter = serverBoundariesToDisplay[0].value
+            if (e.target.value === 'spatialFilterUploaded') {
+              payload.filter = serverBoundariesToDisplay[0].value;
             }
-            if(e.target.value === 'spatialFilterDrawn') {
-              payload.filter = clientBoundariesToDisplay[0].value
+            if (e.target.value === 'spatialFilterDrawn') {
+              payload.filter = clientBoundariesToDisplay[0].value;
             }
 
             dispatch({
@@ -389,10 +386,18 @@ const Filter = (props) => {
           <option key={Math.random()} value={'tableFilter'} label={'Field/Column'}>
             Field/Column
           </option>
-          <option disabled={clientBoundariesToDisplay.length < 1} key={Math.random()} value={'spatialFilterDrawn'} label={'Spatial - Drawn'}>
+          <option
+            disabled={clientBoundariesToDisplay.length < 1}
+            key={Math.random()}
+            value={'spatialFilterDrawn'}
+            label={'Spatial - Drawn'}>
             Spatial - Drawn
           </option>
-          <option disabled={serverBoundariesToDisplay.length < 1} key={Math.random()} value={'spatialFilterUploaded'} label={'Spatial - Uploaded'}>
+          <option
+            disabled={serverBoundariesToDisplay.length < 1}
+            key={Math.random()}
+            value={'spatialFilterUploaded'}
+            label={'Spatial - Uploaded'}>
             Spatial - Uploaded
           </option>
         </select>
@@ -430,7 +435,7 @@ const Filter = (props) => {
               spatialFilterDrawn: (
                 <>
                   <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
-                  CONTAINED IN
+                    CONTAINED IN
                   </option>
                   <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
                     NOT CONTAINED IN
@@ -484,21 +489,21 @@ const Filter = (props) => {
           )}
         </select>
       </td>
-      <td>
-        {input}
-      </td>
+      <td>{input}</td>
       <td className="deleteButtonCell">
-        <Button
-          className={'deleteButton'}
-          variant="contained"
-          onClick={() => {
-            dispatch({
-              type: RECORDSET_REMOVE_FILTER,
-              payload: { filterType: 'tableFilter', setID: props.setID, filterID: props.id }
-            });
-          }}>
-          Delete
-        </Button>
+        <Tooltip classes={{ tooltip: 'toolTip' }} title="Delete the filter in this row, data will be refetched.">
+          <Button
+            className={'deleteButton'}
+            variant="contained"
+            onClick={() => {
+              dispatch({
+                type: RECORDSET_REMOVE_FILTER,
+                payload: { filterType: 'tableFilter', setID: props.setID, filterID: props.id }
+              });
+            }}>
+            Delete
+          </Button>
+        </Tooltip>
       </td>
     </tr>
   );

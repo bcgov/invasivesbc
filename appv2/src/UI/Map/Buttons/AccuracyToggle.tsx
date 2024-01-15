@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import * as L from "leaflet";
-import { Circle, useMap } from "react-leaflet";
-import { IconButton, Tooltip } from "@mui/material";
-import { toolStyles } from "UI/Styles/ToolStyles";
-import { useSelector } from "util/use_selector";
-import { MAP_TOGGLE_ACCURACY } from "state/actions";
+import React, { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import * as L from 'leaflet';
+import { Circle, useMap } from 'react-leaflet';
+import { IconButton, Tooltip } from '@mui/material';
+import { toolStyles } from 'UI/Styles/ToolStyles';
+import { useSelector } from 'util/use_selector';
+import { MAP_TOGGLE_ACCURACY } from 'state/actions';
+import 'UI/Global.css';
 
 import AttributionIcon from '@mui/icons-material/Attribution';
 
@@ -28,13 +29,12 @@ export const AccuracyToggle = (props) => {
     return <></>;
   } else {
     return (
-      <div
-        ref={divRef}
-        className="map-btn">
+      <div ref={divRef} className="map-btn">
         <Tooltip
           open={show}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
+          classes={{ tooltip: 'toolTip' }}
           title={accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
           placement="top-end">
           <span>
@@ -57,8 +57,6 @@ export const AccuracyToggle = (props) => {
     );
   }
 };
-
-
 
 export const AccuracyMarker = (props) => {
   const map = useMap();

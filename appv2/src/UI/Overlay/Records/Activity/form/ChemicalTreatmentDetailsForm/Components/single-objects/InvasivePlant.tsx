@@ -62,10 +62,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
           : `InvasivePlant #${index + 1}`}
       </Typography>
 
-      <Tooltip
-        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-        placement="left"
-        title="Target invasive plant species at this location">
+      <Tooltip classes={{ tooltip: 'toolTip' }} placement="left" title="Target invasive plant species at this location">
         <HelpOutlineIcon />
       </Tooltip>
       <CustomAutoComplete

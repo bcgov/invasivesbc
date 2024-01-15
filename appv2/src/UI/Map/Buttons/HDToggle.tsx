@@ -1,11 +1,12 @@
-import React, { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import * as L from "leaflet";
-import { useMap } from "react-leaflet";
-import { IconButton, Tooltip } from "@mui/material";
-import { toolStyles } from "UI/Styles/ToolStyles";
-import { useSelector } from "util/use_selector";
-import { MAP_TOGGLE_HD } from "state/actions";
+import React, { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import * as L from 'leaflet';
+import { useMap } from 'react-leaflet';
+import { IconButton, Tooltip } from '@mui/material';
+import { toolStyles } from 'UI/Styles/ToolStyles';
+import { useSelector } from 'util/use_selector';
+import { MAP_TOGGLE_HD } from 'state/actions';
+import 'UI/Global.css';
 
 import HdIcon from '@mui/icons-material/Hd';
 import SdIcon from '@mui/icons-material/Sd';
@@ -26,14 +27,13 @@ export const HDToggle = (props) => {
       L.DomEvent.disableScrollPropagation(divRef?.current);
     } catch (e) {}
   }, []);
-  
+
   if (!baseMapToggle && map) {
     return (
-      <div
-        ref={divRef}
-        className="map-btn">
+      <div ref={divRef} className="map-btn">
         <Tooltip
           open={show}
+          classes={{ tooltip: 'toolTip' }}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title={`Max Zoom Resolution: ${HDToggle ? 'Low Def' : 'High Def'}`}

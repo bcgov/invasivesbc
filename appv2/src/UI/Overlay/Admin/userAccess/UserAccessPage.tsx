@@ -1,8 +1,36 @@
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
-import { Box, Button, Card, CardActions, CardContent, Chip, Container, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, IconButton, MenuItem, TextField, Theme, Tooltip, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Chip,
+  Container,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  Grid,
+  IconButton,
+  MenuItem,
+  TextField,
+  Theme,
+  Tooltip,
+  Typography
+} from '@mui/material';
 import { makeStyles } from '@mui/styles';
-import { DataGrid, GridColDef, GridToolbarColumnsButton, GridToolbarExport, GridToolbarFilterButton, GridValueGetterParams } from '@mui/x-data-grid';
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarColumnsButton,
+  GridToolbarExport,
+  GridToolbarFilterButton,
+  GridValueGetterParams
+} from '@mui/x-data-grid';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { selectAuth } from 'state/reducers/auth';
@@ -19,7 +47,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '320px'
   },
   error: {
-  backgroundColor: theme.palette.error.main
+    backgroundColor: theme.palette.error.main
   },
   warning: {
     backgroundColor: theme.palette.warning.main
@@ -165,7 +193,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const renderDetailsButton = (params: GridValueGetterParams) => {
     return (
-      <Tooltip title="View Details">
+      <Tooltip title="View Details" classes={{ tooltip: 'toolTip' }}>
         <Button
           variant="contained"
           color="primary"
@@ -180,7 +208,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const renderRequestDetailsButton = (params: GridValueGetterParams) => {
     return (
-      <Tooltip title="View Details">
+      <Tooltip title="View Details" classes={{ tooltip: 'toolTip' }}>
         <Button
           variant="contained"
           color="primary"
@@ -514,7 +542,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const openRoleDialog = (mode: any) => {
     console.log(mode);
     if (mode === Mode.GRANT) {
-      console.log("is grant");
+      console.log('is grant');
       console.log(roleDialogOpen);
       setMode(Mode.GRANT);
       setRoleDialogOpen(true);
@@ -563,7 +591,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     api.approveAccessRequests(selectedRequestUsers).then((response) => {
       closeApproveDeclineDialog();
       loadUsers();
-    })
+    });
   };
 
   const declineUser = () => {
@@ -1098,15 +1126,15 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             }}>
             {mode === Mode.GRANT
               ? availableRoles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  {role.description}
-                </MenuItem>
-              ))
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.description}
+                  </MenuItem>
+                ))
               : userRoles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  {role.description}
-                </MenuItem>
-              ))}
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.description}
+                  </MenuItem>
+                ))}
           </TextField>
         </DialogContent>
         <DialogActions>
@@ -1146,8 +1174,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             {mode === Mode.APPROVE ? (
               <strong>Approve selected requests?</strong>
             ) : (
-                <strong>Decline the selected request?</strong>
-              )}
+              <strong>Decline the selected request?</strong>
+            )}
           </DialogContentText>
           {mode === Mode.APPROVE && (
             <DialogContentText>
