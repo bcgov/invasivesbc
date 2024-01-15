@@ -26,7 +26,7 @@ export const getDesignTokens = (darkTheme: boolean) => {
             },
             primary: {
               light: '#5469a4',
-              main: '#223f75', // BC ID: corporate blue
+              main: '#003366', // BC ID: corporate blue
               dark: '#001949',
               contrastText: '#ffffff'
             },
@@ -161,7 +161,7 @@ export const getDesignTokens = (darkTheme: boolean) => {
           tooltip: {
             fontSize: '1rem',
             color: 'white',
-            backgroundColor: '#223F75'
+            backgroundColor: '#003366'
           }
         }
       }

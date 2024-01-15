@@ -63,10 +63,10 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
         flexWrap: 'wrap'
       }}>
       <div>
-        <GridToolbarColumnsButton style={{ color: '#223f75' }} onResize={undefined} onResizeCapture={undefined} />
-        <GridToolbarFilterButton style={{ color: '#223f75' }} onResize={undefined} onResizeCapture={undefined} />
+        <GridToolbarColumnsButton style={{ color: '#003366' }} onResize={undefined} onResizeCapture={undefined} />
+        <GridToolbarFilterButton style={{ color: '#003366' }} onResize={undefined} onResizeCapture={undefined} />
         <GridToolbarExport
-          style={{ color: '#223f75' }}
+          style={{ color: '#003366' }}
           csvOptions={{
             includeHeaders: true,
             allColumns: true,

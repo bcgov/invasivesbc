@@ -1,16 +1,18 @@
-import { Button, MenuItem, Select, Tooltip } from '@mui/material';
+import { Accordion, Button, MenuItem, Select, Tooltip } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CSV_LINK_CLICKED, RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
 import DownloadIcon from '@mui/icons-material/Download';
-import Spinner from 'UI/Spinner/Spinner'
-import "./ExcelExporter.css";
+import Spinner from 'UI/Spinner/Spinner';
+import './ExcelExporter.css';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
 
 const ExcelExporter = (props) => {
   const dispatch = useDispatch();
-  const linkToCSV = useSelector((state: any) => state.Map.linkToCSV)
-  const recordSetForCSV = useSelector((state: any) => state.Map.recordSetForCSV)
-  const CanTriggerCSV = useSelector((state: any) => state.Map.CanTriggerCSV)
+  const linkToCSV = useSelector((state: any) => state.Map.linkToCSV);
+  const recordSetForCSV = useSelector((state: any) => state.Map.recordSetForCSV);
+  const CanTriggerCSV = useSelector((state: any) => state.Map.CanTriggerCSV);
   const setType = useSelector((state: any) => state.UserSettings.recordSets[props.setName]?.recordSetType);
   const [selection, setSelection] = useState(
     setType === 'IAPP' ? 'site_selection_extract' : 'terrestrial_plant_observation'
@@ -47,62 +49,71 @@ const ExcelExporter = (props) => {
   }
 
   return (
-    <>
-      <Tooltip title="CSV Export">
-        {linkToCSV && props.setName === recordSetForCSV ?
-          <a href={linkToCSV} download>
-            <Button
-              onClick={() =>
-                dispatch({
-                  type: CSV_LINK_CLICKED
-                })
-              }
-              disabled={linkToCSV.length < 1}
-              sx={{ mr: 1, ml: 'auto' }}
-              size={'small'}
-              variant="contained">
-              Download CSV
-              <DownloadIcon />
-            </Button>
-          </a>
-          :
-          <div className='CSV-spinner'>
-            {(
-              CanTriggerCSV ? 
-              <Button
-              disabled={!CanTriggerCSV}
-              onClick={() =>
-                dispatch({
-                  type: RECORD_SET_TO_EXCEL_REQUEST,
-                  payload: {
-                      id: props.setName,
-                      CSVType: selection
+    <div className="excelExporter">
+      <Accordion>
+        <AccordionSummary className="accordionSummary" expandIcon={<i className="material-icons">expand_more</i>}>
+          Click here for CSV export
+        </AccordionSummary>
+        <AccordionDetails className="accordionDetails">
+          <Tooltip title="CSV Export">
+            {linkToCSV && props.setName === recordSetForCSV ? (
+              <a href={linkToCSV} download>
+                <Button
+                  onClick={() =>
+                    dispatch({
+                      type: CSV_LINK_CLICKED
+                    })
+                  }
+                  disabled={linkToCSV.length < 1}
+                  sx={{ mr: 1, ml: 'auto' }}
+                  size={'small'}
+                  variant="contained">
+                  Download CSV
+                  <DownloadIcon />
+                </Button>
+              </a>
+            ) : (
+              <div className="CSV-spinner">
+                {CanTriggerCSV ? (
+                  <Button
+                    disabled={!CanTriggerCSV}
+                    onClick={() =>
+                      dispatch({
+                        type: RECORD_SET_TO_EXCEL_REQUEST,
+                        payload: {
+                          id: props.setName,
+                          CSVType: selection
+                        }
+                      })
                     }
-                  })
-                }
-                sx={{ mr: 1, ml: 'auto' }}
-                size={'small'}
-                variant="contained">
-                Generate CSV link
-                <DownloadIcon />
-              </Button>
-              : 
-              <Spinner></Spinner>
+                    sx={{ mr: 1, ml: 'auto' }}
+                    size={'small'}
+                    variant="contained">
+                    Generate CSV link
+                    <DownloadIcon />
+                  </Button>
+                ) : (
+                  <Spinner></Spinner>
+                )}
+              </div>
             )}
-          </div>
-        }
-      </Tooltip>
-      <Tooltip title="Choose report type" placement="right">
-        <Select
-          className="excel-exporter-select"
-          value={selection}
-          onChange={(e) => {
-            setSelection(e.target.value);
-          }}>
-          {...items}
-        </Select>
-      </Tooltip>
-    </>
+          </Tooltip>
+          <Tooltip title="Choose report type" placement="right">
+            <>
+              CSV Type:
+              <Select
+                className="excel-exporter-select"
+                value={selection}
+                onChange={(e) => {
+                  setSelection(e.target.value);
+                }}>
+                {...items}
+              </Select>
+            </>
+          </Tooltip>
+        </AccordionDetails>
+      </Accordion>
+    </div>
   );
 };
 
