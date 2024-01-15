@@ -14,6 +14,7 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   CUSTOM_LAYER_DRAWN,
@@ -25,6 +26,7 @@ import {
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
+  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_ONLINE,
   IAPP_TABLE_ROWS_GET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
@@ -257,7 +259,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
     });
 
     var activityLayersLoading = toggledOnActivityLayers.filter((layer) => {
-      return !layer.loaded;
+      return layer.loading
     });
 
     var toggledOnIAPPLayers = mapState.layers.filter((layer) => {
@@ -265,7 +267,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
     });
 
     var IAPPLayersLoading = toggledOnIAPPLayers.filter((layer) => {
-      return !layer.loaded;
+      return layer.loading;
     });
 
     if (activityLayersLoading.length === 0 && IAPPLayersLoading.length === 0) {
@@ -275,14 +277,14 @@ function* handle_WHATS_HERE_FEATURE(action) {
       if (activityLayersLoading.length > 0) {
         actionsToTake.push(
           activityLayersLoading.map((layer) => {
-            return ACTIVITIES_GEOJSON_GET_SUCCESS;
+            return ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS;
           })
         );
       }
       if (IAPPLayersLoading.length > 0) {
         actionsToTake.push(
           IAPPLayersLoading.map((layer) => {
-            return IAPP_GEOJSON_GET_SUCCESS;
+            return IAPP_GET_IDS_FOR_RECORDSET_SUCCESS;
           })
         );
       }
