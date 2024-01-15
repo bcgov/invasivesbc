@@ -177,6 +177,10 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
 
   if (filterObject?.tableFilters?.length > 0) {
     filterObject.tableFilters.forEach((filter) => {
+      if(filter.filter === '')
+      {
+        return;
+      }
       switch (filter.filterType) {
         case 'tableFilter':
           switch (filter.field) {
