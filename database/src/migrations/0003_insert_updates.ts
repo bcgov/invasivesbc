@@ -24,7 +24,7 @@ export async function up(knex: Knex) {
 
 
 
-set search_path='invasivesbc';
+set search_path='invasivesbc', 'public';
 ALTER VIEW activity_jurisdictions  RENAME TO activity_jurisdictions_raw;
 create materialized view if not exists activity_jurisdictions as select * from activity_jurisdictions_raw;
 
