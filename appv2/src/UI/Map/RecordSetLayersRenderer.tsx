@@ -24,8 +24,8 @@ import { RENDER_DEBUG } from 'UI/App';
 export const RecordSetLayersRenderer = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG)
+    console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
 
   const storeLayers = useSelector(
     (state: any) => state.Map?.layers,
@@ -49,8 +49,8 @@ const LayerWrapper = (props) => {
   const ref = useRef(0);
   ref.current += 1;
 
-  if(RENDER_DEBUG)
-  console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
+  if (RENDER_DEBUG)
+    console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
 
   const type = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer?.recordSetID === props.recordSetID)?.type,
@@ -171,7 +171,7 @@ const IAPPCanvasLabel = (props) => {
     //useCallback(() => {
     const bboxString = map.getBounds().toBBoxString();
     const bbox = JSON.parse('[' + bboxString + ']');
-    let newPointsInBounds
+    let newPointsInBounds;
     try {
       newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox));
     } catch (e) {
@@ -194,11 +194,11 @@ const IAPPCanvasLabel = (props) => {
     const newPointsInBounds = debouncedGetPointsInPoly();
     setPointsInBounds(newPointsInBounds);
 
-    map.on('zoomend', function () {
+    map.on('zoomend', function() {
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });
-    map.on('dragend', function () {
+    map.on('dragend', function() {
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });
@@ -272,11 +272,11 @@ const ActivityCanvasLabel = (props) => {
     const newPointsInBounds = debouncedGetPointsInPoly();
     setPointsInBounds(newPointsInBounds);
 
-    map.on('zoomend', function () {
+    map.on('zoomend', function() {
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });
-    map.on('dragend', function () {
+    map.on('dragend', function() {
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });

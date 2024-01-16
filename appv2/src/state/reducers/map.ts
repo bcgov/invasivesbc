@@ -260,7 +260,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers[index].reqCount = draftState.layers[index].reqCount ? draftState.layers[index].reqCount + 1 : 1;
           if (!draftState.layers[index].layerState) {
             draftState.layers[index].layerState = {
-              color: "blue",
+              color: 'blue',
               drawOrder: 0,
               mapToggle: false
             };
@@ -277,7 +277,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers[index].reqCount = draftState.layers[index].reqCount ? draftState.layers[index].reqCount + 1 : 1;
           if (!draftState.layers[index].layerState) {
             draftState.layers[index].layerState = {
-              color: "blue",
+              color: 'blue',
               drawOrder: 0,
               mapToggle: false
             };
