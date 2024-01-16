@@ -1,12 +1,12 @@
 import { Http } from '@capacitor-community/http';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
-import { put, select } from 'redux-saga/effects';
+import { call, put, select } from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
-  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
+  ACTIVITIES_TABLE_ROWS_GET_SUCCESS, EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_FAILURE,
@@ -21,50 +21,72 @@ const checkForErrors = (response: any, status?: any, url?: any) => {
   }
 };
 
-//
-export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
-  const networkReturnForSignedURLToCachedData = yield InvasivesAPI_Call('POST', `/api/activities-lean/`, {
-    ...action.payload.activitiesFilterCriteria,
-    s3SignedUrlRequest: true
-  });
+import { InvasivesAPI_Call } from '../../../hooks/useInvasivesApi';
+import { selectRootConfiguration } from '../../reducers/configuration';
 
-  const signedURL = networkReturnForSignedURLToCachedData.data.signedURL;
+function* refreshExportConfigIfRequired(action) {
+  const config = yield select(selectRootConfiguration);
 
-  let networkReturnS3;
+  if (config.exportConfig && config.exportConfigFreshUntil && config.exportConfigFreshUntil.isAfter()) {
+    // config is current
+    return;
+  }
+  yield put({ type: EXPORT_CONFIG_LOAD_REQUEST });
 
   try {
-    networkReturnS3 = yield Http.request({
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept-Encoding': 'gzip'
-      },
-      url: signedURL
-    });
+    const r = yield InvasivesAPI_Call('GET', `/api/export-config`);
+
+    yield put({ type: EXPORT_CONFIG_LOAD_SUCCESS, payload: r.data?.result });
   } catch (e) {
-    console.dir(e);
+    console.error(e);
+    yield put({ type: EXPORT_CONFIG_LOAD_ERROR });
+  }
+}
+
+//
+export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
+  yield call(refreshExportConfigIfRequired);
+
+  const config = yield select(selectRootConfiguration);
+
+  let activitiesExportURL;
+
+  if (config.exportConfig && config.exportConfig.length > 0) {
+    let matchingExportConfig = config.exportConfig.find(e => e.type === 'activities');
+    activitiesExportURL = matchingExportConfig.url;
   }
 
-  const networkReturn3 = yield InvasivesAPI_Call('POST', `/api/activities-lean/`, {
-    ...action.payload.activitiesFilterCriteria,
-    s3SignedUrlRequest: false
+  let networkReturnS3 = yield Http.request({
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept-Encoding': 'gzip'
+    },
+    url: activitiesExportURL
   });
 
-  const s3_geojson = networkReturnS3.data.result.rows.map((row) => {
+  const apiNetworkReturn = yield InvasivesAPI_Call('POST', `/api/activities-lean/`, {
+    ...action.payload.activitiesFilterCriteria
+  });
+
+  // map the id from the dict into the feature properties to keep the map happy
+  const s3_geojson = Object.entries(networkReturnS3.data).map((entry) => {
+    const [key, value] = entry;
+    value.properties.id = key;
+    return value;
+  });
+
+  //
+  const api_geojson = apiNetworkReturn.data.result.rows.map((row) => {
     return row.geojson ? row.geojson : row;
   });
 
-  const api_geojson = networkReturn3.data.result.rows.map((row) => {
-    return row.geojson ? row.geojson : row;
-  });
-
-  const newIds = api_geojson.map((row) => {
-    return row?.properties?.id;
-  });
+  const filteredAPIResponse = api_geojson.filter(row => !Object.keys(networkReturnS3.data).includes(row.properties.id));
+  const mappedAPIResponse = filteredAPIResponse.reduce((a, v) => ({...a, [v.properties.id]: v}), {});
 
   let featureCollection = {
     type: 'FeatureCollection',
-    features: [...s3_geojson, ...api_geojson.filter((row) => !newIds.includes(row.properties.id))]
+    features: [s3_geojson, ...filteredAPIResponse]
   };
 
   yield put({
@@ -72,6 +94,10 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     payload: {
       recordSetID: action.payload.recordSetID,
       activitiesGeoJSON: featureCollection,
+      activitiesGeoJSONDict: {
+        ...networkReturnS3.data,
+        ...mappedAPIResponse
+      },
       layerState: action.payload.layerState
     }
   });

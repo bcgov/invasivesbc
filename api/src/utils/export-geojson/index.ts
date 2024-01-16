@@ -83,6 +83,7 @@ export async function doActivityAndIAPPExports(connection) {
 
   for (const f of generation_meta) {
     try {
+
       await S3.upload({
         Bucket: OBJECT_STORE_BUCKET_NAME,
         Body: fs.readFileSync(f.filename),
@@ -90,7 +91,8 @@ export async function doActivityAndIAPPExports(connection) {
         ACL: S3ACLRole.AUTH_READ,
         ContentEncoding: 'gzip',
         ContentType: 'application/json',
-        Metadata: {}
+        Metadata: {},
+        CacheControl: "max-age=86400",
       }).promise();
 
       // push the signed URL out to console for manual verification

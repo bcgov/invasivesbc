@@ -171,7 +171,14 @@ const IAPPCanvasLabel = (props) => {
     //useCallback(() => {
     const bboxString = map.getBounds().toBBoxString();
     const bbox = JSON.parse('[' + bboxString + ']');
-    let newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox));
+    let newPointsInBounds
+    try {
+      newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox));
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
+
     if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
       return { ...newPointsInBounds };
     } else {
@@ -243,12 +250,18 @@ const ActivityCanvasLabel = (props) => {
     //useCallback(() => {
     const bboxString = map.getBounds().toBBoxString();
     const bbox = JSON.parse('[' + bboxString + ']');
-    let newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
+    let newPointsInBounds;
+
+    try {
+      newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
+    } catch (e) {
+      console.error(e);
+    }
     if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
       return { ...newPointsInBounds };
     } else {
       const sliced = newPointsInBounds?.features?.slice(0, MAX_LABLES_TO_RENDER);
-      const collection = { type: 'FeatureCollection', features: [...sliced] };
+      const collection = { type: 'FeatureCollection', features: (sliced ? sliced : []) };
       return { ...collection };
     }
   };

@@ -11,6 +11,7 @@ export const ALL_ACTIVITY_SQL = SQL`select a.activity_id                        
                                                    'id', a.short_id,
                                                    'properties', jsonb_build_object(
                                                            'shortId', a.short_id,
+                                                           'id', a.activity_id,
                                                            'activityType', a.activity_type,
                                                            'speciesPositive', a.species_positive,
                                                            'speciesNegative', a.species_negative,
