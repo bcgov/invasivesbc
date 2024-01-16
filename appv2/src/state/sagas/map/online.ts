@@ -6,7 +6,10 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
-  ACTIVITIES_TABLE_ROWS_GET_SUCCESS, EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS,
+  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
+  EXPORT_CONFIG_LOAD_ERROR,
+  EXPORT_CONFIG_LOAD_REQUEST,
+  EXPORT_CONFIG_LOAD_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_FAILURE,
@@ -52,7 +55,7 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
   let activitiesExportURL;
 
   if (config.exportConfig && config.exportConfig.length > 0) {
-    let matchingExportConfig = config.exportConfig.find(e => e.type === 'activities');
+    let matchingExportConfig = config.exportConfig.find((e) => e.type === 'activities');
     activitiesExportURL = matchingExportConfig.url;
   }
 
@@ -81,12 +84,14 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     return row.geojson ? row.geojson : row;
   });
 
-  const filteredAPIResponse = api_geojson.filter(row => !Object.keys(networkReturnS3.data).includes(row.properties.id));
+  const filteredAPIResponse = api_geojson.filter(
+    (row) => !Object.keys(networkReturnS3.data).includes(row.properties.id)
+  );
   const mappedAPIResponse = filteredAPIResponse.reduce((a, v) => ({ ...a, [v.properties.id]: v }), {});
 
   let featureCollection = {
     type: 'FeatureCollection',
-    features: [s3_geojson, ...filteredAPIResponse]
+    features: [...s3_geojson, ...filteredAPIResponse]
   };
 
   yield put({
@@ -120,7 +125,6 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
       }
     })
   };
-
 
   yield put({
     type: IAPP_GEOJSON_GET_SUCCESS,
