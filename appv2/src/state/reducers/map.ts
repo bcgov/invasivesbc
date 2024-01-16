@@ -207,23 +207,24 @@ class MapState {
     this.workingLayerName = null;
   }
 }
+
 const initialState = new MapState();
 
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     /* MW:
-       Using immer produce() (exported as createNextState from redux-toolkit) so we can modify draftState directly and 
-       not do the usual return {...state, ...newState} which is error prone, hard to read when there is a lot of 
-       nesting, and also leads to extra renders because more of the state object is new every time and so then many 
-       references update not just whats new.  Also saves us from doing JSON.parse(JSON.stringify(state.whatever)) to avoid 
+       Using immer produce() (exported as createNextState from redux-toolkit) so we can modify draftState directly and
+       not do the usual return {...state, ...newState} which is error prone, hard to read when there is a lot of
+       nesting, and also leads to extra renders because more of the state object is new every time and so then many
+       references update not just whats new.  Also saves us from doing JSON.parse(JSON.stringify(state.whatever)) to avoid
        reference copying when we don't want it.
 
-       If we were starting from scratch a consideration would possibly be using redux toolkits createReducer (produce is built 
+       If we were starting from scratch a consideration would possibly be using redux toolkits createReducer (produce is built
        in) and builder.addCase instead of switches, although I assume you lose fallthrough cases then.
       */
     return createNextState(state, (draftState) => {
       switch (action.type) {
-        case IAPP_TABLE_ROWS_GET_REQUEST: 
+        case IAPP_TABLE_ROWS_GET_REQUEST:
         case ACTIVITIES_TABLE_ROWS_GET_REQUEST: {
           if (!draftState.recordTables?.[action.payload.recordSetID]) {
             draftState.recordTables[action.payload.recordSetID] = {};
@@ -233,17 +234,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case ACTIVITIES_GEOJSON_GET_SUCCESS: {
-          //TODO:  Delete this when other refs to it are gone:
-          draftState.activitiesGeoJSON = { type: 'FeatureCollection', features: [] }; //action.payload.activitiesGeoJSON;
-
           //Everything should point to this now instead:
-          draftState.activitiesGeoJSONDict = {};
-          action.payload.activitiesGeoJSON.features.forEach((feature) => {
-            if (!feature.properties.id) console.log('no id', feature);
-            if (feature?.properties?.id) {
-              draftState.activitiesGeoJSONDict[feature.properties.id] = feature;
-            }
-          });
+          draftState.activitiesGeoJSONDict = action.payload.activitiesGeoJSONDict;
 
           if (
             draftState.layers?.filter((layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined)
@@ -260,41 +252,37 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if(!draftState.layers[index])
-          {
+          if (!draftState.layers[index]) {
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           }
           draftState.layers[index].loading = true;
           draftState.layers[index].reqCount = draftState.layers[index].reqCount ? draftState.layers[index].reqCount + 1 : 1;
-          if(!draftState.layers[index].layerState)
-          {
+          if (!draftState.layers[index].layerState) {
             draftState.layers[index].layerState = {
-            color: "blue",
-            drawOrder: 0, 
-            mapToggle: false
-            }
-        }
+              color: "blue",
+              drawOrder: 0,
+              mapToggle: false
+            };
+          }
           break;
         }
         case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if(!draftState.layers[index])
-          {
+          if (!draftState.layers[index]) {
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'IAPP' });
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           }
           draftState.layers[index].loading = true;
           draftState.layers[index].reqCount = draftState.layers[index].reqCount ? draftState.layers[index].reqCount + 1 : 1;
-          if(!draftState.layers[index].layerState)
-          {
+          if (!draftState.layers[index].layerState) {
             draftState.layers[index].layerState = {
-            color: "blue",
-            drawOrder: 0, 
-            mapToggle: false
-            }
-        }
-          /*draftState.layers[index].layerState = { 
+              color: "blue",
+              drawOrder: 0,
+              mapToggle: false
+            };
+          }
+          /*draftState.layers[index].layerState = {
             color: '#000000',
             mapToggle: false,
             drawOrder: 0

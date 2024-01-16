@@ -1,4 +1,3 @@
-import { TurnLeft } from '@mui/icons-material';
 import { put, select, take } from 'redux-saga/effects';
 import intersect from '@turf/intersect';
 
@@ -10,7 +9,7 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  ACTIVITY_GET_INITIAL_STATE_FAILURE,
+  ACTIVITY_GET_INITIAL_STATE_FAILURE, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
@@ -24,7 +23,6 @@ import {
 import { selectMap } from 'state/reducers/map';
 import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { getSearchCriteriaFromFilters } from 'util/miscYankedFromComponents';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -34,7 +32,7 @@ export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
         type: ACTIVITIES_GEOJSON_GET_ONLINE,
         payload: {
           recordSetID: action.payload.recordSetID,
-          activitiesFilterCriteria: action.payload.activitiesFilterCriteria,
+          activitiesFilterCriteria: action.payload.activitiesFilterCriteria
         }
       });
     }
@@ -80,7 +78,8 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   filterObject.selectColumns = ['activity_id'];
 
   const layerReqCount = mapState?.layers?.filter((layer) => {
-    return layer?.recordSetID === action.payload.recordSetID})?.[0]?.reqCount;
+    return layer?.recordSetID === action.payload.recordSetID;
+  })?.[0]?.reqCount;
 
   try {
     // if mobile or web
@@ -116,8 +115,9 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     filterObject.limit = 200000;
     filterObject.selectColumns = ['site_id'];
 
-  const layerReqCount = mapState?.layers?.filter((layer) => {
-    return layer?.recordSetID === action.payload.recordSetID})?.[0]?.reqCount;
+    const layerReqCount = mapState?.layers?.filter((layer) => {
+      return layer?.recordSetID === action.payload.recordSetID;
+    })?.[0]?.reqCount;
 
     // if mobile or web
     if (true) {
@@ -284,11 +284,11 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   let currentMapState = yield select(selectMap);
 
-  if(!currentMapState?.activitiesGeoJSONDict || !currentMapState?.IAPPGeoJSONDict) {
+  if (!currentMapState?.activitiesGeoJSONDict || !currentMapState?.IAPPGeoJSONDict) {
     yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
     yield take(IAPP_GEOJSON_GET_SUCCESS);
   }
-  
+
   currentMapState = yield select(selectMap);
   const featuresFilderedByShape = Object.values(currentMapState?.activitiesGeoJSONDict)?.filter((feature: any) => {
     const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
