@@ -82,7 +82,7 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
   });
 
   const filteredAPIResponse = api_geojson.filter(row => !Object.keys(networkReturnS3.data).includes(row.properties.id));
-  const mappedAPIResponse = filteredAPIResponse.reduce((a, v) => ({...a, [v.properties.id]: v}), {});
+  const mappedAPIResponse = filteredAPIResponse.reduce((a, v) => ({ ...a, [v.properties.id]: v }), {});
 
   let featureCollection = {
     type: 'FeatureCollection',
