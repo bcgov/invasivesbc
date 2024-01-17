@@ -17,7 +17,6 @@ import Cursor from 'pg-cursor';
 
 const defaultLog = getLogger('exports');
 
-
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
@@ -35,24 +34,25 @@ async function dumpGeoJSONToFileAsDict(connection, filename, query) {
 
   defaultLog.debug({ message: 'Writing query result to tempfile', filename });
 
-  const streamed = Readable.from(async function* (): AsyncIterableIterator<string> {
-    yield "{\n";
-    let first = true;
-    let page = await cursor.read(1);
-    do {
-      for (const row of page) {
-        const stringified = JSON.stringify(row['feature'], null, 0);
-        yield `${first ? "\n" : ",\n"}${JSON.stringify(row['key'].toString())}: ${stringified}`;
-      }
-      first = false;
-      page = await cursor.read(1);
-    } while (page.length > 0);
-    yield "}\n";
-    defaultLog.debug({ message: 'read complete' });
-  }());
+  const streamed = Readable.from(
+    (async function* (): AsyncIterableIterator<string> {
+      yield '{\n';
+      let first = true;
+      let page = await cursor.read(1);
+      do {
+        for (const row of page) {
+          const stringified = JSON.stringify(row['feature'], null, 0);
+          yield `${first ? '\n' : ',\n'}${JSON.stringify(row['key'].toString())}: ${stringified}`;
+        }
+        first = false;
+        page = await cursor.read(1);
+      } while (page.length > 0);
+      yield '}\n';
+      defaultLog.debug({ message: 'read complete' });
+    })()
+  );
 
   await pipeline(streamed, zlib.createGzip(), createWriteStream(filename));
-
 }
 
 export async function doActivityAndIAPPExports(connection) {
@@ -60,7 +60,9 @@ export async function doActivityAndIAPPExports(connection) {
   const filePrefix = Path.join(tmpdir(), `export.${randomBytes}`);
   const env = process.env.ENVIRONMENT || 'local';
 
-  const last_activity_res = await connection.query('select max(activity_incoming_data_id) as last from activity_incoming_data');
+  const last_activity_res = await connection.query(
+    'select max(activity_incoming_data_id) as last from activity_incoming_data'
+  );
   const last_iapp_res = await connection.query('select max(site_id) as last from iapp_site_summary_and_geojson');
 
   const generation_meta = [
@@ -83,7 +85,6 @@ export async function doActivityAndIAPPExports(connection) {
 
   for (const f of generation_meta) {
     try {
-
       await S3.upload({
         Bucket: OBJECT_STORE_BUCKET_NAME,
         Body: fs.readFileSync(f.filename),
@@ -92,7 +93,7 @@ export async function doActivityAndIAPPExports(connection) {
         ContentEncoding: 'gzip',
         ContentType: 'application/json',
         Metadata: {},
-        CacheControl: "max-age=86400",
+        CacheControl: 'max-age=86400'
       }).promise();
 
       // push the signed URL out to console for manual verification
@@ -104,14 +105,15 @@ export async function doActivityAndIAPPExports(connection) {
 
       defaultLog.info({ message: 'upload complete', filename: f.filename, testURL: testURL });
 
-      await connection.query(`insert into export_records (export_type, last_record, file_reference)
-                              values ($1, $2, $3)`, [f.export_type, f.last_record, f.s3key]);
-
+      await connection.query(
+        `insert into export_records (export_type, last_record, file_reference)
+                              values ($1, $2, $3)`,
+        [f.export_type, f.last_record, f.s3key]
+      );
     } finally {
       fs.unlinkSync(f.filename);
     }
   }
 
   defaultLog.info({ message: 'uploads complete' });
-
 }

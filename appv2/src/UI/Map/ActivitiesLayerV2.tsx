@@ -10,7 +10,6 @@ import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 import { useSelector } from 'react-redux';
 import { getPallette } from './AdditionalHelperFunctions';
 import { shallowEqual } from 'react-redux';
-import { RENDER_DEBUG } from 'UI/App';
 
 enum ZoomTypes {
   LOW = 'low',
@@ -104,11 +103,10 @@ export const ActivitiesDonutLayer = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
 
-  if (RENDER_DEBUG)
-    console.log(
-      '%cActivitiesLayerV2.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey,
-      'color: yellow'
-    );
+  console.log(
+    '%cActivitiesLayerV2.tsx render:' + ref.current.toString() + 'layerkey: ' + props.layerKey,
+    'color: yellow'
+  );
 
   const layerStateColor = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState?.color,
@@ -181,18 +179,7 @@ const MarkerMemo = memo(({ feature, palette, layerKey }: any) => {
     Observation: '#399c3e',
     Treatment: '#c6c617'
   };
-  let position;
-
-  if (feature.properties?.computedCentroid) {
-    position = feature.properties?.computedCentroid;
-  } else {
-    try {
-      center(feature)?.geometry?.coordinates;
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
+  const position = center(feature)?.geometry?.coordinates;
   const bufferedGeo = {
     type: 'FeatureCollection',
     features: [feature]

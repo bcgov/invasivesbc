@@ -19,12 +19,11 @@ import * as turf from '@turf/turf';
 import { LeafletCanvasLabel, LeafletCanvasMarker, MAX_LABLES_TO_RENDER } from './LeafletCanvasLayer';
 import { useMap, GeoJSON } from 'react-leaflet';
 import { circleMarker } from 'leaflet';
-import { RENDER_DEBUG } from 'UI/App';
 
 export const RecordSetLayersRenderer = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
+  console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
 
   const storeLayers = useSelector(
     (state: any) => state.Map?.layers,
@@ -47,9 +46,7 @@ export const RecordSetLayersRenderer = (props: any) => {
 const LayerWrapper = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-
-  if (RENDER_DEBUG)
-    console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
+  console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
 
   const type = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer?.recordSetID === props.recordSetID)?.type,
@@ -170,14 +167,7 @@ const IAPPCanvasLabel = (props) => {
     //useCallback(() => {
     const bboxString = map.getBounds().toBBoxString();
     const bbox = JSON.parse('[' + bboxString + ']');
-    let newPointsInBounds;
-    try {
-      newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox));
-    } catch (e) {
-      console.error(e);
-      return null;
-    }
-
+    let newPointsInBounds = pointsWithinPolygon(props.geoJSON, turf.bboxPolygon(bbox));
     if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
       return { ...newPointsInBounds };
     } else {
@@ -247,18 +237,12 @@ const ActivityCanvasLabel = (props) => {
     //useCallback(() => {
     const bboxString = map.getBounds().toBBoxString();
     const bbox = JSON.parse('[' + bboxString + ']');
-    let newPointsInBounds;
-
-    try {
-      newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
-    } catch (e) {
-      console.error(e);
-    }
+    let newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
     if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
       return { ...newPointsInBounds };
     } else {
       const sliced = newPointsInBounds?.features?.slice(0, MAX_LABLES_TO_RENDER);
-      const collection = { type: 'FeatureCollection', features: sliced ? sliced : [] };
+      const collection = { type: 'FeatureCollection', features: [...sliced] };
       return { ...collection };
     }
   };
