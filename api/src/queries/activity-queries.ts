@@ -15,44 +15,42 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
   }
 
   const sqlStatement: SQLStatement = SQL`
-    INSERT INTO activity_incoming_data (
-      activity_id,
-      activity_type,
-      activity_subtype,
-      created_timestamp,
-      received_timestamp,
-      created_by,
-      updated_by,
-      created_by_with_guid,
-      updated_by_with_guid,
-      sync_status,
-      form_status,
-      review_status,
-      reviewed_by,
-      reviewed_at,
-      activity_payload,
-      geog,
-      media_keys,
-      species_positive,
-      species_negative,
-      species_treated,
-      jurisdiction
-    ) VALUES (
-      ${activity.activity_id},
-      ${activity.activity_type},
-      ${activity.activity_subtype},
-      ${activity.created_timestamp},
-      ${activity.received_timestamp},
-      ${activity.created_by},
-      ${activity.updated_by},
-      ${activity.created_by_with_guid.replace('bceidbusiness', 'bceid-business')},
-      ${activity.updated_by_with_guid.replace('bceidbusiness', 'bceid-business')},
-      ${activity.sync_status},
-      ${activity.form_status},
-      ${activity.review_status},
-      ${activity.reviewed_by},
-      ${activity.reviewed_at},
-      ${activity.activityPostBody}
+    INSERT INTO activity_incoming_data (activity_id,
+                                        activity_type,
+                                        activity_subtype,
+                                        created_timestamp,
+                                        received_timestamp,
+                                        created_by,
+                                        updated_by,
+                                        created_by_with_guid,
+                                        updated_by_with_guid,
+                                        sync_status,
+                                        form_status,
+                                        review_status,
+                                        reviewed_by,
+                                        reviewed_at,
+                                        activity_payload,
+                                        geog,
+                                        media_keys,
+                                        species_positive,
+                                        species_negative,
+                                        species_treated,
+                                        jurisdiction)
+    VALUES (${activity.activity_id},
+            ${activity.activity_type},
+            ${activity.activity_subtype},
+            ${activity.created_timestamp},
+            ${activity.received_timestamp},
+            ${activity.created_by},
+            ${activity.updated_by},
+            ${activity.created_by_with_guid.replace('bceidbusiness', 'bceid-business')},
+            ${activity.updated_by_with_guid.replace('bceidbusiness', 'bceid-business')},
+            ${activity.sync_status},
+            ${activity.form_status},
+            ${activity.review_status},
+            ${activity.reviewed_by},
+            ${activity.reviewed_at},
+            ${activity.activityPostBody}
   `;
 
   if (activity.geoJSONFeature && activity.geoJSONFeature.length) {
@@ -187,13 +185,15 @@ export const getActivitiesSQL = (
 
   if (searchCriteria.search_feature_server_id) {
     sqlStatement.append(
-      SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(geog::geometry, 255)::geography as geog from invasivesbc.admin_defined_shapes where id = ${searchCriteria.search_feature_server_id}) `
+      SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(geog::geometry, 255)::geography as geog
+                                     from invasivesbc.admin_defined_shapes
+                                     where id = ${searchCriteria.search_feature_server_id}) `
     );
   } else if (searchCriteria.search_feature) {
-    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT  st_subdivide(ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')), 255)::geography as geog
-    FROM (
-      SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
-    ) AS anything) `);
+    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(
+                                                                ST_Collect(ST_GeomFromGeoJSON(array_features ->> 'geometry')),
+                                                                255)::geography as geog
+                                                       FROM (SELECT json_array_elements(${searchCriteria.search_feature}::json -> 'features') AS array_features) AS anything) `);
   }
 
   if (!searchCriteria.search_feature_server_id && !searchCriteria.search_feature) {
@@ -438,7 +438,7 @@ LEFT JOIN
   sqlStatement.append(SQL` where 1 = 1 and a.iscurrent = true `);
 
   if (lean) {
-    sqlStatement.append(SQL` and a.activity_incoming_data_id > 84820`);
+    sqlStatement.append(SQL` and a.activity_incoming_data_id > (select last_record from export_records where export_type = 'activities' order by export_time limit 1)`);
   }
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
@@ -761,9 +761,10 @@ LEFT JOIN
  */
 export const getActivitySQL = (activityId: string): SQLStatement => {
   return SQL`
-    SELECT a.* FROM activity_incoming_data a
+    SELECT a.*
+    FROM activity_incoming_data a
     WHERE a.activity_id = ${activityId}
-    and a.iscurrent = true
+      and a.iscurrent = true
   `;
 };
 
@@ -783,18 +784,18 @@ export const getOverlappingBCGridCellsSQL = (
     case '1':
       return SQL`
         SELECT id, public.st_asGeoJSON(geo) as geo
-            FROM invasivesbc.bc_large_grid
-            WHERE public.ST_INTERSECTS(
-              geo,
-              public.geography(
-                public.ST_Force2D(
-                  public.ST_SetSRID(
-                    public.ST_GeomFromGeoJSON(${geometry}),
-                    4326
+        FROM invasivesbc.bc_large_grid
+        WHERE public.ST_INTERSECTS(
+                geo,
+                public.geography(
+                  public.ST_Force2D(
+                    public.ST_SetSRID(
+                      public.ST_GeomFromGeoJSON(${geometry}),
+                      4326
+                      )
+                    )
                   )
-                )
-              )
-            );
+                );
       `;
       break;
     case '0':
@@ -802,15 +803,16 @@ export const getOverlappingBCGridCellsSQL = (
         throw 'Error: looking for small grid items but the large grid item id array wasn\'t provided';
       } else {
         return SQL`
-        SELECT id, public.st_asGeoJSON(geo) as geo, large_grid_item_id
-            FROM invasivesbc.bc_small_grid
-            WHERE large_grid_item_id = ANY (${grid_item_ids}) AND public.ST_INTERSECTS(
-              geo,
-              public.geography(
-                public.ST_Force2D(
-                  public.ST_SetSRID(
-                    public.ST_GeomFromGeoJSON(${geometry}),
-                    4326
+          SELECT id, public.st_asGeoJSON(geo) as geo, large_grid_item_id
+          FROM invasivesbc.bc_small_grid
+          WHERE large_grid_item_id = ANY (${grid_item_ids})
+            AND public.ST_INTERSECTS(
+            geo,
+            public.geography(
+              public.ST_Force2D(
+                public.ST_SetSRID(
+                  public.ST_GeomFromGeoJSON(${geometry}),
+                  4326
                   )
                 )
               )
@@ -834,9 +836,9 @@ export const deleteActivitiesSQL = (activityIds: Array<string>, req?: any): SQLS
   // update existing activity record
   const sqlStatement: SQLStatement = SQL`
     UPDATE activity_incoming_data
-    SET deleted_timestamp = ${new Date().toISOString()},
-    updated_by_with_guid = ${req?.authContext?.preferredUsername},
-    updated_by = ${req?.authContext?.friendlyUsername}
+    SET deleted_timestamp    = ${new Date().toISOString()},
+        updated_by_with_guid = ${req?.authContext?.preferredUsername},
+        updated_by           = ${req?.authContext?.friendlyUsername}
     WHERE activity_id IN (${activityIds[0]}`;
 
   for (let i = 1; i < activityIds.length; i++) {
@@ -865,8 +867,7 @@ export const undeleteActivitiesSQL = (activityIds: Array<string>): SQLStatement 
   const sqlStatement: SQLStatement = SQL`
     UPDATE activity_incoming_data
     SET deleted_timestamp = NULL
-    WHERE
-    activity_id in (${activityIds[0]}`;
+    WHERE activity_id in (${activityIds[0]}`;
 
   for (let i = 1; i < activityIds.length; i++) {
     sqlStatement.append(SQL`, ${activityIds[i]}`);
