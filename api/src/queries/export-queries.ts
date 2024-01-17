@@ -38,7 +38,7 @@ export const ALL_ACTIVITY_SQL = SQL`
                            'species_negative', species_negative,
                            'species_treated', species_treated,
                            'created', created_timestamp,
-                           'jurisdiction', a.jurisdiction_display,
+                           'jurisdiction', a.activity_payload::json->'form_data'->'activity_data'->'jurisdictions',
                            'reported_area', a.activity_payload -> 'form_data' -> 'activity_data' -> 'reported_area',
                            'computedCentroid', jsonb_build_array(
                                    ST_X(ST_Centroid(a.geog)::geometry),

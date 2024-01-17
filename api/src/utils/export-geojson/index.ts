@@ -45,7 +45,7 @@ async function dumpGeoJSONToFileAsDict(connection, filename, query) {
           yield `${first ? '\n' : ',\n'}${JSON.stringify(row['key'].toString())}: ${stringified}`;
         }
         first = false;
-        page = await cursor.read(1);
+        page = await cursor.read(100);
       } while (page.length > 0);
       yield '}\n';
       defaultLog.debug({ message: 'read complete' });
