@@ -165,6 +165,7 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   if (filterObject?.tableFilters?.length > 0) {
     filterObject.tableFilters.forEach((filter) => {
+      if(filter.filter === '') return;
       switch (filter.filterType) {
         case 'tableFilter':
           switch (filter.field) {
@@ -544,113 +545,115 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const where = sqlStatement.append(`where 1=1 and activities.iscurrent = true  `);
+  let tableAlias = filterObject.isCSV? 'b' : 'activities';
+  const where = sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `);
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
-    where.append(`and activities.activity_type not in ('Treatment','Monitoring') `);
+    where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
   }
+
 
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
       case 'form_status':
-        where.append(`and LOWER(activities.form_status) = LOWER('${filter.filter}') `);
+        where.append(`and LOWER(${tableAlias}.form_status) = LOWER('${filter.filter}') `);
         break;
       case 'activity_id':
         where.append(
-          `and LOWER(activities.activity_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'} LOWER('%${
+          `and LOWER(${tableAlias}.activity_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'} LOWER('%${
             filter.filter
           }%') `
         );
         break;
       case 'short_id':
         where.append(
-          `and LOWER(activities.short_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.short_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
         break;
       case 'activity_type':
         where.append(
-          `and LOWER(activities.activity_type) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.activity_type) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
         break;
       case 'activity_subtype':
         where.append(
-          `and LOWER(activities.activity_subtype) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.activity_subtype) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
         break;
       case 'activity_date':
         where.append(
-          `and substring((activities.activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) ${
+          `and substring((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  '%${filter.filter}%' `
         );
         break;
       case 'project_code':
         where.append(
-          `and LOWER((activities.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text) ${
+          `and LOWER((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'jurisdiction_display':
         where.append(
-          `and LOWER(activities.jurisdiction_display) ${
+          `and LOWER(${tableAlias}.jurisdiction_display) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'species_positive_full':
         where.append(
-          `and LOWER(activities.species_positive_full) ${
+          `and LOWER(${tableAlias}.species_positive_full) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'species_negative_full':
         where.append(
-          `and LOWER(activities.species_negative_full) ${
+          `and LOWER(${tableAlias}.species_negative_full) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'has_current_positive':
         where.append(
-          `and activities.current_positive_species ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
+          `and ${tableAlias}.current_positive_species ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
         );
         break;
       case 'has_current_negative':
         where.append(
-          `and activities.current_negative_species  ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
+          `and ${tableAlias}.current_negative_species  ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
         );
         break;
       case 'current_positive_species':
         where.append(
-          `and LOWER(activities.current_positive_species) ${
+          `and LOWER(${tableAlias}.current_positive_species) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'current_negative_species':
         where.append(
-          `and LOWER(activities.current_negative_species)  ${
+          `and LOWER(${tableAlias}.current_negative_species)  ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'species_treated_full':
         where.append(
-          `and LOWER(activities.species_treated_full) ${
+          `and LOWER(${tableAlias}.species_treated_full) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'species_biocontrol_full':
         where.append(
-          `and LOWER(activities.species_biocontrol_full) ${
+          `and LOWER(${tableAlias}.species_biocontrol_full) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
@@ -658,66 +661,66 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
       case 'created_by':
         if (filter.operator === 'CONTAINS') {
           where.append(
-            `and LOWER(activities.created_by) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            `and LOWER(${tableAlias}.created_by) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
               filter.filter
             }%') `
           );
         } else if (filter.operator === 'EQUALS') {
-          where.append(`and LOWER(activities.created_by) = LOWER('${filter.filter}') `);
+          where.append(`and LOWER(${tableAlias}.created_by) = LOWER('${filter.filter}') `);
         }
         break;
       case 'updated_by':
         where.append(
-          `and LOWER(activities.updated_by) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.updated_by) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
         break;
       case 'agency':
         where.append(
-          `and LOWER(activities.agency) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.agency) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
         break;
       case 'regional_invasive_species_organization_areas':
         where.append(
-          `and LOWER(activities.regional_invasive_species_organization_areas) ${
+          `and LOWER(${tableAlias}.regional_invasive_species_organization_areas) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'regional_districts':
         where.append(
-          `and LOWER(activities.regional_districts) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.regional_districts) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
         break;
       case 'invasive_plant_management_areas':
         where.append(
-          `and LOWER(activities.invasive_plant_management_areas) ${
+          `and LOWER(${tableAlias}.invasive_plant_management_areas) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'biogeoclimatic_zones':
         where.append(
-          `and LOWER(activities.biogeoclimatic_zones) ${
+          `and LOWER(${tableAlias}.biogeoclimatic_zones) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'elevation':
         where.append(
-          `and LOWER(activities.elevation) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.elevation) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
         break;
       case 'batch_id':
         where.append(
-          `and LOWER(activities.batch_id::text) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.batch_id::text) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );

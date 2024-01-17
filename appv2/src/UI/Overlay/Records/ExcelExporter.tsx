@@ -55,7 +55,7 @@ const ExcelExporter = (props) => {
           Click here for CSV export
         </AccordionSummary>
         <AccordionDetails className="accordionDetails">
-          <Tooltip title="CSV Export">
+          <Tooltip classes={{ tooltip: 'toolTip' }} title="CSV Export">
             {linkToCSV && props.setName === recordSetForCSV ? (
               <a href={linkToCSV} download>
                 <Button
@@ -98,7 +98,7 @@ const ExcelExporter = (props) => {
               </div>
             )}
           </Tooltip>
-          <Tooltip title="Choose report type" placement="right">
+          <Tooltip classes={{ tooltip: 'toolTip' }} title="Choose report type" placement="right">
             <>
               CSV Type:
               <Select

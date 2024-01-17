@@ -1,13 +1,14 @@
-import React, { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
-import * as L from "leaflet";
-import { useMap } from "react-leaflet";
-import { IconButton, Tooltip } from "@mui/material";
-import { toolStyles } from "UI/Styles/ToolStyles";
-import { useSelector } from "util/use_selector";
+import React, { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
+import * as L from 'leaflet';
+import { useMap } from 'react-leaflet';
+import { IconButton, Tooltip } from '@mui/material';
+import { toolStyles } from 'UI/Styles/ToolStyles';
+import { useSelector } from 'util/use_selector';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
-import { OPEN_NEW_RECORD_MENU } from "state/actions";
-import { useHistory } from "react-router";
+import { OPEN_NEW_RECORD_MENU } from 'state/actions';
+import { useHistory } from 'react-router';
+import 'UI/Global.css';
 
 export const NewRecord = (props) => {
   const map = useMap();
@@ -24,14 +25,13 @@ export const NewRecord = (props) => {
       L.DomEvent.disableScrollPropagation(divRef?.current);
     } catch (e) {}
   }, []);
-  
-  if (map && isAuth ) {
+
+  if (map && isAuth) {
     return (
-      <div
-        ref={divRef}
-        className="map-btn">
+      <div ref={divRef} className="map-btn">
         <Tooltip
           open={show}
+          classes={{ tooltip: 'toolTip' }}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title={`New Record`}
@@ -39,15 +39,11 @@ export const NewRecord = (props) => {
           <span>
             <IconButton
               onClick={() => {
-                dispatch({ type: OPEN_NEW_RECORD_MENU  });
+                dispatch({ type: OPEN_NEW_RECORD_MENU });
               }}
-              className={
-                'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' ' +
-                toolClass.notSelected
-              }
+              className={'leaflet-control-zoom leaflet-bar leaflet-control ' + ' ' + toolClass.notSelected}
               sx={{ color: '#000' }}>
-              <FiberNewIcon/>
+              <FiberNewIcon />
             </IconButton>
           </span>
         </Tooltip>

@@ -29,10 +29,9 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const [open, setOpen] = React.useState(false);
   const { accessRoles, displayName, username } = useSelector(selectAuth);
   const dispatch = useDispatch();
-  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity)
+  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity);
 
   const activity_id = useSelector((state: any) => state?.ActivityPage?.activity?.activity_id);
-
 
   const deleteRecord = () => {
     //TODO refactor this all to happen in a side effect triggered by a request action
@@ -47,10 +46,10 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
     }
     const activityIds = [activity_id];
     dataAccess.deleteActivities(activityIds).then(() => {
-      localStorage.removeItem('activeActivity')
+      localStorage.removeItem('activeActivity');
       history.push('/home/activities');
-      dispatch({ type: ACTIVITY_DELETE_SUCCESS})
-    })
+      dispatch({ type: ACTIVITY_DELETE_SUCCESS });
+    });
   };
 
   const checkIfNotAuthorized = () => {
@@ -125,11 +124,9 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
             )}
           </Grid>
           <Grid item>
-            <Tooltip placement="top" title={deleteTooltipString()}>
+            <Tooltip classes={{ tooltip: 'toolTip' }} placement="top" title={deleteTooltipString()}>
               <span>
-                <Button
-                disabled={isDisabled}
-                variant="contained" color="primary" onClick={() => setOpen(true)}>
+                <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
               </span>
@@ -137,7 +134,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           </Grid>
           <Grid item>
             {!props.hideCheckFormForErrors && (
-              <Tooltip placement="top" title={submitTooltipString()}>
+              <Tooltip classes={{ tooltip: 'toolTip' }} placement="top" title={submitTooltipString()}>
                 <span>
                   <Button
                     disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
@@ -166,6 +163,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           {props.onCopy && (
             <Grid item>
               <Tooltip
+                classes={{ tooltip: 'toolTip' }}
                 TransitionComponent={Zoom}
                 title="Copy the data from the fields, so that you can paste it when you create a new record.">
                 <span>
@@ -179,6 +177,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           {props.onPaste && (
             <Grid item>
               <Tooltip
+                classes={{ tooltip: 'toolTip' }}
                 TransitionComponent={Zoom}
                 title="Paste the data to the new record from the previously copied fields.">
                 <span>
