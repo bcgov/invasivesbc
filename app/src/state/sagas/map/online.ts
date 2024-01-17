@@ -66,7 +66,7 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     type: ACTIVITIES_GEOJSON_GET_SUCCESS,
     payload: {
       recordSetID: action.payload.recordSetID,
-      activitiesGeoJSON: featureCollection,
+      //activitiesGeoJSON: featureCollection,
       layerState: action.payload.layerState
     }
   });

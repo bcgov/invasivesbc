@@ -72,36 +72,46 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     ...action.payload.activitiesFilterCriteria
   });
 
-  // map the id from the dict into the feature properties to keep the map happy
-  const s3_geojson = Object.entries(networkReturnS3.data).map((entry) => {
+  // MW:  I feel like we want to do this ahead of time or else it defeats purpose of prepping file server side
+  // original comment:  map the id from the dict into the feature properties to keep the map happy
+  /*const s3_geojson = Object.entries(networkReturnS3.data).map((entry) => {
     const [key, value] = entry;
     value.properties.id = key;
     return value;
   });
+  */
 
-  //
-  const api_geojson = apiNetworkReturn.data.result.rows.map((row) => {
+  // MW:  Here as well this was a workaround for the memcache code returnning inconsistent formatted data, if we can enforce one way or the other we dont have to loop:
+  /*const api_geojson = apiNetworkReturn.data.result.rows.map((row) => {
     return row.geojson ? row.geojson : row;
   });
+  */
 
+  /* Admittedly an expensive duplicate check, turning off for right now (not related to Robs pr)
   const filteredAPIResponse = api_geojson.filter(
     (row) => !Object.keys(networkReturnS3.data).includes(row.properties.id)
   );
   const mappedAPIResponse = filteredAPIResponse.reduce((a, v) => ({ ...a, [v.properties.id]: v }), {});
+  */
 
+  // MW: temporarily added:
+  //const mappedAPIResponse = api_geojson.reduce((a, v) => ({ ...a, [v.properties.id]: v }), {});
+
+  /* Not needed
   let featureCollection = {
     type: 'FeatureCollection',
     features: [...s3_geojson, ...filteredAPIResponse]
   };
+  */
 
   yield put({
     type: ACTIVITIES_GEOJSON_GET_SUCCESS,
     payload: {
       recordSetID: action.payload.recordSetID,
-      activitiesGeoJSON: featureCollection,
+      //activitiesGeoJSON: featureCollection,
       activitiesGeoJSONDict: {
         ...networkReturnS3.data,
-        ...mappedAPIResponse
+       // ...mappedAPIResponse
       },
       layerState: action.payload.layerState
     }

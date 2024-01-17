@@ -716,12 +716,20 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
 
   if (index && type === typeToFilter && type === 'Activity') {
     let filtered = [];
+    let problem = []
     IDList.map((id) => {
       let f = draftState.activitiesGeoJSONDict[id];
-      if (f !== undefined) {
-        filtered.push(f);
+      if(f !== undefined && f?.geometry !== null){
+        let newF = { ...f };
+        newF.properties.id = id
+        filtered.push(newF);
       }
+      else {
+        problem.push(id)
+      }
+
     });
+    draftState.layers[index].problemGeoJSON = problem
 
     draftState.layers[index].geoJSON = {
       type: 'FeatureCollection',
@@ -732,7 +740,9 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     IDList.map((id) => {
       let f = draftState.IAPPGeoJSONDict[id];
       if (f !== undefined) {
-        filtered.push(f);
+        let newF = { ...f };
+        newF.properties.site_id = id
+        filtered.push(newF);
       }
     });
 

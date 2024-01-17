@@ -38,7 +38,8 @@ export function setupStore(configuration: AppConfig) {
     }
   });
 
-  if (configuration.DEBUG) {
+  //if (configuration.DEBUG) {
+  if (true) {
     globalStore = configureStore({
       reducer: createRootReducer(configuration),
       middleware: [sagaMiddleware, logger]

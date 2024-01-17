@@ -79,7 +79,7 @@ const LayerWrapper = (props) => {
     Treatment: '#c6c617'
   };
   let defaultStyle = (feature) => {
-    return { color: backupPalette[feature?.properties?.type] };
+    return { color: backupPalette[feature?.properties?.activityType] };
   };
 
   let customStyle = (feature) => {
@@ -168,6 +168,7 @@ const IAPPCanvasLabel = (props) => {
   // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
   const getPointsInPoly = () => {
     //useCallback(() => {
+      if(!props.geoJSON) return { type: 'FeatureCollection', features: []}
     const bboxString = map.getBounds().toBBoxString();
     const bbox = JSON.parse('[' + bboxString + ']');
     let newPointsInBounds;
@@ -194,14 +195,16 @@ const IAPPCanvasLabel = (props) => {
     setPointsInBounds(newPointsInBounds);
 
     map.on('zoomend', function () {
+      if(!layerState.labelToggle) return;
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });
     map.on('dragend', function () {
+      if(!layerState.labelToggle) return;
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });
-  }, [props.geoJSON]);
+  }, [props.geoJSON, JSON.stringify(layerState.labelToggle)]);
 
   if (!(pointsInBounds?.features?.length > 0)) return <></>;
   return (
@@ -224,6 +227,7 @@ const ActivityCanvasLabel = (props) => {
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState
   );
 
+  /*
   const labelPoints = useCallback(() => {
     const points = props.geoJSON?.features.map((row) => {
       let computedCenter = null;
@@ -241,16 +245,18 @@ const ActivityCanvasLabel = (props) => {
 
     return { type: 'FeatureCollection', features: [...points] } as any;
   }, [props.geoJSON]);
+  */
 
   // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
   const getPointsInPoly = () => {
+    if(!(props?.geoJSON?.length > 0)) return { type: 'FeatureCollection', features: []}
     //useCallback(() => {
     const bboxString = map.getBounds().toBBoxString();
     const bbox = JSON.parse('[' + bboxString + ']');
     let newPointsInBounds;
 
     try {
-      newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
+      newPointsInBounds = pointsWithinPolygon(props.geoJSON.map((f) => f.properties.computedCenter), turf.bboxPolygon(bbox));
     } catch (e) {
       console.error(e);
     }
@@ -270,14 +276,16 @@ const ActivityCanvasLabel = (props) => {
     setPointsInBounds(newPointsInBounds);
 
     map.on('zoomend', function () {
+      if(!layerState.labelToggle) return;
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });
     map.on('dragend', function () {
+      if(!layerState.labelToggle) return;
       const newPointsInBounds = debouncedGetPointsInPoly();
       setPointsInBounds(newPointsInBounds);
     });
-  }, [props.geoJSON]);
+  }, [props.geoJSON, JSON.stringify(layerState.labelToggle)]);
 
   if (!(pointsInBounds?.features?.length > 0)) return <></>;
   return (

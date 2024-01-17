@@ -41,7 +41,7 @@ const MapPage = () => {
             mapId={'mainMap'}
             isPublicMode={true}
             geometryState={{geometry, setGeometry}}>
-            <VectorOverviewLayer/>
+            {/*<VectorOverviewLayer/>*/}
           </MapContainer>
         </Suspense>
       </MapRecordsContextProvider>
