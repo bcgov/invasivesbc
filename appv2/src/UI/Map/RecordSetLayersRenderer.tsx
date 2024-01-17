@@ -19,10 +19,12 @@ import * as turf from '@turf/turf';
 import { LeafletCanvasLabel, LeafletCanvasMarker, MAX_LABLES_TO_RENDER } from './LeafletCanvasLayer';
 import { useMap, GeoJSON } from 'react-leaflet';
 import { circleMarker } from 'leaflet';
+import { RENDER_DEBUG } from 'UI/App';
 
 export const RecordSetLayersRenderer = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
+  if(RENDER_DEBUG)
   console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
 
   const storeLayers = useSelector(
@@ -46,6 +48,8 @@ export const RecordSetLayersRenderer = (props: any) => {
 const LayerWrapper = (props) => {
   const ref = useRef(0);
   ref.current += 1;
+
+  if(RENDER_DEBUG)
   console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
 
   const type = useSelector(
@@ -214,8 +218,10 @@ const ActivityCanvasLabel = (props) => {
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState
   );
 
+
   const labelPoints = useCallback(() => {
     const points = props.geoJSON?.features.map((row) => {
+
       let computedCenter = null;
       try {
         // center() function can throw an error
