@@ -365,7 +365,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-                   .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}'), 4326)`)
+                   .map((geometry) => `st_subdivide(st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}'), 4326))`)
                    .join(',')}]) AS geojson
          ),
          
@@ -425,8 +425,8 @@ sites as (
   */
 
   sqlStatement.append(`
-    from iapp_sites a
-    join invasivesbc.iapp_site_summary_and_geojson b on a.site_id = b.site_id`);
+    from iapp_site_summary_and_geojson b 
+    join iapp_sites a on a.site_id = b.site_id`);
 
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
