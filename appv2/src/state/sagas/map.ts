@@ -610,12 +610,13 @@ function* handle_URL_CHANGE(action) {
     }
   }
 
-  let mapState = yield select(selectMap);
+  /*let mapState = yield select(selectMap);
   if (!url.includes('WhatsHere') && mapState.whatsHere.toggle) {
     yield put({
       type: MAP_TOGGLE_WHATS_HERE
     });
   }
+  */
 }
 
 function* handle_UserFilterChange(action) {
