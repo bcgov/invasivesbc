@@ -14,6 +14,7 @@ import { S3ACLRole } from '../../constants/misc';
 import AWS from 'aws-sdk';
 import { ALL_ACTIVITY_SQL, PUBLIC_IAPP_SQL } from '../../queries/export-queries';
 import Cursor from 'pg-cursor';
+import { DELETE_STALE_EXPORT_RECORD, STALE_EXPORTS_SQL } from '../../queries/export-record-queries';
 
 const defaultLog = getLogger('exports');
 
@@ -53,6 +54,36 @@ async function dumpGeoJSONToFileAsDict(connection, filename, query) {
   );
 
   await pipeline(streamed, zlib.createGzip(), createWriteStream(filename));
+}
+
+export async function cleanupOldExports(connection) {
+  const result = await connection.query(STALE_EXPORTS_SQL.text, STALE_EXPORTS_SQL.values);
+  const queuedDeletionIDs = [];
+
+  for (const row of result.rows) {
+    try {
+      defaultLog.debug({ message: `Deleting stale export record`, id: row['id'], filename: row['file_reference'] });
+      await S3.deleteObject({
+        Bucket: OBJECT_STORE_BUCKET_NAME,
+        Key: row['file_reference']
+      }).promise();
+    } catch (e) {
+      defaultLog.error({ message: 'error deleting stale S3 object', error: e });
+    } finally {
+      queuedDeletionIDs.push(row['id']);
+    }
+  }
+
+  for (const id of queuedDeletionIDs) {
+    const deletionQuery = DELETE_STALE_EXPORT_RECORD(id);
+    try {
+      await connection.query(deletionQuery.text, deletionQuery.values);
+    } catch (e) {
+      defaultLog.error({ message: 'error marking stale object as deleted in local DB', error: e });
+    }
+  }
+
+  defaultLog.info({ message: `Deleted stale export records` });
 }
 
 export async function doActivityAndIAPPExports(connection) {
@@ -107,7 +138,7 @@ export async function doActivityAndIAPPExports(connection) {
 
       await connection.query(
         `insert into export_records (export_type, last_record, file_reference)
-                              values ($1, $2, $3)`,
+         values ($1, $2, $3)`,
         [f.export_type, f.last_record, f.s3key]
       );
     } finally {
