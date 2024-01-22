@@ -87,6 +87,8 @@ const LayerWrapper = (props) => {
     return { color: color };
   };
 
+  if(!(geoJSON?.features?.length > 0))
+  return <></>
   // These rerender internally if the layer state changes, without regrabbing the geojson
   switch (type) {
     case 'Activity':
@@ -184,7 +186,9 @@ const IAPPCanvasLabel = (props) => {
   const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true, trailing: false });
 
   useEffect(() => {
+    if(!props.geoJSON) return;
     const newPointsInBounds = debouncedGetPointsInPoly();
+
     setPointsInBounds(newPointsInBounds);
 
     map.on('zoomend', function () {
