@@ -195,7 +195,7 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
 }
 
 function* handle_URL_CHANGE(action) {
-  const userSettingsState = yield select(selectUserSettings);
+  const activityPageState = yield select(selectActivity);
   const isActivityURL = action.payload.url.includes('/Records/Activity:');
   if (isActivityURL) {
     const afterColon = action.payload.url.split(':')?.[1];
@@ -203,7 +203,7 @@ function* handle_URL_CHANGE(action) {
     if (afterColon) {
       id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
     }
-    if (id && id.length === 36 && userSettingsState.activeActivity !== id)
+    if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id)
       yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
 
 /*    else if (userSettingsState.activeActivity) {
