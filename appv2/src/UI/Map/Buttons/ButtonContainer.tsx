@@ -29,7 +29,6 @@ export const ButtonContainer = (props) => {
       <AccuracyMarker />
       <LocationMarker />
       <PanToMe />
-      {isAuth && <WhatsHereMarker />}
       {isAuth && <WhatsHereCurrentRecordHighlighted />}
       {isAuth && <WhatsHereDrawComponent />}
       <NewRecord/>
