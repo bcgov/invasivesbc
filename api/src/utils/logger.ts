@@ -50,7 +50,7 @@ class LoggerWithContext {
                 ...meta
               };
               _.forOwn(additionalContext, (prop) => {
-                if (prop == null || prop == [] || prop == {}) {
+                if (prop === null) {
                   delete additionalContext[prop];
                 }
               });
@@ -60,7 +60,6 @@ class LoggerWithContext {
               }
 
               let formattedAdditionalContext = null;
-
 
               if (_.keys(additionalContext).length > 0) {
                 try {
@@ -118,6 +117,6 @@ class LoggerWithContext {
   }
 }
 
-export const getLogger = function(logLabel: string): LoggerWithContext {
+export const getLogger = function (logLabel: string): LoggerWithContext {
   return new LoggerWithContext(logLabel);
 };
