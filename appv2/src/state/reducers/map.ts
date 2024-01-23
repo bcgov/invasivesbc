@@ -201,7 +201,7 @@ class MapState {
       iappRows: [],
       limit: 5,
       page: 0,
-      section: 'position',
+      section: 'invasivesbc',
       toggle: false
     };
     this.workingLayerName = null;
@@ -505,12 +505,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.whatsHere.loadingActivities = false;
             draftState.whatsHere.loadingIAPP = false;
           }
-          draftState.whatsHere.toggle = !state.whatsHere.toggle;
-          draftState.whatsHere.feature = null;
-          draftState.whatsHere.iappRows = [];
-          draftState.whatsHere.activityRows = [];
-          draftState.whatsHere.limit = 5;
-          draftState.whatsHere.page = 0;
+          else
+          {
+            draftState.whatsHere.toggle = !state.whatsHere.toggle;
+            draftState.whatsHere.feature = null;
+            draftState.whatsHere.iappRows = [];
+            draftState.whatsHere.activityRows = [];
+            draftState.whatsHere.limit = 5;
+            draftState.whatsHere.page = 0;
+          }
           break;
         }
         case MAP_WHATS_HERE_FEATURE: {
@@ -626,6 +629,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.userRecordOnClickMenuOpen = false;
           if (action.payload?.pathname === '/') {
             draftState.panelOpen = false;
+          }
+          if(!action?.payload?.pathname?.includes('WhatsHere')){
+            draftState.whatsHere.toggle = false;
           }
           break;
         }

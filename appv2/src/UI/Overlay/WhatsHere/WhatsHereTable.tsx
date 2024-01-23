@@ -55,10 +55,8 @@ export const WhatsHereTable = (props) => {
     // authentication is needed eventually
     if (whatsHere?.highlightedType === 'Activity') {
       history.push(`/Records/Activity:${id}/form`);
-      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: { toggle: false } });
     } else if (whatsHere?.highlightedType === 'IAPP') {
-      history.push(`/Records/IAPP:${id}/form`);
-      dispatch({ type: MAP_TOGGLE_WHATS_HERE, payload: { toggle: false } });
+      history.push(`/Records/IAPP/${id}/summary`)
     }
   };
 

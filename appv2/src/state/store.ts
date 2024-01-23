@@ -30,6 +30,9 @@ export function setupStore(configuration: AppConfig) {
     logErrors: true,
     diff: false,
     diffPredicate: (getState, action) => {
+      if(action.type.includes('WHATS_HERE') || action.type.includes('URL_CHANGE') || action.type.includes('URL_CHANGE')) {
+      return true
+      }
       //if ([RECORDSET_UPDATE_FILTER].includes(action.type)) {
       if (action.type.includes('WHATS_HERE')) {
         return true;

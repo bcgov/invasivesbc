@@ -1,18 +1,15 @@
-import { GeoJSON, useMap } from 'react-leaflet';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import center from '@turf/center';
-import { set } from 'lodash';
+import React, { useEffect, useState } from 'react';
+import { GeoJSON } from 'react-leaflet';
+import { useSelector } from 'react-redux';
 
 export const OnHoverActivity = (props: any) => {
   const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
 
-  const id = useSelector((state: any) => state.Map?.userRecordOnHoverRecordID);
   const row = useSelector((state: any) => state.Map?.userRecordOnHoverRecordRow);
   const geometresForActivity = useSelector((state: any) => state.Map?.userRecordOnHoverRecordRow?.geometry);
   const [centerPointGeometry, setCenterPointGeometry] = useState(null);
   const popupRef = React.useRef(null);
-  const map = useMap();
 
   useEffect(() => {
     try {
@@ -30,7 +27,7 @@ export const OnHoverActivity = (props: any) => {
     return () => {
       setCenterPointGeometry(null);
     };
-  }, [geometresForActivity, quickPanToRecord]);
+  }, [JSON.stringify(geometresForActivity), JSON.stringify(quickPanToRecord)]);
 
   useEffect(() => {
     if (!centerPointGeometry) {
@@ -49,11 +46,6 @@ export const OnHoverActivity = (props: any) => {
   }, [centerPointGeometry]);
 
 
-  map.on('popupopen', function(e) {
-    var px = map.project(e.target._popup._latlng); // find the pixel location on the map where the popup anchor is
-    px.y += (e.target._popup._container.clientHeight * 6  )
-    map.panTo(map.unproject(px),{animate: true}); // pan to new center
-});
 
   return centerPointGeometry !== null ? <GeoJSON ref={popupRef} key={Math.random()} data={centerPointGeometry} /> : null;
 };

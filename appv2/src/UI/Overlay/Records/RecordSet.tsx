@@ -187,8 +187,8 @@ const RecordSetFooter = (props) => {
     }
   }
 
-  const shouldDisplayNextButton = totalRecords > lastRowIndex;
-  const shouldDisplayPreviousButton = firstRowIndex > 0;
+  const shouldDisplayNextButton = totalRecords > lastRowIndex && !loading;
+  const shouldDisplayPreviousButton = firstRowIndex > 0 && !loading;
 
   const dispatch = useDispatch();
 
