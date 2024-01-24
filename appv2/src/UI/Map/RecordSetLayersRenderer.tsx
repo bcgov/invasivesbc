@@ -229,7 +229,7 @@ const ActivityCanvasLabel = (props) => {
       let computedCenter = null;
       try {
         // center() function can throw an error
-        if (row?.geometry != null) {
+        if (row?.geometry != null && row?.geometry?.type) {
           computedCenter = center(row.geometry).geometry;
         }
       } catch (e) {
