@@ -158,7 +158,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
       type: ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
       payload: {
         recordSetID: action.payload.recordSetID,
-        rows: networkReturn.data.result
+        rows: networkReturn.data.result,
+        reqCount: action.payload.reqCount
       }
     });
   } else {
@@ -166,6 +167,7 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
       type: ACTIVITIES_TABLE_ROWS_GET_FAILURE,
       payload: {
         recordSetID: action.payload.recordSetID,
+        rows: networkReturn.data.result,
         error: networkReturn.data
       }
     });
@@ -190,7 +192,8 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
       type: IAPP_TABLE_ROWS_GET_SUCCESS,
       payload: {
         recordSetID: action.payload.recordSetID,
-        rows: networkReturn.data.result
+        rows: networkReturn.data.result,
+        reqCount: action.payload.reqCount
       }
     });
   } else {
@@ -198,7 +201,8 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
       type: IAPP_TABLE_ROWS_GET_FAILURE,
       payload: {
         recordSetID: action.payload.recordSetID,
-        error: networkReturn.data
+        error: networkReturn.data,
+        reqCount: action.payload.reqCount
       }
     });
   }
@@ -211,11 +215,11 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   //const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
 
   const mapState = yield select((state) => state.Map);
-  const layerReqCount = mapState?.layers?.filter((layer) => {
+  const tableFiltersHash = mapState?.layers?.filter((layer) => {
     return layer?.recordSetID === action.payload.recordSetID;
-  })?.[0]?.reqCount;
+  })?.[0]?.tableFiltersHash;
 
-  if (!layerReqCount === action.payload.layerReqCount) {
+  if (!tableFiltersHash === action.payload.tableFiltersHash) {
     return;
   }
 
@@ -225,20 +229,24 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
       return row.activity_id;
     });
 
+    // check again after the network call
     const mapState = yield select((state) => state.Map);
-    const layerReqCount = mapState?.layers?.filter((layer) => {
+    const tableFiltersHash = mapState?.layers?.filter((layer) => {
       return layer?.recordSetID === action.payload.recordSetID;
-    })?.[0]?.reqCount;
-
-    if (!layerReqCount === action.payload.layerReqCount) {
+    })?.[0]?.tableFiltersHash;
+  
+    if (!tableFiltersHash === action.payload.tableFiltersHash) {
       return;
     }
+
 
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
       payload: {
         recordSetID: action.payload.recordSetID,
-        IDList: IDList
+        IDList: IDList,
+        tableFiltersHash: action.payload.tableFiltersHash
+
       }
     });
   } else {
@@ -282,7 +290,8 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
       type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
       payload: {
         recordSetID: action.payload.recordSetID,
-        IDList: IDList
+        IDList: IDList,
+        layerReqCount: action.payload.layerReqCount
       }
     });
   } else {
@@ -297,29 +306,4 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   }
 }
 
-export function* handle_MAP_WHATS_HERE_GET_POI_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, action.payload.IAPPFilterCriteria);
 
-  if (networkReturn.data.result.rows) {
-    const IDList = networkReturn.data.result.rows.map((row) => {
-      return row.site_id;
-    });
-
-    yield put({
-      type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
-      payload: {
-        recordSetID: action.payload.recordSetID,
-        IDList: IDList
-      }
-    });
-  } else {
-    /*  put({
-      type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-      payload: {
-        recordSetID: action.payload.recordSetID,
-        error: networkReturn.data
-      }
-    });
-    */
-  }
-}
