@@ -256,8 +256,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           }
+          draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
           draftState.layers[index].loading = true;
-          draftState.layers[index].reqCount = draftState.layers[index].reqCount ? draftState.layers[index].reqCount + 1 : 1;
           if (!draftState.layers[index].layerState) {
             draftState.layers[index].layerState = {
               color: 'blue',
@@ -273,8 +273,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'IAPP' });
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           }
+          draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
           draftState.layers[index].loading = true;
-          draftState.layers[index].reqCount = draftState.layers[index].reqCount ? draftState.layers[index].reqCount + 1 : 1;
           if (!draftState.layers[index].layerState) {
             draftState.layers[index].layerState = {
               color: 'blue',
@@ -291,10 +291,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
+
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           if (!draftState.layers[index])
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+
+          if(action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash){
+            break;
+          }
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loading = false;
 
@@ -377,6 +382,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          if(action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash){
+            break;
+          }
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loading = false;
 

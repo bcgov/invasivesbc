@@ -5,7 +5,7 @@ import { FindMeToggle, LocationMarker, PanToMe } from './FindMe';
 import { HDToggle } from './HDToggle';
 import { LegendsButton } from "./LegendsButton";
 import { WhatsHereButton, WhatsHereDrawComponent } from './WhatsHereButton';
-import { WhatsHereCurrentRecordHighlighted, WhatsHereMarker } from './WhatsHereMarker';
+import { WhatsHereCurrentRecordHighlighted } from './WhatsHereMarker';
 import './ButtonContainer.css';
 import { useSelector } from 'util/use_selector';
 import { NewRecord } from './NewRecord';

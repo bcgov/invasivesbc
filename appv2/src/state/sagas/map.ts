@@ -631,12 +631,12 @@ function* handle_UserFilterChange(action) {
   )
     if (recordSetType === 'Activity') {
       if (currentSet === action.payload.setID)
-        yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
-      yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
+        yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID, tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash } });
+      yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID, tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash } });
     } else {
       if (currentSet === action.payload.setID)
-        yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
-      yield put({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID } });
+        yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID, tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash } });
+      yield put({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: action.payload.setID, tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash } });
     }
 }
 
@@ -644,9 +644,9 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   const recordSetsState = yield select(selectUserSettings);
   const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
   if (recordSetType === 'Activity') {
-    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID, tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash } });
   } else {
-    yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID } });
+    yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID, tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash } });
   }
 }
 
@@ -672,9 +672,9 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   let actionsToPut = [];
   allUninitializedLayers.map((layer) => {
     if (layer.recordSetType === 'Activity') {
-      actionsToPut.push({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: layer.recordSetID } });
+      actionsToPut.push({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' } });
     } else {
-      actionsToPut.push({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: layer.recordSetID } });
+      actionsToPut.push({ type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST, payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' } });
     }
 
   });
