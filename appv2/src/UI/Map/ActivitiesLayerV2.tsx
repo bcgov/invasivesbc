@@ -188,6 +188,11 @@ const MarkerMemo = memo(({ feature, palette, layerKey }: any) => {
     Observation: '#399c3e',
     Treatment: '#c6c617'
   };
+
+  if(!(feature.geometry?.coordinates?.length > 0)){
+    console.log('bad feature:' + JSON.stringify(feature))
+    return <></>;
+  }
   const position = center(feature)?.geometry?.coordinates;
   const bufferedGeo = {
     type: 'FeatureCollection',

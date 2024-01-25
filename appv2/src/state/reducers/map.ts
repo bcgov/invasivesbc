@@ -737,7 +737,7 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     let filtered = [];
     IDList.map((id) => {
       let f = draftState.IAPPGeoJSONDict[id];
-      if (f !== undefined) {
+      if (f !== undefined && f !== null && f.geometry !== null) {
         filtered.push(f);
       }
     });
