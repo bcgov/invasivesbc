@@ -24,8 +24,7 @@ import { RENDER_DEBUG } from 'UI/App';
 export const RecordSetLayersRenderer = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) console.log('%cRecordSetLayersRenderer.tsx render:' + ref.current.toString(), 'color: yellow');
 
   const storeLayers = useSelector(
     (state: any) => state.Map?.layers,
@@ -49,8 +48,8 @@ const LayerWrapper = (props) => {
   const ref = useRef(0);
   ref.current += 1;
 
-  if(RENDER_DEBUG)
-  console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
+  if (RENDER_DEBUG)
+    console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
 
   const type = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer?.recordSetID === props.recordSetID)?.type,
@@ -87,8 +86,7 @@ const LayerWrapper = (props) => {
     return { color: color };
   };
 
-  if(!(geoJSON?.features?.length > 0))
-  return <></>
+  if (!(geoJSON?.features?.length > 0)) return <></>;
   // These rerender internally if the layer state changes, without regrabbing the geojson
   switch (type) {
     case 'Activity':
@@ -186,7 +184,7 @@ const IAPPCanvasLabel = (props) => {
   const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true, trailing: false });
 
   useEffect(() => {
-    if(!props.geoJSON) return;
+    if (!props.geoJSON) return;
     const newPointsInBounds = debouncedGetPointsInPoly();
 
     setPointsInBounds(newPointsInBounds);
@@ -222,10 +220,8 @@ const ActivityCanvasLabel = (props) => {
     (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.layerKey)?.layerState
   );
 
-
   const labelPoints = useCallback(() => {
     const points = props.geoJSON?.features.map((row) => {
-
       let computedCenter = null;
       try {
         // center() function can throw an error
@@ -239,21 +235,27 @@ const ActivityCanvasLabel = (props) => {
       return { ...row, geometry: computedCenter };
     });
 
-    return { type: 'FeatureCollection', features: [...points] } as any;
+    return { type: 'FeatureCollection', features: points?.length > 0 ? [...points] : [] } as any;
   }, [props.geoJSON]);
 
   // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
   const getPointsInPoly = () => {
     //useCallback(() => {
-    const bboxString = map.getBounds().toBBoxString();
-    const bbox = JSON.parse('[' + bboxString + ']');
-    let newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
-    if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
-      return { ...newPointsInBounds };
-    } else {
-      const sliced = newPointsInBounds?.features?.slice(0, MAX_LABLES_TO_RENDER);
-      const collection = { type: 'FeatureCollection', features: [...sliced] };
-      return { ...collection };
+    try {
+      const bboxString = map.getBounds().toBBoxString();
+      const bbox = JSON.parse('[' + bboxString + ']');
+      let newPointsInBounds = pointsWithinPolygon(labelPoints(), turf.bboxPolygon(bbox));
+      if (newPointsInBounds?.features?.length < MAX_LABLES_TO_RENDER) {
+        return { ...newPointsInBounds };
+      } else {
+        const sliced = newPointsInBounds?.features?.slice(0, MAX_LABLES_TO_RENDER);
+        const collection = { type: 'FeatureCollection', features: [...sliced] };
+        return { ...collection };
+      }
+    } catch (e) {
+      console.log('Errror in getPointsInPoly')
+      console.log(e)
+      return { type: 'FeatureCollection', features: [] };
     }
   };
 
