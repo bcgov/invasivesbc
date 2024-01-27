@@ -174,14 +174,20 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
       currentState,
       mapState?.clientBoundaries
     );
-    filterObject.page = action.payload.page
-      ? action.payload.page
-      : mapState.recordTables?.[action.payload.recordSetID]?.page;
-    filterObject.limit = action.payload.limit
-      ? action.payload.limit
-      : mapState.recordTables?.[action.payload.recordSetID]?.limit;
+    filterObject.page = action.payload.page;
+    filterObject.limit = action.payload.limit;
 
-    const reqCount = mapState?.recordTables?.[action.payload.recordSetID]?.reqCount;
+    if (mapState?.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash) {
+      console.log('Stale tableRow request (tableFiltersHash mismatch), aborting')
+      return;
+    }
+    if (
+      mapState?.recordTables?.[action.payload.recordSetID]?.page !== action.payload.page ||
+      mapState?.recordTables?.[action.payload.recordSetID]?.limit !== action.payload.limit
+    ) {
+      console.log('Stale tableRow request (page or limit mismatch), aborting')
+      return;
+    }
 
     if (true) {
       yield put({
@@ -189,7 +195,10 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
         payload: {
           filterObj: filterObject,
           recordSetID: action.payload.recordSetID,
-          reqCount: reqCount
+          tableFiltersHash: action.payload.tableFiltersHash,
+          page: action.payload.page,
+          limit: action.payload.limit
+
         }
       });
     }

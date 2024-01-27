@@ -138,20 +138,18 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
   let mapState = yield select((state) => state.Map);
-  let reqCount = mapState?.recordTables[action.payload.recordSetID]?.reqCount;
-  if (reqCount !== action.payload.reqCount) {
-    return;
-  }
+  let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
     filterObjects: [action.payload.filterObj]
   });
 
   mapState = yield select((state) => state.Map);
-  reqCount = mapState?.recordTables[action.payload.recordSetID]?.reqCount;
-  if (reqCount !== action.payload.reqCount) {
+  tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
+  if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
   }
+
 
   if (networkReturn.data.result) {
     yield put({
@@ -159,7 +157,9 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
       payload: {
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result,
-        reqCount: action.payload.reqCount
+        tableFiltersHash: action.payload.tableFiltersHash,
+        page: action.payload.page,
+        limit: action.payload.limit
       }
     });
   } else {
@@ -168,6 +168,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
       payload: {
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result,
+        page: action.payload.page,
+        limit: action.payload.limit,
         error: networkReturn.data
       }
     });

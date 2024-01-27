@@ -230,7 +230,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.recordTables[action.payload.recordSetID] = {};
           }
           draftState.recordTables[action.payload.recordSetID].loading = true;
-          draftState.recordTables[action.payload.recordSetID].reqCount = draftState.recordTables[action.payload.recordSetID].reqCount ? draftState.recordTables[action.payload.recordSetID].reqCount + 1 : 1;
+          draftState.recordTables[action.payload.recordSetID].page = action.payload.page;
+          draftState.recordTables[action.payload.recordSetID].limit = action.payload.limit;
+          draftState.recordTables[action.payload.recordSetID].tableFiltersHash = action.payload.tableFiltersHash;
           break;
         }
         case ACTIVITIES_GEOJSON_GET_SUCCESS: {
@@ -312,16 +314,26 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case IAPP_TABLE_ROWS_GET_SUCCESS:
         case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
+          // the hash, page, and limit all need to line up
+          if(draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash){
+            console.log('hash mismatch', draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash, action.payload.tableFiltersHash);
+            break;
+          }
+          if((Number(draftState.recordTables?.[action.payload.recordSetID]?.limit) !== Number(action.payload.limit))){
+            console.log('limit mismatch', draftState.recordTables?.[action.payload.recordSetID]?.limit, action.payload.limit);
+            console.log('typeof', typeof draftState.recordTables?.[action.payload.recordSetID]?.limit, typeof action.payload.limit);
+            break;
+          }
+          if((Number(draftState.recordTables?.[action.payload.recordSetID]?.page) !== Number(action.payload.page))){
+            console.log('page mismatch', draftState.recordTables?.[action.payload.recordSetID]?.page, action.payload.page);
+            break;
+          }
           if (draftState.recordTables?.[action.payload.recordSetID]) {
             draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
           } else {
             draftState.recordTables[action.payload.recordSetID] = {};
             draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
           } // set defaults
-          if (!draftState.recordTables?.[action.payload.recordSetID]?.page)
-            draftState.recordTables[action.payload.recordSetID].page = 0;
-          if (!draftState.recordTables?.[action.payload.recordSetID]?.limit)
-            draftState.recordTables[action.payload.recordSetID].limit = 20;
           draftState.recordTables[action.payload.recordSetID].loading = false;
           break;
         }
