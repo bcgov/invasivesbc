@@ -29,7 +29,7 @@ const Tab = (props: any) => {
 
 
   const canDisplayCallBack = useCallback(() => {
-    if (props.looggedOutOnly && authenticated) {
+    if (props.loggedOutOnly && authenticated) {
       return false;
     }
 
