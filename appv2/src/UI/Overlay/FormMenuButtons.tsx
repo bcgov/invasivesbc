@@ -8,10 +8,12 @@ export const FormMenuButtons = (props) => {
   const dispatch = useDispatch();
   const activityCreatedBy = useSelector((state: any) => state.ActivityPage?.activity?.created_by);
   const activityErrors = useSelector((state: any) => state.ActivityPage?.activityErrors);
+  const status = useSelector((state: any) => state.ActivityPage?.activity?.form_status);
   const username = useSelector((state: any) => state.Auth?.username);
   const accessRoles = useSelector((state: any) => state.Auth?.accessRoles);
 
   const [saveDisabled, setSaveDisabled] = useState(false);
+  const [draftDisabled, setDraftDisabled] = useState(false);
 
 
   useEffect(() => {
@@ -27,6 +29,9 @@ export const FormMenuButtons = (props) => {
     } else {
       setSaveDisabled(false);
     }
+    if(status === 'Submitted'){
+      setDraftDisabled(true);
+    }
   }, [accessRoles, username, activityCreatedBy]);
 
   return (
@@ -36,7 +41,7 @@ export const FormMenuButtons = (props) => {
           dispatch({ type: ACTIVITY_SAVE_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });
         }}
-        disabled={saveDisabled}
+        disabled={saveDisabled || draftDisabled}
         variant="contained">
         SAVE TO DRAFT
       </Button>

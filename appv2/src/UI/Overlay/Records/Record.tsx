@@ -78,21 +78,6 @@ export const Activity = (props) => {
             onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/form')}>
             Form
           </Button>
-          <Button
-          variant="contained"
-            className={"records__activity__map_button " + (urlFromAppModeState?.includes('map')? ' selectedFormTab' : '')}
-            onClick={() => {
-
-
-
-              dispatch({type: PAN_AND_ZOOM_TO_ACTIVITY})
-
-            
-            
-            
-            history.push(history.location.pathname.split(':')[0] + ':' + id + '/map')}}>
-            Re-center Map
-          </Button>
         </div>
       </div>
       <Route

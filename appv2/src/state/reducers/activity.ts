@@ -133,6 +133,8 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         }
         case ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS: {
           draftState.notification = action.payload.notification;
+          setTimeout(()=> { draftState.notification = null }, 5000)
+
           break;
         }
         case ACTIVITY_COPY_SUCCESS: {

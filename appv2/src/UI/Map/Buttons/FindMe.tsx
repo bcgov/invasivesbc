@@ -29,7 +29,7 @@ export const FindMeToggle = (props) => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   }, []);
-  if (panned && map) {
+  if (map) {
     // this is to stop user from clicking it again while things are happening
     return (
       <div ref={divRef} className="map-btn">
@@ -41,7 +41,6 @@ export const FindMeToggle = (props) => {
           title="Find Me"
           placement="top-end">
           <span>
-            {panned ? (
               <IconButton
                 onClick={() => {
                   setShow(false);
@@ -55,9 +54,6 @@ export const FindMeToggle = (props) => {
                 sx={{ color: '#000' }}>
                 <MyLocationIcon />
               </IconButton>
-            ) : (
-              <></>
-            )}
           </span>
         </Tooltip>
       </div>
@@ -139,19 +135,3 @@ export const LocationMarker = (props) => {
   }
 };
 
-export const PanToMe = (props) => {
-  const userCoords = useSelector((state: any) => state.Map?.userCoords);
-  const panned = useSelector((state: any) => state.Map?.panned);
-  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
-  const map = useMap();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (map && userCoords && userCoords?.lat && panned === false && positionTracking) {
-      map.flyTo([userCoords.lat, userCoords.long]);
-      dispatch({ type: MAP_TOGGLE_PANNED });
-    }
-  }, [panned, positionTracking, userCoords]);
-
-  return <></>;
-};

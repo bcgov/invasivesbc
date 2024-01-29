@@ -61,7 +61,9 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-  IAPP_TABLE_ROWS_GET_REQUEST
+  IAPP_TABLE_ROWS_GET_REQUEST,
+  PAN_AND_ZOOM_TO_ACTIVITY,
+  IAPP_PAN_AND_ZOOM
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -450,14 +452,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAIN_MAP_MOVE: {
-          if (action.payload.tab === 'Current Activity') {
-            draftState.activity_zoom = action.payload.zoom;
-            draftState.activity_center = action.payload.center;
-          } else {
             draftState.map_zoom = action.payload.zoom;
             draftState.map_center = action.payload.center;
             draftState.panned = false;
-          }
           break;
         }
         case MAP_DELETE_LAYER_AND_TABLE: {
@@ -510,6 +507,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case MAP_TOGGLE_PANNED: {
           draftState.panned = !state.panned;
+          break;
+        }
+        case IAPP_PAN_AND_ZOOM:
+        case PAN_AND_ZOOM_TO_ACTIVITY: {
+          draftState.positionTracking = false;
           break;
         }
         case MAP_TOGGLE_TRACKING: {
