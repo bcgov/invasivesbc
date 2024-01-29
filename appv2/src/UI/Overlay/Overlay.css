@@ -19,7 +19,10 @@
     background-color: #fff;
     transition: all 0.2s ease;
     transform: translateY(100%);
-    z-index:1000;
+    z-index:400;
+  }
+  .leaflet-control-container {
+    z-index: 499 !important;
   }
 
   .mapOverlayContents { 
@@ -41,6 +44,7 @@
     transform: translateY(-5vh);
     display: flex;
     overflow-y: visible;;
+    z-index: 9999999999;
 
 }
 

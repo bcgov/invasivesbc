@@ -1,7 +1,17 @@
 .batchNav {
-  background: #0078A8;
+  background: #1A5A96;
   padding: 0;
   margin: 0;
+  padding-bottom: 1px;
+  a {
+    color: white !important;
+    text-decoration: none;
+  }
+  .current_batch_link {
+    border-bottom-color: #FCBA19;
+    border-bottom-width: 4px;
+    border-bottom-style: solid;
+  }
 }
 
 .batchDarkNav {
