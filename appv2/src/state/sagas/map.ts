@@ -227,7 +227,7 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   let counter = 0;
   while (state.positionTracking) {
     if (counter === 0) {
-      yield put({ type: MAP_TOGGLE_PANNED });
+      yield put({ type: MAP_TOGGLE_PANNED, payload: {target: 'me'} });
     }
     const currentMapState = yield select(selectMap);
     if (!currentMapState.positionTracking) {
