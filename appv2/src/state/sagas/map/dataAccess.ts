@@ -113,9 +113,6 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     filterObject.limit = 200000;
     filterObject.selectColumns = ['site_id'];
 
-    const layerReqCount = mapState?.layers?.filter((layer) => {
-      return layer?.recordSetID === action.payload.recordSetID;
-    })?.[0]?.reqCount;
 
     // if mobile or web
     if (true) {
@@ -124,7 +121,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
         payload: {
           filterObj: filterObject,
           recordSetID: action.payload.recordSetID,
-          reqCount: layerReqCount
+          tableFiltersHash: action.payload.tableFiltersHash
         }
       });
     }
@@ -220,21 +217,29 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
       currentState,
       mapState?.clientBoundaries
     );
-    filterObject.page = action.payload.page
-      ? action.payload.page
-      : mapState.recordTables?.[action.payload.recordSetID]?.page;
-    filterObject.limit = action.payload.limit
-      ? action.payload.limit
-      : mapState.recordTables?.[action.payload.recordSetID]?.limit;
-    // if mobile or web
-    const reqCount = mapState?.recordTables?.[action.payload.recordSetID]?.reqCount;
+    filterObject.page = action.payload.page;
+    filterObject.limit = action.payload.limit;
+
+    if (mapState?.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash) {
+      console.log('Stale tableRow request (tableFiltersHash mismatch), aborting')
+      return;
+    }
+    if (
+      mapState?.recordTables?.[action.payload.recordSetID]?.page !== action.payload.page ||
+      mapState?.recordTables?.[action.payload.recordSetID]?.limit !== action.payload.limit
+    ) {
+      console.log('Stale tableRow request (page or limit mismatch), aborting')
+      return;
+    }
     if (true) {
       yield put({
         type: IAPP_TABLE_ROWS_GET_ONLINE,
         payload: {
           filterObj: filterObject,
           recordSetID: action.payload.recordSetID,
-          reqCount: reqCount
+          tableFiltersHash: action.payload.tableFiltersHash,
+          page: action.payload.page,
+          limit: action.payload.limit
         }
       });
     }
