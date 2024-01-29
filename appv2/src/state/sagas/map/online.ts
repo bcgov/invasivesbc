@@ -178,14 +178,14 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
   let mapState = yield select((state) => state.Map);
-  let reqCount = mapState?.recordTables[action.payload.recordSetID]?.reqCount;
-  if (reqCount !== action.payload.reqCount) {
-    return;
-  }
+  let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
+
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
   mapState = yield select((state) => state.Map);
-  reqCount = mapState?.recordTables[action.payload.recordSetID]?.reqCount;
-  if (reqCount !== action.payload.reqCount) {
+
+  mapState = yield select((state) => state.Map);
+  tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
+  if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
   }
 
@@ -195,7 +195,9 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
       payload: {
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result,
-        reqCount: action.payload.reqCount
+        tableFiltersHash: action.payload.tableFiltersHash,
+        page: action.payload.page,
+        limit: action.payload.limit
       }
     });
   } else {
@@ -204,7 +206,9 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
       payload: {
         recordSetID: action.payload.recordSetID,
         error: networkReturn.data,
-        reqCount: action.payload.reqCount
+        tableFiltersHash: action.payload.tableFiltersHash,
+        page: action.payload.page,
+        limit: action.payload.limit
       }
     });
   }
@@ -266,11 +270,11 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
   const mapState = yield select((state) => state.Map);
-  const layerReqCount = mapState?.layers?.filter((layer) => {
+  const tableFiltersHash = mapState?.layers?.filter((layer) => {
     return layer?.recordSetID === action.payload.recordSetID;
-  })?.[0]?.reqCount;
+  })?.[0]?.tableFiltersHash;
 
-  if (!layerReqCount === action.payload.layerReqCount) {
+  if (!tableFiltersHash === action.payload.tableFiltersHash) {
     return;
   }
 
@@ -279,21 +283,23 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     const IDList = list?.map((row) => {
       return row.site_id;
     });
+    // check again after the network call
     const mapState = yield select((state) => state.Map);
-    const layerReqCount = mapState?.layers?.filter((layer) => {
+    const tableFiltersHash = mapState?.layers?.filter((layer) => {
       return layer?.recordSetID === action.payload.recordSetID;
-    })?.[0]?.reqCount;
-
-    if (!layerReqCount === action.payload.layerReqCount) {
+    })?.[0]?.tableFiltersHash;
+  
+    if (!tableFiltersHash === action.payload.tableFiltersHash) {
       return;
     }
+
 
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
       payload: {
         recordSetID: action.payload.recordSetID,
         IDList: IDList,
-        layerReqCount: action.payload.layerReqCount
+        tableFiltersHash: action.payload.tableFiltersHash
       }
     });
   } else {

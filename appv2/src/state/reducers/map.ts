@@ -400,7 +400,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers[index].IDList = action.payload.IDList;
           draftState.layers[index].loading = false;
 
-
           if (draftState.IAPPGeoJSONDict !== undefined) {
             GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
           }
