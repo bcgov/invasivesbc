@@ -3,8 +3,11 @@ import React from "react";
 import './LegendsPopup.css';
 
 import invbclogo from "/assets/InvasivesBC_Icon.svg";
+import Button from "@mui/material/Button";
+import { useHistory } from "react-router";
 
 export const LegendsPopup = (props) => {
+  const history = useHistory();
   return (
     <div
       id="legendspopup"
@@ -23,6 +26,9 @@ export const LegendsPopup = (props) => {
       {/* <Button onClick={goBack}>Go Back</Button> */}
       <div className="py-3">
         <div className="container" style={{ textAlign: 'center' }}>
+          <div className="takeMeBack">
+            <Button onClick={() => history.goBack()}>Go Back</Button>
+          </div>
         <img
             src={invbclogo}
             style={{
