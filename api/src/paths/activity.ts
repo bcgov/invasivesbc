@@ -451,6 +451,15 @@ function updateActivity(): RequestHandler {
     )
     }
 
+    if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
+          return res.status(400).json({
+            message: 'Invalid request, cannot convert back to draft from submitted',
+            request: req.body,
+            namespace: 'activity',
+            code: 401
+          });
+    }
+
     try {
       const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);
 

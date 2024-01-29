@@ -107,7 +107,8 @@ const FormContainer: React.FC<any> = (props) => {
   useEffect(() => {
     const currentState = formRef.current?.state;
     dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
-  }, [formDataState]);
+  //}, [formDataState]);
+  }, [formRef]);
 
   //Dialog Proceed OnClick func
   const proceedClick = () => {
