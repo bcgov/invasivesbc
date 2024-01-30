@@ -2,6 +2,7 @@ import { getDBConnection } from '../database/db';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
 import { getLogger } from '../utils/logger';
+
 const defaultLog = getLogger('point-of-interest');
 /**
  * SQL query to fetch point_of_interest records based on search criteria.
@@ -11,16 +12,35 @@ const defaultLog = getLogger('point-of-interest');
  */
 //NOSONAR
 export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL``;
+  const sqlStatement: SQLStatement = SQL`WITH image_arrays AS (SELECT json_agg(json_build_object('media_key',
+                                                                                                 image.media_key,
+                                                                                                 'comments',
+                                                                                                 image.comments,
+                                                                                                 'image_date',
+                                                                                                 image.image_date,
+                                                                                                 'perspective_code',
+                                                                                                 image.perspective_code,
+                                                                                                 'reference_no',
+                                                                                                 image.reference_no,
+                                                                                                 'treatment_id',
+                                                                                                 image.treatment_id)) AS images,
+                                                                      iiim.mapped_site_id                             AS site_id
+                                                               FROM iapp_imported_images image
+                                                                      LEFT JOIN iapp_imported_images_map iiim
+                                                                                ON iiim.imported_image_id = image.id
+                                                               GROUP BY iiim.mapped_site_id) `;
+
   if (searchCriteria.search_feature_server_id) {
     sqlStatement.append(
-      SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(geog::geometry, 255)::geography as geog from invasivesbc.admin_defined_shapes where id = ${searchCriteria.search_feature_server_id}) `
+      SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(geog::geometry, 255)::geography as geog
+                                     from invasivesbc.admin_defined_shapes
+                                     where id = ${searchCriteria.search_feature_server_id}) `
     );
   } else if (searchCriteria.search_feature) {
-    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')), 255)::geography as geog
-    FROM (
-      SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
-    ) AS anything) `);
+    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(
+                                                                ST_Collect(ST_GeomFromGeoJSON(array_features ->> 'geometry')),
+                                                                255)::geography as geog
+                                                       FROM (SELECT json_array_elements(${searchCriteria.search_feature}::json -> 'features') AS array_features) AS anything) `);
   }
   if (
     searchCriteria?.grid_filters?.jurisdictions &&
@@ -28,7 +48,8 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     !searchCriteria.search_feature_server_id
   ) {
     sqlStatement.append(
-      SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string FROM iapp_site_summary_and_geojson) `
+      SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string
+                           FROM iapp_site_summary_and_geojson) `
     );
   } else if (searchCriteria?.grid_filters?.jurisdictions && searchCriteria.search_feature_server_id) {
     sqlStatement.append(
@@ -51,15 +72,17 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   } else {
     sqlStatement.append(
       SQL`SELECT *,
-                 ARRAY(select row_to_json(j) from (SELECT image.media_key, image.comments, image.image_date, image.perspective_code, image.reference_no, image.treatment_id from invasivesbc.iapp_imported_images image where image.id in (select imported_image_id from iapp_imported_images_map where mapped_site_id=s.site_id)) as j) as imported_images,
-       public.st_asGeoJSON(s.geog)::jsonb as geo`
+                 s.site_id as site_id,
+                 image_arrays.images as imported_images,
+                 public.st_asGeoJSON(s.geog)::jsonb as geo`
     );
   }
 
   sqlStatement.append(
     SQL` FROM iapp_site_summary_and_geojson i
     JOIN iapp_spatial s
-      ON i.site_id = s.site_id`
+      ON i.site_id = s.site_id
+       LEFT JOIN image_arrays on image_arrays.site_id = s.site_id`
   );
 
   if (searchCriteria.isCSV) {
@@ -112,7 +135,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   sqlStatement.append(SQL` WHERE 1 = 1 `);
 
   if (searchCriteria.iappSiteID) {
-    sqlStatement.append(SQL` AND i.site_id = ${searchCriteria.iappSiteID}`);
+    sqlStatement.append(SQL` AND i.site_id = ${parseInt(searchCriteria.iappSiteID)}`);
   }
   if (searchCriteria.pointOfInterest_subtype) {
     sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);

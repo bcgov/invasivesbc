@@ -21,10 +21,10 @@ GET.apiDoc = {
   tags: ['point-of-interest'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -81,7 +81,6 @@ export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req, res) => {
-
     const criteria = JSON.parse(<string>req.query['query']);
 
     defaultLog.debug({
@@ -145,7 +144,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
 
         res.set(responseCacheHeaders);
-
       } finally {
         cacheCheckConnection.release();
       }
@@ -156,8 +154,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       await streamIAPPResult(sanitizedSearchCriteria, res);
     } else {
       const connection = await getDBConnection();
-
-
 
       if (!connection) {
         return res.status(503).json({
@@ -198,7 +194,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         };
 
         return res.status(200).json(responseBody);
-
       } catch (error) {
         const message = error.message || error;
         defaultLog.debug({ label: 'getPointsOfInterestBySearchFilterCriteria', message: 'error', error: message });
