@@ -154,13 +154,14 @@ export const RenderTableActivity = (props: any) => {
       type: MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
       payload: {
         id: params.row.id,
-        short_id: params.value
+        short_id: params.row.short_id
       }
     });
   };
 
   const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
-    return <Box>{value} m&#178;</Box>;
+    return <Box   onMouseEnter={() => {
+      dispatchUpdatedID(props.params)}}>{value} m&#178;</Box>;
   };
 
   const columns = [
@@ -168,7 +169,17 @@ export const RenderTableActivity = (props: any) => {
       field: 'id',
       headerName: 'Activity ID',
       hide: true,
-      sortable: false
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'short_id',
@@ -190,7 +201,17 @@ export const RenderTableActivity = (props: any) => {
       field: 'activity_type',
       headerName: 'Activity Type',
       sortable: false,
-      minWidth: 110
+      minWidth: 110,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'reported_area',
@@ -203,19 +224,49 @@ export const RenderTableActivity = (props: any) => {
       field: 'created',
       headerName: 'Created',
       width: 250,
-      sortable: false
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
       width: 200,
-      sortable: false
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'species_code',
       headerName: 'Species Code',
       sortable: false,
-      width: 200
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'geometry',
@@ -255,6 +306,7 @@ export const RenderTableActivity = (props: any) => {
             hideFooterPagination
             hideFooter
             disableColumnMenu
+            
             disableColumnFilter
             onColumnHeaderClick={(c) => {
               dispatch({ type: WHATS_HERE_SORT_FILTER_UPDATE, payload: { recordType: 'Activity', field: c.field } });
@@ -293,7 +345,7 @@ export const RenderTablePOI = (props: any) => {
     dispatch({
       type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
       payload: {
-        id: params.value
+        id: params.row.site_id
       }
     });
   };
@@ -304,7 +356,17 @@ export const RenderTablePOI = (props: any) => {
       field: 'id',
       headerName: 'IAPP ID',
       hide: true,
-      sortable: false
+      sortable: false,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'site_id',
@@ -327,25 +389,65 @@ export const RenderTablePOI = (props: any) => {
       field: 'reported_area',
       headerName: 'Reported Area',
       sortable: false,
-      minWidth: 115
+      minWidth: 115,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'earliest_survey',
       headerName: 'Earliest Survey',
       sortable: false,
-      minWidth: 115
+      minWidth: 115,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdictions',
       sortable: false,
-      width: 500
+      width: 500,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'species_code',
       headerName: 'Species',
       sortable: false,
-      width: 200
+      width: 200,
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}
+          </div>
+        );
+      }
     },
     {
       field: 'geometry',
