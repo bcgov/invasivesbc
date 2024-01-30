@@ -71,12 +71,13 @@ export const WhatsHereTable = (props) => {
             </Button>
           </div>
           <div id="whatsherepopup" className="whatshere-table">
-            <Grid container justifyContent="center" sx={{ mb: 2, pb: 1 }}>
+            <Grid className="whatshere-header" container justifyContent="center" sx={{ mb: 2, pb: 1 }}>
+              <div className="whatshere-title"> What's Here: </div>
               <Tabs value={whatsHere?.section} onChange={handleChange} centered>
-                <Tab value="position" label="" icon={<LocationOnIcon />} />
-                <Tab value="invasivesbc" label="" icon={<FolderIcon />} />
+                <Tab value="position" label="UTM" icon={<LocationOnIcon />}/>
+                <Tab value="invasivesbc" label="InvasivesBC Records" icon={<FolderIcon />} />
                 {/* value="databc" label="Data BC" icon={<StorageIcon />} */}
-                <Tab value="iapp" label="" icon={<AdjustIcon />} />
+                <Tab value="iapp" label="IAPP Records" icon={<AdjustIcon />} />
               </Tabs>
             </Grid>
             <Grid container spacing={2} justifyContent="center">

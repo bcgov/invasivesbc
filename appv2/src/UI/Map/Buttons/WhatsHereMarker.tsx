@@ -1,23 +1,22 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
-import * as L from "leaflet";
+import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import { useMap, Marker, GeoJSON } from "react-leaflet";
-import center from "@turf/center";
+import { useMap, Marker, GeoJSON } from 'react-leaflet';
+import center from '@turf/center';
 
-import { useSelector } from "util/use_selector";
-import "./WhatsHereMarker.css";
-
-
+import { useSelector } from 'util/use_selector';
+import './WhatsHereMarker.css';
 
 export const WhatsHereCurrentRecordHighlighted = (props) => {
   const map = useMap();
-  const isOnWhatsHerePage = useSelector((state:any) => state.AppMode?.url === '/WhatsHere');
+  const isOnWhatsHerePage = useSelector((state: any) => state.AppMode?.url === '/WhatsHere');
   const [highlightedGeo, setHighlightedGeo] = useState(null);
   const [highlightedMarkerLtLng, setHighlightedMarkerLtLng] = useState(null);
-  const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord); 
+  const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
+  const popupRef = React.useRef(null);
 
   useEffect(() => {
     const isIAPP = whatsHere?.highlightedIAPP ? true : false;
@@ -27,7 +26,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     const isPoint = isIAPP || geo?.geometry?.type === 'Point' ? true : false;
     const area = geo?.reported_area;
     let addedZoom = 0;
-    let latOffset = 0.004
+    let latOffset = 0.004;
     if (area < 10000) {
       addedZoom = 3;
       latOffset = 0.0005;
@@ -44,7 +43,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       //setHighlightedMarkerLtLng(centerOfGeo);
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
-     /* map.flyTo({
+      /* map.flyTo({
         lat: centerOfGeo[1] - latOffset,
         lng: centerOfGeo[0]
       }, 15 + addedZoom);*/
@@ -56,11 +55,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
         lng: centerOfGeo[0]
       }, (15 + addedZoom));*/
     } else return;
-  }, [
-    whatsHere?.highlightedIAPP,
-    whatsHere?.highlightedACTIVITY,
-    whatsHere?.highlightedGeo
-  ]);
+  }, [whatsHere?.highlightedIAPP, whatsHere?.highlightedACTIVITY, whatsHere?.highlightedGeo]);
 
   const highlight = (feature, layer) => {
     layer.setStyle({
@@ -86,7 +81,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
             strokeLinecap: 'butt',
             strokeLinejoin: 'miter',
             strokeMiterlimit: 10,
-            fill: '#04ffd4',
+            fill: '#FCBA19',
             fillRule: 'nonzero',
             opacity: 1
           }}
@@ -99,25 +94,43 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
     iconAnchor: [18, 35]
   });
 
+  useEffect(() => {
+    if (!highlightedGeo) {
+      popupRef?.current?.togglePopup();
+      popupRef?.current?.unbindPopup();
+      popupRef?.current?.remove();
+      return;
+    } else {
+      if (whatsHere?.highlightedACTIVITY || whatsHere?.highlightedIAPP) {
+        popupRef?.current?.unbindPopup();
+        popupRef?.current?.remove();
+        const str = whatsHere?.highlightedIAPP ? 'SITE:' + whatsHere?.highlightedIAPP : whatsHere?.highlightedACTIVITY;
+        popupRef.current?.bindPopup(str);
+      }
+      popupRef.current?.openPopup();
+    }
+  }, [highlightedGeo, whatsHere?.highlightedACTIVITY, whatsHere?.highlightedIAPP]);
+
   return (
     <>
-      {highlightedMarkerLtLng && isOnWhatsHerePage? (
+      {highlightedMarkerLtLng && isOnWhatsHerePage ? (
         <Marker key={Math.random()} icon={icon} position={highlightedMarkerLtLng} />
       ) : (
         <></>
       )}
       {highlightedGeo && isOnWhatsHerePage ? (
-        <GeoJSON key={Math.random()} onEachFeature={highlight} data={highlightedGeo?.geometry}></GeoJSON>
+        <GeoJSON ref={popupRef} key={Math.random()} onEachFeature={highlight} data={highlightedGeo?.geometry}></GeoJSON>
       ) : (
         <></>
       )}
-      {
-        whatsHere.feature && isOnWhatsHerePage? ( <GeoJSON key={Math.random()} data={whatsHere?.feature?.geometry}></GeoJSON> ) : ( <></> )
-      }
+      {whatsHere.feature && isOnWhatsHerePage ? (
+        <GeoJSON key={Math.random()} data={whatsHere?.feature?.geometry}></GeoJSON>
+      ) : (
+        <></>
+      )}
     </>
   );
 };
-
 
 export const createDataUTM = (name: string, value: any) => {
   return { name, value };
