@@ -48,6 +48,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
         lng: centerOfGeo[0]
       }, 15 + addedZoom);*/
     } else if (isPoint && geo) {
+      setHighlightedGeo(null)
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;
       setHighlightedMarkerLtLng([centerOfGeo[1], centerOfGeo[0]]);
       /*map.flyTo({
@@ -119,7 +120,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
         <></>
       )}
       {highlightedGeo && isOnWhatsHerePage ? (
-        <GeoJSON ref={popupRef} key={Math.random()} onEachFeature={highlight} data={highlightedGeo?.geometry}></GeoJSON>
+        <GeoJSON key={Math.random()} onEachFeature={highlight} data={highlightedGeo?.geometry}></GeoJSON>
       ) : (
         <></>
       )}

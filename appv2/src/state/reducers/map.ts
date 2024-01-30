@@ -63,7 +63,8 @@ import {
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   IAPP_TABLE_ROWS_GET_REQUEST,
   PAN_AND_ZOOM_TO_ACTIVITY,
-  IAPP_PAN_AND_ZOOM
+  IAPP_PAN_AND_ZOOM,
+  WHATS_HERE_ID_CLICKED
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -226,6 +227,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       */
     return createNextState(state, (draftState) => {
       switch (action.type) {
+        case WHATS_HERE_ID_CLICKED:
+          if(action.payload.type === 'Activity'){
+            draftState.whatsHere.clickedActivity = action.payload.id
+            draftState.whatsHere.clickedActivityDescription = action.payload.description
+          }
+          else if(action.payload.type === 'IAPP'){
+            draftState.whatsHere.clickedIAPP = action.payload.id
+            draftState.whatsHere.clickedIAPPDescription = action.payload.description
+          }
+          break;
+        
         case IAPP_TABLE_ROWS_GET_REQUEST:
         case ACTIVITIES_TABLE_ROWS_GET_REQUEST: {
           if (!draftState.recordTables?.[action.payload.recordSetID]) {
@@ -538,6 +550,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_WHATS_HERE_FEATURE: {
+          draftState.whatsHere.clickedActivity = null;
+          draftState.whatsHere.clickedActivityDescription = null;
+          draftState.whatsHere.clickedIAPP = null;
+          draftState.whatsHere.clickedIAPPDescription = null;
           draftState.whatsHere.loadingActivities = true;
           draftState.whatsHere.loadingIAPP = true;
           draftState.whatsHere.feature = action.payload.feature;
