@@ -12,8 +12,13 @@ export async function* generateSitesCSV(cursor: any, templateName: string) {
   // set up callbacks to format specific fields
   const fieldFormatMap = {};
   const defaultFormatter = (value) => {
-    return typeof value === 'string' ? '"' + value + '"' : value;
+    if (value === null || value === undefined || value === '') {
+      return '';
+    } else {
+      return typeof value === 'string' ? '"' + value + '"' : value;
+    }
   };
+
   switch (templateName) {
     default:
       fieldFormatMap['site_created_date'] = (value) => {
@@ -65,14 +70,6 @@ export async function* generateSitesCSV(cursor: any, templateName: string) {
         const justDate = typeof value === 'string' ? value : value.toISOString();
         return format(parseISO(justDate), 'yyyy-MM-dd');
       };
-      fieldFormatMap['activity_date_time'] = (value) => {
-        if (value === null) return '';
-        return format(parseISO(value), 'yyyy-MM-dd HH:mm:ss');
-      };
-      fieldFormatMap['created_timestamp'] = (value) => {
-        if (value === null) return '';
-        return format(parseISO(value), 'yyyy-MM-dd HH:mm:ss');
-      };
       fieldFormatMap['updated_timestamp'] = (value) => {
         if (value === null) return '';
         return format(parseISO(value), 'yyyy-MM-dd HH:mm:ss');
@@ -85,46 +82,104 @@ export async function* generateSitesCSV(cursor: any, templateName: string) {
         if (value === null) return '';
         return format(parseISO(value), 'yyyy-MM-dd');
       };
+      fieldFormatMap['activity_date_time'] = (value) => {
+        if (value === null) return '';
+        const formattedDate = format(value, 'yyyy-MM-dd');
+        return formattedDate;
+      };
+      fieldFormatMap['created_timestamp'] = (value) => {
+        if (value === null) return '';
+        const formattedDate = format(value, 'yyyy-MM-dd');
+        return formattedDate;
+      };
+      fieldFormatMap['received_timestamp'] = (value) => {
+        if (value === null) return '';
+        const formattedDate = format(value, 'yyyy-MM-dd');
+        return formattedDate;
+      };
+
       fieldFormatMap['jurisdictions'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value + '"';
       };
       fieldFormatMap['comment'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['comments'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['site_comments'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['site_location'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['bioagent_source'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['survey_comments'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['treatment_comments'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['monitoring_comments'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['location_description'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['access_description'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value.replace(/\"/g, '') + '"';
       };
       fieldFormatMap['jurisdiction'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value + '"';
       };
       fieldFormatMap['other_surveyors'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value + '"';
       };
       fieldFormatMap['other_applicators'] = (value) => {
+        if (value === null || value === undefined) {
+          return '';
+        }
         return '"' + value + '"';
       };
       break;
