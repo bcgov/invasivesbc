@@ -365,7 +365,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-                   .map((geometry) => `st_subdivide(st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}'), 4326))`)
+                   .map((geometry) => `st_subdivide(st_collect(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}')), 255)`)
                    .join(',')}]) AS geojson
          ),
          
