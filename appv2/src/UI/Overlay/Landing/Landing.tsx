@@ -5,9 +5,26 @@ import { selectNetworkConnected } from "state/reducers/network";
 import { selectAuth } from "state/reducers/auth";
 import { selectUserInfo } from "state/reducers/userInfo";
 import { useSelector } from "util/use_selector";
+import { useDispatch } from "react-redux";
+import { AUTH_SIGNIN_REQUEST, TOGGLE_PANEL } from "state/actions";
+import { useHistory } from "react-router";
 
 export const LandingComponent = (props) => {
   const connected = useSelector(selectNetworkConnected);
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const requestAccess = async () => {
+    if (connected && !authenticated) {
+      dispatch({ type: AUTH_SIGNIN_REQUEST });
+    } else {
+      history.push('/AccessRequest');
+      dispatch({
+        type: TOGGLE_PANEL,
+        payload: { panelOpen: true, fullScreen: true }
+      });
+    }
+  };
 
   const { authenticated, username, displayName, email, roles } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
@@ -139,7 +156,7 @@ export const LandingComponent = (props) => {
         {connected && !activated && (
           <Box mt={2} paddingBottom={'50px'}>
             <Button variant="outlined" color="primary" 
-            // onClick={requestAccess}
+            onClick={requestAccess}
             >
               Request Access
             </Button>
