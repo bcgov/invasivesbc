@@ -7,10 +7,12 @@ import {
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+  WHATS_HERE_ID_CLICKED,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
   WHATS_HERE_SORT_FILTER_UPDATE
 } from 'state/actions';
+import './WhatsHerePagination.css';
 
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -39,7 +41,7 @@ function WhatsHerePagination(props) {
   }
 
   return (
-    <div key={'pagination'}>
+    <div key={'pagination'} className={'whatsHere-pagination'}>
       <div key={'paginationControls'}>
         {pageNumber <= 0 ? (
           <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
@@ -47,7 +49,7 @@ function WhatsHerePagination(props) {
           </Button>
         ) : (
           <Button
-            sx={{ m: 1, p: 1 }}
+            sx={{ m: 0, p: 0 }}
             size={'small'}
             onClick={(e) => {
               e.stopPropagation();
@@ -68,7 +70,7 @@ function WhatsHerePagination(props) {
           </Button>
         ) : (
           <Button
-            sx={{ m: 1, p: 1 }}
+            sx={{ m: 0, p: 0 }}
             size={'small'}
             onClick={(e) => {
               e.stopPropagation();
@@ -92,7 +94,7 @@ function WhatsHerePagination(props) {
           </Button>
         ) : (
           <Button
-            sx={{ m: 1, p: 1 }}
+            sx={{ m: 0, p: 0 }}
             size={'small'}
             onClick={(e) => {
               e.stopPropagation();
@@ -160,8 +162,14 @@ export const RenderTableActivity = (props: any) => {
   };
 
   const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
-    return <Box   onMouseEnter={() => {
-      dispatchUpdatedID(props.params)}}>{value} m&#178;</Box>;
+    return (
+      <Box
+        onMouseEnter={() => {
+          dispatchUpdatedID(props.params);
+        }}>
+        {value} m&#178;
+      </Box>
+    );
   };
 
   const columns = [
@@ -280,8 +288,9 @@ export const RenderTableActivity = (props: any) => {
     const id = params.row.id;
     const short_id = params.row.short_id;
     dispatch({
-      type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
+      type: WHATS_HERE_ID_CLICKED,
       payload: {
+        type: 'Activity',
         description: 'Activity-' + short_id,
         id: id
       }
@@ -306,7 +315,6 @@ export const RenderTableActivity = (props: any) => {
             hideFooterPagination
             hideFooter
             disableColumnMenu
-            
             disableColumnFilter
             onColumnHeaderClick={(c) => {
               dispatch({ type: WHATS_HERE_SORT_FILTER_UPDATE, payload: { recordType: 'Activity', field: c.field } });
@@ -459,10 +467,11 @@ export const RenderTablePOI = (props: any) => {
 
   const highlightPOI = async (params) => {
     dispatch({
-      type: USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
+      type: WHATS_HERE_ID_CLICKED,
       payload: {
+        type: 'IAPP',
         description: 'IAPP-' + params.id,
-        id: params.id
+        id: params.row.id
       }
     });
     dispatch({

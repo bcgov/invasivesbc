@@ -49,15 +49,22 @@ export const WhatsHereTable = (props) => {
   };
 
   const goToRecord = () => {
-    const id = whatsHere?.highlightedURLID;
+    const id = whatsHere.section === 'invasivesbc'? whatsHere?.clickedActivity : whatsHere?.clickedIAPP;
     // if (authenticated && roles.length > 0) {
     // }
     // authentication is needed eventually
-    if (whatsHere?.highlightedType === 'Activity') {
+    if (whatsHere?.section === 'invasivesbc') {
       history.push(`/Records/Activity:${id}/form`);
     } else if (whatsHere?.highlightedType === 'IAPP') {
-      history.push(`/Records/IAPP/${id}/summary`)
+      history.push(`/Records/IAPP/${id}/summary`);
     }
+  };
+
+  const getActivityDescriptionForOpenButton = () => {
+    return `Open InvasivesBC record: ${whatsHere?.clickedActivityDescription}`;
+  };
+  const getIAPPDescriptionForOpenButton = () => {
+    return `Open IAPP record: ${whatsHere?.clickedIAPPDescription}`;
   };
 
   return (
@@ -72,32 +79,25 @@ export const WhatsHereTable = (props) => {
           </div>
           <div id="whatsherepopup" className="whatshere-table">
             <Grid className="whatshere-header" container justifyContent="center" sx={{ mb: 2, pb: 1 }}>
-              <div className="whatshere-title"> What's Here: </div>
+              <div className="whatshere-title"> What's Here: <br/> {`UTM: Z-${utmRows[0]?.value} E-${utmRows[1]?.value} N-${utmRows[2]?.value}`}</div>
               <Tabs value={whatsHere?.section} onChange={handleChange} centered>
-                <Tab value="position" label="UTM" icon={<LocationOnIcon />}/>
                 <Tab value="invasivesbc" label="InvasivesBC Records" icon={<FolderIcon />} />
                 {/* value="databc" label="Data BC" icon={<StorageIcon />} */}
                 <Tab value="iapp" label="IAPP Records" icon={<AdjustIcon />} />
               </Tabs>
             </Grid>
             <Grid container spacing={2} justifyContent="center">
-              {whatsHere?.highlightedACTIVITY || whatsHere?.highlightedIAPP ? (
                 <Grid item>
-                  <Button variant="contained" onClick={goToRecord}>
-                    {`Open ${whatsHere?.highlightedType} record: ${
-                      whatsHere?.highlightedType === 'IAPP'
-                        ? whatsHere?.highlightedIAPP
-                        : whatsHere?.highlightedACTIVITY
-                    }
-                  `}
-                  </Button>
+                      {whatsHere?.section === 'invasivesbc' && whatsHere?.clickedActivity
+                        ?  <Button variant="contained" onClick={goToRecord}>{getActivityDescriptionForOpenButton()}</Button>
+                        : <></>}
+                        {whatsHere?.section === 'iapp' && whatsHere?.clickedIAPP  
+                        ?  <Button variant="contained" onClick={goToRecord}>{getIAPPDescriptionForOpenButton()}</Button>
+                        : <></>}
                 </Grid>
-              ) : (
-                <></>
-              )}
             </Grid>
+              
             <TableContainer className="whatshere-position">
-              <RenderTablePosition rows={utmRows} />
               <RenderTableActivity />
               {/*section == 'databc' && <RenderTableDataBC rows={databc} />*/}
               <RenderTablePOI />
