@@ -305,6 +305,16 @@ function* handle_GET_API_DOC_ONLINE(action) {
   });
 }
 
+function* clear_local_storage_once() {
+  const target = new Date('2024-02-07');
+  const targetEpoch = target.getTime();
+  const today = Date.now();
+  const cleared = localStorage.getItem('LOCALSTORAGE_CLEAR');
+  if (today > targetEpoch && !cleared) {
+    localStorage.clear();
+    localStorage.setItem('LOCALSTORAGE_CLEAR', JSON.stringify(today));
+  }
+}
 
 function* userSettingsSaga() {
   yield all([
@@ -324,7 +334,7 @@ function* userSettingsSaga() {
     takeEvery(USER_SETTINGS_ADD_RECORD_SET, persistRecordSetsToLocalStorage),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET, persistRecordSetsToLocalStorage),
     takeEvery(RECORDSET_UPDATE_FILTER, persistRecordSetsToLocalStorage),
-    
+    takeEvery(AUTH_INITIALIZE_COMPLETE, clear_local_storage_once),
 
     takeEvery(USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST),
     takeEvery(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
