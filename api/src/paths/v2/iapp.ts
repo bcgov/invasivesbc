@@ -535,9 +535,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'min_survey':
         where.append(
-          `and LOWER(sites.min_survey) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(sites.min_survey::TEXT) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
-          }%' `
+          }%') `
         );
         break;
       case 'all_species_on_site':
@@ -549,7 +549,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'max_survey':
         where.append(
-          `and LOWER(sites.max_survey) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(sites.max_survey::TEXT) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
