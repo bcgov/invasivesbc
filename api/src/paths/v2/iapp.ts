@@ -569,9 +569,13 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         );
         break;
       case 'has_biological_treatments':
-        where.append(
-          ` and LOWER(sites.has_biological_treatments) ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
-        );
+        if (filter.operator === 'CONTAINS') {
+          if (/[yes]/i.test(filter.filter)) {
+            where.append(` and sites.has_biological_treatments = true`);
+          } else if (/[no]/i.test(filter.filter)) {
+            where.append(` and NOT sites.has_biological_treatments`);
+          }
+        }
         break;
       case 'has_chemical_treatments':
         where.append(`and sites.has_chemical_treatments  ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `);
