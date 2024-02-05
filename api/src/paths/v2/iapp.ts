@@ -578,7 +578,13 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         }
         break;
       case 'has_chemical_treatments':
-        where.append(`and sites.has_chemical_treatments  ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `);
+        if (filter.operator === 'CONTAINS') {
+          if (/[yes]/i.test(filter.filter)) {
+            where.append(` and sites.has_chemical_treatments = true`);
+          } else if (/[no]/i.test(filter.filter)) {
+            where.append(` and NOT sites.has_chemical_treatments`);
+          }
+        }
         break;
       case 'has_mechanical_treatments':
         if (filter.operator === 'CONTAINS') {
@@ -600,7 +606,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'monitored':
         where.append(
-          `and sites.monitored ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${filter.filter}%' `
+          `and LOWER(sites.monitored) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'regional_district':
