@@ -189,6 +189,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     const oldID = localStorage.getItem('activeActivity');
     const oldDesc = localStorage.getItem('activeActivityDescription');
     const IAPPID = localStorage.getItem('activeIAPP');
+    const poi_updated = localStorage.getItem('POI_UPDATED');
+    if (!poi_updated) yield replacePOIOnce();
     // needs mobile later
     const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
     const recordsExpandedState = JSON.parse(localStorage.getItem('records-expanded'));
@@ -305,14 +307,12 @@ function* handle_GET_API_DOC_ONLINE(action) {
   });
 }
 
-function* clear_local_storage_once() {
-  const target = new Date('2024-02-07');
-  const targetEpoch = target.getTime();
-  const today = Date.now();
-  const cleared = localStorage.getItem('LOCALSTORAGE_CLEAR');
-  if (today > targetEpoch && !cleared) {
-    localStorage.clear();
-    localStorage.setItem('LOCALSTORAGE_CLEAR', JSON.stringify(today));
+function replacePOIOnce() {
+  const appstate = localStorage.getItem('appstate-invasivesbc');
+  if (appstate) {
+    const newString = appstate.replaceAll('POI', 'IAPP');
+    localStorage.setItem('appstate-invasivesbc', newString);
+    localStorage.setItem('POI_UPDATED', JSON.stringify(Date.now()));
   }
 }
 
@@ -334,7 +334,6 @@ function* userSettingsSaga() {
     takeEvery(USER_SETTINGS_ADD_RECORD_SET, persistRecordSetsToLocalStorage),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET, persistRecordSetsToLocalStorage),
     takeEvery(RECORDSET_UPDATE_FILTER, persistRecordSetsToLocalStorage),
-    takeEvery(AUTH_INITIALIZE_COMPLETE, clear_local_storage_once),
 
     takeEvery(USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST),
     takeEvery(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
