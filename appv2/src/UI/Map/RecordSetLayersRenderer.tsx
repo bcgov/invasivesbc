@@ -52,6 +52,13 @@ const LayerWrapper = (props) => {
   if (RENDER_DEBUG)
     console.log(`%cLayerWrapper.tsx render ${props.recordSetID}:` + ref.current.toString(), 'color: green');
 
+
+    const enabled = useSelector(
+      (state: any) => state.Map?.layers?.find((layer) => layer.recordSetID === props.recordSetID)?.layerState?.mapToggle,
+      shallowEqual
+    );
+
+
   const type = useSelector(
     (state: any) => state.Map?.layers?.find((layer) => layer?.recordSetID === props.recordSetID)?.type,
     shallowEqual
@@ -89,6 +96,7 @@ const LayerWrapper = (props) => {
 
   if (!(geoJSON?.features?.length > 0)) return <></>;
   // These rerender internally if the layer state changes, without regrabbing the geojson
+  
   switch (type) {
     case 'Activity':
       if (props.recordSetID === '2') {
@@ -96,7 +104,8 @@ const LayerWrapper = (props) => {
           <>
             {/*<ActivitiesDonutLayer geoJSON={geoJSON} layerKey={props.recordSetID} />*/}
             {/*<CustomGeoJSONLayer geoJSON={geoJSON} layerKey={props.recordSetID} customStyle={defaultStyle} />*/}
-            <GeoJSONVtLayer
+            {enabled? <GeoJSONVtLayer
+            key={'geojsonkey'}
             zIndex={4000}
               geoJSON={geoJSON}
               options={{
@@ -107,13 +116,12 @@ const LayerWrapper = (props) => {
                 buffer: 128, // tile buffer on each side
                 indexMaxPoints: 100000, // max number of points per tile in the index
                 solidChildren: false,
-                layerStyles: defaultStyle,
+              //  layerStyles: defaultStyle,
                 style: {...defaultStyle,
-                /*style: {
+                //style: {
                         fillColor: '#eb4034',
                        color: '#eb4034',
                       strokeColor: '#eb4034',
-                      */
                   stroke: true,
                   strokeOpacity: 1,
                   strokeWidth: 10,
@@ -123,7 +131,7 @@ const LayerWrapper = (props) => {
                   zIndex: 4000 
                 }
               }}
-            />
+            /> : <></>}
             <ActivityCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
           </>
         );
@@ -193,7 +201,6 @@ const IAPPCanvasLabel = (props) => {
     shallowEqual
   );
 
-  if (!props.geoJSON || !layerState.labelToggle) return <></>;
 
   // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
   const getPointsInPoly = () => {
@@ -232,6 +239,7 @@ const IAPPCanvasLabel = (props) => {
     };
   }, [props.geoJSON]);
 
+  if (!props.geoJSON || !layerState.labelToggle) return <></>;
   if (!(pointsInBounds?.features?.length > 0)) return <></>;
   return (
     <LeafletCanvasLabel
