@@ -93,7 +93,7 @@ const LayerWrapper = (props) => {
       if (props.recordSetID === '2') {
         return (
           <>
-            <ActivitiesDonutLayer geoJSON={geoJSON} layerKey={props.recordSetID} />
+            {/*<ActivitiesDonutLayer geoJSON={geoJSON} layerKey={props.recordSetID} />*/}
             <CustomGeoJSONLayer geoJSON={geoJSON} layerKey={props.recordSetID} customStyle={defaultStyle} />
             <ActivityCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
           </>
@@ -164,7 +164,7 @@ const IAPPCanvasLabel = (props) => {
     shallowEqual
   );
 
-  if (!props.geoJSON) return <></>;
+  if (!props.geoJSON || !layerState.labelToggle) return <></>;
 
   // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
   const getPointsInPoly = () => {
@@ -189,7 +189,7 @@ const IAPPCanvasLabel = (props) => {
   }
 
   useEffect(() => {
-    if (!props.geoJSON) return;
+    if (!props.geoJSON || !layerState.labelToggle) return;
 
     updatePointsInBounds()
 
@@ -225,6 +225,7 @@ const ActivityCanvasLabel = (props) => {
   );
 
   const labelPoints = useCallback(() => {
+    if(!(props.geoJSON?.features?.length > 0) || !layerState.labelToggle) return { type: 'FeatureCollection', features: [] };
     const points = props.geoJSON?.features.map((row) => {
       let computedCenter = null;
       try {
@@ -240,7 +241,7 @@ const ActivityCanvasLabel = (props) => {
     });
 
     return { type: 'FeatureCollection', features: points?.length > 0 ? [...points] : [] } as any;
-  }, [props.geoJSON]);
+  }, [props.geoJSON, layerState?.labelToggle]);
 
   // Grab first .slice(0, MAX_LABLES_TO_RENDER) points in bounds
   const getPointsInPoly = () => {
@@ -271,6 +272,7 @@ const ActivityCanvasLabel = (props) => {
   }
 
   useEffect(() => {
+    if(!layerState?.labelToggle) return;
     updatePointsInBounds();
 
     map.on('zoomend',  updatePointsInBounds)
@@ -281,7 +283,7 @@ const ActivityCanvasLabel = (props) => {
       map.off('dragend', updatePointsInBounds);
       setPointsInBounds(null);
     };
-  }, [props.geoJSON]);
+  }, [props.geoJSON, layerState?.labelToggle]);
 
   if (!(pointsInBounds?.features?.length > 0)) return <></>;
   return (

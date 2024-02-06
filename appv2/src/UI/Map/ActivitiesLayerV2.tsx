@@ -122,10 +122,11 @@ export const ActivitiesDonutLayer = (props: any) => {
     shallowEqual
   );
 
-  const getPaletteCachedCallback = useCallback(async () => {
+  const getPaletteCachedCallback = async () => {
     const pallette = await getPallette(layerStateColor, [1, 2].includes(props.layerKey));
     return pallette;
-  }, [layerStateColor, globalColorschemeOverride, props.layerKey]);
+  }
+//  }, [layerStateColor, globalColorschemeOverride, props.layerKey]);
 
   const [palette, setPalette] = useState(null);
 
@@ -135,6 +136,11 @@ export const ActivitiesDonutLayer = (props: any) => {
         setPalette(p);
       }
     });
+
+    return () => {
+      setPalette(null);
+    }
+
   }, [layerStateColor, globalColorschemeOverride, props.layerKey, layerMapToggle]);
   /*
   useMapEvent('zoomend', () => {
@@ -154,6 +160,7 @@ export const ActivitiesDonutLayer = (props: any) => {
   });
   */
 
+  /*
   const DonutMarkerLayerMemo = memo(( props : any) => {
 
     if(!layerMapToggle || !props.palette || !props.layerKey || !(props.geoJSON?.features?.length > 0)) return <></>;
@@ -167,11 +174,13 @@ export const ActivitiesDonutLayer = (props: any) => {
       />
     );
   }, shallowEqual);
+  */
 
 
 
+    //<DonutMarkerLayerMemo
   return (
-    <DonutMarkerLayerMemo
+    <DonutMarkerLayer
       layerKey={props?.layerKey}
       geoJSON={props.geoJSON}
       palette={palette}
