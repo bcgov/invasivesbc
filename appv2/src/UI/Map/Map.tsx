@@ -13,8 +13,15 @@ const MapUnmounter = (props) => {
   const map = useMap();
   useEffect(() => {
     return () => {
+      try {
+
       map.clearAllEventListeners();
       map.remove();
+      }
+      catch(e)
+      {
+        console.log(e);
+      }
     };
   }, []);
   return <></>;

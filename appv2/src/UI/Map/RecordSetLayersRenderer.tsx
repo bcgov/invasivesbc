@@ -20,6 +20,7 @@ import { LeafletCanvasLabel, LeafletCanvasMarker, MAX_LABLES_TO_RENDER } from '.
 import { useMap, GeoJSON } from 'react-leaflet';
 import { circleMarker } from 'leaflet';
 import { RENDER_DEBUG } from 'UI/App';
+import { GeoJSONVtLayer } from './GeoJsonVtLayer';
 
 export const RecordSetLayersRenderer = (props: any) => {
   const ref = useRef(0);
@@ -94,7 +95,35 @@ const LayerWrapper = (props) => {
         return (
           <>
             {/*<ActivitiesDonutLayer geoJSON={geoJSON} layerKey={props.recordSetID} />*/}
-            <CustomGeoJSONLayer geoJSON={geoJSON} layerKey={props.recordSetID} customStyle={defaultStyle} />
+            {/*<CustomGeoJSONLayer geoJSON={geoJSON} layerKey={props.recordSetID} customStyle={defaultStyle} />*/}
+            <GeoJSONVtLayer
+            zIndex={4000}
+              geoJSON={geoJSON}
+              options={{
+                maxZoom: 24,
+                tolerance: 100,
+                debug: 0,
+                extent: 4096, // tile extent (both width and height)
+                buffer: 128, // tile buffer on each side
+                indexMaxPoints: 100000, // max number of points per tile in the index
+                solidChildren: false,
+                layerStyles: defaultStyle,
+                style: {...defaultStyle,
+                /*style: {
+                        fillColor: '#eb4034',
+                       color: '#eb4034',
+                      strokeColor: '#eb4034',
+                      */
+                  stroke: true,
+                  strokeOpacity: 1,
+                  strokeWidth: 10,
+                  opacity: 1,
+                  fillOpacity: 2 / 2,
+                  weight: 3,
+                  zIndex: 4000 
+                }
+              }}
+            />
             <ActivityCanvasLabel geoJSON={geoJSON} layerKey={props.recordSetID} />
           </>
         );
@@ -186,22 +215,22 @@ const IAPPCanvasLabel = (props) => {
   const updatePointsInBounds = () => {
     const newPointsInBounds = debouncedGetPointsInPoly();
     setPointsInBounds(newPointsInBounds);
-  }
+  };
 
   useEffect(() => {
     if (!props.geoJSON || !layerState.labelToggle) return;
 
-    updatePointsInBounds()
+    updatePointsInBounds();
 
     map.on('zoomend', updatePointsInBounds);
-    map.on('dragend', updatePointsInBounds)  
+    map.on('dragend', updatePointsInBounds);
 
     return () => {
       map.off('zoomend', updatePointsInBounds);
-      map.off('dragend', updatePointsInBounds)  
+      map.off('dragend', updatePointsInBounds);
       setPointsInBounds(null);
-    }
-   } , [props.geoJSON]);
+    };
+  }, [props.geoJSON]);
 
   if (!(pointsInBounds?.features?.length > 0)) return <></>;
   return (
@@ -225,7 +254,8 @@ const ActivityCanvasLabel = (props) => {
   );
 
   const labelPoints = useCallback(() => {
-    if(!(props.geoJSON?.features?.length > 0) || !layerState.labelToggle) return { type: 'FeatureCollection', features: [] };
+    if (!(props.geoJSON?.features?.length > 0) || !layerState.labelToggle)
+      return { type: 'FeatureCollection', features: [] };
     const points = props.geoJSON?.features.map((row) => {
       let computedCenter = null;
       try {
@@ -258,8 +288,8 @@ const ActivityCanvasLabel = (props) => {
         return { ...collection };
       }
     } catch (e) {
-      console.log('Errror in getPointsInPoly')
-      console.log(e)
+      console.log('Errror in getPointsInPoly');
+      console.log(e);
       return { type: 'FeatureCollection', features: [] };
     }
   };
@@ -269,14 +299,14 @@ const ActivityCanvasLabel = (props) => {
   const updatePointsInBounds = () => {
     const newPointsInBounds = debouncedGetPointsInPoly();
     setPointsInBounds(newPointsInBounds);
-  }
+  };
 
   useEffect(() => {
-    if(!layerState?.labelToggle) return;
+    if (!layerState?.labelToggle) return;
     updatePointsInBounds();
 
-    map.on('zoomend',  updatePointsInBounds)
-    map.on('dragend', updatePointsInBounds );
+    map.on('zoomend', updatePointsInBounds);
+    map.on('dragend', updatePointsInBounds);
 
     return () => {
       map.off('zoomend', updatePointsInBounds);
