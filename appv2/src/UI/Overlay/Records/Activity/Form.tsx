@@ -11,7 +11,7 @@ export const ActivityForm = (props) => {
   if(RENDER_DEBUG)
   console.log('%Activity Form render:' + ref.current.toString(), 'color: yellow');
 
-  const { short_id, form_status, activity_type, activity_subtype, form_data, created_by, date_created, updated_by, date_updated, batch_id } =
+  const { short_id, form_status, activity_type, activity_subtype, form_data, created_by, date_created, updated_by, received_timestamp, batch_id } =
     useSelector((state: any) => state.ActivityPage?.activity);
 
   return (
@@ -57,7 +57,7 @@ export const ActivityForm = (props) => {
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Updated At:</td>
-              <td className={'rightValueCol'}>{new Date(date_updated? date_updated: date_created).toLocaleDateString()}</td> <br />
+              <td className={'rightValueCol'}>{new Date(received_timestamp? received_timestamp: date_created).toLocaleDateString()}</td> <br />
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Batch ID</td>
