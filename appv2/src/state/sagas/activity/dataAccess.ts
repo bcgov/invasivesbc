@@ -213,7 +213,9 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
+  const activity_id =  yield select((state) => state.ActivityPage.activity.activity_id)
   try {
+    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: activity_id} })
     yield put({
       type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
       payload: {
