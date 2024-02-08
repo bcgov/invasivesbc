@@ -57,11 +57,11 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   const checkIfNotAuthorized = () => {
     for (let role of accessRoles) {
       if (role.role_id === 18) {
-        return false;
+      return false;
       }
     }
 
-    if (username !== props.activity.created_by) {
+    if (username !== activityInState.activity.created_by) {
       return true;
     }
     return false;
@@ -96,7 +96,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
         </DialogTitle>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button disabled={!checkIfNotAuthorized()} variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
+          <Button disabled={checkIfNotAuthorized()} variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
             Yes
           </Button>
         </DialogActions>
@@ -111,7 +111,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           <Grid item>
             {!props.hideCheckFormForErrors && (
               <Button
-                disabled={isDisabled}
+                disabled={isDisabled || activityInState.activity.form_status === 'Submitted'}
                 variant="contained"
                 color="primary"
                 onClick={() => {
