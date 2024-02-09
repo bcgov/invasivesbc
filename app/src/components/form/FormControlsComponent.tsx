@@ -79,7 +79,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
 
   const submitTooltipString = () => {
     if (props.isAlreadySubmitted()) {
-      return 'With edit permissions, you can still save edits with the Save button, but this record is already submitted.';
+      return 'With edit permissions, you can still save edits with the Save, but it will be a draft once again until you hit submit (this workflow will change soon)';
     }
     if (!props.canBeSubmittedWithoutErrors()) {
       return 'Save form without errors first, to be able to submit.';
@@ -111,7 +111,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
           <Grid item>
             {!props.hideCheckFormForErrors && (
               <Button
-                disabled={isDisabled || activityInState.activity.form_status === 'Submitted'}
+                disabled={isDisabled}
                 variant="contained"
                 color="primary"
                 onClick={() => {
@@ -121,7 +121,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
 
                   props.onSubmit();
                 }}>
-                Save Record
+                Save Draft
               </Button>
             )}
           </Grid>
@@ -141,7 +141,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
               <Tooltip placement="top" title={submitTooltipString()}>
                 <span>
                   <Button
-                    disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
+                    disabled={!props.canBeSubmittedWithoutErrors()}
                     variant="contained"
                     color="primary"
                     onClick={() => {
@@ -151,7 +151,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
 
                       props.onSubmitAsOfficial();
                     }}>
-                    {props.isAlreadySubmitted() ? 'Record Already Submitted' : 'Submit to Database'}
+                    {props.isAlreadySubmitted() ? 'Update Submitted Record' : 'Submit to Database'}
                   </Button>
                 </span>
               </Tooltip>

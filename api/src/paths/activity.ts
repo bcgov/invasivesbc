@@ -461,10 +461,12 @@ function updateActivity(): RequestHandler {
           });
     }
     */
+   /* disabled for now
     if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
       req.body.form_status = 'Submitted'
       sanitizedActivityData.form_status = 'Submitted'
     }
+    */
 
     try {
       const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);
