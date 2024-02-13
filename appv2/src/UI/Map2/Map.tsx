@@ -14,7 +14,7 @@ export const Map = (props: any) => {
   const [zoom] = useState(14);
 
   const storeLayers = useSelector(
-    (state: any) => state.Map?.layers,
+    (state: any) => state.Map?.layers
     /*(prev, next) => {
       return prev.length == next.length;
     }*/
@@ -23,8 +23,11 @@ export const Map = (props: any) => {
   const toggledOnLayers = storeLayers.filter((layer: any) => layer.toggledOn);
 
   useEffect(() => {
+    maplibregl.setRTLTextPlugin('https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js', false);
     if (map.current) return;
     // add the PMTiles plugin to the maplibregl global.
+
+
     const protocol = new Protocol();
     maplibregl.addProtocol('pmtiles', (request) => {
       return new Promise((resolve, reject) => {
@@ -39,7 +42,7 @@ export const Map = (props: any) => {
       });
     });
 
-    const PMTILES_URL =  `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`
+    const PMTILES_URL = `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
     //const PMTILES_URL = 'https://protomaps.github.io/PMTiles/protomaps(vector)ODbL_firenze.pmtiles';
 
     const p = new PMTiles(PMTILES_URL);
@@ -54,6 +57,7 @@ export const Map = (props: any) => {
         zoom: h.maxZoom - 2,
         center: [h.centerLon, h.centerLat],
         style: {
+          glyphs: 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
           version: 8,
           sources: {
             'wms-test-source': {
@@ -74,7 +78,7 @@ export const Map = (props: any) => {
               //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
               // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
               attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
-            },
+            }
           },
           layers: [
             {
@@ -113,72 +117,131 @@ export const Map = (props: any) => {
 
               minzoom: 0,
               maxzoom: 22
-            },
-            
+            }
           ]
-        },
+        }
       });
     });
   }, []);
-
-
 
   useEffect(() => {
     if (!map.current) return;
 
     // update to only map over whats new
-    storeLayers.map((layer: any) => { 
-
-      if(layer.layerState.mapToggle && layer.geoJSON && layer.loading === false) {
-        if(map.current.getLayer(layer.recordSetID)) {
-          map.current.removeLayer(layer.recordSetID)
+    storeLayers.map((layer: any) => {
+      if (layer.layerState.mapToggle && layer.geoJSON && layer.loading === false) {
+        if (map.current.getLayer(layer.recordSetID)) {
+          try {
+            map.current.removeLayer(layer.recordSetID);
+          } catch (e) {
+            console.log('error removing layer', e);
+          }
+        }
+        if (map.current.getLayer('label-' + layer.recordSetID)) {
+          try {
+            map.current.removeLayer('label-' + layer.recordSetID);
+          } catch (e) {
+            console.log('error removing layer', e);
+          }
         }
 
-        if(map.current.getSource(layer.recordSetID)) {
-          map.current.removeSource(layer.recordSetID)
+        if (map.current.getSource(layer.recordSetID)) {
+          try {
+            map.current.removeSource(layer.recordSetID);
+          } catch (e) {
+            console.log('error removing source', e);
+          }
         }
 
-        map.current.addSource(layer.recordSetID, {
-          type: 'geojson',
-          data: layer.geoJSON
-          }).addLayer({
+        map.current
+          .addSource(layer.recordSetID, {
+            type: 'geojson',
+            data: layer.geoJSON
+          })
+          .addLayer({
             id: layer.recordSetID,
             source: layer.recordSetID,
-            type:  layer.type === 'IAPP'? 'circle': 'fill',
-            paint: layer.type === 'IAPP' ? {
-              'circle-color':  layer.layerState.color,
-              'circle-radius': 3,
-            } : {
-              'fill-color': layer.layerState.color,
-              'fill-opacity': 0.5,
-            },
+            type: layer.type === 'IAPP' ? 'circle' : 'fill',
+            paint:
+              layer.type === 'IAPP'
+                ? {
+                    'circle-color': layer.layerState.color,
+                    'circle-radius': 3
+                  }
+                : {
+                    'fill-color': layer.layerState.color,
+                    'fill-opacity': 0.5
+                  },
             minzoom: 0,
             maxzoom: 22
+          });
+
+        if (layer.layerState.labelToggle) {
+          map.current.addLayer({
+            id: 'label-' + layer.recordSetID,
+            type: 'symbol',
+            source: layer.recordSetID,
+            layout: {
+              //                'icon-image': 'dog-park-11',
+              'text-field': [
+                'format',
+                ['upcase', ['get', 'short_id']],
+                { 'font-scale': 1.8 },
+                '\n',
+                {},
+                ['downcase', ['get', 'type']],
+                { 'font-scale': 0.6 }
+              ],
+              // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+              'text-font': ['literal', ['Open Sans Light']],
+              // 'text-font': ['literal', ['Open Sans Semibold']],
+              'text-offset': [0, 0.6],
+              'text-anchor': 'top'
+            },
+            paint: {
+              'text-color': 'black',
+              'text-halo-color': 'white',
+              'text-halo-width': 2,
+              'text-halo-blur': 1
+            }
+          });
+        }
+      } else {
+        if (map.current.getLayer(layer.recordSetID)) {
+          try {
+            map.current.removeLayer(layer.recordSetID);
+          } catch (e) {
+            console.log('error removing layer', e);
           }
-        )
-      }
-      else {
-        if(map.current.getLayer(layer.recordSetID)) {
-          map.current.removeLayer(layer.recordSetID)
+        }
+        if (map.current.getLayer('label-' + layer.recordSetID)) {
+          try {
+            map.current.removeLayer('label-' + layer.recordSetID);
+          } catch (e) {
+            console.log('error removing layer', e);
+          }
         }
 
-        if(map.current.getSource(layer.recordSetID)) {
-          map.current.removeSource(layer.recordSetID)
+        if (map.current.getSource(layer.recordSetID)) {
+          try {
+            map.current.removeSource(layer.recordSetID);
+          } catch (e) {
+            console.log('error removing source', e);
+          }
         }
-
       }
-    })
+    });
 
-    map.current.getLay
     map.current.getLayersOrder().map((layer: any) => {
-      if(storeLayers.filter((l: any) => l.recordSetID === layer).length === 0 && ![ 'wms-test-layer', 'wms-test-layer2', 'invasives-vector', 'buildings'].includes(layer)) {
-        map.current.removeLayer(layer)
-        map.current.removeSource(layer)
-      }})
-
-  }, [storeLayers])
-
-
+      if (
+        storeLayers.filter((l: any) => l.recordSetID === layer).length === 0 &&
+        !['wms-test-layer', 'wms-test-layer2', 'invasives-vector', 'buildings'].includes(layer)
+      ) {
+        //map.current.removeLayer(layer);
+        //map.current.removeSource(layer);
+      }
+    });
+  }, [storeLayers]);
 
   return (
     <div className="MapWrapper">
