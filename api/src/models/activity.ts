@@ -110,9 +110,9 @@ export class ActivityPostRequestBody {
  */
 export class ActivitySearchCriteria {
   //for use in csv endpoint
-  isCSV?: boolean
+  isCSV?: boolean;
   CSVType?: string;
-  
+
   page: number;
   limit: number;
 
@@ -143,7 +143,7 @@ export class ActivitySearchCriteria {
   species_negative: string[];
   species_treated: string[];
   form_status: string[];
-  s3SignedUrlRequest?: boolean
+  s3SignedUrlRequest?: boolean;
 
   jurisdiction: string[];
 
