@@ -350,9 +350,7 @@ CurrentNegativeObservations AS (
     sqlStatement.append('SELECT extract.* ');
   }
 
-  sqlStatement.append(
-    SQL` FROM activity_incoming_data a `
-  );
+  sqlStatement.append(SQL` FROM activity_incoming_data a `);
 
   if (searchCriteria.search_feature || searchCriteria.search_feature_server_id) {
     sqlStatement.append(SQL`
@@ -437,8 +435,15 @@ LEFT JOIN
 
   sqlStatement.append(SQL` where 1 = 1 and a.iscurrent = true `);
 
-  if (lean) {
-    sqlStatement.append(SQL` and a.activity_incoming_data_id > (select last_record from export_records where export_type = 'activities' order by export_time limit 1)`);
+  const drafts =
+    searchCriteria.form_status &&
+    searchCriteria.form_status.length == 1 &&
+    searchCriteria.form_status.includes('Draft');
+
+  if (lean && !drafts) {
+    sqlStatement.append(
+      SQL` and a.activity_incoming_data_id > (select last_record from export_records where export_type = 'activities' order by export_time limit 1)`
+    );
   }
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
@@ -800,7 +805,7 @@ export const getOverlappingBCGridCellsSQL = (
       break;
     case '0':
       if (grid_item_ids.length < 1) {
-        throw 'Error: looking for small grid items but the large grid item id array wasn\'t provided';
+        throw "Error: looking for small grid items but the large grid item id array wasn't provided";
       } else {
         return SQL`
           SELECT id, public.st_asGeoJSON(geo) as geo, large_grid_item_id

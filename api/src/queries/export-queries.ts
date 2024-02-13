@@ -38,7 +38,8 @@ export const ALL_ACTIVITY_SQL = SQL`
                            'species_negative', species_negative,
                            'species_treated', species_treated,
                            'created', created_timestamp,
-                           'jurisdiction', a.activity_payload::json->'form_data'->'activity_data'->'jurisdictions',
+                           'jurisdiction',
+                           a.activity_payload::json -> 'form_data' -> 'activity_data' -> 'jurisdictions',
                            'reported_area', a.activity_payload -> 'form_data' -> 'activity_data' -> 'reported_area',
                            'computedCentroid', jsonb_build_array(
                                    ST_X(ST_Centroid(a.geog)::geometry),
@@ -82,6 +83,7 @@ export const ALL_ACTIVITY_SQL = SQL`
 
     where 1 = 1
       and a.iscurrent = true
+      and a.form_status = 'Submitted'
 
     order by a.activity_incoming_data_id desc
 
