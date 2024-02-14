@@ -27,7 +27,6 @@ export const Map = (props: any) => {
 
   useEffect(() => {
     if (!map.current) return;
-
     rebuildLayersOnTableHashUpdate(storeLayers, map.current);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
@@ -140,7 +139,6 @@ const mapInit = (map, mapContainer) => {
 
 const createActivityLayer = (map: any, layer: any) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
-  console.log('creating');
   map
     .addSource(layerID, {
       type: 'geojson',
@@ -213,9 +211,6 @@ const createActivityLayer = (map: any, layer: any) => {
     },
     minzoom: 10
   });
-
-  console.dir(map.getLayersOrder());
-  console.dir(map.getLayer(layerID));
 };
 
 const deleteStaleActivityLayer = (map: any, layer: any) => {
@@ -246,7 +241,7 @@ const deleteStaleActivityLayer = (map: any, layer: any) => {
   });
 
   // get all sources:
-  console.log(map.style.sourceCaches);
+  //  console.log(map.style.sourceCaches);
 
   const staleSources = Object.keys(map.style.sourceCaches).filter((source) => {
     return source.includes('recordset-layer-' + layer.recordSetID) && !source.includes(layer.tableFiltersHash);
@@ -362,12 +357,11 @@ const refreshColoursOnColourUpdate = (storeLayers, map) => {
       return mapLayer.includes(layerSearchString);
     });
 
-    console.dir(matchingLayers);
     matchingLayers?.map((mapLayer) => {
       let currentColor = '';
       switch (true) {
         case /^recordset-layer-/.test(mapLayer):
-          const fillPolygonLayerStyle = map.getStyle().layers.find(el => el.id === mapLayer)
+          const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           currentColor = fillPolygonLayerStyle.paint['fill-color'];
           if (currentColor !== layer.layerState.color) {
             map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color);
@@ -375,14 +369,14 @@ const refreshColoursOnColourUpdate = (storeLayers, map) => {
           }
           break;
         case /polygon-border-/.test(mapLayer):
-          const polyGonBorderLayerStyle = map.getStyle().layers.find(el => el.id === mapLayer)
+          const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           currentColor = polyGonBorderLayerStyle.paint['line-color'];
           if (currentColor !== layer.layerState.color) {
             map.setPaintProperty(mapLayer, 'line-color', layer.layerState.color);
           }
           break;
         case /polygon-circle-/.test(mapLayer):
-          const activityCircleMarkerLayerStyle = map.getStyle().layers.find(el => el.id === mapLayer)
+          const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
           if (currentColor !== layer.layerState.color) {
             map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color);
@@ -399,7 +393,10 @@ const refreshVisibilityOnToggleUpdate = (storeLayers, map) => {
   storeLayers.map((layer) => {
     const layerSearchString = layer.recordSetID + '-hash-' + layer.tableFiltersHash;
     const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => {
-      return mapLayer.includes(layerSearchString);
+      return mapLayer.includes(layerSearchString) && !mapLayer.includes('label');
+    });
+    const matchingLabelLayers = map.getLayersOrder().filter((mapLayer: any) => {
+      return mapLayer.includes(layerSearchString) && mapLayer.includes('label');
     });
     matchingLayers?.map((mapLayer) => {
       const visibility = map.getLayoutProperty(mapLayer, 'visibility');
@@ -407,6 +404,15 @@ const refreshVisibilityOnToggleUpdate = (storeLayers, map) => {
         map.setLayoutProperty(mapLayer, 'visibility', 'none');
       }
       if (visibility !== 'visible' && layer.layerState.mapToggle) {
+        map.setLayoutProperty(mapLayer, 'visibility', 'visible');
+      }
+    });
+    matchingLabelLayers?.map((mapLayer) => {
+      const visibility = map.getLayoutProperty(mapLayer, 'visibility');
+      if (visibility !== 'none' && !layer.layerState.labelToggle) {
+        map.setLayoutProperty(mapLayer, 'visibility', 'none');
+      }
+      if (visibility !== 'visible' && layer.layerState.labelToggle) {
         map.setLayoutProperty(mapLayer, 'visibility', 'visible');
       }
     });
