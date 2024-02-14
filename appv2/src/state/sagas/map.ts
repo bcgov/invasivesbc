@@ -3,7 +3,6 @@ import * as turf from '@turf/turf';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { channel } from 'redux-saga';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
-import { ActivityStatus } from 'sharedAPI';
 import { selectAuth } from 'state/reducers/auth';
 import { selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -12,6 +11,7 @@ import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_REQUEST,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
+  ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -30,8 +30,6 @@ import {
   IAPP_TABLE_ROWS_GET_ONLINE,
   IAPP_TABLE_ROWS_GET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
-  LAYER_STATE_UPDATE,
-  MAP_DELETE_LAYER_AND_TABLE,
   MAP_INIT_FOR_RECORDSET,
   MAP_INIT_REQUEST,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
@@ -39,17 +37,16 @@ import {
   MAP_SET_COORDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
-  MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   MAP_WHATS_HERE_INIT_GET_POI,
   PAGE_OR_LIMIT_UPDATE,
-  RECORDSET_CLEAR_FILTERS,
-  RECORDSET_REMOVE_FILTER,
-  RECORDSET_UPDATE_FILTER,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
+  RECORDSET_CLEAR_FILTERS,
+  RECORDSET_REMOVE_FILTER,
+  RECORDSET_UPDATE_FILTER,
   REFETCH_SERVER_BOUNDARIES,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
@@ -80,6 +77,7 @@ import {
 } from './map/dataAccess';
 import {
   handle_ACTIVITIES_GEOJSON_GET_ONLINE,
+  handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   handle_IAPP_GEOJSON_GET_ONLINE,
@@ -227,7 +225,7 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
   let counter = 0;
   while (state.positionTracking) {
     if (counter === 0) {
-      yield put({ type: MAP_TOGGLE_PANNED, payload: {target: 'me'} });
+      yield put({ type: MAP_TOGGLE_PANNED, payload: { target: 'me' } });
     }
     const currentMapState = yield select(selectMap);
     if (!currentMapState.positionTracking) {
@@ -357,7 +355,18 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
     const startRecord =
       mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
     const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
-    const sorted = mapState?.whatsHere?.ActivityIDs.map((id) => mapState?.activitiesGeoJSONDict[id]).sort((a, b) => {
+
+    const sorted = mapState?.whatsHere?.ActivityIDs.map((id) => {
+      const sources = ['s3', 'draft', 'supplemental'];
+      for (const source of sources) {
+        if (mapState.activitiesGeoJSONDict[source] !== undefined) {
+          if (mapState.activitiesGeoJSONDict[source][id]) {
+            return mapState.activitiesGeoJSONDict[source][id];
+          }
+        }
+      }
+      return null;
+    }).sort((a, b) => {
       if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
         return a?.properties[mapState?.whatsHere?.ActivitySortField] >
           b?.properties[mapState?.whatsHere?.ActivitySortField]
@@ -585,12 +594,12 @@ function* handle_URL_CHANGE(action) {
 
     let recordSetsState = yield select(selectUserSettings);
     let recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
-    if(recordSetType === undefined){
-      yield take(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS)
+    if (recordSetType === undefined) {
+      yield take(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS);
       recordSetsState = yield select(selectUserSettings);
       recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
     }
-    console.log('%crecordSetType:, ' + recordSetType, 'color: #00ff00')
+    console.log('%crecordSetType:, ' + recordSetType, 'color: #00ff00');
     const mapState = yield select(selectMap);
     const page = mapState.recordTables?.[id]?.page || 0;
     const limit = mapState.recordTables?.[id]?.limit || 20;
@@ -798,6 +807,7 @@ function* persistClientBoundaries(action) {
 function* handle_REMOVE_SERVER_BOUNDARY(action) {
   yield put({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: action.payload.id } });
 }
+
 function* handle_DRAW_CUSTOM_LAYER(action) {
   const panelState = yield select((state) => state.AppMode.panelOpen);
   if (panelState) {
@@ -840,6 +850,7 @@ function* activitiesPageSaga() {
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(MAP_TOGGLE_TRACKING, handle_MAP_TOGGLE_TRACKING),
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
+    takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),

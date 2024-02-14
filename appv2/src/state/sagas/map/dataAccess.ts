@@ -113,7 +113,6 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     filterObject.limit = 200000;
     filterObject.selectColumns = ['site_id'];
 
-
     // if mobile or web
     if (true) {
       yield put({
@@ -175,14 +174,14 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
     filterObject.limit = action.payload.limit;
 
     if (mapState?.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash) {
-      console.log('Stale tableRow request (tableFiltersHash mismatch), aborting')
+      console.log('Stale tableRow request (tableFiltersHash mismatch), aborting');
       return;
     }
     if (
       mapState?.recordTables?.[action.payload.recordSetID]?.page !== action.payload.page ||
       mapState?.recordTables?.[action.payload.recordSetID]?.limit !== action.payload.limit
     ) {
-      console.log('Stale tableRow request (page or limit mismatch), aborting')
+      console.log('Stale tableRow request (page or limit mismatch), aborting');
       return;
     }
 
@@ -195,7 +194,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
           tableFiltersHash: action.payload.tableFiltersHash,
           page: action.payload.page,
           limit: action.payload.limit
-
         }
       });
     }
@@ -221,14 +219,14 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
     filterObject.limit = action.payload.limit;
 
     if (mapState?.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash) {
-      console.log('Stale tableRow request (tableFiltersHash mismatch), aborting')
+      console.log('Stale tableRow request (tableFiltersHash mismatch), aborting');
       return;
     }
     if (
       mapState?.recordTables?.[action.payload.recordSetID]?.page !== action.payload.page ||
       mapState?.recordTables?.[action.payload.recordSetID]?.limit !== action.payload.limit
     ) {
-      console.log('Stale tableRow request (page or limit mismatch), aborting')
+      console.log('Stale tableRow request (page or limit mismatch), aborting');
       return;
     }
     if (true) {
@@ -301,24 +299,36 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   }
 
   currentMapState = yield select(selectMap);
-  const featuresFilderedByShape = Object.values(currentMapState?.activitiesGeoJSONDict)?.filter((feature: any) => {
-    const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
-    switch (feature?.geometry?.type) {
-      case 'Point':
-        const featurePoint = point(feature.geometry.coordinates);
-        return booleanPointInPolygon(featurePoint, boundaryPolygon);
-      case 'Polygon':
-        const featurePolygon = polygon(feature.geometry.coordinates);
-        return intersect(featurePolygon, boundaryPolygon);
-      case 'MultiPolygon':
-        const amultiPolygon = multiPolygon(feature.geometry.coordinates);
-        return intersect(amultiPolygon, boundaryPolygon);
-      default:
-        return false;
-    }
-  });
+  const featuresFilteredByShape = [];
+  const sources = ['s3', 'supplemental', 'draft'];
 
-  const featureFilteredIDS = featuresFilderedByShape.map((feature: any) => {
+  for (const source of sources) {
+    if (!currentMapState?.activitiesGeoJSONDict?.hasOwnProperty(source)) continue;
+
+    const current = currentMapState?.activitiesGeoJSONDict[source];
+    if (current == undefined) continue;
+
+    featuresFilteredByShape.push(
+      ...Object.values(current)?.filter((feature: any) => {
+        const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
+        switch (feature?.geometry?.type) {
+          case 'Point':
+            const featurePoint = point(feature.geometry.coordinates);
+            return booleanPointInPolygon(featurePoint, boundaryPolygon);
+          case 'Polygon':
+            const featurePolygon = polygon(feature.geometry.coordinates);
+            return intersect(featurePolygon, boundaryPolygon);
+          case 'MultiPolygon':
+            const amultiPolygon = multiPolygon(feature.geometry.coordinates);
+            return intersect(amultiPolygon, boundaryPolygon);
+          default:
+            return false;
+        }
+      })
+    );
+  }
+
+  const featureFilteredIDS = featuresFilteredByShape.map((feature: any) => {
     return feature.properties.id;
   });
 
