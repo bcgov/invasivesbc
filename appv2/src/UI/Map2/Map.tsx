@@ -20,157 +20,18 @@ export const Map = (props: any) => {
     }*/
   );
 
-  const toggledOnLayers = storeLayers.filter((layer: any) => layer.toggledOn);
-
-  useEffect(() => {
-    try {
-      //   maplibregl.setRTLTextPlugin('https://unpkg.com/@mapbox/mapbox-gl-rtl-text@0.2.3/mapbox-gl-rtl-text.min.js', true);
-    } catch (e) {
-      console.log('error setting rtl text plugin', e);
-    }
-
-    return () => {
-      if (map.current) {
-        try {
-          map.current.remove();
-        } catch (e) {
-          console.log('error removing map', e);
-        }
-      }
-    };
-  }, []);
-
   useEffect(() => {
     if (map.current) return;
-    // add the PMTiles plugin to the maplibregl global.
-
-    const protocol = new Protocol();
-    maplibregl.addProtocol('pmtiles', (request) => {
-      return new Promise((resolve, reject) => {
-        const callback = (err, data) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve({ data });
-          }
-        };
-        protocol.tile(request, callback);
-      });
-    });
-
-    const PMTILES_URL = `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
-    //const PMTILES_URL = 'https://protomaps.github.io/PMTiles/protomaps(vector)ODbL_firenze.pmtiles';
-
-    const p = new PMTiles(PMTILES_URL);
-
-    // this is so we share one instance across the JS code and the map renderer
-    protocol.add(p);
-
-    // we first fetch the header so we can get the center lon, lat of the map.
-    p.getHeader().then((h) => {
-      map.current = new maplibregl.Map({
-        container: mapContainer.current,
-        maxZoom: 24,
-        zoom: h.maxZoom - 2,
-        center: [h.centerLon, h.centerLat],
-        style: {
-          glyphs: 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-          version: 8,
-          sources: {
-            'wms-test-source': {
-              type: 'raster',
-              tiles: [
-                'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
-              ],
-              tileSize: 256,
-              maxzoom: 24
-            },
-            'wms-test-source2': {
-              type: 'raster',
-              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-              tileSize: 256,
-              maxzoom: 18
-            },
-            example_source: {
-              type: 'vector',
-              url: `pmtiles://${PMTILES_URL}`,
-              //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
-              // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
-              attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
-            }
-          },
-          layers: [
-            {
-              id: 'wms-test-layer',
-              type: 'raster',
-              source: 'wms-test-source2',
-              minzoom: 0
-            },
-            {
-              id: 'wms-test-layer2',
-              type: 'raster',
-              source: 'wms-test-source',
-              minzoom: 0
-            },
-            {
-              id: 'invasives-vector',
-              source: 'example_source',
-              'source-layer': 'invasives',
-              type: 'fill',
-              paint: {
-                'fill-color': 'steelblue'
-              },
-              minzoom: 0,
-              maxzoom: 24
-            },
-            {
-              id: 'buildings',
-              source: 'example_source',
-              'source-layer': 'landuse',
-              type: 'fill',
-              paint: {
-                'fill-color': 'steelblue'
-              },
-
-              minzoom: 0
-            }
-          ]
-        }
-      });
-    });
+    mapInit(map, mapContainer);
   }, []);
 
   useEffect(() => {
     if (!map.current) return;
 
-    console.log('in hook that adds stuff');
-
-    // Create new sources and layers if they don't exist, and blow away those with stale tableFilterHash's
-    storeLayers.map((layer: any) => {
-      if (layer.layerState.mapToggle && layer.geoJSON && layer.loading === false) {
-        if (layer.type === 'Activity') {
-          deleteStaleActivityLayer(map.current, layer);
-          const existingSource = map.current.getSource('recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash)
-          if(existingSource === undefined)
-          {
-            createActivityLayer(map.current, layer);
-          }
-        } else if (layer.type === 'IAPP') {
-          deleteIAPPLayer(map.current, layer);
-          createIAPPLayer(map.current, layer);
-        }
-      }
-    });
-
-    map.current.getLayersOrder().map((layer: any) => {
-      if (
-        storeLayers.filter((l: any) => l.recordSetID === layer).length === 0 &&
-        !['wms-test-layer', 'wms-test-layer2', 'invasives-vector', 'buildings'].includes(layer)
-      ) {
-        //map.current.removeLayer(layer);
-        //map.current.removeSource(layer);
-      }
-    });
+    rebuildLayersOnTableHashUpdate(storeLayers, map.current);
+    refreshColoursOnColourUpdate(storeLayers, map.current);
+    refreshVisibilityOnToggleUpdate(storeLayers, map.current);
+    removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
   }, [storeLayers]);
 
   return (
@@ -180,10 +41,106 @@ export const Map = (props: any) => {
   );
 };
 
+const mapInit = (map, mapContainer) => {
+  const protocol = new Protocol();
+  maplibregl.addProtocol('pmtiles', (request) => {
+    return new Promise((resolve, reject) => {
+      const callback = (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve({ data });
+        }
+      };
+      protocol.tile(request, callback);
+    });
+  });
+
+  const PMTILES_URL = `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
+  //const PMTILES_URL = 'https://protomaps.github.io/PMTiles/protomaps(vector)ODbL_firenze.pmtiles';
+
+  const p = new PMTiles(PMTILES_URL);
+
+  // this is so we share one instance across the JS code and the map renderer
+  protocol.add(p);
+
+  // we first fetch the header so we can get the center lon, lat of the map.
+  p.getHeader().then((h) => {
+    map.current = new maplibregl.Map({
+      container: mapContainer.current,
+      maxZoom: 24,
+      zoom: h.maxZoom - 2,
+      center: [h.centerLon, h.centerLat],
+      style: {
+        glyphs: 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+        version: 8,
+        sources: {
+          'wms-test-source': {
+            type: 'raster',
+            tiles: [
+              'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
+            ],
+            tileSize: 256,
+            maxzoom: 24
+          },
+          'wms-test-source2': {
+            type: 'raster',
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256,
+            maxzoom: 18
+          },
+          example_source: {
+            type: 'vector',
+            url: `pmtiles://${PMTILES_URL}`,
+            //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
+            // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
+            attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+          }
+        },
+        layers: [
+          {
+            id: 'wms-test-layer',
+            type: 'raster',
+            source: 'wms-test-source2',
+            minzoom: 0
+          },
+          {
+            id: 'wms-test-layer2',
+            type: 'raster',
+            source: 'wms-test-source',
+            minzoom: 0
+          },
+          {
+            id: 'invasives-vector',
+            source: 'example_source',
+            'source-layer': 'invasives',
+            type: 'fill',
+            paint: {
+              'fill-color': 'steelblue'
+            },
+            minzoom: 0,
+            maxzoom: 24
+          },
+          {
+            id: 'buildings',
+            source: 'example_source',
+            'source-layer': 'landuse',
+            type: 'fill',
+            paint: {
+              'fill-color': 'steelblue'
+            },
+
+            minzoom: 0
+          }
+        ]
+      }
+    });
+  });
+};
+
 const createActivityLayer = (map: any, layer: any) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
-  console.log('creating')
-  console.log('typeof', typeof map);
+  console.log('creating');
   map
     .addSource(layerID, {
       type: 'geojson',
@@ -256,10 +213,13 @@ const createActivityLayer = (map: any, layer: any) => {
     },
     minzoom: 10
   });
+
+  console.dir(map.getLayersOrder());
+  console.dir(map.getLayer(layerID));
 };
 
 const deleteStaleActivityLayer = (map: any, layer: any) => {
-  if(!map) {
+  if (!map) {
     return;
   }
   const newLayerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
@@ -374,4 +334,97 @@ const deleteIAPPLayer = (map: any, layer: any) => {
       console.log('error removing source', e);
     }
   }
+};
+
+const rebuildLayersOnTableHashUpdate = (storeLayers, map) => {
+  storeLayers.map((layer: any) => {
+    if (layer.geoJSON && layer.loading === false) {
+      if (layer.type === 'Activity') {
+        deleteStaleActivityLayer(map, layer);
+        const existingSource = map.getSource(
+          'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
+        );
+        if (existingSource === undefined) {
+          createActivityLayer(map, layer);
+        }
+      } else if (layer.type === 'IAPP') {
+        // deleteIAPPLayer(map, layer);
+        // createIAPPLayer(map, layer);
+      }
+    }
+  });
+};
+
+const refreshColoursOnColourUpdate = (storeLayers, map) => {
+  storeLayers.map((layer) => {
+    const layerSearchString = layer.recordSetID + '-hash-' + layer.tableFiltersHash;
+    const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => {
+      return mapLayer.includes(layerSearchString);
+    });
+
+    console.dir(matchingLayers);
+    matchingLayers?.map((mapLayer) => {
+      let currentColor = '';
+      switch (true) {
+        case /^recordset-layer-/.test(mapLayer):
+          const fillPolygonLayerStyle = map.getStyle().layers.find(el => el.id === mapLayer)
+          currentColor = fillPolygonLayerStyle.paint['fill-color'];
+          if (currentColor !== layer.layerState.color) {
+            map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color);
+            map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color);
+          }
+          break;
+        case /polygon-border-/.test(mapLayer):
+          const polyGonBorderLayerStyle = map.getStyle().layers.find(el => el.id === mapLayer)
+          currentColor = polyGonBorderLayerStyle.paint['line-color'];
+          if (currentColor !== layer.layerState.color) {
+            map.setPaintProperty(mapLayer, 'line-color', layer.layerState.color);
+          }
+          break;
+        case /polygon-circle-/.test(mapLayer):
+          const activityCircleMarkerLayerStyle = map.getStyle().layers.find(el => el.id === mapLayer)
+          currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
+          if (currentColor !== layer.layerState.color) {
+            map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color);
+          }
+          break;
+        default:
+          'polygon';
+      }
+    });
+  });
+};
+
+const refreshVisibilityOnToggleUpdate = (storeLayers, map) => {
+  storeLayers.map((layer) => {
+    const layerSearchString = layer.recordSetID + '-hash-' + layer.tableFiltersHash;
+    const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => {
+      return mapLayer.includes(layerSearchString);
+    });
+    matchingLayers?.map((mapLayer) => {
+      const visibility = map.getLayoutProperty(mapLayer, 'visibility');
+      if (visibility !== 'none' && !layer.layerState.mapToggle) {
+        map.setLayoutProperty(mapLayer, 'visibility', 'none');
+      }
+      if (visibility !== 'visible' && layer.layerState.mapToggle) {
+        map.setLayoutProperty(mapLayer, 'visibility', 'visible');
+      }
+    });
+  });
+};
+
+const removeDeletedRecordSetLayersOnRecordSetDelete = (storeLayers, map) => {
+  map.getLayersOrder().map((layer: any) => {
+    if (
+      storeLayers.filter((l: any) => l.recordSetID === layer).length === 0 &&
+      !['wms-test-layer', 'wms-test-layer2', 'invasives-vector', 'buildings'].includes(layer)
+    ) {
+      //map.current.removeLayer(layer);
+      //map.current.removeSource(layer);
+    }
+  });
+  storeLayers.map((layer) => {
+    // get matching layers for type
+    // update visibility if doesn't match
+  });
 };
