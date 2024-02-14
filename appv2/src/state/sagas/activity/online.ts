@@ -4,6 +4,7 @@ import { put, select, take } from 'redux-saga/effects';
 import { ActivityStatus, getShortActivityID } from 'sharedAPI';
 
 import {
+  ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_SUCCESS,
@@ -138,6 +139,13 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
       }
     });
   }
+  yield put({
+    type: ACTIVITIES_GEOJSON_REFETCH_ONLINE,
+    payload: {
+      page: 0,
+      limit: 100000
+    }
+  });
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {

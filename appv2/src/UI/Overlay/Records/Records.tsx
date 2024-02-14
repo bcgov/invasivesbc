@@ -32,7 +32,9 @@ export const Records = (props) => {
       return { recordSetID: layer?.recordSetID, loading: layer?.loading, type: layer?.type };
     })
   );
-  const isActivitiesGeoJSONLoaded = useSelector((state: any) => state.Map?.activitiesGeoJSONDict !== undefined);
+  const isActivitiesGeoJSONLoaded = useSelector(
+    (state: any) => state.Map?.activitiesGeoJSONDict?.hasOwnProperty('s3') || false
+  );
   const isIAPPGeoJSONLoaded = useSelector((state: any) => state.Map?.IAPPGeoJSONDict !== undefined);
 
   const [loadMap, setLoadMap] = React.useState({});

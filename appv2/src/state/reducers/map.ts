@@ -228,16 +228,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
     return createNextState(state, (draftState) => {
       switch (action.type) {
         case WHATS_HERE_ID_CLICKED:
-          if(action.payload.type === 'Activity'){
-            draftState.whatsHere.clickedActivity = action.payload.id
-            draftState.whatsHere.clickedActivityDescription = action.payload.description
-          }
-          else if(action.payload.type === 'IAPP'){
-            draftState.whatsHere.clickedIAPP = action.payload.id
-            draftState.whatsHere.clickedIAPPDescription = action.payload.description
+          if (action.payload.type === 'Activity') {
+            draftState.whatsHere.clickedActivity = action.payload.id;
+            draftState.whatsHere.clickedActivityDescription = action.payload.description;
+          } else if (action.payload.type === 'IAPP') {
+            draftState.whatsHere.clickedIAPP = action.payload.id;
+            draftState.whatsHere.clickedIAPPDescription = action.payload.description;
           }
           break;
-        
+
         case IAPP_TABLE_ROWS_GET_REQUEST:
         case ACTIVITIES_TABLE_ROWS_GET_REQUEST: {
           if (!draftState.recordTables?.[action.payload.recordSetID]) {
@@ -251,7 +250,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case ACTIVITIES_GEOJSON_GET_SUCCESS: {
           //Everything should point to this now instead:
-          draftState.activitiesGeoJSONDict = action.payload.activitiesGeoJSONDict;
+          draftState.activitiesGeoJSONDict = {
+            ...draftState.activitiesGeoJSONDict,
+            ...action.payload.activitiesGeoJSONDict
+          };
 
           if (
             draftState.layers?.filter((layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined)
@@ -307,13 +309,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
-
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           if (!draftState.layers[index])
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
-          if(action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash){
+          if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
@@ -329,17 +330,35 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case IAPP_TABLE_ROWS_GET_SUCCESS:
         case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
           // the hash, page, and limit all need to line up
-          if(draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash){
-            console.log('hash mismatch', draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash, action.payload.tableFiltersHash);
+          if (
+            draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash
+          ) {
+            console.log(
+              'hash mismatch',
+              draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash,
+              action.payload.tableFiltersHash
+            );
             break;
           }
-          if((Number(draftState.recordTables?.[action.payload.recordSetID]?.limit) !== Number(action.payload.limit))){
-            console.log('limit mismatch', draftState.recordTables?.[action.payload.recordSetID]?.limit, action.payload.limit);
-            console.log('typeof', typeof draftState.recordTables?.[action.payload.recordSetID]?.limit, typeof action.payload.limit);
+          if (Number(draftState.recordTables?.[action.payload.recordSetID]?.limit) !== Number(action.payload.limit)) {
+            console.log(
+              'limit mismatch',
+              draftState.recordTables?.[action.payload.recordSetID]?.limit,
+              action.payload.limit
+            );
+            console.log(
+              'typeof',
+              typeof draftState.recordTables?.[action.payload.recordSetID]?.limit,
+              typeof action.payload.limit
+            );
             break;
           }
-          if((Number(draftState.recordTables?.[action.payload.recordSetID]?.page) !== Number(action.payload.page))){
-            console.log('page mismatch', draftState.recordTables?.[action.payload.recordSetID]?.page, action.payload.page);
+          if (Number(draftState.recordTables?.[action.payload.recordSetID]?.page) !== Number(action.payload.page)) {
+            console.log(
+              'page mismatch',
+              draftState.recordTables?.[action.payload.recordSetID]?.page,
+              action.payload.page
+            );
             break;
           }
           if (draftState.recordTables?.[action.payload.recordSetID]) {
@@ -408,7 +427,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if(action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash){
+          if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
@@ -464,9 +483,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAIN_MAP_MOVE: {
-            draftState.map_zoom = action.payload.zoom;
-            draftState.map_center = action.payload.center;
-            draftState.panned = false;
+          draftState.map_zoom = action.payload.zoom;
+          draftState.map_center = action.payload.center;
+          draftState.panned = false;
           break;
         }
         case MAP_DELETE_LAYER_AND_TABLE: {
@@ -537,9 +556,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             draftState.whatsHere.loadingActivities = false;
             draftState.whatsHere.loadingIAPP = false;
-          }
-          else
-          {
+          } else {
             draftState.whatsHere.toggle = !state.whatsHere.toggle;
             draftState.whatsHere.feature = null;
             draftState.whatsHere.iappRows = [];
@@ -667,7 +684,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           if (action.payload?.pathname === '/') {
             draftState.panelOpen = false;
           }
-          if(!action?.payload?.pathname?.includes('WhatsHere')){
+          if (!action?.payload?.pathname?.includes('WhatsHere')) {
             draftState.whatsHere.toggle = false;
           }
           break;
@@ -760,9 +777,13 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
   if (index && type === typeToFilter && type === 'Activity') {
     let filtered = [];
     IDList.map((id) => {
-      let f = draftState.activitiesGeoJSONDict[id];
-      if (f !== undefined) {
-        filtered.push(f);
+      for (const source of ['s3', 'draft', 'supplemental']) {
+        if (draftState.activitiesGeoJSONDict.hasOwnProperty(source)) {
+          let f = draftState.activitiesGeoJSONDict[source][id];
+          if (f !== undefined) {
+            filtered.push(f);
+          }
+        }
       }
     });
 

@@ -1,9 +1,9 @@
 import { Http } from '@capacitor-community/http';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { IActivitySearchCriteria } from 'interfaces/useInvasivesApi-interfaces';
 import { call, put, select } from 'redux-saga/effects';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
+  ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
   ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
@@ -15,17 +15,14 @@ import {
   IAPP_TABLE_ROWS_GET_FAILURE,
   IAPP_TABLE_ROWS_GET_SUCCESS
 } from 'state/actions';
-import { selectActivity } from 'state/reducers/activity';
-import { selectAuthHeaders } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { InvasivesAPI_Call } from '../../../hooks/useInvasivesApi';
+import { selectRootConfiguration } from '../../reducers/configuration';
 
 const checkForErrors = (response: any, status?: any, url?: any) => {
   if (response.code > 201) {
   }
 };
-
-import { InvasivesAPI_Call } from '../../../hooks/useInvasivesApi';
-import { selectRootConfiguration } from '../../reducers/configuration';
 
 function* refreshExportConfigIfRequired(action) {
   const config = yield select(selectRootConfiguration);
@@ -46,10 +43,8 @@ function* refreshExportConfigIfRequired(action) {
   }
 }
 
-//
-export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
+function* fetchS3GeoJSON() {
   yield call(refreshExportConfigIfRequired);
-
   const config = yield select(selectRootConfiguration);
 
   let activitiesExportURL;
@@ -59,7 +54,7 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     activitiesExportURL = matchingExportConfig.url;
   }
 
-  let networkReturnS3 = yield Http.request({
+  const networkReturnS3 = yield Http.request({
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -67,16 +62,19 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     },
     url: activitiesExportURL
   });
-
-  const apiNetworkReturn = yield InvasivesAPI_Call('POST', `/api/activities-lean/`, {
-    ...action.payload.activitiesFilterCriteria
-  });
-
   // map the id from the dict into the feature properties to keep the map happy
-  const s3_geojson = Object.entries(networkReturnS3.data).map((entry) => {
-    const [key, value] = entry;
-    value.properties.id = key;
-    return value;
+  // const s3_geojson = Object.entries(networkReturnS3.data).map((entry) => {
+  //   const [key, value] = entry;
+  //   value.properties.id = key;
+  //   return value;
+  // });
+
+  return networkReturnS3.data;
+}
+
+function* fetchSupplementalGeoJSON(activitiesFilterCriteria) {
+  const apiNetworkReturn = yield InvasivesAPI_Call('POST', `/api/activities-lean/`, {
+    ...activitiesFilterCriteria
   });
 
   //
@@ -84,28 +82,43 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
     return row.geojson ? row.geojson : row;
   });
 
-  const filteredAPIResponse = api_geojson.filter(
-    (row) => !Object.keys(networkReturnS3.data).includes(row.properties.id)
-  );
-  const mappedAPIResponse = filteredAPIResponse.reduce((a, v) => ({ ...a, [v.properties.id]: v }), {});
+  return api_geojson.reduce((a, v) => ({ ...a, [v.properties.id]: v }), {});
+}
 
-  let featureCollection = {
-    type: 'FeatureCollection',
-    features: [...s3_geojson, ...filteredAPIResponse]
-  };
+//
+export function* handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE(action) {
+  const supplemental = yield call(fetchSupplementalGeoJSON, action.payload.activitiesFilterCriteria);
+  const draft = yield call(fetchSupplementalGeoJSON, { form_status: ['Draft'], page: 0, limit: 100000 });
 
   yield put({
     type: ACTIVITIES_GEOJSON_GET_SUCCESS,
     payload: {
       recordSetID: action.payload.recordSetID,
-      activitiesGeoJSON: featureCollection,
       activitiesGeoJSONDict: {
-        ...networkReturnS3.data,
-        ...mappedAPIResponse
+        supplemental,
+        draft
       },
       layerState: action.payload.layerState
     }
   });
+}
+
+//
+export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
+  const s3 = yield call(fetchS3GeoJSON);
+
+  yield put({
+    type: ACTIVITIES_GEOJSON_GET_SUCCESS,
+    payload: {
+      recordSetID: action.payload.recordSetID,
+      activitiesGeoJSONDict: {
+        s3
+      },
+      layerState: action.payload.layerState
+    }
+  });
+
+  yield put({ type: ACTIVITIES_GEOJSON_REFETCH_ONLINE, payload: action.payload });
 }
 
 export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
@@ -149,7 +162,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
   if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
   }
-
 
   if (networkReturn.data.result) {
     yield put({
@@ -240,11 +252,10 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     const tableFiltersHash = mapState?.layers?.filter((layer) => {
       return layer?.recordSetID === action.payload.recordSetID;
     })?.[0]?.tableFiltersHash;
-  
+
     if (!tableFiltersHash === action.payload.tableFiltersHash) {
       return;
     }
-
 
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -252,7 +263,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
         recordSetID: action.payload.recordSetID,
         IDList: IDList,
         tableFiltersHash: action.payload.tableFiltersHash
-
       }
     });
   } else {
@@ -288,11 +298,10 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     const tableFiltersHash = mapState?.layers?.filter((layer) => {
       return layer?.recordSetID === action.payload.recordSetID;
     })?.[0]?.tableFiltersHash;
-  
+
     if (!tableFiltersHash === action.payload.tableFiltersHash) {
       return;
     }
-
 
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -313,5 +322,3 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     */
   }
 }
-
-
