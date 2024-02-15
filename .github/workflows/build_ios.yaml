@@ -28,7 +28,7 @@ jobs:
 
       - name: XCode select 15.2
         run: |
-          xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+          sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
 
       - name: Restore derived data
         id: cache-dd-restore
