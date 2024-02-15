@@ -27,16 +27,23 @@ import { useSelector } from 'util/use_selector';
  */
 export const useInvasivesApi = () => {
   const databaseContext = useContext({} as any);
- // const errorContext = useContext(ErrorContext);
- const errorContext = {} as any;
+  // const errorContext = useContext(ErrorContext);
+  const errorContext = {} as any;
   const { API_BASE } = useSelector(selectConfiguration);
   const DEBUG = false;
   const requestHeaders = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
+    if (!requestHeaders.authorization) {
+      console.error(`No authorization header in state`);
+      return {
+        baseUrl: API_BASE,
+        headers: {}
+      };
+    }
     return {
       baseUrl: API_BASE,
-      headers: { 'Access-Control-Allow-Origin': '*', Authorization: requestHeaders.authorization }
+      headers: { Authorization: `${requestHeaders.authorization}` }
     };
   };
 
@@ -1250,10 +1257,9 @@ export const useInvasivesApi = () => {
     getEmbeddedMetabaseReport,
     getIappJurisdictions,
     getEmailSettings,
-    getEmailTemplate,
+    getEmailTemplate
   };
 };
-
 
 export const getRequestOptions = (config, requestHeaders) => {
   return {
