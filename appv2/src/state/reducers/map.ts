@@ -79,6 +79,8 @@ export enum LeafletWhosEditingEnum {
   NONE = 'NONE'
 }
 
+export const ACTIVITY_GEOJSON_SOURCE_KEYS = ['s3', 'draft', 'supplemental'];
+
 class MapState {
   [immerable] = true;
   CanTriggerCSV: boolean;
@@ -777,7 +779,7 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
   if (index && type === typeToFilter && type === 'Activity') {
     let filtered = [];
     IDList.map((id) => {
-      for (const source of ['s3', 'draft', 'supplemental']) {
+      for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
         if (draftState.activitiesGeoJSONDict.hasOwnProperty(source)) {
           let f = draftState.activitiesGeoJSONDict[source][id];
           if (f !== undefined) {

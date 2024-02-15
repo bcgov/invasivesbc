@@ -4,7 +4,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { channel } from 'redux-saga';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { selectAuth } from 'state/reducers/auth';
-import { selectMap } from 'state/reducers/map';
+import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { getSearchCriteriaFromFilters } from '../../util/miscYankedFromComponents';
 import {
@@ -357,8 +357,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
     const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
 
     const sorted = mapState?.whatsHere?.ActivityIDs.map((id) => {
-      const sources = ['s3', 'draft', 'supplemental'];
-      for (const source of sources) {
+      for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
         if (mapState.activitiesGeoJSONDict[source] !== undefined) {
           if (mapState.activitiesGeoJSONDict[source][id]) {
             return mapState.activitiesGeoJSONDict[source][id];

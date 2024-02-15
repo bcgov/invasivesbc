@@ -22,7 +22,7 @@ import {
   WHATS_HERE_IAPP_ROWS_REQUEST,
   WHATS_HERE_PAGE_POI
 } from 'state/actions';
-import { selectMap } from 'state/reducers/map';
+import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
@@ -300,9 +300,8 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
 
   currentMapState = yield select(selectMap);
   const featuresFilteredByShape = [];
-  const sources = ['s3', 'supplemental', 'draft'];
 
-  for (const source of sources) {
+  for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
     if (!currentMapState?.activitiesGeoJSONDict?.hasOwnProperty(source)) continue;
 
     const current = currentMapState?.activitiesGeoJSONDict[source];
