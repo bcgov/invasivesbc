@@ -1041,7 +1041,6 @@ export const useInvasivesApi = () => {
 
   const getBatchUploads = async (): Promise<any> => {
     const options = await getRequestOptions();
-    console.dir(options.headers);
     const { data, status, url } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
@@ -1248,10 +1247,9 @@ export const useInvasivesApi = () => {
     getEmbeddedMetabaseReport,
     getIappJurisdictions,
     getEmailSettings,
-    getEmailTemplate,
+    getEmailTemplate
   };
 };
-
 
 export const getRequestOptions = (config, requestHeaders) => {
   return {
@@ -1298,16 +1296,15 @@ export function* InvasivesAPI_Public_Call(method, endpoint, payloadData?, additi
 
 export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHeaders?) {
   // get config and request setup from store
-  const { authenticated } = yield select(state => state.Auth);
+  const { authenticated } = yield select((state) => state.Auth);
 
   if (!authenticated) {
-    throw new Error("The user is not authenticated. This call cannot proceed.");
+    throw new Error('The user is not authenticated. This call cannot proceed.');
   }
 
   const requestOptions = yield select(selectAuthHeaders);
   const config = yield select(selectConfiguration);
   const options = getRequestOptions(config, requestOptions);
-
 
   //this is a bit of a hack. this whole function needs a rewrite
   if (method === 'GET') {

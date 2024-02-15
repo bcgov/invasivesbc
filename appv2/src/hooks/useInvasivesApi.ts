@@ -1050,7 +1050,6 @@ export const useInvasivesApi = () => {
 
   const getBatchUploads = async (): Promise<any> => {
     const options = await getRequestOptions();
-    console.dir(options.headers);
     const { data, status, url } = await Http.request({
       method: 'GET',
       headers: { ...options.headers },
@@ -1285,11 +1284,6 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
   const requestOptions = yield select(selectAuthHeaders);
   const config = yield select(selectConfiguration);
   const options = getRequestOptions(config, requestOptions);
-
-  console.dir(options.headers);
-  console.dir(additionalHeaders);
-  console.dir(payloadData);
-  console.dir({ ...options.headers, ...additionalHeaders });
 
   //this is a bit of a hack. this whole function needs a rewrite
   if (method === 'GET') {
