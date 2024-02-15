@@ -13,7 +13,6 @@ import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import 'UI/Global.css';
 
 export const QuickPanToRecordToggle = (props) => {
-  const map = useMap();
   const dispatch = useDispatch();
 //  const toolClass = toolStyles();
   const divRef = useRef();
@@ -29,9 +28,10 @@ export const QuickPanToRecordToggle = (props) => {
     } catch (e) {}
   }, []);
 
-  if (map && isAuth) {
+  //if (map && isAuth) {
+  if (true && isAuth) {
     return (
-      <div ref={divRef} className="map-btn">
+    <div ref={divRef} className={quickPanToRecord? "map-btn-selected" : "map-btn"}>
         <Tooltip
           open={show}
           classes={{ tooltip: 'toolTip' }}
@@ -44,12 +44,7 @@ export const QuickPanToRecordToggle = (props) => {
               onClick={() => {
                 dispatch({ type: TOGGLE_QUICK_PAN_TO_RECORD });
               }}
-              className={
-                'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' ' //+
-          //     (quickPanToRecord ? toolClass.selected : toolClass.notSelected)
-              }
-              sx={{ color: '#000' }}>
+              >
               <PlaylistPlayIcon />
             </IconButton>
           </span>

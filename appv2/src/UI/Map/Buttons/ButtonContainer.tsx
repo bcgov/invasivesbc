@@ -19,23 +19,25 @@ export const ButtonContainer = (props) => {
   
   return (
     <div id="map-btn-container">
-      <HDToggle />
+      {/* Maybe not needed anymore? <HDToggle /> */}
       <BaseMapToggle />
       {isAuth && <FindMeToggle />}
       <LegendsButton />
       <AccuracyToggle />
       {isAuth && <WhatsHereButton />}
 
-      {/* helpers */}
-      <AccuracyMarker />
-      <LocationMarker />
-      {isAuth && <WhatsHereCurrentRecordHighlighted />}
-      {isAuth && <WhatsHereDrawComponent />}
       <NewRecord/>
       <CenterCurrentRecord type="Activity"/>
       <CenterCurrentRecord type="IAPP"/>
       <QuickPanToRecordToggle/>
+      {/*
+
+      {isAuth && <WhatsHereCurrentRecordHighlighted />}
+      {isAuth && <WhatsHereDrawComponent />}
       <SelectedRecordIndicator/>
+      <AccuracyMarker />
+      <LocationMarker />
+  */}
     </div>
   );
 };

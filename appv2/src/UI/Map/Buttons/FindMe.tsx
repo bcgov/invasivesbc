@@ -13,7 +13,6 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 const baseUrl = window.location.href.split('/home')[0];
 
 export const FindMeToggle = (props) => {
-  const panned = useSelector((state: any) => state.Map?.panned);
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
   const dispatch = useDispatch();
   /**
@@ -21,7 +20,6 @@ export const FindMeToggle = (props) => {
    * @description Component to handle the functionality of the find me button
    * @returns {void}
    */
-  const map = useMap();
  // const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
@@ -29,10 +27,10 @@ export const FindMeToggle = (props) => {
     L.DomEvent.disableClickPropagation(divRef?.current);
     L.DomEvent.disableScrollPropagation(divRef?.current);
   }, []);
-  if (map) {
+  if (true) {
     // this is to stop user from clicking it again while things are happening
     return (
-      <div ref={divRef} className="map-btn">
+    <div ref={divRef} className={positionTracking? "map-btn-selected" : "map-btn"}>
         <Tooltip
           open={show}
           classes={{ tooltip: 'toolTip' }}
@@ -46,12 +44,7 @@ export const FindMeToggle = (props) => {
                   setShow(false);
                   dispatch({ type: MAP_TOGGLE_TRACKING });
                 }}
-                className={
-                  'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                  ' ' //+
-                //  (positionTracking ? toolClass.selected : toolClass.notSelected)
-                }
-                sx={{ color: '#000' }}>
+                >
                 <MyLocationIcon />
               </IconButton>
           </span>
@@ -73,6 +66,7 @@ export const LocationMarker = (props) => {
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
   const [UTM, setUTM] = useState([]);
 
+  /*
   useEffect(() => {
     if (!userCoords?.lat) {
       return;
@@ -133,5 +127,7 @@ export const LocationMarker = (props) => {
   } else {
     return <></>;
   }
+  */
+ return <>  </>
 };
 

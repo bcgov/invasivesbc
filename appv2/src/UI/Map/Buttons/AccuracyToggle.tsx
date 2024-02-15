@@ -16,7 +16,6 @@ export const AccuracyToggle = (props) => {
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
 
   const [show, setShow] = React.useState(false);
-  //const toolClass = toolStyles(); // Get the classes from the context
 
   const divRef = useRef();
   useEffect(() => {
@@ -29,7 +28,7 @@ export const AccuracyToggle = (props) => {
     return <></>;
   } else {
     return (
-      <div ref={divRef} className="map-btn">
+    <div ref={divRef} className={accuracyToggle? "map-btn-selected" : "map-btn"}>
         <Tooltip
           open={show}
           onMouseEnter={() => setShow(true)}
@@ -42,13 +41,7 @@ export const AccuracyToggle = (props) => {
               onClick={() => {
                 dispatch({ type: MAP_TOGGLE_ACCURACY });
               }}
-              className={
-                'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                // toolClass.customHoverFocus +
-                ' '// +
-             //   (accuracyToggle ? toolClass.selected : toolClass.notSelected)
-              }
-              sx={{ color: '#000' }}>
+              >
               <AttributionIcon />
             </IconButton>
           </span>
@@ -59,12 +52,12 @@ export const AccuracyToggle = (props) => {
 };
 
 export const AccuracyMarker = (props) => {
-  const map = useMap();
   const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
   const userCoords = useSelector((state: any) => state.Map?.userCoords);
 
-  if (map && accuracyToggle && positionTracking && userCoords?.long) {
+  //if (map && accuracyToggle && positionTracking && userCoords?.long) {
+  if (accuracyToggle && positionTracking && userCoords?.long) {
     return (
       <Circle
         key={'circlekeyforaccuracymarker' + Math.random()}

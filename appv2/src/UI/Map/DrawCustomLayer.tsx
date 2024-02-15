@@ -13,6 +13,7 @@ import { CUSTOM_LAYER_DRAWN } from 'state/actions';
 (window as any).type = undefined;
 
 export const DrawCustomLayer = (props) => {
+  /*
   const map = useMap();
   const dispatch = useDispatch();
   const ref = useRef();
@@ -36,6 +37,7 @@ export const DrawCustomLayer = (props) => {
       dispatch({ type: CUSTOM_LAYER_DRAWN, payload: { feature: e.layer.toGeoJSON() } });
     }
   );
+  */
 
   return <></>;
 };

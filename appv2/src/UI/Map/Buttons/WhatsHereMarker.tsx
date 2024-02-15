@@ -10,7 +10,6 @@ import { useSelector } from 'util/use_selector';
 import './WhatsHereMarker.css';
 
 export const WhatsHereCurrentRecordHighlighted = (props) => {
-  const map = useMap();
   const isOnWhatsHerePage = useSelector((state: any) => state.AppMode?.url === '/WhatsHere');
   const [highlightedGeo, setHighlightedGeo] = useState(null);
   const [highlightedMarkerLtLng, setHighlightedMarkerLtLng] = useState(null);

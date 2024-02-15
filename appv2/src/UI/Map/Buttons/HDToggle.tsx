@@ -12,7 +12,7 @@ import HdIcon from '@mui/icons-material/Hd';
 import SdIcon from '@mui/icons-material/Sd';
 
 export const HDToggle = (props) => {
-  const map = useMap();
+  //const map = useMap();
   const dispatch = useDispatch();
   //const toolClass = toolStyles();
   const HDToggle = useSelector((state: any) => state.Map?.HDToggle);
@@ -28,7 +28,8 @@ export const HDToggle = (props) => {
     } catch (e) {}
   }, []);
 
-  if (!baseMapToggle && map) {
+  //if (!baseMapToggle && map) {
+  if (!baseMapToggle) {
     return (
       <div ref={divRef} className="map-btn">
         <Tooltip
