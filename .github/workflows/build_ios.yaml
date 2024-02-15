@@ -18,9 +18,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Setup NodeJS
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 20.x
+          architecture: arm64
 
       - name: Which versions of XCode are available?
         run: |
@@ -32,31 +33,31 @@ jobs:
 
       - name: Restore derived data
         id: cache-dd-restore
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         with:
           path: appv2/ios/App/xcbuild/Build
           key: ${{ runner.os }}-dd
 
       - name: Cache appv2 deps
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-appv2-deps
         with:
           path: appv2/node_modules
-          key: ${{ runner.os }}-appv2-deps-${{ hashFiles('appv2/package-lock.json') }}
+          key: ${{ runner.os }}-arm64-appv2-deps-${{ hashFiles('appv2/package-lock.json') }}
 
       - name: Cache shared deps
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-shared-deps
         with:
           path: sharedAPI/node_modules
-          key: ${{ runner.os }}-shared-deps-${{ hashFiles('sharedAPI/package-lock.json') }}
+          key: ${{ runner.os }}-arm64-shared-deps-${{ hashFiles('sharedAPI/package-lock.json') }}
 
       - name: Cache Pods
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         id: cache-pods
         with:
           path: appv2/ios/App/Pods
-          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-arm64-pods-${{ hashFiles('**/Podfile.lock') }}
 
       - name: Install sharedAPI dependencies
         if: steps.cache-shared-deps.outputs.cache-hit != 'true'
@@ -158,12 +159,12 @@ jobs:
 
       - name: Save derived data
         id: cache-dd-save
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         with:
           path: appv2/ios/App/xcbuild/Build
           key: ${{ steps.cache-dd-restore.outputs.cache-primary-key }}
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Exported
           path: appv2/ios/App/export/Invasives.ipa
