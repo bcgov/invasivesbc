@@ -6,7 +6,7 @@ on:
       - dev
 jobs:
   build-ios:
-    runs-on: macos-latest
+    runs-on: macos-14
     env:
       PROJECT: ${{ 'App.xcworkspace' }}
       SCHEME: ${{ 'App' }}
@@ -22,9 +22,13 @@ jobs:
         with:
           node-version: 20.x
 
-      - name: XCode version?
+      - name: Which versions of XCode are available?
         run: |
-          xcode-select -p
+          sudo ls -la /Applications | grep "Xcode"
+
+      - name: XCode select 15.2
+        run: |
+          xcode-select -s -s /Applications/Xcode_15.2.app/Contents/Developer
 
       - name: Restore derived data
         id: cache-dd-restore
