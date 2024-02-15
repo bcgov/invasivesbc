@@ -1286,6 +1286,11 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
   const config = yield select(selectConfiguration);
   const options = getRequestOptions(config, requestOptions);
 
+  console.dir(options.headers);
+  console.dir(additionalHeaders);
+  console.dir(payloadData);
+  console.dir({ ...options.headers, ...additionalHeaders });
+
   //this is a bit of a hack. this whole function needs a rewrite
   if (method === 'GET') {
     const { data, status, url } = yield Http.request({

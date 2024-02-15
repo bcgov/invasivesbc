@@ -153,7 +153,6 @@ function* persistRecordSetsToLocalStorage(action) {
   localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: state.recordSets }));
 }
 
-
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   const authState = yield select(selectAuth);
 
@@ -294,7 +293,7 @@ function* handle_GET_API_DOC_ONLINE(action) {
     'GET',
     '/api/api-docs/',
     {},
-    { filterForSelectable: true }
+    { filterForSelectable: 'true' }
   );
   const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
   const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
@@ -304,7 +303,6 @@ function* handle_GET_API_DOC_ONLINE(action) {
     payload: { apiDocsWithViewOptions: apiDocsWithViewOptions, apiDocsWithSelectOptions: apiDocsWithSelectOptions }
   });
 }
-
 
 function* userSettingsSaga() {
   yield all([
@@ -324,7 +322,6 @@ function* userSettingsSaga() {
     takeEvery(USER_SETTINGS_ADD_RECORD_SET, persistRecordSetsToLocalStorage),
     takeEvery(USER_SETTINGS_REMOVE_RECORD_SET, persistRecordSetsToLocalStorage),
     takeEvery(RECORDSET_UPDATE_FILTER, persistRecordSetsToLocalStorage),
-    
 
     takeEvery(USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST),
     takeEvery(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
