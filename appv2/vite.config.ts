@@ -1,11 +1,10 @@
-import {defineConfig} from 'vite';
+import { defineConfig } from 'vite';
 //import react from '@vitejs/plugin-react';
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react';
 
 import tsconfigPaths from 'vite-tsconfig-paths';
 
-
-import {NodeModulesPolyfillPlugin} from '@esbuild-plugins/node-modules-polyfill';
+import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import inject from 'rollup-plugin-inject';
@@ -20,17 +19,13 @@ function buildSpecificDefines() {
   defines.CONFIGURATION_IS_MOBILE = JSON.stringify(isMobile);
 
   if (process.env.CONFIGURATION_SOURCE === undefined || process.env.CONFIGURATION_SOURCE === 'Hardcoded') {
-    const commitHash = require('child_process')
-      .execSync('git rev-parse --short HEAD')
-      .toString();
+    const commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString();
 
     defines.INJECTED_COMMIT_HASH = JSON.stringify(commitHash);
     defines.CONFIGURATION_SOURCE = JSON.stringify('Hardcoded');
   } else if (process.env.CONFIGURATION_SOURCE === 'Provided') {
     defines.CONFIGURATION_SOURCE = JSON.stringify('Provided');
-    const commitHash = require('child_process')
-      .execSync('git rev-parse --short HEAD')
-      .toString();
+    const commitHash = require('child_process').execSync('git rev-parse --short HEAD').toString();
 
     defines.INJECTED_COMMIT_HASH = JSON.stringify(commitHash);
 
@@ -65,7 +60,6 @@ function buildSpecificDefines() {
       console.log('Using fallback commit hash');
       defines.INJECTED_COMMIT_HASH = JSON.stringify('local');
     }
-
   } else {
     throw new Error('Unrecognized CONFIGURATION_SOURCE environment variable -- please correct your configuration');
   }
@@ -78,7 +72,7 @@ export default defineConfig({
   publicDir: '../public',
   test: {
     globals: true,
-    environment: 'jsdom',
+    environment: 'jsdom'
   },
   build: {
     // Relative to the root
@@ -88,16 +82,14 @@ export default defineConfig({
     cssCodeSplit: false,
 
     rollupOptions: {
-      plugins: [
-        rollupNodePolyFill()
-      ],
+      plugins: [rollupNodePolyFill()],
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
-            return "vendor"
+            return 'vendor';
           }
           if (id.includes('state/config')) {
-            return "configuration"
+            return 'configuration';
           }
         }
       }
@@ -113,23 +105,21 @@ export default defineConfig({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}',
       //jsxImportSource: process.env['NODE_ENV'] === "development" ? "@welldone-software/why-did-you-render" : "react"
-      jsxImportSource: "@welldone-software/why-did-you-render"
-
+      jsxImportSource: '@welldone-software/why-did-you-render'
     })
   ],
   optimizeDeps: {
     esbuildOptions: {
-      plugins: [
-        NodeModulesPolyfillPlugin()
-      ]
+      plugins: [NodeModulesPolyfillPlugin()]
     }
   },
   resolve: {
     alias: {
       buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
+      process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
       stream: 'rollup-plugin-node-polyfills/polyfills/stream',
-      "@mui/styled-engine": "@mui/styled-engine-sc"
+      '@mui/styled-engine': '@mui/styled-engine-sc'
     }
   }
 });
