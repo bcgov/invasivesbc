@@ -11,7 +11,6 @@ import { useHistory } from 'react-router';
 import 'UI/Global.css';
 
 export const NewRecord = (props) => {
-  const map = useMap();
   const dispatch = useDispatch();
  // const toolClass = toolStyles();
   const divRef = useRef();
@@ -26,7 +25,7 @@ export const NewRecord = (props) => {
     } catch (e) {}
   }, []);
 
-  if (map && isAuth) {
+  if (isAuth) {
     return (
       <div ref={divRef} className="map-btn">
         <Tooltip
@@ -41,8 +40,7 @@ export const NewRecord = (props) => {
               onClick={() => {
                 dispatch({ type: OPEN_NEW_RECORD_MENU });
               }}
-              className={'leaflet-control-zoom leaflet-bar leaflet-control ' /*+ ' ' + toolClass.notSelected*/}
-              sx={{ color: '#000' }}>
+              >
               <FiberNewIcon />
             </IconButton>
           </span>

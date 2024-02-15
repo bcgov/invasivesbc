@@ -4,26 +4,20 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
 import { CONFIG } from 'state/config';
 import { useSelector } from 'react-redux';
+import { c } from 'vitest/dist/reporters-5f784f42';
 //import './map.css';
 
 export const Map = (props: any) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const [lng] = useState(139.753);
-  const [lat] = useState(35.6844);
-  const [zoom] = useState(14);
+  const authInitiated = useSelector((state: any) => state.Auth.initialized)
 
-  const storeLayers = useSelector(
-    (state: any) => state.Map?.layers
-    /*(prev, next) => {
-      return prev.length == next.length;
-    }*/
-  );
+  const storeLayers = useSelector((state: any) => state.Map?.layers);
 
   useEffect(() => {
-    if (map.current) return;
+    if (map.current || !authInitiated) return;
     mapInit(map, mapContainer);
-  }, []);
+  }, [authInitiated]);
 
   useEffect(() => {
     if (!map.current) return;
@@ -36,6 +30,7 @@ export const Map = (props: any) => {
   return (
     <div className="MapWrapper">
       <div ref={mapContainer} className="Map" />
+      {props.children}
     </div>
   );
 };

@@ -23,6 +23,19 @@
 .map-btn {
   padding: .5rem;
   flex: 0 0 auto;
+  button {
+    background-color: white;
+    color: #003366
+  }
+}
+
+.map-btn-selected {
+  padding: .5rem;
+  flex: 0 0 auto;
+  button {
+    background-color: #003366;
+    color :#FCBA19;
+  }
 }
 
 .map-btn-container .map-btn:first-child {
@@ -39,3 +52,12 @@
     width: 50vw;
   }
 } */
+
+.selected {
+  background-color: '#2196f3';
+  color: 'white';
+}
+.notSelected {
+  background-color: 'white';
+  color: 'black';
+}

@@ -144,11 +144,16 @@ const OverlayContentMemo = (props) => {
 
 
 
+
 const App: React.FC = () => {
+  const authInitiated = useSelector((state: any) => state.Auth.initialized)
   const ref = useRef(0);
   ref.current += 1;
   if(RENDER_DEBUG)
   console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
+
+  if(!authInitiated)
+  return <div id='app-pre-auth-init'/>
 
   return (
     <div id="app" className="App">
@@ -156,11 +161,11 @@ const App: React.FC = () => {
       {/*<Map className="Map">*/}
       <Map >
       <ButtonContainer></ButtonContainer>
-      <DrawCustomLayer/>
+      {/*<DrawCustomLayer/>
       <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
       <Route exact={false} path="/Records" render={(props) => <OnHoverActivity />} />
       <MapCenterSetter />
-      <LayerPickerBasic />
+  <LayerPickerBasic />*/}
   </Map>
       <Overlay>
         <OverlayContentMemo />

@@ -11,7 +11,6 @@ import InfoIcon from '@mui/icons-material/Info';
 import { useHistory } from 'react-router';
 
 export const LegendsButton = (props) => {
-  const map = useMap();
   const legendsPopup = useSelector((state: any) => state.Map?.legendsPopup);
   const history = useHistory();
   const dispatch = useDispatch();
@@ -37,9 +36,9 @@ export const LegendsButton = (props) => {
     // dispatch({ type: TOGGLE_PANEL });
   };
 
-  if (map) {
+  if (true) {
     return (
-      <div ref={divRef} className="map-btn">
+    <div ref={divRef} className={legendsPopup? "map-btn-selected" : "map-btn"}>
         <Tooltip
           open={show}
           classes={{ tooltip: 'toolTip' }}
@@ -51,14 +50,8 @@ export const LegendsButton = (props) => {
             <IconButton
               onClick={() => {
                 toggleLegend();
-              }}
-              className={
-                'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' legend ' //+
-                // (mapState?.legendsPopup ? toolClass.selected : toolClass.notSelected)
-             //   toolClass.notSelected
-              }
-              sx={{ color: '#000' }}>
+                }}
+                >
               <InfoIcon />
             </IconButton>
           </span>
