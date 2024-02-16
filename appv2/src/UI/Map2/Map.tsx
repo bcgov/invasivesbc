@@ -24,6 +24,8 @@ export const Map = (props: any) => {
   const map_center = useSelector((state: any) => state.Map?.map_center);
   const map_zoom = useSelector((state: any) => state.Map?.map_zoom);
 
+  const baseMapToggle = useSelector((state: any) => state.Map?.baseMapToggle);
+
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated) return;
@@ -69,6 +71,26 @@ export const Map = (props: any) => {
     if (!map.current) return;
     if (map_center) map.current.jumpTo({ center: map_center, zoom: map_zoom });
   }, [map_center, map_zoom]);
+
+
+  const toggleLayerOnBool = (map, layer, boolToggle) => {
+    if (!map) return;
+      const visibility = map.getLayoutProperty(layer, 'visibility');
+      if (visibility !== 'visible' && boolToggle) {
+        map.setLayoutProperty(layer, 'visibility', 'visible');
+      }
+      if(visibility !== 'none' && !boolToggle){
+        map.setLayoutProperty(layer, 'visibility', 'none');
+      }
+  }
+
+  //Toggle Topo
+  useEffect(()=> {
+    if (!map.current) return;
+    toggleLayerOnBool(map.current, 'Esri-Sat-Layer', !baseMapToggle)
+    toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle)
+    toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle)
+  },[baseMapToggle])
 
   return (
     <div className="MapWrapper">
@@ -120,9 +142,23 @@ const mapInit = (map, mapContainer) => {
             tileSize: 256,
             maxzoom: 24
           },
-          'wms-test-source2': {
+          'Esri-Sat-Layer': {
             type: 'raster',
             tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256,
+            maxzoom: 18
+          },
+          'Esri-Sat-Label': {
+            type: 'raster',
+            tiles: [
+              'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+            ],
+            tileSize: 256,
+            maxzoom: 18
+          },
+          'Esri-Topo': {
+            type: 'raster',
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
             tileSize: 256,
             maxzoom: 18
           },
@@ -136,10 +172,25 @@ const mapInit = (map, mapContainer) => {
         },
         layers: [
           {
-            id: 'wms-test-layer',
+            id: 'Esri-Sat-Label',
             type: 'raster',
-            source: 'wms-test-source2',
+            source: 'Esri-Sat-Label',
             minzoom: 0
+          },
+          {
+            id: 'Esri-Sat-Layer',
+            type: 'raster',
+            source: 'Esri-Sat-Layer',
+            minzoom: 0
+          },
+          {
+            id: 'Esri-Topo',
+            type: 'raster',
+            source: 'Esri-Topo',
+            minzoom: 0,
+            layout: {
+              visibility: 'none'
+            }
           },
           {
             id: 'wms-test-layer2',
