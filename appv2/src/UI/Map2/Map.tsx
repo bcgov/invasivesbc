@@ -6,6 +6,7 @@ import { CONFIG } from 'state/config';
 import { useSelector } from 'react-redux';
 import { c } from 'vitest/dist/reporters-5f784f42';
 import './map.css';
+import circle from '@turf/circle';
 
 export const Map = (props: any) => {
   const mapContainer = useRef(null);
@@ -27,7 +28,27 @@ export const Map = (props: any) => {
   // User tracking coords jump
   const userCoords = useSelector((state: any) => state.Map?.userCoords);
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
+  const positionMarkerEl = document.createElement('div');
+  positionMarkerEl.className = 'userTrackingMarker';
+  positionMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
+  positionMarkerEl.style.width = `32px`;
+  positionMarkerEl.style.height = `32px`;
+  const positionMarker = new maplibregl.Marker({ element: positionMarkerEl });
+  const accuracyCircle = useSelector((state: any) => {
+    if (state.Map?.userCoords?.long) {
+      return circle([state.Map?.userCoords?.long, state.Map?.userCoords?.lat], state.Map?.userCoords?.accuracy, {
+        steps: 64,
+        units: 'meters'
+      });
+    } else {
+      return null;
+    }
+  });
+  const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
 
+
+
+  
   const baseMapToggle = useSelector((state: any) => state.Map?.baseMapToggle);
 
   // Map Init
@@ -79,17 +100,11 @@ export const Map = (props: any) => {
   // User position tracking and marker
   useEffect(() => {
     if (!map.current) return;
-    const el = document.createElement('div');
-        el.className = 'userTrackingMarker';
-        el.style.backgroundImage = 'url(/assets/icon/circle.png)'
-        el.style.width = `32px`;
-        el.style.height = `32px`;
-    const marker = new maplibregl.Marker({element: el});
 
     function animateMarker(timestamp) {
-      marker.setLngLat([userCoords.long, userCoords.lat]);
+      positionMarker.setLngLat([userCoords.long, userCoords.lat]);
       // Ensure it's added to the map. This is safe to call if it's already added.
-      marker.addTo(map.current);
+      positionMarker.addTo(map.current);
       // Request the next frame of the animation.
       requestAnimationFrame(animateMarker);
     }
@@ -97,8 +112,31 @@ export const Map = (props: any) => {
       map.current.jumpTo({ center: [userCoords.long, userCoords.lat] });
       // Start the animation.
       requestAnimationFrame(animateMarker);
+      if (!map.current.getSource('accuracyCircle') && accuracyCircle) {
+        map.current
+          .addSource('accuracyCircle', {
+            type: 'geojson',
+            data: {
+              type: 'FeatureCollection',
+              features: [accuracyCircle]
+            }
+          })
+          .addLayer({
+            id: 'accuracyCircle',
+            source: 'accuracyCircle',
+            type: 'fill',
+            paint: {
+              'fill-color': 'green',
+              'fill-opacity': 0.5
+            },
+            layout: {
+              visibility: accuracyToggle ? 'visible' : 'none'
+            }
+          });
+      }
     }
-  }, [userCoords, positionTracking]);
+    toggleLayerOnBool(map.current, 'accuracyCircle', accuracyToggle && positionTracking);
+  }, [userCoords, positionTracking, accuracyToggle]);
 
   //Toggle Topo
   useEffect(() => {
@@ -542,6 +580,8 @@ const removeDeletedRecordSetLayersOnRecordSetDelete = (storeLayers, map) => {
 
 const toggleLayerOnBool = (map, layer, boolToggle) => {
   if (!map) return;
+
+  if (!map.getLayer(layer)) return;
   const visibility = map.getLayoutProperty(layer, 'visibility');
   if (visibility !== 'visible' && boolToggle) {
     map.setLayoutProperty(layer, 'visibility', 'visible');
