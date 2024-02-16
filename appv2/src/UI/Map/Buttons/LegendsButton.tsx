@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
-import { useMap } from 'react-leaflet';
 import { IconButton, Tooltip } from '@mui/material';
-//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import { MAP_TOGGLE_LEGENDS, TOGGLE_PANEL } from 'state/actions';
 import 'UI/Global.css';
@@ -15,7 +13,6 @@ export const LegendsButton = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const divRef = useRef();
- // const toolClass = toolStyles();
 
   const [show, setShow] = React.useState(false);
 

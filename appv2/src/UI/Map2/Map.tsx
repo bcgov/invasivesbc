@@ -10,15 +10,27 @@ import { c } from 'vitest/dist/reporters-5f784f42';
 export const Map = (props: any) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
-  const authInitiated = useSelector((state: any) => state.Auth.initialized)
 
+  // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
+  const authInitiated = useSelector((state: any) => state.Auth.initialized);
+
+  // RecordSet Layers
   const storeLayers = useSelector((state: any) => state.Map?.layers);
 
+  // WMS Layers
+  const simplePickerLayers2 = useSelector((state: any) => state.Map?.simplePickerLayers2);
+
+  // Map position jump
+  const map_center = useSelector((state: any) => state.Map?.map_center);
+  const map_zoom = useSelector((state: any) => state.Map?.map_zoom);
+
+  // Map Init
   useEffect(() => {
     if (map.current || !authInitiated) return;
     mapInit(map, mapContainer);
   }, [authInitiated]);
 
+  // RecordSet Layers:
   useEffect(() => {
     if (!map.current) return;
     rebuildLayersOnTableHashUpdate(storeLayers, map.current);
@@ -26,6 +38,37 @@ export const Map = (props: any) => {
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
   }, [storeLayers]);
+
+  // layer picker:
+  useEffect(() => {
+    if (!map.current) return;
+
+    console.log('adding');
+    simplePickerLayers2.map((layer) => {
+      if (!map.current.getSource(layer.url))
+        map.current
+          .addSource(layer.url, {
+            type: 'raster',
+            tiles: [layer.url],
+            tileSize: 256,
+            maxzoom: 18
+          })
+          .addLayer({
+            id: layer.url,
+            type: 'raster',
+            source: layer.url,
+            minzoom: 0
+          });
+    });
+    console.dir(simplePickerLayers2);
+    console.log(map.current.style.sourceCaches);
+  }, [simplePickerLayers2, map]);
+
+  // Jump Nav
+  useEffect(() => {
+    if (!map.current) return;
+    if (map_center) map.current.jumpTo({ center: map_center, zoom: map_zoom });
+  }, [map_center, map_zoom]);
 
   return (
     <div className="MapWrapper">

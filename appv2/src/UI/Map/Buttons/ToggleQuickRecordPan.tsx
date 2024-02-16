@@ -1,16 +1,11 @@
+import { IconButton, Tooltip } from '@mui/material';
+import * as L from 'leaflet';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import * as L from 'leaflet';
-import { useMap } from 'react-leaflet';
-import { IconButton, Tooltip } from '@mui/material';
-//import { toolStyles } from 'UI/Styles/ToolStyles';
-import { useSelector } from 'util/use_selector';
-import FiberNewIcon from '@mui/icons-material/FiberNew';
-import { OPEN_NEW_RECORD_MENU, TOGGLE_QUICK_PAN_TO_RECORD } from 'state/actions';
-import { useHistory } from 'react-router';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
-import PlaylistRemoveIcon from '@mui/icons-material/PlaylistRemove';
 import 'UI/Global.css';
+import { TOGGLE_QUICK_PAN_TO_RECORD } from 'state/actions';
+import { useSelector } from 'util/use_selector';
 
 export const QuickPanToRecordToggle = (props) => {
   const dispatch = useDispatch();
@@ -28,7 +23,6 @@ export const QuickPanToRecordToggle = (props) => {
     } catch (e) {}
   }, []);
 
-  //if (map && isAuth) {
   if (true && isAuth) {
     return (
     <div ref={divRef} className={quickPanToRecord? "map-btn-selected" : "map-btn"}>

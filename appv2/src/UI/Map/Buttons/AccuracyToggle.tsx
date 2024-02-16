@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
-import { Circle, useMap } from 'react-leaflet';
+import { Circle}  from 'react-leaflet';
 import { IconButton, Tooltip } from '@mui/material';
-//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import { MAP_TOGGLE_ACCURACY } from 'state/actions';
 import 'UI/Global.css';

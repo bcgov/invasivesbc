@@ -1,17 +1,14 @@
-import React, { useEffect } from 'react';
-import { AccuracyMarker, AccuracyToggle } from './AccuracyToggle';
-import { BaseMapToggle } from './BaseMapToggle';
-import { FindMeToggle, LocationMarker } from './FindMe';
-import { HDToggle } from './HDToggle';
-import { LegendsButton } from "./LegendsButton";
-import { WhatsHereButton, WhatsHereDrawComponent } from './WhatsHereButton';
-import { WhatsHereCurrentRecordHighlighted } from './WhatsHereMarker';
-import './ButtonContainer.css';
+import React from 'react';
 import { useSelector } from 'util/use_selector';
+import { AccuracyToggle } from './AccuracyToggle';
+import { BaseMapToggle } from './BaseMapToggle';
+import './ButtonContainer.css';
+import { CenterCurrentRecord } from './CenterCurrentRecord';
+import { FindMeToggle } from './FindMe';
+import { LegendsButton } from "./LegendsButton";
 import { NewRecord } from './NewRecord';
 import { QuickPanToRecordToggle } from './ToggleQuickRecordPan';
-import { SelectedRecordIndicator } from '../SelectedRecordIndicator';
-import { CenterCurrentRecord } from './CenterCurrentRecord';
+import { WhatsHereButton } from './WhatsHereButton';
 
 export const ButtonContainer = (props) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);

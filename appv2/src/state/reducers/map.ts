@@ -167,22 +167,22 @@ class MapState {
       {
         title: 'Regional Districts',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW/ows'
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW'
       },
       {
         title: 'BC Parks',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS/ows'
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS'
       },
       {
         title: 'Conservancy Areas',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY/ows'
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY'
       },
       {
         title: 'Municipality Boundaries',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/pub/WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP/ows'
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP'
       }
     ];
     this.tooManyLabelsDialog = { dialogActions: [], dialogOpen: false, dialogTitle: '', dialogContentText: null };

@@ -1,17 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { IconButton, Tooltip } from '@mui/material';
 import * as L from 'leaflet';
-import { Marker, Popup, useMap } from 'react-leaflet';
-import { Divider, IconButton, Tooltip } from '@mui/material';
-//import { toolStyles } from 'UI/Styles/ToolStyles';
-import { useSelector } from 'react-redux';
-import { calc_utm } from 'util/utm';
-import { IAPP_PAN_AND_ZOOM, MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING, PAN_AND_ZOOM_TO_ACTIVITY } from 'state/actions';
-import 'UI/Global.css';
+import React, { useEffect, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { handle_IAPP_PAN_AND_ZOOM } from 'state/sagas/iappsite/dataAccess';
+import 'UI/Global.css';
+import { IAPP_PAN_AND_ZOOM, PAN_AND_ZOOM_TO_ACTIVITY } from 'state/actions';
 
-const baseUrl = window.location.href.split('/home')[0];
 
 export const CenterCurrentRecord = (props) => {
   const dispatch = useDispatch();
@@ -42,7 +36,6 @@ export const CenterCurrentRecord = (props) => {
               <IconButton
                 onClick={() => {
                   setShow(false);
-              //    dispatch({ type: MAP_TOGGLE_TRACKING });
                     {props.type=== 'Activity'? dispatch({type: PAN_AND_ZOOM_TO_ACTIVITY}) : dispatch({type: IAPP_PAN_AND_ZOOM})}
                 }}
                 >
