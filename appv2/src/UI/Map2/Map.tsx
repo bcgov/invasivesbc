@@ -5,7 +5,7 @@ import { PMTiles, Protocol } from 'pmtiles';
 import { CONFIG } from 'state/config';
 import { useSelector } from 'react-redux';
 import { c } from 'vitest/dist/reporters-5f784f42';
-//import './map.css';
+import './map.css';
 
 export const Map = (props: any) => {
   const mapContainer = useRef(null);
@@ -23,6 +23,10 @@ export const Map = (props: any) => {
   // Map position jump
   const map_center = useSelector((state: any) => state.Map?.map_center);
   const map_zoom = useSelector((state: any) => state.Map?.map_zoom);
+
+  // User tracking coords jump
+  const userCoords = useSelector((state: any) => state.Map?.userCoords);
+  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
 
   const baseMapToggle = useSelector((state: any) => state.Map?.baseMapToggle);
 
@@ -72,25 +76,37 @@ export const Map = (props: any) => {
     if (map_center) map.current.jumpTo({ center: map_center, zoom: map_zoom });
   }, [map_center, map_zoom]);
 
+  // User position tracking and marker
+  useEffect(() => {
+    if (!map.current) return;
+    const el = document.createElement('div');
+        el.className = 'userTrackingMarker';
+        el.style.backgroundImage = 'url(/assets/icon/circle.png)'
+        el.style.width = `32px`;
+        el.style.height = `32px`;
+    const marker = new maplibregl.Marker({element: el});
 
-  const toggleLayerOnBool = (map, layer, boolToggle) => {
-    if (!map) return;
-      const visibility = map.getLayoutProperty(layer, 'visibility');
-      if (visibility !== 'visible' && boolToggle) {
-        map.setLayoutProperty(layer, 'visibility', 'visible');
-      }
-      if(visibility !== 'none' && !boolToggle){
-        map.setLayoutProperty(layer, 'visibility', 'none');
-      }
-  }
+    function animateMarker(timestamp) {
+      marker.setLngLat([userCoords.long, userCoords.lat]);
+      // Ensure it's added to the map. This is safe to call if it's already added.
+      marker.addTo(map.current);
+      // Request the next frame of the animation.
+      requestAnimationFrame(animateMarker);
+    }
+    if (userCoords && positionTracking) {
+      map.current.jumpTo({ center: [userCoords.long, userCoords.lat] });
+      // Start the animation.
+      requestAnimationFrame(animateMarker);
+    }
+  }, [userCoords, positionTracking]);
 
   //Toggle Topo
-  useEffect(()=> {
+  useEffect(() => {
     if (!map.current) return;
-    toggleLayerOnBool(map.current, 'Esri-Sat-Layer', !baseMapToggle)
-    toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle)
-    toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle)
-  },[baseMapToggle])
+    toggleLayerOnBool(map.current, 'Esri-Sat-Layer', !baseMapToggle);
+    toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
+    toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
+  }, [baseMapToggle]);
 
   return (
     <div className="MapWrapper">
@@ -522,4 +538,15 @@ const removeDeletedRecordSetLayersOnRecordSetDelete = (storeLayers, map) => {
     // get matching layers for type
     // update visibility if doesn't match
   });
+};
+
+const toggleLayerOnBool = (map, layer, boolToggle) => {
+  if (!map) return;
+  const visibility = map.getLayoutProperty(layer, 'visibility');
+  if (visibility !== 'visible' && boolToggle) {
+    map.setLayoutProperty(layer, 'visibility', 'visible');
+  }
+  if (visibility !== 'none' && !boolToggle) {
+    map.setLayoutProperty(layer, 'visibility', 'none');
+  }
 };
