@@ -3,7 +3,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import HerbicidesAccordion from '../accordions/HerbicidesAccordion';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
-import { useFormStyles } from '../../formStyles';
+//import { useFormStyles } from '../../formStyles';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import isNumber from 'is-number';
 
@@ -11,7 +11,7 @@ const TankMix: React.FC = (props) => {
   const form_dataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = form_dataContext;
 
-  const classes = useFormStyles();
+  //const classes = useFormStyles();
   const businessCodes = formDetails.businessCodes;
 
   const [currentTankMix, setCurrentTankMix] = useState(formDetails.form_data.tank_mix_object);
@@ -52,7 +52,7 @@ const TankMix: React.FC = (props) => {
         disabled={formDetails.disabled}
         choices={calculationTypeChoices}
         className={'inputField'}
-        classes={classes}
+        //classes={classes}
         id={'calculation_type'}
         key={'calculation_type'}
         label={'Calculation Type'}
@@ -78,7 +78,7 @@ const TankMix: React.FC = (props) => {
       </Tooltip>
       <TextField
         disabled={formDetails.disabled}
-        className={classes.inputField}
+      ///  className={classes.inputField}
         type="text"
         label="Amount of Mix Used (L)"
         value={currentTankMix?.amount_of_mix}
@@ -112,7 +112,7 @@ const TankMix: React.FC = (props) => {
       </Tooltip>
       <TextField
         disabled={formDetails.disabled}
-        className={classes.inputField}
+//        className={classes.inputField}
         type="text"
         label="Delivery Rate of Mix (L/ha)"
         value={currentTankMix?.delivery_rate_of_mix || ''}

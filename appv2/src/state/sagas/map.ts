@@ -454,8 +454,6 @@ function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
 }
 
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
-  const authState = yield select(selectAuth);
-  const mapState = yield select(selectMap);
   const userSettings = yield select(selectUserSettings);
   const set = userSettings?.recordSets?.[action.payload.id];
   const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
@@ -464,7 +462,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     let networkReturn;
     let conditionallyUnnestedURL;
     if (set.recordSetType === 'IAPP') {
-      const currentState = yield select(selectUserSettings);
+      const currentState = yield select((state) => state.UserSettings);
 
       let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
@@ -478,7 +476,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
 
       conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     } else {
-      const currentState = yield select(selectUserSettings);
+      const currentState = yield select((state) => state.UserSettings);
 
       let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;

@@ -10,7 +10,7 @@ export interface IInvasivePlantComponent {
   index: number;
   species: any;
   key?: number;
-  classes: any;
+  classes?: any;
 }
 
 const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, classes }) => {
@@ -55,8 +55,12 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
   }, [currentInvasivePlant]);
 
   return (
-    <Box component="span" className={classes.listItemContainer}>
-      <Typography className={classes.speciesHeading} variant="h5">
+    <Box component="span" 
+   // className={classes.listItemContainer}
+    >
+      <Typography 
+     // className={classes.speciesHeading} 
+      variant="h5">
         {optionValueLabels[species.invasive_plant_code]
           ? `${optionValueLabels[species.invasive_plant_code]}`
           : `InvasivePlant #${index + 1}`}
@@ -73,7 +77,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         }
         disabled={formDetails.disabled}
         className={'inputField'}
-        classes={classes}
+       // classes={classes}
         actualValue={species.invasive_plant_code}
         id={'invasive_plant_code'}
         label={'Invasive Plant'}
@@ -102,7 +106,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
       <TextField
         fullWidth
         disabled={formDetails.disabled}
-        className={classes.inputField}
+      //  className={classes.inputField}
         style={{ display: invasivePlantsArr.length < 2 ? 'none' : 'flex' }}
         type="number"
         value={species.percent_area_covered}
@@ -144,7 +148,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
           });
         }}
         variant="contained"
-        className={classes.speciesRemoveButton}
+       // className={classes.speciesRemoveButton}
         startIcon={<DeleteIcon />}
         color="secondary">
         Remove Invasive Plant

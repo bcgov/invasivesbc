@@ -4,13 +4,13 @@ import { Accordion, AccordionSummary, Typography, AccordionDetails, Box, Button 
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import Herbicide from '../single-objects/Herbicide';
 import AddIcon from '@mui/icons-material/Add';
-import { useFormStyles } from '../../formStyles';
+//import { useFormStyles } from '../../formStyles';
 
 const HerbicidesAccordion = (props) => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
-  const classes = useFormStyles();
+//  const classes = useFormStyles();
   const tankMixOn = formDetails.form_data.tank_mix;
 
   return (
@@ -21,8 +21,12 @@ const HerbicidesAccordion = (props) => {
         <Typography variant="h5">Herbicides</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box className={classes.accordionBody}>
-          <Box component="div" className={classes.centerBox}>
+        <Box 
+       // className={classes.accordionBody}
+        >
+          <Box component="div" 
+          //className={classes.centerBox}
+          >
             <Button
               disabled={formDetails.disabled}
               id="btn_add_herbicide"
@@ -65,12 +69,14 @@ const HerbicidesAccordion = (props) => {
             </Button>
           </Box>
 
-          <Box component="div" className={classes.listContainer}>
+          <Box component="div" 
+         // className={classes.listContainer}
+          >
             {props.insideTankMix
               ? formDetails.form_data?.tank_mix_object?.herbicides?.map((herbicide, index) => (
                   <Herbicide
                     insideTankMix={props.insideTankMix}
-                    classes={classes}
+          //          classes={classes}
                     key={index}
                     index={index}
                     herbicide={herbicide}
@@ -79,7 +85,7 @@ const HerbicidesAccordion = (props) => {
               : formDetails?.form_data?.herbicides?.map((herbicide, index) => (
                   <Herbicide
                     insideTankMix={props.insideTankMix}
-                    classes={classes}
+           //         classes={classes}
                     key={index}
                     index={index}
                     herbicide={herbicide}

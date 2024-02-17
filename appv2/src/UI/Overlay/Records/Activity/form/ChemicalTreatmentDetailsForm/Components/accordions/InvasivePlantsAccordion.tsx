@@ -4,13 +4,13 @@ import { Accordion, AccordionSummary, Typography, AccordionDetails, Box, Button 
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import AddIcon from '@mui/icons-material/Add';
 import InvasivePlant from '../single-objects/InvasivePlant';
-import { useFormStyles } from '../../formStyles';
+//import { useFormStyles } from '../../formStyles';
 
 const InvasivePlantsAccordion = () => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
   const [accordionExpanded, setAccordionExpanded] = useState(true);
-  const classes = useFormStyles();
+  //const classes = useFormStyles();
 
   return (
     <Accordion
@@ -29,8 +29,12 @@ const InvasivePlantsAccordion = () => {
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box className={classes.accordionBody}>
-          <Box component="div" className={classes.centerBox}>
+        <Box 
+        //className={classes.accordionBody}
+        >
+          <Box component="div" 
+         // className={classes.centerBox}
+          >
             <Button
               id="btn_add_invasive_plant"
               disabled={formDetails.disabled}
@@ -56,9 +60,13 @@ const InvasivePlantsAccordion = () => {
             </Button>
           </Box>
 
-          <Box component="div" className={classes.listContainer}>
+          <Box component="div" 
+         // className={classes.listContainer}
+          >
             {formDetails.form_data?.invasive_plants?.map((species, index) => {
-              return <InvasivePlant species={species} key={index} index={index} classes={classes} />;
+              return <InvasivePlant species={species} key={index} index={index} 
+             // classes={classes} 
+              />;
             })}
           </Box>
         </Box>

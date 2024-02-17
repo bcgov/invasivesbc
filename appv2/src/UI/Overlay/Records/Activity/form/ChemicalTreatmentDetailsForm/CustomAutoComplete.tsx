@@ -5,7 +5,7 @@ export interface ICustomAutoComplete {
   label: string;
   id: string;
   className: string;
-  classes: any;
+  classes?: any;
   choices: any[];
   actualValue: string;
   disabled: boolean;
@@ -17,7 +17,7 @@ export interface ICustomAutoComplete {
 }
 
 const CustomAutoComplete = ({
-  classes,
+ // classes,
   className,
   disabled,
   id,
@@ -60,7 +60,7 @@ const CustomAutoComplete = ({
   return (
     <Autocomplete
       disablePortal
-      className={classes[className]}
+      //className={classes[className]}
       id={id}
       options={choices}
       value={labelValuePair}

@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
 import { Marker, Popup, useMap } from 'react-leaflet';
 import { Divider, IconButton, Tooltip } from '@mui/material';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'react-redux';
 import { calc_utm } from 'util/utm';
 import { IAPP_PAN_AND_ZOOM, MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING, PAN_AND_ZOOM_TO_ACTIVITY } from 'state/actions';
@@ -23,7 +23,7 @@ export const CenterCurrentRecord = (props) => {
    * @returns {void}
    */
   const map = useMap();
-  const toolClass = toolStyles();
+ // const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
   useEffect(() => {
@@ -50,8 +50,8 @@ export const CenterCurrentRecord = (props) => {
                 }}
                 className={
                   'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                  ' ' +
-                  toolClass.notSelected
+                  ' ' //+
+            //      toolClass.notSelected
                 }
                 sx={{ color: '#000' }}>
                 {props.type === 'Activity'? <AssignmentIcon /> :  <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />}

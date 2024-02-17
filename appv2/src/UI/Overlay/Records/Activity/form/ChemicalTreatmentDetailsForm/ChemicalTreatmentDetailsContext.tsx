@@ -1,4 +1,4 @@
-import { ClassNameMap } from '@mui/styles';
+//import { ClassNameMap } from '@mui/styles';
 import * as React from 'react';
 
 export interface IChemicalDetailsContextformDetails {
@@ -8,7 +8,7 @@ export interface IChemicalDetailsContextformDetails {
   businessCodes?: any;
   activitySubType?: any;
   disabled?: boolean;
-  classes?: ClassNameMap;
+  classes?: any;
 }
 
 interface IChemicalTreatmentDetailsContext {

@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from 'react';
 import { useMap } from 'react-leaflet';
 import { useDispatch } from 'react-redux';
 import { MAP_TOGGLE_BASEMAP } from 'state/actions';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import LayersIcon from '@mui/icons-material/Layers';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
@@ -17,7 +17,7 @@ export const BaseMapToggle = (props) => {
 
   const [show, setShow] = React.useState(false);
 
-  const toolClass = toolStyles();
+  //const toolClass = toolStyles();
 
   const divRef = useRef();
   useEffect(() => {
@@ -46,8 +46,8 @@ export const BaseMapToggle = (props) => {
             className={
               'leaflet-control-zoom leaflet-bar leaflet-control ' +
               //classes.customHoverFocus +
-              ' ' +
-              (baseMapToggle ? toolClass.selected : toolClass.notSelected)
+              ' '// +
+//              (baseMapToggle ? toolClass.selected : toolClass.notSelected)
             }
             sx={{ color: '#000' }}>
             {baseMapToggle ? <LayersClearIcon /> : <LayersIcon />}

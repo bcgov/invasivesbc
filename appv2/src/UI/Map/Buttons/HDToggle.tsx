@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
 import { useMap } from 'react-leaflet';
 import { IconButton, Tooltip } from '@mui/material';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import { MAP_TOGGLE_HD } from 'state/actions';
 import 'UI/Global.css';
@@ -14,7 +14,7 @@ import SdIcon from '@mui/icons-material/Sd';
 export const HDToggle = (props) => {
   const map = useMap();
   const dispatch = useDispatch();
-  const toolClass = toolStyles();
+  //const toolClass = toolStyles();
   const HDToggle = useSelector((state: any) => state.Map?.HDToggle);
   const baseMapToggle = useSelector((state: any) => state.Map?.baseMapToggle);
   const divRef = useRef();
@@ -45,8 +45,8 @@ export const HDToggle = (props) => {
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' ' +
-                (HDToggle ? toolClass.selected : toolClass.notSelected)
+                ' '// +
+             //   (HDToggle ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               {HDToggle ? <HdIcon /> : <SdIcon />}

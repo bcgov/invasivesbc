@@ -1,5 +1,4 @@
 import { Button, createTheme, ThemeOptions } from '@mui/material';
-import { ThemeProvider } from '@mui/styles';
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router-dom';
@@ -135,9 +134,7 @@ const OverlayContentMemo = (props) => {
       <Route path="/Training" render={(props) => <TrainingPage />} />
       <Route path="/Legend" render={(props) => <LegendsPopup />} />
       <Route path="/AccessRequest" render={(props) => <AccessRequestPage />} />
-      <ThemeProvider theme={theme}>
         <Route path="/Admin" render={(props) => <UserAccessPage />} />
-      </ThemeProvider>
       <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
     </div>
   );

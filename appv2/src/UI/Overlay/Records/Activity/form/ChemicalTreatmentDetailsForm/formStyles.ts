@@ -1,7 +1,7 @@
 import { Theme } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+//import { makeStyles } from '@mui/styles';
 
-export const useFormStyles = makeStyles((theme: Theme) => ({
+/*export const useFormStyles = makeStyles((theme: Theme) => ({
   formContainer: { width: '100%', paddingTop: '2rem', paddingBottom: '2rem' },
   formControl: { width: '100%' },
   generalFieldsContainer: {
@@ -40,4 +40,4 @@ export const useFormStyles = makeStyles((theme: Theme) => ({
   speciesHeading: { textAlign: 'center', marginBottom: '1rem' },
   speciesRemoveButton: { float: 'right', marginTop: '0.5rem' },
   tankMixRadioGroup: { flexDirection: 'row', justifyContent: 'center' }
-}));
+}));*/

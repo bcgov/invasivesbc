@@ -1,4 +1,4 @@
-import makeStyles from '@mui/styles/makeStyles';
+//import makeStyles from '@mui/styles/makeStyles';
 import {
   Box,
   Button,
@@ -18,7 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ACTIVITY_CREATE_REQUEST, CLOSE_NEW_RECORD_MENU, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST } from 'state/actions';
 import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
-const useStyles = makeStyles((theme: Theme) => ({
+/*const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'space-between'
   }
-}));
+}));*/
 
 export interface INewRecordDialog {
 //  dialogOpen: boolean;
@@ -56,7 +56,7 @@ export interface INewRecordDialogState {
 const NewRecordDialog = (props: INewRecordDialog) => {
   const dispatch = useDispatch();
 
-  const classes = useStyles();
+  //const classes = useStyles();
   const history = useHistory();
 
 
@@ -176,11 +176,13 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     <Dialog open={dialogueOpen || false}>
       <DialogTitle>Create New Record</DialogTitle>
 
-      <Box className={classes.formContainer}>
+      <Box 
+     // className={classes.formContainer}
+      >
         <FormControl>
           <InputLabel>Record Category</InputLabel>
           <Select
-            className={classes.select}
+         //   className={classes.select}
             value={newRecordDialogState.recordCategory}
             onChange={handleRecordCategoryChange}
             label="Select Form Type">
@@ -196,7 +198,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
           <InputLabel>Record Type</InputLabel>
           <Select
             disabled={newRecordDialogState.recordCategory === ''}
-            className={classes.select}
+          //  className={classes.select}
             value={newRecordDialogState.recordType}
             onChange={handleRecordTypeChange}
             label="Select Form Type">
@@ -212,7 +214,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
           <InputLabel>Record Sub-Type</InputLabel>
           <Select
             disabled={newRecordDialogState.recordType === ''}
-            className={classes.select}
+           // className={classes.select}
             value={newRecordDialogState.recordSubtype}
             onChange={handleRecordSubtypeChange}
             label="Select Form Type">
@@ -225,7 +227,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
         </FormControl>
       </Box>
 
-      <DialogActions className={classes.dialogActionsBox}>
+      <DialogActions 
+       // className={classes.dialogActionsBox}
+        >
         <Button
           onClick={() => {
             dispatch({ type: CLOSE_NEW_RECORD_MENU });

@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { Box, Button, Theme, Typography } from '@mui/material';
 import { DropzoneDialog } from 'mui-file-dropzone';
-import makeStyles from '@mui/styles/makeStyles';
+//import makeStyles from '@mui/styles/makeStyles';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useDispatch } from 'react-redux';
 import { INIT_SERVER_BOUNDARIES_GET, REFETCH_SERVER_BOUNDARIES } from 'state/actions';
@@ -13,7 +13,7 @@ export interface IShapeUploadRequest {
   title: string;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+/*const useStyles = makeStyles((theme: Theme) => ({
   itemsContainer: { display: 'flex', justifyContent: 'start', alignItems: 'center', width: '100%', flexWrap: 'wrap' },
   buttonsContainer: { display: 'flex', justifyContent: 'stretch' },
   button: { flexGrow: 1, marginLeft: 10, marginRight: 10 },
@@ -23,10 +23,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%'
   }
 }));
+*/
 
 //   var extension = input?.name?.split('.').pop();
 export const KMLShapesUpload: React.FC<any> = (props) => {
-  const classes = useStyles();
+  //const classes = useStyles();
   const [uploadRequests, setUploadRequests] = useState([]);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const api = useInvasivesApi();
@@ -114,7 +115,9 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   };
 
   return (
-    <Box className={classes.componentContainer}>
+    <Box 
+    //className={classes.componentContainer}
+    >
       <DropzoneDialog
         acceptedFiles={['.kml,.kmz']}
         filesLimit={1}
@@ -130,7 +133,9 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         maxFileSize={10485760}
       />
 
-      {resultMessage && <Box className={classes.messageContainer}>{resultMessage}</Box>}
+      {resultMessage && <Box 
+      //className={classes.messageContainer}
+      >{resultMessage}</Box>}
     </Box>
   );
 };

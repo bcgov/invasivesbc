@@ -38,6 +38,7 @@ export const WhatsHereCurrentRecordHighlighted = (props) => {
       latOffset = 0.002;
     }
 
+    //if (!isPoint && geo) {
     if (!isPoint && geo) {
       setHighlightedGeo({ ...geo });
       const centerOfGeo = center({ ...geo.geometry }).geometry.coordinates;

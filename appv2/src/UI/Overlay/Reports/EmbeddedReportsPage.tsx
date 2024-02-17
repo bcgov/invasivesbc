@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
 import { Autocomplete, Box, Container, TextField, Theme, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+//import { makeStyles } from '@mui/styles';
 import { Report } from './Report';
 import Spinner from 'UI/Spinner/Spinner';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 
-const useStyles = makeStyles((theme: Theme) => ({
+/*const useStyles = makeStyles((theme: Theme) => ({
   reportContainer: {
     display: 'flex',
     paddingLeft: 0,
@@ -42,10 +42,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     textAlign: 'left'
   }
 }));
+*/
 
 const EmbeddedReportsPage: React.FC = () => {
   const api = useInvasivesApi();
-  const classes = useStyles();
+//  const classes = useStyles();
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
   const [reports, setReports] = useState([]);
   const [categories, setCategories] = useState([]);
