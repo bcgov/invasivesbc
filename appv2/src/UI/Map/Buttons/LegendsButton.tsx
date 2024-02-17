@@ -16,7 +16,7 @@ export const LegendsButton = (props) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const divRef = useRef();
-  const toolClass = toolStyles();
+ // const toolClass = toolStyles();
 
   const [show, setShow] = React.useState(false);
 

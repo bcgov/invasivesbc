@@ -13,7 +13,7 @@ import 'UI/Global.css';
 export const NewRecord = (props) => {
   const map = useMap();
   const dispatch = useDispatch();
-  const toolClass = toolStyles();
+ // const toolClass = toolStyles();
   const divRef = useRef();
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
 
