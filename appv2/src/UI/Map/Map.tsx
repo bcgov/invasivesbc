@@ -29,7 +29,7 @@ const Map = (props: any) => {
 
   return (
     <div className="map">
-      {false ? (
+      {true ? (
         <MapContainer
           zoomAnimation={true}
           zoomAnimationThreshold={5}

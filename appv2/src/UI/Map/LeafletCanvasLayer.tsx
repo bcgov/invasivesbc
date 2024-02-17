@@ -4,9 +4,9 @@ import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { useLeafletContext } from '@react-leaflet/core';
 import 'leaflet-markers-canvas';
+import { on } from 'events';
 
-
-export const MAX_LABLES_TO_RENDER = 200
+export const MAX_LABLES_TO_RENDER = 200;
 
 export const LeafletCanvasMarker = (props) => {
   const map = useMap();
@@ -15,7 +15,7 @@ export const LeafletCanvasMarker = (props) => {
   const groupRef = useRef();
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !props.enabled) return;
     const container = context.layerContainer || context.map;
     layerRef.current = new (L as any).MarkersCanvas();
     groupRef.current = (L as any).layerGroup().setZIndex(props.zIndex);
@@ -113,16 +113,21 @@ export const LeafletCanvasLabel = (props) => {
   const layerRef = useRef();
   const groupRef = useRef();
 
-
   const [zoom, setZoom] = useState(map.getZoom());
 
-
-  map.on('zoomend', function () {
+  const onZoomEnd = () => {
     setZoom(map.getZoom());
-  })
+  };
 
   useEffect(() => {
-    if (!map) return;
+    map.on('zoomend', onZoomEnd);
+    return () => {
+      map.off('zoomend', onZoomEnd);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!map || !props.enabled) return;
     const container = context.layerContainer || context.map;
     layerRef.current = new (L as any).MarkersCanvas();
     groupRef.current = (L as any).layerGroup().setZIndex(props.zIndex);
@@ -150,29 +155,26 @@ export const LeafletCanvasLabel = (props) => {
       return
     }
     */
-    if(props.points?.features?.length > MAX_LABLES_TO_RENDER)  {// && map.getZoom() < 13)){
-      return
+    if (props.points?.features?.length > MAX_LABLES_TO_RENDER) {
+      // && map.getZoom() < 13)){
+      return;
     }
 
     /*
     let countIndex = 0
     */
     props.points?.features?.map((point) => {
-
       /*
       if(countIndex > MAX_LABLES_TO_RENDER){
         return
       }
       countIndex += 1
       */
-      
 
-      if (props.labelToggle && props.points?.features.length ) {
+      if (props.labelToggle && props.points?.features.length) {
         if (!(point?.geometry?.coordinates?.length > 0)) {
           return;
         }
-
-
 
         let labelImage;
         if (props.layerType === 'IAPP') {
@@ -180,15 +182,16 @@ export const LeafletCanvasLabel = (props) => {
             'data:image/svg+xml,' +
             encodeURIComponent(svgText(point.properties.site_id, point.properties.species_on_site));
         } else {
-
-          const species_treated = point?.properties?.species_treated?.length > 0 && point.properties.species_treated[0] !== null? point.properties.species_treated : []
-          const species_positive = point?.properties?.species_positive?.length > 0 && point.properties.species_positive[0] !== null? point.properties.species_positive : []
-          const array_to_show = species_treated.length > 0 ? species_treated : species_positive
-          labelImage =
-            'data:image/svg+xml,' +
-            encodeURIComponent(
-              svgText(point.properties.short_id, array_to_show)
-            );
+          const species_treated =
+            point?.properties?.species_treated?.length > 0 && point.properties.species_treated[0] !== null
+              ? point.properties.species_treated
+              : [];
+          const species_positive =
+            point?.properties?.species_positive?.length > 0 && point.properties.species_positive[0] !== null
+              ? point.properties.species_positive
+              : [];
+          const array_to_show = species_treated.length > 0 ? species_treated : species_positive;
+          labelImage = 'data:image/svg+xml,' + encodeURIComponent(svgText(point.properties.short_id, array_to_show));
         }
         var labelIcon = L.icon({
           iconUrl: labelImage,
@@ -226,7 +229,7 @@ export const LeafletCanvasLabel = (props) => {
       } catch (e) {}
     };
     //}, [map]);
-  }, [zoom,props.colour, props.labelToggle, props.enabled, props.points, props.zIndex, props.redraw]);
+  }, [zoom, props.colour, props.labelToggle, props.enabled, props.points, props.zIndex, props.redraw]);
 
   return <></>;
 };

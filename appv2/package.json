@@ -157,7 +157,7 @@
     "@types/jest": "^24.0.25",
     "@types/leaflet": "^1.9.0",
     "@types/leaflet-draw": "^1.0.6",
-    "@types/node": "^16.11.7",
+    "@types/node": "^20.11.16",
     "@types/qs": "^6.9.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -178,7 +178,7 @@
     "rollup-plugin-inject": "^3.0.2",
     "rollup-plugin-node-polyfills": "^0.2.1",
     "sass": "^1.57.1",
-    "vite": "^4.4.1",
+    "vite": "5",
     "vite-tsconfig-paths": "^4.2.1"
   },
   "overrides": {

@@ -10,7 +10,7 @@ import { pointsWithinPolygon } from '@turf/turf';
 import 'leaflet-markers-canvas';
 import { SET_TOO_MANY_LABELS_DIALOG } from 'state/actions';
 import { GeneralDialog } from './GeneralDialog';
-import _, { debounce, map } from 'lodash';
+import _, { debounce, map, set, update } from 'lodash';
 import { shallowEqual } from 'react-redux';
 import { useState, useEffect } from 'react';
 
@@ -183,21 +183,25 @@ const IAPPCanvasLabel = (props) => {
 
   const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true, trailing: false });
 
+  const updatePointsInBounds = () => {
+    const newPointsInBounds = debouncedGetPointsInPoly();
+    setPointsInBounds(newPointsInBounds);
+  }
+
   useEffect(() => {
     if (!props.geoJSON) return;
-    const newPointsInBounds = debouncedGetPointsInPoly();
 
-    setPointsInBounds(newPointsInBounds);
+    updatePointsInBounds()
 
-    map.on('zoomend', function () {
-      const newPointsInBounds = debouncedGetPointsInPoly();
-      setPointsInBounds(newPointsInBounds);
-    });
-    map.on('dragend', function () {
-      const newPointsInBounds = debouncedGetPointsInPoly();
-      setPointsInBounds(newPointsInBounds);
-    });
-  }, [props.geoJSON]);
+    map.on('zoomend', updatePointsInBounds);
+    map.on('dragend', updatePointsInBounds)  
+
+    return () => {
+      map.off('zoomend', updatePointsInBounds);
+      map.off('dragend', updatePointsInBounds)  
+      setPointsInBounds(null);
+    }
+   } , [props.geoJSON]);
 
   if (!(pointsInBounds?.features?.length > 0)) return <></>;
   return (
@@ -261,18 +265,22 @@ const ActivityCanvasLabel = (props) => {
 
   const debouncedGetPointsInPoly = debounce(getPointsInPoly, 500, { leading: true, trailing: false });
 
-  useEffect(() => {
+  const updatePointsInBounds = () => {
     const newPointsInBounds = debouncedGetPointsInPoly();
     setPointsInBounds(newPointsInBounds);
+  }
 
-    map.on('zoomend', function () {
-      const newPointsInBounds = debouncedGetPointsInPoly();
-      setPointsInBounds(newPointsInBounds);
-    });
-    map.on('dragend', function () {
-      const newPointsInBounds = debouncedGetPointsInPoly();
-      setPointsInBounds(newPointsInBounds);
-    });
+  useEffect(() => {
+    updatePointsInBounds();
+
+    map.on('zoomend',  updatePointsInBounds)
+    map.on('dragend', updatePointsInBounds );
+
+    return () => {
+      map.off('zoomend', updatePointsInBounds);
+      map.off('dragend', updatePointsInBounds);
+      setPointsInBounds(null);
+    };
   }, [props.geoJSON]);
 
   if (!(pointsInBounds?.features?.length > 0)) return <></>;

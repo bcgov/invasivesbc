@@ -15,7 +15,7 @@ import 'UI/Global.css';
 export const QuickPanToRecordToggle = (props) => {
   const map = useMap();
   const dispatch = useDispatch();
-  const toolClass = toolStyles();
+//  const toolClass = toolStyles();
   const divRef = useRef();
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);

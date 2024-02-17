@@ -20,7 +20,7 @@ export const WhatsHereButton = (props) => {
   const history = useHistory();
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
   const darkTheme = useSelector((state: any) => state.UserSettings?.darkTheme);
-  const toolClass = toolStyles();
+ // const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
 
   const divRef = useRef();
