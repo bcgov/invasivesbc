@@ -3,14 +3,30 @@ import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
 import { CONFIG } from 'state/config';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { c } from 'vitest/dist/reporters-5f784f42';
 import './map.css';
 import circle from '@turf/circle';
 
+// Draw tools:
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
+import { MAP_WHATS_HERE_FEATURE } from 'state/actions';
+import { useHistory } from 'react-router'
+// @ts-ignore
+MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
+// @ts-ignore
+MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
+// @ts-ignore
+MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
+
 export const Map = (props: any) => {
+  const [draw, setDraw] = useState(null);
   const mapContainer = useRef(null);
   const map = useRef(null);
+  const dispatch = useDispatch();
+  const history = useHistory();
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const authInitiated = useSelector((state: any) => state.Auth.initialized);
@@ -25,8 +41,9 @@ export const Map = (props: any) => {
   const map_center = useSelector((state: any) => state.Map?.map_center);
   const map_zoom = useSelector((state: any) => state.Map?.map_zoom);
 
-  // User tracking coords jump
+  // User tracking coords jump and markers/indicators
   const userCoords = useSelector((state: any) => state.Map?.userCoords);
+  const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
   const positionMarkerEl = document.createElement('div');
   positionMarkerEl.className = 'userTrackingMarker';
@@ -44,17 +61,14 @@ export const Map = (props: any) => {
       return null;
     }
   });
-  const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
 
-
-
-  
   const baseMapToggle = useSelector((state: any) => state.Map?.baseMapToggle);
+  const whatsHereToggle = useSelector((state: any) => state.Map?.whatsHere?.toggle);
 
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated) return;
-    mapInit(map, mapContainer);
+    mapInit(map, mapContainer, setDraw, dispatch, history);
   }, [authInitiated]);
 
   // RecordSet Layers:
@@ -146,6 +160,12 @@ export const Map = (props: any) => {
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
   }, [baseMapToggle]);
 
+  useEffect(() => {
+    if (whatsHereToggle && draw) {
+      draw.changeMode('whats_here_box_mode');
+    }
+  }, [whatsHereToggle]);
+
   return (
     <div className="MapWrapper">
       <div ref={mapContainer} className="Map" />
@@ -154,7 +174,7 @@ export const Map = (props: any) => {
   );
 };
 
-const mapInit = (map, mapContainer) => {
+const mapInit = (map, mapContainer, drawSetter, dispatch, history) => {
   const protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {
@@ -277,6 +297,7 @@ const mapInit = (map, mapContainer) => {
         ]
       }
     });
+    initDrawModes(map.current, drawSetter, dispatch, history);
   });
 };
 
@@ -589,4 +610,87 @@ const toggleLayerOnBool = (map, layer, boolToggle) => {
   if (visibility !== 'none' && !boolToggle) {
     map.setLayoutProperty(layer, 'visibility', 'none');
   }
+};
+
+const initDrawModes = (map, drawSetter, dispatch, history) => {
+  var DoNothing: any = {};
+  DoNothing.onSetup = function (opts) {
+    var state: any = {};
+    state.count = opts.count || 0;
+    return state;
+  };
+  DoNothing.onClick = function (state, e) {
+    //this.changeMode('draw_polygon');
+  };
+
+  var WhatsHereBoxMode: any = { ...DrawRectangle };
+
+  //Example from docs - keeping as template:
+  var LotsOfPointsMode: any = {};
+
+  // When the mode starts this function will be called.
+  // The `opts` argument comes from `draw.changeMode('lotsofpoints', {count:7})`.
+  // The value returned should be an object and will be passed to all other lifecycle functions
+  LotsOfPointsMode.onSetup = function (opts) {
+    var state: any = {};
+    state.count = opts.count || 0;
+    return state;
+  };
+
+  // Whenever a user clicks on the map, Draw will call `onClick`
+  LotsOfPointsMode.onClick = function (state, e) {
+    // `this.newFeature` takes geojson and makes a DrawFeature
+    var point = this.newFeature({
+      type: 'Feature',
+      properties: {
+        count: state.count
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [e.lngLat.lng, e.lngLat.lat]
+      }
+    });
+    this.addFeature(point); // puts the point on the map
+  };
+
+  // Whenever a user clicks on a key while focused on the map, it will be sent here
+  LotsOfPointsMode.onKeyUp = function (state, e) {
+    if (e.keyCode === 27) return this.changeMode('simple_select');
+  };
+
+  // This is the only required function for a mode.
+  // It decides which features currently in Draw's data store will be rendered on the map.
+  // All features passed to `display` will be rendered, so you can pass multiple display features per internal feature.
+  // See `styling-draw` in `API.md` for advice on making display features
+  LotsOfPointsMode.toDisplayFeatures = function (state, geojson, display) {
+    display(geojson);
+  };
+
+  // Add the new draw mode to the MapboxDraw object
+  var draw = new MapboxDraw({
+    defaultMode: 'do_nothing',
+    // Adds the LotsOfPointsMode to the built-in set of modes
+    modes: Object.assign(
+      {
+        draw_rectangle: DrawRectangle,
+        do_nothing: DoNothing,
+        lots_of_points: LotsOfPointsMode,
+        whats_here_box_mode: WhatsHereBoxMode
+      },
+      MapboxDraw.modes
+    )
+  });
+
+  map.on('draw.create', (e) => {
+    //enforce one at a time everywhere
+    const feature = e.features[0];
+    draw.deleteAll();
+    draw.add(feature);
+
+    // For whats here
+    dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
+    history.push('WhatsHere')
+  });
+  map.addControl(draw);
+  drawSetter(draw);
 };
