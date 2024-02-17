@@ -19,11 +19,17 @@ const Map = (props: any) => {
   const initializedAuth = useSelector((state: any) => 
   {
     return state.Auth?.initialized
-  }, (prev, next) => { return prev === next });
+  }, (prev, next) => { return JSON.stringify(prev) === JSON.stringify(next) });
+
+
+  useEffect(()=> {
+    console.log('%cmap rerendering from auth', 'color: yellow');
+    console.log('auth', initializedAuth)
+  },[initializedAuth])
 
   return (
     <div className="map">
-      {initializedAuth ? (
+      {false ? (
         <MapContainer
           zoomAnimation={true}
           zoomAnimationThreshold={5}

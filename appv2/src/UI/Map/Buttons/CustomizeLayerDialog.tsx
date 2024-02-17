@@ -11,7 +11,6 @@ import {
   TextField,
   Theme
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import { set } from 'lodash';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -24,7 +23,7 @@ import {
 } from 'state/actions';
 import KMLShapesUpload from './KMLShapesUpload';
 
-const useStyles = makeStyles((theme: Theme) => ({
+/*const useStyles = makeStyles((theme: Theme) => ({
   formContainer: {
     display: 'flex',
     flexDirection: 'column',
@@ -47,11 +46,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     justifyContent: 'space-between'
   }
 }));
+*/
 
 const CustomizeLayerMenu = (props) => {
   const dispatch = useDispatch();
 
-  const classes = useStyles();
+//  const classes = useStyles();
   const history = useHistory();
 
   const accessRoles = useSelector((state: any) => state.Auth.accessRoles);
@@ -89,14 +89,16 @@ const CustomizeLayerMenu = (props) => {
     <Dialog open={dialogueOpen}>
       <DialogTitle>Add or remove a custom layer</DialogTitle>
 
-      <Box className={classes.formContainer}>
+      <Box 
+      //className={classes.formContainer}
+      >
         {
           {
             New: (
               <FormControl>
                 <InputLabel>New Layer type</InputLabel>
                 <Select
-                  className={classes.select}
+              //    className={classes.select}
                   value={optionVal}
                   onChange={(e) => setOptionVal(e.target.value)}
                   label="Choose new Layer type">
@@ -107,7 +109,7 @@ const CustomizeLayerMenu = (props) => {
                   ))}
                 </Select>
                 <TextField
-                  className={classes.select}
+             //     className={classes.select}
                   value={newLayerName}
                   onChange={(e) => setNewLayerName(e.target.value)}
                   label="Name your new layer"></TextField>
@@ -117,7 +119,7 @@ const CustomizeLayerMenu = (props) => {
               <FormControl>
                 <InputLabel>Remove Layer</InputLabel>
                 <Select
-                  className={classes.select}
+              //    className={classes.select}
                   value={layerToDelete}
                   onChange={(e) => setLayerToDelete(e.target.value)}
                   label="Choose Layer to remove">
@@ -135,7 +137,9 @@ const CustomizeLayerMenu = (props) => {
         }
       </Box>
 
-      <DialogActions className={classes.dialogActionsBox}>
+      <DialogActions 
+      //className={classes.dialogActionsBox}
+      >
         {
           {
             Init: (

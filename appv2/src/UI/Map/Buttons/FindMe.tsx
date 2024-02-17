@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
 import { Marker, Popup, useMap } from 'react-leaflet';
 import { Divider, IconButton, Tooltip } from '@mui/material';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'react-redux';
 import { calc_utm } from 'util/utm';
 import { MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING } from 'state/actions';
@@ -22,7 +22,7 @@ export const FindMeToggle = (props) => {
    * @returns {void}
    */
   const map = useMap();
-  const toolClass = toolStyles();
+ // const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
   useEffect(() => {
@@ -48,8 +48,8 @@ export const FindMeToggle = (props) => {
                 }}
                 className={
                   'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                  ' ' +
-                  (positionTracking ? toolClass.selected : toolClass.notSelected)
+                  ' ' //+
+                //  (positionTracking ? toolClass.selected : toolClass.notSelected)
                 }
                 sx={{ color: '#000' }}>
                 <MyLocationIcon />

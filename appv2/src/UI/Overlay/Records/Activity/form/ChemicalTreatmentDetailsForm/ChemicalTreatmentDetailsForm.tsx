@@ -22,14 +22,14 @@ import {
 import HerbicidesAccordion from './Components/accordions/HerbicidesAccordion';
 import TankMixAccordion from './Components/accordions/TankMixAccordion';
 import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccordion';
-import { useFormStyles } from './formStyles';
+//import { useFormStyles } from './formStyles';
 import { runValidation } from 'sharedAPI';
 import { performCalculation } from 'sharedAPI';
 import { GeneralDialog, IGeneralDialog } from 'UI/Map/GeneralDialog';
 import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
 
 const ChemicalTreatmentDetailsForm = (props) => {
-  const classes = useFormStyles();
+  //const classes = useFormStyles();
 
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
@@ -86,7 +86,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
     herbicideDictionary: herbicideDictionary,
     activitySubType: props.activitySubType,
     disabled: props.disabled,
-    classes: classes,
+//    classes: classes,
     errors: []
   });
   //used to render the list of errors
@@ -215,15 +215,21 @@ const ChemicalTreatmentDetailsForm = (props) => {
   }, [tankMixOn, chemicalApplicationMethod]);
 
   return (
-    classes && (
+    (
       <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
         <Typography variant="h5">Chemical Treatment Details</Typography>
         <Divider />
-        <FormControl className={classes.formControl}>
+        <FormControl 
+       // className={classes.formControl}
+        >
           <InvasivePlantsAccordion />
 
-          <Box className={classes.generalFieldsContainer}>
-            <Box className={classes.generalFieldColumn}>
+          <Box 
+          //className={classes.generalFieldsContainer}
+          >
+            <Box 
+            //className={classes.generalFieldColumn}
+            >
               <Tooltip
                 classes={{ tooltip: 'toolTip' }}
                 style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
@@ -231,7 +237,9 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 title="Check if there is a mix of herbicides in the tank">
                 <HelpOutlineIcon />
               </Tooltip>
-              <FormLabel className={classes.formLabel} style={{ marginTop: '25px' }} component="legend">
+              <FormLabel 
+              //className={classes.formLabel} 
+              style={{ marginTop: '25px' }} component="legend">
                 Tank Mix
               </FormLabel>
 
@@ -241,13 +249,15 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 }}
                 value={tankMixOn}
                 aria-label="tank_mix"
-                className={classes.tankMixRadioGroup}
+                //className={classes.tankMixRadioGroup}
                 name="tank_mix">
                 <FormControlLabel value={true} control={<Radio disabled={props.disabled} />} label="On" />
                 <FormControlLabel value={false} control={<Radio disabled={props.disabled} />} label="Off" />
               </RadioGroup>
             </Box>
-            <Box className={classes.generalFieldColumn}>
+            <Box 
+            //className={classes.generalFieldColumn}
+            >
               <Tooltip
                 classes={{ tooltip: 'toolTip' }}
                 style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
@@ -260,7 +270,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 className={null}
                 disabled={props.disabled}
                 actualValue={chemicalApplicationMethod}
-                classes={classes}
+              //  classes={classes}
                 key={'chemical-application-method'}
                 id={'chemical-application-method'}
                 label={'Chemical Application Method'}

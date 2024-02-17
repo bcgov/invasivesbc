@@ -1,19 +1,20 @@
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-import makeStyles from '@mui/styles/makeStyles';
+//import makeStyles from '@mui/styles/makeStyles';
 import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
 import { Grid, Tooltip } from '@mui/material';
 import { canExpand, getTemplate, ObjectFieldTemplateProps } from '@rjsf/utils';
 import 'UI/Global.css';
 
-const useStyles = makeStyles({
+/*const useStyles = makeStyles({
   root: {
     marginTop: 10
   }
 });
+*/
 
 const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
-  const classes = useStyles();
+  //const classes = useStyles();
 
   const DescriptionField = getTemplate('DescriptionFieldTemplate', props.registry, props.uiSchema);
   const TitleField = getTemplate('TitleFieldTemplate', props.registry, props.uiSchema);
@@ -28,7 +29,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
       {props.description && (
         <DescriptionField id={`${props.idSchema.$id}-description`} description={props.description} />
       )}
-      <Grid container={true} spacing={2} className={classes.root}>
+      <Grid container={true} spacing={2} >
         {props.properties.map((element: any, index: number) => (
           <Grid
             item={true}

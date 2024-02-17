@@ -5,7 +5,7 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { useMap, useMapEvent } from 'react-leaflet';
 import { IconButton, Tooltip } from '@mui/material';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import { MAP_TOGGLE_WHATS_HERE, MAP_WHATS_HERE_FEATURE, TOGGLE_PANEL } from 'state/actions';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
@@ -51,8 +51,8 @@ export const WhatsHereButton = (props) => {
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' ' +
-                ((whatsHere as any)?.toggle ? toolClass.selected : toolClass.notSelected)
+                ' ' //+
+             //   ((whatsHere as any)?.toggle ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               {(whatsHere as any)?.loadingActivities || (whatsHere as any)?.loadingIAPP ? <HourglassTopIcon /> : <></>}

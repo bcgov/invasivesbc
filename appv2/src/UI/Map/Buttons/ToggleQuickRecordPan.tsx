@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
 import { useMap } from 'react-leaflet';
 import { IconButton, Tooltip } from '@mui/material';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
 import { OPEN_NEW_RECORD_MENU, TOGGLE_QUICK_PAN_TO_RECORD } from 'state/actions';
@@ -46,8 +46,8 @@ export const QuickPanToRecordToggle = (props) => {
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' ' +
-                (quickPanToRecord ? toolClass.selected : toolClass.notSelected)
+                ' ' //+
+          //     (quickPanToRecord ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               <PlaylistPlayIcon />

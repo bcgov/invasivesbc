@@ -119,7 +119,6 @@ export default defineConfig({
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
       stream: 'rollup-plugin-node-polyfills/polyfills/stream',
-      '@mui/styled-engine': '@mui/styled-engine-sc'
     }
   }
 });

@@ -25,16 +25,17 @@ import {
   Tooltip,
   Theme
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+//import { makeStyles } from '@mui/styles';
 import { SelectChangeEvent } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 
-const useStyles = makeStyles((theme: Theme) => ({
+/*const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: '320px'
   }
 }));
+*/
 
 interface IAccessRequestPage {
   classes?: any;
@@ -44,7 +45,7 @@ interface IAccessRequestPage {
 const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const history = useHistory();
   const api = useInvasivesApi();
-  const classes = useStyles();
+ // const classes = useStyles();
   const [transferAccess] = useState('yes');
   const [accountType, setAccountType] = useState('');
 

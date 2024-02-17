@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
 import { useMap } from 'react-leaflet';
 import { IconButton, Tooltip } from '@mui/material';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import { MAP_TOGGLE_LEGENDS, TOGGLE_PANEL } from 'state/actions';
 import 'UI/Global.css';
@@ -54,9 +54,9 @@ export const LegendsButton = (props) => {
               }}
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
-                ' legend ' +
+                ' legend ' //+
                 // (mapState?.legendsPopup ? toolClass.selected : toolClass.notSelected)
-                toolClass.notSelected
+             //   toolClass.notSelected
               }
               sx={{ color: '#000' }}>
               <InfoIcon />

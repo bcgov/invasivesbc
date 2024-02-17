@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
 import { useMap } from 'react-leaflet';
 import { IconButton, Tooltip } from '@mui/material';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
 import { OPEN_NEW_RECORD_MENU } from 'state/actions';
@@ -41,7 +41,7 @@ export const NewRecord = (props) => {
               onClick={() => {
                 dispatch({ type: OPEN_NEW_RECORD_MENU });
               }}
-              className={'leaflet-control-zoom leaflet-bar leaflet-control ' + ' ' + toolClass.notSelected}
+              className={'leaflet-control-zoom leaflet-bar leaflet-control ' /*+ ' ' + toolClass.notSelected*/}
               sx={{ color: '#000' }}>
               <FiberNewIcon />
             </IconButton>

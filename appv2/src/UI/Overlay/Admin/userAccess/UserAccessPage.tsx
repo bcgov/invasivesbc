@@ -22,7 +22,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
+//import { makeStyles } from '@mui/styles';
 import {
   DataGrid,
   GridColDef,
@@ -42,7 +42,7 @@ interface IAccessRequestPage {
   classes?: any;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
+/*const useStyles = makeStyles((theme: Theme) => ({
   root: {
     width: '320px'
   },
@@ -69,6 +69,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     paddingBottom: theme.spacing(4)
   }
 }));
+*/
 
 function escapeRegExp(value: string): string {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');

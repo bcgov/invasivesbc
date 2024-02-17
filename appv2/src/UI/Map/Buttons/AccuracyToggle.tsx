@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import * as L from 'leaflet';
 import { Circle, useMap } from 'react-leaflet';
 import { IconButton, Tooltip } from '@mui/material';
-import { toolStyles } from 'UI/Styles/ToolStyles';
+//import { toolStyles } from 'UI/Styles/ToolStyles';
 import { useSelector } from 'util/use_selector';
 import { MAP_TOGGLE_ACCURACY } from 'state/actions';
 import 'UI/Global.css';
@@ -16,7 +16,7 @@ export const AccuracyToggle = (props) => {
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
 
   const [show, setShow] = React.useState(false);
-  const toolClass = toolStyles(); // Get the classes from the context
+  //const toolClass = toolStyles(); // Get the classes from the context
 
   const divRef = useRef();
   useEffect(() => {
@@ -45,8 +45,8 @@ export const AccuracyToggle = (props) => {
               className={
                 'leaflet-control-zoom leaflet-bar leaflet-control ' +
                 // toolClass.customHoverFocus +
-                ' ' +
-                (accuracyToggle ? toolClass.selected : toolClass.notSelected)
+                ' '// +
+             //   (accuracyToggle ? toolClass.selected : toolClass.notSelected)
               }
               sx={{ color: '#000' }}>
               <AttributionIcon />

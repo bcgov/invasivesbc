@@ -68,12 +68,12 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
 }
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
-  const currentState = yield select(selectUserSettings);
-  const mapState = yield select(selectMap);
+  const currentState = yield select((state) => state.UserSettings );
+  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries );
   let filterObject = getRecordFilterObjectFromStateForAPI(
     action.payload.recordSetID,
     currentState,
-    mapState?.clientBoundaries
+    clientBoundaries
   );
   //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
   filterObject.limit = 200000;
@@ -102,12 +102,12 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
 
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
-    const currentState = yield select(selectUserSettings);
-    const mapState = yield select(selectMap);
+  const currentState = yield select((state) => state.UserSettings );
+  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries );
     let filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
-      mapState?.clientBoundaries
+      clientBoundaries
     );
     //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
     filterObject.limit = 200000;
@@ -140,7 +140,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
     })?.[0]?.geojson;
   };
   const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
-  const recordSetType = recordSetsState?.recordSets?.[recordSetID]?.recordSetType;
+  const recordSetType = JSON.parse(JSON.stringify(recordSetsState?.recordSets?.[recordSetID]?.recordSetType))
   const sortColumns = recordSet?.sortColumns;
   const tableFilters = recordSet?.tableFilters;
   let modifiedTableFilters = tableFilters?.map((filter) => {
@@ -163,8 +163,8 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   try {
     // new filter object:
-    const currentState = yield select(selectUserSettings);
-    const mapState = yield select(selectMap);
+  const currentState = yield select((state) => state.UserSettings );
+    const mapState = yield select((state) => state.Map );
     let filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
@@ -208,8 +208,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
 
 export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   try {
-    const currentState = yield select(selectUserSettings);
-    const mapState = yield select(selectMap);
+    const currentState = yield select((state) => state.UserSettings );
+    const mapState = yield select((state) => state.Map );
     let filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
@@ -258,7 +258,7 @@ function largePush(src, dest) {
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
-  const currentMapState = yield select(selectMap);
+  const currentMapState = yield select((state) => state.Map);
 
   const featuresFilteredByUserShape = Object.values(currentMapState?.IAPPGeoJSONDict)?.filter((feature: any) => {
     // IAPP will always be a points
@@ -291,7 +291,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
-  let currentMapState = yield select(selectMap);
+  let currentMapState = yield select((state) => state.Map);
 
   if (!currentMapState?.activitiesGeoJSONDict || !currentMapState?.IAPPGeoJSONDict) {
     yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);

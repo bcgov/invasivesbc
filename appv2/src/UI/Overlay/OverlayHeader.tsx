@@ -27,6 +27,7 @@ const minimize = (e) => {
 
 const setButtonContainerHeight = (height) => {
   const buttonContainer = document.getElementById('map-btn-container');
+  if(!buttonContainer?.style) return;
   buttonContainer.style.marginBottom = height + 10 + 'px';
 }
 
