@@ -8,7 +8,8 @@ import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
 import { ActivityGeo } from './Map/ActivityGeo';
 import { ButtonContainer } from './Map/Buttons/ButtonContainer';
-import Map from './Map/Map';
+//import Map from './Map/Map';
+import{ Map} from './Map2/Map';
 import { MapCenterSetter } from './Map/MapCenterSetter';
 import UserAccessPage from './Overlay/Admin/userAccess/UserAccessPage';
 import BatchCreateNew from './Overlay/Batch/BatchCreateNew';
@@ -152,14 +153,15 @@ const App: React.FC = () => {
   return (
     <div id="app" className="App">
       <Header />
-      <Map className="Map">
+      {/*<Map className="Map">*/}
+      <Map >
       <ButtonContainer></ButtonContainer>
       <DrawCustomLayer/>
       <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
       <Route exact={false} path="/Records" render={(props) => <OnHoverActivity />} />
       <MapCenterSetter />
       <LayerPickerBasic />
-    </Map>
+  </Map>
       <Overlay>
         <OverlayContentMemo />
       </Overlay>
