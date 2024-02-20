@@ -8,7 +8,18 @@ import './map.css';
 // Draw tools:
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useHistory } from 'react-router';
-import { mapInit, rebuildLayersOnTableHashUpdate, refreshColoursOnColourUpdate, refreshVisibilityOnToggleUpdate, removeDeletedRecordSetLayersOnRecordSetDelete, addWMSLayersIfNotExist, handlePositionTracking, toggleLayerOnBool } from './Helpers';
+import {
+  mapInit,
+  rebuildLayersOnTableHashUpdate,
+  refreshColoursOnColourUpdate,
+  refreshVisibilityOnToggleUpdate,
+  removeDeletedRecordSetLayersOnRecordSetDelete,
+  addWMSLayersIfNotExist,
+  handlePositionTracking,
+  toggleLayerOnBool,
+  initDrawModes,
+  refreshDrawControls,
+} from './Helpers';
 
 /* 
 
@@ -58,12 +69,16 @@ export const Map = (props: any) => {
   });
 
   const baseMapToggle = useSelector((state: any) => state.Map?.baseMapToggle);
+
+  // Draw tools - determing who needs edit and where the geos get dispatched, what tools to display etc
   const whatsHereToggle = useSelector((state: any) => state.Map?.whatsHere?.toggle);
+  const appModeUrl = useSelector((state: any) => state.AppMode.url);
+  const activityGeo = useSelector((state: any) => state.ActivityPage?.activity?.geometry)
 
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated) return;
-    mapInit(map, mapContainer, setDraw, dispatch, history);
+    mapInit(map, mapContainer, setDraw, dispatch, history, appModeUrl, activityGeo);
   }, [authInitiated]);
 
   // RecordSet Layers:
@@ -101,13 +116,11 @@ export const Map = (props: any) => {
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
   }, [baseMapToggle]);
 
-
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
-    if (whatsHereToggle && draw) {
-      draw.changeMode('whats_here_box_mode');
-    }
-  }, [whatsHereToggle]);
+    if (!map.current) return;
+    refreshDrawControls(map.current, draw,  setDraw, dispatch, history, whatsHereToggle, appModeUrl, activityGeo)
+  }, [whatsHereToggle, appModeUrl, map, activityGeo]);
 
   return (
     <div className="MapWrapper">
@@ -116,3 +129,4 @@ export const Map = (props: any) => {
     </div>
   );
 };
+
