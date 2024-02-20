@@ -46,7 +46,7 @@ export const mapInit = (map, mapContainer, drawSetter, dispatch, history) => {
       zoom: h.maxZoom - 2,
       center: [h.centerLon, h.centerLat],
       style: {
-        glyphs: 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
         version: 8,
         sources: {
           'wms-test-source': {
@@ -264,14 +264,15 @@ export const deleteStaleActivityLayer = (map: any, layer: any) => {
 };
 
 export const createIAPPLayer = (map: any, layer: any) => {
+  const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
   map
-    .addSource(layer.recordSetID, {
+    .addSource(layerID, {
       type: 'geojson',
       data: layer.geoJSON
     })
     .addLayer({
-      id: layer.recordSetID,
-      source: layer.recordSetID,
+      id: layerID,
+      source: layerID,
       type: 'circle',
       paint: {
         'circle-color': layer.layerState.color,
@@ -282,9 +283,9 @@ export const createIAPPLayer = (map: any, layer: any) => {
     });
 
   map.addLayer({
-    id: 'label-' + layer.recordSetID,
+    id: 'label-' + layerID,
     type: 'symbol',
-    source: layer.recordSetID,
+    source: layerID,
     layout: {
       //                'icon-image': 'dog-park-11',
       'text-field': [
@@ -311,29 +312,40 @@ export const createIAPPLayer = (map: any, layer: any) => {
   });
 };
 
-export const deleteIAPPLayer = (map: any, layer: any) => {
-  if (map.getLayer(layer.recordSetID)) {
-    try {
-      map.removeLayer(layer.recordSetID);
-    } catch (e) {
-      console.log('error removing layer', e);
-    }
-  }
-  if (map.getLayer('label-' + layer.recordSetID)) {
-    try {
-      map.removeLayer('label-' + layer.recordSetID);
-    } catch (e) {
-      console.log('error removing layer', e);
-    }
-  }
+export const deleteStaleIAPPLayer = (map: any, layer: any) => {
+  const allLayersForRecordSet = map.getLayersOrder().filter((mapLayer: any) => {
+    return (
+      mapLayer.includes('recordset-layer-' + layer.recordSetID) ||
+      mapLayer.includes('label-' + layer.recordSetID) 
+    );
+  });
 
-  if (map.getSource(layer.recordSetID)) {
+  const stale = allLayersForRecordSet.filter((mapLayer) => {
+    return !mapLayer.includes(layer.tableFiltersHash);
+  });
+
+  stale.map((staleLayer) => {
     try {
-      map.removeSource(layer.recordSetID);
+      map.removeLayer(staleLayer);
     } catch (e) {
-      console.log('error removing source', e);
+      console.log('error removing layer' + staleLayer);
     }
-  }
+  });
+
+
+  const staleSources = Object.keys(map.style.sourceCaches).filter((source) => {
+    return source.includes('recordset-layer-' + layer.recordSetID) && !source.includes(layer.tableFiltersHash);
+  });
+
+  staleSources?.map((staleSource) => {
+    if (map.getSource(staleSource)) {
+      try {
+        map.removeSource(staleSource);
+      } catch (e) {
+        console.log('error removing source', e);
+      }
+    }
+  });
 };
 
 export const rebuildLayersOnTableHashUpdate = (storeLayers, map) => {
@@ -348,8 +360,13 @@ export const rebuildLayersOnTableHashUpdate = (storeLayers, map) => {
           createActivityLayer(map, layer);
         }
       } else if (layer.type === 'IAPP') {
-        // deleteIAPPLayer(map, layer);
-        // createIAPPLayer(map, layer);
+        deleteStaleIAPPLayer(map, layer);
+        const existingSource = map.getSource(
+          'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
+        );
+        if (existingSource === undefined) {
+          createIAPPLayer(map, layer);
+        }
       }
     }
   });
@@ -367,10 +384,22 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
       switch (true) {
         case /^recordset-layer-/.test(mapLayer):
           const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
+          if(layer.type === 'Activity')
+          {
+
           currentColor = fillPolygonLayerStyle.paint['fill-color'];
           if (currentColor !== layer.layerState.color) {
             map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color);
             map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color);
+          }
+          }
+          else
+          {
+          currentColor = fillPolygonLayerStyle.paint['circle-color'];
+          if (currentColor !== layer.layerState.color) {
+            map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color);
+          }
+
           }
           break;
         case /polygon-border-/.test(mapLayer):
