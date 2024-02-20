@@ -15,7 +15,7 @@ MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
-export const mapInit = (map, mapContainer, drawSetter, dispatch, history) => {
+export const mapInit = (map, mapContainer, drawSetter, dispatch, history, appModeUrl, activityGeo) => {
   const protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {
@@ -138,7 +138,15 @@ export const mapInit = (map, mapContainer, drawSetter, dispatch, history) => {
         ]
       }
     });
-    initDrawModes(map.current, drawSetter, dispatch, history);
+    if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
+      initDrawModes(map.current, drawSetter, dispatch, history, true, null);
+    }
+
+    if (/Records/.test(appModeUrl)) {
+      if (/Activity/.test(appModeUrl)) {
+        initDrawModes(map.current, drawSetter, dispatch, history, false, activityGeo);
+      }
+    }
   });
 };
 
@@ -314,10 +322,7 @@ export const createIAPPLayer = (map: any, layer: any) => {
 
 export const deleteStaleIAPPLayer = (map: any, layer: any) => {
   const allLayersForRecordSet = map.getLayersOrder().filter((mapLayer: any) => {
-    return (
-      mapLayer.includes('recordset-layer-' + layer.recordSetID) ||
-      mapLayer.includes('label-' + layer.recordSetID) 
-    );
+    return mapLayer.includes('recordset-layer-' + layer.recordSetID) || mapLayer.includes('label-' + layer.recordSetID);
   });
 
   const stale = allLayersForRecordSet.filter((mapLayer) => {
@@ -331,7 +336,6 @@ export const deleteStaleIAPPLayer = (map: any, layer: any) => {
       console.log('error removing layer' + staleLayer);
     }
   });
-
 
   const staleSources = Object.keys(map.style.sourceCaches).filter((source) => {
     return source.includes('recordset-layer-' + layer.recordSetID) && !source.includes(layer.tableFiltersHash);
@@ -384,22 +388,17 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
       switch (true) {
         case /^recordset-layer-/.test(mapLayer):
           const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-          if(layer.type === 'Activity')
-          {
-
-          currentColor = fillPolygonLayerStyle.paint['fill-color'];
-          if (currentColor !== layer.layerState.color) {
-            map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color);
-            map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color);
-          }
-          }
-          else
-          {
-          currentColor = fillPolygonLayerStyle.paint['circle-color'];
-          if (currentColor !== layer.layerState.color) {
-            map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color);
-          }
-
+          if (layer.type === 'Activity') {
+            currentColor = fillPolygonLayerStyle.paint['fill-color'];
+            if (currentColor !== layer.layerState.color) {
+              map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color);
+              map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color);
+            }
+          } else {
+            currentColor = fillPolygonLayerStyle.paint['circle-color'];
+            if (currentColor !== layer.layerState.color) {
+              map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color);
+            }
           }
           break;
         case /polygon-border-/.test(mapLayer):
@@ -482,16 +481,29 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
 };
 
-export const initDrawModes = (map, drawSetter, dispatch, history) => {
+export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, activityGeo) => {
   var DoNothing: any = {};
   DoNothing.onSetup = function (opts) {
+  //  if(map.draw && activityGeo)
+    if(activityGeo)
+    {
+      this.addFeature(this.newFeature(activityGeo[0]))
+    }
+
     var state: any = {};
     state.count = opts.count || 0;
     return state;
   };
   DoNothing.onClick = function (state, e) {
-    //this.changeMode('draw_polygon');
+    this.changeMode('draw_polygon');
   };
+
+  DoNothing.toDisplayFeatures = function (state, geojson, display) {
+    geojson.properties.active = MapboxDraw.constants.activeStates.ACTIVE;
+    display(geojson);
+  };
+
+  DoNothing.on
 
   var WhatsHereBoxMode: any = { ...DrawRectangle };
 
@@ -538,8 +550,8 @@ export const initDrawModes = (map, drawSetter, dispatch, history) => {
 
   // Add the new draw mode to the MapboxDraw object
   var draw = new MapboxDraw({
-    displayControlsDefault: false,
-    defaultMode: 'do_nothing',
+    displayControlsDefault: !hideControls,
+    defaultMode: 'simple_select',
     // Adds the LotsOfPointsMode to the built-in set of modes
     modes: Object.assign(
       {
@@ -551,22 +563,66 @@ export const initDrawModes = (map, drawSetter, dispatch, history) => {
       MapboxDraw.modes
     )
   });
+  map.addControl(draw);
+
+  //  if(activityGeo)
+   // draw.add(activityGeo[0])
+
+  drawSetter(draw);
+
+  if (activityGeo) {
+    console.dir(activityGeo)
+    draw.add({ 'type': 'FeatureCollection', 'features': activityGeo});
+  }
 
   map.on('draw.create', (e) => {
     //enforce one at a time everywhere
     const feature = e.features[0];
-    draw.deleteAll();
-    draw.add(feature);
+    try {
+      console.dir(draw);
+      draw.deleteAll();
+      draw.add(feature);
+    } catch (e) {
+      console.log(e);
+    }
 
     // For whats here
-    dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
-    history.push('WhatsHere');
+    if (draw.getMode() === 'whats_here_box_draw') {
+      dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
+      history.push('WhatsHere');
+    }
   });
-  map.addControl(draw);
-  drawSetter(draw);
+
+
+  map.on('draw.update',(e) => {
+    //enforce one at a time everywhere
+    const feature = e.features[0];
+    try {
+      console.dir(draw);
+      draw.deleteAll();
+      draw.add(feature);
+    } catch (e) {
+      console.log(e);
+    }
+
+    dispatch({ type: 'test geo', payload: feature})
+
+    // For whats here
+    if (draw.getMode() === 'whats_here_box_draw') {
+      dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
+      history.push('WhatsHere');
+    }
+  });
 };
 
-export const handlePositionTracking = (map, positionMarker, userCoords, accuracyCircle, accuracyToggle, positionTracking) => {
+export const handlePositionTracking = (
+  map,
+  positionMarker,
+  userCoords,
+  accuracyCircle,
+  accuracyToggle,
+  positionTracking
+) => {
   function animateMarker(timestamp) {
     positionMarker.setLngLat([userCoords.long, userCoords.lat]);
     // Ensure it's added to the map. This is safe to call if it's already added.
@@ -620,4 +676,60 @@ export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
           minzoom: 0
         });
   });
+};
+
+export const refreshDrawControls = (
+  map,
+  draw,
+  drawSetter,
+  dispatch,
+  history,
+  whatsHereToggle,
+  appModeUrl,
+  activityGeo
+) => {
+  /* 
+          We fully tear down map box draw and readd depending on app state / route, to have conditionally rendered controls:
+          Because mapbox draw doesn't clean up its old sources properly we need to do it manually 
+       */
+  map.getLayersOrder().map((layer) => {
+    if (/gl-draw/.test(layer)) {
+      map.removeLayer(layer);
+    }
+  });
+  Object.keys(map.style.sourceCaches).map((source) => {
+    if (/mapbox-gl-draw/.test(source)) {
+      map.removeSource(source);
+    }
+  });
+  try {
+    if (draw) {
+      map.removeControl(draw);
+      drawSetter(null);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+
+  if (!map.draw) {
+    if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
+      initDrawModes(map, drawSetter, dispatch, history, true, null);
+    }
+
+    if (/Records/.test(appModeUrl)) {
+      if (/Activity/.test(appModeUrl)) {
+        initDrawModes(map, drawSetter, dispatch, history, false, activityGeo);
+      } else {
+        initDrawModes(map, drawSetter, dispatch, history, false, null);
+      }
+    }
+  }
+
+  /*
+    if (whatsHereToggle && draw) {
+      draw.changeMode('whats_here_box_mode');
+    } else {
+      draw.changeMode('do_nothing');
+    }
+    */
 };
