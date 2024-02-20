@@ -14,13 +14,19 @@ import trainingVideosSaga from './sagas/training_videos';
 import userSettingsSaga from './sagas/userSettings';
 import { AppConfig } from './config';
 import { createBrowserHistory } from 'history';
+import { createSagaCrashHandler } from './sagas/error_handler';
 
 const historySingleton = createBrowserHistory();
 
 export let globalStore;
 
 export function setupStore(configuration: AppConfig) {
-  const sagaMiddleware = createSagaMiddleware();
+  const storeRef = {
+    store: null
+  };
+  const sagaMiddleware = createSagaMiddleware({
+    onError: createSagaCrashHandler(storeRef)
+  });
 
   const logger = createLogger({
     level: 'log',
@@ -30,8 +36,12 @@ export function setupStore(configuration: AppConfig) {
     logErrors: true,
     diff: false,
     diffPredicate: (getState, action) => {
-      if(action.type.includes('WHATS_HERE') || action.type.includes('URL_CHANGE') || action.type.includes('URL_CHANGE')) {
-      return true
+      if (
+        action.type.includes('WHATS_HERE') ||
+        action.type.includes('URL_CHANGE') ||
+        action.type.includes('URL_CHANGE')
+      ) {
+        return true;
       }
       //if ([RECORDSET_UPDATE_FILTER].includes(action.type)) {
       if (action.type.includes('WHATS_HERE')) {
@@ -73,6 +83,8 @@ export function setupStore(configuration: AppConfig) {
       }
     });
   });
+
+  storeRef.store = globalStore;
 
   return globalStore;
 }

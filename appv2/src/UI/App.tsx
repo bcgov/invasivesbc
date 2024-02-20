@@ -9,7 +9,7 @@ import { Header } from './Header/Header';
 import { ActivityGeo } from './Map/ActivityGeo';
 import { ButtonContainer } from './Map/Buttons/ButtonContainer';
 //import Map from './Map/Map';
-import{ Map} from './Map2/Map';
+import { Map } from './Map2/Map';
 import { MapCenterSetter } from './Map/MapCenterSetter';
 import UserAccessPage from './Overlay/Admin/userAccess/UserAccessPage';
 import BatchCreateNew from './Overlay/Batch/BatchCreateNew';
@@ -36,7 +36,8 @@ import NewRecordDialog from './Map/Buttons/NewRecordDialog';
 import AccessRequestPage from './Overlay/AccessRequest/AccessRequestPage';
 import CustomizeLayerMenu from './Map/Buttons/CustomizeLayerDialog';
 import { DrawCustomLayer } from './Map/DrawCustomLayer';
-
+import { selectGlobalErrorState } from '../state/reducers/error_handler';
+import { ErrorHandler } from './ErrorHandler/ErrorHandler';
 
 export const RENDER_DEBUG = false;
 
@@ -57,8 +58,7 @@ const OverlayContentMemo = (props) => {
   //React.memo((props: any) => {
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%cOverlay content render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) console.log('%cOverlay content render:' + ref.current.toString(), 'color: yellow');
 
   const overlayMenuOpen = useSelector((state: any) => state.AppMode?.overlay_menu_toggle);
   const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
@@ -135,38 +135,38 @@ const OverlayContentMemo = (props) => {
       <Route path="/Training" render={(props) => <TrainingPage />} />
       <Route path="/Legend" render={(props) => <LegendsPopup />} />
       <Route path="/AccessRequest" render={(props) => <AccessRequestPage />} />
-        <Route path="/Admin" render={(props) => <UserAccessPage />} />
+      <Route path="/Admin" render={(props) => <UserAccessPage />} />
       <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
     </div>
   );
 };
 
-
-
-
-
 const App: React.FC = () => {
-  const authInitiated = useSelector((state: any) => state.Auth.initialized)
+  const authInitiated = useSelector((state: any) => state.Auth.initialized);
+  const { detail: errorDetail, actions, hasCrashed } = useSelector(selectGlobalErrorState);
+
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
 
-  if(!authInitiated)
-  return <div id='app-pre-auth-init'/>
+  if (!authInitiated) return <div id="app-pre-auth-init" />;
+
+  if (hasCrashed) {
+    return <ErrorHandler detail={errorDetail} actions={actions} />;
+  }
 
   return (
     <div id="app" className="App">
       <Header />
       {/*<Map className="Map">*/}
-      <Map >
-      <ButtonContainer></ButtonContainer>
-      {/*<DrawCustomLayer/>
+      <Map>
+        <ButtonContainer></ButtonContainer>
+        {/*<DrawCustomLayer/>
       <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
       <Route exact={false} path="/Records" render={(props) => <OnHoverActivity />} />
       <MapCenterSetter />
   <LayerPickerBasic />*/}
-  </Map>
+      </Map>
       <Overlay>
         <OverlayContentMemo />
       </Overlay>
