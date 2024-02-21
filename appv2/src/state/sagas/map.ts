@@ -17,6 +17,7 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+  ACTIVITY_UPDATE_GEO_REQUEST,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
   IAPP_EXTENT_FILTER_REQUEST,
@@ -34,6 +35,8 @@ import {
   MAP_INIT_REQUEST,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
+  MAP_ON_SHAPE_CREATE,
+  MAP_ON_SHAPE_UPDATE,
   MAP_SET_COORDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
@@ -823,6 +826,24 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
   console.dir(action.payload);
 }
 
+function* handle_MAP_ON_SHAPE_CREATE(action) {
+  const appModeUrl = yield select((state:any) => state.AppMode.url)
+  const whatsHereToggle = yield select((state:any)=> state.Map.whatsHere.toggle)
+
+  if(appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
+    yield put({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload]  }})
+  }
+
+}
+function* handle_MAP_ON_SHAPE_UPDATE(action) {
+  const appModeUrl = yield select((state:any) => state.AppMode.url)
+  const whatsHereToggle = yield select((state:any)=> state.Map.whatsHere.toggle)
+
+  if(appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
+    yield put({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload]  }})
+  }
+}
+
 function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
   yield all([
@@ -869,7 +890,9 @@ function* activitiesPageSaga() {
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
-    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries)
+    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries),
+    takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
+    takeEvery(MAP_ON_SHAPE_UPDATE,handle_MAP_ON_SHAPE_UPDATE )
   ]);
 }
 
