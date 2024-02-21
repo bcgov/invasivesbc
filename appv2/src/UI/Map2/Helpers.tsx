@@ -7,7 +7,7 @@ import './map.css';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import { MAP_WHATS_HERE_FEATURE, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE} from 'state/actions';
+import { MAP_WHATS_HERE_FEATURE, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import { feature } from '@turf/helpers';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -483,23 +483,19 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
 };
 
 export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, activityGeo) => {
-  map?._listeners['draw.create']?.map((l) => {
-    if(/customDrawListener/.test(l.name)){
-      map.off('draw.create', l)
-    }
-  })
-  map?._listeners['draw.update']?.map((l) => {
-    if(/customDrawListener/.test(l.name)){
-      map.off('draw.update', l)
-    }
-  })
+  ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
+    map?._listeners[eName]?.map((l) => {
+      if (/customDrawListener/.test(l.name)) {
+        map.off(eName, l);
+      }
+    });
+  });
 
   var DoNothing: any = {};
   DoNothing.onSetup = function (opts) {
-  //  if(map.draw && activityGeo)
-    if(activityGeo)
-    {
-      this.addFeature(this.newFeature(activityGeo[0]))
+    //  if(map.draw && activityGeo)
+    if (activityGeo) {
+      this.addFeature(this.newFeature(activityGeo[0]));
     }
 
     var state: any = {};
@@ -515,7 +511,7 @@ export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, 
     display(geojson);
   };
 
-  DoNothing.on
+  DoNothing.on;
 
   var WhatsHereBoxMode: any = { ...DrawRectangle };
 
@@ -578,15 +574,14 @@ export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, 
   map.addControl(draw);
 
   //  if(activityGeo)
-   // draw.add(activityGeo[0])
+  // draw.add(activityGeo[0])
 
   drawSetter(draw);
 
   if (activityGeo) {
-    console.dir(activityGeo)
-    draw.add({ 'type': 'FeatureCollection', 'features': activityGeo});
+    console.dir(activityGeo);
+    draw.add({ type: 'FeatureCollection', features: activityGeo });
   }
-
 
   const customDrawListenerCreate = (e) => {
     //enforce one at a time everywhere
@@ -603,15 +598,15 @@ export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, 
     if (draw.getMode() === 'whats_here_box_draw') {
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
       history.push('WhatsHere');
-    }
-    else {
-      dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature})
+    } else {
+      dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
     }
   };
 
   const customDrawListenerUpdate = (e) => {
     const feature = e.features[0];
-   /* try {
+    console.dir(feature);
+    /* try {
       console.dir(draw);
       draw.deleteAll();
       draw.add(feature);
@@ -620,21 +615,44 @@ export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, 
     }
     */
 
-      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature})
+    // dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature})
 
     // For whats here
     if (draw.getMode() === 'whats_here_box_draw') {
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
       history.push('WhatsHere');
     }
+  };
+  const customDrawListenerSelectionChange = (e) => {
+    const editedGeo = draw.getAll()?.features[0]
 
+    /* try {
+      console.dir(draw);
+      draw.deleteAll();
+      draw.add(feature);
+    } catch (e) {
+      console.log(e);
+    }
+    */
 
-  }
+    console.dir(e)
+    console.dir(editedGeo)
+    if(editedGeo.id !== e?.features[0]?.id)
+    {
+     dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo})
+    }
 
-  map.on('draw.create', customDrawListenerCreate );
-  map.on('draw.update', customDrawListenerUpdate );
-}
+    // For whats here
+    if (draw.getMode() === 'whats_here_box_draw') {
+      dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: editedGeo.geometry } } });
+      history.push('WhatsHere');
+    }
+  };
 
+  map.on('draw.create', customDrawListenerCreate);
+  map.on('draw.update', customDrawListenerUpdate);
+  map.on('draw.selectionchange', customDrawListenerSelectionChange);
+};
 
 export const handlePositionTracking = (
   map,
