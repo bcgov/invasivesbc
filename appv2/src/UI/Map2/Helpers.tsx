@@ -16,7 +16,7 @@ MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
-export const mapInit = (map, mapContainer, drawSetter, dispatch, history, appModeUrl, activityGeo) => {
+export const mapInit = (map, mapContainer, drawSetter, dispatch, uHistory, appModeUrl, activityGeo, whats_here_toggle) => {
   const protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {
@@ -139,15 +139,7 @@ export const mapInit = (map, mapContainer, drawSetter, dispatch, history, appMod
         ]
       }
     });
-    if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
-      initDrawModes(map.current, drawSetter, dispatch, history, true, null);
-    }
-
-    if (/Records/.test(appModeUrl)) {
-      if (/Activity/.test(appModeUrl)) {
-        initDrawModes(map.current, drawSetter, dispatch, history, false, activityGeo);
-      }
-    }
+    refreshDrawControls(map.current, null, drawSetter, dispatch, uHistory, whats_here_toggle, appModeUrl, activityGeo)
   });
 };
 
@@ -482,7 +474,7 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
 };
 
-export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, activityGeo) => {
+export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls, activityGeo, whats_here_toggle) => {
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map?._listeners[eName]?.map((l) => {
       if (/customDrawListener/.test(l.name)) {
@@ -559,7 +551,11 @@ export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, 
   // Add the new draw mode to the MapboxDraw object
   var draw = new MapboxDraw({
     displayControlsDefault: !hideControls,
-    defaultMode: 'simple_select',
+    controls: {
+      'combine_features': false,
+      'uncombine_features': false
+    },
+    defaultMode: whats_here_toggle? 'whats_here_box_mode': 'simple_select',
     // Adds the LotsOfPointsMode to the built-in set of modes
     modes: Object.assign(
       {
@@ -595,9 +591,9 @@ export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, 
     }
 
     // For whats here
-    if (draw.getMode() === 'whats_here_box_draw') {
+    if (whats_here_toggle) {
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
-      history.push('WhatsHere');
+      uHistory.push('/WhatsHere');
     } else {
       dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
     }
@@ -615,14 +611,9 @@ export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, 
     }
     */
 
+  }
     // dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature})
 
-    // For whats here
-    if (draw.getMode() === 'whats_here_box_draw') {
-      dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
-      history.push('WhatsHere');
-    }
-  };
   const customDrawListenerSelectionChange = (e) => {
     const editedGeo = draw.getAll()?.features[0]
 
@@ -642,11 +633,6 @@ export const initDrawModes = (map, drawSetter, dispatch, history, hideControls, 
      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo})
     }
 
-    // For whats here
-    if (draw.getMode() === 'whats_here_box_draw') {
-      dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: editedGeo.geometry } } });
-      history.push('WhatsHere');
-    }
   };
 
   map.on('draw.create', customDrawListenerCreate);
@@ -722,7 +708,7 @@ export const refreshDrawControls = (
   draw,
   drawSetter,
   dispatch,
-  history,
+  uHistory,
   whatsHereToggle,
   appModeUrl,
   activityGeo
@@ -752,14 +738,13 @@ export const refreshDrawControls = (
 
   if (!map.draw) {
     if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
-      initDrawModes(map, drawSetter, dispatch, history, true, null);
+      initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle);
     }
-
-    if (/Records/.test(appModeUrl)) {
+    else if (/Records/.test(appModeUrl)) {
       if (/Activity/.test(appModeUrl)) {
-        initDrawModes(map, drawSetter, dispatch, history, false, activityGeo);
+        initDrawModes(map, drawSetter, dispatch, uHistory, false, activityGeo, whatsHereToggle);
       } else {
-        initDrawModes(map, drawSetter, dispatch, history, false, null);
+        initDrawModes(map, drawSetter, dispatch, uHistory, false, null, whatsHereToggle);
       }
     }
   }
