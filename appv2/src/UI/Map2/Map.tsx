@@ -7,7 +7,7 @@ import './map.css';
 
 // Draw tools:
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import {
   mapInit,
   rebuildLayersOnTableHashUpdate,
@@ -32,7 +32,7 @@ export const Map = (props: any) => {
   const mapContainer = useRef(null);
   const map = useRef(null);
   const dispatch = useDispatch();
-  const history = useHistory();
+  const uHistory = useHistory();
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const authInitiated = useSelector((state: any) => state.Auth.initialized);
@@ -78,7 +78,7 @@ export const Map = (props: any) => {
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated) return;
-    mapInit(map, mapContainer, setDraw, dispatch, history, appModeUrl, activityGeo);
+    mapInit(map, mapContainer, setDraw, dispatch, uHistory, appModeUrl, activityGeo, null);
   }, [authInitiated]);
 
   // RecordSet Layers:
@@ -119,7 +119,7 @@ export const Map = (props: any) => {
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
     if (!map.current) return;
-    refreshDrawControls(map.current, draw,  setDraw, dispatch, history, whatsHereToggle, appModeUrl, activityGeo)
+    refreshDrawControls(map.current, draw,  setDraw, dispatch, uHistory, whatsHereToggle, appModeUrl, activityGeo)
   }, [whatsHereToggle, appModeUrl, map, activityGeo]);
 
   return (

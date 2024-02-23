@@ -829,9 +829,25 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 function* handle_MAP_ON_SHAPE_CREATE(action) {
   const appModeUrl = yield select((state:any) => state.AppMode.url)
   const whatsHereToggle = yield select((state:any)=> state.Map.whatsHere.toggle)
+  let newGeo = null
+  if(action?.payload?.geometry?.type === 'LineString')
+  {
+    let width = null
+    while(typeof width !== 'number')
+    {
+      try {
+        width = Number(prompt('Enter width in m for line to be buffered: '))
+      }
+      catch(e)
+      {
+        alert('Not a number')
+      }
+    }
+    newGeo = turf.buffer(action.payload.geometry, width/1000)
+  }
 
   if(appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-    yield put({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload]  }})
+    yield put({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo? newGeo: action.payload]  }})
   }
 
 }
