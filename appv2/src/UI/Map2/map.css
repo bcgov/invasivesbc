@@ -1,7 +1,21 @@
 .userTrackingMarker {
-    display: block;
-        border: none;
-        border-radius: 50%;
-        cursor: pointer;
-        padding: 0;
+  display: block;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+}
+.IAPPMarkerEl {
+  display: block;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+}
+.activityMarkerEl {
+  display: block;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
 }

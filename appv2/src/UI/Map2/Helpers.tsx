@@ -1,4 +1,5 @@
 import maplibregl from 'maplibre-gl';
+import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
 import './map.css';
@@ -16,7 +17,16 @@ MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
-export const mapInit = (map, mapContainer, drawSetter, dispatch, uHistory, appModeUrl, activityGeo, whats_here_toggle) => {
+export const mapInit = (
+  map,
+  mapContainer,
+  drawSetter,
+  dispatch,
+  uHistory,
+  appModeUrl,
+  activityGeo,
+  whats_here_toggle
+) => {
   const protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {
@@ -139,7 +149,7 @@ export const mapInit = (map, mapContainer, drawSetter, dispatch, uHistory, appMo
         ]
       }
     });
-    refreshDrawControls(map.current, null, drawSetter, dispatch, uHistory, whats_here_toggle, appModeUrl, activityGeo)
+    refreshDrawControls(map.current, null, drawSetter, dispatch, uHistory, whats_here_toggle, appModeUrl, activityGeo);
   });
 };
 
@@ -552,10 +562,10 @@ export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls,
   var draw = new MapboxDraw({
     displayControlsDefault: !hideControls,
     controls: {
-      'combine_features': false,
-      'uncombine_features': false
+      combine_features: false,
+      uncombine_features: false
     },
-    defaultMode: whats_here_toggle? 'whats_here_box_mode': 'simple_select',
+    defaultMode: whats_here_toggle ? 'whats_here_box_mode' : 'simple_select',
     // Adds the LotsOfPointsMode to the built-in set of modes
     modes: Object.assign(
       {
@@ -610,12 +620,11 @@ export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls,
       console.log(e);
     }
     */
-
-  }
-    // dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature})
+  };
+  // dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature})
 
   const customDrawListenerSelectionChange = (e) => {
-    const editedGeo = draw.getAll()?.features[0]
+    const editedGeo = draw.getAll()?.features[0];
 
     /* try {
       console.dir(draw);
@@ -626,13 +635,11 @@ export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls,
     }
     */
 
-    console.dir(e)
-    console.dir(editedGeo)
-    if(editedGeo.id !== e?.features[0]?.id)
-    {
-     dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo})
+    console.dir(e);
+    console.dir(editedGeo);
+    if (editedGeo.id !== e?.features[0]?.id) {
+      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
-
   };
 
   map.on('draw.create', customDrawListenerCreate);
@@ -739,8 +746,7 @@ export const refreshDrawControls = (
   if (!map.draw) {
     if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
       initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle);
-    }
-    else if (/Records/.test(appModeUrl)) {
+    } else if (/Records/.test(appModeUrl)) {
       if (/Activity/.test(appModeUrl)) {
         initDrawModes(map, drawSetter, dispatch, uHistory, false, activityGeo, whatsHereToggle);
       } else {
@@ -756,4 +762,15 @@ export const refreshDrawControls = (
       draw.changeMode('do_nothing');
     }
     */
+};
+
+export const refreshCurrentRecMakers = (map, options: any) => {
+  if (options.IAPPMarker && options.currentIAPPGeo?.geometry && options.currentIAPPID) {
+    options.IAPPMarker.setLngLat(options.currentIAPPGeo.geometry.coordinates);
+    options.IAPPMarker.addTo(map);
+  }
+  if (options.activityMarker && options.activityGeo?.[0]?.geometry && options.currentActivityShortID) {
+    options.activityMarker.setLngLat(centroid(options.activityGeo[0]).geometry.coordinates);
+    options.activityMarker.addTo(map);
+  }
 };

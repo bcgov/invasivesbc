@@ -19,6 +19,7 @@ import {
   toggleLayerOnBool,
   initDrawModes,
   refreshDrawControls,
+  refreshCurrentRecMakers,
 } from './Helpers';
 
 /* 
@@ -51,11 +52,6 @@ export const Map = (props: any) => {
   const userCoords = useSelector((state: any) => state.Map?.userCoords);
   const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
-  const positionMarkerEl = document.createElement('div');
-  positionMarkerEl.className = 'userTrackingMarker';
-  positionMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
-  positionMarkerEl.style.width = `32px`;
-  positionMarkerEl.style.height = `32px`;
   const positionMarker = new maplibregl.Marker({ element: positionMarkerEl });
   const accuracyCircle = useSelector((state: any) => {
     if (state.Map?.userCoords?.long) {
@@ -73,7 +69,17 @@ export const Map = (props: any) => {
   // Draw tools - determing who needs edit and where the geos get dispatched, what tools to display etc
   const whatsHereToggle = useSelector((state: any) => state.Map?.whatsHere?.toggle);
   const appModeUrl = useSelector((state: any) => state.AppMode.url);
+  // also used with current marker below:
   const activityGeo = useSelector((state: any) => state.ActivityPage?.activity?.geometry)
+
+
+  //Current rec markers:
+  const currentActivityShortID = useSelector((state: any) => state.ActivityPage?.activity?.short_id)
+  const currentIAPPID = useSelector((state:any) => state?.IAPPSitePage?.site?.site_id)
+  const currentIAPPGeo = useSelector((state:any) => state?.IAPPSitePage?.site?.geom)
+  const activityMarker = new maplibregl.Marker({ element: activityMarkerEl });
+  const IAPPMarker = new maplibregl.Marker({ element: IAPPMarkerEl });
+
 
   // Map Init
   useEffect(() => {
@@ -122,6 +128,18 @@ export const Map = (props: any) => {
     refreshDrawControls(map.current, draw,  setDraw, dispatch, uHistory, whatsHereToggle, appModeUrl, activityGeo)
   }, [whatsHereToggle, appModeUrl, map, activityGeo]);
 
+
+  //Current Activity & IAPP Markers
+  useEffect(()=> {
+    if (!map.current) return;
+    refreshCurrentRecMakers(map.current, { activityGeo, currentActivityShortID, currentIAPPID, currentIAPPGeo, activityMarker, IAPPMarker})
+  },[currentActivityShortID,currentIAPPID])
+
+  //Highlighted Record
+  useEffect(()=> {
+
+  },[])
+
   return (
     <div className="MapWrapper">
       <div ref={mapContainer} className="Map" />
@@ -130,3 +148,21 @@ export const Map = (props: any) => {
   );
 };
 
+
+  const positionMarkerEl = document.createElement('div');
+  positionMarkerEl.className = 'userTrackingMarker';
+  positionMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
+  positionMarkerEl.style.width = `32px`;
+  positionMarkerEl.style.height = `32px`;
+
+  const activityMarkerEl = document.createElement('div');
+  activityMarkerEl.className = 'activityMarkerEl';
+  activityMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
+  activityMarkerEl.style.width = `32px`;
+  activityMarkerEl.style.height = `32px`;
+
+  const IAPPMarkerEl = document.createElement('div');
+  IAPPMarkerEl.className = 'IAPPMarkerEl';
+  IAPPMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
+  IAPPMarkerEl.style.width = `32px`;
+  IAPPMarkerEl.style.height = `32px`;
