@@ -20,6 +20,7 @@ import {
   initDrawModes,
   refreshDrawControls,
   refreshCurrentRecMakers,
+  refreshHighlightedRecord,
 } from './Helpers';
 
 /* 
@@ -81,6 +82,11 @@ export const Map = (props: any) => {
   const IAPPMarker = new maplibregl.Marker({ element: IAPPMarkerEl });
 
 
+  //Highlighted Record from main records page:
+  const userRecordOnHoverRecordRow = useSelector((state:any) => state.Map?.userRecordOnHoverRecordRow)
+  const userRecordOnHoverRecordType = useSelector((state:any) => state.Map?.userRecordOnHoverRecordType)
+
+
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated) return;
@@ -137,8 +143,9 @@ export const Map = (props: any) => {
 
   //Highlighted Record
   useEffect(()=> {
+    refreshHighlightedRecord(map.current,{ userRecordOnHoverRecordRow, userRecordOnHoverRecordType})
+  },[userRecordOnHoverRecordRow])
 
-  },[])
 
   return (
     <div className="MapWrapper">
@@ -157,12 +164,12 @@ export const Map = (props: any) => {
 
   const activityMarkerEl = document.createElement('div');
   activityMarkerEl.className = 'activityMarkerEl';
-  activityMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
+  activityMarkerEl.style.backgroundImage = 'url(/assets/icon/clip.png)';
   activityMarkerEl.style.width = `32px`;
   activityMarkerEl.style.height = `32px`;
 
   const IAPPMarkerEl = document.createElement('div');
   IAPPMarkerEl.className = 'IAPPMarkerEl';
-  IAPPMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
+  IAPPMarkerEl.style.backgroundImage = 'url(/assets/iapp_logo.gif)';
   IAPPMarkerEl.style.width = `32px`;
   IAPPMarkerEl.style.height = `32px`;

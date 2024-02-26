@@ -774,3 +774,56 @@ export const refreshCurrentRecMakers = (map, options: any) => {
     options.activityMarker.addTo(map);
   }
 };
+
+export const refreshHighlightedRecord = (map, options: any) => {
+  const layerID = 'highlightRecordLayer';
+  if (map && map.getLayer(layerID)) {
+    map.removeLayer(layerID);
+    map.removeSource(layerID);
+  }
+
+  if (map && options.userRecordOnHoverRecordType === 'Activity' && options.userRecordOnHoverRecordRow) {
+    map
+      .addSource(layerID, {
+        type: 'geojson',
+        data: options.userRecordOnHoverRecordRow.geometry[0]
+      })
+      .addLayer({
+        id: layerID,
+        source: layerID,
+        type: 'fill',
+        paint: {
+          'fill-color': 'yellow',
+          'fill-outline-color': 'yellow',
+          'fill-opacity': 0.5
+        },
+        minzoom: 0,
+        maxzoom: 24
+      });
+  }
+
+  if (map && options.userRecordOnHoverRecordType === 'IAPP' && options.userRecordOnHoverRecordRow) {
+    map
+      .addSource(layerID, {
+        type: 'geojson',
+        data: options.userRecordOnHoverRecordRow.geometry
+      })
+      .addLayer({
+        id: layerID,
+        source: layerID,
+        type: 'circle',
+        paint: {
+          'circle-color': 'yellow',
+          'circle-radius': 3,
+        },
+        minzoom: 0,
+        maxzoom: 24
+      });
+  }
+
+  /*
+  highlightedACTIVITY
+  highlightedIAPP
+  highlighedGeo
+  */
+};
