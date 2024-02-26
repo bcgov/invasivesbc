@@ -821,6 +821,8 @@ export const refreshHighlightedRecord = (map, options: any) => {
       });
   }
 
+
+
   /*
   highlightedACTIVITY
   highlightedIAPP
