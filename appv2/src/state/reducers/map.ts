@@ -594,6 +594,19 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY: {
+          // moving to one place for this stuff:
+          draftState.userRecordOnHoverRecordRow = {
+            id: action.payload.id,
+            short_id: action.payload.short_id,
+            geometry: [
+              state?.whatsHere?.activityRows.filter((row) => {
+                return row.short_id === action.payload.short_id;
+              })[0].geometry
+            ]
+          };
+          draftState.userRecordOnHoverRecordType = 'Activity';
+
+          // to delete:
           draftState.whatsHere.highlightedType = 'Activity';
           draftState.whatsHere.highlightedURLID = action.payload.id;
           draftState.whatsHere.highlightedIAPP = null;
@@ -604,6 +617,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP: {
+          // moving to one place for this stuff:
+          draftState.userRecordOnHoverRecordRow = {
+            id: action.payload.id,
+            geometry: 
+              state?.whatsHere?.iappRows.filter((row) => {
+                return row.site_id === action.payload.id;
+              })[0].geometry
+          };
+          draftState.userRecordOnHoverRecordType = 'IAPP';
+
+          // to delete:
           draftState.whatsHere.highlightedType = 'IAPP';
           draftState.whatsHere.highlightedURLID = action.payload.id;
           draftState.whatsHere.highlightedIAPP = action.payload.id;
