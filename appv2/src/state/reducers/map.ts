@@ -64,7 +64,9 @@ import {
   IAPP_TABLE_ROWS_GET_REQUEST,
   PAN_AND_ZOOM_TO_ACTIVITY,
   IAPP_PAN_AND_ZOOM,
-  WHATS_HERE_ID_CLICKED
+  WHATS_HERE_ID_CLICKED,
+  TOGGLE_WMS_LAYER,
+  TOGGLE_LAYER_PICKER_OPEN
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -130,6 +132,7 @@ class MapState {
   viewFilters: boolean;
   whatsHere: any;
   workingLayerName: string;
+  layerPickerOpen: boolean;
 
   constructor() {
     this.CanTriggerCSV = true;
@@ -148,6 +151,7 @@ class MapState {
     this.currentOpenSet = null;
     this.customizeLayersToggle = false;
     this.drawingCustomLayer = false;
+    this.layerPickerOpen = false;
     this.layers = [];
     this.initialized = false;
     this.labelBoundsPolygon = null;
@@ -163,26 +167,135 @@ class MapState {
     this.recordTables = {};
     this.serverBoundaries = [];
     this.simplePickerLayers = [];
-    this.simplePickerLayers2 = [
+    this.simplePickerLayers2 = localStorage.getItem('localLayersConf')? JSON.parse(localStorage.getItem('localLayersConf')) : [
       {
         title: 'Regional Districts',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW'
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW',
+        toggle: false
       },
       {
         title: 'BC Parks',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS'
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS',
+        toggle: false
       },
       {
         title: 'Conservancy Areas',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY'
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY',
+        toggle: false
       },
       {
         title: 'Municipality Boundaries',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP'
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP',
+        toggle: false
+      },
+
+      {
+        title: 'Cut blocks',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP',
+          toggle: false
+      },
+      {
+        title: 'BC Parks',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
+          toggle: false
+      },
+      {
+        title: 'Conservancy Areas',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW',
+          toggle: false
+      },
+      {
+        title: 'Municipality Boundaries',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP',
+          toggle: false
+      },
+      {
+        title: 'BC Major Watersheds',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS',
+          toggle: false
+      },
+      {
+        title: 'Freshwater Atlas Rivers',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_BASEMAPPING.FWA_RIVERS_POLY',
+          toggle: false
+      },
+      {
+        title: 'Freshwater Lakes',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP',
+          toggle: false
+      },
+      {
+        title: 'Freshwater Atlas Stream Network',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
+          toggle: false
+      },
+      {
+        title: 'Water Licenses Drinking Water',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SP',
+          toggle: false
+      },
+      {
+        title: 'Water Rights Licenses',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV',
+          toggle: false
+      },
+      {
+        title: 'Water Wells',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+          toggle: false
+      },
+      {
+        title: 'Digital Road Atlas (DRA) - Master Partially-Attributed Roads',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
+          toggle: false
+      },
+      {
+        title: 'MOTI RFI',
+        type: 'wms',
+        url:
+          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+          'WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP',
+          toggle: false
       }
     ];
     this.tooManyLabelsDialog = { dialogActions: [], dialogOpen: false, dialogTitle: '', dialogContentText: null };
@@ -229,6 +342,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       */
     return createNextState(state, (draftState) => {
       switch (action.type) {
+        case TOGGLE_LAYER_PICKER_OPEN:
+          draftState.layerPickerOpen = !draftState.layerPickerOpen
+          break;
+        case TOGGLE_WMS_LAYER:
+          const index = draftState.simplePickerLayers2.findIndex((layer) => layer.url === action.payload.layer.url);
+          draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle
+          localStorage.setItem('localLayersConf', JSON.stringify(draftState.simplePickerLayers2))
+          break;
         case WHATS_HERE_ID_CLICKED:
           if (action.payload.type === 'Activity') {
             draftState.whatsHere.clickedActivity = action.payload.id;
@@ -620,10 +741,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           // moving to one place for this stuff:
           draftState.userRecordOnHoverRecordRow = {
             id: action.payload.id,
-            geometry: 
-              state?.whatsHere?.iappRows.filter((row) => {
-                return row.site_id === action.payload.id;
-              })[0].geometry
+            geometry: state?.whatsHere?.iappRows.filter((row) => {
+              return row.site_id === action.payload.id;
+            })[0].geometry
           };
           draftState.userRecordOnHoverRecordType = 'IAPP';
 

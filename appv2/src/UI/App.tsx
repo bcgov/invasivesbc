@@ -38,6 +38,7 @@ import CustomizeLayerMenu from './Map/Buttons/CustomizeLayerDialog';
 import { DrawCustomLayer } from './Map/DrawCustomLayer';
 import { selectGlobalErrorState } from '../state/reducers/error_handler';
 import { ErrorHandler } from './ErrorHandler/ErrorHandler';
+import { LayerPicker } from './Map2/LayerPicker';
 
 export const RENDER_DEBUG = false;
 
@@ -161,6 +162,7 @@ const App: React.FC = () => {
       {/*<Map className="Map">*/}
       <Map>
         <ButtonContainer></ButtonContainer>
+        <LayerPicker/>
         {/*<DrawCustomLayer/>
       <Route path="/Records/Activity:id" render={(props) => <ActivityGeo />} />
       <Route exact={false} path="/Records" render={(props) => <OnHoverActivity />} />

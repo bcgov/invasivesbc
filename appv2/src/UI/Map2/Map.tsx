@@ -21,6 +21,7 @@ import {
   refreshDrawControls,
   refreshCurrentRecMakers,
   refreshHighlightedRecord,
+  refreshWMSOnToggle,
 } from './Helpers';
 
 /* 
@@ -106,6 +107,7 @@ export const Map = (props: any) => {
   useEffect(() => {
     if (!map.current) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
+    refreshWMSOnToggle(simplePickerLayers2, map.current);
   }, [simplePickerLayers2, map]);
 
   // Jump Nav
