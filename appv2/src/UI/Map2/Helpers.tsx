@@ -577,7 +577,7 @@ export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls,
       MapboxDraw.modes
     )
   });
-  map.addControl(draw);
+  map.addControl(draw, 'top-left');
 
   //  if(activityGeo)
   // draw.add(activityGeo[0])
@@ -693,7 +693,7 @@ export const handlePositionTracking = (
 };
 export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
   simplePickerLayers2.map((layer) => {
-    if (!map.getSource(layer.url))
+    if (!map.getSource(layer.url) && layer.toggle && layer.type === 'wms')
       map
         .addSource(layer.url, {
           type: 'raster',
@@ -707,6 +707,20 @@ export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
           source: layer.url,
           minzoom: 0
         });
+  });
+};
+
+export const refreshWMSOnToggle = (simplePickerLayers2, map) => {
+  simplePickerLayers2.map((layer) => {
+    if (map.getLayer(layer.url)) {
+      const visibility = map.getLayoutProperty(layer.url, 'visibility');
+      if (visibility !== 'none' && !layer.toggle) {
+        map.setLayoutProperty(layer.url, 'visibility', 'none');
+      }
+      if (visibility !== 'visible' && layer.toggle) {
+        map.setLayoutProperty(layer.url, 'visibility', 'visible');
+      }
+    }
   });
 };
 
@@ -814,14 +828,12 @@ export const refreshHighlightedRecord = (map, options: any) => {
         type: 'circle',
         paint: {
           'circle-color': 'yellow',
-          'circle-radius': 3,
+          'circle-radius': 3
         },
         minzoom: 0,
         maxzoom: 24
       });
   }
-
-
 
   /*
   highlightedACTIVITY
