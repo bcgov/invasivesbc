@@ -165,13 +165,13 @@ class MapState {
     this.quickPanToRecord = false;
     this.recordSetForCSV = null;
     this.recordTables = {};
-    this.serverBoundaries = [];
+    this.serverBoundaries =  localStorage.getItem('serverLayersConf')? JSON.parse(localStorage.getItem('serverLayersConf')) : []
     this.simplePickerLayers = [];
     this.simplePickerLayers2 = localStorage.getItem('localLayersConf')? JSON.parse(localStorage.getItem('localLayersConf')) : [
       {
         title: 'Regional Districts',
         type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONAL_DISTRICTS_SVW',
+        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
         toggle: false
       },
       {
@@ -199,30 +199,6 @@ class MapState {
         url:
           'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
           'WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP',
-          toggle: false
-      },
-      {
-        title: 'BC Parks',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
-          toggle: false
-      },
-      {
-        title: 'Conservancy Areas',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW',
-          toggle: false
-      },
-      {
-        title: 'Municipality Boundaries',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP',
           toggle: false
       },
       {
@@ -562,8 +538,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case INIT_SERVER_BOUNDARIES_GET: {
-          //draftState.layers[action.payload.setID].loaded = false;
-          draftState.serverBoundaries = action.payload.data;
+          const withLocalToggles = action.payload.data.map((incomingItem) => {
+            let returnVal = {...incomingItem}
+            const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
+              oldItem.id === incomingItem;
+            })?.toggle
+            returnVal.toggle = existingToggleVal
+            return returnVal
+          })
+          draftState.serverBoundaries = withLocalToggles
+          localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries))
           break;
         }
         case USER_SETTINGS_SET_RECORDSET: {
