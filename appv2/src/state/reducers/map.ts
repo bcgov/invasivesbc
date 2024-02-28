@@ -66,7 +66,8 @@ import {
   IAPP_PAN_AND_ZOOM,
   WHATS_HERE_ID_CLICKED,
   TOGGLE_WMS_LAYER,
-  TOGGLE_LAYER_PICKER_OPEN
+  TOGGLE_LAYER_PICKER_OPEN,
+  TOGGLE_KML_LAYER
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -543,10 +544,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
               oldItem.id === incomingItem;
             })?.toggle
-            returnVal.toggle = existingToggleVal
+            returnVal.toggle = existingToggleVal !== null && existingToggleVal !== undefined?  existingToggleVal: false
             return returnVal
           })
           draftState.serverBoundaries = withLocalToggles
+          localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries))
+          break;
+        }
+        case TOGGLE_KML_LAYER: {
+          const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id)
+          console.log(index)
+          draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle
           localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries))
           break;
         }
