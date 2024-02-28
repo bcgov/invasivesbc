@@ -22,6 +22,8 @@ import {
   refreshCurrentRecMakers,
   refreshHighlightedRecord,
   refreshWMSOnToggle,
+  addServerBoundariesIfNotExists,
+  refreshServerBoundariesOnToggle,
 } from './Helpers';
 
 /* 
@@ -45,6 +47,9 @@ export const Map = (props: any) => {
 
   // WMS Layers
   const simplePickerLayers2 = useSelector((state: any) => state.Map?.simplePickerLayers2);
+
+  //KML
+  const serverBoundaries = useSelector((state: any) => state.Map?.serverBoundaries);
 
   // Map position jump
   const map_center = useSelector((state: any) => state.Map?.map_center);
@@ -108,7 +113,13 @@ export const Map = (props: any) => {
     if (!map.current) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
     refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2, map]);
+  }, [simplePickerLayers2]);
+
+
+  useEffect(()=> {
+    addServerBoundariesIfNotExists(serverBoundaries, map.current)
+    refreshServerBoundariesOnToggle(serverBoundaries, map.current)
+  },[serverBoundaries])
 
   // Jump Nav
   useEffect(() => {
