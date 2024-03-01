@@ -67,7 +67,8 @@ import {
   WHATS_HERE_ID_CLICKED,
   TOGGLE_WMS_LAYER,
   TOGGLE_LAYER_PICKER_OPEN,
-  TOGGLE_KML_LAYER
+  TOGGLE_KML_LAYER,
+  TOGGLE_DRAWN_LAYER
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -327,6 +328,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle
           localStorage.setItem('localLayersConf', JSON.stringify(draftState.simplePickerLayers2))
           break;
+        case TOGGLE_DRAWN_LAYER: {
+          const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
+          draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle
+          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries))
+          break;
+          
+        }
         case WHATS_HERE_ID_CLICKED:
           if (action.payload.type === 'Activity') {
             draftState.whatsHere.clickedActivity = action.payload.id;
@@ -484,9 +492,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.clientBoundaries.push({
             id: getUuid(),
             title: draftState?.workingLayerName,
-            geojson: action.payload.feature
+            geojson: action.payload.feature,
+            toggle: true
           });
           draftState.workingLayerName = null;
+          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries))
           break;
         }
         case DRAW_CUSTOM_LAYER: {
@@ -787,6 +797,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case REMOVE_CLIENT_BOUNDARY: {
           const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload.id);
           draftState.clientBoundaries.splice(index, 1);
+          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries))
           break;
         }
         case SET_CURRENT_OPEN_SET: {
