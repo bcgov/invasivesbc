@@ -36,7 +36,7 @@ export const BaseMapToggle = (props) => {
               dispatch({ type: MAP_TOGGLE_BASEMAP });
             }}
             >
-            {baseMapToggle ? <LayersClearIcon /> : <LayersIcon />}
+            {baseMapToggle ? 'TOPO': 'SAT'}
           </IconButton>
         </span>
       </Tooltip>

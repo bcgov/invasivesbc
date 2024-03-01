@@ -257,15 +257,6 @@ const dispatch = useDispatch();
 
       {props.children}
       <Control position="topright">
-        <Button
-          sx={{ maxWidth: '15px' }}
-          variant="contained"
-          onClick={() => {
-            dispatch({type: TOGGLE_CUSTOMIZE_LAYERS })
-          }}>
-          <LayersIcon sx={{ width: '15px' }} />
-          <SettingsIcon sx={{ width: '15px' }} />
-        </Button>
       </Control>
     </LayersControl>
   );
