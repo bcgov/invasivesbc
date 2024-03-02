@@ -1,16 +1,22 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { globalStore } from '../state/store';
-import App from '../UI/App';
-import { render } from '@testing-library/react';
-import React from 'react';
+import { store } from '../main';
+import { waitFor } from '@testing-library/react';
 
-describe('app state', function () {
-  beforeEach(() => {
-    render(<App />);
+describe('App init state, pre-login', function () {
+  beforeEach(async () => {
+    require('../main');
+
+    await waitFor(() => {
+      expect(store).toBeDefined();
+    });
   });
 
-  it('initializes', function () {
-    const state = globalStore.getState();
-    expect(state.Map.layers.length).toBe(0);
+  it('Map array has expected layers logged out', function () {
+    const state = store.getState();
+
+    // We don't pass state.Map directly to expect or else it logs the whole state blob
+    const mapLayerArrayLength = state.Map.layers.length
+    expect(mapLayerArrayLength).toBe(0);
   });
+
 });
