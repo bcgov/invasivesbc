@@ -9,7 +9,7 @@ import './main.css';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 
-let store;
+export let store;
 import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) => {
   store = setupStore(CONFIG);
 

@@ -58,7 +58,7 @@ function buildSpecificDefines() {
       defines.INJECTED_COMMIT_HASH = JSON.stringify(process.env['SOURCE_GIT_COMMIT']);
     } else {
       console.log('Using fallback commit hash');
-      defines.INJECTED_COMMIT_HASH = JSON.stringify('local');
+      defines.INJECTED_COMMIT_HASH = JSON.stringify('locall');
     }
   } else {
     throw new Error('Unrecognized CONFIGURATION_SOURCE environment variable -- please correct your configuration');
