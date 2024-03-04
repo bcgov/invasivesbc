@@ -15,6 +15,7 @@ import userSettingsSaga from './sagas/userSettings';
 import { AppConfig } from './config';
 import { createBrowserHistory } from 'history';
 import { createSagaCrashHandler } from './sagas/error_handler';
+import { persistStore } from 'redux-persist';
 
 const historySingleton = createBrowserHistory();
 
@@ -43,7 +44,6 @@ export function setupStore(configuration: AppConfig) {
       ) {
         return true;
       }
-      //if ([RECORDSET_UPDATE_FILTER].includes(action.type)) {
       if (action.type.includes('WHATS_HERE')) {
         return true;
       }
@@ -54,12 +54,26 @@ export function setupStore(configuration: AppConfig) {
   if (configuration.DEBUG) {
     globalStore = configureStore({
       reducer: createRootReducer(configuration),
-      middleware: [sagaMiddleware, logger]
+      middleware: (getDefaultMiddleware) => {
+        // these checks are useful but very slow
+        return getDefaultMiddleware({
+          actionCreatorCheck: false,
+          serializableCheck: false,
+          immutableCheck: false
+        }).concat([sagaMiddleware, logger]);
+      }
     });
   } else {
     globalStore = configureStore({
       reducer: createRootReducer(configuration),
-      middleware: [sagaMiddleware]
+      middleware: (getDefaultMiddleware) => {
+        // these checks are useful but very slow
+        return getDefaultMiddleware({
+          actionCreatorCheck: false,
+          serializableCheck: false,
+          immutableCheck: false
+        }).concat([sagaMiddleware]);
+      }
     });
   }
 
@@ -86,7 +100,7 @@ export function setupStore(configuration: AppConfig) {
 
   storeRef.store = globalStore;
 
-  return globalStore;
+  return { store: globalStore, persistor: persistStore(globalStore) };
 }
 
 export { historySingleton };

@@ -1,35 +1,25 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import * as L from 'leaflet';
-import 'leaflet-draw';
-import 'leaflet-draw/dist/leaflet.draw.css';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'util/use_selector';
-import { MAP_TOGGLE_WHATS_HERE, MAP_WHATS_HERE_FEATURE, TOGGLE_PANEL } from 'state/actions';
+import { MAP_TOGGLE_WHATS_HERE } from 'state/actions';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import 'UI/Global.css';
 
 export const WhatsHereButton = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
-  const darkTheme = useSelector((state: any) => state.UserSettings?.darkTheme);
+  const whatsHere = useSelector((state: any) => state.Map.whatsHere);
   const [show, setShow] = React.useState(false);
 
   const divRef = useRef();
-  useEffect(() => {
-    try {
-      L.DomEvent.disableClickPropagation(divRef?.current);
-      L.DomEvent.disableScrollPropagation(divRef?.current);
-    } catch (e) {}
-  }, []);
-  //if (whatsHere && map) {
+
   if (whatsHere) {
     return (
-    <div ref={divRef} className={(whatsHere as any)?.toggle? "map-btn-selected" : "map-btn"}>
+      <div ref={divRef} className={(whatsHere as any)?.toggle ? 'map-btn-selected' : 'map-btn'}>
         <Tooltip
           open={show}
           onMouseEnter={() => setShow(true)}
@@ -45,8 +35,7 @@ export const WhatsHereButton = (props) => {
                 } else {
                   history.goBack();
                 }
-              }}
-              >
+              }}>
               {(whatsHere as any)?.loadingActivities || (whatsHere as any)?.loadingIAPP ? <HourglassTopIcon /> : <></>}
               <DocumentScannerIcon />
             </IconButton>
@@ -70,8 +59,8 @@ export const WhatsHereDrawComponent = (props) => {
 
   useEffect(() => {
     if ((whatsHere as any)?.toggle == true && (whatsHere as any)?.feature == null) {
-//      ref.current = new (L as any).Draw.Rectangle(map);
- //     (ref.current as any).enable();
+      //      ref.current = new (L as any).Draw.Rectangle(map);
+      //     (ref.current as any).enable();
     }
 
     return () => {

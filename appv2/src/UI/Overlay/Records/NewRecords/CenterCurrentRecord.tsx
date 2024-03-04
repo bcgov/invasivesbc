@@ -6,7 +6,6 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import 'UI/Global.css';
 import { IAPP_PAN_AND_ZOOM, PAN_AND_ZOOM_TO_ACTIVITY } from 'state/actions';
 
-
 export const CenterCurrentRecord = (props) => {
   const dispatch = useDispatch();
   /**
@@ -14,7 +13,7 @@ export const CenterCurrentRecord = (props) => {
    * @description Component to handle the functionality of the find me button
    * @returns {void}
    */
- // const toolClass = toolStyles();
+  // const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
   useEffect(() => {
@@ -30,17 +29,24 @@ export const CenterCurrentRecord = (props) => {
           classes={{ tooltip: 'toolTip' }}
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
-          title={props.type === 'Activity'? "Center Current Activity" : "Center Current IAPP"}
+          title={props.type === 'Activity' ? 'Center Current Activity' : 'Center Current IAPP'}
           placement="top-end">
           <span>
-              <IconButton
-                onClick={() => {
-                  setShow(false);
-                    {props.type=== 'Activity'? dispatch({type: PAN_AND_ZOOM_TO_ACTIVITY}) : dispatch({type: IAPP_PAN_AND_ZOOM})}
-                }}
-                >
-                {props.type === 'Activity'? <AssignmentIcon /> :  <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />}
-              </IconButton>
+            <IconButton
+              onClick={() => {
+                setShow(false);
+                {
+                  props.type === 'Activity'
+                    ? dispatch({ type: PAN_AND_ZOOM_TO_ACTIVITY })
+                    : dispatch({ type: IAPP_PAN_AND_ZOOM });
+                }
+              }}>
+              {props.type === 'Activity' ? (
+                <AssignmentIcon />
+              ) : (
+                <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
+              )}
+            </IconButton>
           </span>
         </Tooltip>
       </div>
@@ -49,4 +55,3 @@ export const CenterCurrentRecord = (props) => {
     return <></>;
   }
 };
-

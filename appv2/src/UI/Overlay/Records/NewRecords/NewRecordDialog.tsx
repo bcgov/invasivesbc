@@ -8,44 +8,20 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
-  Select,
-  Theme
+  Select
 } from '@mui/material';
 import { useHistory } from 'react-router-dom';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useDispatch, useSelector } from 'react-redux';
-import { ACTIVITY_CREATE_REQUEST, CLOSE_NEW_RECORD_MENU, USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST } from 'state/actions';
+import {
+  ACTIVITY_CREATE_REQUEST,
+  CLOSE_NEW_RECORD_MENU,
+  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
+} from 'state/actions';
 import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
-/*const useStyles = makeStyles((theme: Theme) => ({
-  formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'start',
-    alignItems: 'center',
-    gap: 10,
-    paddingBlock: 10,
-    paddingInline: 8
-  },
-  select: {
-    minWidth: 200,
-    maxWidth: 400,
-    width: 'auto'
-  },
-  syncSuccessful: {
-    color: 'green'
-  },
-  dialogActionsBox: {
-    display: 'flex',
-    justifyContent: 'space-between'
-  }
-}));*/
-
-export interface INewRecordDialog {
-//  dialogOpen: boolean;
- // handleDialogClose: () => void;
-}
+export interface INewRecordDialog {}
 
 export interface INewRecordDialogState {
   recordCategory: string;
@@ -56,21 +32,19 @@ export interface INewRecordDialogState {
 const NewRecordDialog = (props: INewRecordDialog) => {
   const dispatch = useDispatch();
 
-  //const classes = useStyles();
   const history = useHistory();
-
 
   const [activityCategorySelectOptions, setActivityCategorySelectOptions] = useState([]);
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
   const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
 
-  const  accessRoles = useSelector((state: any) => state.Auth.accessRoles);
+  const accessRoles = useSelector((state: any) => state.Auth.accessRoles);
   const { newRecordDialogState } = useSelector((state: any) => state.UserSettings);
-  const dialogueOpen = useSelector((state: any) => state.UserSettings.newRecordDialogueOpen)
+  const dialogueOpen = useSelector((state: any) => state.UserSettings.newRecordDialogueOpen);
 
   useEffect(() => {
     const categories = [];
-      categories.push('Plant');
+    categories.push('Plant');
     if (
       accessRoles.some((role) => {
         return role.role_name === 'frep';
@@ -78,44 +52,19 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     ) {
       categories.push('FREP');
     }
-    // let userAccessDict = {};
-
-    // accessRoles
-    //   .map((r) => r.role_name)
-    //   .forEach((role) => {
-    //     if (Object.keys(userAccessDict).includes(userAccessDict[UserRolesAccess[role]])) {
-    //       return;
-    //     } else {
-    //       userAccessDict[UserRolesAccess[role]] = true;
-    //     }x`
-    //   });
-
-    // if (userAccessDict['both']) {
-    //   Object.keys(ActivityCategory).forEach((key) => {
-    //     categories.push(ActivityCategory[key]);
-    //   });
-    // } else if (userAccessDict['animals']) {
-    //   Object.keys(ActivityCategory).forEach((key) => {
-    //     if (key !== 'Plant') categories.push(ActivityCategory[key]);
-    //   });
-    // } else if (userAccessDict['plants']) {
-    //   Object.keys(ActivityCategory).forEach((key) => {
-    //     if (key !== 'Animal') categories.push(ActivityCategory[key]);
-    //   });
-    // }
-
     setActivityCategorySelectOptions(categories);
     // TODO: Update this to cache for mobile as well
     const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
-    const cachedCategory = (cachedDialogState && JSON.parse(cachedDialogState).recordCategory) ?
-      JSON.parse(cachedDialogState).recordCategory :
-      '';
-    const cachedType = (cachedDialogState && JSON.parse(cachedDialogState).recordType) ?
-      JSON.parse(cachedDialogState).recordType :
-      '';
-    const cachedSubtype = (cachedDialogState && JSON.parse(cachedDialogState).recordSubtype) ?
-      JSON.parse(cachedDialogState).recordSubtype :
-      '';
+    const cachedCategory =
+      cachedDialogState && JSON.parse(cachedDialogState).recordCategory
+        ? JSON.parse(cachedDialogState).recordCategory
+        : '';
+    const cachedType =
+      cachedDialogState && JSON.parse(cachedDialogState).recordType ? JSON.parse(cachedDialogState).recordType : '';
+    const cachedSubtype =
+      cachedDialogState && JSON.parse(cachedDialogState).recordSubtype
+        ? JSON.parse(cachedDialogState).recordSubtype
+        : '';
 
     setNewRecordDialogState({
       ...newRecordDialogState,
@@ -147,8 +96,6 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   }, [newRecordDialogState.recordType]);
 
   const insert_record = async () => {
-
-
     dispatch({
       type: ACTIVITY_CREATE_REQUEST,
       payload: { type: newRecordDialogState.recordType, subType: newRecordDialogState.recordSubtype }
@@ -161,7 +108,12 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   };
 
   const handleRecordCategoryChange = (event: any) => {
-    setNewRecordDialogState({ ...newRecordDialogState, recordCategory: event.target.value, recordType: '', recordSubtype: '' });
+    setNewRecordDialogState({
+      ...newRecordDialogState,
+      recordCategory: event.target.value,
+      recordType: '',
+      recordSubtype: ''
+    });
   };
 
   const handleRecordTypeChange = (event: any) => {
@@ -176,13 +128,10 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     <Dialog open={dialogueOpen || false}>
       <DialogTitle>Create New Record</DialogTitle>
 
-      <Box 
-     // className={classes.formContainer}
-      >
+      <Box>
         <FormControl>
           <InputLabel>Record Category</InputLabel>
           <Select
-         //   className={classes.select}
             value={newRecordDialogState.recordCategory}
             onChange={handleRecordCategoryChange}
             label="Select Form Type">
@@ -198,7 +147,6 @@ const NewRecordDialog = (props: INewRecordDialog) => {
           <InputLabel>Record Type</InputLabel>
           <Select
             disabled={newRecordDialogState.recordCategory === ''}
-          //  className={classes.select}
             value={newRecordDialogState.recordType}
             onChange={handleRecordTypeChange}
             label="Select Form Type">
@@ -214,7 +162,6 @@ const NewRecordDialog = (props: INewRecordDialog) => {
           <InputLabel>Record Sub-Type</InputLabel>
           <Select
             disabled={newRecordDialogState.recordType === ''}
-           // className={classes.select}
             value={newRecordDialogState.recordSubtype}
             onChange={handleRecordSubtypeChange}
             label="Select Form Type">
@@ -227,9 +174,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
         </FormControl>
       </Box>
 
-      <DialogActions 
-       // className={classes.dialogActionsBox}
-        >
+      <DialogActions>
         <Button
           onClick={() => {
             dispatch({ type: CLOSE_NEW_RECORD_MENU });

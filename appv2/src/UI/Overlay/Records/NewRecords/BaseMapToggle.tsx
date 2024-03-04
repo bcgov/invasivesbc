@@ -22,7 +22,7 @@ export const BaseMapToggle = (props) => {
   }, []);
 
   return (
-    <div ref={divRef} className={baseMapToggle? "map-btn-selected" : "map-btn"}>
+    <div ref={divRef} className={baseMapToggle ? 'map-btn-selected' : 'map-btn'}>
       <Tooltip
         open={show}
         classes={{ tooltip: 'toolTip' }}
@@ -34,9 +34,8 @@ export const BaseMapToggle = (props) => {
           <IconButton
             onClick={() => {
               dispatch({ type: MAP_TOGGLE_BASEMAP });
-            }}
-            >
-            {baseMapToggle ? 'TOPO': 'SAT'}
+            }}>
+            {baseMapToggle ? 'TOPO' : 'SAT'}
           </IconButton>
         </span>
       </Tooltip>

@@ -12,9 +12,9 @@ interface ConfigurationState {
 function createConfigurationReducerWithDefaultState(configuration: AppConfig) {
   const initialState: ConfigurationState = {
     current: configuration,
-    exportConfig: null | Array,
+    exportConfig: null,
     exportConfigLoading: false,
-    exportConfigFreshUntil: moment.Moment
+    exportConfigFreshUntil: 0
   };
 
   return (state = initialState, action) => {
@@ -38,7 +38,7 @@ function createConfigurationReducerWithDefaultState(configuration: AppConfig) {
       case EXPORT_CONFIG_LOAD_SUCCESS: {
         return {
           ...state,
-          exportConfigFreshUntil: moment().add('15', 'minutes'),
+          exportConfigFreshUntil: moment().add('15', 'minutes').valueOf(),
           exportConfigLoading: true,
           exportConfig: action.payload
         };

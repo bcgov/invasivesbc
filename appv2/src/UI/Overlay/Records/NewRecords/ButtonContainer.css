@@ -5,7 +5,7 @@
   white-space: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar; 
+  -ms-overflow-style: -ms-autohiding-scrollbar;
   justify-content: center;
   position: absolute;
   bottom: 0;
@@ -23,19 +23,21 @@
 .map-btn {
   padding: .5rem;
   flex: 0 0 auto;
-  button {
-    background-color: white;
-    color: #003366
-  }
+}
+
+.map-btn button {
+  background-color: white;
+  color: #003366
 }
 
 .map-btn-selected {
   padding: .5rem;
   flex: 0 0 auto;
-  button {
-    background-color: #003366;
-    color :#FCBA19;
-  }
+}
+
+.map-btn-selected button {
+  background-color: #003366;
+  color: #FCBA19;
 }
 
 .map-btn-container .map-btn:first-child {
@@ -46,18 +48,12 @@
   margin-right: auto;
 }
 
-/* in case we want different in mobile */
-/* @media only screen and (max-width: 768px) {
-  .map-btn-container {
-    width: 50vw;
-  }
-} */
-
 .selected {
-  background-color: '#2196f3';
-  color: 'white';
+  background-color: #2196f3;
+  color: white;
 }
+
 .notSelected {
-  background-color: 'white';
-  color: 'black';
+  background-color: white;
+  color: black;
 }

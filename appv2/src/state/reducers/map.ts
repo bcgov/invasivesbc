@@ -72,7 +72,7 @@ import {
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
-import { immerable } from 'immer';
+import { Draft, immerable } from 'immer';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
 
@@ -85,19 +85,126 @@ export enum LeafletWhosEditingEnum {
 
 export const ACTIVITY_GEOJSON_SOURCE_KEYS = ['s3', 'draft', 'supplemental'];
 
-class MapState {
-  [immerable] = true;
+const DEFAULT_LOCAL_LAYERS = [
+  {
+    title: 'Regional Districts',
+    type: 'wms',
+    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
+    toggle: false
+  },
+  {
+    title: 'BC Parks',
+    type: 'wms',
+    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS',
+    toggle: false
+  },
+  {
+    title: 'Conservancy Areas',
+    type: 'wms',
+    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY',
+    toggle: false
+  },
+  {
+    title: 'Municipality Boundaries',
+    type: 'wms',
+    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP',
+    toggle: false
+  },
+
+  {
+    title: 'Cut blocks',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP',
+    toggle: false
+  },
+  {
+    title: 'BC Major Watersheds',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS',
+    toggle: false
+  },
+  {
+    title: 'Freshwater Atlas Rivers',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_BASEMAPPING.FWA_RIVERS_POLY',
+    toggle: false
+  },
+  {
+    title: 'Freshwater Lakes',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP',
+    toggle: false
+  },
+  {
+    title: 'Freshwater Atlas Stream Network',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
+    toggle: false
+  },
+  {
+    title: 'Water Licenses Drinking Water',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SP',
+    toggle: false
+  },
+  {
+    title: 'Water Rights Licenses',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV',
+    toggle: false
+  },
+  {
+    title: 'Water Wells',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+    toggle: false
+  },
+  {
+    title: 'Digital Road Atlas (DRA) - Master Partially-Attributed Roads',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
+    toggle: false
+  },
+  {
+    title: 'MOTI RFI',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP',
+    toggle: false
+  }
+];
+
+interface MapState {
   CanTriggerCSV: boolean;
   HDToggle: boolean;
   IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
-  IAPPGeoJSONDict: any;
-  LeafletWhosEditing: LeafletWhosEditingEnum;
+  IAPPGeoJSONDict: object;
+  // LeafletWhosEditing: LeafletWhosEditingEnum;
   accuracyToggle: boolean;
   activitiesGeoJSON: any;
-  activitiesGeoJSONDict: any;
+  activitiesGeoJSONDict: object;
   activityPageMapExtentToggle: boolean;
-  activity_center: L.LatLngExpression;
+  activity_center: [number, number];
   activity_zoom: number;
   baseMapToggle: boolean;
   clientBoundaries: any[];
@@ -110,201 +217,228 @@ class MapState {
   layers: any[];
   legendsPopup: any;
   linkToCSV: string;
-  map_center: L.LatLngExpression;
+  map_center: [number, number];
   map_zoom: number;
   panned: boolean;
   positionTracking: boolean;
   quickPanToRecord: boolean;
   recordSetForCSV: number;
-  recordTables: object;
+  recordTables: any[];
   serverBoundaries: any[];
   simplePickerLayers2: any[];
   simplePickerLayers: object;
   tooManyLabelsDialog: any;
   userCoords: any;
   userHeading: number;
-  userRecordOnClickMenuOpen?: boolean;
-  userRecordOnClickRecordID?: string;
-  userRecordOnClickRecordRow?: any;
-  userRecordOnClickRecordType?: string;
+  userRecordOnClickMenuOpen: boolean;
+  userRecordOnClickRecordID: string | null;
+  userRecordOnClickRecordRow: any;
+  userRecordOnClickRecordType: string | null;
   userRecordOnHoverMenuOpen: boolean;
   userRecordOnHoverRecordID: any;
   userRecordOnHoverRecordRow: any;
   userRecordOnHoverRecordType: any;
   viewFilters: boolean;
-  whatsHere: any;
+  whatsHere: {
+    toggle: boolean;
+    feature: any | null;
+    limit: number;
+    page: number;
+    section: string;
+
+    clickedActivity: any | null;
+    clickedActivityDescription: string | null;
+    clickedIAPP: any | null;
+    clickedIAPPDescription: string | null;
+
+    loadingActivities: boolean;
+    loadingIAPP: boolean;
+
+    highlightedType: 'IAPP' | 'Activity' | null;
+    highlightedURLID: string | null;
+    highlightedIAPP: string | null;
+    highlightedACTIVITY: any | null;
+    highlightedGeo: any | null;
+
+    ActivityIDs: any[];
+    activityRows: any[];
+    ActivityPage: number;
+    ActivityLimit: number;
+    ActivitySortField: string;
+    ActivitySortDirection: string;
+
+    IAPPIDs: any[];
+    iappRows: any[];
+    IAPPPage: number;
+    IAPPLimit: number;
+    IAPPSortField: string;
+    IAPPSortDirection: string;
+  };
+
   workingLayerName: string;
   layerPickerOpen: boolean;
+  //
+  //   constructor()
+  //
+  // {
+  //   this.CanTriggerCSV = true;
+  //   this.HDToggle = false;
+  //   this.IAPPBoundsPolygon = null;
+  //   this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
+  //   this.accuracyToggle = false;
+  //   this.activityPageMapExtentToggle = false;
+  //   this.activity_center = [53, -127];
+  //   this.activity_zoom = 5;
+  //   this.baseMapToggle = false;
+  //   this.clientBoundaries =
+  //     localStorage.getItem('CLIENT_BOUNDARIES') !== null
+  //       ? (JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES')) as Array<any>)
+  //       : [];
+  //   this.currentOpenSet = null;
+  //   this.customizeLayersToggle = false;
+  //   this.drawingCustomLayer = false;
+  //   this.layerPickerOpen = false;
+  //   this.layers = [];
+  //   this.initialized = false;
+  //   this.labelBoundsPolygon = null;
+  //   this.legendsPopup = false;
+  //   this.linkToCSV = null;
+  //   this.map_center = [53, -127];
+  //   this.map_zoom = 5;
+  //   this.panned = true;
+  //   this.positionTracking = false;
+  //   this.quickPanToRecord = false;
+  //   this.quickPanToRecord = false;
+  //   this.recordSetForCSV = null;
+  //   this.recordTables = {};
+  //   this.serverBoundaries = ;
+  //   this.simplePickerLayers = [];
 
-  constructor() {
-    this.CanTriggerCSV = true;
-    this.HDToggle = false;
-    this.IAPPBoundsPolygon = null;
-    this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
-    this.accuracyToggle = false;
-    this.activityPageMapExtentToggle = false;
-    this.activity_center = [53, -127];
-    this.activity_zoom = 5;
-    this.baseMapToggle = false;
-    this.clientBoundaries =
-      localStorage.getItem('CLIENT_BOUNDARIES') !== null
-        ? (JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES')) as Array<any>)
-        : [];
-    this.currentOpenSet = null;
-    this.customizeLayersToggle = false;
-    this.drawingCustomLayer = false;
-    this.layerPickerOpen = false;
-    this.layers = [];
-    this.initialized = false;
-    this.labelBoundsPolygon = null;
-    this.legendsPopup = false;
-    this.linkToCSV = null;
-    this.map_center = [53, -127];
-    this.map_zoom = 5;
-    this.panned = true;
-    this.positionTracking = false;
-    this.quickPanToRecord = false;
-    this.quickPanToRecord = false;
-    this.recordSetForCSV = null;
-    this.recordTables = {};
-    this.serverBoundaries =  localStorage.getItem('serverLayersConf')? JSON.parse(localStorage.getItem('serverLayersConf')) : []
-    this.simplePickerLayers = [];
-    this.simplePickerLayers2 = localStorage.getItem('localLayersConf')? JSON.parse(localStorage.getItem('localLayersConf')) : [
-      {
-        title: 'Regional Districts',
-        type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
-        toggle: false
-      },
-      {
-        title: 'BC Parks',
-        type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS',
-        toggle: false
-      },
-      {
-        title: 'Conservancy Areas',
-        type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY',
-        toggle: false
-      },
-      {
-        title: 'Municipality Boundaries',
-        type: 'wms',
-        url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP',
-        toggle: false
-      },
-
-      {
-        title: 'Cut blocks',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP',
-          toggle: false
-      },
-      {
-        title: 'BC Major Watersheds',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS',
-          toggle: false
-      },
-      {
-        title: 'Freshwater Atlas Rivers',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_BASEMAPPING.FWA_RIVERS_POLY',
-          toggle: false
-      },
-      {
-        title: 'Freshwater Lakes',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP',
-          toggle: false
-      },
-      {
-        title: 'Freshwater Atlas Stream Network',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
-          toggle: false
-      },
-      {
-        title: 'Water Licenses Drinking Water',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SP',
-          toggle: false
-      },
-      {
-        title: 'Water Rights Licenses',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV',
-          toggle: false
-      },
-      {
-        title: 'Water Wells',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-          toggle: false
-      },
-      {
-        title: 'Digital Road Atlas (DRA) - Master Partially-Attributed Roads',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
-          toggle: false
-      },
-      {
-        title: 'MOTI RFI',
-        type: 'wms',
-        url:
-          'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-          'WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP',
-          toggle: false
-      }
-    ];
-    this.tooManyLabelsDialog = { dialogActions: [], dialogOpen: false, dialogTitle: '', dialogContentText: null };
-    this.userHeading = null;
-    this.userRecordOnClickMenuOpen = false;
-    this.viewFilters = true;
-    this.whatsHere = {
-      ActivityIDs: [],
-      ActivityLimit: 5,
-      ActivityPage: 0,
-      ActivitySortDirection: 'desc',
-      ActivitySortField: 'created',
-      IAPPIDs: [],
-      IAPPLimit: 5,
-      IAPPPage: 0,
-      IAPPSortDirection: 'desc',
-      IAPPSortField: 'earliest_survey',
-      activityRows: [],
-      feature: null,
-      highlightedType: null,
-      iappRows: [],
-      limit: 5,
-      page: 0,
-      section: 'invasivesbc',
-      toggle: false
-    };
-    this.workingLayerName = null;
-  }
+  //   this.tooManyLabelsDialog = { dialogActions: [], dialogOpen: false, dialogTitle: '', dialogContentText: null };
+  //   this.userHeading = null;
+  //   this.userRecordOnClickMenuOpen = false;
+  //   this.viewFilters = true;
+  //   this.whatsHere = {
+  //     ActivityIDs: [],
+  //     ActivityLimit: 5,
+  //     ActivityPage: 0,
+  //     ActivitySortDirection: 'desc',
+  //     ActivitySortField: 'created',
+  //     IAPPIDs: [],
+  //     IAPPLimit: 5,
+  //     IAPPPage: 0,
+  //     IAPPSortDirection: 'desc',
+  //     IAPPSortField: 'earliest_survey',
+  //     activityRows: [],
+  //     feature: null,
+  //     highlightedType: null,
+  //     iappRows: [],
+  //     limit: 5,
+  //     page: 0,
+  //     section: 'invasivesbc',
+  //     toggle: false
+  //   };
+  //   this.workingLayerName = null;
+  // }
 }
 
-const initialState = new MapState();
+const initialState: MapState = {
+  activity_center: [53, -127],
+  activity_zoom: 7,
+
+  map_center: [55, -128],
+  map_zoom: 5,
+
+  userRecordOnClickMenuOpen: false,
+  userRecordOnClickRecordID: null,
+  userRecordOnClickRecordRow: null,
+  userRecordOnClickRecordType: null,
+
+  CanTriggerCSV: true,
+
+  HDToggle: false,
+  accuracyToggle: false,
+
+  IAPPBoundsPolygon: undefined,
+  IAPPGeoJSON: undefined,
+  IAPPGeoJSONDict: {},
+
+  activitiesGeoJSON: undefined,
+  activitiesGeoJSONDict: {},
+  activityPageMapExtentToggle: false,
+
+  baseMapToggle: false,
+  clientBoundaries: [], // localStorage.getItem('CLIENT_BOUNDARIES') !== null ? JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES')) : [],
+  currentOpenSet: null,
+  customizeLayersToggle: false,
+  drawingCustomLayer: false,
+  error: false,
+  initialized: false,
+  labelBoundsPolygon: undefined,
+  layerPickerOpen: false,
+  layers: [],
+  legendsPopup: undefined,
+  linkToCSV: '',
+
+  panned: false,
+  positionTracking: false,
+  quickPanToRecord: false,
+
+  recordSetForCSV: 0,
+  recordTables: [],
+
+  serverBoundaries: localStorage.getItem('serverLayersConf')
+    ? JSON.parse(localStorage.getItem('serverLayersConf'))
+    : [],
+  simplePickerLayers: undefined,
+  simplePickerLayers2: localStorage.getItem('localLayersConf')
+    ? JSON.parse(localStorage.getItem('localLayersConf'))
+    : DEFAULT_LOCAL_LAYERS,
+  tooManyLabelsDialog: null,
+
+  userCoords: null,
+  userHeading: 0,
+  userRecordOnHoverMenuOpen: false,
+  userRecordOnHoverRecordID: undefined,
+  userRecordOnHoverRecordRow: undefined,
+  userRecordOnHoverRecordType: undefined,
+  viewFilters: false,
+  whatsHere: {
+    toggle: false,
+    limit: 5,
+    page: 0,
+    feature: null,
+    section: 'invasivesbc',
+
+    clickedActivity: null,
+    clickedActivityDescription: null,
+    clickedIAPP: null,
+    clickedIAPPDescription: null,
+
+    highlightedType: null,
+    highlightedURLID: null,
+    highlightedIAPP: null,
+    highlightedACTIVITY: null,
+    highlightedGeo: null,
+
+    loadingActivities: false,
+    activityRows: [],
+    ActivityIDs: [],
+    ActivityPage: 0,
+    ActivityLimit: 5,
+    ActivitySortField: 'created',
+    ActivitySortDirection: 'desc',
+
+    loadingIAPP: false,
+    iappRows: [],
+    IAPPIDs: [],
+    IAPPPage: 0,
+    IAPPLimit: 5,
+    IAPPSortField: 'earliest_survey',
+    IAPPSortDirection: 'desc'
+  },
+  workingLayerName: ''
+};
 
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
@@ -318,22 +452,21 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
        If we were starting from scratch a consideration would possibly be using redux toolkits createReducer (produce is built
        in) and builder.addCase instead of switches, although I assume you lose fallthrough cases then.
       */
-    return createNextState(state, (draftState) => {
+    return createNextState(state, (draftState: Draft<MapState>) => {
       switch (action.type) {
         case TOGGLE_LAYER_PICKER_OPEN:
-          draftState.layerPickerOpen = !draftState.layerPickerOpen
+          draftState.layerPickerOpen = !draftState.layerPickerOpen;
           break;
         case TOGGLE_WMS_LAYER:
           const index = draftState.simplePickerLayers2.findIndex((layer) => layer.url === action.payload.layer.url);
-          draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle
-          localStorage.setItem('localLayersConf', JSON.stringify(draftState.simplePickerLayers2))
+          draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle;
+          localStorage.setItem('localLayersConf', JSON.stringify(draftState.simplePickerLayers2));
           break;
         case TOGGLE_DRAWN_LAYER: {
           const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
-          draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle
-          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries))
+          draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
+          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           break;
-          
         }
         case WHATS_HERE_ID_CLICKED:
           if (action.payload.type === 'Activity') {
@@ -496,7 +629,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             toggle: true
           });
           draftState.workingLayerName = null;
-          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries))
+          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           break;
         }
         case DRAW_CUSTOM_LAYER: {
@@ -550,22 +683,23 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case INIT_SERVER_BOUNDARIES_GET: {
           const withLocalToggles = action.payload.data.map((incomingItem) => {
-            let returnVal = {...incomingItem}
+            let returnVal = { ...incomingItem };
             const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
               oldItem.id === incomingItem;
-            })?.toggle
-            returnVal.toggle = existingToggleVal !== null && existingToggleVal !== undefined?  existingToggleVal: false
-            return returnVal
-          })
-          draftState.serverBoundaries = withLocalToggles
-          localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries))
+            })?.toggle;
+            returnVal.toggle =
+              existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
+            return returnVal;
+          });
+          draftState.serverBoundaries = withLocalToggles;
+          localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries));
           break;
         }
         case TOGGLE_KML_LAYER: {
-          const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id)
-          console.log(index)
-          draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle
-          localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries))
+          const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
+          console.log(index);
+          draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
+          localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries));
           break;
         }
         case USER_SETTINGS_SET_RECORDSET: {
@@ -603,10 +737,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
 
-        case LEAFLET_SET_WHOS_EDITING: {
-          draftState.LeafletWhosEditing = action.payload.LeafletWhosEditing;
-          break;
-        }
         case MAIN_MAP_MOVE: {
           draftState.map_zoom = action.payload.zoom;
           draftState.map_center = action.payload.center;
@@ -676,9 +806,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case MAP_TOGGLE_WHATS_HERE: {
           if (draftState.whatsHere.toggle) {
-            if (!draftState.panelOpen) {
-              draftState.panelOpen = true;
-            }
             draftState.whatsHere.loadingActivities = false;
             draftState.whatsHere.loadingIAPP = false;
           } else {
@@ -797,7 +924,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case REMOVE_CLIENT_BOUNDARY: {
           const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload.id);
           draftState.clientBoundaries.splice(index, 1);
-          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries))
+          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           break;
         }
         case SET_CURRENT_OPEN_SET: {
@@ -831,7 +958,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case URL_CHANGE: {
           draftState.userRecordOnClickMenuOpen = false;
           if (action.payload?.pathname === '/') {
-            draftState.panelOpen = false;
+            // draftState.panelOpen = false;
           }
           if (!action?.payload?.pathname?.includes('WhatsHere')) {
             draftState.whatsHere.toggle = false;
@@ -867,7 +994,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.userRecordOnHoverRecordType = action.payload.recordType;
           draftState.userRecordOnHoverRecordID = action.payload.id;
           draftState.userRecordOnHoverRecordRow = action.payload.row;
-          draftState.touchTime = Date.now();
+          // draftState.touchTime = Date.now();
           break;
         }
         case WHATS_HERE_ACTIVITY_ROWS_SUCCESS: {

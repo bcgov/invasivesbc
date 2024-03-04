@@ -1,4 +1,4 @@
-import { CRASH_HANDLE_GLOBAL_ERROR, USER_SETTINGS_SET_API_ERROR_DIALOG } from '../actions';
+import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
 import { Http } from '@capacitor-community/http';
 import { Store } from 'redux';
 import { RootState } from '../reducers/rootReducer';
@@ -20,7 +20,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
       type: CRASH_HANDLE_GLOBAL_ERROR,
       payload: {
         detail: {
-          error: error,
+          error: JSON.parse(JSON.stringify(error)),
           errorInfo: errorInfo
         },
         actions: [
@@ -42,8 +42,6 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
       }
     });
 
-    console.dir('made it 1');
-
     if (state.Auth.authenticated) {
       let loggingState = JSON.parse(
         JSON.stringify({
@@ -57,8 +55,6 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
         })
       );
 
-      console.dir('made it 2');
-
       await Http.request({
         method: 'POST',
         headers: {
@@ -71,9 +67,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
           clientState: loggingState,
           commitHash: state.Configuration.current.COMMIT_HASH
         })
-      }).then(() => {
-        console.dir('made it 4');
-      });
+      }).then(() => {});
     }
   };
 }

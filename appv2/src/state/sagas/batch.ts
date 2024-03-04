@@ -2,21 +2,27 @@ import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effect
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import {
-  BATCH_CREATE_REQUEST, BATCH_CREATE_REQUEST_WITH_CALLBACK,
-  BATCH_CREATE_SUCCESS, BATCH_EXECUTE_REQUEST, BATCH_EXECUTE_SUCCESS,
+  BATCH_CREATE_REQUEST,
+  BATCH_CREATE_REQUEST_WITH_CALLBACK,
+  BATCH_CREATE_SUCCESS,
+  BATCH_DELETE_ERROR,
   BATCH_DELETE_REQUEST,
   BATCH_DELETE_SUCCESS,
+  BATCH_EXECUTE_REQUEST,
+  BATCH_EXECUTE_SUCCESS,
   BATCH_LIST_REQUEST,
   BATCH_LIST_SUCCESS,
   BATCH_RETRIEVE_REQUEST,
-  BATCH_RETRIEVE_SUCCESS, BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
+  BATCH_RETRIEVE_SUCCESS,
+  BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_REQUEST,
-  BATCH_TEMPLATE_LIST_SUCCESS, BATCH_UPDATE_REQUEST, BATCH_UPDATE_SUCCESS, BATCH_DELETE_ERROR
+  BATCH_TEMPLATE_LIST_SUCCESS,
+  BATCH_UPDATE_REQUEST,
+  BATCH_UPDATE_SUCCESS
 } from '../actions';
 import { Http } from '@capacitor-community/http';
-import { actions } from 'components/map/LayerPicker/JSON/actions';
 
 function* listBatches(action) {
   yield call(listTemplates, action);
@@ -204,8 +210,7 @@ function* executeBatch(action) {
 
   yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
   yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
-
-};
+}
 
 function* batchSaga() {
   yield all([

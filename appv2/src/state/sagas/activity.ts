@@ -28,7 +28,9 @@ import {
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_PASTE_REQUEST,
   ACTIVITY_PERSIST_REQUEST,
+  ACTIVITY_RESTORE_OFFLINE,
   ACTIVITY_SAVE_NETWORK_REQUEST,
+  ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_FAILURE,
@@ -86,6 +88,7 @@ import {
 } from './activity/online';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { handle_ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE } from './activity/offline';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -104,16 +107,16 @@ function* handle_ACTIVITY_DELETE_SUCESS(action) {
       activeActivity: null
     }
   });
-yield put({
-  type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-  payload: {
-    notification: {
-      visible: true,
-      message: 'Activity deleted successfully',
-      severity: 'success'
+  yield put({
+    type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+    payload: {
+      notification: {
+        visible: true,
+        message: 'Activity deleted successfully',
+        severity: 'success'
+      }
     }
-  }
-});
+  });
   yield put({ type: MAP_INIT_REQUEST });
 }
 
@@ -172,9 +175,9 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
       }
     });
 
-    /* 
+    /*
    Not useful yet as form state is updated before the user does anything, so the user would see this no matter what
-   
+
    yield put({
       type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
       payload: {
@@ -206,14 +209,12 @@ function* handle_URL_CHANGE(action) {
     if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id)
       yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
 
-/*    else if (userSettingsState.activeActivity) {
+    /*    else if (userSettingsState.activeActivity) {
       id = userSettingsState.activeActivity;
       yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
     }
     */
   }
-
-
 }
 
 function* handle_ACTIVITY_DELETE_FAILURE(action) {
@@ -228,7 +229,6 @@ function* handle_ACTIVITY_DELETE_FAILURE(action) {
     }
   });
 }
-
 
 function* activityPageSaga() {
   yield all([
@@ -260,6 +260,8 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SAVE_SUCCESS),
     takeEvery(ACTIVITY_TOGGLE_NOTIFICATION_REQUEST, handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST),
     takeEvery(ACTIVITY_SAVE_NETWORK_REQUEST, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
+    takeEvery(ACTIVITY_SAVE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE),
+    takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
     takeEvery(ACTIVITY_CREATE_REQUEST, handle_ACTIVITY_CREATE_REQUEST),
     takeEvery(ACTIVITY_CREATE_NETWORK, handle_ACTIVITY_CREATE_NETWORK),
     takeEvery(ACTIVITY_CREATE_SUCCESS, handle_ACTIVITY_CREATE_SUCCESS),

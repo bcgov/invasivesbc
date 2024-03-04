@@ -1,6 +1,6 @@
 'use strict';
 
-import { verify, VerifyCallback } from 'jsonwebtoken';
+import { verify } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
 import { getLogger } from './logger';
 import {
@@ -12,16 +12,12 @@ import {
 } from './user-utils';
 import { Request } from 'express';
 import { MDCAsyncLocal } from '../mdc';
-import { get } from 'lodash';
-import { getBetaAccessForUserSQL } from 'queries/role-queries';
 
 const defaultLog = getLogger('auth-utils');
 
 const APP_CERTIFICATE_URL =
   process.env.APP_CERTIFICATE_URL ||
   'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs';
-
-const KEYCLOAK_CLIENT_ID = 'invasives-bc-4565';
 
 // so we have type information available to endpoints
 export interface InvasivesRequest extends Request {
@@ -69,7 +65,6 @@ export const authenticate = async (req: InvasivesRequest) => {
   defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
   const filterForSelectable = req.header('filterforselectable') === 'true' ? true : false;
-  const urlSplit = req.originalUrl.split('?');
   const authHeader = req.header('Authorization');
 
   const isPublicURL = [

@@ -1,8 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
-//import { Uuid, UuidOptions } from 'node-ts-uuid';
-//import  process from 'process'
-//window.process = process
 
 import {
   ACTIVITY_CREATE_SUCCESS,
@@ -35,36 +32,27 @@ import {
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
 } from '../actions';
 
-import { immerable } from 'immer';
 import { AppConfig } from '../config';
 
-/*const options: UuidOptions = {
-  length: 50,
-};
-*/
-
 export function getUuid() {
-  const uuid: string = Math.random() + Date.now().toString();
-  return uuid;
+  return Math.random() + Date.now().toString();
 }
 
-class UserSettingsState {
-  [immerable] = true;
+interface UserSettingsState {
   initialized: boolean;
   error: boolean;
 
-  activeActivity: string;
-  activeActivityDescription: string;
-  activeIAPP: string;
-  apiDocsWithViewOptions: object;
-  apiDocsWithSelectOptions: object;
+  activeActivity: string | null;
+  activeActivityDescription: string | null;
+  activeIAPP: string | null;
+  apiDocsWithViewOptions: object | null;
+  apiDocsWithSelectOptions: object | null;
 
   mapCenter: [number, number];
-  //newRecordDialogState: INewRecordDialogState;
   newRecordDialogState: any;
-  APIErrorDialog: any;
-  recordSets: [
-    {
+
+  recordSets: {
+    [key: number]: {
       tableFilters?: any;
       color: string;
       drawOrder: number;
@@ -79,42 +67,43 @@ class UserSettingsState {
         name: string;
         server_id: any;
       };
-    }
-  ];
+    };
+  };
   recordsExpanded: boolean;
-  boundaries: [
-    {
-      geos: [];
-      id: number;
-      name: string;
-      server_id: any;
-    }
-  ];
+
+  boundaries: {
+    geos: [];
+    id: number;
+    name: string;
+    server_id: any;
+  }[];
 
   darkTheme: boolean;
-
-  constructor() {
-    this.initialized = false;
-    this.darkTheme = localStorage.getItem('USER_SETTINGS_DARK_THEME')
-      ? JSON.parse(localStorage.getItem('USER_SETTINGS_DARK_THEME'))
-      : false;
-    this.mapCenter = [55, -128];
-    this.newRecordDialogState = {
-      recordCategory:
-        JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordCategory || '',
-      recordType: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordType || '',
-      recordSubtype: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordSubtype || ''
-    };
-    this.APIErrorDialog = {
-      dialogActions: [],
-      dialogOpen: false,
-      dialogTitle: '',
-      dialogContentText: ``
-    };
-  }
 }
 
-const initialState = new UserSettingsState();
+const initialState: UserSettingsState = {
+  activeActivity: null,
+  activeActivityDescription: null,
+  activeIAPP: null,
+
+  apiDocsWithSelectOptions: null,
+  apiDocsWithViewOptions: null,
+
+  boundaries: [],
+  error: false,
+  recordSets: {},
+  recordsExpanded: false,
+  initialized: false,
+  darkTheme: localStorage.getItem('USER_SETTINGS_DARK_THEME')
+    ? JSON.parse(localStorage.getItem('USER_SETTINGS_DARK_THEME'))
+    : false,
+  mapCenter: [55, -128],
+  newRecordDialogState: {
+    recordCategory: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordCategory || '',
+    recordType: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordType || '',
+    recordSubtype: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordSubtype || ''
+  }
+};
 
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
@@ -276,15 +265,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           break;
         }
         case USER_SETTINGS_ADD_RECORD_SET: {
-          const newID = JSON.stringify(
-            Number(Object.keys(draftState.recordSets)[Object.keys(draftState.recordSets).length - 1]) + 1
-          );
-          draftState.recordSets[newID] = {
+          draftState.recordSets[Object.keys(draftState.recordSets).length + 1] = {
             tableFilters: [],
             color: 'blue',
             drawOrder: 0,
             mapToggle: false,
-            recordSetName: 'New Recordset - ' + action.payload.recordSetType, 
+            recordSetName: 'New Recordset - ' + action.payload.recordSetType,
             recordSetType: action.payload.recordSetType
           };
           break;

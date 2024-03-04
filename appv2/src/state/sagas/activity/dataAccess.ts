@@ -44,7 +44,9 @@ import {
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_PASTE_FAILURE,
   ACTIVITY_PASTE_SUCCESS,
+  ACTIVITY_SAVE_NETWORK_FAILURE,
   ACTIVITY_SAVE_NETWORK_REQUEST,
+  ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
@@ -141,11 +143,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
             }
           }
         });
-  
+
         return;
       }
     }
-
 
     let wellInformationArr = [];
     if (reported_area < MAX_AREA) {
@@ -176,9 +177,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
 
     //validate its in bc and within max geometry:
 
-    let isWithinBC = false
-    if(action.payload.geometry)
-    isWithinBC = booleanContains(bcArea.features[0] as any, action.payload.geometry[0]);
+    let isWithinBC = false;
+    if (action.payload.geometry) isWithinBC = booleanContains(bcArea.features[0] as any, action.payload.geometry[0]);
 
     if (!isWithinBC) {
       yield put({
@@ -213,9 +213,9 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
-  const activity_id =  yield select((state) => state.ActivityPage.activity.activity_id)
+  const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
   try {
-    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: activity_id} })
+    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: activity_id } });
     yield put({
       type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
       payload: {
@@ -234,15 +234,24 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
 }
 
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
-  try {
-    const activityState = yield select(selectActivity);
+  const { connected } = yield select((state) => state.Network);
+  const activityState = yield select(selectActivity);
+
+  if (connected) {
+    try {
+      yield put({
+        type: ACTIVITY_SAVE_NETWORK_REQUEST,
+        payload: { activity_id: activityState.activity_id, updatedFormData: action.payload?.updatedFormData }
+      });
+    } catch (e) {
+      console.error(e);
+      yield put({ type: ACTIVITY_SAVE_NETWORK_FAILURE });
+    }
+  } else {
     yield put({
-      type: ACTIVITY_SAVE_NETWORK_REQUEST,
-      payload: { activity_id: activityState.activity_id, updatedFormData: action.payload?.updatedFormData }
+      type: ACTIVITY_SAVE_OFFLINE,
+      payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }
     });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 

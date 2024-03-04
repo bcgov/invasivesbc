@@ -1,4 +1,3 @@
-import { AppConfig } from '../config';
 import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
 
 interface ErrorHandlerState {

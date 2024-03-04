@@ -16,18 +16,14 @@ import {
   IAPP_TABLE_ROWS_GET_SUCCESS
 } from 'state/actions';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { InvasivesAPI_Call } from '../../../hooks/useInvasivesApi';
 import { selectRootConfiguration } from '../../reducers/configuration';
+import moment from 'moment';
+import { AnyAction } from 'redux-saga';
 
-const checkForErrors = (response: any, status?: any, url?: any) => {
-  if (response.code > 201) {
-  }
-};
-
-function* refreshExportConfigIfRequired(action) {
+function* refreshExportConfigIfRequired(action?: AnyAction) {
   const config = yield select(selectRootConfiguration);
 
-  if (config.exportConfig && config.exportConfigFreshUntil && config.exportConfigFreshUntil.isAfter()) {
+  if (config.exportConfig && config.exportConfigFreshUntil && moment(config.exportConfigFreshUntil).isAfter()) {
     // config is current
     return;
   }
@@ -44,7 +40,7 @@ function* refreshExportConfigIfRequired(action) {
 }
 
 function* fetchS3GeoJSON() {
-  yield call(refreshExportConfigIfRequired);
+  yield refreshExportConfigIfRequired();
   const config = yield select(selectRootConfiguration);
 
   let activitiesExportURL;

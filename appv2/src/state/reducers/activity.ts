@@ -24,31 +24,38 @@ import {
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
-import { immerable } from 'immer';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import { AppConfig } from '../config';
 
-class ActivityState {
-  [immerable] = true;
+interface ActivityState {
   activity: any;
-  current_activity_hash: string;
+  current_activity_hash: string | null;
   error: boolean;
-  failCode: number;
+  failCode: number | null;
   initialized: boolean;
   loading: boolean;
-  notification: any;
-  saved_activity_hash: string;
+  notification: any | null;
+  saved_activity_hash: string | null;
   suggestedJurisdictions: [];
   suggestedPersons: [];
   suggestedTreatmentIDs: [];
-  unsaved_notification: any;
-  constructor() {
-    this.initialized = false;
-    this.current_activity_hash = null;
-    this.saved_activity_hash = null;
-  }
+  unsaved_notification: any | null;
 }
-const initialState = new ActivityState();
+
+const initialState: ActivityState = {
+  activity: null,
+  current_activity_hash: null,
+  error: false,
+  failCode: null,
+  initialized: false,
+  loading: false,
+  notification: null,
+  saved_activity_hash: null,
+  suggestedJurisdictions: [],
+  suggestedPersons: [],
+  suggestedTreatmentIDs: [],
+  unsaved_notification: null
+};
 
 function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAction) => ActivityState {
   return (state = initialState, action) => {
@@ -60,12 +67,38 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case ACTIVITY_DELETE_SUCCESS: {
-          draftState = new ActivityState();
+          draftState = {
+            activity: null,
+            current_activity_hash: null,
+            error: false,
+            failCode: null,
+            initialized: false,
+            loading: false,
+            notification: null,
+            saved_activity_hash: null,
+            suggestedJurisdictions: [],
+            suggestedPersons: [],
+            suggestedTreatmentIDs: [],
+            unsaved_notification: null
+          };
           break;
         }
         case ACTIVITY_CREATE_REQUEST: {
           const activity_copy_buffer = draftState.activity_copy_buffer;
-          draftState = new ActivityState();
+          draftState = {
+            activity: null,
+            current_activity_hash: null,
+            error: false,
+            failCode: null,
+            initialized: false,
+            loading: false,
+            notification: null,
+            saved_activity_hash: null,
+            suggestedJurisdictions: [],
+            suggestedPersons: [],
+            suggestedTreatmentIDs: [],
+            unsaved_notification: null
+          };
           draftState.activity_copy_buffer = activity_copy_buffer;
           break;
         }

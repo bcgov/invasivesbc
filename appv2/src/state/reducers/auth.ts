@@ -11,36 +11,38 @@ import {
   AUTH_UPDATE_TOKEN_STATE
 } from '../actions';
 import { AppConfig } from 'state/config';
-import { immerable } from 'immer';
+import { Draft, immerable } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 
-class AuthState {
-  [immerable] = true;
+interface AuthState {
   initialized: boolean;
   error: boolean;
   authenticated: boolean;
 
-  email: string;
-  displayName: string;
-  username: string;
-  idir_userid: string;
-  idir_user_guid: string;
+  email: string | null;
+  displayName: string | null;
+  username: string | null;
 
-  bceid_userid: string;
-  bceid_user_guid: string;
+  idir_userid: string | null;
+  idir_user_guid: string | null;
+
+  bceid_userid: string | null;
+  bceid_user_guid: string | null;
+
+  v2BetaAccess: boolean;
 
   requestHeaders: {
-    authorization: string;
+    authorization: string | null;
   };
 
   roles: { role_id: number; role_name: string }[];
   accessRoles: { role_id: number; role_name: string }[];
-  rolesInitialized: false;
+  rolesInitialized: boolean;
 
   extendedInfo: {
-    user_id: number;
-    account_status: number;
-    activation_status: number;
+    user_id: number | null;
+    account_status: number | null;
+    activation_status: number | null;
     work_phone_number: string | null;
     funding_agencies: any[];
     employer: string | null;
@@ -48,15 +50,6 @@ class AuthState {
     pac_service_number_1: string | null;
     pac_service_number_2: string | null;
   };
-
-  constructor() {
-    this.initialized = false;
-    this.authenticated = false;
-    this.roles = [];
-    this.accessRoles = [];
-    this.rolesInitialized = false;
-    this.extendedInfo = null;
-  }
 }
 
 function computeAccessRoles(
@@ -89,7 +82,34 @@ function computeAccessRoles(
   });
 }
 
-const initialState = new AuthState();
+const initialState: AuthState = {
+  accessRoles: [],
+  authenticated: false,
+  bceid_user_guid: null,
+  bceid_userid: null,
+  displayName: null,
+  email: null,
+  error: false,
+  extendedInfo: {
+    account_status: 0,
+    activation_status: 0,
+    employer: null,
+    funding_agencies: [],
+    pac_number: null,
+    pac_service_number_1: null,
+    pac_service_number_2: null,
+    user_id: null,
+    work_phone_number: null
+  },
+  idir_user_guid: null,
+  idir_userid: null,
+  initialized: false,
+  requestHeaders: { authorization: null },
+  roles: [],
+  rolesInitialized: false,
+  username: null,
+  v2BetaAccess: false
+};
 
 function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfig): object {
   let displayName = 'User';
@@ -142,8 +162,8 @@ function loadCurrentStateFromKeycloak(previousState: AuthState, config: AppConfi
 }
 
 function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => AuthState {
-  return (state = initialState, action) => {
-    return createNextState(state, (draftState) => {
+  return (state: AuthState = initialState, action) => {
+    return createNextState(state, (draftState: Draft<AuthState>) => {
       switch (action.type) {
         case AUTH_SIGNOUT_COMPLETE: {
           draftState.initialized = true;
@@ -208,7 +228,6 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         }
         default:
           break;
-        //return state;
       }
     });
   };

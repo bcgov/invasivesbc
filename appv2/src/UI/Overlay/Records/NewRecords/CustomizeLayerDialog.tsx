@@ -8,10 +8,8 @@ import {
   InputLabel,
   MenuItem,
   Select,
-  TextField,
-  Theme
+  TextField
 } from '@mui/material';
-import { set } from 'lodash';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -21,40 +19,15 @@ import {
   REMOVE_SERVER_BOUNDARY,
   TOGGLE_CUSTOMIZE_LAYERS
 } from 'state/actions';
-import KMLShapesUpload from './KMLShapesUpload';
 
-/*const useStyles = makeStyles((theme: Theme) => ({
-  formContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'start',
-    alignItems: 'center',
-    gap: 10,
-    paddingBlock: 10,
-    paddingInline: 8
-  },
-  select: {
-    minWidth: 200,
-    maxWidth: 400,
-    width: 'auto'
-  },
-  syncSuccessful: {
-    color: 'green'
-  },
-  dialogActionsBox: {
-    display: 'flex',
-    justifyContent: 'space-between'
-  }
-}));
-*/
+import KMLShapesUpload from './KMLShapesUpload';
 
 const CustomizeLayerMenu = (props) => {
   const dispatch = useDispatch();
 
-//  const classes = useStyles();
+  //  const classes = useStyles();
   const history = useHistory();
 
-  const accessRoles = useSelector((state: any) => state.Auth.accessRoles);
   const dialogueOpen = useSelector((state: any) => state.Map.customizeLayersToggle);
 
   //menu options
@@ -89,19 +62,13 @@ const CustomizeLayerMenu = (props) => {
     <Dialog open={dialogueOpen}>
       <DialogTitle>Add or remove a custom layer</DialogTitle>
 
-      <Box 
-      //className={classes.formContainer}
-      >
+      <Box>
         {
           {
             New: (
               <FormControl>
                 <InputLabel>New Layer type</InputLabel>
-                <Select
-              //    className={classes.select}
-                  value={optionVal}
-                  onChange={(e) => setOptionVal(e.target.value)}
-                  label="Choose new Layer type">
+                <Select value={optionVal} onChange={(e) => setOptionVal(e.target.value)} label="Choose new Layer type">
                   {newLayerTypeOptions.map((option) => (
                     <MenuItem disabled={['WMS Link', 'WFS Link'].includes(option)} key={Math.random()} value={option}>
                       {option}
@@ -109,7 +76,6 @@ const CustomizeLayerMenu = (props) => {
                   ))}
                 </Select>
                 <TextField
-             //     className={classes.select}
                   value={newLayerName}
                   onChange={(e) => setNewLayerName(e.target.value)}
                   label="Name your new layer"></TextField>
@@ -119,7 +85,6 @@ const CustomizeLayerMenu = (props) => {
               <FormControl>
                 <InputLabel>Remove Layer</InputLabel>
                 <Select
-              //    className={classes.select}
                   value={layerToDelete}
                   onChange={(e) => setLayerToDelete(e.target.value)}
                   label="Choose Layer to remove">
@@ -137,9 +102,7 @@ const CustomizeLayerMenu = (props) => {
         }
       </Box>
 
-      <DialogActions 
-      //className={classes.dialogActionsBox}
-      >
+      <DialogActions>
         {
           {
             Init: (

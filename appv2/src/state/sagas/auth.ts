@@ -1,4 +1,4 @@
-import { all, call, delay, put, select, take, takeLatest } from 'redux-saga/effects';
+import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
 
 import { historySingleton } from '../store';
 
@@ -10,7 +10,6 @@ import Keycloak, {
 } from 'keycloak-js';
 
 import { Browser } from '@capacitor/browser';
-
 
 import {
   AUTH_INITIALIZE_COMPLETE,
@@ -26,8 +25,7 @@ import {
   AUTH_SIGNOUT_COMPLETE,
   AUTH_SIGNOUT_REQUEST,
   AUTH_UPDATE_TOKEN_STATE,
-  TABS_GET_INITIAL_STATE_REQUEST, TOGGLE_PANEL,
-  URL_CHANGE,
+  TABS_GET_INITIAL_STATE_REQUEST,
   USERINFO_CLEAR_REQUEST,
   USERINFO_LOAD_COMPLETE
 } from '../actions';
@@ -95,7 +93,7 @@ function* reinitAuth() {
   let postAuthNavigate = null;
   if (authTargetJSON) {
     const authTarget = JSON.parse(authTargetJSON);
-    if (authTarget.at > (Date.now() - (30 * 10000))) {
+    if (authTarget.at > Date.now() - 30 * 10000) {
       // it is recent
       postAuthNavigate = authTarget.destination;
     } else {
@@ -104,18 +102,21 @@ function* reinitAuth() {
   }
 
   if (!postAuthNavigate) {
-    // this is an initial request or we have no destination preset
-    sessionStorage.setItem('_invasivesbc_auth_target', JSON.stringify({
-      at: Date.now(),
-      destination: historySingleton?.location?.pathname || '/'
-    }));
+    // either this is an initial request or we have no destination preset
+    sessionStorage.setItem(
+      '_invasivesbc_auth_target',
+      JSON.stringify({
+        at: Date.now(),
+        destination: historySingleton?.location?.pathname || '/'
+      })
+    );
   }
 
   if (config.MOBILE) {
     yield call(keycloakInstance.init, {
       checkLoginIframe: false,
       silentCheckSsoFallback: false,
-      silentCheckSsoRedirectUri: "https://invasivesbc.gov.bc.ca/check_sso.html",
+      silentCheckSsoRedirectUri: 'https://invasivesbc.gov.bc.ca/check_sso.html',
       redirectUri: config.REDIRECT_URI,
       enableLogging: true,
       responseMode: 'query',
@@ -125,7 +126,6 @@ function* reinitAuth() {
     });
 
     yield delay(3000);
-
   } else {
     yield call(keycloakInstance.init, {
       checkLoginIframe: true,
@@ -136,14 +136,12 @@ function* reinitAuth() {
     });
   }
 
-
   yield put({
     type: AUTH_INITIALIZE_COMPLETE,
     payload: {
       authenticated: keycloakInstance.authenticated
     }
   });
-
 
   if (keycloakInstance.authenticated) {
     // we are already logged in
@@ -154,13 +152,6 @@ function* reinitAuth() {
     if (postAuthNavigate) {
       sessionStorage.removeItem('_invasivesbc_auth_target');
       historySingleton.push(postAuthNavigate);
-    /*  yield put({
-        type: TOGGLE_PANEL, payload: {
-          panelOpen: false,
-          panelFullScreen: false
-        }
-      });
-      */
     }
   } else {
     // we are not logged in
@@ -191,8 +182,6 @@ function* initializeAuthentication() {
 function* refreshRoles() {
   const configuration = yield select(selectConfiguration);
   let authHeaders = yield select(selectAuthHeaders);
-  let authState = yield select(state => state.Auth);
-
 
   for (let i = 0; i < 3; i++) {
     if (authHeaders.authorization !== null && authHeaders.authorization.length > 0) {
@@ -207,23 +196,19 @@ function* refreshRoles() {
   try {
     const { data: userData } = yield Http.request({
       method: 'GET',
-      //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/user-access`,
-      //url: 'http://localhost:7080' + `/api/user-access`,
       url: configuration.API_BASE + `/api/user-access`,
       headers: {
-        Authorization: authHeaders.authorization,
-        'Content-Type': 'application/json'
+        authorization: authHeaders.authorization,
+        accept: 'application/json'
       }
     });
 
     const { data: rolesData } = yield Http.request({
       method: 'GET',
-      //url: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca' + `/api/roles`,
-      //url: 'http://localhost:7080' + `/api/roles`,
       url: configuration.API_BASE + `/api/roles`,
       headers: {
-        Authorization: authHeaders.authorization,
-        'Content-Type': 'application/json'
+        authorization: authHeaders.authorization,
+        accept: 'application/json'
       }
     });
 
@@ -269,12 +254,7 @@ function* keepTokenFresh() {
 function* handleSigninRequest(action) {
   const config: AppConfig = yield select(selectConfiguration);
 
-
   try {
-    const url = keycloakInstance.createLoginUrl({
-      redirectUri: config.REDIRECT_URI
-    });
-
     yield call(keycloakInstance.login, {
       redirectUri: config.REDIRECT_URI
     });
