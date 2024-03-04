@@ -318,7 +318,7 @@ export const Header: React.FC = () => {
   if (RENDER_DEBUG) console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
   const history = useHistory();
 
-  const { DEBUG } = useSelector((state) => state.Configuration.current);
+  const { DEBUG, MOBILE } = useSelector((state) => state.Configuration.current);
 
   return (
     <div className="HeaderBar">
@@ -374,7 +374,7 @@ export const Header: React.FC = () => {
           <Map />
         </Tab>
 
-        {DEBUG && <NetworkStateControl />}
+        {(DEBUG || MOBILE) && <NetworkStateControl />}
       </ButtonWrapper>
 
       <LoginOrOutMemo />
