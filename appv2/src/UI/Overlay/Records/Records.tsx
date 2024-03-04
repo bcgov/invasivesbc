@@ -1,6 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
-
-import Close from '@mui/icons-material/Close';
+import React, { useEffect, useState } from 'react';
 import ColorLensIcon from '@mui/icons-material/ColorLens';
 import Delete from '@mui/icons-material/Delete';
 import LabelIcon from '@mui/icons-material/Label';
@@ -9,7 +7,7 @@ import LayersIcon from '@mui/icons-material/Layers';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import { Button, Tooltip, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { Route, useHistory } from 'react-router';
+import { Route } from 'react-router';
 import {
   USER_SETTINGS_ADD_RECORD_SET,
   USER_SETTINGS_ADD_RECORD_SET_REQUEST,
@@ -19,22 +17,32 @@ import {
 import { Activity } from './Record';
 import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
-import { TouchHoldHandler } from '../TouchHoldHandler/TouchHoldHandler';
 import Spinner from 'UI/Spinner/Spinner';
+import { useHistory } from 'react-router-dom';
 
-export const Records = (props) => {
+export const Records = () => {
   // this version of layer 'highlighting' uses a usestate variable, but should be turned into a redux state variable
   // before getting the map layers to interact with the list item on hover.
   const recordSets = useSelector((state: any) => state.UserSettings?.recordSets);
 
-  const loaded = useSelector((state: any) =>
-    state.Map?.layers?.map((layer) => {
-      return { recordSetID: layer?.recordSetID, loading: layer?.loading, type: layer?.type };
-    })
-  );
-  const isActivitiesGeoJSONLoaded = useSelector(
-    (state: any) => state.Map?.activitiesGeoJSONDict?.hasOwnProperty('s3') || false
-  );
+  const mapLayers = useSelector((state: any) => state.Map.layers);
+  const [loaded, setLoaded] = useState([]);
+  useEffect(() => {
+    setLoaded(
+      mapLayers.map((layer) => {
+        return { recordSetID: layer?.recordSetID, loading: layer?.loading, type: layer?.type };
+      })
+    );
+  }, [mapLayers]);
+
+  const [isActivitiesGeoJSONLoaded, setActivitiesGeoJSONLoaded] = useState(false);
+
+  const activitiesGeoJSONState = useSelector((state: any) => state.Map?.activitiesGeoJSONDict);
+
+  useEffect(() => {
+    setActivitiesGeoJSONLoaded(activitiesGeoJSONState.hasOwnProperty('s3'));
+  }, [activitiesGeoJSONState]);
+
   const isIAPPGeoJSONLoaded = useSelector((state: any) => state.Map?.IAPPGeoJSONDict !== undefined);
 
   const [loadMap, setLoadMap] = React.useState({});

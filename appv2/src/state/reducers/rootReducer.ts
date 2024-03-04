@@ -15,6 +15,12 @@ import { createUserInfoReducer } from './userInfo';
 import { AppConfig } from 'state/config';
 import { errorHandlerReducer } from './error_handler';
 
+import storage from 'redux-persist/lib/storage';
+import hardSet from 'redux-persist/lib/stateReconciler/hardSet';
+
+import { persistReducer } from 'redux-persist';
+import { createOfflineActivityReducer } from './offlineActivity';
+
 function createRootReducer(config: AppConfig) {
   return combineReducers({
     AppMode: appMode,
@@ -30,7 +36,15 @@ function createRootReducer(config: AppConfig) {
     TrainingVideos: createTrainingVideosReducer(),
     EmailSettings: createEmailSettingsReducer(),
     EmailTemplates: createEmailTemplatesReducer(),
-    ErrorHandler: errorHandlerReducer
+    ErrorHandler: errorHandlerReducer,
+    OfflineActivity: persistReducer(
+      {
+        key: 'offline-activity',
+        storage,
+        stateReconciler: hardSet
+      },
+      createOfflineActivityReducer(config)
+    )
   });
 }
 

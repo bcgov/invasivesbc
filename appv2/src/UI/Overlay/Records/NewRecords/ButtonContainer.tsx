@@ -5,15 +5,14 @@ import { BaseMapToggle } from './BaseMapToggle';
 import './ButtonContainer.css';
 import { CenterCurrentRecord } from './CenterCurrentRecord';
 import { FindMeToggle } from './FindMe';
-import { LegendsButton } from "./LegendsButton";
+import { LegendsButton } from './LegendsButton';
 import { NewRecord } from './NewRecord';
-import { QuickPanToRecordToggle } from './ToggleQuickRecordPan';
+import { QuickPanToRecordToggle } from './QuickPanToRecordToggle';
 import { WhatsHereButton } from './WhatsHereButton';
 
 export const ButtonContainer = (props) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
 
-  
   return (
     <div id="map-btn-container">
       {/* Maybe not needed anymore? <HDToggle /> */}
@@ -23,10 +22,10 @@ export const ButtonContainer = (props) => {
       <AccuracyToggle />
       {isAuth && <WhatsHereButton />}
 
-      <NewRecord/>
-      <CenterCurrentRecord type="Activity"/>
-      <CenterCurrentRecord type="IAPP"/>
-      <QuickPanToRecordToggle/>
+      <NewRecord />
+      <CenterCurrentRecord type="Activity" />
+      <CenterCurrentRecord type="IAPP" />
+      <QuickPanToRecordToggle />
       {/*
 
       {isAuth && <WhatsHereCurrentRecordHighlighted />}

@@ -25,7 +25,11 @@ export const GeneralDialog = (props: IGeneralDialog) => {
   }, [props.dialogOpen]);
 
   return (
-    <Dialog onClick={(e) => e.stopPropagation()} open={open} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+    <Dialog
+      onClick={(e) => e.stopPropagation()}
+      open={open}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description">
       <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
       {props.dialogContentText && (
         <DialogContent>
@@ -39,7 +43,8 @@ export const GeneralDialog = (props: IGeneralDialog) => {
               action.children
             ) : (
               <Button
-                onClick={action.actionOnClick} key={'dialogue_action' + Math.random()}
+                onClick={action.actionOnClick}
+                key={'dialogue_action' + Math.random()}
                 color="primary"
                 autoFocus={action.autoFocus ? action.autoFocus : false}>
                 {action.actionName}

@@ -6,11 +6,7 @@ import { getDesignTokens } from 'util/CustomThemeProvider';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
-import { ActivityGeo } from './Map/ActivityGeo';
-import { ButtonContainer } from './Map/Buttons/ButtonContainer';
-//import Map from './Map/Map';
 import { Map } from './Map2/Map';
-import { MapCenterSetter } from './Map/MapCenterSetter';
 import UserAccessPage from './Overlay/Admin/userAccess/UserAccessPage';
 import BatchCreateNew from './Overlay/Batch/BatchCreateNew';
 import BatchList from './Overlay/Batch/BatchList';
@@ -28,17 +24,15 @@ import { TrainingPage } from './Overlay/Training/Training';
 import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
 import { IAPPRecord } from './Overlay/IAPP/IAPPRecord';
 import { FormMenuButtons } from './Overlay/FormMenuButtons';
-import { OnHoverActivity } from './Map/OnHoverActivity';
 import { App as CapacitorApp, URLOpenListenerEvent } from '@capacitor/app';
 import { Browser } from '@capacitor/browser';
-import { LayerPickerBasic } from './Map/LayerPickerBasic';
-import NewRecordDialog from './Map/Buttons/NewRecordDialog';
 import AccessRequestPage from './Overlay/AccessRequest/AccessRequestPage';
-import CustomizeLayerMenu from './Map/Buttons/CustomizeLayerDialog';
-import { DrawCustomLayer } from './Map/DrawCustomLayer';
 import { selectGlobalErrorState } from '../state/reducers/error_handler';
 import { ErrorHandler } from './ErrorHandler/ErrorHandler';
 import { LayerPicker } from './Map2/LayerPicker';
+import NewRecordDialog from './Overlay/Records/NewRecords/NewRecordDialog';
+import { ButtonContainer } from './Overlay/Records/NewRecords/ButtonContainer';
+import CustomizeLayerMenu from './Overlay/Records/NewRecords/CustomizeLayerDialog';
 
 export const RENDER_DEBUG = false;
 
@@ -56,7 +50,6 @@ const AppUrlListener: React.FC<any> = () => {
 };
 
 const OverlayContentMemo = (props) => {
-  //React.memo((props: any) => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cOverlay content render:' + ref.current.toString(), 'color: yellow');
@@ -159,10 +152,9 @@ const App: React.FC = () => {
   return (
     <div id="app" className="App">
       <Header />
-      {/*<Map className="Map">*/}
       <Map>
-        <ButtonContainer></ButtonContainer>
-        <LayerPicker/>
+        <ButtonContainer />
+        <LayerPicker />
       </Map>
       <Overlay>
         <OverlayContentMemo />

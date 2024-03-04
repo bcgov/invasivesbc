@@ -1,10 +1,9 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Box, Button, Theme, Typography } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box } from '@mui/material';
 import { DropzoneDialog } from 'mui-file-dropzone';
-//import makeStyles from '@mui/styles/makeStyles';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useDispatch } from 'react-redux';
-import { INIT_SERVER_BOUNDARIES_GET, REFETCH_SERVER_BOUNDARIES } from 'state/actions';
+import { REFETCH_SERVER_BOUNDARIES } from 'state/actions';
 
 export interface IShapeUploadRequest {
   data: string;
@@ -13,21 +12,7 @@ export interface IShapeUploadRequest {
   title: string;
 }
 
-/*const useStyles = makeStyles((theme: Theme) => ({
-  itemsContainer: { display: 'flex', justifyContent: 'start', alignItems: 'center', width: '100%', flexWrap: 'wrap' },
-  buttonsContainer: { display: 'flex', justifyContent: 'stretch' },
-  button: { flexGrow: 1, marginLeft: 10, marginRight: 10 },
-  componentContainer: { maxWidth: '500px', padding: 7 },
-  messageContainer: {
-    padding: 7,
-    width: '100%'
-  }
-}));
-*/
-
-//   var extension = input?.name?.split('.').pop();
 export const KMLShapesUpload: React.FC<any> = (props) => {
-  //const classes = useStyles();
   const [uploadRequests, setUploadRequests] = useState([]);
   const [dialogOpen, setDialogOpen] = React.useState(false);
   const api = useInvasivesApi();
@@ -36,12 +21,11 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if(uploadRequests.length > 0)
-    doUpload().then(() => {
-      props.whenDone();
-      console.log('done');
-      dispatch({ type: REFETCH_SERVER_BOUNDARIES})
-    });
+    if (uploadRequests.length > 0)
+      doUpload().then(() => {
+        props.whenDone();
+        dispatch({ type: REFETCH_SERVER_BOUNDARIES });
+      });
   }, [uploadRequests]);
 
   const doUpload = async () => {
@@ -115,14 +99,15 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
   };
 
   return (
-    <Box 
-    //className={classes.componentContainer}
-    >
+    <Box>
       <DropzoneDialog
         acceptedFiles={['.kml,.kmz']}
         filesLimit={1}
         cancelButtonText={'cancel'}
-        onClose={() => { setDialogOpen(false); props.whenDone(); }}
+        onClose={() => {
+          setDialogOpen(false);
+          props.whenDone();
+        }}
         submitButtonText={'Upload to InvasivesBC'}
         open={props.open}
         onSave={(files: any) => {
@@ -133,9 +118,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         maxFileSize={10485760}
       />
 
-      {resultMessage && <Box 
-      //className={classes.messageContainer}
-      >{resultMessage}</Box>}
+      {resultMessage && <Box>{resultMessage}</Box>}
     </Box>
   );
 };

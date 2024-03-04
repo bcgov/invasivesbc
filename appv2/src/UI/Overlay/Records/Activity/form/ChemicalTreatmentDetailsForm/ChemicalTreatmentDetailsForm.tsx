@@ -25,7 +25,7 @@ import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccor
 //import { useFormStyles } from './formStyles';
 import { runValidation } from 'sharedAPI';
 import { performCalculation } from 'sharedAPI';
-import { GeneralDialog, IGeneralDialog } from 'UI/Map/GeneralDialog';
+import { GeneralDialog, IGeneralDialog } from 'UI/Overlay/GeneralDialog';
 import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
 
 const ChemicalTreatmentDetailsForm = (props) => {
@@ -86,7 +86,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
     herbicideDictionary: herbicideDictionary,
     activitySubType: props.activitySubType,
     disabled: props.disabled,
-//    classes: classes,
+    //    classes: classes,
     errors: []
   });
   //used to render the list of errors
@@ -215,124 +215,123 @@ const ChemicalTreatmentDetailsForm = (props) => {
   }, [tankMixOn, chemicalApplicationMethod]);
 
   return (
-    (
-      <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
-        <Typography variant="h5">Chemical Treatment Details</Typography>
-        <Divider />
-        <FormControl 
-       // className={classes.formControl}
+    <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
+      <Typography variant="h5">Chemical Treatment Details</Typography>
+      <Divider />
+      <FormControl
+      // className={classes.formControl}
+      >
+        <InvasivePlantsAccordion />
+
+        <Box
+        //className={classes.generalFieldsContainer}
         >
-          <InvasivePlantsAccordion />
-
-          <Box 
-          //className={classes.generalFieldsContainer}
+          <Box
+          //className={classes.generalFieldColumn}
           >
-            <Box 
-            //className={classes.generalFieldColumn}
-            >
-              <Tooltip
-                classes={{ tooltip: 'toolTip' }}
-                style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-                placement="left"
-                title="Check if there is a mix of herbicides in the tank">
-                <HelpOutlineIcon />
-              </Tooltip>
-              <FormLabel 
-              //className={classes.formLabel} 
-              style={{ marginTop: '25px' }} component="legend">
-                Tank Mix
-              </FormLabel>
+            <Tooltip
+              classes={{ tooltip: 'toolTip' }}
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Check if there is a mix of herbicides in the tank">
+              <HelpOutlineIcon />
+            </Tooltip>
+            <FormLabel
+              //className={classes.formLabel}
+              style={{ marginTop: '25px' }}
+              component="legend">
+              Tank Mix
+            </FormLabel>
 
-              <RadioGroup
-                onChange={() => {
-                  setTankMixOn((prevState) => !prevState);
-                }}
-                value={tankMixOn}
-                aria-label="tank_mix"
-                //className={classes.tankMixRadioGroup}
-                name="tank_mix">
-                <FormControlLabel value={true} control={<Radio disabled={props.disabled} />} label="On" />
-                <FormControlLabel value={false} control={<Radio disabled={props.disabled} />} label="Off" />
-              </RadioGroup>
-            </Box>
-            <Box 
-            //className={classes.generalFieldColumn}
-            >
-              <Tooltip
-                classes={{ tooltip: 'toolTip' }}
-                style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-                placement="left"
-                title="Choose treatment application method">
-                <HelpOutlineIcon />
-              </Tooltip>
-              <CustomAutoComplete
-                choices={chemicalApplicationMethodChoices}
-                className={null}
-                disabled={props.disabled}
-                actualValue={chemicalApplicationMethod}
-              //  classes={classes}
-                key={'chemical-application-method'}
-                id={'chemical-application-method'}
-                label={'Chemical Application Method'}
-                onChange={(event, value) => {
-                  if (value === null) {
-                    return;
-                  }
-                  setChemicalApplicationMethod(value.value);
-                }}
-                parentState={{ chemicalApplicationMethod, setChemicalApplicationMethod }}
-              />
-            </Box>
+            <RadioGroup
+              onChange={() => {
+                setTankMixOn((prevState) => !prevState);
+              }}
+              value={tankMixOn}
+              aria-label="tank_mix"
+              //className={classes.tankMixRadioGroup}
+              name="tank_mix">
+              <FormControlLabel value={true} control={<Radio disabled={props.disabled} />} label="On" />
+              <FormControlLabel value={false} control={<Radio disabled={props.disabled} />} label="Off" />
+            </RadioGroup>
           </Box>
+          <Box
+          //className={classes.generalFieldColumn}
+          >
+            <Tooltip
+              classes={{ tooltip: 'toolTip' }}
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+              placement="left"
+              title="Choose treatment application method">
+              <HelpOutlineIcon />
+            </Tooltip>
+            <CustomAutoComplete
+              choices={chemicalApplicationMethodChoices}
+              className={null}
+              disabled={props.disabled}
+              actualValue={chemicalApplicationMethod}
+              //  classes={classes}
+              key={'chemical-application-method'}
+              id={'chemical-application-method'}
+              label={'Chemical Application Method'}
+              onChange={(event, value) => {
+                if (value === null) {
+                  return;
+                }
+                setChemicalApplicationMethod(value.value);
+              }}
+              parentState={{ chemicalApplicationMethod, setChemicalApplicationMethod }}
+            />
+          </Box>
+        </Box>
 
-          <HerbicidesAccordion insideTankMix={false} />
+        <HerbicidesAccordion insideTankMix={false} />
 
-          <TankMixAccordion />
+        <TankMixAccordion />
 
-          {calculationResults && (
-            <>
-              <Typography style={{ marginTop: '1rem' }} variant="h4">
-                Calculation Results
-              </Typography>
-              <Divider style={{ marginBottom: '1rem' }} />
-              <CalculationResultsTable data={calculationResults} />
-              {Object.keys(calculationResults).length < 1 && (
-                <Typography style={{ marginTop: '10px' }} variant={'body1'} color={'error'}>
-                  Couldn't perform calculation because of the invalid scenario.
-                </Typography>
-              )}
-            </>
-          )}
-        </FormControl>
-        <GeneralDialog
-          dialogOpen={warningDialog.dialogOpen}
-          dialogTitle={warningDialog.dialogTitle}
-          dialogActions={warningDialog.dialogActions}
-          dialogContentText={warningDialog.dialogContentText}
-        />
-        {localErrors.length > 0 && (
+        {calculationResults && (
           <>
-            <Typography style={{ marginTop: '1rem' }} color={'error'} variant="h5">
-              There are errors in this sub-form:
+            <Typography style={{ marginTop: '1rem' }} variant="h4">
+              Calculation Results
             </Typography>
-            <List dense={true}>
-              {localErrors.map((err, index) => (
-                <ListItem key={index}>
-                  <ListItemText
-                    style={{ color: '#ff000' }}
-                    primary={
-                      <Typography color={'error'} variant="body1">
-                        {`${index + 1}. ${err}`}
-                      </Typography>
-                    }
-                  />
-                </ListItem>
-              ))}
-            </List>
+            <Divider style={{ marginBottom: '1rem' }} />
+            <CalculationResultsTable data={calculationResults} />
+            {Object.keys(calculationResults).length < 1 && (
+              <Typography style={{ marginTop: '10px' }} variant={'body1'} color={'error'}>
+                Couldn't perform calculation because of the invalid scenario.
+              </Typography>
+            )}
           </>
         )}
-      </ChemicalTreatmentDetailsContextProvider>
-    )
+      </FormControl>
+      <GeneralDialog
+        dialogOpen={warningDialog.dialogOpen}
+        dialogTitle={warningDialog.dialogTitle}
+        dialogActions={warningDialog.dialogActions}
+        dialogContentText={warningDialog.dialogContentText}
+      />
+      {localErrors.length > 0 && (
+        <>
+          <Typography style={{ marginTop: '1rem' }} color={'error'} variant="h5">
+            There are errors in this sub-form:
+          </Typography>
+          <List dense={true}>
+            {localErrors.map((err, index) => (
+              <ListItem key={index}>
+                <ListItemText
+                  style={{ color: '#ff000' }}
+                  primary={
+                    <Typography color={'error'} variant="body1">
+                      {`${index + 1}. ${err}`}
+                    </Typography>
+                  }
+                />
+              </ListItem>
+            ))}
+          </List>
+        </>
+      )}
+    </ChemicalTreatmentDetailsContextProvider>
   );
 };
 

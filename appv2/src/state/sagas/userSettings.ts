@@ -6,6 +6,8 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import {
   AUTH_INITIALIZE_COMPLETE,
+  GET_API_DOC_FAILURE,
+  GET_API_DOC_OFFLINE,
   GET_API_DOC_ONLINE,
   GET_API_DOC_REQUEST,
   GET_API_DOC_SUCCESS,
@@ -284,24 +286,55 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
 }
 
 function* handle_GET_API_DOC_REQUEST(action) {
-  // TODO decide online or not
-  yield put({ type: GET_API_DOC_ONLINE });
+  const { connected } = yield select((state) => state.Network);
+
+  if (connected) {
+    yield put({ type: GET_API_DOC_ONLINE });
+  } else {
+    yield put({ type: GET_API_DOC_OFFLINE });
+  }
+}
+
+function* handle_GET_API_DOC_OFFLINE(action) {
+  const cachedAPISpec = localStorage.getItem('api-spec');
+  if (cachedAPISpec) {
+    yield put({
+      type: GET_API_DOC_SUCCESS,
+      payload: JSON.parse(cachedAPISpec)
+    });
+  } else {
+    console.error('no cached API spec is available');
+    yield put({
+      type: GET_API_DOC_FAILURE
+    });
+  }
 }
 
 function* handle_GET_API_DOC_ONLINE(action) {
-  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call(
-    'GET',
-    '/api/api-docs/',
-    {},
-    { filterForSelectable: 'true' }
-  );
-  const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
-  const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
-  const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
-  yield put({
-    type: GET_API_DOC_SUCCESS,
-    payload: { apiDocsWithViewOptions: apiDocsWithViewOptions, apiDocsWithSelectOptions: apiDocsWithSelectOptions }
-  });
+  try {
+    const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call(
+      'GET',
+      '/api/api-docs/',
+      {},
+      { filterForSelectable: 'true' }
+    );
+    const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
+    const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
+    const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
+    yield put({
+      type: GET_API_DOC_SUCCESS,
+      payload: { apiDocsWithViewOptions: apiDocsWithViewOptions, apiDocsWithSelectOptions: apiDocsWithSelectOptions }
+    });
+    localStorage.setItem(
+      'api-spec',
+      JSON.stringify({
+        apiDocsWithViewOptions: apiDocsWithViewOptions,
+        apiDocsWithSelectOptions: apiDocsWithSelectOptions
+      })
+    );
+  } catch (e) {
+    console.dir(e);
+  }
 }
 
 function* userSettingsSaga() {
@@ -310,6 +343,7 @@ function* userSettingsSaga() {
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_REQUEST, handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
     takeEvery(GET_API_DOC_REQUEST, handle_GET_API_DOC_REQUEST),
     takeEvery(GET_API_DOC_ONLINE, handle_GET_API_DOC_ONLINE),
+    takeEvery(GET_API_DOC_OFFLINE, handle_GET_API_DOC_OFFLINE),
     takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
     takeEvery(USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST),
     takeEvery(

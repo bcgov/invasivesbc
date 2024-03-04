@@ -1,30 +1,24 @@
-import {
-  IAPP_GET_SUCCESS,
-  IAPP_GET_FAILURE,
-  IAPP_GET_REQUEST
-} from '../actions';
+import { IAPP_GET_SUCCESS, IAPP_GET_FAILURE, IAPP_GET_REQUEST } from '../actions';
 
-import {AppConfig} from '../config';
+import { AppConfig } from '../config';
 
-
-class IAPPSiteState {
+interface IAPPSiteState {
   initialized: boolean;
   loading: boolean;
   failCode: unknown | null;
   site: unknown | null;
-
-  constructor() {
-    this.initialized = false;
-    this.failCode = null;
-  }
 }
 
-const initialState = new IAPPSiteState();
+const initialState: IAPPSiteState = {
+  initialized: false,
+  loading: false,
+  failCode: null,
+  site: null
+};
 
 function createIAPPSiteReducer(configuration: AppConfig): (IAPPSiteState, AnyAction) => IAPPSiteState {
   return (state = initialState, action) => {
     switch (action.type) {
-
       case IAPP_GET_REQUEST: {
         return {
           ...state,
@@ -37,12 +31,12 @@ function createIAPPSiteReducer(configuration: AppConfig): (IAPPSiteState, AnyAct
           ...state,
           loading: false,
           failCode: action.payload?.failNetworkObj?.status
-        }
+        };
       }
       case IAPP_GET_SUCCESS: {
         return {
           ...state,
-          site: {...action.payload.iapp},
+          site: { ...action.payload.iapp },
           loading: false
         };
       }
@@ -54,5 +48,4 @@ function createIAPPSiteReducer(configuration: AppConfig): (IAPPSiteState, AnyAct
 
 const selectIAPPSite: (state) => IAPPSiteState = (state) => state.IAPPSitePage;
 
-export {createIAPPSiteReducer, selectIAPPSite};
-
+export { createIAPPSiteReducer, selectIAPPSite };

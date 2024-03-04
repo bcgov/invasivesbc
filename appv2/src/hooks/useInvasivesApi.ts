@@ -4,7 +4,6 @@ import { useContext } from 'react';
 import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
 import { DocType } from '../constants/database';
 //import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
-import { ErrorContext } from 'contexts/ErrorContext';
 import {
   IActivitySearchCriteria,
   ICreateMetabaseQuery,
@@ -1263,15 +1262,14 @@ export const useInvasivesApi = () => {
 export const getRequestOptions = (config, requestHeaders) => {
   return {
     baseUrl: config.API_BASE,
-    //baseUrl: 'https://api-dev-invasivesbci.apps.silver.devops.gov.bc.ca',
-    headers: { 'Access-Control-Allow-Origin': '*', Authorization: requestHeaders.authorization }
+    headers: { Authorization: requestHeaders.authorization }
   };
 };
 
 export async function InvasivesAPI_Callback(method, endpoint, payloadData?, options?) {
   const { data, status, url } = await Http.request({
     method: method,
-    headers: { ...options.headers, 'Content-Type': 'application/json' },
+    headers: { ...options.headers, Accept: 'application/json' },
     url: options.baseUrl + endpoint,
     data: payloadData
   });
@@ -1286,18 +1284,24 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
   const options = getRequestOptions(config, requestOptions);
 
   //this is a bit of a hack. this whole function needs a rewrite
+  let params;
+  if (payloadData) {
+    params = {
+      query: JSON.stringify(payloadData)
+    };
+  }
+
   if (method === 'GET') {
     const { data, status, url } = yield Http.request({
       method: method,
       headers: { ...options.headers, ...additionalHeaders },
       url: options.baseUrl + endpoint,
-      params: {
-        query: JSON.stringify(payloadData)
-      }
+      params
     });
 
     return { data, status, url };
-  } else {
+  } else if (['PUT', 'POST'].includes(method)) {
+    // content-type is only sensible when request includes a body
     const { data, status, url } = yield Http.request({
       method: method,
       headers: { ...options.headers, 'Content-Type': 'application/json' },
@@ -1305,6 +1309,13 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
       data: payloadData
     });
 
+    return { data, status, url };
+  } else {
+    const { data, status, url } = yield Http.request({
+      method: method,
+      headers: { ...options.headers },
+      url: options.baseUrl + endpoint
+    });
     return { data, status, url };
   }
 }

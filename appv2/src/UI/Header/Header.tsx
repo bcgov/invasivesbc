@@ -2,31 +2,35 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
 import React, { useCallback, useEffect, useRef } from 'react';
 import './Header.css';
-import { Avatar, Box, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { AUTH_SIGNIN_REQUEST, AUTH_SIGNOUT_REQUEST, TOGGLE_PANEL } from 'state/actions';
-import { Route, useHistory } from 'react-router';
+import { Avatar, Box, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import {
+  AUTH_SIGNIN_REQUEST,
+  AUTH_SIGNOUT_REQUEST,
+  NETWORK_GO_OFFLINE,
+  NETWORK_GO_ONLINE,
+  TOGGLE_PANEL
+} from 'state/actions';
+import { useHistory } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import InfoIcon from '@mui/icons-material/Info';
-import { AdminPanelSettings, Assessment, FileUpload, Home, School } from '@mui/icons-material';
+import { AdminPanelSettings, Assessment, FileUpload, Home, Map, School } from '@mui/icons-material';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
-import { Map } from '@mui/icons-material';
 import { RENDER_DEBUG } from 'UI/App';
+import { Switch } from '@mui/base';
+import { useSelector } from '../../util/use_selector';
 
 const Tab = (props: any) => {
   const ref = useRef(0);
   ref.current += 1;
 
-  const urlFromAppModeState = useSelector((state: any) => state.AppMode?.url);
+  const urlFromAppModeState = useSelector((state: any) => state.AppMode.url);
   const history = useHistory();
 
   const dispatch = useDispatch();
-  const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
-
-
+  const authenticated = useSelector((state: any) => state?.Auth.authenticated);
 
   const canDisplayCallBack = useCallback(() => {
     if (props.loggedOutOnly && authenticated) {
@@ -167,7 +171,7 @@ const InvIcon = () => {
 };
 
 const ActivityTabMemo = (props) => {
-  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity) || undefined
+  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity) || undefined;
   return (
     <Tab
       key={'tab3'}
@@ -182,7 +186,7 @@ const ActivityTabMemo = (props) => {
 };
 
 const IAPPTabMemo = (props) => {
-  const activeIAPP = useSelector((state: any) => state?.UserSettings?.activeIAPP) || undefined
+  const activeIAPP = useSelector((state: any) => state?.UserSettings?.activeIAPP) || undefined;
   return (
     <Tab
       key={'tab4'}
@@ -194,7 +198,7 @@ const IAPPTabMemo = (props) => {
       <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
     </Tab>
   );
-}
+};
 
 const AdminPanelMemo = (props) => {
   const roles = useSelector((state: any) => state?.Auth?.roles);
@@ -288,13 +292,33 @@ const LoginOrOutMemo = React.memo((props) => {
   );
 });
 
+const NetworkStateControl: React.FC = () => {
+  const { connected } = useSelector((state) => state.Network);
+  const dispatch = useDispatch();
+  return (
+    <FormGroup>
+      <FormControlLabel
+        control={
+          <Switch
+            checked={connected}
+            onChange={(e) => {
+              dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+            }}
+          />
+        }
+        label="Online"
+      />
+    </FormGroup>
+  );
+};
+
 export const Header: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
   const history = useHistory();
 
+  const { DEBUG } = useSelector((state) => state.Configuration.current);
 
   return (
     <div className="HeaderBar">
@@ -349,7 +373,10 @@ export const Header: React.FC = () => {
         <Tab key={'tab8'} path={'/'} label="Map" loggedOutOnly={true} panelOpen={false}>
           <Map />
         </Tab>
+
+        {DEBUG && <NetworkStateControl />}
       </ButtonWrapper>
+
       <LoginOrOutMemo />
     </div>
   );

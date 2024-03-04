@@ -1,6 +1,5 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
-import * as L from 'leaflet';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'util/use_selector';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
@@ -13,13 +12,6 @@ export const NewRecord = (props) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
 
   const [show, setShow] = React.useState(false);
-
-  useEffect(() => {
-    try {
-      L.DomEvent.disableClickPropagation(divRef?.current);
-      L.DomEvent.disableScrollPropagation(divRef?.current);
-    } catch (e) {}
-  }, []);
 
   if (isAuth) {
     return (
@@ -35,8 +27,7 @@ export const NewRecord = (props) => {
             <IconButton
               onClick={() => {
                 dispatch({ type: OPEN_NEW_RECORD_MENU });
-              }}
-              >
+              }}>
               <FiberNewIcon />
             </IconButton>
           </span>
