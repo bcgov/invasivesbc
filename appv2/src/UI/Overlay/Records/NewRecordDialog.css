@@ -1,0 +1,9 @@
+#new_record_dialog .content {
+  min-width: 30svw;
+  padding: 1rem;
+}
+
+#new_record_dialog .vertical_grid {
+  display: grid;
+  grid-row-gap: 1.75rem;
+}

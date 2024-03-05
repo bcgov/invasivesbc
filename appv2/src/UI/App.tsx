@@ -30,9 +30,9 @@ import AccessRequestPage from './Overlay/AccessRequest/AccessRequestPage';
 import { selectGlobalErrorState } from '../state/reducers/error_handler';
 import { ErrorHandler } from './ErrorHandler/ErrorHandler';
 import { LayerPicker } from './Map2/LayerPicker';
-import NewRecordDialog from './Overlay/Records/NewRecords/NewRecordDialog';
-import { ButtonContainer } from './Overlay/Records/NewRecords/ButtonContainer';
-import CustomizeLayerMenu from './Overlay/Records/NewRecords/CustomizeLayerDialog';
+import NewRecordDialog from './Overlay/Records/NewRecordDialog';
+import { ButtonContainer } from './Map2/Controls/ButtonContainer';
+import CustomizeLayerMenu from './Map2/Controls/CustomizeLayerDialog';
 
 export const RENDER_DEBUG = false;
 
