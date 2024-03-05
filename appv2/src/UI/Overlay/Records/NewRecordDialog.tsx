@@ -1,4 +1,3 @@
-//import makeStyles from '@mui/styles/makeStyles';
 import {
   Box,
   Button,
@@ -20,6 +19,9 @@ import {
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
 } from 'state/actions';
 import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
+
+import './NewRecordDialog.css';
+import FormContainer from './Activity/form/FormContainer';
 
 export interface INewRecordDialog {}
 
@@ -125,14 +127,15 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   };
 
   return (
-    <Dialog open={dialogueOpen || false}>
+    <Dialog open={dialogueOpen || false} id="new_record_dialog">
       <DialogTitle>Create New Record</DialogTitle>
 
-      <Box>
+      <Box className={'vertical_grid content'}>
         <FormControl>
           <InputLabel>Record Category</InputLabel>
           <Select
             value={newRecordDialogState.recordCategory}
+            IconComponent={KeyboardArrowDownIcon}
             onChange={handleRecordCategoryChange}
             label="Select Form Type">
             {activityCategorySelectOptions.map((option) => (
@@ -142,13 +145,14 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             ))}
           </Select>
         </FormControl>
-        <KeyboardArrowDownIcon />
+
         <FormControl>
           <InputLabel>Record Type</InputLabel>
           <Select
             disabled={newRecordDialogState.recordCategory === ''}
             value={newRecordDialogState.recordType}
             onChange={handleRecordTypeChange}
+            IconComponent={KeyboardArrowDownIcon}
             label="Select Form Type">
             {activityTypeSelectOptions.map((option) => (
               <MenuItem key={Math.random()} value={option}>
@@ -157,13 +161,13 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             ))}
           </Select>
         </FormControl>
-        <KeyboardArrowDownIcon />
         <FormControl>
           <InputLabel>Record Sub-Type</InputLabel>
           <Select
             disabled={newRecordDialogState.recordType === ''}
             value={newRecordDialogState.recordSubtype}
             onChange={handleRecordSubtypeChange}
+            IconComponent={KeyboardArrowDownIcon}
             label="Select Form Type">
             {activitySubTypeSelectOptions.map((option) => (
               <MenuItem key={Math.random()} value={option}>
