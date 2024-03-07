@@ -17,6 +17,8 @@ MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
+const FALLBACK_COLOR = 'red'
+
 export const mapInit = (
   map,
   mapContainer,
@@ -88,13 +90,13 @@ export const mapInit = (
             tileSize: 256,
             maxzoom: 18
           },
-          example_source: {
+          /*example_source: {
             type: 'vector',
             url: `pmtiles://${PMTILES_URL}`,
             //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
             // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
             attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
-          }
+          }*/
         },
         layers: [
           {
@@ -123,8 +125,8 @@ export const mapInit = (
             type: 'raster',
             source: 'wms-test-source',
             minzoom: 0
-          },
-          {
+          }
+          /*{
             id: 'invasives-vector',
             source: 'example_source',
             'source-layer': 'invasives',
@@ -143,9 +145,9 @@ export const mapInit = (
             paint: {
               'fill-color': 'steelblue'
             },
-
             minzoom: 0
           }
+          */
         ]
       }
     });
@@ -165,8 +167,8 @@ export const createActivityLayer = (map: any, layer: any) => {
       source: layerID,
       type: 'fill',
       paint: {
-        'fill-color': layer.layerState.color,
-        'fill-outline-color': layer.layerState.color,
+        'fill-color': layer.layerState.color || FALLBACK_COLOR,
+        'fill-outline-color': layer.layerState.color || FALLBACK_COLOR,
         'fill-opacity': 0.5
       },
       minzoom: 0,
@@ -178,7 +180,7 @@ export const createActivityLayer = (map: any, layer: any) => {
     source: layerID,
     type: 'line',
     paint: {
-      'line-color': layer.layerState.color,
+      'line-color': layer.layerState.color || FALLBACK_COLOR,
       'line-opacity': 1,
       'line-width': 3
     }
@@ -189,7 +191,7 @@ export const createActivityLayer = (map: any, layer: any) => {
     source: layerID,
     type: 'circle',
     paint: {
-      'circle-color': layer.layerState.color,
+      'circle-color': layer.layerState.color || FALLBACK_COLOR,
       'circle-radius': 3
     },
     maxzoom: 10
@@ -286,7 +288,7 @@ export const createIAPPLayer = (map: any, layer: any) => {
       source: layerID,
       type: 'circle',
       paint: {
-        'circle-color': layer.layerState.color,
+        'circle-color': layer.layerState.color || FALLBACK_COLOR,
         'circle-radius': 3
       },
       minzoom: 0,
@@ -394,13 +396,13 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
           if (layer.type === 'Activity') {
             currentColor = fillPolygonLayerStyle.paint['fill-color'];
             if (currentColor !== layer.layerState.color) {
-              map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color);
-              map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color);
+              map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color || FALLBACK_COLOR);
+              map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color || FALLBACK_COLOR);
             }
           } else {
             currentColor = fillPolygonLayerStyle.paint['circle-color'];
             if (currentColor !== layer.layerState.color) {
-              map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color);
+              map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
             }
           }
           break;
@@ -408,14 +410,14 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
           const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           currentColor = polyGonBorderLayerStyle.paint['line-color'];
           if (currentColor !== layer.layerState.color) {
-            map.setPaintProperty(mapLayer, 'line-color', layer.layerState.color);
+            map.setPaintProperty(mapLayer, 'line-color', layer.layerState.color || FALLBACK_COLOR);
           }
           break;
         case /polygon-circle-/.test(mapLayer):
           const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
           if (currentColor !== layer.layerState.color) {
-            map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color);
+            map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
           }
           break;
         default:
