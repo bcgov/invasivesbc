@@ -8,9 +8,11 @@ import App from './UI/App';
 import './main.css';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
-export let store;
+// For tests, please leave:
+export let exportStore
 import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) => {
-  const { store, persistor } = setupStore(CONFIG);
+const { store, persistor }  = setupStore(CONFIG);
+exportStore = store
 
   const container = document.getElementById('root');
   if (container && store) {
