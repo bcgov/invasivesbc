@@ -68,7 +68,8 @@ import {
   TOGGLE_WMS_LAYER,
   TOGGLE_LAYER_PICKER_OPEN,
   TOGGLE_KML_LAYER,
-  TOGGLE_DRAWN_LAYER
+  TOGGLE_DRAWN_LAYER,
+  MAP_ON_SHAPE_UPDATE
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -634,6 +635,21 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case DRAW_CUSTOM_LAYER: {
           draftState.drawingCustomLayer = true;
           draftState.workingLayerName = action.payload.name;
+          break;
+        }
+        case MAP_ON_SHAPE_UPDATE: {
+          if(draftState.drawingCustomLayer)
+          {
+            draftState.drawingCustomLayer = false;
+            draftState.clientBoundaries.push({
+              id: getUuid(),
+              title: draftState?.workingLayerName,
+              geojson: action.payload,
+              toggle: true
+            });
+            draftState.workingLayerName = null;
+            localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
+          }
           break;
         }
         case IAPP_EXTENT_FILTER_SUCCESS: {

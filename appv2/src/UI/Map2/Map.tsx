@@ -24,6 +24,8 @@ import {
   refreshWMSOnToggle,
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle,
+  addClientBoundariesIfNotExists,
+  refreshClientBoundariesOnToggle,
 } from './Helpers';
 
 /* 
@@ -50,6 +52,8 @@ export const Map = (props: any) => {
 
   //KML
   const serverBoundaries = useSelector((state: any) => state.Map?.serverBoundaries);
+  //Drawn boundaries:
+  const clientBoundaries = useSelector((state: any) => state.Map?.clientBoundaries)
 
   // Map position jump
   const map_center = useSelector((state: any) => state.Map?.map_center);
@@ -78,6 +82,7 @@ export const Map = (props: any) => {
   const appModeUrl = useSelector((state: any) => state.AppMode.url);
   // also used with current marker below:
   const activityGeo = useSelector((state: any) => state.ActivityPage?.activity?.geometry)
+  const drawingCustomLayer = useSelector((state:any) => state.Map.drawingCustomLayer)
 
 
   //Current rec markers:
@@ -121,6 +126,11 @@ export const Map = (props: any) => {
     refreshServerBoundariesOnToggle(serverBoundaries, map.current)
   },[serverBoundaries])
 
+  useEffect(()=> {
+    addClientBoundariesIfNotExists(clientBoundaries, map.current)
+    refreshClientBoundariesOnToggle(clientBoundaries, map.current)
+  }, [clientBoundaries])
+
   // Jump Nav
   useEffect(() => {
     if (!map.current) return;
@@ -144,8 +154,8 @@ export const Map = (props: any) => {
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
     if (!map.current) return;
-    refreshDrawControls(map.current, draw,  setDraw, dispatch, uHistory, whatsHereToggle, appModeUrl, activityGeo)
-  }, [whatsHereToggle, appModeUrl, map, activityGeo]);
+    refreshDrawControls(map.current, draw,  setDraw, dispatch, uHistory, whatsHereToggle, appModeUrl, activityGeo, drawingCustomLayer)
+  }, [whatsHereToggle, appModeUrl, map, activityGeo, drawingCustomLayer]);
 
 
   //Current Activity & IAPP Markers

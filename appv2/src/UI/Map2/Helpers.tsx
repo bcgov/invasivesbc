@@ -151,7 +151,7 @@ export const mapInit = (
         ]
       }
     });
-    refreshDrawControls(map.current, null, drawSetter, dispatch, uHistory, whats_here_toggle, appModeUrl, activityGeo);
+    refreshDrawControls(map.current, null, drawSetter, dispatch, uHistory, whats_here_toggle, appModeUrl, activityGeo, null);
   });
 };
 
@@ -486,7 +486,7 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
 };
 
-export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls, activityGeo, whats_here_toggle) => {
+export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls, activityGeo, whats_here_toggle, drawingCustomLayer) => {
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map?._listeners[eName]?.map((l) => {
       if (/customDrawListener/.test(l.name)) {
@@ -606,7 +606,8 @@ export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls,
     if (whats_here_toggle) {
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
       uHistory.push('/WhatsHere');
-    } else {
+    }
+    else {
       dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
     }
   };
@@ -734,7 +735,8 @@ export const refreshDrawControls = (
   uHistory,
   whatsHereToggle,
   appModeUrl,
-  activityGeo
+  activityGeo,
+  drawingCustomLayer
 ) => {
   /* 
           We fully tear down map box draw and readd depending on app state / route, to have conditionally rendered controls:
@@ -761,12 +763,12 @@ export const refreshDrawControls = (
 
   if (!map.draw) {
     if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
-      initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle);
+      initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle,null);
     } else if (/Records/.test(appModeUrl)) {
       if (/Activity/.test(appModeUrl)) {
-        initDrawModes(map, drawSetter, dispatch, uHistory, false, activityGeo, whatsHereToggle);
+        initDrawModes(map, drawSetter, dispatch, uHistory, false, activityGeo, whatsHereToggle, drawingCustomLayer);
       } else {
-        initDrawModes(map, drawSetter, dispatch, uHistory, false, null, whatsHereToggle);
+        initDrawModes(map, drawSetter, dispatch, uHistory, false, null, whatsHereToggle, drawingCustomLayer);
       }
     }
   }
@@ -876,6 +878,55 @@ export const refreshServerBoundariesOnToggle = (serverBoundaries, map) => {
   if (map && serverBoundaries?.length > 0) {
     serverBoundaries.map((layer) => {
       const layerID = 'serverBoundary' + layer.id;
+
+      if (map.getSource(layerID) && map.getLayer(layerID)) {
+        const visibility = map.getLayoutProperty(layerID, 'visibility');
+        if (visibility !== 'none' && !layer.toggle) {
+          map.setLayoutProperty(layerID, 'visibility', 'none');
+        }
+        if (visibility !== 'visible' && layer.toggle) {
+          map.setLayoutProperty(layerID, 'visibility', 'visible');
+        }
+      }
+    });
+  }
+};
+
+
+
+export const addClientBoundariesIfNotExists = (clientBoundaries, map) => {
+  if (map && clientBoundaries?.length > 0) {
+    clientBoundaries.map((layer) => {
+      const layerID = 'clientBoundaries' + layer.id;
+
+      if (!map.getSource(layerID)) {
+        console.dir(layer)
+        map
+          .addSource(layerID, {
+            type: 'geojson',
+            data: layer.geojson
+          })
+          .addLayer({
+            id: layerID,
+            source: layerID,
+            type: 'fill',
+            paint: {
+              'fill-color': 'blue',
+              'fill-outline-color': 'yellow',
+              'fill-opacity': 0.5
+            },
+            minzoom: 0,
+            maxzoom: 24
+          });
+      }
+    });
+  }
+};
+
+export const refreshClientBoundariesOnToggle = (clientBoundaries, map) => {
+  if (map && clientBoundaries?.length > 0) {
+    clientBoundaries.map((layer) => {
+      const layerID = 'clientBoundaries' + layer.id;
 
       if (map.getSource(layerID) && map.getLayer(layerID)) {
         const visibility = map.getLayoutProperty(layerID, 'visibility');
