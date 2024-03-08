@@ -32,12 +32,12 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   if (searchCriteria.search_feature_server_id) {
     sqlStatement.append(
-      SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(geog::geometry, 255)::geography as geog
+      SQL`, multi_polygon_cte AS (SELECT st_subdivide(geog::geometry, 255)::geography as geog
                                      from invasivesbc.admin_defined_shapes
                                      where id = ${searchCriteria.search_feature_server_id}) `
     );
   } else if (searchCriteria.search_feature) {
-    sqlStatement.append(SQL`WITH multi_polygon_cte AS (SELECT st_subdivide(
+    sqlStatement.append(SQL`, multi_polygon_cte AS (SELECT st_subdivide(
                                                                 ST_Collect(ST_GeomFromGeoJSON(array_features ->> 'geometry')),
                                                                 255)::geography as geog
                                                        FROM (SELECT json_array_elements(${searchCriteria.search_feature}::json -> 'features') AS array_features) AS anything) `);
@@ -48,7 +48,7 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
     !searchCriteria.search_feature_server_id
   ) {
     sqlStatement.append(
-      SQL`WITH strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string
+      SQL`, strings AS (SELECT site_id, array_to_string(jurisdictions, ', ') AS j_string
                            FROM iapp_site_summary_and_geojson) `
     );
   } else if (searchCriteria?.grid_filters?.jurisdictions && searchCriteria.search_feature_server_id) {
