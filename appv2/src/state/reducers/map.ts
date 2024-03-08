@@ -559,7 +559,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
-          draftState.layers[index].loading = false;
 
           //if (draftState.activitiesGeoJSON?.features?.length > 0) {
           if (draftState.activitiesGeoJSONDict !== undefined) {
@@ -1043,14 +1042,14 @@ export { createMapReducer, selectMap };
 const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
   if (
     !draftState.layers?.length ||
-    (!draftState.activitiesGeoJSONDict && typeToFilter === 'Activity') ||
-    (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP')
+    (!(Object.keys(draftState.activitiesGeoJSONDict).length === ACTIVITY_GEOJSON_SOURCE_KEYS.length) && typeToFilter === 'Activity') ||
+    (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP') 
   )
     return;
   let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
   const type = draftState.layers[index].type;
 
-  if (index && type === typeToFilter && type === 'Activity') {
+  if (index !== undefined && type === typeToFilter && type === 'Activity') {
     let filtered = [];
     IDList.map((id) => {
       for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
@@ -1067,6 +1066,7 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
       type: 'FeatureCollection',
       features: filtered
     };
+    draftState.layers[index].loading = false
   } else if (type === typeToFilter && type === 'IAPP') {
     let filtered = [];
     IDList.map((id) => {
@@ -1080,5 +1080,6 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
       type: 'FeatureCollection',
       features: filtered
     };
+    draftState.layers[index].loading = false
   }
 };

@@ -798,7 +798,7 @@ export const refreshHighlightedRecord = (map, options: any) => {
     map.removeSource(layerID);
   }
 
-  if (map && options.userRecordOnHoverRecordType === 'Activity' && options.userRecordOnHoverRecordRow) {
+  if (map && options.userRecordOnHoverRecordType === 'Activity' && options.userRecordOnHoverRecordRow && options.userRecordOnHoverRecordRow?.geometry?.[0]) {
     map
       .addSource(layerID, {
         type: 'geojson',
