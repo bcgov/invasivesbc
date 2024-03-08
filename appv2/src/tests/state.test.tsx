@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { store } from '../main';
+import { exportStore as store } from '../main'
 import { waitFor } from '@testing-library/react';
 import { MAP_TOGGLE_BASEMAP } from 'state/actions';
 
@@ -8,7 +8,7 @@ describe('App init state, pre-login', function () {
 
   // There might be a better way but this seems to work ok:
   beforeEach(async () => {
-    require('../main');
+   require('../main');
     await waitFor(() => {
       expect(store).toBeDefined();
     });
