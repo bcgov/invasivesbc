@@ -13,7 +13,6 @@
   width: 100vw;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
   transition: all 0.2s ease;
   /* in case we want a gradient background */
   /* background: rgb(255,255,255);
