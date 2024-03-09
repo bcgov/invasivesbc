@@ -1,5 +1,4 @@
 import { IconButton, Tooltip } from '@mui/material';
-import * as L from 'leaflet';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -16,10 +15,6 @@ export const CenterCurrentRecord = (props) => {
   // const toolClass = toolStyles();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
-  useEffect(() => {
-    L.DomEvent.disableClickPropagation(divRef?.current);
-    L.DomEvent.disableScrollPropagation(divRef?.current);
-  }, []);
   if (true) {
     // this is to stop user from clicking it again while things are happening
     return (

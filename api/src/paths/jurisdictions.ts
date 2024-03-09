@@ -6,7 +6,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { JurisdictionSearchCriteria } from '../models/jurisdiction';
-import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
+import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
 import { getJurisdictionsSQL } from '../queries/jurisdiction-queries';
 import { getLogger } from '../utils/logger';
 

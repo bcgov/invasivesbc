@@ -1,5 +1,4 @@
 import { IconButton, Tooltip } from '@mui/material';
-import L from 'leaflet';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { MAP_TOGGLE_BASEMAP } from 'state/actions';
@@ -14,12 +13,6 @@ export const BaseMapToggle = (props) => {
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
 
-  useEffect(() => {
-    try {
-      L.DomEvent.disableClickPropagation(divRef?.current);
-      L.DomEvent.disableScrollPropagation(divRef?.current);
-    } catch (e) {}
-  }, []);
 
   return (
     <div ref={divRef} className={baseMapToggle ? 'map-btn-selected' : 'map-btn'}>

@@ -13,6 +13,7 @@ function buildSpecificDefines() {
 
   defines['ENABLE_JEEPSQLITE'] = JSON.stringify('TRUE' === process.env.JEEPSQLITE);
   defines['CONFIGURATION_IS_MOBILE'] = JSON.stringify(isMobile);
+  defines['CONFIGURATION_TEST'] = false
 
   if (process.env.CONFIGURATION_SOURCE === undefined || process.env.CONFIGURATION_SOURCE === 'Hardcoded') {
     const commitHash = execSync('git rev-parse --short HEAD').toString();

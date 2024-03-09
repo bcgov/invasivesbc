@@ -13,8 +13,10 @@
   },
   "main": "./src/index.ts",
   "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
     "geojson": "^0.5.0",
-    "uuid": "^8.3.0"
+    "uuid": "^8.3.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "@types/geojson": "^7946.0.3",
@@ -24,6 +26,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^3.4.0",
     "moment": "^2.29.4",
+    "openapi-sampler": "^1.4.0",
     "prettier": "^2.6.2",
     "typescript": "5.0.2"
   }
