@@ -1,6 +1,7 @@
 export interface AppConfig {
   DEBUG: boolean;
   MOBILE: boolean;
+  TEST: boolean;
 
   API_BASE: string;
 
@@ -38,6 +39,7 @@ declare global {
   const CONFIGURATION_IS_MOBILE: string | null;
   const INJECTED_COMMIT_HASH: string | null;
   const CONFIGURATION_IAPP_GEOJSON_URL: string | null;
+  const CONFIGURATION_TEST: boolean;
 }
 
 let CONFIG: AppConfig;
@@ -48,6 +50,7 @@ switch (CONFIGURATION_SOURCE) {
       COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       DEBUG: false,
       MOBILE: false,
+      TEST: false,
       API_BASE: '{{env "API_BASE"}}',
       KEYCLOAK_CLIENT_ID: '{{env "KEYCLOAK_CLIENT_ID"}}',
       KEYCLOAK_REALM: '{{env "KEYCLOAK_REALM"}}',
@@ -66,6 +69,7 @@ switch (CONFIGURATION_SOURCE) {
   case 'Provided':
     CONFIG = {
       DEBUG: true,
+      TEST: CONFIGURATION_TEST,
       COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       MOBILE: JSON.parse(CONFIGURATION_IS_MOBILE) === true,
       API_BASE: CONFIGURATION_API_BASE,
@@ -88,6 +92,7 @@ switch (CONFIGURATION_SOURCE) {
     CONFIG = {
       DEBUG: true,
       MOBILE: false,
+      TEST: false,
       COMMIT_HASH: 'local',
       API_BASE: 'http://localhost:3002',
       KEYCLOAK_CLIENT_ID: 'invasives-bc-1849',

@@ -5,3 +5,9 @@ if (typeof window?.URL?.createObjectURL === 'undefined') {
     // Mock this function for mapbox-gl to work
   };
 }
+
+import { server } from './mocks/server'
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+afterAll(() => server.close())
+afterEach(() => server.resetHandlers())

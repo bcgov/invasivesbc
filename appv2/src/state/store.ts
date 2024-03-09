@@ -51,7 +51,7 @@ export function setupStore(configuration: AppConfig) {
     }
   });
 
-  if (configuration.DEBUG) {
+  if(!configuration.TEST && configuration.DEBUG) {
     globalStore = configureStore({
       reducer: createRootReducer(configuration),
       middleware: (getDefaultMiddleware) => {

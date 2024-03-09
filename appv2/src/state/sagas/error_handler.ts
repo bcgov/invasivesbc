@@ -8,6 +8,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
     console.error('unhandled error in saga');
     console.error(error.message);
     console.error(errorInfo.sagaStack);
+    console.error(error)
 
     if (storeRefHolder.store == null) {
       console.error('Missing store ref when handling saga error');
