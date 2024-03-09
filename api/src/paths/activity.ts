@@ -7,7 +7,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivityPostRequestBody } from '../models/activity';
-import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
+import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
 import { commit as commitContext } from '../utils/context-queries';
 import { getLogger } from '../utils/logger';
@@ -113,7 +113,8 @@ const post_put_apiDoc = {
                       type: 'array',
                       title: 'Media',
                       items: {
-                        $ref: '#/components/schemas/Media'
+                      //  $ref: '#/components/schemas/Media'
+                      type: 'object'
                       }
                     },
                     geometry: {
@@ -128,15 +129,16 @@ const post_put_apiDoc = {
                       oneOf: [
                         { $ref: '#/components/schemas/Activity_Observation_PlantTerrestrial' },
                         { $ref: '#/components/schemas/Activity_Observation_PlantAquatic' },
-                        { $ref: '#/components/schemas/Activity_Dispersal_BiologicalDispersal' },
-                        { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlant' },
-                        { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlant' },
-                        { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
+                        { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlantTerrestrial' },
+                        { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlantAquatic' },
+                        { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlantAquatic' },
+                        { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlantTerrestrial' },
+//                        { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
                         { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
                         { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                        { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-                        { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
-                        { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                    //    { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+             //           { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                 //       { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
                         { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
                         { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
                         { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' },

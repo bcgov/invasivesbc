@@ -165,6 +165,7 @@
     "jeep-sqlite": "^1.6.7",
     "jsdom": "^22.1.0",
     "msw": "^2.2.3",
+    "openapi-sampler": "^1.4.0",
     "prettier": "^2.6.2",
     "react-error-overlay": "6.0.9",
     "react-sqlite-hook": "^3.2.1",
@@ -186,7 +187,7 @@
   "scripts": {
     "build:android": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE vite build",
     "build:ios": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE vite build",
-    "test": "vitest --config vitest.config.ts",
+    "test": "CONFIGURATION_SOURCE=Provided vitest --config vitest.config.ts",
     "lint:fix": "npm run lint -- --fix",
     "start": "CONFIGURATION_SOURCE=Provided vite serve --port 3000 --strictPort",
     "start:jeep": "CONFIGURATION_SOURCE=Provided JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",

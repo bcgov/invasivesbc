@@ -7,9 +7,9 @@ export default defineConfig((configEnv) =>
     defineConfig({
       test: {
         exclude: ['packages/template/*'],
-        setupFiles: ['./src/setupTests.ts']
+        setupFiles: ['./src/setupTests.ts'],
       },
-      define: { CONFIGURATION_TEST: true }
-    })
+     define: {'CONFIGURATION_TEST': true}} 
+    ),
   )
 );

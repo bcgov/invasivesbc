@@ -38,8 +38,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'object',
-            properties: {}
+            $ref: '#/components/schemas/AdminDefinedShapeResponse',
           }
         }
       }

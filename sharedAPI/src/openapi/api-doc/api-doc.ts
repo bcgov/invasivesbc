@@ -22,6 +22,9 @@ import {
   Activity_Treatment_MechanicalPlantTerrestrial
 } from './Activities/Plant/Treatments';
 import { ChemicalTreatment_Species_Codes, Error } from './Components/General_Sub_Forms';
+import { AdminDefinedShapeResponse, AdminDefinedShapeResultItem } from './Paths/AdminDefinedShapes';
+//Generated with swagger-cli bundle thanks to https://gist.githubusercontent.com/zit0un/3ac0575eb0f3aabdc645c3faad47ab4a/raw/8db5e3ab89418def3a15474979e494c92b69592e/GeoJSON-OAS3.yaml
+import { spatialAPISpec } from './util/spatialSchemas';
 
 export const api_doc = {
   openapi: '3.0.0',
@@ -157,6 +160,11 @@ export const api_doc = {
       }
     },
     schemas: {
+      ...spatialAPISpec.components.schemas,
+      AdminDefinedShapeResultItem,
+
+      AdminDefinedShapeResponse,
+
       //treatments
       Activity_Treatment_ChemicalPlantTerrestrial: Activity_Treatment_ChemicalPlantTerrestrial,
       Activity_Treatment_ChemicalPlantAquatic: Activity_Treatment_ChemicalPlantAquatic,

@@ -1,5 +1,4 @@
 import { IconButton, Tooltip } from '@mui/material';
-import * as L from 'leaflet';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
@@ -16,12 +15,6 @@ export const QuickPanToRecordToggle = (props) => {
 
   const [show, setShow] = React.useState(false);
 
-  useEffect(() => {
-    try {
-      L.DomEvent.disableClickPropagation(divRef?.current);
-      L.DomEvent.disableScrollPropagation(divRef?.current);
-    } catch (e) {}
-  }, []);
 
   if (true && isAuth) {
     return (

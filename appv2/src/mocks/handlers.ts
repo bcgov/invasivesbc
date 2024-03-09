@@ -1,31 +1,80 @@
 //example ripped from https://raw.githubusercontent.com/vitest-dev/vitest/main/examples/react-testing-lib-msw/src/mocks/handlers.ts
-import { HttpResponse, graphql, http } from 'msw'
+import { HttpResponse, graphql, http } from 'msw';
+import {
+  ActivitiesLeanResponse_Mock,
+  ActivitiesResponse_Mock,
+  ActivitiesS3Repsonse_Mock,
+  AdminDefinedShapeResponse_Mock,
+  ExportConfigResponse_Mock,
+  IAPPS3Repsonse_Mock,
+  IAPPSitesResponse_Mock,
+  getAPIDoc
+} from 'sharedAPI/src/openapi/api-doc/util/mocks/mock_handlers';
 
-// Mock Data
-export const posts = [
+const BASEURL = 'http://localhost:3002';
+
+// Later we can pass the req through to the mocking function so we can deal with edge cases like id only queries, and ultimately make them more dynamic when we need them to be
+const handlerConfig = [
+  { method: 'get', url: BASEURL + '/api/api-docs', req: null, responseBody: getAPIDoc(), status: 200 },
   {
-    userId: 1,
-    id: 1,
-    title: 'first post title',
-    body: 'first post body',
+    method: 'get',
+    url: BASEURL + '/admin-defined-shapes',
+    req: null,
+    responseBody: AdminDefinedShapeResponse_Mock(), // went to town trying to make this one open-api compliant, really this is where the others should go
+    status: 200
   },
   {
-    userId: 2,
-    id: 5,
-    title: 'second post title',
-    body: 'second post body',
+    method: 'get',
+    url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz',
+    req: null,
+    responseBody: IAPPS3Repsonse_Mock(null),
+    status: 200
   },
   {
-    userId: 3,
-    id: 6,
-    title: 'third post title',
-    body: 'third post body',
+    method: 'get',
+    url: BASEURL + '/api/export-config',
+    req: null,
+    responseBody: ExportConfigResponse_Mock(null),
+    status: 200
   },
-]
+  {
+    method: 'post',
+    url: BASEURL + '/api/v2/activities/',
+    req: null,
+    responseBody: ActivitiesResponse_Mock(null),
+    status: 200
+  },
+  {
+    method: 'post',
+    url: BASEURL + '/api/v2/IAPP/',
+    req: null,
+    responseBody: IAPPSitesResponse_Mock(null),
+    status: 200
+  },
+  {
+    method: 'get',
+    url: '/fake_zipped_activity_json_url',
+    req: null,
+    responseBody: ActivitiesS3Repsonse_Mock(null),
+    status: 200
+  },
+  {
+    method: 'post',
+    url: BASEURL + '/api/activities-lean/',
+    req: null,
+    responseBody: ActivitiesLeanResponse_Mock(null),
+    status: 200
+  }
+];
 
 // Define handlers that catch the corresponding requests and returns the mock data.
-export const handlers = [
-  http.get('http://localhost:3002/api/api-docs', () => {
-    return HttpResponse.json(posts, { status: 200 })
-  }),
-]
+export const handlers = handlerConfig.map((conf) => {
+  switch (conf.method) {
+    case 'get': {
+      return http.get(conf.url, () => HttpResponse.json(conf.responseBody, { status: conf.status }));
+    }
+    case 'post': {
+      return http.post(conf.url, () => HttpResponse.json(conf.responseBody, { status: conf.status }));
+    }
+  }
+});

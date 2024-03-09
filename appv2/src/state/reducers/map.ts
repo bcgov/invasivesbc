@@ -224,7 +224,7 @@ interface MapState {
   positionTracking: boolean;
   quickPanToRecord: boolean;
   recordSetForCSV: number;
-  recordTables: any[];
+  recordTables: object;
   serverBoundaries: any[];
   simplePickerLayers2: any[];
   simplePickerLayers: object;
@@ -386,7 +386,7 @@ const initialState: MapState = {
   quickPanToRecord: false,
 
   recordSetForCSV: 0,
-  recordTables: [],
+  recordTables: {},
 
   serverBoundaries: localStorage.getItem('serverLayersConf')
     ? JSON.parse(localStorage.getItem('serverLayersConf'))

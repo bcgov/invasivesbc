@@ -5,7 +5,7 @@ import express from 'express';
 import compression from 'compression';
 
 import { initialize } from 'express-openapi';
-import { api_doc } from './openapi/api-doc/api-doc';
+import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
 import { authenticate, InvasivesRequest } from './utils/auth-utils';
 import { getLogger } from './utils/logger';

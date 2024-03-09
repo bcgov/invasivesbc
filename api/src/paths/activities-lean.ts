@@ -7,7 +7,7 @@ import { InvasivesRequest } from 'utils/auth-utils';
 import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
 import { getDBConnection } from '../database/db';
 import { ActivitySearchCriteria } from '../models/activity';
-import geoJSON_Feature_Schema from '../openapi/geojson-feature-doc.json';
+import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
 import { getLogger } from '../utils/logger';
 import { getS3SignedURL } from '../utils/file-utils';
