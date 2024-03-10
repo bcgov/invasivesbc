@@ -28,6 +28,6 @@
     //"typeRoots": ["node_modules/@types"],
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "**/*.ts", "../sharedAPI/src/openapi/api-doc/util/mocks/mock_handlers.ts"],
+  "include": ["src", "**/*.ts"],
   "exclude": ["**/*.spec.ts", "**/node_modules", "**/dist"]
 }
