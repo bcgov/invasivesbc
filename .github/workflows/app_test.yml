@@ -12,12 +12,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20.x'
+
+      - name: Install sharedAPI
+        working-directory: ./api
+        run: npm install
      
-      - name: Install
+      - name: Install app
         working-directory: ./appv2
         run: npm install
         
-      - name: Install
+      - name: Test
         working-directory: ./appv2
         run: npm run test
         
