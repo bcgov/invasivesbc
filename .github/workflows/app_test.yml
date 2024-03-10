@@ -15,7 +15,7 @@ jobs:
 
       - name: Install sharedAPI
         working-directory: ./api
-        run: npm install
+        run: npm install --legacy-peer-deps
      
       - name: Install app
         working-directory: ./appv2
@@ -23,5 +23,17 @@ jobs:
         
       - name: Test
         working-directory: ./appv2
+        env:
+          MOBILE: false
+          JEEPSQLITE: 'FALSE'
+          REDIRECT_URI: ''
+          IAPP_GEOJSON_URL: ''
+          REACT_APP_API_HOST: ''
+          SSO_CLIENT_ID: ''
+          SSO_REALM: ''
+          PUBLIC_MAP_URL: ''
+          CONFIGURATION_SOURCE: 'Provided'
+          OPENSHIFT_BUILD_COMMIT: ''
+          SOURCE_GIT_COMMIT: $GITHUB_SHA   
         run: npm run test
         
