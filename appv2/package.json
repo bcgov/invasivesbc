@@ -172,6 +172,9 @@
     "vite": "5",
     "vite-tsconfig-paths": "^4.2.1"
   },
+    "optionalDependencies": {
+    "@rollup/rollup-linux-x64-gnu": "^4.9.6"
+  },
   "overrides": {
     "proj4-fully-loaded": "=0.2.0"
   },
