@@ -5,14 +5,14 @@ import { AdminDefinedShapeResponse } from '../../Paths/AdminDefinedShapes';
 import { activitiesDraftsResponseStub, LeanActivityStub, s3_activitiesResponseStub } from './activities';
 import { example_s3_iapp } from './example_s3_iapp';
 import { exportConfigStub } from './export-config';
-var OpenAPISampler = require('openapi-sampler');
+import * as  OpenAPISampler from 'openapi-sampler';
 
 export const getAPIDoc = () => {
   return JSON.stringify(api_doc);
 };
 
 export const AdminDefinedShapeResponse_Mock = () => {
-  return OpenAPISampler.sample(AdminDefinedShapeResponse, {}, api_doc);
+  return OpenAPISampler.sample(AdminDefinedShapeResponse as any, {}, api_doc);
 };
 
 export const ActivitiesResponse_Mock = (req) => {
