@@ -145,33 +145,6 @@ function* handle_MAP_INIT_REQUEST(action) {
     }
   });
 
-  //yield take(IAPP_GEOJSON_GET_SUCCESS);
-
-  const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-  const defaultRecordSet = {
-    ['1']: {
-      recordSetType: 'Activity',
-      recordSetName: 'My Drafts'
-    },
-    ['2']: {
-      recordSetType: 'Activity',
-      recordSetName: 'All InvasivesBC Activities',
-      drawOrder: 1
-    },
-    ['3']: {
-      recordSetType: 'IAPP',
-      recordSetName: 'All IAPP Records',
-      color: '#21f34f',
-      drawOrder: 2
-    }
-  };
-  const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
-
-  /*
-  const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
-  const shapes = serverShapesServerResponse.data.result;
-  yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
-  */
 
   yield call(refetchServerBoundaries);
   yield put({ type: MAP_INIT_FOR_RECORDSET });

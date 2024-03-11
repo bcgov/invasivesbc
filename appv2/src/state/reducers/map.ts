@@ -740,6 +740,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
             }
             draftState.layers[layerIndex].layerState = {};
+            if (action.payload.recordSets[setID].colorScheme)
+              draftState.layers[layerIndex].layerState.colorScheme = action.payload.recordSets[setID].colorScheme;
             if (action.payload.recordSets[setID].color)
               draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
             if (action.payload.recordSets[setID].mapToggle)

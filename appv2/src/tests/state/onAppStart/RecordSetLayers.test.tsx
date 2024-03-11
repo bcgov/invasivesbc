@@ -23,4 +23,30 @@ describe('Can load initial record set layer state on startup', function () {
       expect(store.getState()?.Map?.layers[2].geoJSON).toBeDefined()
     });
   });
+
+  it('IAPP layer has right color', async function () {
+    await waitFor(() => {
+      expect(store.getState()?.Map?.layers[2].layerState.color).toEqual('#21f34f') //green
+    })
+  })
+
+
+  it('Draft & Activity default layers have color scheme loaded', async function () {
+    await waitFor(() => {
+      expect(store.getState()?.Map?.layers[0].layerState.colorScheme).toEqual({
+      Biocontrol: '#845ec2',
+      FREP: '#de852c',
+      Monitoring: '#2138e0',
+      Observation: '#399c3e',
+      Treatment: '#c6c617'
+    })
+      expect(store.getState()?.Map?.layers[1].layerState.colorScheme).toEqual({
+      Biocontrol: '#845ec2',
+      FREP: '#de852c',
+      Monitoring: '#2138e0',
+      Observation: '#399c3e',
+      Treatment: '#c6c617'
+    })
+  })
+  })
 });
