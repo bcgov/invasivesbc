@@ -70,6 +70,7 @@
     "distinct-colors": "^3.0.0",
     "dotenv": "8.2.0",
     "dotenv-expand": "5.1.0",
+    "esbuild": "^0.20.1",
     "eslint": "^7.11.0",
     "eslint-config-react-app": "^6.0.0",
     "eslint-plugin-flowtype": "^5.2.0",
@@ -172,7 +173,7 @@
     "vite": "5",
     "vite-tsconfig-paths": "^4.2.1"
   },
-    "optionalDependencies": {
+  "optionalDependencies": {
     "@rollup/rollup-linux-x64-gnu": "^4.9.6"
   },
   "overrides": {
