@@ -837,8 +837,21 @@ export const refreshCurrentRecMakers = (map, options: any) => {
 
 export const refreshHighlightedRecord = (map, options: any) => {
   const layerID = 'highlightRecordLayer';
+  if (map && map.getLayer(layerID + 'shape')) {
+    map.removeLayer(layerID + 'shape');
+  }
+  if (map && map.getLayer(layerID + 'outline')) {
+    map.removeLayer(layerID + 'outline');
+  }
+  if (map && map.getLayer(layerID + 'zoomoutcircle')) {
+    map.removeLayer(layerID + 'zoomoutcircle');
+  }
+
   if (map && map.getLayer(layerID)) {
     map.removeLayer(layerID);
+  }
+
+  if (map && map.getSource(layerID)) {
     map.removeSource(layerID);
   }
 
@@ -854,13 +867,36 @@ export const refreshHighlightedRecord = (map, options: any) => {
         data: options.userRecordOnHoverRecordRow.geometry[0]
       })
       .addLayer({
-        id: layerID,
+        id: layerID + 'shape',
         source: layerID,
         type: 'fill',
         paint: {
           'fill-color': 'yellow',
           'fill-outline-color': 'yellow',
           'fill-opacity': 0.5
+        },
+        minzoom: 0,
+        maxzoom: 24
+      })
+      .addLayer({
+        id: layerID + 'outline',
+        source: layerID,
+        type: 'line',
+        paint: {
+          'line-color': 'yellow',
+          'line-opacity': 1,
+          'line-width': 3
+        },
+        minzoom: 0,
+        maxzoom: 24
+      })
+      .addLayer({
+        id: layerID + 'zoomoutcircle',
+        source: layerID,
+        type: 'circle',
+        paint: {
+          'circle-color': 'yellow',
+          'circle-radius': 3
         },
         minzoom: 0,
         maxzoom: 24
