@@ -15,7 +15,13 @@ const BASEURL = 'http://localhost:3002';
 
 // Later we can pass the req through to the mocking function so we can deal with edge cases like id only queries, and ultimately make them more dynamic when we need them to be
 const handlerConfig = [
-  { method: 'get', url: BASEURL + '/api/api-docs', req: null, responseBody: getAPIDoc(), status: 200 },
+  // very confused on this one:
+  { method: 'get', url: ('/'), req: null, responseBody: '', status: 200 },
+
+  // not sure why I needed to add this one just now:
+  { method: 'get', url: ('/api/api-docs'), req: null, responseBody: getAPIDoc(), status: 200 },
+
+  { method: 'get', url: (BASEURL + '/api/api-docs'), req: null, responseBody: getAPIDoc(), status: 200 },
   {
     method: 'get',
     url: BASEURL + '/admin-defined-shapes',
