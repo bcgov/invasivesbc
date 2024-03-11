@@ -174,22 +174,6 @@ export const RenderTableActivity = (props: any) => {
 
   const columns = [
     {
-      field: 'id',
-      headerName: 'Activity ID',
-      hide: true,
-      sortable: false,
-      renderCell: (params) => {
-        return (
-          <div
-            onMouseEnter={() => {
-              dispatchUpdatedID(params);
-            }}>
-            {params.value}
-          </div>
-        );
-      }
-    },
-    {
       field: 'short_id',
       headerName: 'Activity ID',
       minWidth: 130,
@@ -226,7 +210,16 @@ export const RenderTableActivity = (props: any) => {
       headerName: 'Reported Area',
       minWidth: 130,
       sortable: false,
-      renderCell: (params: GridRenderCellParams) => <MetresSquaredCell {...params} />
+      renderCell: (params) => {
+        return (
+          <div
+            onMouseEnter={() => {
+              dispatchUpdatedID(params);
+            }}>
+            {params.value}m
+          </div>
+        );
+      }
     },
     {
       field: 'created',
@@ -276,12 +269,6 @@ export const RenderTableActivity = (props: any) => {
         );
       }
     },
-    {
-      field: 'geometry',
-      headerName: 'Geometry',
-      sortable: false,
-      hide: true
-    }
   ];
 
   const highlightActivity = async (params) => {
@@ -457,12 +444,6 @@ export const RenderTablePOI = (props: any) => {
         );
       }
     },
-    {
-      field: 'geometry',
-      headerName: 'Geometry',
-      sortable: false,
-      hide: true
-    }
   ];
 
   const highlightPOI = async (params) => {
