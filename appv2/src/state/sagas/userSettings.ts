@@ -171,11 +171,27 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
           filter: ActivityStatus.DRAFT
         }
       ],
+      colorScheme: 
+        {
+          Biocontrol: '#845ec2',
+          FREP: '#de852c',
+          Monitoring: '#2138e0',
+          Observation: '#399c3e',
+          Treatment: '#c6c617'
+        },
       drawOrder: 1
     },
     ['2']: {
       recordSetType: 'Activity',
       recordSetName: 'All InvasivesBC Activities',
+      colorScheme: 
+        {
+          Biocontrol: '#845ec2',
+          FREP: '#de852c',
+          Monitoring: '#2138e0',
+          Observation: '#399c3e',
+          Treatment: '#c6c617'
+        },
       drawOrder: 2
     },
     ['3']: {

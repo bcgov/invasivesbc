@@ -17,7 +17,7 @@ MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
-const FALLBACK_COLOR = 'red'
+const FALLBACK_COLOR = 'red';
 
 export const mapInit = (
   map,
@@ -89,7 +89,7 @@ export const mapInit = (
             tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
             tileSize: 256,
             maxzoom: 18
-          },
+          }
           /*example_source: {
             type: 'vector',
             url: `pmtiles://${PMTILES_URL}`,
@@ -151,12 +151,46 @@ export const mapInit = (
         ]
       }
     });
-    refreshDrawControls(map.current, null, drawSetter, dispatch, uHistory, whats_here_toggle, appModeUrl, activityGeo, null);
+    refreshDrawControls(
+      map.current,
+      null,
+      drawSetter,
+      dispatch,
+      uHistory,
+      whats_here_toggle,
+      appModeUrl,
+      activityGeo,
+      null
+    );
   });
 };
 
 export const createActivityLayer = (map: any, layer: any) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
+
+  const getPaintBySchemeOrColor = (layer: any) => {
+    if (layer.layerState.colorScheme) {
+      return [
+        'match',
+        ['get', 'type'],
+        'Biocontrol',
+        layer.layerState.colorScheme['Biocontrol'] || FALLBACK_COLOR,
+        'FREP',
+        layer.layerState.colorScheme['FREP'] || FALLBACK_COLOR,
+        'Monitoring',
+        layer.layerState.colorScheme['Monitoring'] || FALLBACK_COLOR,
+        'Treatment',
+        layer.layerState.colorScheme['Treatment'] || FALLBACK_COLOR,
+        'Observation',
+        layer.layerState.colorScheme['Observation'] || FALLBACK_COLOR,
+        layer.layerState.color || FALLBACK_COLOR
+      ];
+    } else {
+      return layer.layerState.color || FALLBACK_COLOR;
+    }
+  };
+
+  // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
   map
     .addSource(layerID, {
       type: 'geojson',
@@ -167,8 +201,8 @@ export const createActivityLayer = (map: any, layer: any) => {
       source: layerID,
       type: 'fill',
       paint: {
-        'fill-color': layer.layerState.color || FALLBACK_COLOR,
-        'fill-outline-color': layer.layerState.color || FALLBACK_COLOR,
+        'fill-color': getPaintBySchemeOrColor(layer),
+        'fill-outline-color': getPaintBySchemeOrColor(layer),
         'fill-opacity': 0.5
       },
       minzoom: 0,
@@ -180,7 +214,7 @@ export const createActivityLayer = (map: any, layer: any) => {
     source: layerID,
     type: 'line',
     paint: {
-      'line-color': layer.layerState.color || FALLBACK_COLOR,
+      'line-color': getPaintBySchemeOrColor(layer),
       'line-opacity': 1,
       'line-width': 3
     }
@@ -191,7 +225,7 @@ export const createActivityLayer = (map: any, layer: any) => {
     source: layerID,
     type: 'circle',
     paint: {
-      'circle-color': layer.layerState.color || FALLBACK_COLOR,
+      'circle-color': getPaintBySchemeOrColor(layer),
       'circle-radius': 3
     },
     maxzoom: 10
@@ -395,7 +429,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
           const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           if (layer.type === 'Activity') {
             currentColor = fillPolygonLayerStyle.paint['fill-color'];
-            if (currentColor !== layer.layerState.color) {
+            if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
               map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color || FALLBACK_COLOR);
               map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color || FALLBACK_COLOR);
             }
@@ -409,14 +443,14 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
         case /polygon-border-/.test(mapLayer):
           const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           currentColor = polyGonBorderLayerStyle.paint['line-color'];
-          if (currentColor !== layer.layerState.color) {
+          if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
             map.setPaintProperty(mapLayer, 'line-color', layer.layerState.color || FALLBACK_COLOR);
           }
           break;
         case /polygon-circle-/.test(mapLayer):
           const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
-          if (currentColor !== layer.layerState.color) {
+          if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
             map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
           }
           break;
@@ -486,7 +520,16 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
 };
 
-export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls, activityGeo, whats_here_toggle, drawingCustomLayer) => {
+export const initDrawModes = (
+  map,
+  drawSetter,
+  dispatch,
+  uHistory,
+  hideControls,
+  activityGeo,
+  whats_here_toggle,
+  drawingCustomLayer
+) => {
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map?._listeners[eName]?.map((l) => {
       if (/customDrawListener/.test(l.name)) {
@@ -606,8 +649,7 @@ export const initDrawModes = (map, drawSetter, dispatch, uHistory, hideControls,
     if (whats_here_toggle) {
       dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
       uHistory.push('/WhatsHere');
-    }
-    else {
+    } else {
       dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
     }
   };
@@ -763,7 +805,7 @@ export const refreshDrawControls = (
 
   if (!map.draw) {
     if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
-      initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle,null);
+      initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle, null);
     } else if (/Records/.test(appModeUrl)) {
       if (/Activity/.test(appModeUrl)) {
         initDrawModes(map, drawSetter, dispatch, uHistory, false, activityGeo, whatsHereToggle, drawingCustomLayer);
@@ -800,7 +842,12 @@ export const refreshHighlightedRecord = (map, options: any) => {
     map.removeSource(layerID);
   }
 
-  if (map && options.userRecordOnHoverRecordType === 'Activity' && options.userRecordOnHoverRecordRow && options.userRecordOnHoverRecordRow?.geometry?.[0]) {
+  if (
+    map &&
+    options.userRecordOnHoverRecordType === 'Activity' &&
+    options.userRecordOnHoverRecordRow &&
+    options.userRecordOnHoverRecordRow?.geometry?.[0]
+  ) {
     map
       .addSource(layerID, {
         type: 'geojson',
