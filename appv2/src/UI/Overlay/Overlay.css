@@ -1,6 +1,6 @@
 #overlaydiv {
   min-height: 5vh;
-  max-height: calc(100% - 10vh);
+  max-height: calc(100% - 8vh);
   height: 200px;
   cursor: pointer;
 }
@@ -11,7 +11,7 @@
 }
 
 .map__overlay {
-    bottom: 0;
+    bottom: 3vh;
     height: 0;
     left: 0;
     position: absolute;
@@ -33,7 +33,7 @@
   }
   
   .map__overlay--show {
-    transform: translateY(-5vh);
+    transform: translateY(0vh);
     overflow-y: auto;
     display: flex;
 /*    overflow-y: visible;; */
@@ -41,7 +41,7 @@
 
 .map__overlay--show-fullscreen {
     height: 100% !important;
-    transform: translateY(-5vh);
+    transform: translateY(0vh);
     display: flex;
     overflow-y: visible;;
     z-index: 9999999999;
