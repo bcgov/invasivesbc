@@ -33,6 +33,7 @@ body {
   flex: 1;
   flex-direction: column;
   flex-wrap: wrap;
+  max-height: 100vh;
   max-width: 100%;
   overflow: hidden;
 }

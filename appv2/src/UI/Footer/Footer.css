@@ -1,7 +1,9 @@
 .FooterBar {
-  height: 5vh;
+  height: 3vh;
   width: 100vw;
   display: flex;
+  bottom: 0;
+  position: fixed;
     background-color: #003366;
   /*    position: fixed;
     bottom: 0;
