@@ -30,6 +30,18 @@ jobs:
           cd ../appv2
           npm install
       - name: "Test"
+        env:
+          MOBILE: false
+          JEEPSQLITE: 'FALSE'
+          REDIRECT_URI: ''
+          IAPP_GEOJSON_URL: ''
+          REACT_APP_API_HOST: 'http://localhost:3002'
+          SSO_CLIENT_ID: ''
+          SSO_REALM: ''
+          PUBLIC_MAP_URL: ''
+          CONFIGURATION_SOURCE: 'Provided'
+          OPENSHIFT_BUILD_COMMIT: ''
+          SOURCE_GIT_COMMIT: $GITHUB_SHA
         run: cd appv2 && npm run state_test_coverage_gh
       - name: "Upload Coverage"
         uses: actions/upload-artifact@v4
