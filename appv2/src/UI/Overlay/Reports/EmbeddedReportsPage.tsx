@@ -6,47 +6,11 @@ import { Report } from './Report';
 import Spinner from 'UI/Spinner/Spinner';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
+import './Report.css'
 
-/*const useStyles = makeStyles((theme: Theme) => ({
-  reportContainer: {
-    display: 'flex',
-    paddingLeft: 0,
-    paddingRight: 0,
-    paddingTop: '1rem'
-  },
-  reportIFrameContainer: {
-    flexGrow: 1,
-    minHeight: 600,
-    minWidth: 800,
-    alignContent: 'center'
-  },
-  reportSelection: {
-    '@media (min-device-width: 600px)': {
-      width: 400
-    },
-    minHeight: 600,
-    maxHeight: 1200,
-    overflowY: 'scroll'
-  },
-  reportLink: {
-    textDecoration: 'none',
-    lineHeight: 1.5,
-    marginLeft: '0.5rem',
-    cursor: 'pointer'
-  },
-  reportMenuUL: {
-    listStyleType: 'none',
-    lineHeight: 1,
-    padding: 0,
-    margin: 0,
-    textAlign: 'left'
-  }
-}));
-*/
 
 const EmbeddedReportsPage: React.FC = () => {
   const api = useInvasivesApi();
-//  const classes = useStyles();
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
   const [reports, setReports] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -131,7 +95,10 @@ const EmbeddedReportsPage: React.FC = () => {
           renderInput={(params) => <TextField {...params} label="Select a Metabase Report" />}
         />
       </Box>
-      <Container className={classes.reportIFrameContainer}>
+      <Container 
+      // not sure what class we can map to here
+      //classes={{ 'reportIFrameContainer'}}
+      >
         <Box>{activeReport && <Report reportId={activeReport} />}</Box>
       </Container>
     </Container>
