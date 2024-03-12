@@ -7,6 +7,11 @@ export default defineConfig((configEnv) =>
     viteConfig,
     defineConfig({
       test: {
+        coverage: {
+          provider: 'v8',
+          reporter: ['text', 'json-summary', 'json'],
+          reportOnFailure: true,
+        },
         exclude: ['packages/template/*'],
         setupFiles: ['./src/setupTests.ts'],
         deps: {
@@ -16,7 +21,7 @@ export default defineConfig((configEnv) =>
               include: ['openapi-sampler']
             }
           }
-        }
+        },
       },
       define: { CONFIGURATION_TEST: true }
     })
