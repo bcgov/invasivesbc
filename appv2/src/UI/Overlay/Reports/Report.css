@@ -1,0 +1,6 @@
+.reportIFrameContainer {
+  min-height: 600;
+  flex-grow: 1;
+  min-width: 800;
+  align-content: 'center';
+}

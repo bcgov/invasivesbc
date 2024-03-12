@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { exportStore as store } from '../../../main';
+import { exportStore as store } from '../../../../main';
 import { waitFor } from '@testing-library/react';
 import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, RECORDSET_UPDATE_FILTER } from 'state/actions';
 
-describe('Can load initial record set state on startup', function () {
+describe('Can load initial record set state on startup (first visit)', function () {
   // There might be a better way but this seems to work ok:
   beforeAll(async () => {
     localStorage.clear();
-    require('../../../main');
+    require('../../../../main');
     await waitFor(() => {
       expect(store).toBeDefined();
     });

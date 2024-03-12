@@ -22,7 +22,6 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-//import { makeStyles } from '@mui/styles';
 import {
   DataGrid,
   GridColDef,
@@ -148,7 +147,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     DECLINE
   }
 
-  const classes = useStyles();
   const api = useInvasivesApi();
   const authState = useSelector(selectAuth);
 
@@ -223,26 +221,25 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const renderStatus = (params: GridValueGetterParams) => {
-    // let color = '#FF0000';
-    let style = classes.gray;
+    let color = '#FF0000';
     if (params.row.status === 'APPROVED') {
-      style = classes.success;
+      color = '#00FF00';
     } else if (params.row.status === 'DECLINED') {
-      style = classes.error;
+      color = '#FFA500';
     } else if (params.row.status === 'NOT_APPROVED') {
-      style = classes.warning;
+      color = '#FF0000';
     }
-    return <Chip label={params.row.status} classes={{ root: style }} />;
+    return <Chip label={params.row.status} sx={{ bgcolor: 'green', color: color }} />;
   };
 
   const renderType = (params: GridValueGetterParams) => {
-    let style = classes.gray;
+    let color = '#FF0000';
     if (params.row.requestType === 'ACCESS') {
-      style = classes.success;
+      color = '#00FF00';
     } else if (params.row.requestType === 'UPDATE') {
-      style = classes.info;
+      color = '#FFA500';
     }
-    return <Chip label={params.row.requestType} classes={{ root: style }} />;
+    return <Chip label={params.row.requestType} sx={{ bgcolor: 'green', color: color }} />;
   };
 
   const handleRowClick = (param, event) => {
@@ -627,7 +624,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   return (
-    <Container className={classes?.container} style={{ paddingBottom: '50px' }}>
+    <Container 
+   // className={classes?.container} 
+    style={{ paddingBottom: '50px' }}>
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
@@ -1114,7 +1113,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           </DialogContentText>
           <TextField
             style={{ width: '100%' }}
-            classes={{ root: classes.root }}
+            //classes={{ root: classes.root }}
             select
             name="Roles"
             id="available-roles"
