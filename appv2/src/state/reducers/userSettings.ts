@@ -166,8 +166,18 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
             (filter) => filter.id === action.payload.filterID
           );
-
           draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
+
+          draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
+            draftState.recordSets[action.payload.setID]?.tableFiltersHash;
+
+          const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+            (filter) => filter.filter !== ''
+          );
+
+          draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
+            JSON.stringify(tableFiltersNotBlank)
+          );
           break;
         }
         case RECORDSET_UPDATE_FILTER: {
