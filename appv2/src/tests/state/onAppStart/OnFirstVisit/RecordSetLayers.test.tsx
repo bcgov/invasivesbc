@@ -47,6 +47,7 @@ describe('Can load initial record set layer state on startup', function () {
       Observation: '#399c3e',
       Treatment: '#c6c617'
     })
+
   })
   })
 });
