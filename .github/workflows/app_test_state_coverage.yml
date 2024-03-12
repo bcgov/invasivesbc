@@ -47,7 +47,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.branch }}
-          path: appv2/coverage
+          path: appv2/src/coverage
 
   report-coverage:
     needs: test
