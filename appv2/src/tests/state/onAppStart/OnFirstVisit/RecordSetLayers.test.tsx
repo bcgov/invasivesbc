@@ -49,4 +49,10 @@ describe('Can load initial record set layer state on startup', function () {
     })
   })
   })
+  it('Draft & Activity default layers have default toggles loaded', async function () {
+    await waitFor(() => {
+      expect(store.getState()?.Map?.layers[0].layerState.mapToggle).toEqual(undefined)      
+      expect(store.getState()?.Map?.layers[1].layerState.mapToggle).toEqual(undefined)
+  })
+  })
 });
