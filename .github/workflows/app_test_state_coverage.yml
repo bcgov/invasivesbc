@@ -60,7 +60,7 @@ jobs:
           path: coverage
       - uses: actions/download-artifact@v4
         with:
-          name: coverage-dev
+          name: coverage-main
           path: coverage-dev
       - name: "Report Coverage"
         uses: davelosert/vitest-coverage-report-action@v2
