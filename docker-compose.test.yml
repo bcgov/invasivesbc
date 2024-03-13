@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgis/postgis:14-3.2-alpine
+    container_name: ${PROJECT_NAME}-${TAG}-db
+    ports:
+      - ${DB_PORT}:${DB_PORT}
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_DATABASE}
+      - PORT=${DB_PORT}
+      - TZ=America/Vancouver
+    networks:
+      - local-network
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./database/.docker/db/entrypoint:/docker-entrypoint-initdb.d
+
+        ## Run the database migrations and seeding
+  db_setup:
+    image: ${PROJECT_NAME}-${TAG}-postgres-setup-img
+    container_name: ${PROJECT_NAME}-${TAG}-db-setup
+    build:
+      context: ./database
+      dockerfile: ./.docker/db/Dockerfile.setup
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - ENVIRONMENT=local
+      - REACT_APP_REAL_NODE_ENV=local
+      - NODE_ENV=local
+      - SKIP_POSTGRES9_COMPATIBILITY=true
+    networks:
+      - local-network
+    links:
+      - db
+    restart: on-failure
+    depends_on:
+      - db
+
+
+networks:
+  local-network:
+    driver: bridge
+
+volumes:
+  postgres:
+    name: ${PROJECT_NAME}-${TAG}-vol-postgres
+  npmcache_api:
+    name: ${PROJECT_NAME}-${TAG}-vol-npmcache-api
+  npmcache_app:
+    name: ${PROJECT_NAME}-${TAG}-vol-npmcache-app
