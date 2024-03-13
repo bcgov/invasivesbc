@@ -1,5 +1,5 @@
-import * as assert from 'assert';
 import * as fs from 'fs';
+import { beforeAll, expect, test } from 'vitest';
 
 import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from './kml-import';
 
@@ -8,28 +8,28 @@ describe('KML Utilities', function () {
   let KML_DATA_ILLEGAL_GEOMETRIES: Buffer;
   let KMZ_DATA_VALID: Buffer;
 
-  before(function () {
+  beforeAll(function () {
     KML_DATA_VALID = fs.readFileSync('test/kml/valid.kml');
     KML_DATA_ILLEGAL_GEOMETRIES = fs.readFileSync('test/kml/invalid.kml');
     KMZ_DATA_VALID = fs.readFileSync('test/kml/test.kmz');
   });
 
-  it('Valid KML Import', function () {
+  test('Valid KML Import', function () {
     const geoJSON = GeoJSONFromKML(KML_DATA_VALID);
     const filtered = sanitizeGeoJSON(geoJSON);
-    assert.equal(filtered.features.length, 2);
+    expect(filtered.features.length).toBe(2);
   });
 
-  it('Invalid KML Import (Unacceptable geometries)', function () {
+  test('Invalid KML Import (Unacceptable geometries)', function () {
     const geoJSON = GeoJSONFromKML(KML_DATA_ILLEGAL_GEOMETRIES);
     const filtered = sanitizeGeoJSON(geoJSON);
-    assert.equal(filtered.features.length, 0);
+    expect(filtered.features.length).toBe(0);
   });
 
-  it('Valid KMZ Import', function () {
+  test('Valid KMZ Import', function () {
     const kmlData = KMZToKML(KMZ_DATA_VALID);
     const geoJSON = GeoJSONFromKML(kmlData);
     const filtered = sanitizeGeoJSON(geoJSON);
-    assert.equal(filtered.features.length, 2);
+    expect(filtered.features.length).toBe(2);
   });
 });
