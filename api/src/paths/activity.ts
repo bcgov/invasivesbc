@@ -1,18 +1,16 @@
-'use strict';
-
-import { request, RequestHandler } from 'express';
+import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { ActivityPostRequestBody } from '../models/activity';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
+import { getDBConnection } from '../database/db.js';
+import { ActivityPostRequestBody } from '../models/activity.js';
 import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
-import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries';
-import { commit as commitContext } from '../utils/context-queries';
-import { getLogger } from '../utils/logger';
-import { uploadMedia } from './media';
-import { InvasivesRequest } from '../utils/auth-utils';
+import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries.js';
+import { commit as commitContext } from '../utils/context-queries.js';
+import { getLogger } from '../utils/logger.js';
+import { uploadMedia } from './media.js';
+import { InvasivesRequest } from '../utils/auth-utils.js';
 
 const defaultLog = getLogger('activity');
 
@@ -113,8 +111,8 @@ const post_put_apiDoc = {
                       type: 'array',
                       title: 'Media',
                       items: {
-                      //  $ref: '#/components/schemas/Media'
-                      type: 'object'
+                        //  $ref: '#/components/schemas/Media'
+                        type: 'object'
                       }
                     },
                     geometry: {
@@ -133,12 +131,12 @@ const post_put_apiDoc = {
                         { $ref: '#/components/schemas/Activity_Treatment_ChemicalPlantAquatic' },
                         { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlantAquatic' },
                         { $ref: '#/components/schemas/Activity_Treatment_MechanicalPlantTerrestrial' },
-//                        { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
+                        //                        { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
                         { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
                         { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                    //    { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-             //           { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
-                 //       { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                        //    { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                        //           { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                        //       { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
                         { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
                         { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
                         { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' },
@@ -415,12 +413,18 @@ function updateActivity(): RequestHandler {
     const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
 
     if (!isAdmin) {
-
       // some batch record guids don't have the suffix or id.  this will still work for the new ones though
-      const containsOldIDAndIsOK = sanitizedActivityData.updated_by_with_guid.includes(response.rows[0]?.created_by_with_guid?.toLowerCase())
+      const containsOldIDAndIsOK = sanitizedActivityData.updated_by_with_guid.includes(
+        response.rows[0]?.created_by_with_guid?.toLowerCase()
+      );
 
-      if ((sanitizedActivityData.updated_by_with_guid?.replace('bceid-business', 'bceidbusiness') !== response.rows[0]?.created_by_with_guid.replace('bceid-business','bceidbusiness') && !containsOldIDAndIsOK) &&
-        (response.rows[0].created_by_with_guid !== null)) { // some old records are null
+      if (
+        sanitizedActivityData.updated_by_with_guid?.replace('bceid-business', 'bceidbusiness') !==
+          response.rows[0]?.created_by_with_guid.replace('bceid-business', 'bceidbusiness') &&
+        !containsOldIDAndIsOK &&
+        response.rows[0].created_by_with_guid !== null
+      ) {
+        // some old records are null
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record',
           request: req.body,
@@ -437,10 +441,10 @@ function updateActivity(): RequestHandler {
 
       // make sure monitoring a subset
       sanitizedActivityData.species_treated.forEach((species) => {
-        defaultLog.info({message: 'species check', species});
+        defaultLog.info({ message: 'species check', species });
 
         if (linked_species_treated.includes(species) === false) {
-          defaultLog.debug({message: 'linked_species_treated', linked_species_treated});
+          defaultLog.debug({ message: 'linked_species_treated', linked_species_treated });
           // otherwise throw 400
           return res.status(400).json({
             message: 'Invalid request, species in monitoring not included in linked treatment',
@@ -449,8 +453,7 @@ function updateActivity(): RequestHandler {
             code: 401
           });
         }
-      }
-    )
+      });
     }
 
     /*
@@ -463,7 +466,7 @@ function updateActivity(): RequestHandler {
           });
     }
     */
-   /* disabled for now
+    /* disabled for now
     if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
       req.body.form_status = 'Submitted'
       sanitizedActivityData.form_status = 'Submitted'

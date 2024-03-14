@@ -1,5 +1,4 @@
 import moment from 'moment';
-import axios from 'axios';
 
 let metabaseSession: string;
 let metabaseSessionTimestamp: number;
@@ -19,20 +18,19 @@ export const METABASE_TIMEOUT = 60000; // ms
 export async function getMetabaseSession(): Promise<any> {
   if (metabaseSession && moment().valueOf() < metabaseSessionTimestamp + METABASE_TIMEOUT) return metabaseSession;
 
-  const response = await axios({
+  const response = await fetch(`${METABASE_URL}/api/session`, {
     method: 'post',
-    url: `${METABASE_URL}/api/session`,
-    data: {
+    body: JSON.stringify({
       username: METABASE_USER,
       password: METABASE_PASS
-    },
+    }),
     headers: {
       'Content-Type': 'application/json'
-    },
-    timeout: METABASE_TIMEOUT
+    }
   });
+  const data: any = await response.json();
 
-  if (!response.data.id) {
+  if (!data.id) {
     throw {
       code: 503,
       message: 'Failed to establish metabase session',
@@ -41,7 +39,7 @@ export async function getMetabaseSession(): Promise<any> {
   }
 
   metabaseSessionTimestamp = moment().valueOf();
-  metabaseSession = response.data.id;
+  metabaseSession = data.id;
 
   return metabaseSession;
 }

@@ -1,8 +1,7 @@
-import axios from 'axios';
-import { getDBConnection } from '../database/db';
-import { getLogger } from './logger';
-import { getWell } from '../paths/context/well';
-import { insertWellDistanceSQL } from './../queries/context-queries';
+import { getDBConnection } from '../database/db.js';
+import { getLogger } from './logger.js';
+import { getWell } from '../paths/context/well.js';
+import { insertWellDistanceSQL } from './../queries/context-queries.js';
 import { SQL, SQLStatement } from 'sql-template-strings';
 
 const defaultLog = getLogger('context-queries');
@@ -19,11 +18,6 @@ const saveBCGW = async (id: any, req: any) => {
   const lat = req.body.form_data.activity_data.latitude;
   const lon = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
-  const config = {
-    headers: {
-      authorization: req.headers.authorization
-    }
-  };
 
   /* All the layers to get queried */
   const layers = [
@@ -59,20 +53,23 @@ const saveBCGW = async (id: any, req: any) => {
   const queryBCGW = async (layer) => {
     const url = `${api}/context/databc/${layer.tableName}?lon=${lon}&lat=${lat}`;
 
-    await axios
-      .get(url, config)
-      .then(async (response) => {
-        const attribute = response.data.result[layer.targetAttribute];
-        const column = layer.targetColumn;
-        sqlStatement.append(`
-          update activity_incoming_data
-          set ${column} = '${attribute}'
-          where activity_id = '${id}';
-        `);
-      })
-      .catch((error) => {
-        defaultLog.debug({ label: 'addingContext', message: 'error', error });
+    try {
+      const response = await fetch(url, {
+        headers: {
+          authorization: req.headers.authorization
+        }
       });
+      const data: any = await response.json();
+      const attribute = data.result[layer.targetAttribute];
+      const column = layer.targetColumn;
+      sqlStatement.append(`
+        update activity_incoming_data
+        set ${column} = '${attribute}'
+        where activity_id = '${id}';
+      `);
+    } catch (e) {
+      defaultLog.debug({ label: 'addingContext', message: 'error', e });
+    }
   };
 
   /* Build the bulk insert statement*/
@@ -103,7 +100,7 @@ const saveBCGW = async (id: any, req: any) => {
  *   entered in the database.
  * @param req {object} The express request object
  */
-const saveInternal = (id: any, req: any) => {
+const saveInternal = async (id: any, req: any) => {
   const lat = req.body.form_data.activity_data.latitude;
   const lon = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
@@ -133,32 +130,36 @@ const saveInternal = (id: any, req: any) => {
   for (const layer of layers) {
     const url = `${api}/context/internal/${layer.targetAttribute}?lon=${lon}&lat=${lat}`;
 
-    axios
-      .get(url, config)
-      .then(async (response) => {
-        const attribute = response.data.target;
-        const column = layer.targetColumn;
-        const connection = await getDBConnection();
-        const sql = `
-          update activity_incoming_data
-          set ${column} = '${attribute}'
-          where activity_id = '${id}'
-        `;
-
-        await connection
-          .query(sql)
-          .then(() => {
-            defaultLog.info({ message: `Successfully entered ${attribute} into column ${column}` });
-          })
-          .catch((err) => {
-            defaultLog.error({ message: 'Error inserting into the database', error: err });
-          });
-
-        connection.release();
-      })
-      .catch((error) => {
-        defaultLog.debug({ label: 'addingContext', message: 'error', error });
+    try {
+      const response = await fetch(url, {
+        headers: {
+          authorization: req.headers.authorization
+        }
       });
+      const data: any = await response.json();
+
+      const attribute = data.target;
+      const column = layer.targetColumn;
+      const connection = await getDBConnection();
+      const sql = `
+        update activity_incoming_data
+        set ${column} = '${attribute}'
+        where activity_id = '${id}'
+      `;
+
+      await connection
+        .query(sql)
+        .then(() => {
+          defaultLog.info({ message: `Successfully entered ${attribute} into column ${column}` });
+        })
+        .catch((err) => {
+          defaultLog.error({ message: 'Error inserting into the database', error: err });
+        });
+
+      connection.release();
+    } catch (e) {
+      defaultLog.debug({ label: 'addingContext', message: 'error', e });
+    }
   }
 };
 
@@ -171,7 +172,7 @@ const saveInternal = (id: any, req: any) => {
  *   entered in the database.
  * @param req {object} The express request object
  */
-const saveElevation = (id: any, req: any) => {
+const saveElevation = async (id: any, req: any) => {
   const lat = req.body.form_data.activity_data.latitude;
   const lon = req.body.form_data.activity_data.longitude;
   const api = `${req.protocol}://${req.get('host')}/api`;
@@ -184,33 +185,36 @@ const saveElevation = (id: any, req: any) => {
   /* For each layer run an asynchronous request */
   const url = `${api}/context/elevation?lon=${lon}&lat=${lat}`;
 
-  axios
-    .get(url, config)
-    .then(async (response) => {
-      const elevation = response.data.result;
-      const connection = await getDBConnection();
-      const sql = `
-        update activity_incoming_data
-        set elevation = round(${elevation}, 0)
-        where activity_id = '${id}'
-      `;
-
-      await connection
-        .query(sql)
-        .then(() => {
-          defaultLog.info({ message: 'Successfully entered elevation' });
-        })
-        .catch((err) => {
-          defaultLog.error({ message: 'Error inserting into the database', error: err });
-        });
-
-      connection.release();
-    })
-    .catch((error) => {
-      defaultLog.debug({ label: 'addingContext', message: 'error', error });
+  try {
+    const response = await fetch(url, {
+      headers: {
+        authorization: req.headers.authorization
+      }
     });
-};
+    const data: any = await response.json();
 
+    const elevation = data.result;
+    const connection = await getDBConnection();
+    const sql = `
+      update activity_incoming_data
+      set elevation = round(${elevation}, 0)
+      where activity_id = '${id}'
+    `;
+
+    await connection
+      .query(sql)
+      .then(() => {
+        defaultLog.info({ message: 'Successfully entered elevation' });
+      })
+      .catch((err) => {
+        defaultLog.error({ message: 'Error inserting into the database', error: err });
+      });
+
+    connection.release();
+  } catch (e) {
+    defaultLog.debug({ label: 'addingContext', message: 'error', e });
+  }
+};
 /**
  * ## saveWell
  * Insert contextual well data for the new activity record from

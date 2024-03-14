@@ -1,15 +1,13 @@
-'use strict';
-
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from './../../database/db';
-import { getActivitySQL } from './../../queries/activity-queries';
-import { getFileFromS3 } from './../../utils/file-utils';
-import { getLogger } from './../../utils/logger';
-import { getMediaItemsList } from './../media';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
+import { getDBConnection } from './../../database/db.js';
+import { getActivitySQL } from './../../queries/activity-queries.js';
+import { getFileFromS3 } from './../../utils/file-utils.js';
+import { getLogger } from './../../utils/logger.js';
+import { getMediaItemsList } from './../media.js';
+import { S3 } from 'aws-sdk';
 
 const defaultLog = getLogger('activity');
 
@@ -128,7 +126,7 @@ function getMedia(): RequestHandler {
       return next();
     }
 
-    const s3GetPromises: Promise<GetObjectOutput>[] = [];
+    const s3GetPromises: Promise<S3.Types.GetObjectOutput>[] = [];
 
     activity['media_keys'].forEach((key: string) => {
       s3GetPromises.push(getFileFromS3(key));
@@ -151,14 +149,12 @@ function getMedia(): RequestHandler {
 function returnActivity(): RequestHandler {
   return async (req, res) => {
     if (req['activity'] === null) {
-      return res
-        .status(404)
-        .json({
-          message: 'Activity not found.  Maybe it was deleted.',
-          request: req.body,
-          namespace: 'activity/{activityId}',
-          code: 404
-        });
+      return res.status(404).json({
+        message: 'Activity not found.  Maybe it was deleted.',
+        request: req.body,
+        namespace: 'activity/{activityId}',
+        code: 404
+      });
     }
     // original blob from client:
     let originalPayload = { ...req['activity'].activity_payload };

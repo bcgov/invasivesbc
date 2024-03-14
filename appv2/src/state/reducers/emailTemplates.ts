@@ -9,7 +9,7 @@ interface EmailTemplates {
     emailbody: string,
     templatename: string
   }]
-};
+}
 
 function createEmailTemplatesReducer() {
   const initialState: EmailTemplates = {

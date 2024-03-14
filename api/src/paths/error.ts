@@ -1,14 +1,12 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { getLogger } from '../utils/logger';
-import { ErrorPostRequestBody } from '../models/error';
-import { saveErrorSQL } from '../queries/error-queries';
-import { InvasivesRequest } from 'utils/auth-utils';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
+import { getDBConnection } from '../database/db.js';
+import { getLogger } from '../utils/logger.js';
+import { ErrorPostRequestBody } from '../models/error.js';
+import { saveErrorSQL } from '../queries/error-queries.js';
+import { InvasivesRequest } from '../utils/auth-utils.js';
 
 const defaultLog = getLogger('error');
 
@@ -30,7 +28,7 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           properties: {
-            error: { 
+            error: {
               type: 'object'
             },
             clientState: {
@@ -43,6 +41,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
+      description: 'Success'
     },
     401: {
       $ref: '#/components/responses/401'
@@ -66,7 +65,7 @@ function errorLog(): RequestHandler {
     defaultLog.debug({
       label: 'error',
       message: 'client error',
-     // body: req.body,
+      // body: req.body,
       namespace: 'error'
     });
 
@@ -106,7 +105,7 @@ function errorLog(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      const errorMessage = error.message? error.message : error;
+      const errorMessage = error.message ? error.message : error;
       defaultLog.debug({ label: 'error log', message: 'error', errorMessage });
       return res.status(500).json({
         message: 'Failed to log error',

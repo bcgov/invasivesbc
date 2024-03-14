@@ -1,5 +1,6 @@
-import { getLogger } from './utils/logger';
-import { app, adminApp } from './app';
+import { getLogger } from './utils/logger.js';
+import { adminApp, app } from './app.js';
+
 import ViteExpress from 'vite-express';
 
 const HOST = process.env.API_HOST || 'localhost';

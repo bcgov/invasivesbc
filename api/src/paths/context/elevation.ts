@@ -1,10 +1,7 @@
-'use strict';
-
-import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
+import { getLogger } from '../../utils/logger.js';
 
 const defaultLog = getLogger('activity');
 
@@ -84,26 +81,25 @@ function getElevation(): RequestHandler {
 
     const url = `https://geogratis.gc.ca/services/elevation/cdem/altitude?lat=${lat}&lon=${lon}`;
 
-    axios
-      .get(url)
-      .then((response) => {
-        return res.status(200).json({
-          message: 'Got elevation',
-          request: req.query,
-          result: response.data?.altitude,
-          namespace: 'context/elevation',
-          code: 200
-        });
-      })
-      .catch((error) => {
-        defaultLog.debug({ label: 'getElevation', message: 'error', error, namespace: 'context/elevation' });
-        return res.status(500).json({
-          message: 'Error getting elevation',
-          request: req.query,
-          error,
-          namespace: 'context/elevation',
-          code: 500
-        });
+    try {
+      const response = await fetch(url);
+      const data: any = await response.json();
+      return res.status(200).json({
+        message: 'Got elevation',
+        request: req.query,
+        result: data.altitude,
+        namespace: 'context/elevation',
+        code: 200
       });
+    } catch (e) {
+      defaultLog.debug({ label: 'getElevation', message: 'error', e, namespace: 'context/elevation' });
+      return res.status(500).json({
+        message: 'Error getting elevation',
+        request: req.query,
+        e,
+        namespace: 'context/elevation',
+        code: 500
+      });
+    }
   };
 }

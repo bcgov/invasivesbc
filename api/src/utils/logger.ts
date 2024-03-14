@@ -1,7 +1,7 @@
-import winston, { Logform } from 'winston';
-import _ from 'lodash';
+import winston from 'winston';
+import _ from 'lodash-es';
 import YAML from 'js-yaml';
-import { MDCAsyncLocal } from '../mdc';
+import { MDCAsyncLocal } from '../mdc.js';
 
 /**
  * Logger input.
@@ -28,7 +28,7 @@ class LoggerWithContext {
             winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
             winston.format.errors({ stack: true }),
             winston.format.colorize(),
-            winston.format.printf(({ level, timestamp, label, message, ...meta }) => {
+            winston.format.printf(({ level, timestamp, label, message, ...meta }: ILoggerMessage) => {
               const optionalLabel = label ? ` ${label} - ` : '';
               const preamble = `[${timestamp}] (${level}) (${outputLabel}):${optionalLabel}`;
               //

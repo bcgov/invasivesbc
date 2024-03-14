@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import { beforeAll, test } from 'vitest';
 
-import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from './kml-import';
+import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from './kml-import.js';
 
 describe('KML Utilities', function () {
   let KML_DATA_VALID: Buffer;

@@ -1,13 +1,12 @@
-import { SECURITY_ON, ALL_ROLES } from '../../constants/misc';
-import { createHash } from 'crypto';
-import { getDBConnection } from '../../database/db';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
+import { getDBConnection } from '../../database/db.js';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getuid } from 'process';
-import SQL, { SQLStatement } from 'sql-template-strings';
-import { InvasivesRequest } from 'utils/auth-utils';
-import { getLogger } from '../../utils/logger';
-import { streamActivitiesResult } from '../../utils/iapp-json-utils';
+import { SQL, SQLStatement } from 'sql-template-strings';
+import { InvasivesRequest } from 'utils/auth-utils.js';
+import { getLogger } from '../../utils/logger.js';
+import { streamActivitiesResult } from '../../utils/iapp-json-utils.js';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = 'Activities v2 - Fat';
@@ -165,7 +164,7 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   if (filterObject?.tableFilters?.length > 0) {
     filterObject.tableFilters.forEach((filter) => {
-      if(filter.filter === '') return;
+      if (filter.filter === '') return;
       switch (filter.filterType) {
         case 'tableFilter':
           switch (filter.field) {
@@ -318,7 +317,7 @@ function getActivitiesSQLv2(filterObject: any) {
 
 function initialWithStatement(sqlStatement: SQLStatement) {
   /*const withStatement = sqlStatement.append(
-    `with not_deleted_activities as (SELECT a.* FROM invasivesbc.activity_incoming_data a  
+    `with not_deleted_activities as (SELECT a.* FROM invasivesbc.activity_incoming_data a
       where a.iscurrent = true
       )   `
   );*/
@@ -327,57 +326,48 @@ function initialWithStatement(sqlStatement: SQLStatement) {
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
   //todo: only do this when applicable
-  const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (
-    SELECT
-        cpo.activity_incoming_data_id,
-        string_agg(cpo.invasive_plant, ', ') AS current_positive_species
-    FROM
-        invasivesbc.current_positive_observations_materialized cpo
-    GROUP BY
-        cpo.activity_incoming_data_id
-),
-CurrentNegativeObservations AS (
-    SELECT
-        cno.activity_incoming_data_id,
-        string_agg(cno.invasive_plant, ', ') AS current_negative_species
-    FROM
-        invasivesbc.current_negative_observations_materialized cno
-    GROUP BY
-        cno.activity_incoming_data_id),
-`);
+  const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
+                                                                                 string_agg(cpo.invasive_plant, ', ') AS current_positive_species
+                                                                          FROM invasivesbc.current_positive_observations_materialized cpo
+                                                                          GROUP BY cpo.activity_incoming_data_id),
+                                          CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
+                                                                                 string_agg(cno.invasive_plant, ', ') AS current_negative_species
+                                                                          FROM invasivesbc.current_negative_observations_materialized cno
+                                                                          GROUP BY cno.activity_incoming_data_id),
+  `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
-     
+
         serverFilterGeometryIDs as (
- 
+
           select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
-         
+
           ),
          serverFilterGeometries AS (
          select a.id, title, st_subdivide(geog::geometry)::geography as geo
          from invasivesbc.admin_defined_shapes a
          inner join serverFilterGeometryIDs b on a.id = b.id
          ),
-         
+
           serverFilterGeometriesIntersecting as (
-         
+
          select a.activity_incoming_data_id, b.id
          from activity_incoming_data a
          inner join serverFilterGeometries b on st_intersects(a.geog, b.geo)
          where iscurrent=true
          group by a.activity_incoming_data_id, b.id
-         
-         
+
+
          ),
           serverFilterGeometriesIntersectingAll as (
-         
+
          select a.activity_incoming_data_id, count(*)
          from activity_incoming_data a
          inner join serverFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
          where iscurrent=true
-         group by a.activity_incoming_data_id 
-         
+         group by a.activity_incoming_data_id
+
          having count(*) = (select count(*) from serverFilterGeometryIDs)
          ),
          `);
@@ -390,23 +380,23 @@ CurrentNegativeObservations AS (
                    .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
                    .join(',')}]) AS geojson
          ),
-         
+
           clientFilterGeometriesIntersecting as (
-         
-         select a.activity_incoming_data_id 
+
+         select a.activity_incoming_data_id
          from activity_incoming_data a
          inner join clientFilterGeometries on st_intersects(a.geog, geojson)
          where iscurrent=true
-         
+
          ),
           clientFilterGeometriesIntersectingAll as (
-         
+
          select a.activity_incoming_data_id, count(*)
          from activity_incoming_data a
          inner join clientFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
          where iscurrent=true
-         group by a.activity_incoming_data_id 
-         
+         group by a.activity_incoming_data_id
+
          having count(*) = (select count(*) from clientFilterGeometries)
          ),
          `);
@@ -414,9 +404,9 @@ CurrentNegativeObservations AS (
 
   sqlStatement.append(`
 activities as (
-    select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species, 
+    select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species,
     case when CurrentPositiveObservations.current_positive_species is null then false else true end as has_current_positive,
-    case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative  
+    case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative
     `);
 
   /*if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -545,12 +535,11 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
-  let tableAlias = filterObject.isCSV? 'b' : 'activities';
+  let tableAlias = filterObject.isCSV ? 'b' : 'activities';
   const where = sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `);
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
   }
-
 
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
@@ -692,9 +681,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'regional_districts':
         where.append(
-          `and LOWER(${tableAlias}.regional_districts) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `and LOWER(${tableAlias}.regional_districts) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'invasive_plant_management_areas':

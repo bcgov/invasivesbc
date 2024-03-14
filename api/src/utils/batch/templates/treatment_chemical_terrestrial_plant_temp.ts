@@ -1,5 +1,5 @@
-import { ChemTreatmentValidators } from '../validation/chemical-treatment';
-import { Template, TemplateColumnBuilder } from '../definitions';
+import { ChemTreatmentValidators } from '../validation/chemical-treatment.js';
+import { Template, TemplateColumnBuilder } from '../definitions.js';
 import {
   ActivityPersonsWithApplicatorLicense,
   BasicInformation,
@@ -12,7 +12,7 @@ import {
   ApplicationMethodType,
   ApplicationMethodValidator,
   GranularHerbicideRate
-} from '../shared-columns';
+} from '../shared-columns.js';
 
 const TreatmentChemicalTerrestrialPlantTemp = new Template(
   'treatment_chemical_terrestrial_plant_temp',

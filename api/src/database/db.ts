@@ -1,8 +1,7 @@
-'use strict';
+import pg from 'pg';
+const { Pool } = pg;
 
-import { Pool, PoolClient, PoolConfig } from 'pg';
-
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../utils/logger.js';
 
 const defaultLog = getLogger('db');
 
@@ -13,6 +12,7 @@ const DB_PASSWORD: string = process.env.DB_PASS || 'world';
 const DB_DATABASE: string = process.env.DB_DATABASE || 'invasives';
 const DB_SCHEMA: string = process.env.DB_SCHEMA || 'invasivesbc';
 
+// @ts-ignore
 const poolConfig: PoolConfig = {
   user: DB_USERNAME,
   password: DB_PASSWORD,
@@ -26,6 +26,7 @@ const poolConfig: PoolConfig = {
 
 defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
 
+// @ts-ignore
 let pool: Pool = null;
 
 try {
@@ -43,7 +44,9 @@ try {
  *
  * @returns {Promise<PoolClient>}
  */
+// @ts-ignore
 export const getDBConnection = async function (): Promise<PoolClient> {
+  // @ts-ignore
   let client: PoolClient = null;
 
   try {

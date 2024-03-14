@@ -1,12 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
+import { getLogger } from '../../utils/logger.js';
 import { sign } from 'jsonwebtoken';
-import { getDBConnection } from '../../database/db';
-import { getEmbeddedReport } from '../../queries/embedded-report-queries';
+import { getDBConnection } from '../../database/db.js';
+import { getEmbeddedReport } from '../../queries/embedded-report-queries.js';
 
 const defaultLog = getLogger('metabase-query');
 
@@ -20,10 +18,10 @@ GET.apiDoc = {
   tags: ['metabase'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   parameters: [
     {
@@ -91,7 +89,6 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         });
       }
 
-
       const sql = getEmbeddedReport(reportId);
       const response = await connection.query(sql.text, sql.values);
 
@@ -127,11 +124,8 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         namespace: 'embedded-report/{reportId}',
         code: 500
       });
-    }
-    finally {
-
+    } finally {
       connection.release();
     }
-
   };
 }

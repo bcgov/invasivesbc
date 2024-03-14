@@ -1,14 +1,12 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { JurisdictionSearchCriteria } from '../models/jurisdiction';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
+import { getDBConnection } from '../database/db.js';
+import { JurisdictionSearchCriteria } from '../models/jurisdiction.js';
 import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
-import { getJurisdictionsSQL } from '../queries/jurisdiction-queries';
-import { getLogger } from '../utils/logger';
+import { getJurisdictionsSQL } from '../queries/jurisdiction-queries.js';
+import { getLogger } from '../utils/logger.js';
 
 const defaultLog = getLogger('jurisdictions');
 

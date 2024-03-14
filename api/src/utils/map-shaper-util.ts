@@ -1,10 +1,7 @@
-// mostly taken from map-shaper.ts
-'use strict';
-
 import { applyCommands } from 'mapshaper';
 import proj4 from 'proj4';
 import reproject from 'reproject';
-import {getLogger} from "./logger";
+import { getLogger } from './logger.js';
 
 const defaultLog = getLogger('map-shaper');
 
@@ -18,7 +15,7 @@ const albersToGeog = (featureCollection) => {
     const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
     return reprojected;
   } catch (e) {
-    defaultLog.warn({message: 'error converting back to geog from albers', error: e});
+    defaultLog.warn({ message: 'error converting back to geog from albers', error: e });
   }
 };
 

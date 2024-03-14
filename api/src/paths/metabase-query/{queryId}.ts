@@ -1,11 +1,13 @@
-'use strict';
-
-import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
-import {closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL} from "../../utils/metabase-session";
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SECURITY_ON } from '../../constants/misc.js';
+import { getLogger } from '../../utils/logger.js';
+import {
+  closeMetabaseSession,
+  getMetabaseSession,
+  METABASE_TIMEOUT,
+  METABASE_URL
+} from '../../utils/metabase-session.js';
 
 const defaultLog = getLogger('metabase-query');
 
@@ -94,17 +96,16 @@ function getMetabaseQueryResults(): RequestHandler {
 
       const session = await getMetabaseSession();
 
-      const response = await axios({
+      const response = await fetch(`${METABASE_URL}/api/card/${queryId}/query/json`, {
         method: 'post',
-        url: `${METABASE_URL}/api/card/${queryId}/query/json`,
         headers: {
           'Content-Type': 'application/json',
           'X-Metabase-Session': session
-        },
-        timeout: METABASE_TIMEOUT
+        }
       });
+      const data: any = await response.json();
 
-      if (!response || !response.data || !response.data.length) {
+      if (!response || !data || !data.length) {
         return res.status(404).json({
           message: 'No results',
           namespace: 'metabase-query/{queryId}',
@@ -118,11 +119,11 @@ function getMetabaseQueryResults(): RequestHandler {
         request: req.params,
         namespace: 'metabase-query/{queryId}',
         code: 200,
-        activity_ids: response.data
+        activity_ids: data
           .map((row) => row['Activity ID'])
           .filter((row) => row)
           .splice(0, SEARCH_LIMIT_MAX),
-        point_of_interest_ids: response.data
+        point_of_interest_ids: data
           .map((row) => row['Point Of Interest ID'])
           .filter((row) => row)
           .map((row) => '' + row)

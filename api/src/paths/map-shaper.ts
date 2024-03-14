@@ -1,5 +1,3 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import get from 'simple-get';
@@ -7,7 +5,7 @@ import { applyCommands } from 'mapshaper';
 import decode from 'urldecode';
 import proj4 from 'proj4';
 import reproject from 'reproject';
-import {getLogger} from "../utils/logger";
+import { getLogger } from '../utils/logger.js';
 
 /**
  * GET api/species?key=123;key=456;key=789
@@ -30,7 +28,7 @@ const albersToGeog = (featureCollection) => {
     const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
     return reprojected;
   } catch (e) {
-    defaultLog.error({message: 'error converting back to geog from albers:', error: e});
+    defaultLog.error({ message: 'error converting back to geog from albers:', error: e });
   }
 };
 
@@ -82,7 +80,7 @@ function getSimplifiedGeoJSON(): RequestHandler {
           }
         );
       } catch (e) {
-        defaultLog.error({message: 'Failed to get simplified GeoJSON', error: e});
+        defaultLog.error({ message: 'Failed to get simplified GeoJSON', error: e });
         return res.status(500).json({
           message: 'Failed to get simplified GeoJSON',
           request: req.query,

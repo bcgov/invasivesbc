@@ -1,15 +1,13 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { streamIAPPResult } from '../utils/iapp-json-utils';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries';
-import { getLogger } from '../utils/logger';
-import { versionedKey } from '../utils/cache/cache-utils';
+import { streamIAPPResult } from '../utils/iapp-json-utils.js';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
+import { getDBConnection } from '../database/db.js';
+import { PointOfInterestSearchCriteria } from '../models/point-of-interest.js';
+import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries.js';
+import { getLogger } from '../utils/logger.js';
+import { versionedKey } from '../utils/cache/cache-utils.js';
 import { createHash } from 'crypto';
 
 const defaultLog = getLogger('point-of-interest');

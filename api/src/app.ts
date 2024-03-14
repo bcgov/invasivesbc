@@ -1,16 +1,13 @@
-'use strict';
-
 import bodyParser from 'body-parser';
 import express from 'express';
 import compression from 'compression';
 
 import { initialize } from 'express-openapi';
-import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
-import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
-import { authenticate, InvasivesRequest } from './utils/auth-utils';
-import { getLogger } from './utils/logger';
-import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin/metabase_groups';
-import { MDC, MDCAsyncLocal } from './mdc';
+import { api_doc } from '../../sharedAPI/src/openapi/api-doc/api-doc.js';
+import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter.js';
+import { authenticate, InvasivesRequest } from './utils/auth-utils.js';
+import { getLogger } from './utils/logger.js';
+import { MDC, MDCAsyncLocal } from './mdc.js';
 
 const defaultLog = getLogger('app');
 
@@ -58,7 +55,6 @@ app.use(function (req: any, res: any, next: any) {
   } else {
     next();
   }
-
 });
 
 // Initialize express-openapi framework
@@ -111,14 +107,10 @@ initialize({
       // streaming responses cannot alter headers after dispatch
       res.status(error.status || error.code || 500).json(error);
     } else {
-
     }
-
   }
 });
 
 const adminApp: express.Express = express();
-adminApp.get('/metabase_groups', getMetabaseGroupMappings);
-adminApp.post('/metabase_sync', postSyncMetabaseGroupMappings);
 
 export { adminApp, app };

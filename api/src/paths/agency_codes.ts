@@ -1,12 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
+import { getDBConnection } from '../database/db.js';
 import { SQLStatement } from 'sql-template-strings';
-import { getFundingAgencyCodesSQL } from '../queries/code-queries';
-// import { getEmployers, getFundingAgencies } from '../utils/code-utils';
+import { getFundingAgencyCodesSQL } from '../queries/code-queries.js';
 
 export const GET: Operation = [getAgencyCodes()];
 

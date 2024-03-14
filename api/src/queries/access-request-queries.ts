@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { appendNRQ } from './update-request-queries';
+import { appendNRQ } from './update-request-queries.js';
 
 /**
  * SQL query to fetch an access request and their associated role.
@@ -87,7 +87,6 @@ export const createAccessRequestSQL = (accessRequest): SQLStatement => {
     )
     on conflict (idir_userid, bceid_userid) do nothing;
   `;
-
 };
 
 /**
@@ -135,7 +134,8 @@ export const approveAccessRequestsSQL = (accessRequest): SQLStatement => {
             pac_number=${accessRequest.pac_number},
             pac_service_number_1=${accessRequest.pac_service_number_1},
             pac_service_number_2=${accessRequest.pac_service_number_2}
-            where (bceid_userid is not null and bceid_userid=${accessRequest.bceid_userid
-    }) OR (idir_userid is not null and idir_userid=${accessRequest.idir_userid});
+            where (bceid_userid is not null and bceid_userid=${
+              accessRequest.bceid_userid
+            }) OR (idir_userid is not null and idir_userid=${accessRequest.idir_userid});
     `;
 };

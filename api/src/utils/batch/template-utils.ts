@@ -1,24 +1,24 @@
-import { Template } from './definitions';
-import { ObservationTerrestrialPlant } from './templates/observation_terrestrial_plant';
-import { ObservationAquaticPlant } from './templates/observation_aquatic_plant';
-import { BiocontrolRelease } from './templates/biocontrol_release';
-import { BiocontrolCollection } from './templates/biocontrol_collection';
-import { MonitoringBiocontrolDispersalTerrestrialPlant } from './templates/monitoring_biocontrol_dispersal_terrestrial_plant';
-import { MonitoringBiocontrolReleaseTerrestrialPlant } from './templates/monitoring_biocontrol_release_terrestrial_plant';
-import { MonitoringMechanical } from './templates/monitoring_mechanical_treatment';
-import { MonitoringChemical } from './templates/monitoring_chemical_treatment';
-import { TreatmentChemicalTerrestrialPlant } from './templates/treatment_chemical_terrestrial_plant';
-import { TreatmentChemicalAquaticPlant } from './templates/treatment_chemical_aquatic_plant';
-import { TreatmentMechanicalAquaticPlant } from './templates/treatment_mechanical_aquatic_plant';
-import { TreatmentMechanicalTerrestrialPlant } from './templates/treatment_mechanical_terrestrial_plant';
-import { getDBConnection } from '../../database/db';
+import { Template } from './definitions.js';
+import { ObservationTerrestrialPlant } from './templates/observation_terrestrial_plant.js';
+import { ObservationAquaticPlant } from './templates/observation_aquatic_plant.js';
+import { BiocontrolRelease } from './templates/biocontrol_release.js';
+import { BiocontrolCollection } from './templates/biocontrol_collection.js';
+import { MonitoringBiocontrolDispersalTerrestrialPlant } from './templates/monitoring_biocontrol_dispersal_terrestrial_plant.js';
+import { MonitoringBiocontrolReleaseTerrestrialPlant } from './templates/monitoring_biocontrol_release_terrestrial_plant.js';
+import { MonitoringMechanical } from './templates/monitoring_mechanical_treatment.js';
+import { MonitoringChemical } from './templates/monitoring_chemical_treatment.js';
+import { TreatmentChemicalTerrestrialPlant } from './templates/treatment_chemical_terrestrial_plant.js';
+import { TreatmentChemicalAquaticPlant } from './templates/treatment_chemical_aquatic_plant.js';
+import { TreatmentMechanicalAquaticPlant } from './templates/treatment_mechanical_aquatic_plant.js';
+import { TreatmentMechanicalTerrestrialPlant } from './templates/treatment_mechanical_terrestrial_plant.js';
+import { getDBConnection } from '../../database/db.js';
 import { PoolClient } from 'pg';
-import { ObservationTerrestrialPlantTemp } from './templates/observation_terrestrial_plant_temp';
-import { TreatmentChemicalTerrestrialPlantTemp } from './templates/treatment_chemical_terrestrial_plant_temp';
-import { TreatmentMechanicalTerrestrialPlantTemp } from './templates/treatment_mechanical_terrestrial_plant_temp';
-import { ObservationAquaticPlantTemp } from './templates/observation_aquatic_plant_temp';
-import { TreatmentChemicalAquaticPlantTemp } from './templates/treatment_chemical_aquatic_plant_temp';
-import { TreatmentMechanicalAquaticPlantTemp } from './templates/treatment_mechanical_aquatic_plant_temp';
+import { ObservationTerrestrialPlantTemp } from './templates/observation_terrestrial_plant_temp.js';
+import { TreatmentChemicalTerrestrialPlantTemp } from './templates/treatment_chemical_terrestrial_plant_temp.js';
+import { TreatmentMechanicalTerrestrialPlantTemp } from './templates/treatment_mechanical_terrestrial_plant_temp.js';
+import { ObservationAquaticPlantTemp } from './templates/observation_aquatic_plant_temp.js';
+import { TreatmentChemicalAquaticPlantTemp } from './templates/treatment_chemical_aquatic_plant_temp.js';
+import { TreatmentMechanicalAquaticPlantTemp } from './templates/treatment_mechanical_aquatic_plant_temp.js';
 
 const templateList: Template[] = [
   ObservationTerrestrialPlant,

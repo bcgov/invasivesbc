@@ -10,7 +10,7 @@ interface EmailSettings {
     clientId: string,
     clientSecret: string,
   }
-};
+}
 
 function createEmailSettingsReducer() {
   const initialState: EmailSettings = {

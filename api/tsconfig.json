@@ -1,38 +1,31 @@
 {
+  "extends": "./tsconfig.node20.json",
   "compilerOptions": {
     "baseUrl": "src",
-    "outDir": "dist",
-    "module": "ESNext",
-    "target": "ESNext",
-    "allowJs": false,
-    "moduleResolution": "node",
+    "outDir": "./dist",
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": false,
-    "allowSyntheticDefaultImports": true,
-    "noUnusedLocals": false,
-    "esModuleInterop": true,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "strict": false,
-    "isolatedModules": true,
-    "noEmit": false,
-    //    "typeRoots": ["node_modules/@types", "src/types"],
-    "noFallthroughCasesInSwitch": true
-  },
-  "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
+    "paths": {
+      "sharedAPI/*": [
+        "../../sharedAPI/src/*"
+      ]
+    },
+    "types": [
+      "node",
+      "mocha",
+      "chai"
+    ]
   },
   "include": [
     "src",
     "**/*.ts",
     "node_modules/vitest/globals.d.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/dist"
   ]
 }

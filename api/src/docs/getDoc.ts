@@ -1,4 +1,4 @@
-import { ALL_ROLES } from '../constants/misc';
+import { ALL_ROLES } from '../constants/misc.js';
 
 export const retrieveGetDoc = (responseDescription: string) => {
   return {

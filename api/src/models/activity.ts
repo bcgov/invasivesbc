@@ -1,5 +1,5 @@
-import { SEARCH_LIMIT_MAX } from '../constants/misc';
-import { IMediaItem } from './media';
+import { SEARCH_LIMIT_MAX } from '../constants/misc.js';
+import { IMediaItem } from './media.js';
 
 /**
  * Activity post request body.
