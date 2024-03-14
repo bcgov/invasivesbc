@@ -11,7 +11,6 @@ export default defineConfig((configEnv) =>
           reporter: ['text', 'json-summary', 'json'],
           reportOnFailure: true
         },
-        // setupFiles: ['./src/setupTests.ts'],
         deps: {
           optimizer: {}
         }

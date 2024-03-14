@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { beforeAll, expect, test } from 'vitest';
+import { beforeAll, test } from 'vitest';
 
 import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from './kml-import';
 

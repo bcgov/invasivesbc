@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 // sets up constants in the code, based on build environment
 function buildSpecificDefines() {
@@ -29,7 +28,7 @@ export default defineConfig({
   define: {
     ...buildSpecificDefines()
   },
-  plugins: [tsconfigPaths()],
+  plugins: [],
   optimizeDeps: {
     esbuildOptions: {
       plugins: []
