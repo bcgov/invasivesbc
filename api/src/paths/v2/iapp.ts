@@ -177,8 +177,7 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
 
   if (filterObject?.tableFilters?.length > 0) {
     filterObject.tableFilters.forEach((filter) => {
-      if(filter.filter === '')
-      {
+      if (filter.filter === '') {
         return;
       }
       switch (filter.filterType) {
@@ -224,9 +223,7 @@ function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     body: JSON.stringify(sanitizedSearchCriteria, null, 2)
   });
 
-
-  if(filterObject?.CSVType)
-  {
+  if (filterObject?.CSVType) {
     sanitizedSearchCriteria.isCSV = true;
     sanitizedSearchCriteria.CSVType = filterObject.CSVType;
   }
@@ -262,23 +259,21 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
 
       sql = getIAPPSQLv2(filterObject);
 
-      if(filterObject.isCSV)
-      {
-          await streamIAPPResult(filterObject, res, sql);
-      }
-      else
-      {
-      const response = await connection.query(sql.text, sql.values);
+      if (filterObject.isCSV) {
+        await streamIAPPResult(filterObject, res, sql);
+      } else {
+        const response = await connection.query(sql.text, sql.values);
 
-      return res.status(200).json({
-        message: 'fetched sites by criteria',
-        request: req.body,
-        result: response.rows,
-        count: response.rowCount,
-        namespace: 'IAPP',
-        code: 200
-      });
-    }} catch (error) {
+        return res.status(200).json({
+          message: 'fetched sites by criteria',
+          request: req.body,
+          result: response.rows,
+          count: response.rowCount,
+          namespace: 'IAPP',
+          code: 200
+        });
+      }
+    } catch (error) {
       defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
         message: 'Error getting sites by search filter criteria',
@@ -365,21 +360,24 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-                   .map((geometry) => `st_subdivide(st_collect(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}')), 255)`)
+                   .map(
+                     (geometry) =>
+                       `st_subdivide(st_collect(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}')), 255)`
+                   )
                    .join(',')}]) AS geojson
          ),
          
           clientFilterGeometriesIntersecting as (
          
          select a.site_id 
-         from iapp_sites a
+         from iapp_spatial a
          inner join clientFilterGeometries on st_intersects(a.geog, geojson)
          
          ),
           clientFilterGeometriesIntersectingAll as (
          
          select a.site_id, count(*)
-         from iapp_sites a
+         from iapp_spatial a
          inner join clientFilterGeometriesIntersecting b on a.site_id  = b.site_id
          group by a.site_id 
          
@@ -428,7 +426,6 @@ sites as (
     from iapp_site_summary_and_geojson b 
     join iapp_sites a on a.site_id = b.site_id`);
 
-
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
       inner join serverFilterGeometriesIntersectingAll c on a.site_id = c.site_id
@@ -450,8 +447,7 @@ sites as (
 }
 
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
-  if(filterObject.isCSV)
-  {
+  if (filterObject.isCSV) {
     const select = sqlStatement.append(`select pe.* `);
     return select;
   }
