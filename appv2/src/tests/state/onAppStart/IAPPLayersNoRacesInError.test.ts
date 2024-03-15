@@ -18,7 +18,7 @@ describe('Can load IAPP layer regardless of ID call or GeoJSON call happening fi
   const overRideHandlers = [
     {
       method: 'get',
-      url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz',
+      url: process.env['IAPP_GEOJSON_URL'],      
       req: null,
       responseBody: IAPPS3Repsonse_Mock(null),
       status: 200
