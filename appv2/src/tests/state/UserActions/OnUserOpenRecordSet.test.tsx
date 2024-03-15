@@ -2,9 +2,13 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../main';
 import { waitFor } from '@testing-library/react';
 import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, RECORDSET_UPDATE_FILTER, URL_CHANGE } from 'state/actions';
+import { server } from 'mocks/server';
 
 describe('Can trigger refetch for both table and data on filter change', function () {
-  // There might be a better way but this seems to work ok:
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+  afterAll(() => server.close())
+  afterEach(() => server.resetHandlers())
+
   beforeAll(async () => {
     localStorage.clear();
     require('../../../main');

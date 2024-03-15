@@ -2,8 +2,12 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../../main';
 import { waitFor } from '@testing-library/react';
 import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP } from 'state/actions';
+import { server } from 'mocks/server';
 
 describe('Can load initial record set layer state on startup', function () {
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
+  afterAll(() => server.close())
+  afterEach(() => server.resetHandlers())
   // There might be a better way but this seems to work ok:
   beforeAll(async () => {
     localStorage.clear();
