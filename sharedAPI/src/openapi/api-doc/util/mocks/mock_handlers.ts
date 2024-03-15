@@ -3,6 +3,7 @@
 import { api_doc } from '../../api-doc';
 import { AdminDefinedShapeResponse } from '../../Paths/AdminDefinedShapes';
 import { activitiesDraftsResponseStub, LeanActivityStub, s3_activitiesResponseStub } from './activities';
+import { IAPPSitesResponse_Stub } from './IAPPSites';
 import { example_s3_iapp } from './example_s3_iapp';
 import { exportConfigStub } from './export-config';
 import * as  OpenAPISampler from 'openapi-sampler';
@@ -19,7 +20,7 @@ export const ActivitiesResponse_Mock = (req) => {
   return activitiesDraftsResponseStub;
 };
 export const IAPPSitesResponse_Mock = (req) => {
-  return activitiesDraftsResponseStub;
+  return IAPPSitesResponse_Stub;
 };
 
 export const ExportConfigResponse_Mock = (req) => {
