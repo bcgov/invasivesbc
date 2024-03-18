@@ -701,7 +701,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case INIT_SERVER_BOUNDARIES_GET: {
-          const withLocalToggles = action.payload.data.map((incomingItem) => {
+          const withLocalToggles = action.payload.data?.map((incomingItem) => {
             let returnVal = { ...incomingItem };
             const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
               oldItem.id === incomingItem;
@@ -711,14 +711,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             return returnVal;
           });
           draftState.serverBoundaries = withLocalToggles;
-          localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries));
+          const strippedOfShapes = draftState.serverBoundaries.map((item) => {
+            const returnVal = { ...item };
+            delete returnVal.geojson
+            return returnVal
+          })
+          localStorage.setItem('serverLayersConf', JSON.stringify(strippedOfShapes));
           break;
         }
         case TOGGLE_KML_LAYER: {
           const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
           console.log(index);
           draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
-          localStorage.setItem('serverLayersConf', JSON.stringify(draftState.serverBoundaries));
+          const strippedOfShapes = draftState.serverBoundaries.map((item) => {
+            const returnVal = { ...item };
+            delete returnVal.geojson
+            return returnVal
+          })
+          localStorage.setItem('serverLayersConf', JSON.stringify(strippedOfShapes));
           break;
         }
         case USER_SETTINGS_SET_RECORDSET: {
