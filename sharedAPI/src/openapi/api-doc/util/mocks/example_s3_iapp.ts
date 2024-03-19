@@ -1,5 +1,4 @@
 export const example_s3_iapp =  {
-      data: {
         result: [
           {
             "type": "Feature",
@@ -47,5 +46,4 @@ export const example_s3_iapp =  {
             }
         }
         ]
-      }
     }

@@ -1,12 +1,14 @@
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
-import { getDBConnection } from '../../database/db.js';
+import { SECURITY_ON, ALL_ROLES } from '../../constants/misc';
+import { createHash } from 'crypto';
+import { getDBConnection } from '../../database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getuid } from 'process';
-import { SQL, SQLStatement } from 'sql-template-strings';
-import { InvasivesRequest } from 'utils/auth-utils.js';
-import { getLogger } from '../../utils/logger.js';
-import { streamIAPPResult } from '../../utils/iapp-json-utils.js';
+import SQL, { SQLStatement } from 'sql-template-strings';
+import { InvasivesRequest } from 'utils/auth-utils';
+import { getLogger } from '../../utils/logger';
+import { streamIAPPResult } from '../../utils/iapp-json-utils';
+import { filter } from 'lodash';
 
 const defaultLog = getLogger('IAPP');
 const CACHENAME = 'IAPPv2 - Fat';
@@ -368,14 +370,14 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
           clientFilterGeometriesIntersecting as (
 
          select a.site_id
-         from iapp_sites a
+         from iapp_spatial a
          inner join clientFilterGeometries on st_intersects(a.geog, geojson)
 
          ),
           clientFilterGeometriesIntersectingAll as (
 
          select a.site_id, count(*)
-         from iapp_sites a
+         from iapp_spatial a
          inner join clientFilterGeometriesIntersecting b on a.site_id  = b.site_id
          group by a.site_id
 

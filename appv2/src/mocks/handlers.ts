@@ -31,7 +31,7 @@ const handlerConfig = [
   },
   {
     method: 'get',
-    url: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz',
+    url: process.env['IAPP_GEOJSON_URL'],
     req: null,
     responseBody: IAPPS3Repsonse_Mock(null),
     status: 200
@@ -72,9 +72,7 @@ const handlerConfig = [
     status: 200
   }
 ];
-
-// Define handlers that catch the corresponding requests and returns the mock data.
-export const handlers = handlerConfig.map((conf) => {
+export const mapHandlers = (inputHandlerConfig) => inputHandlerConfig.map((conf) => {
   switch (conf.method) {
     case 'get': {
       return http.get(conf.url, () => HttpResponse.json(conf.responseBody, { status: conf.status }));
@@ -84,3 +82,6 @@ export const handlers = handlerConfig.map((conf) => {
     }
   }
 });
+
+// Define handlers that catch the corresponding requests and returns the mock data.
+export const handlers = mapHandlers(handlerConfig)

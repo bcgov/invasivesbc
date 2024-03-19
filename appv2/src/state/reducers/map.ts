@@ -96,19 +96,25 @@ const DEFAULT_LOCAL_LAYERS = [
   {
     title: 'BC Parks',
     type: 'wms',
-    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_PARKS',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
     toggle: false
   },
   {
     title: 'Conservancy Areas',
     type: 'wms',
-    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_BC_PROTECTED_AREAS_CONSERVANCY',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW',
     toggle: false
   },
   {
     title: 'Municipality Boundaries',
     type: 'wms',
-    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_ADMIN_BOUNDARIES.ADM_NR_MUNICIPALITIES_SP',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
+      'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP',
     toggle: false
   },
 
@@ -638,8 +644,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_ON_SHAPE_UPDATE: {
-          if(draftState.drawingCustomLayer)
-          {
+          if (draftState.drawingCustomLayer) {
             draftState.drawingCustomLayer = false;
             draftState.clientBoundaries.push({
               id: getUuid(),
@@ -1060,8 +1065,9 @@ export { createMapReducer, selectMap };
 const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
   if (
     !draftState.layers?.length ||
-    (!(Object.keys(draftState.activitiesGeoJSONDict).length === ACTIVITY_GEOJSON_SOURCE_KEYS.length) && typeToFilter === 'Activity') ||
-    (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP') 
+    (!(Object.keys(draftState.activitiesGeoJSONDict).length === ACTIVITY_GEOJSON_SOURCE_KEYS.length) &&
+      typeToFilter === 'Activity') ||
+    (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP')
   )
     return;
   let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
@@ -1084,7 +1090,7 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
       type: 'FeatureCollection',
       features: filtered
     };
-    draftState.layers[index].loading = false
+    draftState.layers[index].loading = false;
   } else if (type === typeToFilter && type === 'IAPP') {
     let filtered = [];
     IDList.map((id) => {
@@ -1098,6 +1104,6 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
       type: 'FeatureCollection',
       features: filtered
     };
-    draftState.layers[index].loading = false
+    draftState.layers[index].loading = false;
   }
 };
