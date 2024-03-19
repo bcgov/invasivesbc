@@ -2,7 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
 import { getLogger } from '../../utils/logger.js';
-import { sign } from 'jsonwebtoken';
+import pkg from 'jsonwebtoken';
+const { sign } = pkg;
 import { getDBConnection } from '../../database/db.js';
 import { getEmbeddedReport } from '../../queries/embedded-report-queries.js';
 
@@ -18,10 +19,10 @@ GET.apiDoc = {
   tags: ['metabase'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   parameters: [
     {

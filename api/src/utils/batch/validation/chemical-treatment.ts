@@ -8,7 +8,8 @@ import {
   validate_inv_plants_fields,
   validate_tank_mix_fields,
   validate_tank_mix_herbicides
-} from 'sharedAPI';
+} from '@bcgov/invasivesbci-shared';
+
 import { BatchCellValidationMessage, RowValidationResult } from './validation.js';
 import { getLogger } from '../../logger.js';
 

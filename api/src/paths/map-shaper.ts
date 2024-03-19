@@ -1,7 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import get from 'simple-get';
-import { applyCommands } from 'mapshaper';
+import pkg from 'mapshaper';
+const { applyCommands } = pkg;
+
 import decode from 'urldecode';
 import proj4 from 'proj4';
 import reproject from 'reproject';

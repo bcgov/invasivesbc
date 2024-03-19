@@ -1,16 +1,23 @@
 import { Feature } from 'geojson';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { ActivityLetter, ActivityStatus, ActivitySubtype, ActivitySyncStatus, ActivityType } from './constants';
-import { performCalculation } from './validation/herbicideCalculator';
-import { mapFormDataToLegacy } from './validation/chemTreatmentValidation';
+import { ActivityLetter, ActivityStatus, ActivitySubtype, ActivitySyncStatus, ActivityType } from './constants.js';
+import { performCalculation } from './validation/herbicideCalculator.js';
+import { mapFormDataToLegacy } from './validation/chemTreatmentValidation.js';
 
-export * from './validation/constants';
-export * from './validation/herbicideCalculator';
-export * from './validation/chemTreatmentValidation';
-export * from './validation/herbicideApplicationRates';
-export * from './validation/areaLimitValidation';
-export * from './constants';
+import * as geoJSON_Feature_Schema from './openapi/geojson-feature-doc.json' with { type: 'json' };
+
+export { geoJSON_Feature_Schema };
+export { ActivityLetter };
+
+export * from './validation/constants.js';
+export * from './validation/herbicideCalculator.js';
+export * from './validation/chemTreatmentValidation.js';
+export * from './validation/herbicideApplicationRates.js';
+export * from './validation/areaLimitValidation.js';
+export * from './constants.js';
+
+import { api_doc } from './openapi/api-doc/api-doc.js';
 
 //export const autofillChemFields = (activity, codesForFiled) => {
 export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalMethodCodes) => {
@@ -45,7 +52,7 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
         if (newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[i]) {
           newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[
             i
-          ].product_application_rate_calculated = product_application_rate / 1000;
+            ].product_application_rate_calculated = product_application_rate / 1000;
         }
       }
     }
@@ -57,10 +64,10 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
         const herbicide = herbicides[i];
         newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[
           i
-        ].herbicide_code = herbicide?.herbicide_code;
+          ].herbicide_code = herbicide?.herbicide_code;
         newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[
           i
-        ].herbicide_type_code = herbicide?.herbicide_type_code;
+          ].herbicide_type_code = herbicide?.herbicide_type_code;
         newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[i].index = i;
       }
 
@@ -351,3 +358,5 @@ export function populateSpeciesArrays(record) {
   };
   return returnVal;
 }
+
+export { api_doc };

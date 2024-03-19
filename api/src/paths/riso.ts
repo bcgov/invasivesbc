@@ -4,7 +4,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
 import { getDBConnection } from '../database/db.js';
 import { RISOSearchCriteria } from '../models/riso.js';
-import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
+import { geoJSON_Feature_Schema } from '@bcgov/invasivesbci-shared';
 import { getRISOsSQL } from '../queries/riso-queries.js';
 import { getLogger } from '../utils/logger.js';
 

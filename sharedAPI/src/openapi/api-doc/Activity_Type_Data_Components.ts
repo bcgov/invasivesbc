@@ -1,4 +1,4 @@
-import { Persons } from './Components/General_Sub_Forms';
+import { Persons } from './Components/General_Sub_Forms.js';
 
 export const Observation = {
   title: 'Observation Information',

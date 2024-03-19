@@ -1,5 +1,5 @@
-import { HerbicideApplicationRates } from './herbicideApplicationRates';
-import { IGeneralFields } from './herbicideCalculator';
+import { HerbicideApplicationRates } from './herbicideApplicationRates.js';
+import { IGeneralFields } from './herbicideCalculator.js';
 
 export const mapFormDataToLegacy = (formData) => {
   console.log('mapping to igeneralfields', JSON.stringify(formData, null, 2));

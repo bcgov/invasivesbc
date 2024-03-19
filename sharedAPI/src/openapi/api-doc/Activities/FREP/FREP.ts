@@ -1,5 +1,5 @@
-import { Activity } from '../../Activity_Data_Components';
-import { FREP_FormC } from '../../Components/FREP_Sub_Forms';
+import { Activity } from '../../Activity_Data_Components.js';
+import { FREP_FormC } from '../../Components/FREP_Sub_Forms.js';
 
 export const Activity_FREP_FormC = {
   type: 'object',

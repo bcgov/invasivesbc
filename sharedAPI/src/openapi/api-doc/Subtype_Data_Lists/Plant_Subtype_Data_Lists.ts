@@ -16,7 +16,7 @@ import {
   WaterQuality,
   Weather_Conditions,
   Well_Information
-} from '../Components/General_Sub_Forms';
+} from '../Components/General_Sub_Forms.js';
 import {
   Monitoring_BiocontrolDispersal_Information,
   Monitoring_BiocontrolDispersalPlants,
@@ -26,18 +26,18 @@ import {
   Monitoring_ChemicalTerrestrialAquaticPlant_Information,
   Monitoring_MechanicalTerrestrialAquaticPlant_Information,
   Monitoring_BiocontrolPlants
-} from '../Components/Monitoring_Sub_Forms';
+} from '../Components/Monitoring_Sub_Forms.js';
 import {
   Observation_PlantAquatic_Information,
   Observation_PlantTerrestrial_Information
-} from '../Components/Observation_Sub_Forms';
+} from '../Components/Observation_Sub_Forms.js';
 import {
   Biocontrol_Collection_Information,
   Biocontrol_Release_Information,
   Treatment_ChemicalPlant_Information,
   Treatment_MechanicalPlant_Information,
   Treatment_MechanicalPlant_Information_Aquiatic
-} from '../Components/Treatment_Sub_Forms';
+} from '../Components/Treatment_Sub_Forms.js';
 
 // ------------------------Treatments--------------------
 

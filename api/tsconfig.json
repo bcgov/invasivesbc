@@ -1,22 +1,14 @@
 {
-  "extends": "./tsconfig.node20.json",
+  "extends": "../tsconfig.json",
+  "references": [
+    {
+      "path": "../sharedAPI"
+    }
+  ],
   "compilerOptions": {
+    "outDir": "dist",
     "baseUrl": "src",
-    "outDir": "./dist",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitThis": true,
-    "noImplicitAny": false,
-    "downlevelIteration": true,
-    "resolveJsonModule": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "strict": false,
-    "paths": {
-      "sharedAPI/*": [
-        "../../sharedAPI/src/*"
-      ]
-    },
+    "rootDir": "src",
     "types": [
       "node",
       "mocha",
@@ -24,8 +16,6 @@
     ]
   },
   "include": [
-    "src",
-    "**/*.ts",
-    "node_modules/vitest/globals.d.ts"
+    "src/**/*.ts"
   ]
 }

@@ -5,7 +5,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
 import { getDBConnection } from '../database/db.js';
 import { ActivityPostRequestBody } from '../models/activity.js';
-import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
+import { geoJSON_Feature_Schema } from '@bcgov/invasivesbci-shared';
 import { getActivitySQL, IPutActivitySQL, postActivitySQL, putActivitySQL } from '../queries/activity-queries.js';
 import { commit as commitContext } from '../utils/context-queries.js';
 import { getLogger } from '../utils/logger.js';

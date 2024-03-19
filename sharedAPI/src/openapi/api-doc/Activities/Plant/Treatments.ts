@@ -1,11 +1,11 @@
-import { Activity } from '../../Activity_Data_Components';
-import { Treatment, Treatment_Chemical } from '../../Activity_Type_Data_Components';
+import { Activity } from '../../Activity_Data_Components.js';
+import { Treatment, Treatment_Chemical } from '../../Activity_Type_Data_Components.js';
 import {
   Subtype_Data_Treatment_ChemicalPlantAquatic,
   Subtype_Data_Treatment_ChemicalPlantTerrestrial,
   Subtype_Data_Treatment_MechanicalPlantAquatic,
   Subtype_Data_Treatment_MechanicalPlantTerrestrial
-} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists';
+} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists.js';
 
 export const Activity_Treatment_ChemicalPlantTerrestrial = {
   type: 'object',

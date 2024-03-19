@@ -1,4 +1,4 @@
-import { Jurisdiction, ProjectCode } from './Components/General_Sub_Forms';
+import { Jurisdiction, ProjectCode } from './Components/General_Sub_Forms.js';
 
 export const Activity = {
   title: 'Basic Information',

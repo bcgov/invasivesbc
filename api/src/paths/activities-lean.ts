@@ -5,7 +5,7 @@ import { InvasivesRequest } from '../utils/auth-utils.js';
 import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc.js';
 import { getDBConnection } from '../database/db.js';
 import { ActivitySearchCriteria } from '../models/activity.js';
-import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
+import { geoJSON_Feature_Schema } from '@bcgov/invasivesbci-shared';
 import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries.js';
 import { getLogger } from '../utils/logger.js';
 import { getS3SignedURL } from '../utils/file-utils.js';

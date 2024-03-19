@@ -3,7 +3,13 @@ import { getLogger } from '../logger.js';
 import { PoolClient } from 'pg';
 import { randomUUID } from 'crypto';
 import moment from 'moment';
-import { activity_create_function, ActivityLetter, autofillChemFields, populateSpeciesArrays } from 'sharedAPI';
+import {
+  activity_create_function,
+  ActivityLetter,
+  autofillChemFields,
+  populateSpeciesArrays
+} from '@bcgov/invasivesbci-shared';
+
 import { mapTemplateFields } from './blob-utils.js';
 
 const defaultLog = getLogger('batch');
@@ -47,13 +53,13 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
   if (['Activity_Treatment_ChemicalPlantTerrestrial', 'Activity_Treatment_ChemicalPlantAquatic'].includes(subtype)) {
     const chemicalMethodSprayCodes = row.data[
       'Chemical Treatment (If Tank Mix) - Application Method'
-    ]?.templateColumn.codes.map((codeObj) => {
+      ]?.templateColumn.codes.map((codeObj) => {
       return codeObj.code;
     });
 
     const chemicalMethodCodes = row.data[
       'Chemical Treatment (No Tank Mix) - Application Method'
-    ]?.templateColumn.codes.map((codeObj) => {
+      ]?.templateColumn.codes.map((codeObj) => {
       return codeObj.code;
     });
 

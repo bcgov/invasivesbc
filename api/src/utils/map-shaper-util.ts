@@ -1,4 +1,6 @@
-import { applyCommands } from 'mapshaper';
+import pkg from 'mapshaper';
+const { applyCommands } = pkg;
+
 import proj4 from 'proj4';
 import reproject from 'reproject';
 import { getLogger } from './logger.js';

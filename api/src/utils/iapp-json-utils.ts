@@ -353,13 +353,15 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
   }
 };
 
-var AWS = require('aws-sdk');
-const { Readable, PassThrough } = require('stream');
+import pkg from 'aws-sdk';
+const { Endpoint, S3: S3API } = pkg;
+
+import { Readable, PassThrough } from 'stream';
 
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
+const AWS_ENDPOINT = new Endpoint(OBJECT_STORE_URL);
 
-const S3 = new AWS.S3({
+const S3 = new S3API({
   endpoint: AWS_ENDPOINT.href,
   accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
   secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,

@@ -1,10 +1,10 @@
-import { Activity } from '../../Activity_Data_Components';
-import { TransectData } from '../../Components/General_Sub_Forms';
+import { Activity } from '../../Activity_Data_Components.js';
+import { TransectData } from '../../Components/General_Sub_Forms.js';
 import {
   Subtype_Data_Transect_BiocontrolEfficacy,
   Subtype_Data_Transect_FireMonitoring,
   Subtype_Data_Transect_Vegetation
-} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists';
+} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists.js';
 
 export const Activity_Transect_FireMonitoring = {
   type: 'object',

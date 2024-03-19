@@ -10,7 +10,7 @@ import {
 import { default as unsafeslugify } from 'slugify';
 import moment from 'moment';
 import { _mapToDBObject } from '../execution.js';
-import { lookupAreaLimit } from 'sharedAPI';
+import { lookupAreaLimit } from '@bcgov/invasivesbci-shared';
 import { getLogger } from '../../logger.js';
 import circle from '@turf/circle';
 

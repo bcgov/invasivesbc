@@ -5,7 +5,7 @@ import {
   IAPP_Mechanical_Treatment,
   IAPP_Site,
   IAPP_Survey
-} from './IAPP_Sub_Forms';
+} from './IAPP_Sub_Forms.js';
 
 export const Error = {
   description: 'Error response object',
