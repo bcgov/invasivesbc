@@ -22,7 +22,7 @@ function* fetchEmailTemplates() {
       'emailTemplates': data.result
     }
   });
-};
+}
 
 function* updateEmailTemplates(action) {
   const configuration = yield select(selectConfiguration);
@@ -53,7 +53,7 @@ function* updateEmailTemplates(action) {
         emailTemplates: emailTemplatesState.emailTemplates
       }
     });
-};
+}
 
 function* emailTemplatesSaga() {
   yield all([

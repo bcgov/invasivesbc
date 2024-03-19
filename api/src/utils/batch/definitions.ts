@@ -1,6 +1,6 @@
 import { SQL } from 'sql-template-strings';
 import { PoolClient } from 'pg';
-import { RowValidationResult } from './validation/validation';
+import { RowValidationResult } from './validation/validation.js';
 
 type templateDataType =
   | 'text'

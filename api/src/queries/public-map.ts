@@ -1,4 +1,4 @@
-import {SQL} from "sql-template-strings";
+import { SQL } from 'sql-template-strings';
 
 export const PUBLIC_IAPP_SQL = SQL`SELECT i.geojson as feature
                                    from iapp_site_summary_and_geojson i`;

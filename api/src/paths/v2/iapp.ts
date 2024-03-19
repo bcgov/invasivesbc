@@ -1,14 +1,12 @@
-import { SECURITY_ON, ALL_ROLES } from '../../constants/misc';
-import { createHash } from 'crypto';
-import { getDBConnection } from '../../database/db';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
+import { getDBConnection } from '../../database/db.js';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getuid } from 'process';
-import SQL, { SQLStatement } from 'sql-template-strings';
-import { InvasivesRequest } from 'utils/auth-utils';
-import { getLogger } from '../../utils/logger';
-import { streamIAPPResult } from '../../utils/iapp-json-utils';
-import { filter } from 'lodash';
+import { SQL, SQLStatement } from 'sql-template-strings';
+import { InvasivesRequest } from 'utils/auth-utils.js';
+import { getLogger } from '../../utils/logger.js';
+import { streamIAPPResult } from '../../utils/iapp-json-utils.js';
 
 const defaultLog = getLogger('IAPP');
 const CACHENAME = 'IAPPv2 - Fat';
@@ -20,10 +18,10 @@ POST.apiDoc = {
   tags: ['IAPP'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'IAPP Request Object',
@@ -323,29 +321,29 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
-     
+
         serverFilterGeometryIDs as (
- 
+
           select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
-         
+
           ),
          serverFilterGeometries AS (
           select a.id, title, st_subdivide(a.geog::geometry, 255)::geography as geo
           from invasivesbc.admin_defined_shapes a
           inner join serverFilterGeometryIDs b on a.id = b.id
          ),
-         
+
           serverFilterGeometriesIntersecting as (
-         
+
             select a.site_id, b.id
             from invasivesbc.iapp_spatial a
             inner join serverFilterGeometries b on  st_intersects(a.geog, b.geo)
             group by a.site_id, b.id
-         
-         
+
+
          ),
           serverFilterGeometriesIntersectingAll as (
-         
+
             select a.site_id, count(*)
             from invasivesbc.iapp_spatial a
             inner join serverFilterGeometriesIntersecting b on a.site_id  = b.site_id
@@ -360,27 +358,27 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-                   .map(
-                     (geometry) =>
-                       `st_subdivide(st_collect(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}')), 255)`
-                   )
-                   .join(',')}]) AS geojson
+      .map(
+        (geometry) =>
+          `st_subdivide(st_collect(st_geomfromgeojson('${JSON.stringify(geometry?.geometry)}')), 255)`
+      )
+      .join(',')}]) AS geojson
          ),
-         
+
           clientFilterGeometriesIntersecting as (
-         
-         select a.site_id 
+
+         select a.site_id
          from iapp_spatial a
          inner join clientFilterGeometries on st_intersects(a.geog, geojson)
-         
+
          ),
           clientFilterGeometriesIntersectingAll as (
-         
+
          select a.site_id, count(*)
          from iapp_spatial a
          inner join clientFilterGeometriesIntersecting b on a.site_id  = b.site_id
-         group by a.site_id 
-         
+         group by a.site_id
+
          having count(*) = (select count(*) from clientFilterGeometries)
          ),
          `);
@@ -388,8 +386,8 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 
   sqlStatement.append(`
 sites as (
-  select 
-        
+  select
+
    array_to_string(b.jurisdictions, ', ') as jurisdictions_flattened,
   b.site_id,
   b.site_paper_file_id,
@@ -407,7 +405,7 @@ sites as (
   b.regional_invasive_species_organization,
   b.invasive_plant_management_area,
   b.geojson
-  
+
   `);
 
   /*if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -423,7 +421,7 @@ sites as (
   */
 
   sqlStatement.append(`
-    from iapp_site_summary_and_geojson b 
+    from iapp_site_summary_and_geojson b
     join iapp_sites a on a.site_id = b.site_id`);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {

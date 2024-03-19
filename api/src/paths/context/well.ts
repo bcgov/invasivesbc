@@ -1,14 +1,11 @@
-'use strict';
-
 import distance from '@turf/distance';
 import { point } from '@turf/helpers';
 import nearestPoint from '@turf/nearest-point';
-import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import proj4 from 'proj4';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
+import { getLogger } from '../../utils/logger.js';
 
 const defaultLog = getLogger('activity');
 
@@ -119,10 +116,12 @@ function getWell(req, res, next) {
   /* ### getClosest
     Get the closest well feature and distance to location
     @param response {object} Response from BCGW
-    @return {object} The express response object or the axios return
+    @return {object} The express response object or the network return
     */
-  const getClosest = (response) => {
+  const getClosest = async (response) => {
     // There should be at least one well.
+    let data = await response.json();
+
     if (response?.data?.features?.length > 0) {
       const loc = point([Number(lon), Number(lat)]);
       const closestWell = nearestPoint(loc, response.data);
@@ -157,8 +156,8 @@ function getWell(req, res, next) {
 
   /* ### failure
     Handle a failure of requesting well from BCGW
-    @param error {object} The axios error object
-    @return {object} The express response object or the axios return
+    @param error {object} The  error object
+    @return {object} The express response object or the  return
     */
   const failure = (error) => {
     defaultLog.debug({ label: 'getWell', message: 'error', error });
@@ -188,7 +187,7 @@ function getWell(req, res, next) {
   };
 
   // Everything ready to go for our request
-  axios.get(url).then(getClosest).then(moduleReturn).catch(failure);
+  fetch(url).then(getClosest).then(moduleReturn).catch(failure);
 }
 
 /* ## proxyWell

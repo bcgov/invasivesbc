@@ -1,19 +1,16 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { ActivitySearchCriteria } from '../models/activity';
-import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
-import { getLogger } from '../utils/logger';
-import { InvasivesRequest } from '../utils/auth-utils';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
+import { getDBConnection } from '../database/db.js';
+import { ActivitySearchCriteria } from '../models/activity.js';
+import { deleteActivitiesSQL, getActivitiesSQL } from '../queries/activity-queries.js';
+import { getLogger } from '../utils/logger.js';
+import { InvasivesRequest } from '../utils/auth-utils.js';
 import { createHash } from 'crypto';
-import cacheService from '../utils/cache/cache-service';
-import { versionedKey } from '../utils/cache/cache-utils';
-import { streamActivitiesResult, streamIAPPResult } from '../utils/iapp-json-utils';
-import { is } from 'date-fns/locale';
+import cacheService from '../utils/cache/cache-service.js';
+import { versionedKey } from '../utils/cache/cache-utils.js';
+import { streamActivitiesResult } from '../utils/iapp-json-utils.js';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = 'Activities - Fat';

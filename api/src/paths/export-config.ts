@@ -1,12 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getLogger } from '../utils/logger';
-import { getDBConnection } from '../database/db';
-import { GET_LATEST_EXPORT_METADATA } from '../queries/export-record-queries';
+import { getLogger } from '../utils/logger.js';
+import { getDBConnection } from '../database/db.js';
+import { GET_LATEST_EXPORT_METADATA } from '../queries/export-record-queries.js';
 import AWS from 'aws-sdk';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
 
 const logger = getLogger('export-config');
 
@@ -29,10 +27,10 @@ GET.apiDoc = {
   tags: ['export-config'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -41,7 +39,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'array',
-            properties: {}
+            items: {}
           }
         }
       }
@@ -57,7 +55,6 @@ GET.apiDoc = {
 
 function getExportMetadata(): RequestHandler {
   return async (req, res, next) => {
-
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({
@@ -70,7 +67,7 @@ function getExportMetadata(): RequestHandler {
 
     const result = await connection.query(GET_LATEST_EXPORT_METADATA.query, GET_LATEST_EXPORT_METADATA.values);
 
-    const rowsWithSignedURLs = result.rows.map(r => {
+    const rowsWithSignedURLs = result.rows.map((r) => {
       return {
         ...r,
         url: S3.getSignedUrl('getObject', {

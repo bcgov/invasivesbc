@@ -1,9 +1,9 @@
-import { Activity } from '../../Activity_Data_Components';
-import { Collection, Treatment } from '../../Activity_Type_Data_Components';
+import { Activity } from '../../Activity_Data_Components.js';
+import { Collection, Treatment } from '../../Activity_Type_Data_Components.js';
 import {
   Subtype_Data_Biocontrol_Collection,
   Subtype_Data_Biocontrol_Release
-} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists';
+} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists.js';
 
 export const Activity_Biocontrol_Release = {
   type: 'object',

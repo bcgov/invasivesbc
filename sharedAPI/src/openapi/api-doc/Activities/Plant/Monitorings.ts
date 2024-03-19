@@ -1,11 +1,11 @@
-import { Activity } from '../../Activity_Data_Components';
-import { Monitoring, Monitoring_Biocontrol, Monitoring_Biocontrol_Release } from '../../Activity_Type_Data_Components';
+import { Activity } from '../../Activity_Data_Components.js';
+import { Monitoring, Monitoring_Biocontrol, Monitoring_Biocontrol_Release } from '../../Activity_Type_Data_Components.js';
 import {
   Subtype_Data_Monitoring_BiocontrolDispersal_TerrestrialPlant,
   Subtype_Data_Monitoring_BiocontrolRelease_TerrestrialPlant,
   Subtype_Data_Monitoring_ChemicalTerrestrialAquaticPlant,
   Subtype_Data_Monitoring_MechanicalTerrestrialAquaticPlant
-} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists';
+} from '../../Subtype_Data_Lists/Plant_Subtype_Data_Lists.js';
 
 export const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
   type: 'object',

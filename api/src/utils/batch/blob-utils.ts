@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import { getLogger } from '../logger';
-import { TemplateColumn } from './definitions';
-import { parsedGeoType } from './validation/spatial-validation';
+import { getLogger } from '../logger.js';
+import { TemplateColumn } from './definitions.js';
+import { parsedGeoType } from './validation/spatial-validation.js';
 
 const defaultLog = getLogger('batch');
 

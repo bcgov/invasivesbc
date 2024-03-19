@@ -1,0 +1,44 @@
+{
+  "compilerOptions": {
+    "lib": [
+      "ESNext"
+    ],
+    "composite": true,
+    "module": "NodeNext",
+    "target": "ESNext",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "NodeNext",
+    "noImplicitThis": true,
+    "noImplicitAny": false,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "declarationMap": true,
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true
+  },
+  "references": [
+    {
+      "path": "./api"
+    },
+    //    {
+    //      "path": "./app"
+    //    },
+    //    {
+    //      "path": "./appv2"
+    //    },
+    {
+      "path": "./sharedAPI"
+    }
+  ],
+  "exclude": [
+    "sharedAPI/dist/**",
+    "api/dist/**",
+    "**/node_modules"
+  ]
+}

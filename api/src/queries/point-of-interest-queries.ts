@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PointOfInterestPostRequestBody, PointOfInterestSearchCriteria } from '../models/point-of-interest';
+import { PointOfInterestPostRequestBody, PointOfInterestSearchCriteria } from '../models/point-of-interest.js';
 
 /**
  * SQL query to insert a new point_of_interest, and return the inserted record.
@@ -294,20 +294,20 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
   const sqlStatement: SQLStatement = SQL``;
 
   if (searchCriteria.search_feature) {
-    sqlStatement.append(SQL`WITH 
-    multi_polygon_cte AS 
+    sqlStatement.append(SQL`WITH
+    multi_polygon_cte AS
       (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
         FROM (
           SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
-        ) AS anything), 
+        ) AS anything),
     not_null_issag AS (SELECT site_id, geojson FROM iapp_site_summary_and_geojson WHERE (geojson->'geometry')::text != 'null'),
     intersections as (
-      select 
-        site_id, 
-        ( public.ST_INTERSECTS( 
-            public.geography( public.ST_Force2D( public.ST_SetSRID( ( public.ST_GeomFromGeoJSON( ( (geojson -> 'geometry'):: text))), 4326))), 
-            ( SELECT geog FROM multi_polygon_cte))) as intersects 
-      from 
+      select
+        site_id,
+        ( public.ST_INTERSECTS(
+            public.geography( public.ST_Force2D( public.ST_SetSRID( ( public.ST_GeomFromGeoJSON( ( (geojson -> 'geometry'):: text))), 4326))),
+            ( SELECT geog FROM multi_polygon_cte))) as intersects
+      from
         not_null_issag
     )
    `);
@@ -315,9 +315,7 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
       SQL`SELECT a.site_id, b.intersects, geojson  FROM iapp_site_summary_and_geojson a join intersections b on a.site_id = b.site_id WHERE 1 = 1`
     );
   } else {
-    sqlStatement.append(
-      SQL`SELECT a.site_id, geojson  FROM iapp_site_summary_and_geojson a WHERE 1 = 1`
-    );
+    sqlStatement.append(SQL`SELECT a.site_id, geojson  FROM iapp_site_summary_and_geojson a WHERE 1 = 1`);
   }
 
   enum PoiType {
@@ -416,7 +414,7 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
 
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
-      AND b.intersects IS TRUE 
+      AND b.intersects IS TRUE
     `);
   }
 

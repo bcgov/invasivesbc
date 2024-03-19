@@ -1,0 +1,10 @@
+{
+  "name": "invasivesbc",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "api",
+      "sharedAPI"
+    ]
+  }
+}

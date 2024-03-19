@@ -1,12 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { InvasivesRequest } from 'utils/auth-utils';
-import { getDBConnection } from '../../database/db';
-import { getLogger } from '../../utils/logger';
-import { getPublicActivitiesSQL } from '../../queries/public-queries';
+import { InvasivesRequest } from 'utils/auth-utils.js';
+import { getDBConnection } from '../../database/db.js';
+import { getLogger } from '../../utils/logger.js';
+import { getPublicActivitiesSQL } from '../../queries/public-queries.js';
 
 const defaultLog = getLogger('activity');
 

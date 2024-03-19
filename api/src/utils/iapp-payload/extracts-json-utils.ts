@@ -1,4 +1,4 @@
-import { mapTankMix } from './iapp-function-utils';
+import { mapTankMix } from './iapp-function-utils.js';
 
 const mapEfficacyCode = (percent) => {
   percent = Number(percent);

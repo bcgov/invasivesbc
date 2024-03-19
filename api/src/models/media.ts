@@ -1,4 +1,4 @@
-import { parseBase64DataURLString } from './../utils/file-utils';
+import { parseBase64DataURLString } from './../utils/file-utils.js';
 
 /**
  * A single media item.

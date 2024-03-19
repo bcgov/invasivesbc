@@ -1,6 +1,6 @@
-import { getLogger } from './utils/logger';
-import { getDBConnection } from './database/db';
-import { buildPublicMapExport } from './utils/public-map';
+import { getLogger } from './utils/logger.js';
+import { getDBConnection } from './database/db.js';
+import { buildPublicMapExport } from './utils/public-map/index.js';
 
 const defaultLog = getLogger('map-exporter');
 

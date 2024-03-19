@@ -1,6 +1,6 @@
-import { getLogger } from './utils/logger';
-import { getDBConnection } from './database/db';
-import { cleanupOldExports, doActivityAndIAPPExports } from './utils/export-geojson';
+import { getLogger } from './utils/logger.js';
+import { cleanupOldExports, doActivityAndIAPPExports } from './utils/export-geojson/index.js';
+import { getDBConnection } from './database/db.js';
 
 const defaultLog = getLogger('geojson-exporter');
 

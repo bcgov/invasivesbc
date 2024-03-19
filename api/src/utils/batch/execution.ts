@@ -1,10 +1,16 @@
-import { Template } from './definitions';
-import { getLogger } from '../logger';
+import { Template } from './definitions.js';
+import { getLogger } from '../logger.js';
 import { PoolClient } from 'pg';
 import { randomUUID } from 'crypto';
 import moment from 'moment';
-import { activity_create_function, ActivityLetter, autofillChemFields, populateSpeciesArrays } from 'sharedAPI';
-import { mapTemplateFields } from './blob-utils';
+import {
+  activity_create_function,
+  ActivityLetter,
+  autofillChemFields,
+  populateSpeciesArrays
+} from '@bcgov/invasivesbci-shared';
+
+import { mapTemplateFields } from './blob-utils.js';
 
 const defaultLog = getLogger('batch');
 
@@ -40,19 +46,20 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
     mapped?.form_data?.activity_data?.invasive_species_agency_code &&
     mapped.form_data.activity_data.invasive_species_agency_code.length > 0
   ) {
-    mapped.form_data.activity_data.invasive_species_agency_code = mapped.form_data.activity_data.invasive_species_agency_code.join();
+    mapped.form_data.activity_data.invasive_species_agency_code =
+      mapped.form_data.activity_data.invasive_species_agency_code.join();
   }
 
   if (['Activity_Treatment_ChemicalPlantTerrestrial', 'Activity_Treatment_ChemicalPlantAquatic'].includes(subtype)) {
     const chemicalMethodSprayCodes = row.data[
       'Chemical Treatment (If Tank Mix) - Application Method'
-    ]?.templateColumn.codes.map((codeObj) => {
+      ]?.templateColumn.codes.map((codeObj) => {
       return codeObj.code;
     });
 
     const chemicalMethodCodes = row.data[
       'Chemical Treatment (No Tank Mix) - Application Method'
-    ]?.templateColumn.codes.map((codeObj) => {
+      ]?.templateColumn.codes.map((codeObj) => {
       return codeObj.code;
     });
 
@@ -121,13 +128,12 @@ export const BatchExecutionService = {
         }
         if (errorRow && errorRowsBehaviour === 'Skip') continue;
 
-        const { id: activityId, shortId, payload, geog } = _mapToDBObject(
-          row,
-          desiredFinalStatus,
-          template.type,
-          template.subtype,
-          userInfo
-        );
+        const {
+          id: activityId,
+          shortId,
+          payload,
+          geog
+        } = _mapToDBObject(row, desiredFinalStatus, template.type, template.subtype, userInfo);
 
         let guid = null;
         if (userInfo?.idir_userid !== null) {

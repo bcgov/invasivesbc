@@ -1,10 +1,8 @@
-'use strict';
-
 import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
-import { getDBConnection } from '../../../database/db';
-import { getLogger } from '../../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc.js';
+import { getDBConnection } from '../../../database/db.js';
+import { getLogger } from '../../../utils/logger.js';
 
 const defaultLog = getLogger('activity');
 

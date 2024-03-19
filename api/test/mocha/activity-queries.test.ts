@@ -2,22 +2,19 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import request from 'supertest';
-
-// needs to be in this order:
-require('dotenv').config({ path: './env_config/env.local', debug: false });
-import { app } from '../../src/app';
+import { app } from '../../src/app.js';
 import faker from '@faker-js/faker';
 
 // activity stuff
 import { v4 as uuidv4 } from 'uuid';
-//import '../../../app/src/constants';
-import '../../../app/src/constants/database';
-import '../../../app/src/constants/activities';
-import * as addActivity from '../../../app/src/utils/addActivity';
+
 // todo:
-import fake, { JsonSchema } from 'typescript-json-schema-faker';
 // Geojson factory
 import bbox from '@turf/bbox';
+
+// needs to be in this order:
+require('dotenv').config({ path: './env_config/env.local', debug: false });
+
 var random = require('geojson-random');
 
 const activityTypes = [
@@ -78,7 +75,7 @@ export const template = {
 
 export const newRecord = () => {
   const id = uuidv4();
-  const short_id = addActivity.getShortActivityID({ ...template, _id: id, activity_id: id });
+  //const short_id = addActivity.getShortActivityID({ ...template, _id: id, activity_id: id });
   const bc_geo = require('../../../app/src/components/map/BC_AREA.json');
   const bc_bbox = bbox(bc_geo);
   const date = new Date().toISOString();
@@ -93,7 +90,7 @@ export const newRecord = () => {
     ...template,
     _id: id,
     activity_id: id,
-    short_id: short_id,
+    //short_id: short_id,
     geometry: geo_array,
     date_created: date,
     created_timestamp: date,

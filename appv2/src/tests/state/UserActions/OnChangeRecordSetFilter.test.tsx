@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../main';
 import { waitFor } from '@testing-library/react';
-import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, RECORDSET_REMOVE_FILTER, RECORDSET_UPDATE_FILTER, URL_CHANGE } from 'state/actions';
-import { server } from 'mocks/server';
+import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, RECORDSET_REMOVE_FILTER, RECORDSET_UPDATE_FILTER, URL_CHANGE } from 'state/actions.js';
+import { server } from 'mocks/server.js';
 
 describe('Can trigger refetch for both table and data on filter change', function () {
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
@@ -37,6 +37,7 @@ describe('Can trigger refetch for both table and data on filter change', functio
     });
   });
 
+
   it('doesnt crash on user data entry', async function () {
     store.dispatch({
       type: RECORDSET_UPDATE_FILTER,
@@ -57,6 +58,7 @@ describe('Can trigger refetch for both table and data on filter change', functio
       // TODO look at filter value in state and localstorage
     });
   });
+
 
   it('reloaded the table data', async function () {
     await waitFor(() => {

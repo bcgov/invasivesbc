@@ -1,4 +1,4 @@
-import { Biological_Agent_Stage } from './General_Sub_Forms';
+import { Biological_Agent_Stage } from './General_Sub_Forms.js';
 
 export const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   title: '',

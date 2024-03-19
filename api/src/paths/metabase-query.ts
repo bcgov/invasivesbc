@@ -1,17 +1,15 @@
-'use strict';
-
-import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../constants/misc';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SECURITY_ON } from '../constants/misc.js';
+import { getLogger } from '../utils/logger.js';
 import {
   closeMetabaseSession,
   getMetabaseSession,
   METABASE_COLLECTION_ID,
-  METABASE_TIMEOUT, METABASE_URL
-} from '../utils/metabase-session';
+  METABASE_TIMEOUT,
+  METABASE_URL
+} from '../utils/metabase-session.js';
 
 const defaultLog = getLogger('metabase-query');
 
@@ -158,11 +156,10 @@ function createMetabaseQuery(): RequestHandler {
   //NOSONAR
   return async (req, res) => {
     defaultLog.debug({ label: 'metabase', message: 'createMetabaseQuery', body: req.body });
-
+    let activitiesResponseData: any, poiResponseData: any;
     try {
       let { activity_ids, point_of_interest_ids } = req?.body;
       const { name, description } = req?.body;
-      let activitesResponse, poiResponse;
 
       if (!activity_ids && !point_of_interest_ids) {
         return res.status(400).json({
@@ -187,67 +184,64 @@ function createMetabaseQuery(): RequestHandler {
       const POI_METABASE_SOURCE_TABLE_ID = 21; // find via GET api/table
       const POI_METABASE_QUERY_FIELD_ID = 215;
 
-      const request: AxiosRequestConfig = {
-        method: 'post',
-        url: `${METABASE_URL}/api/card`,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Metabase-Session': session
+      const url = `${METABASE_URL}/api/card`;
+      const headers = {
+        'Content-Type': 'application/json',
+        'X-Metabase-Session': session
+      };
+
+      const baseData = {
+        'description value': description ? description : `Custom InvasivesBC Query, created at time: ${todaysDateTime}`,
+        dataset_query: {
+          type: 'query',
+          database: METABASE_DATABASE_ID
         },
-        data: {
-          'description value': description
-            ? description
-            : `Custom InvasivesBC Query, created at time: ${todaysDateTime}`,
-          dataset_query: {
-            type: 'query',
-            database: METABASE_DATABASE_ID
-          },
-          display: 'table',
-          visualization_settings: {
-            'table.pivot_column': 'QUANTITY',
-            'table.cell_column': 'SUBTOTAL'
-          },
-          collection_position: 1,
-          result_metadata: null,
-          metadata_checksum: null,
-          collection_id: isNaN(METABASE_COLLECTION_ID) ? null : Number(METABASE_COLLECTION_ID)
+        display: 'table',
+        visualization_settings: {
+          'table.pivot_column': 'QUANTITY',
+          'table.cell_column': 'SUBTOTAL'
         },
-        timeout: METABASE_TIMEOUT
+        collection_position: 1,
+        result_metadata: null,
+        metadata_checksum: null,
+        collection_id: isNaN(METABASE_COLLECTION_ID) ? null : Number(METABASE_COLLECTION_ID)
       };
 
       if (activity_ids && activity_ids.length) {
-        const activitiesRequest: AxiosRequestConfig = {
-          ...request,
-          data: {
-            ...request.data,
-            name: name ? name : `Custom InvasivesBC Activities List - ${todaysDateTime}`,
-            dataset_query: {
-              ...request.data.dataset_query,
-              query: {
-                'source-table': ACTIVITIES_METABASE_SOURCE_TABLE_ID,
-                filter: [
-                  'and',
-                  [
-                    // row is IN (...activity_ids)
-                    '=',
-                    ['field-id', ACTIVITIES_METABASE_QUERY_FIELD_ID],
-                    ...activity_ids
-                  ],
-                  [
-                    // row deleted_date IS NULL
-                    'is-null',
-                    ['field-id', ACTIVITIES_METABASE_DELETED_DATE_FIELD_ID]
-                  ]
+        const activitiesRequestData = {
+          ...baseData,
+          name: name ? name : `Custom InvasivesBC Activities List - ${todaysDateTime}`,
+          dataset_query: {
+            ...baseData.dataset_query,
+            query: {
+              'source-table': ACTIVITIES_METABASE_SOURCE_TABLE_ID,
+              filter: [
+                'and',
+                [
+                  // row is IN (...activity_ids)
+                  '=',
+                  ['field-id', ACTIVITIES_METABASE_QUERY_FIELD_ID],
+                  ...activity_ids
                 ],
-                limit: SEARCH_LIMIT_MAX
-              }
+                [
+                  // row deleted_date IS NULL
+                  'is-null',
+                  ['field-id', ACTIVITIES_METABASE_DELETED_DATE_FIELD_ID]
+                ]
+              ],
+              limit: SEARCH_LIMIT_MAX
             }
           }
         };
 
-        activitesResponse = await axios(activitiesRequest);
+        const activitiesResponse = await fetch(url, {
+          method: 'POST',
+          body: JSON.stringify(activitiesRequestData),
+          headers
+        });
+        activitiesResponseData = await activitiesResponse.json();
 
-        if (!activitesResponse || !activitesResponse.data) {
+        if (!activitiesResponse || !activitiesResponseData) {
           return res.status(500).json({
             message: 'Failed to create activities query',
             namespace: 'metabase-query',
@@ -257,33 +251,36 @@ function createMetabaseQuery(): RequestHandler {
       }
 
       if (point_of_interest_ids && point_of_interest_ids.length) {
-        const poiRequest: AxiosRequestConfig = {
-          ...request,
-          data: {
-            ...request.data,
-            name: name ? name : `Custom InvasivesBC Points of Interest List - ${todaysDateTime}`,
-            dataset_query: {
-              ...request.data.dataset_query,
-              query: {
-                'source-table': POI_METABASE_SOURCE_TABLE_ID,
-                filter: [
-                  'and',
-                  [
-                    // row is IN (...point_of_interest_ids)
-                    '=',
-                    ['field-id', POI_METABASE_QUERY_FIELD_ID],
-                    ...point_of_interest_ids
-                    // note: points of interest has no deleted_date at the base level at this time
-                  ]
-                ],
-                limit: SEARCH_LIMIT_MAX
-              }
+        const poiRequestData = {
+          ...baseData,
+          name: name ? name : `Custom InvasivesBC Points of Interest List - ${todaysDateTime}`,
+          dataset_query: {
+            ...baseData.dataset_query,
+            query: {
+              'source-table': POI_METABASE_SOURCE_TABLE_ID,
+              filter: [
+                'and',
+                [
+                  // row is IN (...point_of_interest_ids)
+                  '=',
+                  ['field-id', POI_METABASE_QUERY_FIELD_ID],
+                  ...point_of_interest_ids
+                  // note: points of interest has no deleted_date at the base level at this time
+                ]
+              ],
+              limit: SEARCH_LIMIT_MAX
             }
           }
         };
-        poiResponse = await axios(poiRequest);
 
-        if (!poiResponse || !poiResponse.data) {
+        const poiResponse = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(poiRequestData)
+        });
+        poiResponseData = await poiResponse.json();
+
+        if (!poiResponse || !poiResponseData) {
           return res.status(500).json({
             message: 'Failed to create points of interest query',
             namespace: 'metabase-query',
@@ -296,10 +293,10 @@ function createMetabaseQuery(): RequestHandler {
         message: 'Successfully created query',
         namespace: 'metabase-query',
         code: 200,
-        activity_query_id: activitesResponse?.data?.id,
-        activity_query_name: activitesResponse?.data?.name,
-        point_of_interest_query_id: poiResponse?.data?.id,
-        point_of_interest_query_name: poiResponse?.data?.name
+        activity_query_id: activitiesResponseData.id,
+        activity_query_name: activitiesResponseData.name,
+        point_of_interest_query_id: poiResponseData.id,
+        point_of_interest_query_name: poiResponseData.name
       });
     } catch (error) {
       // reset session on error (just in case):
@@ -327,19 +324,15 @@ function getMetabaseQueryOptions(): RequestHandler {
     try {
       const session = await getMetabaseSession();
 
-      const response = await axios({
+      const response = await fetch(METABASE_URL + `/api/collection/${METABASE_COLLECTION_ID}/items?model=card`, {
         method: 'get',
-        url: METABASE_URL + `/api/collection/${METABASE_COLLECTION_ID}/items`,
         headers: {
           'X-Metabase-Session': session
-        },
-        params: {
-          model: 'card'
-        },
-        timeout: METABASE_TIMEOUT
+        }
       });
+      const data: any = await response.json();
 
-      if (!response || !response.data) {
+      if (!response || !data) {
         return res.status(500).json({
           message: 'Failed to get query options',
           namespace: 'metabase-query',
@@ -349,7 +342,7 @@ function getMetabaseQueryOptions(): RequestHandler {
 
       // extract just the ids from results, so we can re-fetch from the db using our own security layers
       return res.status(200).json({
-        options: response.data
+        options: data
           .filter((collection) => collection.model === 'card')
           .map((collection) => ({
             id: collection.id,

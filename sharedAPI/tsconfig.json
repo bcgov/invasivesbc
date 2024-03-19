@@ -1,0 +1,27 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "src",
+    "outDir": "./dist",
+    "rootDir": "src",
+    "composite": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitThis": true,
+    "noImplicitAny": false,
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "strict": false,
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.json"
+  ]
+}

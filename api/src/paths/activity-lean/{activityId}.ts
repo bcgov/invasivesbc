@@ -1,13 +1,11 @@
-'use strict';
-
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from './../../database/db';
-import { getFileFromS3 } from './../../utils/file-utils';
-import { getLogger } from './../../utils/logger';
-import { getMediaItemsList } from './../media';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
+import { getDBConnection } from './../../database/db.js';
+import { getFileFromS3 } from './../../utils/file-utils.js';
+import { getLogger } from './../../utils/logger.js';
+import { getMediaItemsList } from './../media.js';
+import { S3 } from 'aws-sdk';
 
 const defaultLog = getLogger('activity');
 
@@ -130,7 +128,7 @@ function getMedia(): RequestHandler {
       return next();
     }
 
-    const s3GetPromises: Promise<GetObjectOutput>[] = [];
+    const s3GetPromises: Promise<S3.Types.GetObjectOutput>[] = [];
 
     activity['media_keys'].forEach((key: string) => {
       s3GetPromises.push(getFileFromS3(key));

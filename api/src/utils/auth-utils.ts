@@ -1,17 +1,18 @@
-'use strict';
+import jwt from 'jsonwebtoken';
+const { verify } = jwt;
 
-import { verify } from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
-import { getLogger } from './logger';
+
+import { getLogger } from './logger.js';
 import {
   createUser,
   getRolesForUser,
   getUserByKeycloakID,
   getV2BetaAccessForUser,
   KeycloakAccountType
-} from './user-utils';
+} from './user-utils.js';
 import { Request } from 'express';
-import { MDCAsyncLocal } from '../mdc';
+import { MDCAsyncLocal } from '../mdc.js';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -147,7 +148,7 @@ export const authenticate = async (req: InvasivesRequest) => {
         return;
       }
 
-      if (decoded.identity_provider === 'idir') {
+      if (decoded['identity_provider'] === 'idir') {
         accountType = KeycloakAccountType.idir;
         if (!decoded['idir_user_guid']) {
           reject({
@@ -157,8 +158,8 @@ export const authenticate = async (req: InvasivesRequest) => {
           });
           return;
         }
-        id = decoded.idir_user_guid;
-      } else if (decoded.identity_provider === 'bceidbusiness') {
+        id = decoded['idir_user_guid'];
+      } else if (decoded['identity_provider'] === 'bceidbusiness') {
         accountType = KeycloakAccountType.bceid;
         if (!decoded['bceid_user_guid']) {
           reject({
@@ -168,7 +169,7 @@ export const authenticate = async (req: InvasivesRequest) => {
           });
           return;
         }
-        id = decoded.bceid_user_guid;
+        id = decoded['bceid_user_guid'];
       } else {
         reject({
           code: 401,

@@ -1,12 +1,10 @@
-'use strict';
-
-import { GetObjectOutput, ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IMediaItem, MediaBase64 } from '../models/media';
-import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
-import { getLogger } from '../utils/logger';
-import { retrieveGetDoc } from '../docs/getDoc';
+import { IMediaItem, MediaBase64 } from '../models/media.js';
+import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils.js';
+import { getLogger } from '../utils/logger.js';
+import { retrieveGetDoc } from '../docs/getDoc.js';
+import { S3 } from 'aws-sdk';
 
 const defaultLog = getLogger('media');
 
@@ -30,7 +28,7 @@ function getMedia(): RequestHandler {
       return next();
     }
 
-    const s3GetPromises: Promise<GetObjectOutput>[] = [];
+    const s3GetPromises: Promise<S3.Types.GetObjectOutput>[] = [];
 
     keys.forEach((key: string) => {
       s3GetPromises.push(getFileFromS3(key));
@@ -68,7 +66,7 @@ export function uploadMedia(): RequestHandler {
 
     const rawMediaArray: IMediaItem[] = req.body.media;
 
-    const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
+    const s3UploadPromises: Promise<S3.Types.ManagedUpload.SendData>[] = [];
 
     rawMediaArray.forEach((rawMedia: IMediaItem) => {
       if (!rawMedia) {
@@ -111,8 +109,8 @@ export function uploadMedia(): RequestHandler {
 /*
   Function to get list of media items from s3 object list
 */
-export function getMediaItemsList(s3ObjectList: GetObjectOutput[], keys: string[]) {
-  const mediaItems: IMediaItem[] = s3ObjectList.map((s3Object: GetObjectOutput, index) => {
+export function getMediaItemsList(s3ObjectList: S3.Types.GetObjectOutput[], keys: string[]) {
+  const mediaItems: IMediaItem[] = s3ObjectList.map((s3Object: S3.Types.GetObjectOutput, index) => {
     // Encode image buffer as base64
     const contentString = Buffer.from(s3Object.Body as Buffer).toString('base64');
 

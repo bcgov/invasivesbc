@@ -1,4 +1,4 @@
-import { Agent_Quantity_And_Life_Stage, Biocontrol_Release_Biological_Agent_Stage, Biological_Agent_Stage } from './General_Sub_Forms';
+import { Agent_Quantity_And_Life_Stage, Biocontrol_Release_Biological_Agent_Stage, Biological_Agent_Stage } from './General_Sub_Forms.js';
 
 //--------------------- Chemical ---------------------
 export const Treatment_ChemicalAnimalTerrestrial = {

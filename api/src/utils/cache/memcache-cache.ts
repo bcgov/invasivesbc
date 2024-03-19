@@ -1,5 +1,5 @@
-import { getLogger } from '../logger';
-import { AbstractCache, AbstractCacheService } from './cache-utils';
+import { getLogger } from '../logger.js';
+import { AbstractCache, AbstractCacheService } from './cache-utils.js';
 import { MemcacheClient } from 'memcache-client';
 
 const defaultLog = getLogger('cache');

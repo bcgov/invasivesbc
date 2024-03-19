@@ -1,9 +1,7 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { TemplateService } from '../../utils/batch/template-utils';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc.js';
+import { TemplateService } from '../../utils/batch/template-utils.js';
 
 export const GET: Operation = [listTemplates()];
 

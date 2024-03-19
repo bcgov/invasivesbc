@@ -1,4 +1,4 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
+import { Template, TemplateColumnBuilder } from '../definitions.js';
 import {
   ActivityPersons,
   BasicInformation,
@@ -8,7 +8,7 @@ import {
   PhenologySumValidator,
   ProjectInformation,
   WeatherInformation
-} from '../shared-columns';
+} from '../shared-columns.js';
 
 const BiocontrolRelease = new Template('biocontrol_release', 'Biocontrol Release', null);
 

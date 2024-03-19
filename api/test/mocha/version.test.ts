@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 
 import request from 'supertest';
-import { app } from '../../src/app';
+import { app } from '../../src/app.js';
 
 describe('API starts', () => {
   it('should respond to version GET', async () => {

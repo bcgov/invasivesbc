@@ -1,4 +1,4 @@
-import {FORM_SUBTYPES_WITH_AREA_LIMITS, MAX_AREA} from "./constants";
+import {FORM_SUBTYPES_WITH_AREA_LIMITS, MAX_AREA} from "./constants.js";
 
 export function lookupAreaLimit(activityFormSubtype: string): number {
 

@@ -1,11 +1,11 @@
-import { TemplateColumnBuilder } from './definitions';
-import { RowValidationResult } from './validation/validation';
+import { TemplateColumnBuilder } from './definitions.js';
+import { RowValidationResult } from './validation/validation.js';
 import {
   WATER_LEVEL_MANAGEMENT_CODES,
   WIND_DIRECTION_CODES,
   WATERBODY_TYPE_CODES,
   SUBSTRATE_TYPE_CODES
-} from './hard-coded-codes';
+} from './hard-coded-codes.js';
 
 export const BasicInformation = [
   new TemplateColumnBuilder('WKT', 'WKT', {

@@ -1,6 +1,6 @@
 //these codes don't exist in the code table for whatever reason
 
-import { CodeEntry } from './definitions';
+import { CodeEntry } from './definitions.js';
 
 export const WIND_DIRECTION_CODES: CodeEntry[] = [
   new CodeEntry('wind_direction', 'No Wind', 'No Wind'),

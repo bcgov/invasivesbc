@@ -1,5 +1,5 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
-import { DISPOSED_MATERIAL_FORMAT_CODES } from '../hard-coded-codes';
+import { Template, TemplateColumnBuilder } from '../definitions.js';
+import { DISPOSED_MATERIAL_FORMAT_CODES } from '../hard-coded-codes.js';
 import {
   ActivityPersons,
   AuthorizationInformation,
@@ -8,7 +8,7 @@ import {
   ProjectInformation,
   ShorelineInformation,
   ShorelineSumValidator
-} from '../shared-columns';
+} from '../shared-columns.js';
 
 const TreatmentMechanicalAquaticPlantTemp = new Template(
   'treatment_mechanical_aquatic_plant_temp',

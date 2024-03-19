@@ -1,4 +1,4 @@
-import SQL, { SQLStatement } from 'sql-template-strings';
+import { SQL, SQLStatement } from 'sql-template-strings';
 
 export function getPublicActivitiesSQL(): SQLStatement {
   const f: SQLStatement = SQL`select a.activity_type,

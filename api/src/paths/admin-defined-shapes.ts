@@ -1,21 +1,18 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../database/db';
-import { getLogger } from '../utils/logger';
+import { getDBConnection } from '../database/db.js';
+import { getLogger } from '../utils/logger.js';
 import { SQLStatement } from 'sql-template-strings';
 import {
   deleteAdministrativelyDefinedShapesSQL,
   getAdministrativelyDefinedShapesSQL
-} from '../queries/admin-defined-shapes';
-import { atob } from 'js-base64';
+} from '../queries/admin-defined-shapes.js';
 import { QueryResult } from 'pg';
 import { FeatureCollection } from 'geojson';
-import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from '../utils/kml-import';
-import { InvasivesRequest } from '../utils/auth-utils';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { simplifyGeojson } from '../utils/map-shaper-util';
+import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from '../utils/kml-import.js';
+import { InvasivesRequest } from '../utils/auth-utils.js';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
+import { simplifyGeojson } from '../utils/map-shaper-util.js';
 
 const defaultLog = getLogger('admin-defined-shapes');
 
@@ -38,7 +35,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            $ref: '#/components/schemas/AdminDefinedShapeResponse',
+            $ref: '#/components/schemas/AdminDefinedShapeResponse'
           }
         }
       }
@@ -245,7 +242,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({label: 'getAdministrativelyDefinedShapes', message: 'error', error});
+      defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to get administratively defined shapes',
         request: req.body,

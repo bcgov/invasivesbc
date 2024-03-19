@@ -1,7 +1,7 @@
-import { getDBConnection } from '../database/db';
+import { getDBConnection } from '../database/db.js';
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-import { getLogger } from '../utils/logger';
+import { PointOfInterestSearchCriteria } from '../models/point-of-interest.js';
+import { getLogger } from '../utils/logger.js';
 
 const defaultLog = getLogger('point-of-interest');
 /**

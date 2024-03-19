@@ -1,8 +1,6 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../utils/logger.js';
 import * as fs from 'fs';
 
 const logger = getLogger('training_videos');

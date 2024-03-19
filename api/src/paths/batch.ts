@@ -1,12 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { InvasivesRequest } from '../utils/auth-utils';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from '../constants/misc.js';
+import { getDBConnection } from '../database/db.js';
+import { InvasivesRequest } from '../utils/auth-utils.js';
+import { getLogger } from '../utils/logger.js';
 import csvParser from 'csv-parser';
 import { Readable } from 'stream';
 
@@ -17,10 +15,10 @@ const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 
@@ -33,10 +31,10 @@ const POST_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Batch upload processor',

@@ -1,30 +1,30 @@
-import { Activity_FREP_FormC } from './Activities/FREP/FREP';
-import { Activity_Biocontrol_Collection, Activity_Biocontrol_Release } from './Activities/Plant/Biocontrol';
+import { Activity_FREP_FormC } from './Activities/FREP/FREP.js';
+import { Activity_Biocontrol_Collection, Activity_Biocontrol_Release } from './Activities/Plant/Biocontrol.js';
 import {
   Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant,
   Activity_Monitoring_BiocontrolRelease_TerrestrialPlant,
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant
-} from './Activities/Plant/Monitorings';
+} from './Activities/Plant/Monitorings.js';
 import {
   Activity_Observation_PlantAquatic,
   Activity_Observation_PlantTerrestrial
-} from './Activities/Plant/Observations';
+} from './Activities/Plant/Observations.js';
 import {
   Activity_Transect_BiocontrolEfficacy,
   Activity_Transect_FireMonitoring,
   Activity_Transect_Vegetation
-} from './Activities/Plant/Transects';
+} from './Activities/Plant/Transects.js';
 import {
   Activity_Treatment_ChemicalPlantAquatic,
   Activity_Treatment_ChemicalPlantTerrestrial,
   Activity_Treatment_MechanicalPlantAquatic,
   Activity_Treatment_MechanicalPlantTerrestrial
-} from './Activities/Plant/Treatments';
-import { ChemicalTreatment_Species_Codes, Error } from './Components/General_Sub_Forms';
-import { AdminDefinedShapeResponse, AdminDefinedShapeResultItem } from './Paths/AdminDefinedShapes';
+} from './Activities/Plant/Treatments.js';
+import { ChemicalTreatment_Species_Codes, Error } from './Components/General_Sub_Forms.js';
+import { AdminDefinedShapeResponse, AdminDefinedShapeResultItem } from './Paths/AdminDefinedShapes.js';
 //Generated with swagger-cli bundle thanks to https://gist.githubusercontent.com/zit0un/3ac0575eb0f3aabdc645c3faad47ab4a/raw/8db5e3ab89418def3a15474979e494c92b69592e/GeoJSON-OAS3.yaml
-import { spatialAPISpec } from './util/spatialSchemas';
+import { spatialAPISpec } from './util/spatialSchemas.js';
 
 export const api_doc = {
   openapi: '3.0.0',
@@ -67,7 +67,7 @@ export const api_doc = {
     {
       name: 'activity',
       description:
-        "Activity endpointsAn activity is a parent classification that contains Observations, Treatments, and Monitoring 'activities'"
+        'Activity endpointsAn activity is a parent classification that contains Observations, Treatments, and Monitoring \'activities\''
     },
     {
       name: 'observation',
@@ -98,7 +98,7 @@ export const api_doc = {
         scheme: 'bearer',
         bearerFormat: 'JWT',
         description:
-          "To access the authenticated api routes, a valid JWT token must be present in the 'Authorization' header.The 'Authorization' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`"
+          'To access the authenticated api routes, a valid JWT token must be present in the \'Authorization\' header.The \'Authorization\' header value must be of the form: `Bearer xxxxxx.yyyyyyy.zzzzzz`'
       }
     },
     responses: {

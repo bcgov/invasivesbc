@@ -35,7 +35,7 @@ function* fetchEmailSettings() {
       }
     }
   });
-};
+}
 
 function* updateEmailSettings(action) {
   const configuration = yield select(selectConfiguration);
@@ -63,7 +63,7 @@ function* updateEmailSettings(action) {
         'emailSettings': data.request,
       }
     });
-};
+}
 
 function* emailSettingsSaga() {
   yield all([

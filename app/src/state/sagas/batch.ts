@@ -203,16 +203,16 @@ function* executeBatch(action) {
   });
 
 
-  if(!(status < 200 || status > 299)) 
+  if(!(status < 200 || status > 299))
   {
     yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
     yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
   }
   else
   {
-    yield put({ type: BATCH_EXECUTE_ERROR, payload: data }) 
+    yield put({ type: BATCH_EXECUTE_ERROR, payload: data })
   }
-};
+}
 
 function* batchSaga() {
   yield all([

@@ -1,10 +1,7 @@
-'use strict';
-
-import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
-import { getLogger } from '../../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc.js';
+import { getLogger } from '../../../utils/logger.js';
 
 const defaultLog = getLogger('activity');
 
@@ -92,20 +89,19 @@ function getDataBC(): RequestHandler {
     // Formulate the url.
     const url = `https://openmaps.gov.bc.ca/geo/pub/wfs?service=WFS&version=1.1.0&request=GetFeature&typeName=pub:${wfs}&outputFormat=json&maxFeatures=1&srsName=epsg:4326&bbox=${coords},epsg:4326`;
 
-    axios
-      .get(url)
-      .then((response) => {
-        return res.status(200).json({
-          message: 'Got DataBC Layer',
-          request: req.body,
-          result: response.data?.features?.[0]?.properties,
-          namespace: 'context/databc/{wfs}',
-          code: 200
-        });
-      })
-      .catch((error) => {
-        defaultLog.debug({ label: 'getDataBC', message: 'error', error });
-        throw error;
+    try {
+      const response = await fetch(url);
+      const data: any = await response.json();
+      return res.status(200).json({
+        message: 'Got DataBC Layer',
+        request: req.body,
+        result: data.features?.[0]?.properties,
+        namespace: 'context/databc/{wfs}',
+        code: 200
       });
+    } catch (e) {
+      defaultLog.debug({ label: 'getDataBC', message: 'error', e });
+      throw e;
+    }
   };
 }

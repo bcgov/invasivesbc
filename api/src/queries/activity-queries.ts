@@ -1,7 +1,6 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { InvasivesRequest } from 'utils/auth-utils';
-import { getLogger } from '../utils/logger';
-import { ActivityPostRequestBody, ActivitySearchCriteria } from './../models/activity';
+import { getLogger } from '../utils/logger.js';
+import { ActivityPostRequestBody, ActivitySearchCriteria } from './../models/activity.js';
 
 /**
  * SQL query to insert a new activity, and return the inserted record.
