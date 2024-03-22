@@ -78,12 +78,20 @@ POST.apiDoc = {
   }
 };
 
-function sanitizeActivityFilterObject(filterObject: any, req: any) {
+export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   let sanitizedSearchCriteria = {
     serverSideNamedFilters: {},
     selectColumns: [],
     clientReqTableFilters: []
   } as any;
+
+
+  if(req.params.x) {
+    sanitizedSearchCriteria.vt_request = true;
+    sanitizedSearchCriteria.x = req.params.x;
+    sanitizedSearchCriteria.y = req.params.y;
+    sanitizedSearchCriteria.z = req.params.z;
+  }
 
   const roleName = (req as any).authContext.roles[0]?.role_name;
   //const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
@@ -165,7 +173,7 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   if (filterObject?.tableFilters?.length > 0) {
     filterObject.tableFilters.forEach((filter) => {
-      if(filter.filter === '') return;
+      if (filter.filter === '') return;
       switch (filter.filterType) {
         case 'tableFilter':
           switch (filter.field) {
@@ -295,7 +303,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
   };
 }
 
-function getActivitiesSQLv2(filterObject: any) {
+export function getActivitiesSQLv2(filterObject: any) {
   try {
     let sqlStatement: SQLStatement = SQL``;
     sqlStatement = initialWithStatement(sqlStatement);
@@ -458,19 +466,34 @@ activities as (
 }
 
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
-  if (filterObject.selectColumns) {
-    if (filterObject.isCSV) {
-      const select = sqlStatement.append(SQL` select extract.* `);
-      return select;
+  if (filterObject.vt_request) {
+    sqlStatement.append(`
+          mvtgeom AS
+                       (SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
+                                            ST_TileEnvelope($1, $2, $3), extent => 4096,
+                                            buffer => 64) AS geom,
+                               activity_id                    as feature_id,
+                               activity_type,
+                               activity_subtype
+                              -- can include whatever other properties are needed in this query also and they will be added as attributes
+                        FROM activities
+                        WHERE ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.x}, ${filterObject.y}, ${filterObject.z})),
+              `
+  } else {
+    if (filterObject.selectColumns) {
+      if (filterObject.isCSV) {
+        const select = sqlStatement.append(SQL` select extract.* `);
+        return select;
+      } else {
+        const select = sqlStatement.append(
+          `select ${filterObject.selectColumns.map((column) => `activities.${column}`).join(',')} `
+        );
+        return select;
+      }
     } else {
-      const select = sqlStatement.append(
-        `select ${filterObject.selectColumns.map((column) => `activities.${column}`).join(',')} `
-      );
+      const select = sqlStatement.append(`select * `);
       return select;
     }
-  } else {
-    const select = sqlStatement.append(`select * `);
-    return select;
   }
 }
 
@@ -545,12 +568,11 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
-  let tableAlias = filterObject.isCSV? 'b' : 'activities';
+  let tableAlias = filterObject.isCSV ? 'b' : 'activities';
   const where = sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `);
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
   }
-
 
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
@@ -692,9 +714,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'regional_districts':
         where.append(
-          `and LOWER(${tableAlias}.regional_districts) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `and LOWER(${tableAlias}.regional_districts) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'invasive_plant_management_areas':

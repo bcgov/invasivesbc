@@ -193,6 +193,33 @@ export const Map = (props: any) => {
 
   }, [map.current]);
 
+  useEffect(() => {
+    if (!map.current) return;
+
+    const query = {
+      agency: 'Council'
+    };
+
+    // // all IAPP
+    map.current.addLayer({
+      id: 'POC_ACTIVITY_FILTER_VECTOR',
+      type: 'fill',
+      source: {
+        type: 'vector',
+        tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?query=${encodeURI(JSON.stringify(query))}`],
+        minzoom: 2,
+        maxzoom: 13
+      },
+      visibility: 'visible',
+      'source-layer': 'data',
+      paint: {
+        'fill-color': 'red',
+      }
+    });
+
+  }, [map.current]);
+
+
   //Current Activity & IAPP Markers
   useEffect(() => {
     if (!map.current) return;

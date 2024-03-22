@@ -1,16 +1,17 @@
 import { getDBConnection } from 'database/db';
+import { getActivitiesSQLv2 } from 'paths/v2/activities';
 
 export interface TileService {
-  tile(source: string, z: number, x: number, y: number, user_id?: string | null, query?: any): Promise<Buffer>;
+  tile(source: string, filterObj): Promise<Buffer>;
 }
 
 export const PostgresTileService: TileService = {
-  async tile(source, z, x, y, user_id?: string | null, query?: any): Promise<Buffer> {
+  async tile(source, filterObj: any): Promise<Buffer> {
     const connection = await getDBConnection();
 
     try {
       switch (source) {
-        case 'iapp':
+        /*case 'iapp':
           return Buffer.from((await connection.query(
             ` WITH mvtgeom AS
                        (SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
@@ -26,9 +27,13 @@ export const PostgresTileService: TileService = {
               FROM mvtgeom;
             `
             ,
-            [z, x, y, query['agency']])).rows[0].data);
+            [filterObj.z, filterObj.x, filterObj.y, query['agency']])).rows[0].data);
+            */
+        case 'activities':
+          const { text, values } = getActivitiesSQLv2(filterObj);
+          return Buffer.from((await connection.query(text, values)).rows[0].data)
         default:
-          return null;
+          return null
       }
 
     } finally {
