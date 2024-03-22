@@ -27,7 +27,9 @@ export const mapInit = (
   uHistory,
   appModeUrl,
   activityGeo,
-  whats_here_toggle
+  whats_here_toggle,
+  api_base,
+  getAuthHeaderCallback
 ) => {
   const protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
@@ -57,6 +59,19 @@ export const mapInit = (
       container: mapContainer.current,
       maxZoom: 24,
       zoom: h.maxZoom - 2,
+      transformRequest: (url, resourceType) => {
+        if (url.includes(api_base)) {
+          return {
+            url,
+            headers: {
+              ...getAuthHeaderCallback()
+            }
+          };
+        }
+        return {
+          url
+        };
+      },
       center: [h.centerLon, h.centerLat],
       style: {
         glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
@@ -539,7 +554,7 @@ export const initDrawModes = (
   });
 
   var DoNothing: any = {};
-  DoNothing.onSetup = function (opts) {
+  DoNothing.onSetup = function(opts) {
     //  if(map.draw && activityGeo)
     if (activityGeo) {
       this.addFeature(this.newFeature(activityGeo[0]));
@@ -549,11 +564,11 @@ export const initDrawModes = (
     state.count = opts.count || 0;
     return state;
   };
-  DoNothing.onClick = function (state, e) {
+  DoNothing.onClick = function(state, e) {
     this.changeMode('draw_polygon');
   };
 
-  DoNothing.toDisplayFeatures = function (state, geojson, display) {
+  DoNothing.toDisplayFeatures = function(state, geojson, display) {
     geojson.properties.active = MapboxDraw.constants.activeStates.ACTIVE;
     display(geojson);
   };
@@ -568,14 +583,14 @@ export const initDrawModes = (
   // When the mode starts this function will be called.
   // The `opts` argument comes from `draw.changeMode('lotsofpoints', {count:7})`.
   // The value returned should be an object and will be passed to all other lifecycle functions
-  LotsOfPointsMode.onSetup = function (opts) {
+  LotsOfPointsMode.onSetup = function(opts) {
     var state: any = {};
     state.count = opts.count || 0;
     return state;
   };
 
   // Whenever a user clicks on the map, Draw will call `onClick`
-  LotsOfPointsMode.onClick = function (state, e) {
+  LotsOfPointsMode.onClick = function(state, e) {
     // `this.newFeature` takes geojson and makes a DrawFeature
     var point = this.newFeature({
       type: 'Feature',
@@ -591,7 +606,7 @@ export const initDrawModes = (
   };
 
   // Whenever a user clicks on a key while focused on the map, it will be sent here
-  LotsOfPointsMode.onKeyUp = function (state, e) {
+  LotsOfPointsMode.onKeyUp = function(state, e) {
     if (e.keyCode === 27) return this.changeMode('simple_select');
   };
 
@@ -599,7 +614,7 @@ export const initDrawModes = (
   // It decides which features currently in Draw's data store will be rendered on the map.
   // All features passed to `display` will be rendered, so you can pass multiple display features per internal feature.
   // See `styling-draw` in `API.md` for advice on making display features
-  LotsOfPointsMode.toDisplayFeatures = function (state, geojson, display) {
+  LotsOfPointsMode.toDisplayFeatures = function(state, geojson, display) {
     display(geojson);
   };
 
@@ -707,6 +722,7 @@ export const handlePositionTracking = (
     // Request the next frame of the animation.
     requestAnimationFrame(animateMarker);
   }
+
   if (userCoords && positionTracking) {
     map.jumpTo({ center: [userCoords.long, userCoords.lat] });
     // Start the animation.
@@ -780,9 +796,9 @@ export const refreshDrawControls = (
   activityGeo,
   drawingCustomLayer
 ) => {
-  /* 
+  /*
           We fully tear down map box draw and readd depending on app state / route, to have conditionally rendered controls:
-          Because mapbox draw doesn't clean up its old sources properly we need to do it manually 
+          Because mapbox draw doesn't clean up its old sources properly we need to do it manually
        */
   map.getLayersOrder().map((layer) => {
     if (/gl-draw/.test(layer)) {
@@ -976,14 +992,13 @@ export const refreshServerBoundariesOnToggle = (serverBoundaries, map) => {
 };
 
 
-
 export const addClientBoundariesIfNotExists = (clientBoundaries, map) => {
   if (map && clientBoundaries?.length > 0) {
     clientBoundaries.map((layer) => {
       const layerID = 'clientBoundaries' + layer.id;
 
       if (!map.getSource(layerID)) {
-        console.dir(layer)
+        console.dir(layer);
         map
           .addSource(layerID, {
             type: 'geojson',
