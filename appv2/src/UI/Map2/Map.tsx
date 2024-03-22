@@ -2,7 +2,7 @@ import circle from '@turf/circle';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './map.css';
 
 // Draw tools:
@@ -25,16 +25,21 @@ import {
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle,
   addClientBoundariesIfNotExists,
-  refreshClientBoundariesOnToggle,
+  refreshClientBoundariesOnToggle
 } from './Helpers';
+import { useSelector } from 'util/use_selector';
+import { opacify } from 'color2k';
 
-/* 
+/*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
   I've tried to make it so the handlers can safely run more than once, and no destructing and recreating when not necessary.
 
  */
 export const Map = (props: any) => {
+  const { API_BASE } = useSelector(state => state.Configuration.current);
+  const { requestHeaders } = useSelector(state => state.Auth);
+
   const [draw, setDraw] = useState(null);
   const mapContainer = useRef(null);
   const map = useRef(null);
@@ -53,7 +58,7 @@ export const Map = (props: any) => {
   //KML
   const serverBoundaries = useSelector((state: any) => state.Map?.serverBoundaries);
   //Drawn boundaries:
-  const clientBoundaries = useSelector((state: any) => state.Map?.clientBoundaries)
+  const clientBoundaries = useSelector((state: any) => state.Map?.clientBoundaries);
 
   // Map position jump
   const map_center = useSelector((state: any) => state.Map?.map_center);
@@ -81,27 +86,29 @@ export const Map = (props: any) => {
   const whatsHereToggle = useSelector((state: any) => state.Map?.whatsHere?.toggle);
   const appModeUrl = useSelector((state: any) => state.AppMode.url);
   // also used with current marker below:
-  const activityGeo = useSelector((state: any) => state.ActivityPage?.activity?.geometry)
-  const drawingCustomLayer = useSelector((state:any) => state.Map.drawingCustomLayer)
+  const activityGeo = useSelector((state: any) => state.ActivityPage?.activity?.geometry);
+  const drawingCustomLayer = useSelector((state: any) => state.Map.drawingCustomLayer);
 
 
   //Current rec markers:
-  const currentActivityShortID = useSelector((state: any) => state.ActivityPage?.activity?.short_id)
-  const currentIAPPID = useSelector((state:any) => state?.IAPPSitePage?.site?.site_id)
-  const currentIAPPGeo = useSelector((state:any) => state?.IAPPSitePage?.site?.geom)
+  const currentActivityShortID = useSelector((state: any) => state.ActivityPage?.activity?.short_id);
+  const currentIAPPID = useSelector((state: any) => state?.IAPPSitePage?.site?.site_id);
+  const currentIAPPGeo = useSelector((state: any) => state?.IAPPSitePage?.site?.geom);
   const activityMarker = new maplibregl.Marker({ element: activityMarkerEl });
   const IAPPMarker = new maplibregl.Marker({ element: IAPPMarkerEl });
 
 
   //Highlighted Record from main records page:
-  const userRecordOnHoverRecordRow = useSelector((state:any) => state.Map?.userRecordOnHoverRecordRow)
-  const userRecordOnHoverRecordType = useSelector((state:any) => state.Map?.userRecordOnHoverRecordType)
+  const userRecordOnHoverRecordRow = useSelector((state: any) => state.Map?.userRecordOnHoverRecordRow);
+  const userRecordOnHoverRecordType = useSelector((state: any) => state.Map?.userRecordOnHoverRecordType);
 
 
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated) return;
-    mapInit(map, mapContainer, setDraw, dispatch, uHistory, appModeUrl, activityGeo, null);
+    mapInit(map, mapContainer, setDraw, dispatch, uHistory, appModeUrl, activityGeo, null, API_BASE, () => {
+      return requestHeaders;
+    });
   }, [authInitiated]);
 
   // RecordSet Layers:
@@ -121,15 +128,15 @@ export const Map = (props: any) => {
   }, [simplePickerLayers2]);
 
 
-  useEffect(()=> {
-    addServerBoundariesIfNotExists(serverBoundaries, map.current)
-    refreshServerBoundariesOnToggle(serverBoundaries, map.current)
-  },[serverBoundaries])
+  useEffect(() => {
+    addServerBoundariesIfNotExists(serverBoundaries, map.current);
+    refreshServerBoundariesOnToggle(serverBoundaries, map.current);
+  }, [serverBoundaries]);
 
-  useEffect(()=> {
-    addClientBoundariesIfNotExists(clientBoundaries, map.current)
-    refreshClientBoundariesOnToggle(clientBoundaries, map.current)
-  }, [clientBoundaries])
+  useEffect(() => {
+    addClientBoundariesIfNotExists(clientBoundaries, map.current);
+    refreshClientBoundariesOnToggle(clientBoundaries, map.current);
+  }, [clientBoundaries]);
 
   // Jump Nav
   useEffect(() => {
@@ -154,45 +161,80 @@ export const Map = (props: any) => {
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
     if (!map.current) return;
-    refreshDrawControls(map.current, draw,  setDraw, dispatch, uHistory, whatsHereToggle, appModeUrl, activityGeo, drawingCustomLayer)
+    refreshDrawControls(map.current, draw, setDraw, dispatch, uHistory, whatsHereToggle, appModeUrl, activityGeo, drawingCustomLayer);
   }, [whatsHereToggle, appModeUrl, map, activityGeo, drawingCustomLayer]);
 
 
-  //Current Activity & IAPP Markers
-  useEffect(()=> {
+  useEffect(() => {
     if (!map.current) return;
-    refreshCurrentRecMakers(map.current, { activityGeo, currentActivityShortID, currentIAPPID, currentIAPPGeo, activityMarker, IAPPMarker})
-  },[currentActivityShortID,currentIAPPID])
+
+    const query = {
+      agency: 'Council'
+    };
+
+    // // all IAPP
+    map.current.addLayer({
+      id: 'iapp_vector_points',
+      type: 'circle',
+      source: {
+        type: 'vector',
+        tiles: [`${API_BASE}/api/vectors/iapp/{z}/{x}/{y}?query=${encodeURI(JSON.stringify(query))}`],
+        minzoom: 2,
+        maxzoom: 13
+      },
+      visibility: 'visible',
+      'source-layer': 'data',
+      paint: {
+        'circle-color': 'red',
+        'circle-radius': 3,
+        'circle-opacity': 0.75
+      }
+    });
+
+  }, [map.current]);
+
+  //Current Activity & IAPP Markers
+  useEffect(() => {
+    if (!map.current) return;
+    refreshCurrentRecMakers(map.current, {
+      activityGeo,
+      currentActivityShortID,
+      currentIAPPID,
+      currentIAPPGeo,
+      activityMarker,
+      IAPPMarker
+    });
+  }, [currentActivityShortID, currentIAPPID]);
 
   //Highlighted Record
-  useEffect(()=> {
-    refreshHighlightedRecord(map.current,{ userRecordOnHoverRecordRow, userRecordOnHoverRecordType})
-  },[userRecordOnHoverRecordRow])
+  useEffect(() => {
+    refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
+  }, [userRecordOnHoverRecordRow]);
 
 
   return (
-    <div className="MapWrapper">
-      <div ref={mapContainer} className="Map" />
+    <div className='MapWrapper'>
+      <div ref={mapContainer} className='Map' />
       {props.children}
     </div>
   );
 };
 
 
-  const positionMarkerEl = document.createElement('div');
-  positionMarkerEl.className = 'userTrackingMarker';
-  positionMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
-  positionMarkerEl.style.width = `32px`;
-  positionMarkerEl.style.height = `32px`;
+const positionMarkerEl = document.createElement('div');
+positionMarkerEl.className = 'userTrackingMarker';
+positionMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
+positionMarkerEl.style.width = `32px`;
+positionMarkerEl.style.height = `32px`;
 
-  const activityMarkerEl = document.createElement('div');
-  activityMarkerEl.className = 'activityMarkerEl';
-  activityMarkerEl.style.backgroundImage = 'url(/assets/icon/clip.png)';
-  activityMarkerEl.style.width = `32px`;
-  activityMarkerEl.style.height = `32px`;
+const activityMarkerEl = document.createElement('div');
+activityMarkerEl.className = 'activityMarkerEl';
+activityMarkerEl.style.backgroundImage = 'url(/assets/icon/clip.png)';
+activityMarkerEl.style.width = `32px`;
+activityMarkerEl.style.height = `32px`;
 
-  const IAPPMarkerEl = document.createElement('div');
-  IAPPMarkerEl.className = 'IAPPMarkerEl';
-  IAPPMarkerEl.style.backgroundImage = 'url(/assets/iapp_logo.gif)';
-  IAPPMarkerEl.style.width = `32px`;
-  IAPPMarkerEl.style.height = `32px`;
+const IAPPMarkerEl = document.createElement('div');
+IAPPMarkerEl.className = 'IAPPMarkerEl';
+IAPPMarkerEl.style.backgroundImage = 'url(/assets/iapp_logo.gif)';
+IAPPMarkerEl.style.width = `32px`;
+IAPPMarkerEl.style.height = `32px`;
