@@ -3,6 +3,7 @@ import { PostgresTileService } from 'utils/vectors/tile-service';
 import { RequestHandler } from 'express';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { Operation } from 'express-openapi';
+import { sanitizeActivityFilterObject } from 'paths/v2/activities';
 
 export const GET: Operation = [tile()];
 
@@ -26,12 +27,15 @@ GET.apiDoc = {
 
 function tile(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const { source, z, x, y } = req.params;
-
-    const query = JSON.parse(req.query['query']) || {};
+    const rawBodyCriteria = req.body['filterObjects'];
+    const { source } = req.params;
+    let filterObj = null 
+    if(source === 'activities') {
+      filterObj = sanitizeActivityFilterObject(rawBodyCriteria?.[0], req);
+    }
 
     //@todo validate source, tile bounds
-    const tileData = await PostgresTileService.tile(source, Number(z), Number(x), Number(y), req.authContext?.user?.user_id, query);
+    const tileData = await PostgresTileService.tile(source, filterObj)
 
     res.setHeader('content-type', 'application/vnd.mapbox-vector-tile');
     res.status(200).send(tileData);
