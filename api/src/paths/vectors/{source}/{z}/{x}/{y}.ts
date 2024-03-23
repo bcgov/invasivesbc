@@ -27,11 +27,11 @@ GET.apiDoc = {
 
 function tile(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const rawBodyCriteria = req.body['filterObjects'];
+    const rawBodyCriteria = req.query.filterObject
     const { source } = req.params;
     let filterObj = null 
     if(source === 'activities') {
-      filterObj = sanitizeActivityFilterObject(rawBodyCriteria?.[0], req);
+      filterObj = sanitizeActivityFilterObject(rawBodyCriteria, req);
     }
 
     //@todo validate source, tile bounds

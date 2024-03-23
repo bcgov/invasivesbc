@@ -85,8 +85,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
     clientReqTableFilters: []
   } as any;
 
-
-  if(req.params.x) {
+  if (req.params.x) {
     sanitizedSearchCriteria.vt_request = true;
     sanitizedSearchCriteria.x = req.params.x;
     sanitizedSearchCriteria.y = req.params.y;
@@ -312,9 +311,14 @@ export function getActivitiesSQLv2(filterObject: any) {
     sqlStatement = fromStatement(sqlStatement, filterObject);
     sqlStatement = whereStatement(sqlStatement, filterObject);
     sqlStatement = groupByStatement(sqlStatement, filterObject);
+    if (!filterObject.vt_request) {
     sqlStatement = orderByStatement(sqlStatement, filterObject);
-    sqlStatement = limitStatement(sqlStatement, filterObject);
-    sqlStatement = offSetStatement(sqlStatement, filterObject);
+      sqlStatement = limitStatement(sqlStatement, filterObject);
+      sqlStatement = offSetStatement(sqlStatement, filterObject);
+    }
+    else {
+      sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom;`);
+    }
 
     defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
     return sqlStatement;
@@ -460,6 +464,10 @@ activities as (
   sqlStatement.append(`
     )  `);
 
+
+
+
+
   defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
 
   return cte;
@@ -468,17 +476,15 @@ activities as (
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.vt_request) {
     sqlStatement.append(`
-          mvtgeom AS
-                       (SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
-                                            ST_TileEnvelope($1, $2, $3), extent => 4096,
+    , mvtgeom AS
+    (  SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
+                                            ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}), extent => 4096,
                                             buffer => 64) AS geom,
-                               activity_id                    as feature_id,
+                               activity_incoming_data_id                    as feature_id,
+                               activity_id                    ,
                                activity_type,
-                               activity_subtype
-                              -- can include whatever other properties are needed in this query also and they will be added as attributes
-                        FROM activities
-                        WHERE ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.x}, ${filterObject.y}, ${filterObject.z})),
-              `
+                               activity_subtype from activities  where ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}) 
+     `);
   } else {
     if (filterObject.selectColumns) {
       if (filterObject.isCSV) {
@@ -495,10 +501,11 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
       return select;
     }
   }
+  return sqlStatement;
 }
 
 function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
-  let from = sqlStatement.append(`from activities  `);
+  let from = filterObject.vt_request? sqlStatement.append(' ') : sqlStatement.append(`from activities  `);
   if (filterObject.isCSV) {
     from = sqlStatement.append(` b `);
     switch (filterObject.CSVType) {
@@ -569,7 +576,8 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   let tableAlias = filterObject.isCSV ? 'b' : 'activities';
-  const where = sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `);
+  const where = filterObject.vt_request?  sqlStatement.append(`and 1=1 and ${tableAlias}.iscurrent = true  `) :  sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `)
+
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
   }

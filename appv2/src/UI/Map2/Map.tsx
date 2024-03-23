@@ -43,6 +43,7 @@ export const Map = (props: any) => {
   const [draw, setDraw] = useState(null);
   const mapContainer = useRef(null);
   const map = useRef(null);
+  const MapMode = useSelector((state: any) => state.Map?.MapMode);
   const dispatch = useDispatch();
   const uHistory = useHistory();
 
@@ -165,6 +166,8 @@ export const Map = (props: any) => {
   }, [whatsHereToggle, appModeUrl, map, activityGeo, drawingCustomLayer]);
 
 
+  // Vector Endpoint Mode for Recordsets:
+  /*
   useEffect(() => {
     if (!map.current) return;
 
@@ -192,32 +195,42 @@ export const Map = (props: any) => {
     });
 
   }, [map.current]);
+  */
 
   useEffect(() => {
-    if (!map.current) return;
+    if (!map.current || MapMode !== 'VECTOR_ENDPOINT') return;
 
-    const query = {
-      agency: 'Council'
-    };
 
-    // // all IAPP
-    map.current.addLayer({
-      id: 'POC_ACTIVITY_FILTER_VECTOR',
-      type: 'fill',
-      source: {
-        type: 'vector',
-        tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?query=${encodeURI(JSON.stringify(query))}`],
-        minzoom: 2,
-        maxzoom: 13
-      },
-      visibility: 'visible',
-      'source-layer': 'data',
-      paint: {
-        'fill-color': 'red',
+    storeLayers.map((layer) => {
+      if(!layer.filterObject) {
+        return;
+
       }
-    });
 
-  }, [map.current]);
+      const layerID = `POC_${layer.recordSetID}_VECTOR`;
+
+      if (map.current.getSource(layerID)) {
+        return;
+      }
+
+      map.current.addLayer({
+        id: `POC_${layer.recordSetID}_VECTOR`,
+        type: 'fill',
+        source: {
+          type: 'vector',
+          tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
+          minzoom: 2,
+          maxzoom: 13
+        },
+        visibility: 'visible',
+        'source-layer': 'data',
+        paint: {
+          'fill-color': layer.colour ? layer.colour : 'red',
+        }
+      });
+    })
+
+  }, [storeLayers]);
 
 
   //Current Activity & IAPP Markers

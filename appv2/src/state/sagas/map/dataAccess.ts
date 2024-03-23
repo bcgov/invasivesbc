@@ -12,6 +12,7 @@ import {
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   EXPORT_CONFIG_LOAD_REQUEST,
   EXPORT_CONFIG_LOAD_SUCCESS,
+  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
@@ -65,6 +66,40 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
+}
+
+
+export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
+
+  const currentState = yield select((state) => state.UserSettings );
+  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries );
+  let filterObject = getRecordFilterObjectFromStateForAPI(
+    action.payload.recordSetID,
+    currentState,
+    clientBoundaries
+  );
+
+  // abort if already a stale hash
+  const mapState = yield select((state) => state.Map);
+  const tableFiltersHash = mapState?.layers?.filter((layer) => {
+    return layer?.recordSetID === action.payload.recordSetID;
+  })?.[0]?.tableFiltersHash;
+
+  if (!tableFiltersHash === action.payload.tableFiltersHash) {
+    return;
+  }
+
+  yield put({type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, payload: {
+    filterObject: filterObject,
+    recordSetID: action.payload.recordSetID,
+    tableFiltersHash: action.payload.tableFiltersHash,
+    recordSetType: action.payload.recordSetType
+  }})
+
+
+  //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+//  filterObject.limit = 200000;
+ // filterObject.selectColumns = ['activity_id'];
 }
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {

@@ -69,7 +69,9 @@ import {
   TOGGLE_LAYER_PICKER_OPEN,
   TOGGLE_KML_LAYER,
   TOGGLE_DRAWN_LAYER,
-  MAP_ON_SHAPE_UPDATE
+  MAP_ON_SHAPE_UPDATE,
+  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
+  MAP_MODE_SET
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -201,6 +203,7 @@ const DEFAULT_LOCAL_LAYERS = [
 ];
 
 interface MapState {
+  MapMode: string;
   CanTriggerCSV: boolean;
   HDToggle: boolean;
   IAPPBoundsPolygon: any;
@@ -386,7 +389,7 @@ const initialState: MapState = {
   layers: [],
   legendsPopup: undefined,
   linkToCSV: '',
-
+  MapMode: 'VECTOR_ENDPOINT',
   panned: false,
   positionTracking: false,
   quickPanToRecord: false,
@@ -574,6 +577,30 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           break;
         }
+        case MAP_MODE_SET:
+          draftState.MapMode = action.payload;
+          switch (action.payload) {
+            case 'VECTOR_ENDPOINT':
+              draftState.activitiesGeoJSONDict = {};
+              draftState.IAPPGeoJSONDict = {};
+              draftState.layers = draftState.layers.map((layer) => {
+                delete layer.IDList;
+                delete layer.geoJSON;
+                return layer;
+              });
+              break;
+          }
+          break;
+        case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
+          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          if (!draftState.layers[index])
+            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType});
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+
+          draftState.layers[index].filterObject = action.payload.filterObject;
+          draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
+          break;
+        }
         case IAPP_TABLE_ROWS_GET_SUCCESS:
         case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
           // the hash, page, and limit all need to line up
@@ -713,9 +740,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.serverBoundaries = withLocalToggles;
           const strippedOfShapes = draftState.serverBoundaries.map((item) => {
             const returnVal = { ...item };
-            delete returnVal.geojson
-            return returnVal
-          })
+            delete returnVal.geojson;
+            return returnVal;
+          });
           localStorage.setItem('serverLayersConf', JSON.stringify(strippedOfShapes));
           break;
         }
@@ -725,9 +752,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
           const strippedOfShapes = draftState.serverBoundaries.map((item) => {
             const returnVal = { ...item };
-            delete returnVal.geojson
-            return returnVal
-          })
+            delete returnVal.geojson;
+            return returnVal;
+          });
           localStorage.setItem('serverLayersConf', JSON.stringify(strippedOfShapes));
           break;
         }
