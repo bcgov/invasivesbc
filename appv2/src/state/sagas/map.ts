@@ -20,6 +20,8 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
+  FILTER_PREP_FOR_VECTOR_ENDPOINT,
+  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_ONLINE,
@@ -76,7 +78,8 @@ import {
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
   handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
-  handle_MAP_WHATS_HERE_INIT_GET_POI
+  handle_MAP_WHATS_HERE_INIT_GET_POI,
+  handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT
 } from './map/dataAccess';
 import {
   handle_ACTIVITIES_GEOJSON_GET_ONLINE,
@@ -144,7 +147,6 @@ function* handle_MAP_INIT_REQUEST(action) {
       //   layerState: IAPPlayerState
     }
   });
-
 
   yield call(refetchServerBoundaries);
   yield put({ type: MAP_INIT_FOR_RECORDSET });
@@ -622,13 +624,23 @@ function* handle_UserFilterChange(action) {
             limit: 20
           }
         });
-      yield put({
-        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-        payload: {
-          recordSetID: action.payload.setID,
-          tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-        }
-      });
+      if (map.MapMode === 'VECTOR_ENDPOINT') {
+        yield put({
+          type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
+          payload: {
+            recordSetID: action.payload.setID,
+            tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+          }
+        });
+      } else {
+        yield put({
+          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+          payload: {
+            recordSetID: action.payload.setID,
+            tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+          }
+        });
+      }
     } else {
       if (currentSet === action.payload.setID)
         yield put({
@@ -686,6 +698,7 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
 function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSets = Object.keys(userSettingsState.recordSets);
+  const mapMode = yield select((state) => state.Map.MapMode);
 
   // current layers
   const layers = yield select((state) => state.Map.layers);
@@ -710,10 +723,19 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   let actionsToPut = [];
   allUninitializedLayers.map((layer) => {
     if (layer.recordSetType === 'Activity') {
+      if(mapMode === 'VECTOR_ENDPOINT') {
+      actionsToPut.push({
+        type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
+        payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
+      });
+    }
+    else {
       actionsToPut.push({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
       });
+
+    }
     } else {
       actionsToPut.push({
         type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -800,36 +822,31 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 }
 
 function* handle_MAP_ON_SHAPE_CREATE(action) {
-  const appModeUrl = yield select((state:any) => state.AppMode.url)
-  const whatsHereToggle = yield select((state:any)=> state.Map.whatsHere.toggle)
-  let newGeo = null
-  if(action?.payload?.geometry?.type === 'LineString')
-  {
-    let width = null
-    while(typeof width !== 'number')
-    {
+  const appModeUrl = yield select((state: any) => state.AppMode.url);
+  const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
+  let newGeo = null;
+  if (action?.payload?.geometry?.type === 'LineString') {
+    let width = null;
+    while (typeof width !== 'number') {
       try {
-        width = Number(prompt('Enter width in m for line to be buffered: '))
-      }
-      catch(e)
-      {
-        alert('Not a number')
+        width = Number(prompt('Enter width in m for line to be buffered: '));
+      } catch (e) {
+        alert('Not a number');
       }
     }
-    newGeo = turf.buffer(action.payload.geometry, width/1000)
+    newGeo = turf.buffer(action.payload.geometry, width / 1000);
   }
 
-  if(appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-    yield put({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo? newGeo: action.payload]  }})
+  if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo ? newGeo : action.payload] } });
   }
-
 }
 function* handle_MAP_ON_SHAPE_UPDATE(action) {
-  const appModeUrl = yield select((state:any) => state.AppMode.url)
-  const whatsHereToggle = yield select((state:any)=> state.Map.whatsHere.toggle)
+  const appModeUrl = yield select((state: any) => state.AppMode.url);
+  const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
 
-  if(appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-    yield put({type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload]  }})
+  if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload] } });
   }
 }
 
@@ -859,6 +876,7 @@ function* activitiesPageSaga() {
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
+    takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
@@ -881,7 +899,7 @@ function* activitiesPageSaga() {
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
-    takeEvery(MAP_ON_SHAPE_UPDATE,handle_MAP_ON_SHAPE_UPDATE )
+    takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE)
   ]);
 }
 
