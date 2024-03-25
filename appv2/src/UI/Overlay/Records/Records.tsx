@@ -19,21 +19,15 @@ import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
 import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
+import { set } from 'lodash';
 
 export const Records = () => {
+  const MapMode = useSelector((state: any) => state.Map?.MapMode);
   // this version of layer 'highlighting' uses a usestate variable, but should be turned into a redux state variable
   // before getting the map layers to interact with the list item on hover.
   const recordSets = useSelector((state: any) => state.UserSettings?.recordSets);
 
   const mapLayers = useSelector((state: any) => state.Map.layers);
-  const [loaded, setLoaded] = useState([]);
-  useEffect(() => {
-    setLoaded(
-      mapLayers.map((layer) => {
-        return { recordSetID: layer?.recordSetID, loading: layer?.loading, type: layer?.type };
-      })
-    );
-  }, [mapLayers]);
 
   const [isActivitiesGeoJSONLoaded, setActivitiesGeoJSONLoaded] = useState(false);
 
@@ -49,12 +43,16 @@ export const Records = () => {
 
   useEffect(() => {
     let rv = {};
-    loaded.forEach((layer) => {
+    mapLayers.forEach((layer) => {
       const geojson = layer?.type === 'Activity' ? isActivitiesGeoJSONLoaded : isIAPPGeoJSONLoaded;
-      rv[layer?.recordSetID] = !layer?.loading && geojson;
+      if (MapMode !== 'VECTOR_ENDPOINT') {
+        rv[layer?.recordSetID] = !layer?.loading && geojson;
+      } else {
+        rv[layer?.recordSetID] = !layer?.loading;
+      }
     });
     setLoadMap(rv);
-  }, [JSON.stringify(loaded), isActivitiesGeoJSONLoaded, isIAPPGeoJSONLoaded]);
+  }, [JSON.stringify(mapLayers), isActivitiesGeoJSONLoaded, isIAPPGeoJSONLoaded, MapMode]);
 
   const colours = ['#2A81CB', '#FFD326', '#CB2B3E', '#2AAD27', '#CB8427', '#CAC428', '#9C2BCB', '#7B7B7B', '#3D3D3D'];
 

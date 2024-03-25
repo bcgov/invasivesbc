@@ -569,11 +569,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
+          if(draftState.MapMode === 'VECTOR_ENDPOINT') {
+            draftState.layers[index].loading = false;
+          }
 
           //if (draftState.activitiesGeoJSON?.features?.length > 0) {
-          if (draftState.activitiesGeoJSONDict !== undefined) {
+          if (draftState.MapMode !== 'VECTOR_ENDPOINT' && draftState.activitiesGeoJSONDict !== undefined) {
             GeoJSONFilterSetForLayer(draftState, state, 'Activity', action.payload.recordSetID, action.payload.IDList);
-          } else {
           }
           break;
         }
@@ -584,7 +586,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               draftState.activitiesGeoJSONDict = {};
               draftState.IAPPGeoJSONDict = {};
               draftState.layers = draftState.layers.map((layer) => {
-                delete layer.IDList;
                 delete layer.geoJSON;
                 return layer;
               });
@@ -594,7 +595,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
           if (!draftState.layers[index])
+          {
             draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType});
+          }
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
           draftState.layers[index].filterObject = action.payload.filterObject;
@@ -721,8 +724,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
+          if(draftState.MapMode === 'VECTOR_ENDPOINT') {
+            draftState.layers[index].loading = false;
+          }
 
-          if (draftState.IAPPGeoJSONDict !== undefined && Object.keys(draftState.IAPPGeoJSONDict).length > 0) {
+          if (draftState.MapMode != 'VECTOR_ENDPOINT' && draftState.IAPPGeoJSONDict !== undefined && Object.keys(draftState.IAPPGeoJSONDict).length > 0) {
             GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
           }
           break;
