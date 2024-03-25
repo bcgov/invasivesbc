@@ -115,7 +115,7 @@ export const Map = (props: any) => {
   // RecordSet Layers:
   useEffect(() => {
     if (!map.current) return;
-    rebuildLayersOnTableHashUpdate(storeLayers, map.current);
+    rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
@@ -197,6 +197,7 @@ export const Map = (props: any) => {
   }, [map.current]);
   */
 
+  /*
   useEffect(() => {
     if (!map.current || MapMode !== 'VECTOR_ENDPOINT') return;
 
@@ -231,6 +232,7 @@ export const Map = (props: any) => {
     })
 
   }, [storeLayers]);
+  */
 
 
   //Current Activity & IAPP Markers

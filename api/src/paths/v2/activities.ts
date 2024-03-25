@@ -144,6 +144,10 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
           break;
       }
     });
+
+    if(filterObject.selectColumns.includes('count')){
+      selectColumns = ['count(*) as count']
+    }
   }
 
   //sanitize limit

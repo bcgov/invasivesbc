@@ -180,7 +180,7 @@ export const mapInit = (
   });
 };
 
-export const createActivityLayer = (map: any, layer: any) => {
+export const createActivityLayer = (map: any, layer: any, mode) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
 
   const getPaintBySchemeOrColor = (layer: any) => {
@@ -206,25 +206,35 @@ export const createActivityLayer = (map: any, layer: any) => {
   };
 
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
-  map
-    .addSource(layerID, {
-      type: 'geojson',
-      data: layer.geoJSON
-    })
-    .addLayer({
-      id: layerID,
-      source: layerID,
-      type: 'fill',
-      paint: {
-        'fill-color': getPaintBySchemeOrColor(layer),
-        'fill-outline-color': getPaintBySchemeOrColor(layer),
-        'fill-opacity': 0.5
-      },
+  let source = {};
+  if (mode === 'VECTOR_ENDPOINT') {
+    source = {
+      type: 'vector',
+      tiles: [`${layer.url}?query=${encodeURI(JSON.stringify(layer.filterObject))}`],
       minzoom: 0,
       maxzoom: 24
-    });
+    };
+  } else {
+    source = {
+      type: 'geojson',
+      data: layer.geoJSON
+    };
+  }
 
-  map.addLayer({
+  let fillLayer = {
+    id: layerID,
+    source: layerID,
+    type: 'fill',
+    paint: {
+      'fill-color': getPaintBySchemeOrColor(layer),
+      'fill-outline-color': getPaintBySchemeOrColor(layer),
+      'fill-opacity': 0.5
+    },
+    minzoom: 0,
+    maxzoom: 24
+  };
+
+  let borderLayer = {
     id: 'polygon-border-' + layerID,
     source: layerID,
     type: 'line',
@@ -233,9 +243,9 @@ export const createActivityLayer = (map: any, layer: any) => {
       'line-opacity': 1,
       'line-width': 3
     }
-  });
+  };
 
-  map.addLayer({
+  let circleMarkerZoomedOutLayer = {
     id: 'polygon-circle-' + layerID,
     source: layerID,
     type: 'circle',
@@ -244,9 +254,9 @@ export const createActivityLayer = (map: any, layer: any) => {
       'circle-radius': 3
     },
     maxzoom: 10
-  });
+  };
 
-  map.addLayer({
+  let labelLayer = {
     id: 'label-' + layerID,
     type: 'symbol',
     source: layerID,
@@ -277,7 +287,19 @@ export const createActivityLayer = (map: any, layer: any) => {
       'text-halo-blur': 1
     },
     minzoom: 10
-  });
+  }
+
+  if (mode === 'VECTOR_ENDPOINT') {
+    fillLayer['source-layer'] = 'data';
+    borderLayer['source-layer'] = 'data';
+    circleMarkerZoomedOutLayer['source-layer'] = 'data';
+    labelLayer['source-layer'] = 'data';
+  }
+
+  map.addSource(layerID, source).addLayer(fillLayer);
+  map.addLayer(borderLayer);
+  map.addLayer(circleMarkerZoomedOutLayer);
+  map.addLayer(labelLayer);
 };
 
 export const deleteStaleActivityLayer = (map: any, layer: any) => {
@@ -325,26 +347,39 @@ export const deleteStaleActivityLayer = (map: any, layer: any) => {
   });
 };
 
-export const createIAPPLayer = (map: any, layer: any) => {
+export const createIAPPLayer = (map: any, layer: any, mode) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
-  map
-    .addSource(layerID, {
-      type: 'geojson',
-      data: layer.geoJSON
-    })
-    .addLayer({
-      id: layerID,
-      source: layerID,
-      type: 'circle',
-      paint: {
-        'circle-color': layer.layerState.color || FALLBACK_COLOR,
-        'circle-radius': 3
-      },
+
+  let source = {};
+  if (mode === 'VECTOR_ENDPOINT') {
+    source = {
+      type: 'vector',
+      tiles: [`${layer.url}?query=${encodeURI(JSON.stringify(layer.filterObject))}`],
       minzoom: 0,
       maxzoom: 24
-    });
+    };
+  } else {
+    source = {
+      type: 'geojson',
+      data: layer.geoJSON
+    };
+  }
 
-  map.addLayer({
+
+  let circleLayer = {
+    id: layerID,
+    source: layerID,
+    type: 'circle',
+    paint: {
+      'circle-color': layer.layerState.color || FALLBACK_COLOR,
+      'circle-radius': 3
+    },
+    minzoom: 0,
+    maxzoom: 24
+  };
+
+
+  let labelLayer = {
     id: 'label-' + layerID,
     type: 'symbol',
     source: layerID,
@@ -371,10 +406,22 @@ export const createIAPPLayer = (map: any, layer: any) => {
       'text-halo-blur': 1
     },
     minzoom: 10
-  });
+  }
+
+
+  if(mode === 'VECTOR_ENDPOINT') {
+    circleLayer['source-layer'] = 'data';
+    labelLayer['source-layer'] = 'data';
+  }
+
+  map
+    .addSource(layerID, source)
+    .addLayer(circleLayer);
+
+  map.addLayer(labelLayer);
 };
 
-export const deleteStaleIAPPLayer = (map: any, layer: any) => {
+export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
   const allLayersForRecordSet = map.getLayersOrder().filter((mapLayer: any) => {
     return mapLayer.includes('recordset-layer-' + layer.recordSetID) || mapLayer.includes('label-' + layer.recordSetID);
   });
@@ -406,24 +453,24 @@ export const deleteStaleIAPPLayer = (map: any, layer: any) => {
   });
 };
 
-export const rebuildLayersOnTableHashUpdate = (storeLayers, map) => {
+export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode) => {
   storeLayers.map((layer: any) => {
-    if (layer.geoJSON && layer.loading === false) {
+    if ((layer.geoJSON && layer.loading === false) || mode === 'VECTOR_ENDPOINT' && layer.filterObject) {
       if (layer.type === 'Activity') {
         deleteStaleActivityLayer(map, layer);
         const existingSource = map.getSource(
           'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
         );
         if (existingSource === undefined) {
-          createActivityLayer(map, layer);
+          createActivityLayer(map, layer, mode);
         }
       } else if (layer.type === 'IAPP') {
-        deleteStaleIAPPLayer(map, layer);
+        deleteStaleIAPPLayer(map, layer, mode);
         const existingSource = map.getSource(
           'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
         );
         if (existingSource === undefined) {
-          createIAPPLayer(map, layer);
+          createIAPPLayer(map, layer, mode);
         }
       }
     }
@@ -554,7 +601,7 @@ export const initDrawModes = (
   });
 
   var DoNothing: any = {};
-  DoNothing.onSetup = function(opts) {
+  DoNothing.onSetup = function (opts) {
     //  if(map.draw && activityGeo)
     if (activityGeo) {
       this.addFeature(this.newFeature(activityGeo[0]));
@@ -564,11 +611,11 @@ export const initDrawModes = (
     state.count = opts.count || 0;
     return state;
   };
-  DoNothing.onClick = function(state, e) {
+  DoNothing.onClick = function (state, e) {
     this.changeMode('draw_polygon');
   };
 
-  DoNothing.toDisplayFeatures = function(state, geojson, display) {
+  DoNothing.toDisplayFeatures = function (state, geojson, display) {
     geojson.properties.active = MapboxDraw.constants.activeStates.ACTIVE;
     display(geojson);
   };
@@ -583,14 +630,14 @@ export const initDrawModes = (
   // When the mode starts this function will be called.
   // The `opts` argument comes from `draw.changeMode('lotsofpoints', {count:7})`.
   // The value returned should be an object and will be passed to all other lifecycle functions
-  LotsOfPointsMode.onSetup = function(opts) {
+  LotsOfPointsMode.onSetup = function (opts) {
     var state: any = {};
     state.count = opts.count || 0;
     return state;
   };
 
   // Whenever a user clicks on the map, Draw will call `onClick`
-  LotsOfPointsMode.onClick = function(state, e) {
+  LotsOfPointsMode.onClick = function (state, e) {
     // `this.newFeature` takes geojson and makes a DrawFeature
     var point = this.newFeature({
       type: 'Feature',
@@ -606,7 +653,7 @@ export const initDrawModes = (
   };
 
   // Whenever a user clicks on a key while focused on the map, it will be sent here
-  LotsOfPointsMode.onKeyUp = function(state, e) {
+  LotsOfPointsMode.onKeyUp = function (state, e) {
     if (e.keyCode === 27) return this.changeMode('simple_select');
   };
 
@@ -614,7 +661,7 @@ export const initDrawModes = (
   // It decides which features currently in Draw's data store will be rendered on the map.
   // All features passed to `display` will be rendered, so you can pass multiple display features per internal feature.
   // See `styling-draw` in `API.md` for advice on making display features
-  LotsOfPointsMode.toDisplayFeatures = function(state, geojson, display) {
+  LotsOfPointsMode.toDisplayFeatures = function (state, geojson, display) {
     display(geojson);
   };
 
@@ -990,7 +1037,6 @@ export const refreshServerBoundariesOnToggle = (serverBoundaries, map) => {
     });
   }
 };
-
 
 export const addClientBoundariesIfNotExists = (clientBoundaries, map) => {
   if (map && clientBoundaries?.length > 0) {

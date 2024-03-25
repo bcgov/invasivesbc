@@ -101,6 +101,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
 
 function* handle_MAP_INIT_REQUEST(action) {
   const authState = yield select(selectAuth);
+  const mapState = yield select(selectMap);
   const sets = {};
   // sets['2'] = action.payload.recordSets[2];
   // sets['3'] = action.payload.recordSets[3];
@@ -128,25 +129,27 @@ function* handle_MAP_INIT_REQUEST(action) {
     100
   );
 
-  yield put({
-    type: ACTIVITIES_GEOJSON_GET_REQUEST,
-    payload: {
-      // recordSetID: '2',
-      activitiesFilterCriteria: filterCriteria
-      // layerState: layerState
-    }
-  });
+  if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
+    yield put({
+      type: ACTIVITIES_GEOJSON_GET_REQUEST,
+      payload: {
+        // recordSetID: '2',
+        activitiesFilterCriteria: filterCriteria
+        // layerState: layerState
+      }
+    });
 
-  //  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+    //  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
 
-  yield put({
-    type: IAPP_GEOJSON_GET_REQUEST,
-    payload: {
-      //   recordSetID: '3',
-      IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
-      //   layerState: IAPPlayerState
-    }
-  });
+    yield put({
+      type: IAPP_GEOJSON_GET_REQUEST,
+      payload: {
+        //   recordSetID: '3',
+        IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
+        //   layerState: IAPPlayerState
+      }
+    });
+  }
 
   yield call(refetchServerBoundaries);
   yield put({ type: MAP_INIT_FOR_RECORDSET });
@@ -613,53 +616,52 @@ function* handle_UserFilterChange(action) {
     recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !==
     recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash
   )
-    if (recordSetType === 'Activity') {
-      if (currentSet === action.payload.setID)
-        yield put({
-          type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-          payload: {
-            recordSetID: action.payload.setID,
-            tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-            page: 0,
-            limit: 20
-          }
-        });
-      if (map.MapMode === 'VECTOR_ENDPOINT') {
-        yield put({
-          type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
-          payload: {
-            recordSetID: action.payload.setID,
-            tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-          }
-        });
-      } else {
-        yield put({
-          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-          payload: {
-            recordSetID: action.payload.setID,
-            tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-          }
-        });
-      }
-    } else {
-      if (currentSet === action.payload.setID)
-        yield put({
-          type: IAPP_TABLE_ROWS_GET_REQUEST,
-          payload: {
-            recordSetID: action.payload.setID,
-            tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-            page: 0,
-            limit: 20
-          }
-        });
+    if (map.MapMode === 'VECTOR_ENDPOINT') {
       yield put({
-        type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
+        type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
         payload: {
           recordSetID: action.payload.setID,
           tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
         }
       });
     }
+  if (recordSetType === 'Activity') {
+    if (currentSet === action.payload.setID)
+      yield put({
+        type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+        payload: {
+          recordSetID: action.payload.setID,
+          tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+          page: 0,
+          limit: 20
+        }
+      });
+    yield put({
+      type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+      payload: {
+        recordSetID: action.payload.setID,
+        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+      }
+    });
+  } else {
+    if (currentSet === action.payload.setID)
+      yield put({
+        type: IAPP_TABLE_ROWS_GET_REQUEST,
+        payload: {
+          recordSetID: action.payload.setID,
+          tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+          page: 0,
+          limit: 20
+        }
+      });
+    yield put({
+      type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
+      payload: {
+        recordSetID: action.payload.setID,
+        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+      }
+    });
+  }
 }
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action) {
@@ -722,20 +724,17 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
 
   let actionsToPut = [];
   allUninitializedLayers.map((layer) => {
-    if (layer.recordSetType === 'Activity') {
-      if(mapMode === 'VECTOR_ENDPOINT') {
+    if (mapMode === 'VECTOR_ENDPOINT') {
       actionsToPut.push({
         type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
       });
     }
-    else {
+    if (layer.recordSetType === 'Activity') {
       actionsToPut.push({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
       });
-
-    }
     } else {
       actionsToPut.push({
         type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
