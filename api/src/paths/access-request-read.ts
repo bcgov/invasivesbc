@@ -62,6 +62,8 @@ function getAccessRequestData(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'access-request', message: 'create', body: req.body });
 
+
+
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({

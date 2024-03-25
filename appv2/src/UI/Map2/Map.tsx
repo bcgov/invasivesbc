@@ -115,7 +115,7 @@ export const Map = (props: any) => {
   // RecordSet Layers:
   useEffect(() => {
     if (!map.current) return;
-    rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode);
+    rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
@@ -166,74 +166,6 @@ export const Map = (props: any) => {
   }, [whatsHereToggle, appModeUrl, map, activityGeo, drawingCustomLayer]);
 
 
-  // Vector Endpoint Mode for Recordsets:
-  /*
-  useEffect(() => {
-    if (!map.current) return;
-
-    const query = {
-      agency: 'Council'
-    };
-
-    // // all IAPP
-    map.current.addLayer({
-      id: 'iapp_vector_points',
-      type: 'circle',
-      source: {
-        type: 'vector',
-        tiles: [`${API_BASE}/api/vectors/iapp/{z}/{x}/{y}?query=${encodeURI(JSON.stringify(query))}`],
-        minzoom: 2,
-        maxzoom: 13
-      },
-      visibility: 'visible',
-      'source-layer': 'data',
-      paint: {
-        'circle-color': 'red',
-        'circle-radius': 3,
-        'circle-opacity': 0.75
-      }
-    });
-
-  }, [map.current]);
-  */
-
-  /*
-  useEffect(() => {
-    if (!map.current || MapMode !== 'VECTOR_ENDPOINT') return;
-
-
-    storeLayers.map((layer) => {
-      if(!layer.filterObject) {
-        return;
-
-      }
-
-      const layerID = `POC_${layer.recordSetID}_VECTOR`;
-
-      if (map.current.getSource(layerID)) {
-        return;
-      }
-
-      map.current.addLayer({
-        id: `POC_${layer.recordSetID}_VECTOR`,
-        type: 'fill',
-        source: {
-          type: 'vector',
-          tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
-          minzoom: 2,
-          maxzoom: 13
-        },
-        visibility: 'visible',
-        'source-layer': 'data',
-        paint: {
-          'fill-color': layer.colour ? layer.colour : 'red',
-        }
-      });
-    })
-
-  }, [storeLayers]);
-  */
-
 
   //Current Activity & IAPP Markers
   useEffect(() => {
@@ -253,10 +185,20 @@ export const Map = (props: any) => {
     refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
   }, [userRecordOnHoverRecordRow]);
 
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  useEffect(()=> {
+    setInterval(() => {
+      if (map.current) {
+        setMapLoaded(map.current.areTilesLoaded());
+      }
+    }, 1000);
+  },[map.current])
 
   return (
     <div className='MapWrapper'>
       <div ref={mapContainer} className='Map' />
+      <div id='LoadingMap' className={!mapLoaded? 'loadingMap': 'loadedMap'} >Loading tiles...</div>
       {props.children}
     </div>
   );

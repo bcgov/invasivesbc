@@ -27,7 +27,7 @@ GET.apiDoc = {
 
 function tile(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const rawBodyCriteria = req.query.filterObject
+    const rawBodyCriteria = JSON.parse(decodeURI(req.query.filterObject as string))
     const { source } = req.params;
     let filterObj = null 
     if(source === 'activities') {
