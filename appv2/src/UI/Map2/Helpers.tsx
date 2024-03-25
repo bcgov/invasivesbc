@@ -180,8 +180,16 @@ export const mapInit = (
   });
 };
 
-export const createActivityLayer = (map: any, layer: any, mode) => {
+export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
+
+  console.log('checking if recordset colorscheme is loaded:' + typeof layer.recordSetID)
+  // hack so the colorschemes apply
+  
+  if(['1','2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
+    console.log('colorscheme its not loaded')
+    return;
+  }
 
   const getPaintBySchemeOrColor = (layer: any) => {
     if (layer.layerState.colorScheme) {
@@ -210,7 +218,7 @@ export const createActivityLayer = (map: any, layer: any, mode) => {
   if (mode === 'VECTOR_ENDPOINT') {
     source = {
       type: 'vector',
-      tiles: [`${layer.url}?query=${encodeURI(JSON.stringify(layer.filterObject))}`],
+      tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
       minzoom: 0,
       maxzoom: 24
     };
@@ -347,14 +355,14 @@ export const deleteStaleActivityLayer = (map: any, layer: any) => {
   });
 };
 
-export const createIAPPLayer = (map: any, layer: any, mode) => {
+export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
 
   let source = {};
   if (mode === 'VECTOR_ENDPOINT') {
     source = {
       type: 'vector',
-      tiles: [`${layer.url}?query=${encodeURI(JSON.stringify(layer.filterObject))}`],
+      tiles: [`${API_BASE}/api/vectors/iapp/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
       minzoom: 0,
       maxzoom: 24
     };
@@ -453,7 +461,7 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
   });
 };
 
-export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode) => {
+export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE) => {
   storeLayers.map((layer: any) => {
     if ((layer.geoJSON && layer.loading === false) || mode === 'VECTOR_ENDPOINT' && layer.filterObject) {
       if (layer.type === 'Activity') {
@@ -462,7 +470,7 @@ export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode) => {
           'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
         );
         if (existingSource === undefined) {
-          createActivityLayer(map, layer, mode);
+          createActivityLayer(map, layer, mode, API_BASE);
         }
       } else if (layer.type === 'IAPP') {
         deleteStaleIAPPLayer(map, layer, mode);
@@ -470,7 +478,7 @@ export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode) => {
           'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
         );
         if (existingSource === undefined) {
-          createIAPPLayer(map, layer, mode);
+          createIAPPLayer(map, layer, mode, API_BASE);
         }
       }
     }
@@ -491,13 +499,17 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
           const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
           if (layer.type === 'Activity') {
             currentColor = fillPolygonLayerStyle.paint['fill-color'];
-            if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
+            if (currentColor !== layer.layerState.color && !layer.layerState?.colorScheme) {
               map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color || FALLBACK_COLOR);
               map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color || FALLBACK_COLOR);
             }
           } else {
+            //console.log('is iapp to color')
+            
             currentColor = fillPolygonLayerStyle.paint['circle-color'];
-            if (currentColor !== layer.layerState.color) {
+            //console.log('color is: ', currentColor, 'layer color is: ', layer.layerState.color || layer.layerState.colorScheme, 'fallback is: ', FALLBACK_COLOR)
+            if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
+             // console.log('colors dont match, updating')
               map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
             }
           }

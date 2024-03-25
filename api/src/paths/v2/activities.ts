@@ -85,6 +85,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
     clientReqTableFilters: []
   } as any;
 
+  defaultLog.debug({ label: 'sanitizeActivityFilterObject', message: 'sql', body: JSON.stringify(filterObject, null, 2)});
   if (req.params.x) {
     sanitizedSearchCriteria.vt_request = true;
     sanitizedSearchCriteria.x = req.params.x;
@@ -307,6 +308,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 }
 
 export function getActivitiesSQLv2(filterObject: any) {
+  defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: JSON.stringify(filterObject, null, 2)});
   try {
     let sqlStatement: SQLStatement = SQL``;
     sqlStatement = initialWithStatement(sqlStatement);
@@ -486,7 +488,7 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
                                             buffer => 64) AS geom,
                                activity_incoming_data_id                    as feature_id,
                                activity_id                    ,
-                               activity_type,
+                               activity_type as type,
                                activity_subtype from activities  where ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}) 
      `);
   } else {

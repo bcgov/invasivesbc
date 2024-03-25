@@ -27,7 +27,6 @@
   text-align: justify;
   top: 0;
   right: 0;
-
 }
 
 .MuiLayerPickerIconButton {
@@ -36,7 +35,6 @@
 }
 
 .layerPickerOpen {
-
   width: 500px;
   height: auto;
   background-color: white;
@@ -45,7 +43,6 @@
 .layerPickerClosed {
   width: 50px;
   height: 50px;
-
 }
 
 #layerPickerToggleOpen {
@@ -60,16 +57,33 @@
 }
 
 .layerPickerLayer {
-
-
 }
 
-
 .layerPickerCategoryHeader {
-  font-weight:900;
+  font-weight: 900;
 }
 .layerpickercustomizeMenu {
   height: 50px;
   width: auto;
+}
 
+#LoadingMap {
+}
+
+.loadingMap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  font-size: 20px;
+  color: 'black';
+  top: 0;
+  left: 0;
+  width: 100px;
+  height: 100px;
+  background-color: rgba(255, 255, 255, 0.5);
+  z-index: 999;
+}
+.loadedMap {
+  display: none;
 }
