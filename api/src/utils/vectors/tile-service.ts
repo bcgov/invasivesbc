@@ -1,5 +1,6 @@
 import { getDBConnection } from 'database/db';
 import { getActivitiesSQLv2 } from 'paths/v2/activities';
+import { getIAPPSQLv2 } from 'paths/v2/iapp';
 
 export interface TileService {
   tile(source: string, filterObj): Promise<Buffer>;
@@ -11,8 +12,8 @@ export const PostgresTileService: TileService = {
 
     try {
       switch (source) {
-        /*case 'iapp':
-          return Buffer.from((await connection.query(
+        case 'iapp': {
+          /*
             ` WITH mvtgeom AS
                        (SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
                                             ST_TileEnvelope($1, $2, $3), extent => 4096,
@@ -26,19 +27,20 @@ export const PostgresTileService: TileService = {
               SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data
               FROM mvtgeom;
             `
-            ,
-            [filterObj.z, filterObj.x, filterObj.y, query['agency']])).rows[0].data);
             */
+          let { text, values } = getIAPPSQLv2(filterObj);
+          return Buffer.from((await connection.query(text, values)).rows[0].data);
+        }
         case 'activities':
-          const { text, values } = getActivitiesSQLv2(filterObj);
-          return Buffer.from((await connection.query(text, values)).rows[0].data)
+          {
+            let { text, values } = getActivitiesSQLv2(filterObj);
+          return Buffer.from((await connection.query(text, values)).rows[0].data);
+          }
         default:
-          return null
+          return null;
       }
-
     } finally {
       connection.release();
     }
-
   }
 };

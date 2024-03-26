@@ -59,6 +59,7 @@ export const mapInit = (
       container: mapContainer.current,
       maxZoom: 24,
       zoom: h.maxZoom - 2,
+      minZoom: 0,
       transformRequest: (url, resourceType) => {
         if (url.includes(api_base)) {
           return {
@@ -225,7 +226,8 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
   } else {
     source = {
       type: 'geojson',
-      data: layer.geoJSON
+      data: layer.geoJSON,
+      //tolerance: 0 defaults to 0.375, 0 is a hog but 0.375 is too much at low zooms
     };
   }
 
