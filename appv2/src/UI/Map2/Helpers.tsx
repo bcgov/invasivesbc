@@ -261,7 +261,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
       'circle-color': getPaintBySchemeOrColor(layer),
       'circle-radius': 3
     },
-    maxzoom: 10
+    maxzoom: 10, minzoom: 0
   };
 
   let labelLayer = {

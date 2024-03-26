@@ -37,9 +37,11 @@ import {
   MAP_INIT_REQUEST,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
+  MAP_MODE_SET,
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
   MAP_SET_COORDS,
+  MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
   MAP_WHATS_HERE_FEATURE,
@@ -849,6 +851,11 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   }
 }
 
+
+function* handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
+  location.reload()
+}
+
 function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
   yield all([
@@ -868,6 +875,7 @@ function* activitiesPageSaga() {
     takeEvery(USER_SETTINGS_ADD_RECORD_SET, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
+    takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),

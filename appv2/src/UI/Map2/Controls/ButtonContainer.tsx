@@ -9,6 +9,7 @@ import { LegendsButton } from './LegendsButton';
 import { NewRecord } from './NewRecord';
 import { QuickPanToRecordToggle } from './QuickPanToRecordToggle';
 import { WhatsHereButton } from './WhatsHereButton';
+import { MapModeToggle } from './MapToggleCacheGeoJSON';
 
 export const ButtonContainer = (props) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
@@ -26,6 +27,7 @@ export const ButtonContainer = (props) => {
       <CenterCurrentRecord type="Activity" />
       <CenterCurrentRecord type="IAPP" />
       <QuickPanToRecordToggle />
+      <MapModeToggle/>
       {/*
 
       {isAuth && <WhatsHereCurrentRecordHighlighted />}

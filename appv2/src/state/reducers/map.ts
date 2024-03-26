@@ -71,7 +71,8 @@ import {
   TOGGLE_DRAWN_LAYER,
   MAP_ON_SHAPE_UPDATE,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  MAP_MODE_SET
+  MAP_MODE_SET,
+  MAP_TOGGLE_GEOJSON_CACHE
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -389,7 +390,7 @@ const initialState: MapState = {
   layers: [],
   legendsPopup: undefined,
   linkToCSV: '',
-  MapMode: 'VECTOR_ENDPOINT',
+  MapMode: localStorage.getItem('MapMode') ? localStorage.getItem('MapMode') : 'GEOJSON',
   panned: false,
   positionTracking: false,
   quickPanToRecord: false,
@@ -476,6 +477,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
           draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
           localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
+          break;
+        }
+        case MAP_TOGGLE_GEOJSON_CACHE: 
+        {
+          draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
+          localStorage.setItem('MapMode', draftState.MapMode);
           break;
         }
         case WHATS_HERE_ID_CLICKED:
