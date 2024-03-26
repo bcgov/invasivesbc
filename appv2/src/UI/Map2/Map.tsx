@@ -2,7 +2,7 @@ import circle from '@turf/circle';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useStore } from 'react-redux';
 import './map.css';
 
 // Draw tools:
@@ -38,7 +38,7 @@ import { opacify } from 'color2k';
  */
 export const Map = (props: any) => {
   const { API_BASE } = useSelector(state => state.Configuration.current);
-  const { requestHeaders } = useSelector(state => state.Auth);
+  const store = useStore(); // to escape useselector memoization
 
   const [draw, setDraw] = useState(null);
   const mapContainer = useRef(null);
@@ -108,7 +108,7 @@ export const Map = (props: any) => {
   useEffect(() => {
     if (map.current || !authInitiated) return;
     mapInit(map, mapContainer, setDraw, dispatch, uHistory, appModeUrl, activityGeo, null, API_BASE, () => {
-      return requestHeaders;
+      return store.getState().Auth.requestHeaders;
     });
   }, [authInitiated]);
 
