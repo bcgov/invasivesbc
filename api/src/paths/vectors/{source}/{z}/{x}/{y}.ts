@@ -4,6 +4,7 @@ import { RequestHandler } from 'express';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { Operation } from 'express-openapi';
 import { sanitizeActivityFilterObject } from 'paths/v2/activities';
+import { sanitizeIAPPFilterObject } from 'paths/v2/iapp';
 
 export const GET: Operation = [tile()];
 
@@ -32,6 +33,9 @@ function tile(): RequestHandler {
     let filterObj = null 
     if(source === 'activities') {
       filterObj = sanitizeActivityFilterObject(rawBodyCriteria, req);
+    }
+    else {
+      filterObj = sanitizeIAPPFilterObject(rawBodyCriteria, req);
     }
 
     //@todo validate source, tile bounds

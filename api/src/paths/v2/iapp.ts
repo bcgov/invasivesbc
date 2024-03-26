@@ -79,12 +79,19 @@ POST.apiDoc = {
   }
 };
 
-function sanitizeIAPPFilterObject(filterObject: any, req: any) {
+export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
   let sanitizedSearchCriteria = {
     serverSideNamedFilters: {},
     selectColumns: [],
     clientReqTableFilters: []
   } as any;
+
+  if (req.params.x) {
+    sanitizedSearchCriteria.vt_request = true;
+    sanitizedSearchCriteria.x = req.params.x;
+    sanitizedSearchCriteria.y = req.params.y;
+    sanitizedSearchCriteria.z = req.params.z;
+  }
 
   const roleName = (req as any).authContext.roles[0]?.role_name;
   //const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
@@ -287,7 +294,7 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
   };
 }
 
-function getIAPPSQLv2(filterObject: any) {
+export function getIAPPSQLv2(filterObject: any) {
   try {
     let sqlStatement: SQLStatement = SQL``;
     sqlStatement = initialWithStatement(sqlStatement);
@@ -296,9 +303,13 @@ function getIAPPSQLv2(filterObject: any) {
     sqlStatement = fromStatement(sqlStatement, filterObject);
     sqlStatement = whereStatement(sqlStatement, filterObject);
     sqlStatement = groupByStatement(sqlStatement, filterObject);
-    sqlStatement = orderByStatement(sqlStatement, filterObject);
-    sqlStatement = limitStatement(sqlStatement, filterObject);
-    sqlStatement = offSetStatement(sqlStatement, filterObject);
+    if (!filterObject.vt_request) {
+      sqlStatement = orderByStatement(sqlStatement, filterObject);
+      sqlStatement = limitStatement(sqlStatement, filterObject);
+      sqlStatement = offSetStatement(sqlStatement, filterObject);
+    } else {
+      sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom;`);
+    }
 
     defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'sql', body: sqlStatement });
     return sqlStatement;
@@ -406,7 +417,8 @@ sites as (
   b.regional_district,
   b.regional_invasive_species_organization,
   b.invasive_plant_management_area,
-  b.geojson
+  b.geojson,
+  b.geog as geog
   
   `);
 
@@ -447,23 +459,36 @@ sites as (
 }
 
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
-  if (filterObject.isCSV) {
-    const select = sqlStatement.append(`select pe.* `);
-    return select;
-  }
-  if (filterObject.selectColumns) {
-    const select = sqlStatement.append(
-      `select ${filterObject.selectColumns.map((column) => `sites.${column}`).join(',')} `
-    );
-    return select;
+  if (filterObject.vt_request) {
+    sqlStatement.append(`
+    , mvtgeom AS
+    (  SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
+                                            ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y} ), extent => 4096,
+                                            buffer => 64, clip_geom => false) AS geom,
+                               site_id                    as feature_id,
+                               site_id
+                               from sites  where ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}, margin => (64.0 / 4096) )
+     `);
   } else {
-    const select = sqlStatement.append(`select * `);
-    return select;
+    if (filterObject.isCSV) {
+      const select = sqlStatement.append(`select pe.* `);
+      return select;
+    }
+    if (filterObject.selectColumns) {
+      const select = sqlStatement.append(
+        `select ${filterObject.selectColumns.map((column) => `sites.${column}`).join(',')} `
+      );
+      return select;
+    } else {
+      const select = sqlStatement.append(`select * `);
+      return select;
+    }
   }
+  return sqlStatement;
 }
 
 function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const from = sqlStatement.append(`from sites `);
+  let from = filterObject.vt_request ? sqlStatement.append(' ') : sqlStatement.append(`from sites  `);
   if (filterObject.isCSV) {
     switch (filterObject.CSVType) {
       case 'site_selection_extract':
@@ -502,7 +527,7 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const where = sqlStatement.append(`where 1=1 `);
+  const where = filterObject.vt_request?  sqlStatement.append(`and 1=1 `) :  sqlStatement.append(`where 1=1  `)
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     //TODO do i need to hide any    where.append(`and iapp_sites.activity_type not in ('Treatment','Monitoring') `);
   }
