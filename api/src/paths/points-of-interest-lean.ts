@@ -168,7 +168,8 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           properties: {
             ...row.geojson.properties,
             site_id: row.geojson.properties.site_id,
-            species_on_site: species_on_site
+            species_on_site: species_on_site,
+            map_symbol: row.geojson.properties.map_symbol
           }
         };
       });
