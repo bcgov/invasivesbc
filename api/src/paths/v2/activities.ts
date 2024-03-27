@@ -488,6 +488,8 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
                                             buffer => 64) AS geom,
                                activity_incoming_data_id                    as feature_id,
                                activity_id                    ,
+                               short_id,
+                               map_symbol,
                                activity_type as type,
                                activity_subtype from activities  where ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}) 
      `);

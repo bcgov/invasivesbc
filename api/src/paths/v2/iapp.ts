@@ -406,6 +406,7 @@ sites as (
   b.site_paper_file_id,
   b.min_survey,
   b.all_species_on_site,
+  b.map_symbol,
   b.max_survey,
   b.agencies,
   b.biological_agent,
@@ -466,7 +467,8 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
                                             ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y} ), extent => 4096,
                                             buffer => 64, clip_geom => false) AS geom,
                                site_id                    as feature_id,
-                               site_id
+                               site_id,
+                               map_symbol
                                from sites  where ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}, margin => (64.0 / 4096) )
      `);
   } else {

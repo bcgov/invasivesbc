@@ -390,7 +390,7 @@ const initialState: MapState = {
   layers: [],
   legendsPopup: undefined,
   linkToCSV: '',
-  MapMode: localStorage.getItem('MapMode') ? localStorage.getItem('MapMode') : 'GEOJSON',
+  MapMode: localStorage.getItem('MapMode') ? localStorage.getItem('MapMode') : 'VECTOR_ENDPOINT',
   panned: false,
   positionTracking: false,
   quickPanToRecord: false,

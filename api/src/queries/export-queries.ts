@@ -34,6 +34,7 @@ export const ALL_ACTIVITY_SQL = SQL`
                            'id', a.activity_id,
                            'type', a.activity_type,
                            'subtype', activity_subtype,
+                           'map_symbol', a.map_symbol,
                            'species_positive', species_positive,
                            'species_negative', species_negative,
                            'species_treated', species_treated,

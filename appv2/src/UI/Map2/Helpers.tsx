@@ -275,14 +275,11 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
       'text-field': [
         'format',
         ['upcase', ['get', 'short_id']],
-        { 'font-scale': 1.3 },
+        { 'font-scale': 0.9 },
         '\n',
         {},
-        [
-          'upcase',
-          ['concat', ['get', 'type'], ' +  ', ['get', 'species_positive'], ' - ', ['get', 'species_negative']]
-        ],
-        { 'font-scale': 1.0 }
+        ['get', 'map_symbol'],
+        { 'font-scale': 0.9 }
       ],
       // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
       'text-font': ['literal', ['Open Sans Bold']],
@@ -297,7 +294,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
       'text-halo-blur': 1
     },
     minzoom: 10
-  }
+  };
 
   if (mode === 'VECTOR_ENDPOINT') {
     fillLayer['source-layer'] = 'data';
@@ -397,12 +394,12 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
       //                'icon-image': 'dog-park-11',
       'text-field': [
         'format',
-        ['concat', 'IAPP-', ['to-string', ['get', 'site_id']]],
-        { 'font-scale': 1.3 },
+        ['to-string', ['get', 'site_id']],
+        { 'font-scale': 0.9 },
         '\n',
         {},
-        ['to-string', ['get', 'species_on_site']],
-        { 'font-scale': 1.0 }
+        ['to-string', ['get', 'map_symbol']],
+        { 'font-scale': 0.9 }
       ],
       // the actual font names that work are here
       'text-font': ['literal', ['Open Sans Bold']],
