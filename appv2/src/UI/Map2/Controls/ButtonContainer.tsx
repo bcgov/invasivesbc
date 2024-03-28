@@ -24,11 +24,11 @@ export const ButtonContainer = (props) => {
       <AccuracyToggle />
       {isAuth && <WhatsHereButton />}
 
-      <NewRecord />
-      <CenterCurrentRecord type="Activity" />
-      <CenterCurrentRecord type="IAPP" />
+      { isAuth && <NewRecord />}
+      { isAuth && <CenterCurrentRecord type="Activity" />}
+      { isAuth && <CenterCurrentRecord type="IAPP" />}
       <QuickPanToRecordToggle />
-      <MapModeToggle/>
+      { isAuth  && <MapModeToggle/>}
       {/*
 
       {isAuth && <WhatsHereCurrentRecordHighlighted />}
