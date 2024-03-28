@@ -82,6 +82,7 @@ export const Map = (props: any) => {
   });
 
   const baseMapToggle = useSelector((state: any) => state.Map?.baseMapToggle);
+  const HDToggle = useSelector((state: any) => state.Map?.HDToggle);
 
   // Draw tools - determing who needs edit and where the geos get dispatched, what tools to display etc
   const whatsHereToggle = useSelector((state: any) => state.Map?.whatsHere?.toggle);
@@ -154,10 +155,11 @@ export const Map = (props: any) => {
   //Toggle Topo
   useEffect(() => {
     if (!map.current) return;
-    toggleLayerOnBool(map.current, 'Esri-Sat-Layer', !baseMapToggle);
+    toggleLayerOnBool(map.current, 'Esri-Sat-LayerHD', (!baseMapToggle && HDToggle));
+    toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', (!baseMapToggle && !HDToggle));
     toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
-  }, [baseMapToggle]);
+  }, [baseMapToggle, HDToggle]);
 
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
