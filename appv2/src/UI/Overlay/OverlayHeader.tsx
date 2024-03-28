@@ -77,10 +77,10 @@ const drag = (e) =>   {
 const cleanup = (e) => {
   try {
 
-  document.removeEventListener('mousemove', debouncedDrag, false);
-  document.removeEventListener('mouseup', cleanup, false);
-  document.removeEventListener('touchmove', debouncedDrag, false);
-  document.removeEventListener('touchend', cleanup, false);
+  document.removeEventListener('mousemove', drag, false);
+  //document.removeEventListener('mouseup', cleanup, false);
+  document.removeEventListener('touchmove', drag, false);
+  //document.removeEventListener('touchend', cleanup, false);
   }
   catch(e){
     console.error(e);
@@ -91,17 +91,18 @@ const onClickDragButton = (e?) => {
 
   if(e.type.includes('touch')) {
     document.addEventListener('touchmove', drag, false);
-    document.addEventListener('touchend', cleanup, false);
+    document.addEventListener('touchend', cleanup, true);
   }
   else {
+    console.log('** click drag mouse')
   document.addEventListener('mousemove', drag, false);
-  document.addEventListener('mouseup', cleanup, false);
+  document.addEventListener('mouseup', cleanup, true);
   }
 
   setTimeout(() => {
     if(e)
     cleanup(e);
-  }, 10000);
+  }, 5000);
 };
 
 export const OverlayHeader = (props) => {
