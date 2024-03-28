@@ -18,6 +18,7 @@ export const LayerPicker = (props: any) => {
   const WMSLayers = useSelector((state: any) => state?.Map?.simplePickerLayers2);
   const KMLLayers = useSelector((state: any) => state.Map.serverBoundaries);
   const drawnLayers = useSelector((state: any) => state.Map?.clientBoundaries);
+  const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   return (
     <div id="layerPickerElement" className={layerPickerOpen ? 'layerPickerOpen' : 'layerPickerClosed'}>
       <div id="layerPickerToggleOpen" onClick={() => dispatch({ type: TOGGLE_LAYER_PICKER_OPEN })}>
@@ -104,7 +105,7 @@ export const LayerPicker = (props: any) => {
       ) : (
         <></>
       )}
-      {layerPickerOpen ? (
+      {layerPickerOpen && isAuth ? (
         <Button
           className={'layerpickercustomizeMenu'}
           variant="outlined"
