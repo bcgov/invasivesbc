@@ -56,21 +56,47 @@ const getOverlayHeight = () => {
   return currentAppHeight;
 }
 
-const debouncedDrag = (e) => { //} debounce((e) => {
+const debouncedDrag = debounce((e) => {
+  let newOverlayHeight;
+  if(e.type.includes('touch')) {
+    const pos = e.touches[0].clientY;
+    newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(pos);
+  }
+  else {
   const mousePos = e.y;
-  const newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(mousePos);
+  newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(mousePos);
+  }
   setOverlayHeight(newOverlayHeight);
   setButtonContainerHeight(newOverlayHeight);
-}//, 10);
+},5)
+
+const drag = (e) =>   {
+  debouncedDrag(e)
+}
 
 const cleanup = (e) => {
+  try {
+
   document.removeEventListener('mousemove', debouncedDrag, false);
+  document.removeEventListener('mouseup', cleanup, false);
+  document.removeEventListener('touchmove', debouncedDrag, false);
+  document.removeEventListener('touchend', cleanup, false);
+  }
+  catch(e){
+    console.error(e);
+  }
 };
 
 const onClickDragButton = (e?) => {
 
-  document.addEventListener('mousemove', debouncedDrag, false);
+  if(e.type.includes('touch')) {
+    document.addEventListener('touchmove', drag, false);
+    document.addEventListener('touchend', cleanup, false);
+  }
+  else {
+  document.addEventListener('mousemove', drag, false);
   document.addEventListener('mouseup', cleanup, false);
+  }
 
   setTimeout(() => {
     if(e)
@@ -112,7 +138,7 @@ export const OverlayHeader = (props) => {
           </Button>
         </div>
 
-        <div onMouseDown={onClickDragButton} className="dragMeToResize">
+        <div onMouseDown={onClickDragButton} onTouchStart={onClickDragButton} className="dragMeToResize">
           <Button className='centerOverlayResizeButton' sx={{ height: '20px' }} variant="contained">
             <DragHandleIcon />
           </Button>
