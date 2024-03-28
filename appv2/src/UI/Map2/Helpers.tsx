@@ -1,4 +1,4 @@
-import maplibregl from 'maplibre-gl';
+import maplibregl, { ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
@@ -96,7 +96,7 @@ export const mapInit = (
             type: 'raster',
             tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
             tileSize: 256,
-            maxzoom: 18 
+            maxzoom: 18
           },
           'Esri-Sat-Label': {
             type: 'raster',
@@ -179,6 +179,11 @@ export const mapInit = (
         ]
       }
     });
+    let scale = new ScaleControl({
+      maxWidth: 80,
+      unit: 'metric'
+    });
+    map.current.addControl(scale, 'top-left');
     refreshDrawControls(
       map.current,
       null,
@@ -196,11 +201,11 @@ export const mapInit = (
 export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
 
-  console.log('checking if recordset colorscheme is loaded:' + typeof layer.recordSetID)
+  console.log('checking if recordset colorscheme is loaded:' + typeof layer.recordSetID);
   // hack so the colorschemes apply
-  
-  if(['1','2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
-    console.log('colorscheme its not loaded')
+
+  if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
+    console.log('colorscheme its not loaded');
     return;
   }
 
@@ -231,14 +236,16 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
   if (mode === 'VECTOR_ENDPOINT') {
     source = {
       type: 'vector',
-      tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
+      tiles: [
+        `${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`
+      ],
       minzoom: 0,
       maxzoom: 24
     };
   } else {
     source = {
       type: 'geojson',
-      data: layer.geoJSON,
+      data: layer.geoJSON
       //tolerance: 0 defaults to 0.375, 0 is a hog but 0.375 is too much at low zooms
     };
   }
@@ -275,7 +282,8 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
       'circle-color': getPaintBySchemeOrColor(layer),
       'circle-radius': 3
     },
-    maxzoom: 10, minzoom: 0
+    maxzoom: 10,
+    minzoom: 0
   };
 
   let labelLayer = {
@@ -384,7 +392,6 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
     };
   }
 
-
   let circleLayer = {
     id: layerID,
     source: layerID,
@@ -396,7 +403,6 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
     minzoom: 0,
     maxzoom: 24
   };
-
 
   let labelLayer = {
     id: 'label-' + layerID,
@@ -425,17 +431,14 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
       'text-halo-blur': 1
     },
     minzoom: 10
-  }
+  };
 
-
-  if(mode === 'VECTOR_ENDPOINT') {
+  if (mode === 'VECTOR_ENDPOINT') {
     circleLayer['source-layer'] = 'data';
     labelLayer['source-layer'] = 'data';
   }
 
-  map
-    .addSource(layerID, source)
-    .addLayer(circleLayer);
+  map.addSource(layerID, source).addLayer(circleLayer);
 
   map.addLayer(labelLayer);
 };
@@ -474,7 +477,7 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
 
 export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE) => {
   storeLayers.map((layer: any) => {
-    if ((layer.geoJSON && layer.loading === false) || mode === 'VECTOR_ENDPOINT' && layer.filterObject) {
+    if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
       if (layer.type === 'Activity') {
         deleteStaleActivityLayer(map, layer);
         const existingSource = map.getSource(
@@ -516,11 +519,11 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
             }
           } else {
             //console.log('is iapp to color')
-            
+
             currentColor = fillPolygonLayerStyle.paint['circle-color'];
             //console.log('color is: ', currentColor, 'layer color is: ', layer.layerState.color || layer.layerState.colorScheme, 'fallback is: ', FALLBACK_COLOR)
             if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
-             // console.log('colors dont match, updating')
+              // console.log('colors dont match, updating')
               map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
             }
           }
