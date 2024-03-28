@@ -86,11 +86,17 @@ export const mapInit = (
             tileSize: 256,
             maxzoom: 24
           },
-          'Esri-Sat-Layer': {
+          'Esri-Sat-LayerHD': {
             type: 'raster',
             tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
             tileSize: 256,
-            maxzoom: 18
+            maxzoom: 24
+          },
+          'Esri-Sat-LayerSD': {
+            type: 'raster',
+            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+            tileSize: 256,
+            maxzoom: 18 
           },
           'Esri-Sat-Label': {
             type: 'raster',
@@ -122,9 +128,15 @@ export const mapInit = (
             minzoom: 0
           },
           {
-            id: 'Esri-Sat-Layer',
+            id: 'Esri-Sat-LayerHD',
             type: 'raster',
-            source: 'Esri-Sat-Layer',
+            source: 'Esri-Sat-LayerHD',
+            minzoom: 0
+          },
+          {
+            id: 'Esri-Sat-LayerSD',
+            type: 'raster',
+            source: 'Esri-Sat-LayerSD',
             minzoom: 0
           },
           {
