@@ -108,9 +108,11 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   }
 
   const ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES = [
+  /*  
+    Expected behaviour for now is nobody sees anyone else's drafts, but if the requirement flip flops we can use this:
     'administrator_plants',
     'administrator_animals',
-    'master_administrator'
+    'master_administrator'*/
   ];
 
   // see if the user has ANY of those roles above (does not need to be the first/primary role)
