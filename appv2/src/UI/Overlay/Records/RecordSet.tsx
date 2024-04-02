@@ -47,6 +47,9 @@ export const RecordSet = (props) => {
   const recordSet = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]);
   const tableType = recordSet?.recordSetType;
 
+
+  const onlyFilterIsForDrafts = recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
+
   switch (recordSet) {
     case undefined:
       return <></>;
@@ -103,7 +106,7 @@ export const RecordSet = (props) => {
                   ) : (
                     <>
                       Show Filters{' '}
-                      {(recordSet?.tableFilters?.length || 0) > 0 && `(${recordSet?.tableFilters?.length})`}
+                      {(recordSet?.tableFilters?.length || 0) > 0 && !onlyFilterIsForDrafts && `(${recordSet?.tableFilters?.length})`}
                       <VisibilityIcon />
                       <FilterAltIcon />
                     </>
@@ -138,7 +141,7 @@ export const RecordSet = (props) => {
           </div>
           <div className="recordSet_filters_container">
             <div className="recordSet_filters">
-              {recordSet?.tableFilters?.length > 0 && viewFilters ? (
+              {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters ? (
                 <table className="recordSetFilterTable">
                   <tbody>
                     <tr>

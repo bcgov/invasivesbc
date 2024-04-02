@@ -246,7 +246,18 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           break;
         }
         case RECORDSET_CLEAR_FILTERS: {
-          draftState.recordSets[action.payload.setID].tableFilters = [];
+          if (!(action.payload.setID === '1')) {
+            draftState.recordSets[action.payload.setID].tableFilters = [];
+          } else {
+            draftState.recordSets[action.payload.setID].tableFilters = [
+              {
+                id: '1',
+                field: 'form_status',
+                filterType: 'tableFilter',
+                filter: 'Draft'
+              }
+            ];
+          }
           break;
         }
         case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
