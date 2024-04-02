@@ -263,6 +263,7 @@ const LoginOrOutMemo = React.memo((props) => {
         <Avatar></Avatar>
       </IconButton>
       <Menu
+        id="menu-appbar"
         anchorEl={anchorEl}
         open={openMenu}
         onClose={handleClose}

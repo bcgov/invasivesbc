@@ -5,6 +5,9 @@
   
 
 }
+#menu-appbar {
+  z-index: 9999999999;
+}
 .HeaderBar {
    height: 5vh;
     cursor: pointer;
