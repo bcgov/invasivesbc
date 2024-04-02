@@ -83,7 +83,8 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
   let sanitizedSearchCriteria = {
     serverSideNamedFilters: {},
     selectColumns: [],
-    clientReqTableFilters: []
+    clientReqTableFilters: [],
+    ids_to_filter: [],
   } as any;
 
   if (req.params.x) {
@@ -224,6 +225,19 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
   sanitizedSearchCriteria.serverFilterGeometries = serverFilterGeometries;
   sanitizedSearchCriteria.clientFilterGeometries = clientFilterGeometries;
   sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
+
+  let id_list_valid = true
+  for(let i = 0; i < filterObject?.ids_to_filter?.length; i++){
+    if(isNaN(parseInt(filterObject.ids_to_filter[i]))){
+      id_list_valid = false;
+      break;
+    }
+  }
+
+  if(id_list_valid){
+    sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
+  }
+
   defaultLog.debug({
     label: 'getIAPPBySearchFilterCriteria',
     message: 'sanitizedObject',
@@ -660,6 +674,10 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
     }
   });
+
+  if(filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0){
+    where.append(`and sites.site_id in (${filterObject.ids_to_filter.join(',')}) `);
+  }
 
   return where;
 }
