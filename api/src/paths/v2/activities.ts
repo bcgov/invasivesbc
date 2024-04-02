@@ -1,10 +1,10 @@
-import { SECURITY_ON, ALL_ROLES } from '../../constants/misc';
-import { createHash } from 'crypto';
+import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
 import { getDBConnection } from '../../database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getuid } from 'process';
 import SQL, { SQLStatement } from 'sql-template-strings';
+import { escapeLiteral } from 'pg';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from '../../utils/logger';
 import { streamActivitiesResult } from '../../utils/iapp-json-utils';
@@ -19,10 +19,10 @@ POST.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Activities Request Object',
@@ -85,7 +85,11 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
     clientReqTableFilters: []
   } as any;
 
-  defaultLog.debug({ label: 'sanitizeActivityFilterObject', message: 'sql', body: JSON.stringify(filterObject, null, 2)});
+  defaultLog.debug({
+    label: 'sanitizeActivityFilterObject',
+    message: 'sql',
+    body: JSON.stringify(filterObject, null, 2)
+  });
   if (req.params.x) {
     sanitizedSearchCriteria.vt_request = true;
     sanitizedSearchCriteria.x = req.params.x;
@@ -102,6 +106,25 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
     const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
     sanitizedSearchCriteria.user_roles = user_roles;
   }
+
+  const ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES = [
+    'administrator_plants',
+    'administrator_animals',
+    'master_administrator'
+  ];
+
+  // see if the user has ANY of those roles above (does not need to be the first/primary role)
+  let intersectingRoles = [];
+  if (req.authContext.roles) {
+    intersectingRoles = ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES.filter(v => (req as any).authContext.roles.find(z => z['role_name'] == v));
+  }
+
+  if (intersectingRoles.length > 0) {
+    sanitizedSearchCriteria.restrictVisibleDraftActivities = false;
+  } else {
+    sanitizedSearchCriteria.restrictVisibleDraftActivities = true;
+  }
+
   if (!isAuth || !roleName || roleName.includes('animal')) {
     sanitizedSearchCriteria.serverSideNamedFilters.hideTreatmentsAndMonitoring = true;
   } else {
@@ -112,6 +135,8 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   } else {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = false;
   }
+
+  sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
   let selectColumns = [];
 
@@ -146,8 +171,8 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
       }
     });
 
-    if(filterObject.selectColumns.includes('count')){
-      selectColumns = ['count(*) as count']
+    if (filterObject.selectColumns.includes('count')) {
+      selectColumns = ['count(*) as count'];
     }
   }
 
@@ -308,7 +333,11 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 }
 
 export function getActivitiesSQLv2(filterObject: any) {
-  defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: JSON.stringify(filterObject, null, 2)});
+  defaultLog.debug({
+    label: 'getActivitiesBySearchFilterCriteria',
+    message: 'sql',
+    body: JSON.stringify(filterObject, null, 2)
+  });
   try {
     let sqlStatement: SQLStatement = SQL``;
     sqlStatement = initialWithStatement(sqlStatement);
@@ -318,11 +347,10 @@ export function getActivitiesSQLv2(filterObject: any) {
     sqlStatement = whereStatement(sqlStatement, filterObject);
     sqlStatement = groupByStatement(sqlStatement, filterObject);
     if (!filterObject.vt_request) {
-    sqlStatement = orderByStatement(sqlStatement, filterObject);
+      sqlStatement = orderByStatement(sqlStatement, filterObject);
       sqlStatement = limitStatement(sqlStatement, filterObject);
       sqlStatement = offSetStatement(sqlStatement, filterObject);
-    }
-    else {
+    } else {
       sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom;`);
     }
 
@@ -336,7 +364,7 @@ export function getActivitiesSQLv2(filterObject: any) {
 
 function initialWithStatement(sqlStatement: SQLStatement) {
   /*const withStatement = sqlStatement.append(
-    `with not_deleted_activities as (SELECT a.* FROM invasivesbc.activity_incoming_data a  
+    `with not_deleted_activities as (SELECT a.* FROM invasivesbc.activity_incoming_data a
       where a.iscurrent = true
       )   `
   );*/
@@ -345,57 +373,48 @@ function initialWithStatement(sqlStatement: SQLStatement) {
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
   //todo: only do this when applicable
-  const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (
-    SELECT
-        cpo.activity_incoming_data_id,
-        string_agg(cpo.invasive_plant, ', ') AS current_positive_species
-    FROM
-        invasivesbc.current_positive_observations_materialized cpo
-    GROUP BY
-        cpo.activity_incoming_data_id
-),
-CurrentNegativeObservations AS (
-    SELECT
-        cno.activity_incoming_data_id,
-        string_agg(cno.invasive_plant, ', ') AS current_negative_species
-    FROM
-        invasivesbc.current_negative_observations_materialized cno
-    GROUP BY
-        cno.activity_incoming_data_id),
-`);
+  const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
+                                                                                 string_agg(cpo.invasive_plant, ', ') AS current_positive_species
+                                                                          FROM invasivesbc.current_positive_observations_materialized cpo
+                                                                          GROUP BY cpo.activity_incoming_data_id),
+                                          CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
+                                                                                 string_agg(cno.invasive_plant, ', ') AS current_negative_species
+                                                                          FROM invasivesbc.current_negative_observations_materialized cno
+                                                                          GROUP BY cno.activity_incoming_data_id),
+  `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
-     
+
         serverFilterGeometryIDs as (
- 
+
           select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
-         
+
           ),
          serverFilterGeometries AS (
          select a.id, title, st_subdivide(geog::geometry)::geography as geo
          from invasivesbc.admin_defined_shapes a
          inner join serverFilterGeometryIDs b on a.id = b.id
          ),
-         
+
           serverFilterGeometriesIntersecting as (
-         
+
          select a.activity_incoming_data_id, b.id
          from activity_incoming_data a
          inner join serverFilterGeometries b on st_intersects(a.geog, b.geo)
          where iscurrent=true
          group by a.activity_incoming_data_id, b.id
-         
-         
+
+
          ),
           serverFilterGeometriesIntersectingAll as (
-         
+
          select a.activity_incoming_data_id, count(*)
          from activity_incoming_data a
          inner join serverFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
          where iscurrent=true
-         group by a.activity_incoming_data_id 
-         
+         group by a.activity_incoming_data_id
+
          having count(*) = (select count(*) from serverFilterGeometryIDs)
          ),
          `);
@@ -405,26 +424,26 @@ CurrentNegativeObservations AS (
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-                   .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
-                   .join(',')}]) AS geojson
+      .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
+      .join(',')}]) AS geojson
          ),
-         
+
           clientFilterGeometriesIntersecting as (
-         
-         select a.activity_incoming_data_id 
+
+         select a.activity_incoming_data_id
          from activity_incoming_data a
          inner join clientFilterGeometries on st_intersects(a.geog, geojson)
          where iscurrent=true
-         
+
          ),
           clientFilterGeometriesIntersectingAll as (
-         
+
          select a.activity_incoming_data_id, count(*)
          from activity_incoming_data a
          inner join clientFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
          where iscurrent=true
-         group by a.activity_incoming_data_id 
-         
+         group by a.activity_incoming_data_id
+
          having count(*) = (select count(*) from clientFilterGeometries)
          ),
          `);
@@ -432,9 +451,9 @@ CurrentNegativeObservations AS (
 
   sqlStatement.append(`
 activities as (
-    select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species, 
+    select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species,
     case when CurrentPositiveObservations.current_positive_species is null then false else true end as has_current_positive,
-    case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative  
+    case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative
     `);
 
   /*if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -471,9 +490,6 @@ activities as (
     )  `);
 
 
-
-
-
   defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
 
   return cte;
@@ -491,7 +507,7 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
                                short_id,
                                map_symbol,
                                activity_type as type,
-                               activity_subtype from activities  where ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}) 
+                               activity_subtype from activities  where ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y})
      `);
   } else {
     if (filterObject.selectColumns) {
@@ -513,7 +529,7 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
-  let from = filterObject.vt_request? sqlStatement.append(' ') : sqlStatement.append(`from activities  `);
+  let from = filterObject.vt_request ? sqlStatement.append(' ') : sqlStatement.append(`from activities  `);
   if (filterObject.isCSV) {
     from = sqlStatement.append(` b `);
     switch (filterObject.CSVType) {
@@ -584,10 +600,22 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   let tableAlias = filterObject.isCSV ? 'b' : 'activities';
-  const where = filterObject.vt_request?  sqlStatement.append(`and 1=1 and ${tableAlias}.iscurrent = true  `) :  sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `)
+  const where = filterObject.vt_request ? sqlStatement.append(`and 1=1 and ${tableAlias}.iscurrent = true  `) : sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `);
 
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
+  }
+
+  if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
+    where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
+  }
+
+  if (filterObject.restrictVisibleDraftActivities) {
+    if (filterObject.preferredUsername) {
+      where.append(`and (${tableAlias}.form_status = 'Submitted' or (${tableAlias}.created_by=${escapeLiteral(filterObject.preferredUsername)} and ${tableAlias}.form_status <> 'Submitted')) `);
+    } else {
+      where.append(`and (${tableAlias}.form_status = 'Submitted') `);
+    }
   }
 
   filterObject.clientReqTableFilters.forEach((filter) => {
