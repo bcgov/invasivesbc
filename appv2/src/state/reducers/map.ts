@@ -72,7 +72,8 @@ import {
   MAP_ON_SHAPE_UPDATE,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   MAP_MODE_SET,
-  MAP_TOGGLE_GEOJSON_CACHE
+  MAP_TOGGLE_GEOJSON_CACHE,
+  WHATS_HERE_SERVER_FILTERED_IDS_FETCHED
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -284,6 +285,10 @@ interface MapState {
     IAPPLimit: number;
     IAPPSortField: string;
     IAPPSortDirection: string;
+
+
+    serverActivityIDs: any[];
+    serverIAPPIDs: any[];
   };
 
   workingLayerName: string;
@@ -446,7 +451,10 @@ const initialState: MapState = {
     IAPPPage: 0,
     IAPPLimit: 5,
     IAPPSortField: 'earliest_survey',
-    IAPPSortDirection: 'desc'
+    IAPPSortDirection: 'desc',
+
+    serverActivityIDs: [],
+    serverIAPPIDs: []
   },
   workingLayerName: ''
 };
@@ -465,6 +473,42 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       */
     return createNextState(state, (draftState: Draft<MapState>) => {
       switch (action.type) {
+        case WHATS_HERE_SERVER_FILTERED_IDS_FETCHED: {
+          draftState.whatsHere.serverActivityIDs = action.payload.activities;
+          draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
+
+
+          const toggledOnActivityLayers = draftState.layers.filter(
+            (layer) => layer.type === 'Activity' && layer.layerState.mapToggle
+          );
+
+          const toggledOnIAPPLayers = draftState.layers.filter((layer) => layer.type === 'IAPP' && layer.layerState.mapToggle);
+
+
+          const localActivityIDs = []
+
+          toggledOnActivityLayers.map((layer) => {
+            localActivityIDs.push(...layer.IDList);
+          })
+
+          const localIAPPIDs = []
+
+          toggledOnIAPPLayers.map((layer) => {
+            localIAPPIDs.push(...layer.IDList);
+          })
+
+
+          let iappIDs = [];
+          let activityIDs = [];
+          localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
+          localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
+
+
+          draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
+          draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
+
+          break;
+        }
         case TOGGLE_LAYER_PICKER_OPEN:
           draftState.layerPickerOpen = !draftState.layerPickerOpen;
           break;

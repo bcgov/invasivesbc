@@ -65,10 +65,12 @@ import {
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
+  WHATS_HERE_IAPP_ROWS_ONLINE,
   WHATS_HERE_IAPP_ROWS_REQUEST,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
+  WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
   WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 import {
@@ -223,13 +225,6 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
 
 function* handle_WHATS_HERE_FEATURE(action) {
   var mapState = yield select(selectMap);
-  if (!mapState.activitiesGeoJSONDict) {
-    yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
-  }
-  mapState = yield select(selectMap);
-  if (!mapState.IAPPGeoJSONDict) {
-    yield take(IAPP_GEOJSON_GET_SUCCESS);
-  }
 
   var layersLoading = true;
   while (layersLoading) {
@@ -272,9 +267,86 @@ function* handle_WHATS_HERE_FEATURE(action) {
       yield all(actionsToTake.map((action) => take(action)));
     }
   }
+  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
+    // get all the toggled on recordsets
 
-  yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
-  yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY });
+    const activitiesfilterObj = {
+      selectColumns: ['activity_id'],
+      tableFilters: [
+        {
+          id: '0.81778552637744651712083357942',
+          filterType: 'spatialFilterDrawn',
+          operator: 'CONTAINED IN',
+          filter: '0.652479498272151712093656568',
+          geojson: action.payload.feature
+        }
+      ],
+      limit: 200000
+    };
+
+    const activitiesNetworkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+      filterObjects: [activitiesfilterObj]
+    });
+
+    let activitiesServerIDList = [];
+    if (activitiesNetworkReturn.data.result || activitiesNetworkReturn.data?.data?.result) {
+      const list = activitiesNetworkReturn.data?.data?.result
+        ? activitiesNetworkReturn.data?.data?.result
+        : activitiesNetworkReturn.data?.result;
+      activitiesServerIDList = list.map((row) => {
+        return row.activity_id;
+      });
+    }
+
+    const iappfilterObj = {
+      selectColumns: ['site_id'],
+      tableFilters: [
+        {
+          id: '0.81778552637744651712083357942',
+          filterType: 'spatialFilterDrawn',
+          operator: 'CONTAINED IN',
+          filter: '0.652479498272151712093656568',
+          geojson: action.payload.feature
+        }
+      ],
+      limit: 200000
+    };
+
+    const iappNetworkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
+      filterObjects: [iappfilterObj]
+    });
+
+    let iappServerIDList = [];
+
+    if (iappNetworkReturn.data.result || iappNetworkReturn.data?.data?.result) {
+      const list = iappNetworkReturn.data?.data?.result
+        ? iappNetworkReturn.data?.data?.result
+        : iappNetworkReturn.data?.result;
+      iappServerIDList = list.map((row) => {
+        return row.site_id;
+      });
+    }
+
+    yield put({
+      type: WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
+      payload: { activities: activitiesServerIDList, iapp: iappServerIDList }
+    });
+
+  }
+
+  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
+    if (!mapState.activitiesGeoJSONDict) {
+      yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
+    }
+    mapState = yield select(selectMap);
+    if (!mapState.IAPPGeoJSONDict) {
+      yield take(IAPP_GEOJSON_GET_SUCCESS);
+    }
+
+    yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY });
+    yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
+  }
+
 }
 
 function* whatsHereSaga() {
@@ -286,44 +358,79 @@ function* whatsHereSaga() {
 }
 
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
-  try {
-    const mapState = yield select(selectMap);
-    const startRecord =
-      mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
-    const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
-    const sorted = mapState?.whatsHere?.IAPPIDs.map((site_id) => mapState?.IAPPGeoJSONDict[site_id]).sort((a, b) => {
-      if (mapState?.whatsHere?.IAPPSortDirection === 'desc') {
-        return a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField]
-          ? 1
-          : -1;
-      } else {
-        return a?.properties[mapState?.whatsHere?.IAPPSortField] < b?.properties[mapState?.whatsHere?.IAPPSortField]
-          ? 1
-          : -1;
-      }
-    });
-    /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-     */
-    const sliceWithData = sorted.slice(startRecord, endRecord);
+  const mapState = yield select(selectMap);
 
-    const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => {
-      return {
-        id: iappRecord?.properties.site_id,
-        site_id: iappRecord?.properties.site_id,
-        jurisdiction_code: iappRecord?.properties.jurisdictions,
-        species_code: iappRecord?.properties.species_on_site,
-        earliest_survey: iappRecord?.properties.earliest_survey,
-        geometry: iappRecord?.geometry,
-        reported_area: iappRecord?.properties.reported_area
+
+      const startRecord =
+        mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
+      const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
+      const slicedIDs = mapState.whatsHere.IAPPIDs.slice(startRecord, endRecord);
+
+      const filterObject = {
+        selectColumns: ['site_id', 'jurisdictions', 'species_on_site', 'earliest_survey', 'reported_area'],
+        limit: 200000,
+        ids_to_filter: slicedIDs
       };
-    });
 
-    yield put({
-      type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-      payload: { data: mappedToWhatsHereColumns }
-    });
-  } catch (e) {
-    console.error(e);
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
+        filterObjects: [filterObject]
+      });
+
+      const mappedToWhatsHereColumns = networkReturn.data.result.map((iappRecord) => {
+        return {
+          id: iappRecord.site_id,
+          site_id: iappRecord.site_id,
+          jurisdiction_code: iappRecord.jurisdictions,
+          species_code: iappRecord.species_on_site,
+          earliest_survey: iappRecord.earliest_survey,
+          reported_area: iappRecord.reported_area
+        };
+      });
+
+      yield put({
+        type: WHATS_HERE_IAPP_ROWS_SUCCESS,
+        payload: { data: mappedToWhatsHereColumns }
+      });
+
+  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
+    try {
+      const startRecord =
+        mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
+      const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
+      const sorted = mapState?.whatsHere?.IAPPIDs.map((site_id) => mapState?.IAPPGeoJSONDict[site_id]).sort((a, b) => {
+        if (mapState?.whatsHere?.IAPPSortDirection === 'desc') {
+          return a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField]
+            ? 1
+            : -1;
+        } else {
+          return a?.properties[mapState?.whatsHere?.IAPPSortField] < b?.properties[mapState?.whatsHere?.IAPPSortField]
+            ? 1
+            : -1;
+        }
+      });
+      /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
+       */
+      const sliceWithData = sorted.slice(startRecord, endRecord);
+
+      const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => {
+        return {
+          id: iappRecord?.properties.site_id,
+          site_id: iappRecord?.properties.site_id,
+          jurisdiction_code: iappRecord?.properties.jurisdictions,
+          species_code: iappRecord?.properties.species_on_site,
+          earliest_survey: iappRecord?.properties.earliest_survey,
+          geometry: iappRecord?.geometry,
+          reported_area: iappRecord?.properties.reported_area
+        };
+      });
+
+      yield put({
+        type: WHATS_HERE_IAPP_ROWS_SUCCESS,
+        payload: { data: mappedToWhatsHereColumns }
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
 
@@ -851,9 +958,13 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   }
 }
 
-
 function* handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
-  location.reload()
+  location.reload();
+}
+
+
+function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
+  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
 }
 
 function* activitiesPageSaga() {
@@ -871,6 +982,7 @@ function* activitiesPageSaga() {
     takeEvery(CUSTOM_LAYER_DRAWN, handle_CUSTOM_LAYER_DRAWN),
 
     takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
+    takeEvery(WHATS_HERE_SERVER_FILTERED_IDS_FETCHED, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
 
     takeEvery(USER_SETTINGS_ADD_RECORD_SET, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
