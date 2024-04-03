@@ -1,4 +1,4 @@
-import maplibregl, { ScaleControl } from 'maplibre-gl';
+import maplibregl, { NavigationControl, ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
@@ -10,6 +10,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { MAP_WHATS_HERE_FEATURE, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import { feature } from '@turf/helpers';
+import proj4 from 'proj4';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
 // @ts-ignore
@@ -31,6 +32,41 @@ export const mapInit = (
   api_base,
   getAuthHeaderCallback
 ) => {
+  proj4.defs([
+    ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs'],
+    ['EPSG:32608', '+proj=utm +zone=8 +datum=WGS84 +units=m +no_defs'],
+    ['EPSG:32609', '+proj=utm +zone=9 +datum=WGS84 +units=m +no_defs'],
+    ['EPSG:32610', '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs'],
+    ['EPSG:32611', '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs'],
+    ['EPSG:32612', '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs']
+  ]);
+
+  const coordinatesContainer = document.createElement('div');
+  coordinatesContainer.style.position = 'absolute';
+  coordinatesContainer.style.top = '10px';
+  coordinatesContainer.style.left = '90px';
+  coordinatesContainer.style.background = 'rgba(255, 255, 255, 0.8)';
+  coordinatesContainer.style.padding = '5px';
+  coordinatesContainer.style.borderRadius = '5px';
+  coordinatesContainer.style.zIndex = '99';
+  mapContainer.current.appendChild(coordinatesContainer);
+
+  mapContainer.current.addEventListener('mousemove', (e) => {
+    const { lng, lat } = map.current.unproject([e.clientX, e.clientY]);
+
+    // Convert latitude-longitude coordinates to UTM
+    const utmZone = Math.floor((lng + 180) / 6) + 1; // Calculate UTM zone
+    const srid = 32600 + utmZone;
+    const projection = 'EPSG:' + srid;
+    const utm = proj4('EPSG:4326', projection, [lng, lat]);
+    console.log(projection);
+
+    // Update coordinatesContainer with both sets of coordinates
+    coordinatesContainer.innerHTML = `
+      <div>${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
+      <div>UTM: Zone ${utmZone}, ${utm[0].toFixed(2)}, ${utm[1].toFixed(2)}</div>
+    `;
+  });
   const protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {
@@ -147,13 +183,13 @@ export const mapInit = (
             layout: {
               visibility: 'none'
             }
-          },
-          {
-            id: 'wms-test-layer2',
-            type: 'raster',
-            source: 'wms-test-source',
-            minzoom: 0
           }
+          // {
+          //   id: 'wms-test-layer2',
+          //   type: 'raster',
+          //   source: 'wms-test-source',
+          //   minzoom: 0
+          // }
           /*{
             id: 'invasives-vector',
             source: 'example_source',
@@ -183,7 +219,9 @@ export const mapInit = (
       maxWidth: 80,
       unit: 'metric'
     });
+    let nav = new NavigationControl();
     map.current.addControl(scale, 'top-left');
+    map.current.addControl(nav, 'top-left');
     refreshDrawControls(
       map.current,
       null,
