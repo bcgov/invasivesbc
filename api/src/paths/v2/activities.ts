@@ -82,7 +82,8 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   let sanitizedSearchCriteria = {
     serverSideNamedFilters: {},
     selectColumns: [],
-    clientReqTableFilters: []
+    clientReqTableFilters: [],
+    ids_to_filter: [],
   } as any;
 
   defaultLog.debug({
@@ -140,6 +141,17 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
+  let id_list_valid = true
+  for(let i = 0; i < filterObject?.ids_to_filter?.length; i++){
+    if(isNaN(parseInt(filterObject.ids_to_filter[i]))){
+      id_list_valid = false;
+      break;
+    }
+  }
+
+  if(id_list_valid){
+    sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
+  }
   let selectColumns = [];
 
   if (filterObject?.selectColumns?.length > 0) {
@@ -797,6 +809,10 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
     }
   });
+
+  if(filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0){
+    where.append(` and  ${tableAlias}.activity_id in (${filterObject.ids_to_filter.join(',')}) `);
+  }
 
   return where;
 }

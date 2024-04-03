@@ -359,6 +359,7 @@ function* whatsHereSaga() {
 
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
   const mapState = yield select(selectMap);
+  if((mapState.MapMode === 'VECTOR_ENDPOINT')) {
 
 
       const startRecord =
@@ -367,7 +368,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
       const slicedIDs = mapState.whatsHere.IAPPIDs.slice(startRecord, endRecord);
 
       const filterObject = {
-        selectColumns: ['site_id', 'jurisdictions', 'species_on_site', 'earliest_survey', 'reported_area'],
+        selectColumns: ['site_id', 'jurisdictions_flattened', 'all_species_on_site', 'min_survey', 'reported_area'],
         limit: 200000,
         ids_to_filter: slicedIDs
       };
@@ -380,9 +381,9 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
         return {
           id: iappRecord.site_id,
           site_id: iappRecord.site_id,
-          jurisdiction_code: iappRecord.jurisdictions,
-          species_code: iappRecord.species_on_site,
-          earliest_survey: iappRecord.earliest_survey,
+          jurisdiction_code: iappRecord.jurisdictions_flattened,
+          species_code: iappRecord.all_species_on_site,
+          earliest_survey: iappRecord.min_survey,
           reported_area: iappRecord.reported_area
         };
       });
@@ -392,6 +393,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
         payload: { data: mappedToWhatsHereColumns }
       });
 
+    }
   if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
     try {
       const startRecord =
@@ -440,6 +442,41 @@ function* handle_WHATS_HERE_PAGE_POI(action) {
 }
 
 function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
+    const mapState = yield select(selectMap);
+    if((mapState.MapMode === 'VECTOR_ENDPOINT')) {
+
+
+    const startRecord =
+      mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
+    const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
+    const slicedIDs = mapState.whatsHere.ActivityIDs.slice(startRecord, endRecord);
+
+    const filterObject = {
+      selectColumns: ['activity_id', 'short_id', 'jurisdiction_display', 'map_symbol' ],
+      limit: 200000,
+      ids_to_filter: slicedIDs
+    };
+
+    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+      filterObjects: [filterObject]
+    });
+
+    const mappedToWhatsHereColumns = networkReturn.data.result.map((activityRecord) => {
+      return {
+        id: activityRecord.activity_id,
+        short_id: activityRecord.short_id,
+        jurisdiction_code: activityRecord.jurisdiction_display,
+        species_code: activityRecord.map_symbol,
+      };
+    });
+
+    yield put({
+      type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
+      payload: { data: mappedToWhatsHereColumns }
+    });
+  }
+
+if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
   try {
     const mapState = yield select(selectMap);
     const startRecord =
@@ -537,6 +574,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
   } catch (e) {
     console.error(e);
   }
+}
 }
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
@@ -965,6 +1003,7 @@ function* handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
 
 function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
   yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
+  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
 }
 
 function* activitiesPageSaga() {
