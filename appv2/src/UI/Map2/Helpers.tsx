@@ -32,15 +32,6 @@ export const mapInit = (
   api_base,
   getAuthHeaderCallback
 ) => {
-  proj4.defs([
-    ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs'],
-    ['EPSG:32608', '+proj=utm +zone=8 +datum=WGS84 +units=m +no_defs'],
-    ['EPSG:32609', '+proj=utm +zone=9 +datum=WGS84 +units=m +no_defs'],
-    ['EPSG:32610', '+proj=utm +zone=10 +datum=WGS84 +units=m +no_defs'],
-    ['EPSG:32611', '+proj=utm +zone=11 +datum=WGS84 +units=m +no_defs'],
-    ['EPSG:32612', '+proj=utm +zone=12 +datum=WGS84 +units=m +no_defs']
-  ]);
-
   const coordinatesContainer = document.createElement('div');
   coordinatesContainer.style.position = 'absolute';
   coordinatesContainer.style.top = '10px';
@@ -54,17 +45,23 @@ export const mapInit = (
   mapContainer.current.addEventListener('mousemove', (e) => {
     const { lng, lat } = map.current.unproject([e.clientX, e.clientY]);
 
-    // Convert latitude-longitude coordinates to UTM
-    const utmZone = Math.floor((lng + 180) / 6) + 1; // Calculate UTM zone
-    const srid = 32600 + utmZone;
-    const projection = 'EPSG:' + srid;
-    const utm = proj4('EPSG:4326', projection, [lng, lat]);
-    console.log(projection);
+    const utmZone = Math.floor((lng + 180) / 6) + 1;
 
-    // Update coordinatesContainer with both sets of coordinates
+    function proj4_setdef(utmZone: number): string {
+      const zdef = `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
+      return zdef;
+    }
+
+    proj4.defs([
+      ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs'],
+      ['EPSG:AUTO', proj4_setdef(utmZone)]
+    ]);
+
+    const utm: [number, number] = proj4('EPSG:4326', 'EPSG:AUTO', [lng, lat]);
+
     coordinatesContainer.innerHTML = `
       <div>${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
-      <div>UTM: Zone ${utmZone}, ${utm[0].toFixed(2)}, ${utm[1].toFixed(2)}</div>
+      <div>Zone ${utmZone}, E: ${utm[0].toFixed(0)}, N: ${utm[1].toFixed(0)}</div>
     `;
   });
   const protocol = new Protocol();
