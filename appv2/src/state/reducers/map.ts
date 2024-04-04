@@ -1,26 +1,33 @@
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
+  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
+  IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
+  IAPP_PAN_AND_ZOOM,
+  IAPP_TABLE_ROWS_GET_REQUEST,
   IAPP_TABLE_ROWS_GET_SUCCESS,
   INIT_SERVER_BOUNDARIES_GET,
-  LAYER_STATE_UPDATE,
-  LEAFLET_SET_WHOS_EDITING,
   MAIN_MAP_MOVE,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
+  MAP_MODE_SET,
+  MAP_ON_SHAPE_UPDATE,
   MAP_SET_COORDS,
   MAP_SET_WHATS_HERE_PAGE_LIMIT,
   MAP_SET_WHATS_HERE_SECTION,
   MAP_TOGGLE_ACCURACY,
   MAP_TOGGLE_BASEMAP,
+  MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_HD,
   MAP_TOGGLE_LEGENDS,
   MAP_TOGGLE_PANNED,
@@ -33,52 +40,47 @@ import {
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
   OVERLAY_MENU_TOGGLE,
   PAGE_OR_LIMIT_UPDATE,
-  RECORDSETS_TOGGLE_VIEW_FILTER,
-  RECORDSET_REMOVE_FILTER,
-  RECORDSET_UPDATE_FILTER,
+  PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
+  RECORDSET_REMOVE_FILTER,
+  RECORDSET_UPDATE_FILTER,
+  RECORDSETS_TOGGLE_VIEW_FILTER,
   REMOVE_CLIENT_BOUNDARY,
   SET_CURRENT_OPEN_SET,
   SET_TOO_MANY_LABELS_DIALOG,
   TOGGLE_BASIC_PICKER_LAYER,
   TOGGLE_CUSTOMIZE_LAYERS,
+  TOGGLE_DRAWN_LAYER,
+  TOGGLE_KML_LAYER,
+  TOGGLE_LAYER_PICKER_OPEN,
+  TOGGLE_PUBLIC_LAYER,
   TOGGLE_QUICK_PAN_TO_RECORD,
+  TOGGLE_WMS_LAYER,
   URL_CHANGE,
   USER_CLICKED_RECORD,
   USER_HOVERED_RECORD,
   USER_SETTINGS_DELETE_KML_SUCCESS,
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
+  USER_SETTINGS_REMOVE_RECORD_SET,
+  USER_SETTINGS_SET_RECORDSET,
   USER_TOUCHED_RECORD,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
+  WHATS_HERE_ID_CLICKED,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
-  WHATS_HERE_SORT_FILTER_UPDATE,
-  USER_SETTINGS_REMOVE_RECORD_SET,
-  USER_SETTINGS_SET_RECORDSET,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-  IAPP_TABLE_ROWS_GET_REQUEST,
-  PAN_AND_ZOOM_TO_ACTIVITY,
-  IAPP_PAN_AND_ZOOM,
-  WHATS_HERE_ID_CLICKED,
-  TOGGLE_WMS_LAYER,
-  TOGGLE_LAYER_PICKER_OPEN,
-  TOGGLE_KML_LAYER,
-  TOGGLE_DRAWN_LAYER,
-  MAP_ON_SHAPE_UPDATE,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  MAP_MODE_SET,
-  MAP_TOGGLE_GEOJSON_CACHE
+  WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
-import { Draft, immerable } from 'immer';
+import { Draft } from 'immer';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
+
+import { createCRC32 } from 'hash-wasm';
+const crc32 = await createCRC32();
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -88,6 +90,14 @@ export enum LeafletWhosEditingEnum {
 }
 
 export const ACTIVITY_GEOJSON_SOURCE_KEYS = ['s3', 'draft', 'supplemental'];
+
+const PUBLIC_LAYERS = [
+  {
+    title: 'Public IAPP and Activities',
+    id: 'public',
+    toggle: true
+  }
+];
 
 const DEFAULT_LOCAL_LAYERS = [
   {
@@ -219,6 +229,10 @@ interface MapState {
   activity_zoom: number;
   baseMapToggle: boolean;
   clientBoundaries: any[];
+
+  publicLayers: any[];
+  publicLayersHash: string;
+
   currentOpenSet: string;
   customizeLayersToggle: boolean;
   drawingCustomLayer: boolean;
@@ -357,7 +371,7 @@ const initialState: MapState = {
   activity_center: [53, -127],
   activity_zoom: 7,
 
-  map_center: [55, -128],
+  map_center: [-120, 50],
   map_zoom: 5,
 
   userRecordOnClickMenuOpen: false,
@@ -406,6 +420,9 @@ const initialState: MapState = {
     ? JSON.parse(localStorage.getItem('localLayersConf'))
     : DEFAULT_LOCAL_LAYERS,
   tooManyLabelsDialog: null,
+
+  publicLayers: PUBLIC_LAYERS,
+  publicLayersHash: crc32.update(JSON.stringify(PUBLIC_LAYERS)).digest(),
 
   userCoords: null,
   userHeading: 0,
@@ -479,8 +496,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           break;
         }
-        case MAP_TOGGLE_GEOJSON_CACHE: 
-        {
+        case TOGGLE_PUBLIC_LAYER: {
+          const index = draftState.publicLayers.findIndex((layer) => layer.id === action.payload.layer.id);
+          draftState.publicLayers[index].toggle = !draftState.publicLayers[index]?.toggle;
+
+          crc32.init();
+          draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          break;
+        }
+        case MAP_TOGGLE_GEOJSON_CACHE: {
           draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
           localStorage.setItem('MapMode', draftState.MapMode);
           break;
@@ -576,7 +600,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
-          if(draftState.MapMode === 'VECTOR_ENDPOINT') {
+          if (draftState.MapMode === 'VECTOR_ENDPOINT') {
             draftState.layers[index].loading = false;
           }
 
@@ -601,9 +625,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index])
-          {
-            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType});
+          if (!draftState.layers[index]) {
+            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType });
           }
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
@@ -731,7 +754,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
-          if(draftState.MapMode === 'VECTOR_ENDPOINT') {
+          if (draftState.MapMode === 'VECTOR_ENDPOINT') {
             draftState.layers[index].loading = false;
           }
 

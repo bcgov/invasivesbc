@@ -84,6 +84,7 @@
     "geojson-vt": "^3.2.1",
     "georaster": "^1.5.6",
     "geostyler-sld-parser": "^5.0.0",
+    "hash-wasm": "^4.11.0",
     "identity-obj-proxy": "3.0.0",
     "immer": "^10.0.2",
     "install": "^0.13.0",
