@@ -97,7 +97,7 @@ const initialState: UserSettingsState = {
   darkTheme: localStorage.getItem('USER_SETTINGS_DARK_THEME')
     ? JSON.parse(localStorage.getItem('USER_SETTINGS_DARK_THEME'))
     : false,
-  mapCenter: [55, -128],
+  mapCenter: [-120, 50],
   newRecordDialogState: {
     recordCategory: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordCategory || '',
     recordType: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordType || '',

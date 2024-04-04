@@ -1,7 +1,6 @@
 import maplibregl, { NavigationControl, ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { PMTiles, Protocol } from 'pmtiles';
 import './map.css';
 
 // Draw tools:
@@ -78,160 +77,129 @@ export const mapInit = (
     });
   });
 
-  const PMTILES_URL = `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
-  //const PMTILES_URL = 'https://protomaps.github.io/PMTiles/protomaps(vector)ODbL_firenze.pmtiles';
-
-  const p = new PMTiles(PMTILES_URL);
-
-  // this is so we share one instance across the JS code and the map renderer
-  protocol.add(p);
-
-  // we first fetch the header so we can get the center lon, lat of the map.
-  p.getHeader().then((h) => {
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      maxZoom: 24,
-      zoom: h.maxZoom - 2,
-      minZoom: 0,
-      transformRequest: (url, resourceType) => {
-        if (url.includes(api_base)) {
-          return {
-            url,
-            headers: {
-              ...getAuthHeaderCallback()
-            }
-          };
-        }
+  map.current = new maplibregl.Map({
+    container: mapContainer.current,
+    maxZoom: 24,
+    zoom: h.maxZoom - 2,
+    minZoom: 0,
+    transformRequest: (url, resourceType) => {
+      if (url.includes(api_base)) {
         return {
-          url
+          url,
+          headers: {
+            ...getAuthHeaderCallback()
+          }
         };
-      },
-      center: [h.centerLon, h.centerLat],
-      style: {
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-        version: 8,
-        sources: {
-          'wms-test-source': {
-            type: 'raster',
-            tiles: [
-              'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
-            ],
-            tileSize: 256,
-            maxzoom: 24
-          },
-          'Esri-Sat-LayerHD': {
-            type: 'raster',
-            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-            tileSize: 256,
-            maxzoom: 24
-          },
-          'Esri-Sat-LayerSD': {
-            type: 'raster',
-            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-            tileSize: 256,
-            maxzoom: 18
-          },
-          'Esri-Sat-Label': {
-            type: 'raster',
-            tiles: [
-              'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
-            ],
-            tileSize: 256,
-            maxzoom: 18
-          },
-          'Esri-Topo': {
-            type: 'raster',
-            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
-            tileSize: 256,
-            maxzoom: 18
-          }
-          /*example_source: {
-            type: 'vector',
-            url: `pmtiles://${PMTILES_URL}`,
-            //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
-            // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
-            attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
-          }*/
-        },
-        layers: [
-          {
-            id: 'Esri-Sat-Label',
-            type: 'raster',
-            source: 'Esri-Sat-Label',
-            minzoom: 0
-          },
-          {
-            id: 'Esri-Sat-LayerHD',
-            type: 'raster',
-            source: 'Esri-Sat-LayerHD',
-            minzoom: 0
-          },
-          {
-            id: 'Esri-Sat-LayerSD',
-            type: 'raster',
-            source: 'Esri-Sat-LayerSD',
-            minzoom: 0
-          },
-          {
-            id: 'Esri-Topo',
-            type: 'raster',
-            source: 'Esri-Topo',
-            minzoom: 0,
-            layout: {
-              visibility: 'none'
-            }
-          }
-          // {
-          //   id: 'wms-test-layer2',
-          //   type: 'raster',
-          //   source: 'wms-test-source',
-          //   minzoom: 0
-          // }
-          /*{
-            id: 'invasives-vector',
-            source: 'example_source',
-            'source-layer': 'invasives',
-            type: 'fill',
-            paint: {
-              'fill-color': 'steelblue'
-            },
-            minzoom: 0,
-            maxzoom: 24
-          },
-          {
-            id: 'buildings',
-            source: 'example_source',
-            'source-layer': 'landuse',
-            type: 'fill',
-            paint: {
-              'fill-color': 'steelblue'
-            },
-            minzoom: 0
-          }
-          */
-        ]
       }
-    });
-    let scale = new ScaleControl({
-      maxWidth: 80,
-      unit: 'metric'
-    });
-    let nav = new NavigationControl();
-    map.current.addControl(scale, 'top-left');
-    map.current.addControl(nav, 'top-left');
-    refreshDrawControls(
-      map.current,
-      null,
-      drawSetter,
-      dispatch,
-      uHistory,
-      whats_here_toggle,
-      appModeUrl,
-      activityGeo,
-      null
-    );
+      return {
+        url
+      };
+    },
+    center: new LngLat(53, 45),
+    style: {
+      glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+      version: 8,
+      sources: {
+        'wms-test-source': {
+          type: 'raster',
+          tiles: [
+            'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
+          ],
+          tileSize: 256,
+          maxzoom: 24
+        },
+        'Esri-Sat-LayerHD': {
+          type: 'raster',
+          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+          tileSize: 256,
+          maxzoom: 24
+        },
+        'Esri-Sat-LayerSD': {
+          type: 'raster',
+          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+          tileSize: 256,
+          maxzoom: 18
+        },
+        'Esri-Sat-Label': {
+          type: 'raster',
+          tiles: [
+            'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+          ],
+          tileSize: 256,
+          maxzoom: 18
+        },
+        'Esri-Topo': {
+          type: 'raster',
+          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
+          tileSize: 256,
+          maxzoom: 18
+        }
+        /*example_source: {
+          type: 'vector',
+          url: `pmtiles://${PMTILES_URL}`,
+          //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
+          // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
+          attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+        }*/
+      },
+      layers: [
+        {
+          id: 'Esri-Sat-Label',
+          type: 'raster',
+          source: 'Esri-Sat-Label',
+          minzoom: 0
+        },
+        {
+          id: 'Esri-Sat-LayerHD',
+          type: 'raster',
+          source: 'Esri-Sat-LayerHD',
+          minzoom: 0
+        },
+        {
+          id: 'Esri-Sat-LayerSD',
+          type: 'raster',
+          source: 'Esri-Sat-LayerSD',
+          minzoom: 0
+        },
+        {
+          id: 'Esri-Topo',
+          type: 'raster',
+          source: 'Esri-Topo',
+          minzoom: 0,
+          layout: {
+            visibility: 'none'
+          }
+        }
+        // {
+        //   id: 'wms-test-layer2',
+        //   type: 'raster',
+        //   source: 'wms-test-source',
+        //   minzoom: 0
+        // }
+      ]
+    }
   });
+  let scale = new ScaleControl({
+    maxWidth: 80,
+    unit: 'metric'
+  });
+  let nav = new NavigationControl();
+  map.current.addControl(scale, 'top-left');
+  map.current.addControl(nav, 'top-left');
+  refreshDrawControls(
+    map.current,
+    null,
+    drawSetter,
+    dispatch,
+    uHistory,
+    whats_here_toggle,
+    appModeUrl,
+    activityGeo,
+    null
+  );
+  ;
 };
+
 
 export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
@@ -474,9 +442,9 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
   }
 
   map.addSource(layerID, source).addLayer(circleLayer);
-
   map.addLayer(labelLayer);
 };
+
 
 export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
   const allLayersForRecordSet = map.getLayersOrder().filter((mapLayer: any) => {
@@ -508,6 +476,85 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
       }
     }
   });
+};
+
+export const createPublicLayer = (map: any, layer: any, API_BASE) => {
+
+  const layerID = 'public-layer';
+
+  const source = {
+    type: 'vector',
+    tiles: [`${API_BASE}/api/public-map/{z}/{x}/{y}`],
+    minzoom: 0,
+    maxzoom: 24
+  };
+
+  let circleLayer = {
+    id: layerID,
+    source: layerID,
+    type: 'circle',
+    paint: {
+      'circle-color': '#ff0000',
+      'circle-radius': 3
+    },
+    minzoom: 0,
+    maxzoom: 24
+  };
+
+  let labelLayer = {
+    id: 'label-' + layerID,
+    type: 'symbol',
+    source: layerID,
+    layout: {
+      //                'icon-image': 'dog-park-11',
+      'text-field': [
+        'format',
+        ['to-string', ['get', 'site_id']],
+        { 'font-scale': 0.9 },
+        '\n',
+        {},
+        ['to-string', ['get', 'map_symbol']],
+        { 'font-scale': 0.9 }
+      ],
+      // the actual font names that work are here
+      'text-font': ['literal', ['Open Sans Bold']],
+      'text-offset': [0, 0.6],
+      'text-anchor': 'top'
+    },
+    paint: {
+      'text-color': 'black',
+      'text-halo-color': 'white',
+      'text-halo-width': 1,
+      'text-halo-blur': 1
+    },
+    minzoom: 10
+  };
+
+  circleLayer['source-layer'] = 'data';
+  labelLayer['source-layer'] = 'data';
+
+  map.addSource(layerID, source).addLayer(circleLayer);
+  map.addLayer(labelLayer);
+};
+
+export const checkPublicMap = (publicLayers, map, API_BASE) => {
+
+  publicLayers.forEach((layer: any) => {
+    if (layer.id === 'public') {
+      const existingSource = map.getSource(
+        'public-layer'
+      );
+      if (existingSource === undefined) {
+        createPublicLayer(map, layer, API_BASE);
+      }
+      const VISIBILITY = layer.toggle ? 'visible' : 'none';
+
+      map.setLayoutProperty('public-layer', 'visibility', VISIBILITY);
+      map.setLayoutProperty('label-public-layer', 'visibility', VISIBILITY);
+    }
+  });
+
+
 };
 
 export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE) => {
@@ -665,7 +712,7 @@ export const initDrawModes = (
   });
 
   var DoNothing: any = {};
-  DoNothing.onSetup = function (opts) {
+  DoNothing.onSetup = function(opts) {
     //  if(map.draw && activityGeo)
     if (activityGeo) {
       this.addFeature(this.newFeature(activityGeo[0]));
@@ -675,11 +722,11 @@ export const initDrawModes = (
     state.count = opts.count || 0;
     return state;
   };
-  DoNothing.onClick = function (state, e) {
+  DoNothing.onClick = function(state, e) {
     this.changeMode('draw_polygon');
   };
 
-  DoNothing.toDisplayFeatures = function (state, geojson, display) {
+  DoNothing.toDisplayFeatures = function(state, geojson, display) {
     geojson.properties.active = MapboxDraw.constants.activeStates.ACTIVE;
     display(geojson);
   };
@@ -694,14 +741,14 @@ export const initDrawModes = (
   // When the mode starts this function will be called.
   // The `opts` argument comes from `draw.changeMode('lotsofpoints', {count:7})`.
   // The value returned should be an object and will be passed to all other lifecycle functions
-  LotsOfPointsMode.onSetup = function (opts) {
+  LotsOfPointsMode.onSetup = function(opts) {
     var state: any = {};
     state.count = opts.count || 0;
     return state;
   };
 
   // Whenever a user clicks on the map, Draw will call `onClick`
-  LotsOfPointsMode.onClick = function (state, e) {
+  LotsOfPointsMode.onClick = function(state, e) {
     // `this.newFeature` takes geojson and makes a DrawFeature
     var point = this.newFeature({
       type: 'Feature',
@@ -717,7 +764,7 @@ export const initDrawModes = (
   };
 
   // Whenever a user clicks on a key while focused on the map, it will be sent here
-  LotsOfPointsMode.onKeyUp = function (state, e) {
+  LotsOfPointsMode.onKeyUp = function(state, e) {
     if (e.keyCode === 27) return this.changeMode('simple_select');
   };
 
@@ -725,7 +772,7 @@ export const initDrawModes = (
   // It decides which features currently in Draw's data store will be rendered on the map.
   // All features passed to `display` will be rendered, so you can pass multiple display features per internal feature.
   // See `styling-draw` in `API.md` for advice on making display features
-  LotsOfPointsMode.toDisplayFeatures = function (state, geojson, display) {
+  LotsOfPointsMode.toDisplayFeatures = function(state, geojson, display) {
     display(geojson);
   };
 

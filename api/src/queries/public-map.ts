@@ -1,4 +1,22 @@
-import {SQL} from "sql-template-strings";
+import { SQL } from 'sql-template-strings';
+
+export const getPublicMapTileQuery = (filterObject: { z: number, x: number, y: number }) => {
+
+  const stmt = SQL`WITH mvtgeom AS
+                            (SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
+                                                 ST_TileEnvelope($1, $2, $3), extent => 4096,
+                                                 buffer => 64) AS geom,
+                                    site_id                    as feature_id,
+                                    reported_area
+                                    -- can include whatever other properties are needed in this query also and they will be added as attributes
+                             FROM iapp_site_summary_and_geojson
+                             WHERE ST_Transform(geog::geometry, 3857) && ST_TileEnvelope($1, $2, $3))
+                   SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data
+                   FROM mvtgeom;`;
+  stmt.values = [filterObject.z, filterObject.x, filterObject.y];
+
+  return stmt;
+};
 
 export const PUBLIC_IAPP_SQL = SQL`SELECT i.geojson as feature
                                    from iapp_site_summary_and_geojson i`;
