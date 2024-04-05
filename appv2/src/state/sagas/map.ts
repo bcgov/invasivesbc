@@ -17,11 +17,11 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-  ACTIVITY_UPDATE_GEO_REQUEST,
+  ACTIVITY_UPDATE_GEO_REQUEST, AUTH_INITIALIZE_COMPLETE, AUTH_SIGNOUT_COMPLETE,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
   FILTER_PREP_FOR_VECTOR_ENDPOINT,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
+  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, HIDE_DEFAULT_PUBLIC_LAYERS,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_ONLINE,
@@ -57,7 +57,7 @@ import {
   REFETCH_SERVER_BOUNDARIES,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
-  SET_CURRENT_OPEN_SET,
+  SET_CURRENT_OPEN_SET, SHOW_DEFAULT_PUBLIC_LAYERS,
   TOGGLE_PANEL,
   URL_CHANGE,
   USER_SETTINGS_ADD_RECORD_SET,
@@ -165,7 +165,8 @@ function* refetchServerBoundaries() {
   yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
 }
 
-function* getPOIIDsOnline(feature, filterCriteria) {}
+function* getPOIIDsOnline(feature, filterCriteria) {
+}
 
 function* handle_MAP_TOGGLE_TRACKING(action) {
   const state = yield select(selectMap);
@@ -950,6 +951,12 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
   );
 }
 
+function* handle_MAP_POST_SIGNIN(action) {
+  if (action.payload.authenticated) {
+    yield put({ type: HIDE_DEFAULT_PUBLIC_LAYERS });
+  }
+}
+
 function* persistClientBoundaries(action) {
   const state = yield select(selectMap);
 
@@ -1000,6 +1007,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo ? newGeo : action.payload] } });
   }
 }
+
 function* handle_MAP_ON_SHAPE_UPDATE(action) {
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
@@ -1069,7 +1077,8 @@ function* activitiesPageSaga() {
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
-    takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE)
+    takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
+    takeEvery(AUTH_INITIALIZE_COMPLETE, handle_MAP_POST_SIGNIN)
   ]);
 }
 
