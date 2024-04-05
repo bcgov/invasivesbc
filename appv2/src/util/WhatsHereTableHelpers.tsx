@@ -380,7 +380,7 @@ export const RenderTablePOI = (props: any) => {
         );
       }
     },
-    {
+    /*{
       field: 'reported_area',
       headerName: 'Reported Area',
       sortable: false,
@@ -395,7 +395,7 @@ export const RenderTablePOI = (props: any) => {
           </div>
         );
       }
-    },
+    },*/
     {
       field: 'earliest_survey',
       headerName: 'Earliest Survey',

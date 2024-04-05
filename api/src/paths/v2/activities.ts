@@ -142,15 +142,24 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
   let id_list_valid = true
-  for(let i = 0; i < filterObject?.ids_to_filter?.length; i++){
-    if(isNaN(parseInt(filterObject.ids_to_filter[i]))){
+  try {
+  for(let i = 0; i < filterObject?.ids_to_filter?.length - 1; i++){
+    if(typeof(filterObject?.ids_to_filter[i]) !== 'string' || filterObject.ids_to_filter[i].length !== 36){
       id_list_valid = false;
       break;
     }
   }
+}
+catch(e) {
+  defaultLog.debug({ label: 'id_list_valid', message: 'error', body: e});
+  id_list_valid = false
+}
 
   if(id_list_valid){
     sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
+  }
+  else {
+    throw new Error('Invalid id list');
   }
   let selectColumns = [];
 
@@ -811,7 +820,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   });
 
   if(filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0){
-    where.append(` and  ${tableAlias}.activity_id in (${filterObject.ids_to_filter.join(',')}) `);
+    where.append(` and  ${tableAlias}.activity_id in (${filterObject.ids_to_filter.map(id => "'" + id + "'").join(',')}) `);
   }
 
   return where;

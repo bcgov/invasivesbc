@@ -123,6 +123,7 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     'all_species_on_site',
     'max_survey',
     'agencies',
+    'map_symbol',
     'biological_agent',
     'has_biological_treatments',
     'has_chemical_treatments',
@@ -227,7 +228,7 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
   sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
 
   let id_list_valid = true
-  for(let i = 0; i < filterObject?.ids_to_filter?.length; i++){
+  for(let i = 0; i < filterObject?.ids_to_filter?.length -1; i++){
     if(isNaN(parseInt(filterObject.ids_to_filter[i]))){
       id_list_valid = false;
       break;
@@ -236,6 +237,9 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
 
   if(id_list_valid){
     sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
+  }
+  else {
+    throw new Error('Invalid site_id list');
   }
 
   defaultLog.debug({
