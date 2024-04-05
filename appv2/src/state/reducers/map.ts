@@ -98,8 +98,14 @@ import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
 
 import { createCRC32 } from 'hash-wasm';
+import { IHasher } from 'hash-wasm/lib/WASMInterface';
 
-const crc32 = await createCRC32();
+let crc32: IHasher = null;
+
+/* support for top level await is not present in older browsers, so we need to check for nulls and provide an alternative until it's loaded */
+createCRC32().then(hasher => {
+  crc32 = hasher;
+});
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -445,7 +451,12 @@ const initialState: MapState = {
   tooManyLabelsDialog: null,
 
   publicLayers: PUBLIC_LAYERS,
-  publicLayersHash: crc32.update(JSON.stringify(PUBLIC_LAYERS)).digest(),
+
+  /*
+    Used to provide shortcut deep comparison on public layers.
+    Initial value doesn't really matter, since we just use this to watch for changes
+   */
+  publicLayersHash: '0',
 
   userCoords: null,
   userHeading: 0,
@@ -562,8 +573,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           const index = draftState.publicLayers.findIndex((layer) => layer.id === action.payload.layer.id);
           draftState.publicLayers[index].toggle = !draftState.publicLayers[index]?.toggle;
 
-          crc32.init();
-          draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          if (crc32) {
+            crc32.init();
+            draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          } else {
+            draftState.publicLayersHash = Date.now().toString();
+          }
           break;
         }
         case HIDE_DEFAULT_PUBLIC_LAYERS: {
@@ -574,8 +589,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               draftState.publicLayers[index].toggle = false;
             }
           }
-          crc32.init();
-          draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          if (crc32) {
+            crc32.init();
+            draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          } else {
+            draftState.publicLayersHash = Date.now().toString();
+          }
           break;
         }
         case SHOW_DEFAULT_PUBLIC_LAYERS: {
@@ -586,8 +605,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               draftState.publicLayers[index].toggle = true;
             }
           }
-          crc32.init();
-          draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          if (crc32) {
+            crc32.init();
+            draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          } else {
+            draftState.publicLayersHash = Date.now().toString();
+          }
           break;
         }
         case MAP_TOGGLE_GEOJSON_CACHE: {
