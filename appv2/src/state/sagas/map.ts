@@ -364,7 +364,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
     const slicedIDs = mapState.whatsHere.IAPPIDs.slice(startRecord, endRecord);
 
     const filterObject = {
-      selectColumns: ['site_id', 'jurisdictions_flattened', 'map_symbol', 'min_survey', 'reported_area'],
+      selectColumns: ['site_id', 'jurisdictions_flattened', 'map_symbol', 'min_survey', 'reported_area', 'geojson'],
       limit: 200000,
       ids_to_filter: slicedIDs
     };
@@ -388,6 +388,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
         jurisdiction_code: iappRecord.jurisdictions_flattened,
         species_code: iappRecord.map_symbol,
         earliest_survey: new Date(iappRecord.min_survey).toDateString(),
+        geometry: iappRecord.geojson
       };
     });
 
@@ -476,7 +477,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
         jurisdiction_code: activityRecord.jurisdiction_display,
         species_code: activityRecord.map_symbol,
         reported_area: activityRecord.activity_payload.form_data.activity_data.reported_area,
-        geoJSON: activityRecord.activity_payload.geometry?.[0],
+        geometry: activityRecord.activity_payload.geometry?.[0],
         created: new Date(activityRecord.activity_payload.form_data.activity_data.activity_date_time).toDateString()
       };
     });
