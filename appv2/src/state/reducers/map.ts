@@ -485,16 +485,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           const toggledOnIAPPLayers = draftState.layers.filter((layer) => layer.type === 'IAPP' && layer.layerState.mapToggle);
 
 
-          const localActivityIDs = []
+          let localActivityIDs = []
 
           toggledOnActivityLayers.map((layer) => {
-            localActivityIDs.push(...layer.IDList);
+            localActivityIDs = localActivityIDs.concat(layer.IDList);
           })
 
-          const localIAPPIDs = []
+          let localIAPPIDs = []
 
           toggledOnIAPPLayers.map((layer) => {
-            localIAPPIDs.push(...layer.IDList);
+            localIAPPIDs = localIAPPIDs.concat(layer.IDList);
           })
 
 

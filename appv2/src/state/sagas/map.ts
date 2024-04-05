@@ -331,7 +331,6 @@ function* handle_WHATS_HERE_FEATURE(action) {
       type: WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
       payload: { activities: activitiesServerIDList, iapp: iappServerIDList }
     });
-
   }
 
   if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
@@ -346,7 +345,6 @@ function* handle_WHATS_HERE_FEATURE(action) {
     yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY });
     yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
   }
-
 }
 
 function* whatsHereSaga() {
@@ -359,41 +357,45 @@ function* whatsHereSaga() {
 
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
   const mapState = yield select(selectMap);
-  if((mapState.MapMode === 'VECTOR_ENDPOINT')) {
+  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
+    const startRecord =
+      mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
+    const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
+    const slicedIDs = mapState.whatsHere.IAPPIDs.slice(startRecord, endRecord);
 
+    const filterObject = {
+      selectColumns: ['site_id', 'jurisdictions_flattened', 'map_symbol', 'min_survey', 'reported_area'],
+      limit: 200000,
+      ids_to_filter: slicedIDs
+    };
 
-      const startRecord =
-        mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
-      const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
-      const slicedIDs = mapState.whatsHere.IAPPIDs.slice(startRecord, endRecord);
-
-      const filterObject = {
-        selectColumns: ['site_id', 'jurisdictions_flattened', 'all_species_on_site', 'min_survey', 'reported_area'],
-        limit: 200000,
-        ids_to_filter: slicedIDs
-      };
-
-      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
-        filterObjects: [filterObject]
-      });
-
-      const mappedToWhatsHereColumns = networkReturn.data.result.map((iappRecord) => {
-        return {
-          id: iappRecord.site_id,
-          site_id: iappRecord.site_id,
-          jurisdiction_code: iappRecord.jurisdictions_flattened,
-          species_code: iappRecord.all_species_on_site,
-          earliest_survey: iappRecord.min_survey,
-          reported_area: iappRecord.reported_area
-        };
-      });
-
+    if (slicedIDs.length === 0) {
       yield put({
         type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-        payload: { data: mappedToWhatsHereColumns }
+        payload: { data: [] }
       });
-
+      return;
     }
+
+    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
+      filterObjects: [filterObject]
+    });
+
+    const mappedToWhatsHereColumns = networkReturn.data.result.map((iappRecord) => {
+      return {
+        id: iappRecord.site_id,
+        site_id: iappRecord.site_id,
+        jurisdiction_code: iappRecord.jurisdictions_flattened,
+        species_code: iappRecord.map_symbol,
+        earliest_survey: new Date(iappRecord.min_survey).toDateString(),
+      };
+    });
+
+    yield put({
+      type: WHATS_HERE_IAPP_ROWS_SUCCESS,
+      payload: { data: mappedToWhatsHereColumns }
+    });
+  }
   if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
     try {
       const startRecord =
@@ -442,20 +444,25 @@ function* handle_WHATS_HERE_PAGE_POI(action) {
 }
 
 function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
-    const mapState = yield select(selectMap);
-    if((mapState.MapMode === 'VECTOR_ENDPOINT')) {
-
-
+  const mapState = yield select(selectMap);
+  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
     const startRecord =
       mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
     const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
     const slicedIDs = mapState.whatsHere.ActivityIDs.slice(startRecord, endRecord);
 
     const filterObject = {
-      selectColumns: ['activity_id', 'short_id', 'jurisdiction_display', 'map_symbol' ],
+      selectColumns: ['activity_id', 'short_id', 'activity_payload', 'activity_type', 'jurisdiction_display', 'map_symbol'],
       limit: 200000,
       ids_to_filter: slicedIDs
     };
+    if (slicedIDs.length === 0) {
+      yield put({
+        type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
+        payload: { data: [] }
+      });
+      return;
+    }
 
     const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
       filterObjects: [filterObject]
@@ -465,8 +472,12 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
       return {
         id: activityRecord.activity_id,
         short_id: activityRecord.short_id,
+        activity_type: activityRecord.activity_type,
         jurisdiction_code: activityRecord.jurisdiction_display,
         species_code: activityRecord.map_symbol,
+        reported_area: activityRecord.activity_payload.form_data.activity_data.reported_area,
+        geoJSON: activityRecord.activity_payload.geometry?.[0],
+        created: new Date(activityRecord.activity_payload.form_data.activity_data.activity_date_time).toDateString()
       };
     });
 
@@ -476,105 +487,106 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
     });
   }
 
-if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
-  try {
-    const mapState = yield select(selectMap);
-    const startRecord =
-      mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
-    const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
+  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
+    try {
+      const mapState = yield select(selectMap);
+      const startRecord =
+        mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) -
+        mapState?.whatsHere?.ActivityLimit;
+      const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
 
-    const sorted = mapState?.whatsHere?.ActivityIDs.map((id) => {
-      for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
-        if (mapState.activitiesGeoJSONDict[source] !== undefined) {
-          if (mapState.activitiesGeoJSONDict[source][id]) {
-            return mapState.activitiesGeoJSONDict[source][id];
+      const sorted = mapState?.whatsHere?.ActivityIDs.map((id) => {
+        for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
+          if (mapState.activitiesGeoJSONDict[source] !== undefined) {
+            if (mapState.activitiesGeoJSONDict[source][id]) {
+              return mapState.activitiesGeoJSONDict[source][id];
+            }
           }
         }
-      }
-      return null;
-    }).sort((a, b) => {
-      if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
-        return a?.properties[mapState?.whatsHere?.ActivitySortField] >
-          b?.properties[mapState?.whatsHere?.ActivitySortField]
-          ? 1
-          : -1;
-      } else {
-        return a?.properties[mapState?.whatsHere?.ActivitySortField] <
-          b?.properties[mapState?.whatsHere?.ActivitySortField]
-          ? 1
-          : -1;
-      }
-    });
-    /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-     */
-    const sliceWithData = sorted.slice(startRecord, endRecord);
-    const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
-      const jurisdiction_code = [];
-      activityRecord?.properties?.jurisdiction?.forEach((item) => {
-        jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
+        return null;
+      }).sort((a, b) => {
+        if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
+          return a?.properties[mapState?.whatsHere?.ActivitySortField] >
+            b?.properties[mapState?.whatsHere?.ActivitySortField]
+            ? 1
+            : -1;
+        } else {
+          return a?.properties[mapState?.whatsHere?.ActivitySortField] <
+            b?.properties[mapState?.whatsHere?.ActivitySortField]
+            ? 1
+            : -1;
+        }
+      });
+      /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
+       */
+      const sliceWithData = sorted.slice(startRecord, endRecord);
+      const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
+        const jurisdiction_code = [];
+        activityRecord?.properties?.jurisdiction?.forEach((item) => {
+          jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
+        });
+
+        const species_code = [];
+        switch (activityRecord?.properties?.type) {
+          case 'Observation':
+            activityRecord?.properties?.species_positive?.forEach((s) => {
+              if (s !== null) species_code.push(s);
+            });
+            activityRecord?.properties?.species_negative?.forEach((s) => {
+              if (s !== null) species_code.push(s);
+            });
+            break;
+          case 'Biocontrol':
+          case 'Treatment':
+            if (
+              activityRecord?.properties.species_treated &&
+              activityRecord?.properties.species_treated.length > 0 &&
+              activityRecord?.properties.species_treated[0] !== null
+            ) {
+              const treatmentTemp = activityRecord?.properties.species_treated;
+              if (treatmentTemp) {
+                treatmentTemp.forEach((s) => {
+                  species_code.push(s);
+                });
+              }
+            }
+            break;
+          case 'Monitoring':
+            if (
+              activityRecord?.properties.species_treated &&
+              activityRecord?.properties.species_treated.length > 0 &&
+              activityRecord?.properties.species_treated[0] !== null
+            ) {
+              const monitoringTemp = activityRecord?.properties.species_treated;
+              if (monitoringTemp) {
+                monitoringTemp.forEach((s) => {
+                  species_code.push(s);
+                });
+              }
+            }
+            break;
+        }
+
+        return {
+          id: activityRecord?.properties?.id,
+          short_id: activityRecord?.properties?.short_id,
+          activity_type: activityRecord?.properties?.type,
+          reported_area: activityRecord?.properties?.reported_area ? activityRecord?.properties?.reported_area : 0,
+          created: activityRecord?.properties?.created,
+          jurisdiction_code: jurisdiction_code,
+          species_code: species_code,
+          geometry: activityRecord?.geometry
+        };
       });
 
-      const species_code = [];
-      switch (activityRecord?.properties?.type) {
-        case 'Observation':
-          activityRecord?.properties?.species_positive?.forEach((s) => {
-            if (s !== null) species_code.push(s);
-          });
-          activityRecord?.properties?.species_negative?.forEach((s) => {
-            if (s !== null) species_code.push(s);
-          });
-          break;
-        case 'Biocontrol':
-        case 'Treatment':
-          if (
-            activityRecord?.properties.species_treated &&
-            activityRecord?.properties.species_treated.length > 0 &&
-            activityRecord?.properties.species_treated[0] !== null
-          ) {
-            const treatmentTemp = activityRecord?.properties.species_treated;
-            if (treatmentTemp) {
-              treatmentTemp.forEach((s) => {
-                species_code.push(s);
-              });
-            }
-          }
-          break;
-        case 'Monitoring':
-          if (
-            activityRecord?.properties.species_treated &&
-            activityRecord?.properties.species_treated.length > 0 &&
-            activityRecord?.properties.species_treated[0] !== null
-          ) {
-            const monitoringTemp = activityRecord?.properties.species_treated;
-            if (monitoringTemp) {
-              monitoringTemp.forEach((s) => {
-                species_code.push(s);
-              });
-            }
-          }
-          break;
-      }
-
-      return {
-        id: activityRecord?.properties?.id,
-        short_id: activityRecord?.properties?.short_id,
-        activity_type: activityRecord?.properties?.type,
-        reported_area: activityRecord?.properties?.reported_area ? activityRecord?.properties?.reported_area : 0,
-        created: activityRecord?.properties?.created,
-        jurisdiction_code: jurisdiction_code,
-        species_code: species_code,
-        geometry: activityRecord?.geometry
-      };
-    });
-
-    yield put({
-      type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-      payload: { data: mappedToWhatsHereColumns }
-    });
-  } catch (e) {
-    console.error(e);
+      yield put({
+        type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
+        payload: { data: mappedToWhatsHereColumns }
+      });
+    } catch (e) {
+      console.error(e);
+    }
   }
-}
 }
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
@@ -999,7 +1011,6 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
 function* handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
   location.reload();
 }
-
 
 function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
   yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });

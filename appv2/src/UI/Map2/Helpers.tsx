@@ -599,6 +599,9 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   if (!map) return;
 
   if (!map.getLayer(layer)) return;
+  if (layer.includes('Sat')) {
+    console.log('** layer exists can toggle');
+  }
   const visibility = map.getLayoutProperty(layer, 'visibility');
   if (visibility !== 'visible' && boolToggle) {
     map.setLayoutProperty(layer, 'visibility', 'visible');
