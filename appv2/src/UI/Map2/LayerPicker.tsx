@@ -4,7 +4,7 @@ import {
   TOGGLE_CUSTOMIZE_LAYERS,
   TOGGLE_DRAWN_LAYER,
   TOGGLE_KML_LAYER,
-  TOGGLE_LAYER_PICKER_OPEN,
+  TOGGLE_LAYER_PICKER_OPEN, TOGGLE_PUBLIC_LAYER,
   TOGGLE_WMS_LAYER
 } from 'state/actions';
 import LayersIcon from '@mui/icons-material/Layers';
@@ -18,6 +18,7 @@ export const LayerPicker = (props: any) => {
   const WMSLayers = useSelector((state: any) => state?.Map?.simplePickerLayers2);
   const KMLLayers = useSelector((state: any) => state.Map.serverBoundaries);
   const drawnLayers = useSelector((state: any) => state.Map?.clientBoundaries);
+  const publicLayers = useSelector((state: any) => state.Map.publicLayers);
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   return (
     <div id="layerPickerElement" className={layerPickerOpen ? 'layerPickerOpen' : 'layerPickerClosed'}>
@@ -31,6 +32,31 @@ export const LayerPicker = (props: any) => {
         </>
       </div>
       <div id="layerPickerHeader"></div>
+      {layerPickerOpen ? (
+        <>
+          <br />
+          <div id="DrawnBoundariesHeader" className="layerPickerCategoryHeader">
+            Public Layers:
+          </div>
+          {publicLayers.map((layer: any) => {
+            return (
+              <div key={layer.title + layer.id} className="layerPickerLayer">
+                <input
+                  type="checkbox"
+                  id={layer.title}
+                  onChange={() => dispatch({ type: TOGGLE_PUBLIC_LAYER, payload: { layer } })}
+                  name={layer?.title || 'Layer name is null'}
+                  value={layer?.toggle}
+                  checked={layer?.toggle}
+                />
+                <label htmlFor={layer.title}>{layer?.title}</label>
+              </div>
+            );
+          })}
+        </>
+      ) : (
+        <></>
+      )}
       {layerPickerOpen ? (
         <>
           <div id="WMSLayersHeader" className="layerPickerCategoryHeader">
@@ -83,7 +109,7 @@ export const LayerPicker = (props: any) => {
       {layerPickerOpen ? (
         <>
           <br />
-          <div id="DrawnBoundariesHeader" className="layerPickerCategoryHeader">
+          <div id="PublicLayerHeader" className="layerPickerCategoryHeader">
             Drawn Layers:
           </div>
           {drawnLayers?.map((layer: any) => {
