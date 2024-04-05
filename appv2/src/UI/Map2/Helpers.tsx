@@ -1,4 +1,4 @@
-import maplibregl, { LngLat, ScaleControl } from 'maplibre-gl';
+import maplibregl, { LayerSpecification, LngLat, ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './map.css';
@@ -279,8 +279,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
         { 'font-scale': 0.9 }
       ],
       // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-      'text-font': ['literal', ['Open Sans Bold']],
-      // 'text-font': ['literal', ['Open Sans Semibold']],
+      'text-font': ['Open Sans Bold'],
       'text-offset': [0, 0.6],
       'text-anchor': 'top'
     },
@@ -397,7 +396,7 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
         { 'font-scale': 0.9 }
       ],
       // the actual font names that work are here
-      'text-font': ['literal', ['Open Sans Bold']],
+      'text-font': ['Open Sans Bold'],
       'text-offset': [0, 0.6],
       'text-anchor': 'top'
     },
@@ -463,51 +462,132 @@ export const createPublicLayer = (map: any, layer: any, API_BASE) => {
     maxzoom: 24
   };
 
-  let circleLayer = {
+  map.addSource(layerID, source);
+
+  const circleLayer: LayerSpecification = {
     id: layerID,
     source: layerID,
+    'source-layer': 'data',
     type: 'circle',
     paint: {
-      'circle-color': '#ff0000',
-      'circle-radius': 3
+      'circle-color': {
+        type: 'categorical',
+        property: 'type',
+        stops: [
+          ['IAPP', '#00ff00'],
+          ['Activity', '#0000ff']
+        ],
+        default: '#ff0000'
+      },
+      'circle-radius': {
+        type: 'interval',
+        stops: [
+          [1, 1],
+          [8, 2],
+          [10, 3],
+          [11, 4],
+          [13, 5],
+          [14, 7],
+          [15, 9],
+          [16, 11],
+          [17, 13],
+          [18, 15]
+        ]
+      }
     },
-    minzoom: 0,
-    maxzoom: 24
+    minzoom: 0
   };
 
-  let labelLayer = {
-    id: 'label-' + layerID,
-    type: 'symbol',
-    source: layerID,
-    layout: {
-      //                'icon-image': 'dog-park-11',
-      'text-field': [
-        'format',
-        ['to-string', ['get', 'site_id']],
-        { 'font-scale': 0.9 },
-        '\n',
-        {},
-        ['to-string', ['get', 'map_symbol']],
-        { 'font-scale': 0.9 }
-      ],
-      // the actual font names that work are here
-      'text-font': ['literal', ['Open Sans Bold']],
-      'text-offset': [0, 0.6],
-      'text-anchor': 'top'
-    },
-    paint: {
-      'text-color': 'black',
-      'text-halo-color': 'white',
-      'text-halo-width': 1,
-      'text-halo-blur': 1
-    },
-    minzoom: 10
-  };
+  const labelLayer: LayerSpecification = {
+      id: 'label-' + layerID,
+      type: 'symbol',
+      source: layerID,
+      'source-layer': 'data',
+      layout: {
+        'text-field': [
+          'step',
+          ['zoom'],
+          ['format', ['get', 'site_id'], { 'font-scale': 0.76 }
+          ],
+          13,
+          ['format', ['match',
+            ['get', 'type'],
+            'IAPP', 'IAPP',
+            'Activity', 'InvasivesBC',
+            ['get', 'type']
+          ],
+            {},
+            ['literal', ' '],
+            {},
+            ['get', 'site_id'],
+            {}
+          ],
+          17,
+          ['format', ['match',
+            ['get', 'type'],
+            'IAPP', 'IAPP',
+            'Activity', 'InvasivesBC',
+            ['get', 'type']
+          ],
+            {},
+            ['literal', ' '],
+            {},
+            ['get', 'site_id'],
+            {},
+            '\n\n',
+            {},
+            ['get', 'species_positive'],
+            { 'font-scale': 0.75 }
+          ],
+          20,
+          ['format', ['match',
+            ['get', 'type'],
+            'IAPP', 'IAPP',
+            'Activity', 'InvasivesBC',
+            ['get', 'type']
+          ],
+            {},
+            ['literal', ' '],
+            {},
+            ['get', 'site_id'],
+            {},
+            '\n\n',
+            {},
+            ['get', 'species_positive'],
+            { 'font-scale': 0.75 },
+            '\n\n',
+            {},
+            ['get', 'riso'],
+            { 'font-scale': 0.75 },
+            '\n\n',
+            {},
+            ['get', 'jurisdictions'],
+            { 'font-scale': 0.75 },
+            '\n\n',
+            {},
+            ['get', 'agencies'],
+            { 'font-scale': 0.75 }
+          ]
+        ],
 
-  circleLayer['source-layer'] = 'data';
-  labelLayer['source-layer'] = 'data';
+        'text-justify': 'left',
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top',
+        'text-font': ['Open Sans Bold']
+      },
+      paint: {
+        'text-color': 'black',
+        'text-halo-color': 'white',
+        'text-halo-width': 0.8,
+        'text-halo-blur': 0.5
+      },
+      minzoom: 8
+    }
+  ;
+  //
 
-  map.addSource(layerID, source).addLayer(circleLayer);
+
+  map.addLayer(circleLayer);
   map.addLayer(labelLayer);
 };
 

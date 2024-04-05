@@ -5,14 +5,35 @@ export const getPublicMapTileQuery = (filterObject: { z: number, x: number, y: n
   const stmt = SQL`WITH mvtgeom AS
                             (SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
                                                  ST_TileEnvelope($1, $2, $3), extent => 4096,
-                                                 buffer => 64) AS geom,
-                                    site_id                    as feature_id,
-                                    reported_area
-                                    -- can include whatever other properties are needed in this query also and they will be added as attributes
-                             FROM iapp_site_summary_and_geojson
-                             WHERE ST_Transform(geog::geometry, 3857) && ST_TileEnvelope($1, $2, $3))
+                                                 buffer => 64)                 AS geom,
+                                    a.site_id                                  as feature_id,
+                                    'IAPP'                                     as type,
+                                    a.site_id::text                            as site_id,
+                                    a.all_species_on_site                      as species_positive,
+                                    a.agencies                                 as agencies,
+                                    a.regional_invasive_species_organization   as riso,
+                                    array_to_string(a.jurisdictions, ', ', '') as jurisdictions
+                             FROM iapp_site_summary_and_geojson a
+                                      join iapp_site_summary b on a.site_id = b.site_id
+                             WHERE ST_Transform(geog::geometry, 3857) && ST_TileEnvelope($1, $2, $3)
+                             UNION
+                             SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
+                                                 ST_TileEnvelope($1, $2, $3), extent => 4096,
+                                                 buffer => 64)                       AS geom,
+                                    act.activity_incoming_data_id                    as feature_id,
+                                    'Activity'                                       as type,
+                                    act.short_id                                     as site_id,
+                                    act.species_positive_full                        as species_positive,
+                                    act.agency                                       as agencies,
+                                    act.regional_invasive_species_organization_areas as riso,
+                                    act.jurisdiction_display                         as jurisdictions
+                             from activity_incoming_data as act
+                             where act.form_status = 'Submitted'
+                               and act.activity_type = 'Observation'
+                               and ST_Transform(geog::geometry, 3857) && ST_TileEnvelope($1, $2, $3))
                    SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data
-                   FROM mvtgeom;`;
+                   FROM mvtgeom
+  `;
   stmt.values = [filterObject.z, filterObject.x, filterObject.y];
 
   return stmt;

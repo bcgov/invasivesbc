@@ -8,7 +8,7 @@ import {
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
+  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, HIDE_DEFAULT_PUBLIC_LAYERS,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -49,7 +49,7 @@ import {
   RECORDSETS_TOGGLE_VIEW_FILTER,
   REMOVE_CLIENT_BOUNDARY,
   SET_CURRENT_OPEN_SET,
-  SET_TOO_MANY_LABELS_DIALOG,
+  SET_TOO_MANY_LABELS_DIALOG, SHOW_DEFAULT_PUBLIC_LAYERS,
   TOGGLE_BASIC_PICKER_LAYER,
   TOGGLE_CUSTOMIZE_LAYERS,
   TOGGLE_DRAWN_LAYER,
@@ -80,6 +80,7 @@ import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
 
 import { createCRC32 } from 'hash-wasm';
+
 const crc32 = await createCRC32();
 
 export enum LeafletWhosEditingEnum {
@@ -500,6 +501,30 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           const index = draftState.publicLayers.findIndex((layer) => layer.id === action.payload.layer.id);
           draftState.publicLayers[index].toggle = !draftState.publicLayers[index]?.toggle;
 
+          crc32.init();
+          draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          break;
+        }
+        case HIDE_DEFAULT_PUBLIC_LAYERS: {
+          for (const l of PUBLIC_LAYERS) {
+            const index = draftState.publicLayers.findIndex((layer) => layer.id === l.id);
+            if (index !== -1 && l.toggle) {
+              // layer was default-on, turn it off
+              draftState.publicLayers[index].toggle = false;
+            }
+          }
+          crc32.init();
+          draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
+          break;
+        }
+        case SHOW_DEFAULT_PUBLIC_LAYERS: {
+          for (const l of PUBLIC_LAYERS) {
+            const index = draftState.publicLayers.findIndex((layer) => layer.id === l.id);
+            if (index !== -1 && l.toggle) {
+              // layer was default-on, turn it back on
+              draftState.publicLayers[index].toggle = true;
+            }
+          }
           crc32.init();
           draftState.publicLayersHash = crc32.update(JSON.stringify(draftState.publicLayers)).digest();
           break;
