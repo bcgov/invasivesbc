@@ -8,8 +8,11 @@ import {
 } from './Activities/Plant/Monitorings';
 import {
   Activity_Observation_PlantAquatic,
-  Activity_Observation_PlantTerrestrial
+  Activity_Observation_PlantTerrestrial,
 } from './Activities/Plant/Observations';
+import {
+  Activity_Observation_Mussels
+} from './Activities/Mussels/Observations';
 import {
   Activity_Transect_BiocontrolEfficacy,
   Activity_Transect_FireMonitoring,
@@ -173,6 +176,7 @@ export const api_doc = {
       //observations
       Activity_Observation_PlantTerrestrial: Activity_Observation_PlantTerrestrial,
       Activity_Observation_PlantAquatic: Activity_Observation_PlantAquatic,
+      Activity_Observation_Mussels: Activity_Observation_Mussels,
       //monitorings
       Activity_Monitoring_ChemicalTerrestrialAquaticPlant: Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
       Activity_Monitoring_MechanicalTerrestrialAquaticPlant: Activity_Monitoring_MechanicalTerrestrialAquaticPlant,
