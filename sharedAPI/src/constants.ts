@@ -2,6 +2,7 @@
 export enum ActivityCategory {
   Plant = 'Plant',
   Animal = 'Animal',
+  Mussels = 'Mussels',
   FREP = 'FREP'
 }
 
@@ -22,6 +23,8 @@ export enum ActivitySubtype {
 
   Activity_AnimalTerrestrial = 'Activity_AnimalActivity_AnimalTerrestrial',
   Activity_AnimalAquatic = 'Activity_AnimalActivity_AnimalAquatic',
+
+  Observation_Mussels = 'Activity_Observation_Mussels',
 
   // Treatments:
   Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlantTerrestrial',
@@ -88,6 +91,11 @@ export const ActivitySubtypeRelations = {
       ActivitySubtype.Monitoring_MechanicalAnimalTerrestrial
     ]
   },
+  [ActivityCategory.Mussels]: {
+    [ActivityType.Observation]: [
+      ActivitySubtype.Observation_Mussels
+    ],
+  },
   [ActivityCategory.FREP]: { [ActivityType.FREP]: [ActivitySubtype.Activity_FREP_FormC] }
 };
 
@@ -97,6 +105,7 @@ export enum ActivitySubtypeShortLabels {
   Activity_Observation_PlantAquatic = 'Aquatic Invasive Plant Observation',
   Activity_AnimalActivity_AnimalTerrestrial = 'Terrestrial Animal Observation',
   Activity_AnimalActivity_AnimalAquatic = 'Aquatic Animal Observation',
+  Activity_Observation_Mussels = 'Activity Observation Mussels',
 
   // Treatments:
   Activity_Treatment_ChemicalPlantTerrestrial = 'Terrestrial Plant Treatment - Chemical',
@@ -137,6 +146,7 @@ export enum ActivityLetter {
   Activity_Observation_PlantAquatic = 'PAO',
   Activity_AnimalActivity_AnimalTerrestrial = 'ATO',
   Activity_AnimalActivity_AnimalAquatic = 'AAO',
+  Activity_Observation_Mussels = 'MUS',
 
   // Treatments:
   Activity_Treatment_ChemicalPlantTerrestrial = 'PTC',
