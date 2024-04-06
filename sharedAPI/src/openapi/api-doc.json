@@ -199,6 +199,20 @@
           }
         }
       },
+      "Activity_Observation_Mussels": {
+        "type": "object",
+        "properties": {
+          "activity_data": {
+            "$ref": "#/components/schemas/Activity"
+          },
+          "activity_type_data": {
+            "$ref": "#/components/schemas/Observation"
+          },
+          "activity_subtype_data": {
+            "$ref": "#/components/schemas/Observation_Mussels"
+          }
+        }
+      },
       "Activity_Treatment_ChemicalPlantAquatic": {
         "type": "object",
         "properties": {
