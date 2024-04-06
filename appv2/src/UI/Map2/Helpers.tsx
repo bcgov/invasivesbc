@@ -1,4 +1,4 @@
-import maplibregl, { LngLat, ScaleControl } from 'maplibre-gl';
+import maplibregl, { LayerSpecification, LngLat, NavigationControl, ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './map.css';
@@ -7,8 +7,7 @@ import './map.css';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import { MAP_WHATS_HERE_FEATURE, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
-import { feature } from '@turf/helpers';
+import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE, MAP_WHATS_HERE_FEATURE } from 'state/actions';
 import proj4 from 'proj4';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -63,24 +62,11 @@ export const mapInit = (
       <div>Zone ${utmZone}, E: ${utm[0].toFixed(0)}, N: ${utm[1].toFixed(0)}</div>
     `;
   });
-  const protocol = new Protocol();
-  maplibregl.addProtocol('pmtiles', (request) => {
-    return new Promise((resolve, reject) => {
-      const callback = (err, data) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve({ data });
-        }
-      };
-      protocol.tile(request, callback);
-    });
-  });
 
   map.current = new maplibregl.Map({
     container: mapContainer.current,
     maxZoom: 24,
-    zoom: h.maxZoom - 2,
+    zoom: 14,
     minZoom: 0,
     transformRequest: (url, resourceType) => {
       if (url.includes(api_base)) {

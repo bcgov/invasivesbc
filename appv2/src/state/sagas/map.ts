@@ -509,12 +509,12 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
       }).sort((a, b) => {
         if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
           return a?.properties[mapState?.whatsHere?.ActivitySortField] >
-            b?.properties[mapState?.whatsHere?.ActivitySortField]
+          b?.properties[mapState?.whatsHere?.ActivitySortField]
             ? 1
             : -1;
         } else {
           return a?.properties[mapState?.whatsHere?.ActivitySortField] <
-            b?.properties[mapState?.whatsHere?.ActivitySortField]
+          b?.properties[mapState?.whatsHere?.ActivitySortField]
             ? 1
             : -1;
         }

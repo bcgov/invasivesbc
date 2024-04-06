@@ -8,7 +8,8 @@ import {
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, HIDE_DEFAULT_PUBLIC_LAYERS,
+  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
+  HIDE_DEFAULT_PUBLIC_LAYERS,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -49,7 +50,8 @@ import {
   RECORDSETS_TOGGLE_VIEW_FILTER,
   REMOVE_CLIENT_BOUNDARY,
   SET_CURRENT_OPEN_SET,
-  SET_TOO_MANY_LABELS_DIALOG, SHOW_DEFAULT_PUBLIC_LAYERS,
+  SET_TOO_MANY_LABELS_DIALOG,
+  SHOW_DEFAULT_PUBLIC_LAYERS,
   TOGGLE_BASIC_PICKER_LAYER,
   TOGGLE_CUSTOMIZE_LAYERS,
   TOGGLE_DRAWN_LAYER,
@@ -71,25 +73,8 @@ import {
   WHATS_HERE_ID_CLICKED,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
-  WHATS_HERE_SORT_FILTER_UPDATE,
-  USER_SETTINGS_REMOVE_RECORD_SET,
-  USER_SETTINGS_SET_RECORDSET,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-  IAPP_TABLE_ROWS_GET_REQUEST,
-  PAN_AND_ZOOM_TO_ACTIVITY,
-  IAPP_PAN_AND_ZOOM,
-  WHATS_HERE_ID_CLICKED,
-  TOGGLE_WMS_LAYER,
-  TOGGLE_LAYER_PICKER_OPEN,
-  TOGGLE_KML_LAYER,
-  TOGGLE_DRAWN_LAYER,
-  MAP_ON_SHAPE_UPDATE,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  MAP_MODE_SET,
-  MAP_TOGGLE_GEOJSON_CACHE
+  WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
+  WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
@@ -531,17 +516,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           const toggledOnIAPPLayers = draftState.layers.filter((layer) => layer.type === 'IAPP' && layer.layerState.mapToggle);
 
 
-          let localActivityIDs = []
+          let localActivityIDs = [];
 
           toggledOnActivityLayers.map((layer) => {
             localActivityIDs = localActivityIDs.concat(layer.IDList);
-          })
+          });
 
-          let localIAPPIDs = []
+          let localIAPPIDs = [];
 
           toggledOnIAPPLayers.map((layer) => {
             localIAPPIDs = localIAPPIDs.concat(layer.IDList);
-          })
+          });
 
 
           let iappIDs = [];
