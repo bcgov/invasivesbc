@@ -12,7 +12,7 @@ import {
   ThemeProvider,
   Typography
 } from '@mui/material';
-import  Form from '@rjsf/core';
+import { Form } from '@rjsf/mui'
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 import { SelectAutoCompleteContextProvider } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
