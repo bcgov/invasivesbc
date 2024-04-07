@@ -31,6 +31,7 @@ interface ActivityState {
   activity: any;
   current_activity_hash: string | null;
   error: boolean;
+  pasteCount: number;
   failCode: number | null;
   initialized: boolean;
   loading: boolean;
@@ -40,12 +41,14 @@ interface ActivityState {
   suggestedPersons: [];
   suggestedTreatmentIDs: [];
   unsaved_notification: any | null;
+  activity_copy_buffer: object | null;
 }
 
 const initialState: ActivityState = {
   activity: null,
   current_activity_hash: null,
   error: false,
+  pasteCount: 0,
   failCode: null,
   initialized: false,
   loading: false,
@@ -54,7 +57,8 @@ const initialState: ActivityState = {
   suggestedJurisdictions: [],
   suggestedPersons: [],
   suggestedTreatmentIDs: [],
-  unsaved_notification: null
+  unsaved_notification: null,
+  activity_copy_buffer: null
 };
 
 function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAction) => ActivityState {
@@ -71,6 +75,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             activity: null,
             current_activity_hash: null,
             error: false,
+            pasteCount: 0,
             failCode: null,
             initialized: false,
             loading: false,
@@ -84,11 +89,12 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case ACTIVITY_CREATE_REQUEST: {
-          const activity_copy_buffer = draftState.activity_copy_buffer;
+          const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
           draftState = {
             activity: null,
             current_activity_hash: null,
             error: false,
+            pasteCount: 0,
             failCode: null,
             initialized: false,
             loading: false,
@@ -97,9 +103,9 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             suggestedJurisdictions: [],
             suggestedPersons: [],
             suggestedTreatmentIDs: [],
-            unsaved_notification: null
+            unsaved_notification: null,
+            activity_copy_buffer
           };
-          draftState.activity_copy_buffer = activity_copy_buffer;
           break;
         }
         case ACTIVITY_GET_FAILURE: {
@@ -177,7 +183,8 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case ACTIVITY_PASTE_SUCCESS: {
-          draftState.form_data = draftState.activity_copy_buffer.form_data;
+          draftState.pasteCount = draftState.pasteCount + 1;
+          draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer.form_data));
           break;
         }
         case ACTIVITY_ADD_PHOTO_SUCCESS: {
