@@ -48,6 +48,8 @@ const FormContainer: React.FC<any> = (props) => {
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
 
   const formDataState = useSelector((state) => state.ActivityPage.activity.form_data);
+  const pasteCount = useSelector((state) => state.ActivityPage.pasteCount);
+
   const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
   const activity_type = useSelector((state) => state.ActivityPage.activity.activity_type);
   const activity_ID = useSelector((state) => state.ActivityPage.activity.activity_id);
@@ -72,12 +74,12 @@ const FormContainer: React.FC<any> = (props) => {
   }, 1000);
 
   const errorTransformers = useCallback(() => {
-    
+
     return getCustomErrorTransformer;
   }, []);
 
   const customValidators = useCallback(() => {
-    
+
     return validatorForActivity(activity_subtype, null);
   }, [JSON.stringify(activity_subtype)]);
 
@@ -158,7 +160,7 @@ const FormContainer: React.FC<any> = (props) => {
               Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can however
               save in progress work, and come back later.
             </Typography>
-            
+
           </div>
         ) : null}
       </>
@@ -167,7 +169,7 @@ const FormContainer: React.FC<any> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
-      
+
       const subtype = activity_subtype;
       if (!subtype) throw new Error('Activity has no Subtype specified');
       let components;
@@ -256,7 +258,7 @@ const FormContainer: React.FC<any> = (props) => {
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
-    
+
     const notMine = username !== created_by;
     const notAdmin =
       accessRoles?.filter((role) => {
@@ -269,15 +271,16 @@ const FormContainer: React.FC<any> = (props) => {
     }
   }, [JSON.stringify(accessRoles), JSON.stringify(username)]);
 
-  // hack to make fields rerender only on paste event
-  const [keyInt, setKeyInt] = useState(0);
-  const pasteCallback = () => {
-    props.pasteFormData();
-    setTimeout(() => {
-      setKeyInt(keyInt + Math.random());
-    }, 1500);
-  };
 
+  // useEffect() => {
+  //   () => {
+  //     props.pasteFormData();
+  //     setTimeout(() => {
+  //       setKeyInt(keyInt + Math.random());
+  //     }, 1500);
+  //   };
+  // }
+  //
   if (!schemas.schema || !schemas.uiSchema) {
     return <CircularProgress />;
   } else {
@@ -298,7 +301,7 @@ const FormContainer: React.FC<any> = (props) => {
                   'single-select-autocomplete': SingleSelectAutoComplete
                 }}
                 readonly={props.isDisabled}
-                key={activity_ID + keyInt.toString()}
+                key={activity_ID + pasteCount}
                 disabled={false}
                 formData={formDataState || null}
                 schema={schemas.schema}
@@ -310,7 +313,7 @@ const FormContainer: React.FC<any> = (props) => {
                 transformErrors={getCustomErrorTransformer()}
                 autoComplete="off"
                 onChange={(event) => {
-                  
+
                   debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
                     //setformData(updatedFormData);
                   });
