@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
-import { Autocomplete, Box, Container, TextField, Theme, Typography } from '@mui/material';
-//import { makeStyles } from '@mui/styles';
+import { Autocomplete, Box, Container, TextField, Typography } from '@mui/material';
 import { Report } from './Report';
 import Spinner from 'UI/Spinner/Spinner';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
-import './Report.css'
+import './Report.css';
 
 
 const EmbeddedReportsPage: React.FC = () => {
@@ -14,7 +13,7 @@ const EmbeddedReportsPage: React.FC = () => {
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
   const [reports, setReports] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [activeReport, setActiveReport] = useState(null);
+  const [activeReport, setActiveReport] = useState<number>(null);
   const [loading, setLoading] = useState(true);
   const authState = useSelector(selectAuth);
 
@@ -54,16 +53,16 @@ const EmbeddedReportsPage: React.FC = () => {
   return (
     <Container style={{ paddingBottom: '50px' }}>
       <Box style={{ paddingTop: '30px', paddingBottom: '10px', display: 'flex', justifyContent: 'center' }}>
-        <Typography variant="h4" align="center">
+        <Typography variant='h4' align='center'>
           <Box
             style={{ paddingTop: '1rem' }}
-            component="img"
-            alignContent="center"
+            component='img'
+            alignContent='center'
             sx={{
               height: 37,
               width: 37
             }}
-            alt="Metabase Icon"
+            alt='Metabase Icon'
             src={metabaseIconUrl}
           />
           Metabase Reports
@@ -84,7 +83,8 @@ const EmbeddedReportsPage: React.FC = () => {
       <Box style={{ paddingBottom: '30px', display: 'flex', justifyContent: 'center' }}>
         {/* MUI Dropdown for list of metabase report types */}
         <Autocomplete
-          id="metabase-report-select"
+          id='metabase-report-select'
+          disablePortal
           options={options}
           groupBy={(option) => option.category}
           getOptionLabel={(option) => option.name}
@@ -92,14 +92,11 @@ const EmbeddedReportsPage: React.FC = () => {
           onChange={(event, report) => {
             setActiveReport(report.id);
           }}
-          renderInput={(params) => <TextField {...params} label="Select a Metabase Report" />}
+          renderInput={(params) => <TextField {...params} label='Select a Metabase Report' />}
         />
       </Box>
-      <Container 
-      // not sure what class we can map to here
-      //classes={{ 'reportIFrameContainer'}}
-      >
-        <Box>{activeReport && <Report reportId={activeReport} />}</Box>
+      <Container>
+        <Box>{activeReport && <Report reportId={`${activeReport}`} />}</Box>
       </Container>
     </Container>
   );
