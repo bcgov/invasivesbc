@@ -328,6 +328,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           Object.keys(action.payload.updatedSet).forEach((key) => {
             draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
           });
+          draftState.recordSets[action.payload.setName].labelToggle = draftState.recordSets[action.payload.setName].labelToggle && draftState.recordSets[action.payload.setName].mapToggle || false;
           break;
         }
         case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {

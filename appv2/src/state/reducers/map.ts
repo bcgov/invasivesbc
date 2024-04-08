@@ -418,7 +418,7 @@ const initialState: MapState = {
   userRecordOnHoverRecordID: undefined,
   userRecordOnHoverRecordRow: undefined,
   userRecordOnHoverRecordType: undefined,
-  viewFilters: false,
+  viewFilters: true,
   whatsHere: {
     toggle: false,
     limit: 5,
@@ -477,32 +477,30 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.whatsHere.serverActivityIDs = action.payload.activities;
           draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
 
-
           const toggledOnActivityLayers = draftState.layers.filter(
             (layer) => layer.type === 'Activity' && layer.layerState.mapToggle
           );
 
-          const toggledOnIAPPLayers = draftState.layers.filter((layer) => layer.type === 'IAPP' && layer.layerState.mapToggle);
+          const toggledOnIAPPLayers = draftState.layers.filter(
+            (layer) => layer.type === 'IAPP' && layer.layerState.mapToggle
+          );
 
-
-          let localActivityIDs = []
+          let localActivityIDs = [];
 
           toggledOnActivityLayers.map((layer) => {
             localActivityIDs = localActivityIDs.concat(layer.IDList);
-          })
+          });
 
-          let localIAPPIDs = []
+          let localIAPPIDs = [];
 
           toggledOnIAPPLayers.map((layer) => {
             localIAPPIDs = localIAPPIDs.concat(layer.IDList);
-          })
-
+          });
 
           let iappIDs = [];
           let activityIDs = [];
           localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
           localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
-
 
           draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
           draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
@@ -523,8 +521,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           break;
         }
-        case MAP_TOGGLE_GEOJSON_CACHE: 
-        {
+        case MAP_TOGGLE_GEOJSON_CACHE: {
           draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
           localStorage.setItem('MapMode', draftState.MapMode);
           break;
@@ -620,7 +617,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
-          if(draftState.MapMode === 'VECTOR_ENDPOINT') {
+          if (draftState.MapMode === 'VECTOR_ENDPOINT') {
             draftState.layers[index].loading = false;
           }
 
@@ -645,9 +642,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
           let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index])
-          {
-            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType});
+          if (!draftState.layers[index]) {
+            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType });
           }
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
@@ -775,11 +771,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           draftState.layers[index].IDList = action.payload.IDList;
-          if(draftState.MapMode === 'VECTOR_ENDPOINT') {
+          if (draftState.MapMode === 'VECTOR_ENDPOINT') {
             draftState.layers[index].loading = false;
           }
 
-          if (draftState.MapMode != 'VECTOR_ENDPOINT' && draftState.IAPPGeoJSONDict !== undefined && Object.keys(draftState.IAPPGeoJSONDict).length > 0) {
+          if (
+            draftState.MapMode != 'VECTOR_ENDPOINT' &&
+            draftState.IAPPGeoJSONDict !== undefined &&
+            Object.keys(draftState.IAPPGeoJSONDict).length > 0
+          ) {
             GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
           }
           break;
@@ -828,6 +828,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
             }
           });
+          if (draftState.layers[layerIndex].layerState.mapToggle === false) {
+            draftState.layers[layerIndex].layerState.labelToggle = false;
+          }
           break;
         }
         case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
