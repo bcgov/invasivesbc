@@ -248,7 +248,7 @@ export const mapInit = (
             layout: {
               'text-field': [
                 'format',
-                ['upcase', ['get', 'site_id']],
+                ['concat', 'IAPP Site: ', ['get', 'site_id']],
                 { 'font-scale': 0.9 },
                 '\n',
                 {},

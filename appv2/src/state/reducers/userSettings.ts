@@ -160,6 +160,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             default:
               break;
           }
+          localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
         case RECORDSET_REMOVE_FILTER: {
@@ -178,6 +179,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
             JSON.stringify(tableFiltersNotBlank)
           );
+          localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
         case RECORDSET_UPDATE_FILTER: {
@@ -243,6 +245,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
             JSON.stringify(tableFiltersNotBlank)
           );
+          localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
         case RECORDSET_CLEAR_FILTERS: {
@@ -258,6 +261,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               }
             ];
           }
+          localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
         case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
