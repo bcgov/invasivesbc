@@ -30,7 +30,8 @@ export const mapInit = (
   activityGeo,
   whats_here_toggle,
   api_base,
-  getAuthHeaderCallback
+  getAuthHeaderCallback,
+  PUBLIC_MAP_URL
 ) => {
   const coordinatesContainer = document.createElement('div');
   coordinatesContainer.style.position = 'absolute';
@@ -78,8 +79,7 @@ export const mapInit = (
     });
   });
 
-  const PMTILES_URL = `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
-  //const PMTILES_URL = 'https://protomaps.github.io/PMTiles/protomaps(vector)ODbL_firenze.pmtiles';
+  const PMTILES_URL = PUBLIC_MAP_URL || `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
 
   const p = new PMTiles(PMTILES_URL);
 
@@ -144,14 +144,14 @@ export const mapInit = (
             tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
             tileSize: 256,
             maxzoom: 18
-          }
-          /*example_source: {
+          },
+          public_layer: {
             type: 'vector',
             url: `pmtiles://${PMTILES_URL}`,
             //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
             // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
             attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
-          }*/
+          }
         },
         layers: [
           {
@@ -180,35 +180,96 @@ export const mapInit = (
             layout: {
               visibility: 'none'
             }
-          }
+          },
           // {
           //   id: 'wms-test-layer2',
           //   type: 'raster',
           //   source: 'wms-test-source',
           //   minzoom: 0
           // }
-          /*{
-            id: 'invasives-vector',
-            source: 'example_source',
+          {
+            id: 'invasivesbc-pmtile-vector',
+            source: 'public_layer',
             'source-layer': 'invasives',
             type: 'fill',
             paint: {
-              'fill-color': 'steelblue'
+              'fill-color': 'lightskyblue'
             },
             minzoom: 0,
             maxzoom: 24
           },
           {
-            id: 'buildings',
-            source: 'example_source',
-            'source-layer': 'landuse',
-            type: 'fill',
+            id: 'iapp-pmtile-vector',
+            source: 'public_layer',
+            'source-layer': 'iapp',
+            type: 'circle',
             paint: {
-              'fill-color': 'steelblue'
+              'circle-color': 'limegreen'
             },
-            minzoom: 0
+            minzoom: 0,
+            maxzoom: 24
+          },
+          {
+            id: 'invasivesbc-pmtile-vector-label',
+            source: 'public_layer',
+            'source-layer': 'invasives',
+            type: 'symbol',
+            layout: {
+              //                'icon-image': 'dog-park-11',
+              'text-field': [
+                'format',
+                ['upcase', ['get', 'id']],
+                { 'font-scale': 0.9 },
+                '\n',
+                {},
+                ['get', 'map_symbol'],
+                { 'font-scale': 0.9 }
+              ],
+              // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+              'text-font': ['literal', ['Open Sans Bold']],
+              // 'text-font': ['literal', ['Open Sans Semibold']],
+              'text-offset': [0, 0.6],
+              'text-anchor': 'top'
+            },
+            paint: {
+              'text-color': 'black',
+              'text-halo-color': 'white',
+              'text-halo-width': 1,
+              'text-halo-blur': 1
+            },
+            minzoom: 0,
+            maxzoom: 24
+          },
+          {
+            id: 'iapp-pmtile-vector-label',
+            source: 'public_layer',
+            'source-layer': 'iapp',
+            type: 'symbol',
+            layout: {
+              'text-field': [
+                'format',
+                ['upcase', ['get', 'site_id']],
+                { 'font-scale': 0.9 },
+                '\n',
+                {},
+                ['get', 'map_symbol'],
+                { 'font-scale': 0.9 }
+              ],
+              // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+              'text-font': ['literal', ['Open Sans Bold']],
+              // 'text-font': ['literal', ['Open Sans Semibold']],
+              'text-offset': [0, 0.6],
+              'text-anchor': 'top'
+            },
+            paint: {
+              'text-color': 'black',
+              'text-halo-color': 'white',
+              'text-halo-width': 1,
+              'text-halo-blur': 1
+            },
+            minzoom: 0,
+            maxzoom: 24
           }
-          */
         ]
       }
     });

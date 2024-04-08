@@ -18,6 +18,7 @@ export const PUBLIC_ACTIVITY_SQL = SQL`select jsonb_build_object(
                                                   'RISO', a.regional_invasive_species_organization_areas,
                                                   'agency', a.agency,
                                                   'regionalDistricts', a.regional_districts,
+                                                  'map_symbol', a.map_symbol,
                                                   'MOTIDistricts', a.moti_districts,
                                                   'FLNRODistricts', a.flnro_districts)) as feature
                                        from activity_incoming_data as a
