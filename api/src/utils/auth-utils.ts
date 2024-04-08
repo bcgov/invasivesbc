@@ -115,7 +115,7 @@ export const authenticate = async (req: InvasivesRequest) => {
   }
 
   return new Promise<void>((resolve, reject) => {
-    verify(token, retrieveKey, {}, function (error, decoded) {
+    verify(token, retrieveKey, {}, function (error, decoded: Record<string, any>) {
       if (error) {
         defaultLog.error({ label: 'authenticate', message: 'token verification failure', error });
         reject({

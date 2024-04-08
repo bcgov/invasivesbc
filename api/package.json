@@ -9,6 +9,7 @@
     "url": "https://github.com/bcgov/invasivesbc.git"
   },
   "scripts": {
+    "dev": "nodemon --exec 'tsx' src/server --watch ../sharedAPI --watch .",
     "start": "tsx src/server",
     "export-map": "ts-node src/map-exporter",
     "export-geojson": "ts-node src/geojson-exporter",
