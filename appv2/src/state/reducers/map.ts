@@ -286,7 +286,6 @@ interface MapState {
     IAPPSortField: string;
     IAPPSortDirection: string;
 
-
     serverActivityIDs: any[];
     serverIAPPIDs: any[];
   };
