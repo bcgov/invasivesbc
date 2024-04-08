@@ -383,7 +383,7 @@ const initialState: MapState = {
   activityPageMapExtentToggle: false,
 
   baseMapToggle: false,
-  clientBoundaries: [], // localStorage.getItem('CLIENT_BOUNDARIES') !== null ? JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES')) : [],
+  clientBoundaries: localStorage.getItem('CLIENT_BOUNDARIES') !== null ? JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES')) : [],
   currentOpenSet: null,
   customizeLayersToggle: false,
   drawingCustomLayer: false,
