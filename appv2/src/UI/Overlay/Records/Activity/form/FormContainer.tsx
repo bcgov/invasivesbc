@@ -300,9 +300,9 @@ const FormContainer: React.FC<any> = (props) => {
                   'multi-select-autocomplete': MultiSelectAutoComplete,
                   'single-select-autocomplete': SingleSelectAutoComplete
                 }}
-                readonly={props.isDisabled}
+                readonly={isDisabled}
                 key={activity_ID + pasteCount}
-                disabled={false}
+                disabled={isDisabled}
                 formData={formDataState || null}
                 schema={schemas.schema}
                 uiSchema={schemas.uiSchema}
