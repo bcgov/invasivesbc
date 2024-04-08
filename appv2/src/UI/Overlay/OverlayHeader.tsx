@@ -162,6 +162,7 @@ export const OverlayHeader = (props) => {
                 onClick={() => {
                   dispatch({ type: OVERLAY_MENU_TOGGLE });
                 }}>
+                  Save Menu
                 <SaveAsIcon />
               </Button>);
           }}

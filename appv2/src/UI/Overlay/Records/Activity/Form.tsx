@@ -1,9 +1,12 @@
 import React, { useRef } from 'react';
 import FormContainer from './form/FormContainer';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './Form.css';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
+import { Button } from '@mui/material';
+import { calc_lat_long_from_utm } from 'util/utm';
+import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -11,9 +14,69 @@ export const ActivityForm = (props) => {
   if(RENDER_DEBUG)
   console.log('%Activity Form render:' + ref.current.toString(), 'color: yellow');
 
+  const dispatch = useDispatch();
+
   const { short_id, form_status, activity_type, activity_subtype, form_data, created_by, date_created, updated_by, received_timestamp, batch_id } =
     useSelector((state: any) => state.ActivityPage?.activity);
 
+  const manualUTMEntry = () => {
+    let validZone = false;
+    let zone;
+    let validNorthing = false;
+    let northing;
+    let validEasting = false;
+    let easting;
+
+    while (!validZone) {
+      zone = prompt('Enter a valid UTM Zone');
+      if(zone === null)
+        return;
+      if (!isNaN(Number(zone))) {
+        validZone = true;
+        break;
+      }
+    }
+    if (!validZone) {
+      return; // allow for cancel
+    }
+    while (!validEasting) {
+      easting = prompt('Enter a valid UTM Easting');
+      if(easting === null)
+        return;
+      if (!isNaN(Number(easting))) {
+        validEasting = true;
+        break;
+      }
+    }
+    if (!validEasting) {
+      //allow for cancel
+      return;
+    }
+    while (!validNorthing) {
+      northing = prompt('Enter a valid UTM Northing');
+      if(northing === null)
+        return;
+      if (!isNaN(Number(northing))) {
+        validNorthing = true;
+        break;
+      }
+    }
+    if (!validNorthing) {
+      return; // allow for cancel
+    }
+
+    let result = JSON.parse(JSON.stringify(calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing))));
+    const geo: any = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [result[0], result[1]]
+      },
+      properties: {}
+    };
+
+    dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [geo]}})
+  };
   return (
     <>
       <div className={'recordHeaderInfo'}>
@@ -66,6 +129,7 @@ export const ActivityForm = (props) => {
           </tbody>
         </table>
       </div>
+        <Button onClick={manualUTMEntry} variant="outlined" sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>Click to enter UTM manually</Button>
       <FormContainer />
     </>
   );
