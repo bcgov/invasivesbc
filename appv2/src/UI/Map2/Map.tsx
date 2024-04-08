@@ -37,7 +37,7 @@ import { opacify } from 'color2k';
 
  */
 export const Map = (props: any) => {
-  const { API_BASE } = useSelector(state => state.Configuration.current);
+  const { API_BASE } = useSelector((state) => state.Configuration.current);
   const store = useStore(); // to escape useselector memoization
 
   const [draw, setDraw] = useState(null);
@@ -49,6 +49,7 @@ export const Map = (props: any) => {
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const authInitiated = useSelector((state: any) => state.Auth.initialized);
+  const loggedIn = useSelector((state: any) => state.Auth.authenticated);
 
   // RecordSet Layers
   const storeLayers = useSelector((state: any) => state.Map?.layers);
@@ -91,7 +92,6 @@ export const Map = (props: any) => {
   const activityGeo = useSelector((state: any) => state.ActivityPage?.activity?.geometry);
   const drawingCustomLayer = useSelector((state: any) => state.Map.drawingCustomLayer);
 
-
   //Current rec markers:
   const currentActivityShortID = useSelector((state: any) => state.ActivityPage?.activity?.short_id);
   const currentIAPPID = useSelector((state: any) => state?.IAPPSitePage?.site?.site_id);
@@ -99,18 +99,30 @@ export const Map = (props: any) => {
   const activityMarker = new maplibregl.Marker({ element: activityMarkerEl });
   const IAPPMarker = new maplibregl.Marker({ element: IAPPMarkerEl });
 
-
   //Highlighted Record from main records page:
   const userRecordOnHoverRecordRow = useSelector((state: any) => state.Map?.userRecordOnHoverRecordRow);
   const userRecordOnHoverRecordType = useSelector((state: any) => state.Map?.userRecordOnHoverRecordType);
 
+  const PUBLIC_MAP_URL = useSelector((state: any) => state.Configuration.current.PUBLIC_MAP_URL);
 
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated) return;
-    mapInit(map, mapContainer, setDraw, dispatch, uHistory, appModeUrl, activityGeo, null, API_BASE, () => {
-      return store.getState().Auth.requestHeaders;
-    });
+    mapInit(
+      map,
+      mapContainer,
+      setDraw,
+      dispatch,
+      uHistory,
+      appModeUrl,
+      activityGeo,
+      null,
+      API_BASE,
+      () => {
+        return store.getState().Auth.requestHeaders;
+      },
+      PUBLIC_MAP_URL
+    );
   }, [authInitiated]);
 
   // RecordSet Layers:
@@ -129,11 +141,12 @@ export const Map = (props: any) => {
     refreshWMSOnToggle(simplePickerLayers2, map.current);
   }, [simplePickerLayers2]);
 
-
   useEffect(() => {
-    addServerBoundariesIfNotExists(serverBoundaries, map.current);
-    refreshServerBoundariesOnToggle(serverBoundaries, map.current);
-  }, [serverBoundaries]);
+    if (loggedIn) {
+      addServerBoundariesIfNotExists(serverBoundaries, map.current);
+      refreshServerBoundariesOnToggle(serverBoundaries, map.current);
+    }
+  }, [serverBoundaries, loggedIn]);
 
   useEffect(() => {
     addClientBoundariesIfNotExists(clientBoundaries, map.current);
@@ -143,7 +156,7 @@ export const Map = (props: any) => {
   // Jump Nav
   useEffect(() => {
     if (!map.current) return;
-    if (map_center) map.current.jumpTo({ center: map_center, zoom: map_zoom });
+    if (map_center && map_center && map_zoom) map.current.jumpTo({ center: map_center, zoom: map_zoom });
   }, [map_center, map_zoom]);
 
   // User position tracking and marker
@@ -155,8 +168,8 @@ export const Map = (props: any) => {
   //Toggle Topo
   useEffect(() => {
     if (!map.current) return;
-    toggleLayerOnBool(map.current, 'Esri-Sat-LayerHD', (!baseMapToggle && HDToggle));
-    toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', (!baseMapToggle && !HDToggle));
+    toggleLayerOnBool(map.current, 'Esri-Sat-LayerHD', !baseMapToggle && HDToggle);
+    toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', !baseMapToggle && !HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
   }, [baseMapToggle, HDToggle]);
@@ -164,10 +177,18 @@ export const Map = (props: any) => {
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
     if (!map.current) return;
-    refreshDrawControls(map.current, draw, setDraw, dispatch, uHistory, whatsHereToggle, appModeUrl, activityGeo, drawingCustomLayer);
+    refreshDrawControls(
+      map.current,
+      draw,
+      setDraw,
+      dispatch,
+      uHistory,
+      whatsHereToggle,
+      appModeUrl,
+      activityGeo,
+      drawingCustomLayer
+    );
   }, [whatsHereToggle, appModeUrl, map, activityGeo, drawingCustomLayer]);
-
-
 
   //Current Activity & IAPP Markers
   useEffect(() => {
@@ -189,23 +210,37 @@ export const Map = (props: any) => {
 
   const [mapLoaded, setMapLoaded] = useState(false);
 
-  useEffect(()=> {
+  useEffect(() => {
     setInterval(() => {
       if (map.current) {
         setMapLoaded(map.current.areTilesLoaded());
       }
     }, 1000);
-  },[map.current])
+  }, [map.current]);
+
+  // toggle public map pmtile layer
+  useEffect(() => {
+    if (!map.current) return;
+
+    if (loggedIn) {
+      console.log('logged in')
+      toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
+      toggleLayerOnBool(map.current, 'iapp-pmtile-vector', false);
+      toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector-label', false);
+      toggleLayerOnBool(map.current, 'iapp-pmtile-vector-label', false);
+    }
+  }, [loggedIn, map.current]);
 
   return (
-    <div className='MapWrapper'>
-      <div ref={mapContainer} className='Map' />
-      <div id='LoadingMap' className={!mapLoaded? 'loadingMap': 'loadedMap'} >Loading tiles...</div>
+    <div className="MapWrapper">
+      <div ref={mapContainer} className="Map" />
+      <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
+        Loading tiles...
+      </div>
       {props.children}
     </div>
   );
 };
-
 
 const positionMarkerEl = document.createElement('div');
 positionMarkerEl.className = 'userTrackingMarker';
