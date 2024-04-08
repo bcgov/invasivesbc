@@ -1,3 +1,7 @@
+import {
+  BasicInformation,
+} from '../Components/Mussels_Sub_Form';
+
 export const Observation_PlantTerrestrial_Information = {
   type: 'object',
   title: 'Observation Plant Terrestrial Information',
@@ -94,15 +98,8 @@ export const Observation_PlantAquatic_Information = {
 
 export const Observation_Mussels_Information = {
   type: 'object',
-  title: 'ObservationMusselsInformation',
+  title: 'invisible',
   properties: {
-    mussels_were_found: {
-      type: 'string',
-      title: 'Mussels were found',
-      enum: ['Unknown', 'Yes', 'NO'],
-      default: 'Unknown',
-      'x-tooltip-text':
-        'Choose Yes if mussels were found. If no mussels were found, choose No and provide details in the comments field.'
-    }
+    BasicInformation: BasicInformation
   }
 };

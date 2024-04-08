@@ -969,6 +969,10 @@ const Observation_PlantAquatic_Information = {
   'ui:order': ['suitable_for_biocontrol_agent']
 };
 
+const Observation_Mussels_Information = {
+  ...TwoColumnStyle,
+};
+
 const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -1227,6 +1231,7 @@ const BaseUISchemaComponents = {
     Treatment_MechanicalPlant_Information,
     Observation_PlantTerrestrial_Information,
     Observation_PlantAquatic_Information,
+    Observation_Mussels_Information,
     Monitoring_ChemicalTerrestrialAquaticPlant_Information,
     Monitoring_ChemicalPlants,
     Monitoring_MechanicalTerrestrialAquaticPlant_Information,
