@@ -87,3 +87,8 @@
 .loadedMap {
   display: none;
 }
+
+.maplibregl-canvas-container.maplibregl-interactive,
+.maplibregl-canvas-container.maplibregl-interactive:active {
+    cursor: crosshair;
+}
