@@ -13,16 +13,17 @@ const FourColumnStyle = {
   'ui:column-md': 6,
   'ui:column-lg': 3
 };
-const ThreeColumnStyle = {
+const TwoColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 6,
   'ui:column-lg': 4
 };
-const TwoColumnStyle = {
+/*const TwoColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 6,
   'ui:column-lg': 6
 };
+*/
 const OneColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 12,
@@ -246,7 +247,7 @@ const Authorization_Infotmation = {
 };
 
 const WaterQuality = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   water_sample_depth: {},
   secchi_depth: {},
   water_colour: {},
@@ -254,7 +255,7 @@ const WaterQuality = {
 };
 
 const TerrestrialPlant = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   observation_type: {},
   edna_sample: { 'ui:widget': 'single-select-autocomplete' },
@@ -295,7 +296,7 @@ const TerrestrialPlants = {
 };
 
 const AquaticPlant = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   sample_point_id: {},
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   observation_type: {},
@@ -321,7 +322,7 @@ const AquaticPlants = {
 };
 
 const WaterbodyData = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   waterbody_type: { 'ui:widget': 'single-select-autocomplete' },
   waterbody_name_gazetted: {},
   waterbody_name_local: {},
@@ -359,7 +360,7 @@ const WaterbodyData_AdditionalFields = {
 };
 
 const Weather_Conditions = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   temperature: { validateOnBlur: true },
   cloud_cover_code: { 'ui:widget': 'single-select-autocomplete' },
   precipitation_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -391,7 +392,7 @@ const Pest_Injury_Threshold_Determination = {
 };
 
 const Target_Plant_Phenology = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   phenology_details_recorded: {},
   winter_dormant: {},
   seedlings: {},
@@ -416,7 +417,7 @@ const Target_Plant_Phenology = {
 };
 
 const Spread_Results = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   spread_details_recorded: {},
   agent_density: {},
   plant_attack: {},
@@ -426,7 +427,7 @@ const Spread_Results = {
 };
 
 const TransectLine = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   transect_line_id: {},
   transect_comment: { 'ui:widget': 'textarea' },
   start_x_utm: {},
@@ -453,7 +454,7 @@ const InvasivePlants = {
 };
 
 const FireMonitoringTransectPoints = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   sample_point_id: {},
   offset_distance: {},
   utm_x: { 'ui:readonly': true },
@@ -651,7 +652,7 @@ const VegetationTransectLines = {
 };
 
 const TransectInvasivePlants = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   invasive_plant_density_code: { 'ui:widget': 'single-select-autocomplete' },
   invasive_plant_distribution_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -669,7 +670,7 @@ const TransectInvasivePlants = {
 };
 
 const BiocontrolEfficacyTransectPoint = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   sample_point_id: {},
   offset_distance: {},
   utm_x: { 'ui:readonly': true },
@@ -719,7 +720,7 @@ const BiocontrolEfficacyTransectLines = {
 };
 
 const FREP_Log = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   log_num: {},
   species: { 'ui:widget': 'single-select-autocomplete' },
   decay_class: { 'ui:widget': 'single-select-autocomplete' },
@@ -728,7 +729,7 @@ const FREP_Log = {
 };
 
 const FREP_Stand_Table = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   tree_num: {},
   species: { 'ui:widget': 'single-select-autocomplete' },
   wt_class: { 'ui:widget': 'single-select-autocomplete' },
@@ -738,7 +739,7 @@ const FREP_Stand_Table = {
 
 const FREP_FormA = {
   plot_identification: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     date: {},
     opening_id: {},
     assessed_by: {},
@@ -748,7 +749,7 @@ const FREP_FormA = {
     northing: {}
   },
   plot_identification_trees: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     trees_exist: {},
     baf: {},
     fixed_area: {},
@@ -761,7 +762,7 @@ const FREP_FormA = {
     }
   },
   plot_information: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     cwd_in_transect: {},
     first_leg: {},
     second_leg: {},
@@ -776,7 +777,7 @@ const FREP_FormA = {
 
 const FREP_FormB = {
   stratum_summary: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     date: {},
     opening_id: {},
     assessed_by: {},
@@ -793,7 +794,7 @@ const FREP_FormB = {
     estimated_size: {}
   },
   dispersed_summary: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     estimated_age_of_oldest_trees: {},
     patch_location: { 'ui:widget': 'single-select-autocomplete' },
     percent_trees_windthrown: { 'ui:widget': 'single-select-autocomplete' },
@@ -801,7 +802,7 @@ const FREP_FormB = {
     windthrow_treatment: { 'ui:widget': 'single-select-autocomplete' }
   },
   reserve_constraints: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     reserve_constraints_none: { 'ui:widget': 'single-select-autocomplete' },
     wetsite: { 'ui:widget': 'single-select-autocomplete' },
     rmz: { 'ui:widget': 'single-select-autocomplete' },
@@ -819,7 +820,7 @@ const FREP_FormB = {
     reserve_constraints_comments: {}
   },
   ecological_anchors: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     ecological_anchors_none: { 'ui:widget': 'single-select-autocomplete' },
     bear_den: {},
     hibernaculum: {},
@@ -847,7 +848,7 @@ const FREP_FormB = {
 
 const FREP_FormC = {
   opening_identification: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     opening_number: {},
     opening_id: {},
     license_number: {},
@@ -861,15 +862,15 @@ const FREP_FormC = {
     override_code: { 'ui:widget': 'single-select-autocomplete' }
   },
   innovative_practices: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     innovative_practices: {}
   },
   invasive_plants: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     invasive_code: { 'ui:widget': 'single-select-autocomplete' }
   },
   evaluator_opinion: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     evaluator_opinion_code: { 'ui:widget': 'single-select-autocomplete' },
     rationale: {}
   },
@@ -885,7 +886,7 @@ const FREP_FormC = {
  */
 
 const Treatment_ChemicalPlant_Information = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   pesticide_employer_code: { 'ui:widget': 'single-select-autocomplete' },
   pesticide_use_permit_PUP: {},
   pest_management_plan: { 'ui:widget': 'single-select-autocomplete' },
@@ -922,7 +923,7 @@ const Treatment_ChemicalPlant_Information = {
 
 const Treatment_MechanicalPlant_Information = {
   items: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
     treated_area: {},
     mechanical_method_code: { 'ui:widget': 'single-select-autocomplete' },
@@ -943,7 +944,7 @@ const Treatment_MechanicalPlant_Information = {
 };
 
 const Observation_PlantTerrestrial_Information = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   soil_texture_code: { 'ui:widget': 'single-select-autocomplete' },
   specific_use_code: { 'ui:widget': 'multi-select-autocomplete' },
   suitable_for_biocontrol_agent: {},
@@ -1030,7 +1031,7 @@ const Monitoring_MechanicalPlants = {
 };
 
 const Monitoring_BiocontrolRelease_TerrestrialPlant_Information = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
   biocontrol_present: {},
@@ -1075,7 +1076,7 @@ const Monitoring_BiocontrolPlants = {
 };
 
 const Monitoring_BiocontrolDispersal_Information = {
-  ...ThreeColumnStyle,
+  ...TwoColumnStyle,
   invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
   applicator1_name: {},
   applicator2_name: {},
@@ -1126,7 +1127,7 @@ const Monitoring_BiocontrolDispersalPlants = {
 
 const Biocontrol_Collection_Information = {
   items: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
     biological_agent_code: { 'ui:widget': 'single-select-autocomplete' },
     historical_iapp_site_id: {},
@@ -1162,7 +1163,7 @@ const Biocontrol_Collection_Information = {
 
 const Biocontrol_Release_Information = {
   items: {
-    ...ThreeColumnStyle,
+    ...TwoColumnStyle,
     invasive_plant_code: { 'ui:widget': 'single-select-autocomplete' },
     mortality: {},
     agent_source: {},
@@ -1203,9 +1204,9 @@ const Biocontrol_Release_Information = {
 */
 const BaseUISchemaComponents = {
   column_styles: {
-    FourColumnStyle,
-    ThreeColumnStyle,
-    OneColumnStyle,
+  //  FourColumnStyle,
+  //  TwoColumnStyle,
+  //  OneColumnStyle,
     TwoColumnStyle
   },
   activity_data_objects: {

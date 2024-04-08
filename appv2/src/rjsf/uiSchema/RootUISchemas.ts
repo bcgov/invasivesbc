@@ -10,7 +10,7 @@ import BaseUISchemaComponents from 'rjsf/uiSchema/BaseUISchemaComponents';
 
 const Activity_Observation_PlantTerrestrial = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
@@ -31,7 +31,7 @@ const Activity_Observation_PlantTerrestrial = {
 
 const Activity_Observation_PlantAquatic = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
@@ -64,11 +64,11 @@ const Activity_Observation_PlantAquatic = {
 
 const Activity_Transect_FireMonitoring = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_type_data_objects.TransectData
   },
   activity_subtype_data: {
@@ -79,11 +79,11 @@ const Activity_Transect_FireMonitoring = {
 
 const Activity_Transect_Vegetation = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_type_data_objects.TransectData
   },
   activity_subtype_data: {
@@ -94,11 +94,11 @@ const Activity_Transect_Vegetation = {
 
 const Activity_Transect_BiocontrolEfficacy = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_type_data_objects.TransectData
   },
   activity_subtype_data: {
@@ -112,7 +112,7 @@ const Activity_Transect_BiocontrolEfficacy = {
 
 const Activity_Treatment_ChemicalPlantTerrestrial = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
@@ -136,7 +136,7 @@ const Activity_Treatment_ChemicalPlantTerrestrial = {
 
 const Activity_Treatment_ChemicalPlantAquatic = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
@@ -160,7 +160,7 @@ const Activity_Treatment_ChemicalPlantAquatic = {
 
 const Activity_Treatment_MechanicalPlantTerrestrial = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
@@ -178,7 +178,7 @@ const Activity_Treatment_MechanicalPlantTerrestrial = {
 
 const Activity_Treatment_MechanicalPlantAquatic = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
@@ -203,11 +203,11 @@ const Activity_Treatment_MechanicalPlantAquatic = {
 
 const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_type_data_objects.Monitoring
   },
   activity_subtype_data: {
@@ -224,11 +224,11 @@ const Activity_Monitoring_ChemicalTerrestrialAquaticPlant = {
 
 const Activity_Monitoring_MechanicalTerrestrialAquaticPlant = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_type_data_objects.Monitoring
   },
   activity_subtype_data: {
@@ -242,11 +242,11 @@ const Activity_Monitoring_MechanicalTerrestrialAquaticPlant = {
 
 const Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_type_data_objects.Monitoring_Biocontrol_Release
   },
   activity_subtype_data: {
@@ -269,11 +269,11 @@ const Activity_Monitoring_BiocontrolRelease_TerrestrialPlant = {
 
 const Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_type_data_objects.Monitoring_Biocontrol
   },
   activity_subtype_data: {
@@ -296,7 +296,7 @@ const Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant = {
 
 const Activity_Biocontrol_Collection = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
@@ -321,7 +321,7 @@ const Activity_Biocontrol_Collection = {
 
 const Activity_Biocontrol_Release = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_type_data: {
@@ -348,7 +348,7 @@ const Activity_Biocontrol_Release = {
 
 const Activity_FREP_FormC = {
   activity_data: {
-    ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+    ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
     ...BaseUISchemaComponents.activity_data_objects.Activity
   },
   activity_subtype_data: {
@@ -361,7 +361,7 @@ const Activity_FREP_FormC = {
 
 // const Activity_AnimalActivity_AnimalTerrestrial = {
 //   'activity_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+//     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
 //     ...BaseUISchemaComponents.activity_data_objects.Activity
 //   },
 //   'activity_type_data': {
@@ -369,7 +369,7 @@ const Activity_FREP_FormC = {
 //     ...BaseUISchemaComponents.activity_type_data_objects.Observation
 //   },
 //   'activity_subtype_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+//     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
 //     ...BaseUISchemaComponents.Activity_AnimalTerrestrial
 //   },
 //   'ui:order':['activity_data','activity_type_data', 'activity_subtype_data']
@@ -377,7 +377,7 @@ const Activity_FREP_FormC = {
 
 // const Activity_AnimalActivity_AnimalAquatic = {
 //   'activity_data': {
-//     ...BaseUISchemaComponents.column_styles.ThreeColumnStyle,
+//     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
 //     ...BaseUISchemaComponents.activity_data_objects.Activity
 //   },
 //   'activity_type_data': {
