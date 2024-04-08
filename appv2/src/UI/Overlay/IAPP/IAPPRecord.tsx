@@ -19,6 +19,7 @@ export const IAPPRecord = (props) => {
   );
 
   useEffect(() => {
+    if(id !== null && id !== undefined && id !== ""  && id !== 'undefined')
     dispatch({type: IAPP_GET_REQUEST, payload: {iappID: id}});
   }, [id]);
 

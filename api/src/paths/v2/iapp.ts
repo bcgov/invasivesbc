@@ -329,7 +329,7 @@ export function getIAPPSQLv2(filterObject: any) {
       sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom;`);
     }
 
-    defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'sql', body: sqlStatement });
+    //defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'sql', body: sqlStatement });
     return sqlStatement;
   } catch (e) {
     defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'error', body: e.message });

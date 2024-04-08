@@ -17,6 +17,7 @@ export function* handle_IAPP_GET_REQUEST(action) {
     const idFromURL = action.payload.iappID;
     if(idFromURL !== undefined) {
     yield put({type: IAPP_GET_NETWORK_REQUEST, payload: {iappID: action.payload.iappID}});
+    return
     }
 
     const userSettingsState = yield select(selectUserSettings)

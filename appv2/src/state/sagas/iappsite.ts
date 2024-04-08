@@ -11,7 +11,7 @@ import { handle_IAPP_GET_REQUEST, handle_IAPP_GET_SUCCESS, handle_IAPP_PAN_AND_Z
 import { handle_IAPP_GET_NETWORK_REQUEST } from './iappsite/online';
 
 function* handle_USER_SETTINGS_READY(action) {
-  if (action.payload.activeIAPP) {
+  if (action.payload.activeIAPP && action.payload.activeIAPP !== null) {
     yield put({ type: IAPP_GET_REQUEST, payload: { iappID: action.payload.activeIAPP } });
   }
 }
