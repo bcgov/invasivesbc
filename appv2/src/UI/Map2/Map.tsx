@@ -4,6 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useStore } from 'react-redux';
 import './map.css';
+import centroid from '@turf/centroid'
 
 // Draw tools:
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -102,6 +103,7 @@ export const Map = (props: any) => {
   //Highlighted Record from main records page:
   const userRecordOnHoverRecordRow = useSelector((state: any) => state.Map?.userRecordOnHoverRecordRow);
   const userRecordOnHoverRecordType = useSelector((state: any) => state.Map?.userRecordOnHoverRecordType);
+  const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
 
   const PUBLIC_MAP_URL = useSelector((state: any) => state.Configuration.current.PUBLIC_MAP_URL);
 
@@ -159,6 +161,7 @@ export const Map = (props: any) => {
     if (map_center && map_center && map_zoom) map.current.jumpTo({ center: map_center, zoom: map_zoom });
   }, [map_center, map_zoom]);
 
+
   // User position tracking and marker
   useEffect(() => {
     if (!map.current) return;
@@ -205,7 +208,30 @@ export const Map = (props: any) => {
 
   //Highlighted Record
   useEffect(() => {
+    if(!map.current)
+    return;
     refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
+
+    if(quickPanToRecord)
+    {
+      if(userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'IAPP')
+      {
+        if(userRecordOnHoverRecordRow.geometry)
+        {
+          map.current.jumpTo({ center: centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates, zoom: 15 });
+        }
+
+      }
+      if(userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'Activity')
+      {
+        if(userRecordOnHoverRecordRow.geometry?.[0])
+        {
+          map.current.jumpTo({ center: centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates, zoom: 15 });
+        }
+      }
+    }
+
+  // Jump Nav
   }, [userRecordOnHoverRecordRow]);
 
   const [mapLoaded, setMapLoaded] = useState(false);
