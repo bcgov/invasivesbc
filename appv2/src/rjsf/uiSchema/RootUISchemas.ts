@@ -30,7 +30,9 @@ const Activity_Observation_PlantTerrestrial = {
 };
 
 const Activity_Observation_Mussels = {
-
+  BasicInformation: {
+    ...BaseUISchemaComponents.activity_subtype_data_information_objects.Observation_Mussels_Information
+  },
 };
 
 const Activity_Observation_PlantAquatic = {
