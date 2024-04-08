@@ -29,6 +29,10 @@ const Activity_Observation_PlantTerrestrial = {
   'ui:order': ['activity_data', 'activity_type_data', 'activity_subtype_data']
 };
 
+const Activity_Observation_Mussels = {
+
+};
+
 const Activity_Observation_PlantAquatic = {
   activity_data: {
     ...BaseUISchemaComponents.column_styles.TwoColumnStyle,
@@ -392,6 +396,7 @@ const Activity_FREP_FormC = {
 
 const RootUISchemas = {
   //Plant-Observations
+  Activity_Observation_Mussels,
   Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantAquatic,
   //Plant-Treatments
