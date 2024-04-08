@@ -101,6 +101,12 @@ table.code-reference {
   padding: 0;
 }
 
+
+tr {
+  width: 50px
+}
+
+
 table.batchAlternateLayout {
   border-collapse: collapse;
   font-size: 12px;
@@ -127,7 +133,15 @@ table.batchAlternateLayout {
     padding: 0;
   }
 
+
+
+tr {
+  width: 50px
+}
+
+
   tbody {
+    tr:hover,
     tr {
       &:nth-child(even) {
         background: #e3e3e3;
