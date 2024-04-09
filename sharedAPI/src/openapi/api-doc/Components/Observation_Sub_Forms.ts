@@ -1,5 +1,7 @@
 import {
   BasicInformation,
+  JourneyDetails,
+  WatercraftDetails,
 } from '../Components/Mussels_Sub_Form';
 
 export const Observation_PlantTerrestrial_Information = {
@@ -100,6 +102,8 @@ export const Observation_Mussels_Information = {
   type: 'object',
   title: 'invisible',
   properties: {
-    BasicInformation: BasicInformation
+    BasicInformation: BasicInformation,
+    WatercraftDetails: WatercraftDetails,
+    JourneyDetails: JourneyDetails
   }
 };
