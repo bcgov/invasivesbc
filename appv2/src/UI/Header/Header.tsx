@@ -14,13 +14,14 @@ import {
 import { useHistory } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { AdminPanelSettings, Assessment, FileUpload, Home, Map, School } from '@mui/icons-material';
+import { AdminPanelSettings, Assessment, FileUpload, Home, Map, School, WarningOutlined } from '@mui/icons-material';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { RENDER_DEBUG } from 'UI/App';
 import { Switch } from '@mui/base';
 import { useSelector } from '../../util/use_selector';
+import { selectAuth } from 'state/reducers/auth';
 
 const Tab = (props: any) => {
   const ref = useRef(0);
@@ -96,8 +97,8 @@ const Tab = (props: any) => {
               payload: { panelOpen: props.panelOpen, fullScreen: props.panelFullScreen }
             });
           }}>
-          <div className="Tab__Content">{props.children}</div>
-          <div className="Tab__Label">{props.label}</div>
+          <div className='Tab__Content'>{props.children}</div>
+          <div className='Tab__Label'>{props.label}</div>
         </div>
       ) : (
         <></>
@@ -108,13 +109,13 @@ const Tab = (props: any) => {
 
 const ButtonWrapper = (props: any) => {
   return (
-    <div className="ButtonWrapperContainer">
-      <div id="left-icon-container">
-        <ArrowLeftIcon className="direction-icon" />
+    <div className='ButtonWrapperContainer'>
+      <div id='left-icon-container'>
+        <ArrowLeftIcon className='direction-icon' />
       </div>
-      <div id="ButtonWrapper">{props.children}</div>
-      <div id="right-icon-container">
-        <ArrowRightIcon className="direction-icon" />
+      <div id='ButtonWrapper'>{props.children}</div>
+      <div id='right-icon-container'>
+        <ArrowRightIcon className='direction-icon' />
       </div>
     </div>
   );
@@ -152,7 +153,7 @@ const LogoutButton = () => {
 
 const InvIcon = () => {
   return (
-    <div className="inv-icon">
+    <div className='inv-icon'>
       <img
         src={invbclogo}
         style={{
@@ -161,11 +162,11 @@ const InvIcon = () => {
           borderRadius: 4,
           padding: 5
         }}
-        height="20"
-        width="20"
-        alt="B.C. Government Logo"
+        height='20'
+        width='20'
+        alt='B.C. Government Logo'
       />
-      <div id="appTitle">InvasivesBC</div>
+      <div id='appTitle'>InvasivesBC</div>
     </div>
   );
 };
@@ -176,7 +177,7 @@ const ActivityTabMemo = (props) => {
     <Tab
       key={'tab3'}
       path={'/Records/Activity:' + activeActivity + '/form'}
-      label="Current Activity"
+      label='Current Activity'
       loggedInOnly={true}
       panelOpen={true}
       panelFullScreen={false}>
@@ -191,22 +192,21 @@ const IAPPTabMemo = (props) => {
     <Tab
       key={'tab4'}
       path={'/Records/IAPP/' + activeIAPP + '/summary'}
-      label="Current IAPP"
+      label='Current IAPP'
       loggedInOnly={true}
       panelOpen={true}
       panelFullScreen={false}>
-      <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
+      <img alt='iapp logo' src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
     </Tab>
   );
 };
 
 const AdminPanelMemo = (props) => {
   const roles = useSelector((state: any) => state?.Auth?.roles);
-  const history = useHistory();
   return (
     <>
       {roles.find((role) => role.role_id === 18) ? (
-        <Tab key={'tab9'} path={'/Admin'} label="Admin" panelOpen={true} loggedInOnly={true} panelFullScreen={true}>
+        <Tab key={'tab9'} path={'/Admin'} label='Admin' panelOpen={true} loggedInOnly={true} panelFullScreen={true}>
           <AdminPanelSettings />
         </Tab>
       ) : (
@@ -259,11 +259,11 @@ const LoginOrOutMemo = React.memo((props) => {
 
   return (
     <Box sx={{ flexGrow: 0, float: 'right', marginRight: '1rem' }}>
-      <IconButton onClick={handleClick} size="small">
+      <IconButton onClick={handleClick} size='small'>
         <Avatar></Avatar>
       </IconButton>
       <Menu
-        id="menu-appbar"
+        id='menu-appbar'
         anchorEl={anchorEl}
         open={openMenu}
         onClose={handleClose}
@@ -307,7 +307,7 @@ const NetworkStateControl: React.FC = () => {
             }}
           />
         }
-        label="Online"
+        label='Online'
       />
     </FormGroup>
   );
@@ -322,7 +322,7 @@ export const Header: React.FC = () => {
   const { DEBUG, MOBILE } = useSelector((state) => state.Configuration.current);
 
   return (
-    <div className="HeaderBar">
+    <div className='HeaderBar'>
       <InvIcon />
 
       <ButtonWrapper>
@@ -331,13 +331,13 @@ export const Header: React.FC = () => {
           currentPath={history.location.pathname}
           path={'/Landing'}
           loggedInOnly={false}
-          label="Home"
+          label='Home'
           panelOpen={true}
           panelFullScreen={true}>
           <Home />
         </Tab>
 
-        <Tab key={'tab2'} path="/Records" label="Records" loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
+        <Tab key={'tab2'} path='/Records' label='Records' loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
           <ManageSearchIcon />
         </Tab>
 
@@ -348,21 +348,21 @@ export const Header: React.FC = () => {
         <Tab
           key={'tab5'}
           path={'/Batch/list'}
-          label="Batch"
+          label='Batch'
           loggedInOnly={true}
           panelOpen={true}
           panelFullScreen={true}>
           <FileUpload />
         </Tab>
 
-        <Tab key={'tab6'} path={'/Reports'} label="Reports" loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
+        <Tab key={'tab6'} path={'/Reports'} label='Reports' loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
           <Assessment />
         </Tab>
 
         <Tab
           key={'tab7'}
           path={'/Training'}
-          label="Training"
+          label='Training'
           loggedInOnly={false}
           panelOpen={true}
           panelFullScreen={true}>
@@ -371,12 +371,13 @@ export const Header: React.FC = () => {
 
         <AdminPanelMemo />
 
-        <Tab key={'tab8'} path={'/'} label="Map" loggedOutOnly={true} panelOpen={false}>
+        <Tab key={'tab8'} path={'/'} label='Map' loggedOutOnly={true} panelOpen={false}>
           <Map />
         </Tab>
 
         {(DEBUG || MOBILE) && <NetworkStateControl />}
       </ButtonWrapper>
+
 
       <LoginOrOutMemo />
     </div>

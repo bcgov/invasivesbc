@@ -4,7 +4,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useStore } from 'react-redux';
 import './map.css';
-import centroid from '@turf/centroid'
+import centroid from '@turf/centroid';
 
 // Draw tools:
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
@@ -42,6 +42,8 @@ export const Map = (props: any) => {
   const store = useStore(); // to escape useselector memoization
 
   const [draw, setDraw] = useState(null);
+  const [mapReady, setMapReady] = useState(false);
+
   const mapContainer = useRef(null);
   const map = useRef(null);
   const MapMode = useSelector((state: any) => state.Map?.MapMode);
@@ -129,19 +131,19 @@ export const Map = (props: any) => {
 
   // RecordSet Layers:
   useEffect(() => {
-    if (!map.current) return;
+    if (!mapReady) return;
     rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-  }, [storeLayers]);
+  }, [storeLayers, mapReady]);
 
   // Layer picker:
   useEffect(() => {
-    if (!map.current) return;
+    if (!mapReady) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
     refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2]);
+  }, [simplePickerLayers2, mapReady]);
 
   useEffect(() => {
     if (loggedIn) {
@@ -157,29 +159,35 @@ export const Map = (props: any) => {
 
   // Jump Nav
   useEffect(() => {
-    if (!map.current) return;
-    if (map_center && map_center && map_zoom) map.current.jumpTo({ center: map_center, zoom: map_zoom });
-  }, [map_center, map_zoom]);
+    if (!mapReady) return;
+    try {
+      if (map_center && map_zoom) map.current.jumpTo({ center: map_center, zoom: map_zoom });
+    } catch (e) {
+      console.log('jumpTo failed, probable invalid coords');
+      console.dir(map_center);
+      console.dir(e);
+    }
+  }, [map_center, map_zoom, mapReady]);
 
 
   // User position tracking and marker
   useEffect(() => {
-    if (!map.current) return;
+    if (!mapReady) return;
     handlePositionTracking(map.current, positionMarker, userCoords, accuracyCircle, accuracyToggle, positionTracking);
-  }, [userCoords, positionTracking, accuracyToggle]);
+  }, [userCoords, positionTracking, accuracyToggle, mapReady]);
 
   //Toggle Topo
   useEffect(() => {
-    if (!map.current) return;
+    if (!mapReady) return;
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerHD', !baseMapToggle && HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', !baseMapToggle && !HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
-  }, [baseMapToggle, HDToggle]);
+  }, [baseMapToggle, HDToggle, mapReady]);
 
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
-    if (!map.current) return;
+    if (!mapReady) return;
     refreshDrawControls(
       map.current,
       draw,
@@ -191,11 +199,11 @@ export const Map = (props: any) => {
       activityGeo,
       drawingCustomLayer
     );
-  }, [whatsHereToggle, appModeUrl, map, activityGeo, drawingCustomLayer]);
+  }, [whatsHereToggle, appModeUrl, mapReady, map.current, activityGeo, drawingCustomLayer]);
 
   //Current Activity & IAPP Markers
   useEffect(() => {
-    if (!map.current) return;
+    if (!mapReady) return;
     refreshCurrentRecMakers(map.current, {
       activityGeo,
       currentActivityShortID,
@@ -204,35 +212,33 @@ export const Map = (props: any) => {
       activityMarker,
       IAPPMarker
     });
-  }, [currentActivityShortID, currentIAPPID]);
+  }, [currentActivityShortID, currentIAPPID, mapReady, map.current]);
 
   //Highlighted Record
   useEffect(() => {
-    if(!map.current)
-    return;
+    if (!mapReady)
+      return;
     refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
 
-    if(quickPanToRecord)
-    {
-      if(userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'IAPP')
-      {
-        if(userRecordOnHoverRecordRow.geometry)
-        {
+    if (quickPanToRecord) {
+      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'IAPP') {
+        if (userRecordOnHoverRecordRow.geometry) {
           map.current.jumpTo({ center: centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates, zoom: 15 });
         }
 
       }
-      if(userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'Activity')
-      {
-        if(userRecordOnHoverRecordRow.geometry?.[0])
-        {
-          map.current.jumpTo({ center: centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates, zoom: 15 });
+      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'Activity') {
+        if (userRecordOnHoverRecordRow.geometry?.[0]) {
+          map.current.jumpTo({
+            center: centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates,
+            zoom: 15
+          });
         }
       }
     }
 
-  // Jump Nav
-  }, [userRecordOnHoverRecordRow]);
+    // Jump Nav
+  }, [userRecordOnHoverRecordRow, map.current, mapReady]);
 
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -244,12 +250,25 @@ export const Map = (props: any) => {
     }, 1000);
   }, [map.current]);
 
+  useEffect(() => {
+    if (!map.current) {
+      setMapReady(false);
+      return;
+    }
+    map.current.on('styledata', () => {
+      if (map.current.isStyleLoaded()) {
+        setMapReady(true)
+      }
+    });
+  }, [map.current]);
+
+
   // toggle public map pmtile layer
   useEffect(() => {
     if (!map.current) return;
 
     if (loggedIn) {
-      console.log('logged in')
+      console.log('logged in');
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector-label', false);
@@ -258,9 +277,9 @@ export const Map = (props: any) => {
   }, [loggedIn, map.current]);
 
   return (
-    <div className="MapWrapper">
-      <div ref={mapContainer} className="Map" />
-      <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
+    <div className='MapWrapper'>
+      <div ref={mapContainer} className='Map' />
+      <div id='LoadingMap' className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
         Loading tiles...
       </div>
       {props.children}

@@ -6,18 +6,20 @@ import {
   AUTH_REFRESH_ROLES_COMPLETE,
   AUTH_REFRESH_ROLES_ERROR,
   AUTH_REFRESH_ROLES_REQUEST,
-  AUTH_REQUEST_COMPLETE,
+  AUTH_REQUEST_COMPLETE, AUTH_SET_DISRUPTED, AUTH_SET_RECOVERED_FROM_DISRUPTION,
   AUTH_SIGNOUT_COMPLETE,
   AUTH_UPDATE_TOKEN_STATE
 } from '../actions';
 import { AppConfig } from 'state/config';
-import { Draft, immerable } from 'immer';
+import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 
 interface AuthState {
   initialized: boolean;
   error: boolean;
   authenticated: boolean;
+
+  disrupted: boolean;
 
   email: string | null;
   displayName: string | null;
@@ -90,6 +92,7 @@ const initialState: AuthState = {
   displayName: null,
   email: null,
   error: false,
+  disrupted: false,
   extendedInfo: {
     account_status: 0,
     activation_status: 0,
@@ -168,6 +171,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         case AUTH_SIGNOUT_COMPLETE: {
           draftState.initialized = true;
           draftState.authenticated = false;
+          draftState.disrupted = false;
           draftState.roles = [];
           draftState.accessRoles = [];
           draftState.rolesInitialized = false;
@@ -179,6 +183,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         }
         case AUTH_INITIALIZE_COMPLETE: {
           draftState.initialized = true;
+          draftState.disrupted = false;
           Object.keys(loadCurrentStateFromKeycloak(state, configuration)).forEach((key) => {
             draftState[key] = loadCurrentStateFromKeycloak(state, configuration)[key];
           });
@@ -194,6 +199,15 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           Object.keys(loadCurrentStateFromKeycloak(state, configuration)).forEach((key) => {
             draftState[key] = loadCurrentStateFromKeycloak(state, configuration)[key];
           });
+          draftState.disrupted = false;
+          break;
+        }
+        case AUTH_SET_DISRUPTED: {
+          draftState.disrupted = true;
+          break;
+        }
+        case AUTH_SET_RECOVERED_FROM_DISRUPTION: {
+          draftState.disrupted = false;
           break;
         }
         case AUTH_REFRESH_ROLES_REQUEST: {

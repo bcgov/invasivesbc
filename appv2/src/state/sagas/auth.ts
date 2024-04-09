@@ -1,4 +1,4 @@
-import { all, call, delay, put, select, takeLatest } from 'redux-saga/effects';
+import { all, call, cancelled, delay, fork, put, select, takeLatest } from 'redux-saga/effects';
 
 import { historySingleton } from '../store';
 
@@ -21,6 +21,8 @@ import {
   AUTH_REINIT,
   AUTH_REQUEST_COMPLETE,
   AUTH_REQUEST_ERROR,
+  AUTH_SET_DISRUPTED,
+  AUTH_SET_RECOVERED_FROM_DISRUPTION,
   AUTH_SIGNIN_REQUEST,
   AUTH_SIGNOUT_COMPLETE,
   AUTH_SIGNOUT_REQUEST,
@@ -31,10 +33,11 @@ import {
 } from '../actions';
 import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
-import { selectAuthHeaders } from '../reducers/auth';
+import { selectAuth, selectAuthHeaders } from '../reducers/auth';
 import { Http } from '@capacitor-community/http';
+import { END } from 'redux-saga';
 
-const MIN_TOKEN_FRESHNESS = 2 * 60; //want our token to be good for at least this long at all times
+const MIN_TOKEN_FRESHNESS = 20; //want our token to be good for at least this long at all times
 const TOKEN_REFRESH_INTERVAL = 5 * 1000;
 
 let keycloakInstance = null;
@@ -127,13 +130,27 @@ function* reinitAuth() {
 
     yield delay(3000);
   } else {
-    yield call(keycloakInstance.init, {
-      checkLoginIframe: true,
-      redirectUri: config.REDIRECT_URI,
-      responseMode: 'fragment',
-      onLoad: 'check-sso',
-      pkceMethod: 'S256'
-    });
+    const FAIL_LIMIT = 3;
+    let failCount = 0;
+    while (failCount < FAIL_LIMIT) {
+      try {
+        yield call(keycloakInstance.init, {
+          checkLoginIframe: false,
+          redirectUri: config.REDIRECT_URI,
+          responseMode: 'fragment',
+          onLoad: 'check-sso',
+          pkceMethod: 'S256'
+        });
+        break;
+      } catch (e) {
+        console.dir(e);
+        if (failCount >= FAIL_LIMIT) {
+          yield put({ type: AUTH_SIGNOUT_REQUEST });
+        }
+        failCount++;
+        yield delay(1000);
+      }
+    }
   }
 
   yield put({
@@ -242,13 +259,59 @@ function* refreshRoles() {
 }
 
 function* keepTokenFresh() {
-  const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
-  if (refreshed) {
-    yield put({ type: AUTH_UPDATE_TOKEN_STATE });
-  }
 
-  yield delay(TOKEN_REFRESH_INTERVAL);
-  yield put({ type: AUTH_REFRESH_TOKEN });
+  const RETRY_LIMIT = 10;
+
+  try {
+    let refreshRetryCount = 0;
+
+    while (!(yield cancelled())) {
+
+      if (!keycloakInstance) {
+        // KC is not yet initialized
+        yield delay(TOKEN_REFRESH_INTERVAL);
+        continue;
+      }
+      const { authenticated, disrupted } = yield select(selectAuth);
+
+      if (!authenticated) {
+        // not logged in yet, nothing to do
+        yield delay(TOKEN_REFRESH_INTERVAL);
+        continue;
+      }
+
+      try {
+        if (keycloakInstance.isTokenExpired(MIN_TOKEN_FRESHNESS)) {
+
+          const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
+          if (refreshed) {
+            yield put({ type: AUTH_UPDATE_TOKEN_STATE });
+          }
+          if (disrupted) {
+            yield put({ type: AUTH_SET_RECOVERED_FROM_DISRUPTION });
+            refreshRetryCount = 0;
+          }
+        }
+      } catch (e) {
+        console.log('auth refresh failure');
+        console.dir(e);
+        if (!disrupted) {
+          yield put({ type: AUTH_SET_DISRUPTED });
+        }
+
+        refreshRetryCount++;
+        if (refreshRetryCount >= RETRY_LIMIT) {
+          put({ type: AUTH_SIGNOUT_REQUEST });
+        }
+      } finally {
+        yield delay(TOKEN_REFRESH_INTERVAL);
+      }
+    }
+  } finally {
+    if (yield cancelled()) {
+      console.log('token freshness task shutting down');
+    }
+  }
 }
 
 function* handleSigninRequest(action) {
@@ -282,9 +345,9 @@ function* authenticationSaga() {
     takeLatest(AUTH_INITIALIZE_REQUEST, initializeAuthentication),
     takeLatest(AUTH_SIGNIN_REQUEST, handleSigninRequest),
     takeLatest(AUTH_SIGNOUT_REQUEST, handleSignoutRequest),
-    takeLatest(AUTH_REFRESH_TOKEN, keepTokenFresh),
     takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles),
-    takeLatest(AUTH_REINIT, reinitAuth)
+    takeLatest(AUTH_REINIT, reinitAuth),
+    fork(keepTokenFresh)
   ]);
 }
 
