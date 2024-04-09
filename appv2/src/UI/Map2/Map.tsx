@@ -138,14 +138,14 @@ export const Map = (props: any) => {
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
     console.log('all layers')
     console.dir(map.current.getStyle().layers);
-  }, [storeLayers,  map.current]);
+  }, [storeLayers,  map.current, map?.current?.isStyleLoaded()]);
 
   // Layer picker:
   useEffect(() => {
     if (!map?.current?.isStyleLoaded()) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
     refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2,  map.current]);
+  }, [simplePickerLayers2,  map.current, map?.current?.isStyleLoaded()]);
 
   useEffect(() => {
     if (!map?.current?.isStyleLoaded()) return;
@@ -153,13 +153,13 @@ export const Map = (props: any) => {
       addServerBoundariesIfNotExists(serverBoundaries, map.current);
       refreshServerBoundariesOnToggle(serverBoundaries, map.current);
     }
-  }, [serverBoundaries, loggedIn, map.current]);
+  }, [serverBoundaries, loggedIn, map.current, map?.current?.isStyleLoaded()]);
 
   useEffect(() => {
     if (!map?.current?.isStyleLoaded()) return;
     addClientBoundariesIfNotExists(clientBoundaries, map.current);
     refreshClientBoundariesOnToggle(clientBoundaries, map.current);
-  }, [clientBoundaries,  map.current]);
+  }, [clientBoundaries,  map.current, map?.current?.isStyleLoaded()]);
 
   // Jump Nav
   useEffect(() => {
@@ -171,14 +171,14 @@ export const Map = (props: any) => {
       console.dir(map_center);
       console.dir(e);
     }
-  }, [map_center, map_zoom, map.current]);
+  }, [map_center, map_zoom, map.current, map?.current?.isStyleLoaded()]);
 
 
   // User position tracking and marker
   useEffect(() => {
     if (!map?.current?.isStyleLoaded()) return;
     handlePositionTracking(map.current, positionMarker, userCoords, accuracyCircle, accuracyToggle, positionTracking);
-  }, [userCoords, positionTracking, accuracyToggle, mapReady]);
+  }, [userCoords, positionTracking, accuracyToggle, map?.current?.isStyleLoaded()]);
 
   //Toggle Topo
   useEffect(() => {
@@ -187,7 +187,7 @@ export const Map = (props: any) => {
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', !baseMapToggle && !HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
-  }, [baseMapToggle, HDToggle,  map.current]);
+  }, [baseMapToggle, HDToggle,  map.current, map?.current?.isStyleLoaded()]);
 
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
@@ -203,7 +203,7 @@ export const Map = (props: any) => {
       activityGeo,
       drawingCustomLayer
     );
-  }, [whatsHereToggle, appModeUrl, mapReady, map.current, activityGeo, drawingCustomLayer]);
+  }, [whatsHereToggle, appModeUrl, mapReady, map.current, activityGeo, drawingCustomLayer, map?.current?.isStyleLoaded()]);
 
   //Current Activity & IAPP Markers
   useEffect(() => {
@@ -216,7 +216,7 @@ export const Map = (props: any) => {
       activityMarker,
       IAPPMarker
     });
-  }, [currentActivityShortID, currentIAPPID, map.current]);
+  }, [currentActivityShortID, currentIAPPID, map.current, map?.current?.isStyleLoaded()]);
 
   //Highlighted Record
   useEffect(() => {
@@ -241,7 +241,7 @@ export const Map = (props: any) => {
     }
 
     // Jump Nav
-  }, [userRecordOnHoverRecordRow, map.current]);
+  }, [userRecordOnHoverRecordRow, map.current, map?.current?.isStyleLoaded()]);
 
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -251,13 +251,14 @@ export const Map = (props: any) => {
         setMapLoaded(map.current.areTilesLoaded());
       }
     }, 1000);
-  }, [map.current]);
+  }, [map.current, map?.current?.isStyleLoaded()]);
 
 
   // toggle public map pmtile layer
   useEffect(() => {
     if (!map?.current?.isStyleLoaded()) return;
 
+    console.log('checking if logged in:', loggedIn)
     if (loggedIn) {
       console.log('logged in');
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
@@ -265,7 +266,7 @@ export const Map = (props: any) => {
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector-label', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector-label', false);
     }
-  }, [loggedIn, map.current]);
+  }, [loggedIn, map.current, map?.current?.isStyleLoaded()]);
 
   return (
     <div className='MapWrapper'>
