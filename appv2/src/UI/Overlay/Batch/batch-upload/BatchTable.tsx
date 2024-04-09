@@ -4,10 +4,10 @@ import { CopyToClipboardButton } from './ClipboardHelper';
 import { Button } from '@mui/material';
 import { UnfoldLess, UnfoldMore } from '@mui/icons-material';
 import { USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
-import { useHistory } from "react-router-dom";
+import { useHistory } from 'react-router-dom';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'util/use_selector';
-import "UI/Styles/batch.scss";
+import 'UI/Styles/batch.scss';
 
 export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?: string; length?: number }) => {
   const [truncate, setTruncate] = useState(true);
@@ -125,7 +125,7 @@ const BatchTableCell = ({ field, row }) => {
           displayedValue === null || (typeof displayedValue === 'string' && displayedValue?.trim().length === 0)
             ? 'empty'
             : ''
-          }`}>
+        }`}>
         {row.data[field].templateColumn?.dataType === 'WKT' ? (
           <AbbreviatedDisplayWithCopy
             length={25}
@@ -133,8 +133,8 @@ const BatchTableCell = ({ field, row }) => {
             content={JSON.stringify(row.data[field].parsedValue?.geojson) || ''}
           />
         ) : (
-            displayedValue
-          )}
+          displayedValue
+        )}
       </span>
       <ul className={'messages'}>
         {hasMessages &&
@@ -170,26 +170,16 @@ const BatchTable = ({ jsonRepresentation, created_activities }) => {
           <tr>
             <th>Field</th>
             {jsonRepresentation?.rows?.map((row) => (
-              <th key={row.rowIndex}>Row&nbsp;{row.rowIndex}
+              <th key={row.rowIndex}>
+                Row&nbsp;{row.rowIndex}
                 {created_activities[row.rowIndex - 1] && (
                   <>
                     <div>
                       <Button
                         key={created_activities[row.rowIndex - 1]?.id}
                         onClick={() => {
-                          dispatch({
-                            type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-                            payload: {
-                              description: 'Activity-' + created_activities[row.rowIndex - 1]?.short_id,
-                              id: created_activities[row.rowIndex - 1]?.id
-                            }
-                          });
-
-                          // history.push(
-                          //   tabsConfigState?.tabConfig?.filter((t) => {
-                          //     return t?.label === 'Current Activity';
-                          //   })?.[0]?.path
-                          // );
+                          const url = '/Records/Activity:' +  created_activities[row.rowIndex - 1].id + '/form';
+                          history.push(url);
                         }}>
                         {created_activities[row.rowIndex - 1]?.short_id}
                       </Button>
