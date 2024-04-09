@@ -131,22 +131,24 @@ export const Map = (props: any) => {
 
   // RecordSet Layers:
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-  }, [storeLayers, mapReady, map.current]);
+    console.log('all layers')
+    console.dir(map.current.getStyle().layers);
+  }, [storeLayers,  map.current]);
 
   // Layer picker:
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
     refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2, mapReady, map.current]);
+  }, [simplePickerLayers2,  map.current]);
 
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     if (loggedIn) {
       addServerBoundariesIfNotExists(serverBoundaries, map.current);
       refreshServerBoundariesOnToggle(serverBoundaries, map.current);
@@ -154,14 +156,14 @@ export const Map = (props: any) => {
   }, [serverBoundaries, loggedIn, map.current]);
 
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     addClientBoundariesIfNotExists(clientBoundaries, map.current);
     refreshClientBoundariesOnToggle(clientBoundaries, map.current);
-  }, [clientBoundaries, mapReady, map.current]);
+  }, [clientBoundaries,  map.current]);
 
   // Jump Nav
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     try {
       if (map_center && map_zoom) map.current.jumpTo({ center: map_center, zoom: map_zoom });
     } catch (e) {
@@ -169,27 +171,27 @@ export const Map = (props: any) => {
       console.dir(map_center);
       console.dir(e);
     }
-  }, [map_center, map_zoom, mapReady, map.current]);
+  }, [map_center, map_zoom, map.current]);
 
 
   // User position tracking and marker
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     handlePositionTracking(map.current, positionMarker, userCoords, accuracyCircle, accuracyToggle, positionTracking);
   }, [userCoords, positionTracking, accuracyToggle, mapReady]);
 
   //Toggle Topo
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerHD', !baseMapToggle && HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', !baseMapToggle && !HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
-  }, [baseMapToggle, HDToggle, mapReady, map.current]);
+  }, [baseMapToggle, HDToggle,  map.current]);
 
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     refreshDrawControls(
       map.current,
       draw,
@@ -205,7 +207,7 @@ export const Map = (props: any) => {
 
   //Current Activity & IAPP Markers
   useEffect(() => {
-    if (!mapReady) return;
+    if (!map?.current?.isStyleLoaded()) return;
     refreshCurrentRecMakers(map.current, {
       activityGeo,
       currentActivityShortID,
@@ -214,12 +216,11 @@ export const Map = (props: any) => {
       activityMarker,
       IAPPMarker
     });
-  }, [currentActivityShortID, currentIAPPID, mapReady, map.current]);
+  }, [currentActivityShortID, currentIAPPID, map.current]);
 
   //Highlighted Record
   useEffect(() => {
-    if (!mapReady)
-      return;
+    if (!map?.current?.isStyleLoaded()) return;
     refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
 
     if (quickPanToRecord) {
@@ -240,7 +241,7 @@ export const Map = (props: any) => {
     }
 
     // Jump Nav
-  }, [userRecordOnHoverRecordRow, map.current, mapReady]);
+  }, [userRecordOnHoverRecordRow, map.current]);
 
   const [mapLoaded, setMapLoaded] = useState(false);
 
@@ -252,22 +253,10 @@ export const Map = (props: any) => {
     }, 1000);
   }, [map.current]);
 
-  useEffect(() => {
-    if (!map.current) {
-      setMapReady(false);
-      return;
-    }
-    map.current.on('styledata', () => {
-      if (map.current.isStyleLoaded()) {
-        setMapReady(true)
-      }
-    });
-  }, [map.current]);
-
 
   // toggle public map pmtile layer
   useEffect(() => {
-    if (!map.current) return;
+    if (!map?.current?.isStyleLoaded()) return;
 
     if (loggedIn) {
       console.log('logged in');
