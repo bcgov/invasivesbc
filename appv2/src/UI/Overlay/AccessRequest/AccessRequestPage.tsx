@@ -645,7 +645,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             title="If your employer or agency were not on our lists, please enter it here.">
                             <TextField
                               style={{ width: 640 }}
-                              classes={{ root: classes.root }}
+                              //classes={{ root: classes.root }}
                               multiline
                               rows={4}
                               value={comments}
