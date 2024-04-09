@@ -285,7 +285,7 @@ const FormContainer: React.FC<any> = (props) => {
     return <CircularProgress />;
   } else {
     return (
-      <Box sx={{pl: '15%', pr: '15%'}} >
+      <Box sx={{pl: '1.5em', pr: '1.5em'}} >
         <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
           <SelectAutoCompleteContextProvider>
             <>
