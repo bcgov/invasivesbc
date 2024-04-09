@@ -8,6 +8,7 @@ export enum ActivityCategory {
 
 export enum ActivityType {
   Observation = 'Observation',
+  Shift = 'Shift',
   Collection = 'Collection',
   Biocontrol = 'Biocontrol',
   Treatment = 'Treatment',
@@ -25,6 +26,7 @@ export enum ActivitySubtype {
   Activity_AnimalAquatic = 'Activity_AnimalActivity_AnimalAquatic',
 
   Observation_Mussels = 'Activity_Observation_Mussels',
+  Mussels_Officer_Shift = 'Activity_Officer_Shift',
 
   // Treatments:
   Treatment_ChemicalPlant = 'Activity_Treatment_ChemicalPlantTerrestrial',
@@ -95,6 +97,9 @@ export const ActivitySubtypeRelations = {
     [ActivityType.Observation]: [
       ActivitySubtype.Observation_Mussels
     ],
+    [ActivityType.Shift]: [
+      ActivitySubtype.Mussels_Officer_Shift
+    ]
   },
   [ActivityCategory.FREP]: { [ActivityType.FREP]: [ActivitySubtype.Activity_FREP_FormC] }
 };
@@ -107,6 +112,8 @@ export enum ActivitySubtypeShortLabels {
   Activity_AnimalActivity_AnimalAquatic = 'Aquatic Animal Observation',
   Activity_Observation_Mussels = 'Activity Observation Mussels',
 
+  // Shifts:
+  Activity_Officer_Shift = 'Inspect Officer Shift',
   // Treatments:
   Activity_Treatment_ChemicalPlantTerrestrial = 'Terrestrial Plant Treatment - Chemical',
   Activity_Treatment_ChemicalPlantAquatic = 'Aquatic Plant Treatment - Chemical',
@@ -148,6 +155,8 @@ export enum ActivityLetter {
   Activity_AnimalActivity_AnimalAquatic = 'AAO',
   Activity_Observation_Mussels = 'MUS',
 
+  // Shifts
+  Activity_Officer_Shift = 'SFT',
   // Treatments:
   Activity_Treatment_ChemicalPlantTerrestrial = 'PTC',
   Activity_Treatment_ChemicalPlant_BulkEdit = 'PTC',
@@ -220,4 +229,3 @@ export const ReviewActionDescriptions: { [key: string]: string } = {
   [ReviewStatus.DISAPPROVED]:
     'Re-Submit this for Review by InvasivesBC staff. Currently dispproved and requires changes for approval.'
 };
-

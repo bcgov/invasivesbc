@@ -11,6 +11,9 @@ import {
   Activity_Observation_PlantTerrestrial,
 } from './Activities/Plant/Observations';
 import {
+  Activity_Officer_Shift
+} from './Activities/Mussels/Mussels_Officer_Shift';
+import {
   Activity_Observation_Mussels
 } from './Activities/Mussels/Observations';
 import {
@@ -177,6 +180,8 @@ export const api_doc = {
       Activity_Observation_PlantTerrestrial: Activity_Observation_PlantTerrestrial,
       Activity_Observation_PlantAquatic: Activity_Observation_PlantAquatic,
       Activity_Observation_Mussels: Activity_Observation_Mussels,
+      //Shift
+      Activity_Officer_Shift: Activity_Officer_Shift,
       //monitorings
       Activity_Monitoring_ChemicalTerrestrialAquaticPlant: Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
       Activity_Monitoring_MechanicalTerrestrialAquaticPlant: Activity_Monitoring_MechanicalTerrestrialAquaticPlant,
