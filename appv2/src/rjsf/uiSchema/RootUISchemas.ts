@@ -32,10 +32,19 @@ const Activity_Observation_PlantTerrestrial = {
 const Activity_Observation_Mussels = {
   activity_subtype_data: {
     Observation_Mussels_Information: {
-      ...BaseUISchemaComponents.activity_subtype_data_information_objects.Observation_Mussels_Information
+      ...BaseUISchemaComponents.activity_subtype_data_information_objects.Mussels_Officer_Shift
     }
   },
 };
+
+const Activity_Officer_Shift = {
+  activity_subtype_data: {
+    stub: {
+      ...BaseUISchemaComponents.activity_subtype_data_information_objects,
+      ...BaseUISchemaComponents.general_objects.Mussels_Officer_Shift_Blowby,
+    },
+  }
+}
 
 const Activity_Observation_PlantAquatic = {
   activity_data: {
@@ -403,6 +412,8 @@ const RootUISchemas = {
   Activity_Observation_Mussels,
   Activity_Observation_PlantTerrestrial,
   Activity_Observation_PlantAquatic,
+  //Shift
+  Activity_Officer_Shift,
   //Plant-Treatments
   Activity_Treatment_ChemicalPlantTerrestrial,
   Activity_Treatment_ChemicalPlantAquatic,

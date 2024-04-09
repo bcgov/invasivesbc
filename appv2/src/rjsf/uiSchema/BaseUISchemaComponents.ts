@@ -971,6 +971,24 @@ const Observation_PlantAquatic_Information = {
   'ui:order': ['suitable_for_biocontrol_agent']
 };
 
+const Mussels_Officer_Shift = {
+  ...ThreeColumnStyle,
+  Blowbys: {
+    'ui:options': {
+      orderable: false
+    },
+    items: {
+      ...ThreeColumnStyle
+    }
+
+  }
+}
+const Mussels_Officer_Shift_Blowby = {
+  ...ThreeColumnStyle,
+  'ui:options': {
+    orderable: false
+  },
+}
 const Observation_Mussels_Information = {
   BasicInformation: {
     ...TwoColumnStyle,
@@ -1251,6 +1269,7 @@ const BaseUISchemaComponents = {
     Observation_PlantTerrestrial_Information,
     Observation_PlantAquatic_Information,
     Observation_Mussels_Information,
+    Mussels_Officer_Shift,
     Monitoring_ChemicalTerrestrialAquaticPlant_Information,
     Monitoring_ChemicalPlants,
     Monitoring_MechanicalTerrestrialAquaticPlant_Information,
@@ -1263,6 +1282,7 @@ const BaseUISchemaComponents = {
     Biocontrol_Release_Information
   },
   general_objects: {
+    Mussels_Officer_Shift_Blowby,
     Pest_Injury_Threshold_Determination,
     Biological_Agent_Stage,
     Biocontrol_Release_Biological_Agent_Stage,
