@@ -4,8 +4,6 @@
  *
  */
 
-import { JourneyDetails, WatercraftDetails_PreviousAISKnowledge, WatercraftDetails_PreviousInspection } from "sharedAPI/src/openapi/api-doc/Components/Mussels_Sub_Form";
-
 /**
  * ------------------  Styling  -----------------------
  */
@@ -972,7 +970,6 @@ const Observation_PlantAquatic_Information = {
 };
 
 const Mussels_Officer_Shift = {
-  ...ThreeColumnStyle,
   Blowbys: {
     'ui:options': {
       orderable: false
@@ -980,15 +977,9 @@ const Mussels_Officer_Shift = {
     items: {
       ...ThreeColumnStyle
     }
-
   }
 }
-const Mussels_Officer_Shift_Blowby = {
-  ...ThreeColumnStyle,
-  'ui:options': {
-    orderable: false
-  },
-}
+
 const Observation_Mussels_Information = {
   BasicInformation: {
     ...TwoColumnStyle,
@@ -1282,7 +1273,6 @@ const BaseUISchemaComponents = {
     Biocontrol_Release_Information
   },
   general_objects: {
-    Mussels_Officer_Shift_Blowby,
     Pest_Injury_Threshold_Determination,
     Biological_Agent_Stage,
     Biocontrol_Release_Biological_Agent_Stage,

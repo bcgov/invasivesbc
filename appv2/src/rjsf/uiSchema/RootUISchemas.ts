@@ -39,10 +39,7 @@ const Activity_Observation_Mussels = {
 
 const Activity_Officer_Shift = {
   activity_subtype_data: {
-    stub: {
-      ...BaseUISchemaComponents.activity_subtype_data_information_objects,
-      ...BaseUISchemaComponents.general_objects.Mussels_Officer_Shift_Blowby,
-    },
+    ...BaseUISchemaComponents.activity_subtype_data_information_objects.Mussels_Officer_Shift,
   }
 }
 
