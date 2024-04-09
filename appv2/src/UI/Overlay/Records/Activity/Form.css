@@ -52,3 +52,30 @@ td {
 .rightHeaderCol {
     width: 30%
 }
+
+
+#invasive_plants_section {
+    display: flex;
+    flex-direction: column;
+}
+
+
+#invasive_plants_list{
+    display: flex;
+    flex-wrap: wrap
+}
+
+.invasive_plant { 
+    padding: 10px;
+    /*width: 50px*/
+
+}
+
+.removeInvasivePlantButton {
+    padding-top: 10px;
+}
+
+.invasive_plant_tooltip {
+    
+
+}

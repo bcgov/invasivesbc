@@ -55,18 +55,19 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
   }, [currentInvasivePlant]);
 
   return (
-    <Box component="span" 
-   // className={classes.listItemContainer}
-    >
-      <Typography 
-     // className={classes.speciesHeading} 
-      variant="h5">
-        {optionValueLabels[species.invasive_plant_code]
-          ? `${optionValueLabels[species.invasive_plant_code]}`
-          : `InvasivePlant #${index + 1}`}
-      </Typography>
+    <div className={'invasive_plant'}>
 
-      <Tooltip classes={{ tooltip: 'toolTip' }} placement="left" title="Target invasive plant species at this location">
+      <Tooltip classes={{ tooltip: 'toolTip' }}
+      
+      
+        style={{
+          float: 'right',
+          marginBottom: 5,
+          color: 'rgb(170, 170, 170)',
+          display: invasivePlantsArr.length < 2 ? 'none' : 'block'
+        }}
+      
+      placement="left" title="Target invasive plant species at this location">
         <HelpOutlineIcon />
       </Tooltip>
       <CustomAutoComplete
@@ -92,6 +93,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         parentState={{ species, setCurrentInvasivePlant }}
       />
 
+        <div className={'invasive_plant_tooltip'}>
       <Tooltip
         style={{
           float: 'right',
@@ -103,6 +105,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         title="Percent of area covered by this species">
         <HelpOutlineIcon />
       </Tooltip>
+      </div>
       <TextField
         fullWidth
         disabled={formDetails.disabled}
@@ -123,12 +126,16 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         defaultValue={undefined}
       />
 
+<div 
+        className={'removeInvasivePlantButton'}>
       <Button
         disabled={formDetails.disabled}
         onClick={() => {
           setFormDetails((prevDetails) => {
-            const newSpeciesArr = [...prevDetails.form_data.invasive_plants];
+            let newSpeciesArr = JSON.parse(JSON.stringify([...prevDetails.form_data.invasive_plants]))
+            console.dir(newSpeciesArr)
             newSpeciesArr.splice(index, 1);
+            console.dir(newSpeciesArr)
 
             newSpeciesArr.forEach((item, i) => {
               item.index = i;
@@ -153,7 +160,8 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         color="secondary">
         Remove Invasive Plant
       </Button>
-    </Box>
+      </div>
+    </div>
   );
 };
 

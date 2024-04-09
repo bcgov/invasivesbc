@@ -6,6 +6,9 @@ import AddIcon from '@mui/icons-material/Add';
 import InvasivePlant from '../single-objects/InvasivePlant';
 //import { useFormStyles } from '../../formStyles';
 
+
+import '../../../../Form.css'
+
 const InvasivePlantsAccordion = () => {
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
@@ -13,28 +16,21 @@ const InvasivePlantsAccordion = () => {
   //const classes = useFormStyles();
 
   return (
-    <Accordion
-      onChange={() => {
-        setAccordionExpanded((prevState) => {
-          return !prevState;
-        });
-      }}
-      expanded={accordionExpanded}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="species-content" id="species-header">
+    <div id="invasive_plants_section">
         <Typography
           style={{ width: '33%', flexShrink: 0 }}
           // color={invasivePlantsArrErrors?.length > 0 ? 'error' : 'textPrimary'}
           variant="h5">
           Invasive Plants
         </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Box 
-        //className={classes.accordionBody}
-        >
-          <Box component="div" 
-         // className={classes.centerBox}
-          >
+
+            <div id="invasive_plants_list">
+            {formDetails.form_data?.invasive_plants?.map((species, index) => {
+              return <InvasivePlant species={species} key={index} index={index} 
+             // classes={classes} 
+              />;
+            })}</div>
+
             <Button
               id="btn_add_invasive_plant"
               disabled={formDetails.disabled}
@@ -58,20 +54,7 @@ const InvasivePlantsAccordion = () => {
               color="primary">
               Add Invasive Plant
             </Button>
-          </Box>
-
-          <Box component="div" 
-         // className={classes.listContainer}
-          >
-            {formDetails.form_data?.invasive_plants?.map((species, index) => {
-              return <InvasivePlant species={species} key={index} index={index} 
-             // classes={classes} 
-              />;
-            })}
-          </Box>
-        </Box>
-      </AccordionDetails>
-    </Accordion>
+    </div>
   );
 };
 
