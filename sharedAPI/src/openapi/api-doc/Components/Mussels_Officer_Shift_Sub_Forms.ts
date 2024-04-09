@@ -19,6 +19,7 @@ export const Station = {
 }
 export const Blowby = {
   type: 'object',
+  title: 'invisible',
   properties: {
     reportedToRapp: {
       title: 'Reported to RAPP',
