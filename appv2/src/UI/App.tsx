@@ -33,6 +33,8 @@ import { LayerPicker } from './Map2/LayerPicker';
 import NewRecordDialog from './Overlay/Records/NewRecordDialog';
 import { ButtonContainer } from './Map2/Controls/ButtonContainer';
 import CustomizeLayerMenu from './Map2/Controls/CustomizeLayerDialog';
+import { ConnectivityErrorHandler } from 'UI/ErrorHandler/ConnectivityErrorHandler';
+import { selectAuth } from 'state/reducers/auth';
 
 export const RENDER_DEBUG = false;
 
@@ -67,10 +69,10 @@ const OverlayContentMemo = (props) => {
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
       <AppUrlListener />
-      <Route path="/Landing" render={(props) => <LandingComponent />} />
-      <Route exact={true} path="/Records" render={(props) => <Records />} />
+      <Route path='/Landing' render={(props) => <LandingComponent />} />
+      <Route exact={true} path='/Records' render={(props) => <Records />} />
       <Route
-        path="/Records/Activity:id"
+        path='/Records/Activity:id'
         render={(props) => (
           <>
             {!overlayMenuOpen ? (
@@ -85,7 +87,7 @@ const OverlayContentMemo = (props) => {
       />
 
       <Route
-        path="/Records/IAPP/:id"
+        path='/Records/IAPP/:id'
         render={(props) => (
           <>
             <IAPPRecord />
@@ -95,7 +97,7 @@ const OverlayContentMemo = (props) => {
 
       <Route
         exact={true}
-        path="/Records/List/Local:id"
+        path='/Records/List/Local:id'
         render={(props) => (
           <>
             {!userRecordOnClickMenuOpen ? (
@@ -110,7 +112,7 @@ const OverlayContentMemo = (props) => {
                         : '/Records/IAPP/' + userRecordOnClickRecordID + '/summary';
                     history.push(url);
                   }}
-                  variant="contained">
+                  variant='contained'>
                   Open {}
                 </Button>
               </OverlayMenu>
@@ -118,19 +120,19 @@ const OverlayContentMemo = (props) => {
           </>
         )}
       />
-      <Route exact={true} path="/Batch/list" render={(props) => <BatchList />} />
+      <Route exact={true} path='/Batch/list' render={(props) => <BatchList />} />
       <Route
-        path="/Batch/list/:id"
+        path='/Batch/list/:id'
         render={(props) => <BatchView match={props.match as any} history={undefined} location={undefined} />}
       />
-      <Route path="/Batch/new" render={(props) => <BatchCreateNew />} />
-      <Route path="/Batch/templates" render={(props) => <BatchTemplates />} />
-      <Route path="/Reports" render={(props) => <EmbeddedReportsPage />} />
-      <Route path="/Training" render={(props) => <TrainingPage />} />
-      <Route path="/Legend" render={(props) => <LegendsPopup />} />
-      <Route path="/AccessRequest" render={(props) => <AccessRequestPage />} />
-      <Route path="/Admin" render={(props) => <UserAccessPage />} />
-      <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
+      <Route path='/Batch/new' render={(props) => <BatchCreateNew />} />
+      <Route path='/Batch/templates' render={(props) => <BatchTemplates />} />
+      <Route path='/Reports' render={(props) => <EmbeddedReportsPage />} />
+      <Route path='/Training' render={(props) => <TrainingPage />} />
+      <Route path='/Legend' render={(props) => <LegendsPopup />} />
+      <Route path='/AccessRequest' render={(props) => <AccessRequestPage />} />
+      <Route path='/Admin' render={(props) => <UserAccessPage />} />
+      <Route path='/WhatsHere' render={(props) => <WhatsHereTable />} />
     </div>
   );
 };
@@ -138,19 +140,23 @@ const OverlayContentMemo = (props) => {
 const App: React.FC = () => {
   const authInitiated = useSelector((state: any) => state.Auth.initialized);
   const { detail: errorDetail, actions, hasCrashed } = useSelector(selectGlobalErrorState);
-
+  const { disrupted } = useSelector(selectAuth);
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
 
-  if (!authInitiated) return <div id="app-pre-auth-init" />;
+  if (!authInitiated) return <div id='app-pre-auth-init' />;
+
+  if (disrupted) {
+    return <ConnectivityErrorHandler />;
+  }
 
   if (hasCrashed) {
     return <ErrorHandler detail={errorDetail} actions={actions} />;
   }
 
   return (
-    <div id="app" className="App">
+    <div id='app' className='App'>
       <Header />
       <Map>
         <ButtonContainer />

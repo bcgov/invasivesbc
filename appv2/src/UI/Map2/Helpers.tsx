@@ -44,6 +44,10 @@ export const mapInit = (
   mapContainer.current.appendChild(coordinatesContainer);
 
   mapContainer.current.addEventListener('mousemove', (e) => {
+    if (!map.current) {
+      return;
+    }
+
     const { lng, lat } = map.current.unproject([e.clientX, e.clientY]);
 
     const utmZone = Math.floor((lng + 180) / 6) + 1;
@@ -65,6 +69,7 @@ export const mapInit = (
       <div>Zone ${utmZone}, E: ${utm[0].toFixed(0)}, N: ${utm[1].toFixed(0)}</div>
     `;
   });
+
   const protocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {
@@ -273,6 +278,7 @@ export const mapInit = (
         ]
       }
     });
+
     let scale = new ScaleControl({
       maxWidth: 80,
       unit: 'metric'
