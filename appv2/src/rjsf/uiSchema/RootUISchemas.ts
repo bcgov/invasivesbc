@@ -32,7 +32,7 @@ const Activity_Observation_PlantTerrestrial = {
 const Activity_Observation_Mussels = {
   activity_subtype_data: {
     Observation_Mussels_Information: {
-      ...BaseUISchemaComponents.activity_subtype_data_information_objects.Mussels_Officer_Shift
+      ...BaseUISchemaComponents.activity_subtype_data_information_objects.Observation_Mussels_Information
     }
   },
 };
