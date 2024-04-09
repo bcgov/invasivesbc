@@ -1010,6 +1010,29 @@ const Observation_Mussels_Information = {
   },
   JourneyDetails: {
     ...TwoColumnStyle
+  },
+  InspectionDetails: {
+    aquaticPlantsFound: { 'ui:widget': 'radio' },
+    marineMusselsFound: { 'ui:widget': 'radio' },
+    highRiskArea: { 'ui:widget': 'radio' },
+    dreissenidMusselsFoundPrevious: { 'ui:widget': 'radio' },
+    k9Inspection: { 
+      k9Inspection: {'ui:widget': 'radio' },
+    }
+  },
+  HighRiskAssessment: {
+    highriskAIS: { 'ui:widget': 'radio' },
+    adultDreissenidFound: { 'ui:widget': 'radio' },
+    InspectionOutcomes: {
+      standingWaterPresent: {
+        standingWaterPresent: { 'ui:widget': 'radio' },
+      },
+      adultDreissenidMusselsFound: { 'ui:widget': 'radio' },
+      decontaminationPerformed: { 'ui:widget': 'radio' },
+      decontaminationOrderIssued: { 'ui:widget': 'radio' },
+      decontaminationAppendixB: { 'ui:widget': 'radio' },
+      sealIssued: { 'ui:widget': 'radio' },
+    }
   }
 };
 
