@@ -975,8 +975,20 @@ const Mussels_Officer_Shift = {
       orderable: false
     },
     items: {
-      ...ThreeColumnStyle
+      ...TwoColumnStyle
     }
+  },
+  shiftInformation: {
+    shiftEnd: {
+      ...FourColumnStyle
+    },
+    shiftStart: {
+      ...FourColumnStyle
+    }
+    
+  },
+  ShiftEnd: {
+
   }
 }
 
