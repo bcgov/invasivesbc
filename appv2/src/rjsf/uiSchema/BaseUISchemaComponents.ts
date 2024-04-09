@@ -980,10 +980,10 @@ const Mussels_Officer_Shift = {
   },
   shiftInformation: {
     shiftEnd: {
-      ...FourColumnStyle
+      ...TwoColumnStyle
     },
     shiftStart: {
-      ...FourColumnStyle
+      ...TwoColumnStyle
     }
     
   },
@@ -998,26 +998,50 @@ const Observation_Mussels_Information = {
   },
   WatercraftDetails: {
     WatercraftDetails_BasicInformation: {
-      ...TwoColumnStyle,
-      commerciallyHauled: { 'ui:widget': 'radio' },
+      ...OneColumnStyle,
+      commerciallyHauled: { 
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
     },
     WatercraftDetails_PreviousAISKnowledge: {
-      previousAISKnowledge: { 'ui:widget': 'radio' },
+      previousAISKnowledge: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
     },
     WatercraftDetails_PreviousInspection: {
-      previousInspection: { 'ui:widget': 'radio' },
+      previousInspection: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
     },
   },
   JourneyDetails: {
     ...TwoColumnStyle
   },
   InspectionDetails: {
-    aquaticPlantsFound: { 'ui:widget': 'radio' },
-    marineMusselsFound: { 'ui:widget': 'radio' },
-    highRiskArea: { 'ui:widget': 'radio' },
-    dreissenidMusselsFoundPrevious: { 'ui:widget': 'radio' },
+    aquaticPlantsFound: {
+      'ui:inline': true,
+      'ui:widget': 'radio'
+    },
+    marineMusselsFound: {
+      'ui:inline': true,
+      'ui:widget': 'radio'
+    },
+    highRiskArea: {
+      'ui:inline': true,
+      'ui:widget': 'radio'
+    },
+    dreissenidMusselsFoundPrevious: {
+      'ui:inline': true,
+      'ui:widget': 'radio'
+    },
     k9Inspection: { 
-      k9Inspection: {'ui:widget': 'radio' },
+      k9Inspection: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
     }
   },
   HighRiskAssessment: {
