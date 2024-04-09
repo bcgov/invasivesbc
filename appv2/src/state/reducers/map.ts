@@ -944,6 +944,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.whatsHere.loadingIAPP = true;
           draftState.whatsHere.feature = action.payload.feature;
           draftState.whatsHere.toggle = state.whatsHere.toggle;
+          draftState.whatsHere.limit = 5;
+          draftState.whatsHere.page = 0;
           break;
         }
         case MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED: {
