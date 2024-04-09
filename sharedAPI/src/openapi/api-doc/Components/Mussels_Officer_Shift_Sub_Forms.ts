@@ -21,11 +21,6 @@ export const Blowby = {
   type: 'object',
   title: 'invisible',
   properties: {
-    reportedToRapp: {
-      title: 'Reported to RAPP',
-      type: 'boolean',
-      default: false
-    },
     watercraftComplexity: {
       title: 'Watercraft Complexity',
       type: 'string',
@@ -39,7 +34,12 @@ export const Blowby = {
     blowbyTime: {
       title: 'Blowby Time',
       ...TimeCapture
-    }
+    },
+    reportedToRapp: {
+      title: 'Reported to RAPP',
+      type: 'boolean',
+      default: false
+    },
   },
   required: [
     'reportedToRapp',
@@ -55,14 +55,14 @@ export const ShiftStart = {
       title: 'Shift Start Time',
       ...DateCapture
     },
+    shiftStartComments: {
+      title: 'Shift Start Comment',
+      type: 'string'
+    },
     station: {
       title: 'Station',
       ...Station
     },
-    shiftStartComments: {
-      title: 'Shift Start Comment',
-      type: 'string'
-    }
   },
   required: [
     'shiftStartTime',
@@ -73,10 +73,6 @@ export const ShiftStart = {
 export const ShiftEnd = {
   type: 'object',
   properties: {
-    shiftEndTime: {
-      title: 'Shift end time',
-      ...TimeCapture
-    },
     k9OnShift: {
       title: '🐕 K9 on Shift',
       type: 'boolean',
@@ -86,6 +82,10 @@ export const ShiftEnd = {
       title: '⛵️ Boats Inspected',
       type: 'boolean',
       default: false
+    },
+    shiftEndTime: {
+      title: 'Shift end time',
+      ...TimeCapture
     },
     shiftEndComments: {
       title: 'Shift End Comment',
