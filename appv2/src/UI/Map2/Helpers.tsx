@@ -48,6 +48,10 @@ export const mapInit = (
       return;
     }
 
+    if(!e?.clientX || !e?.clientY) {
+      return;
+    }
+
     const { lng, lat } = map.current.unproject([e.clientX, e.clientY]);
 
     const utmZone = Math.floor((lng + 180) / 6) + 1;
@@ -710,6 +714,7 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
   if (visibility !== 'none' && !boolToggle) {
     map.setLayoutProperty(layer, 'visibility', 'none');
+    console.log('toggle off');
   }
 };
 

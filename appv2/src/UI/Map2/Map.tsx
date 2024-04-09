@@ -136,26 +136,28 @@ export const Map = (props: any) => {
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-  }, [storeLayers, mapReady]);
+  }, [storeLayers, mapReady, map.current]);
 
   // Layer picker:
   useEffect(() => {
     if (!mapReady) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
     refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2, mapReady]);
+  }, [simplePickerLayers2, mapReady, map.current]);
 
   useEffect(() => {
+    if (!mapReady) return;
     if (loggedIn) {
       addServerBoundariesIfNotExists(serverBoundaries, map.current);
       refreshServerBoundariesOnToggle(serverBoundaries, map.current);
     }
-  }, [serverBoundaries, loggedIn]);
+  }, [serverBoundaries, loggedIn, map.current]);
 
   useEffect(() => {
+    if (!mapReady) return;
     addClientBoundariesIfNotExists(clientBoundaries, map.current);
     refreshClientBoundariesOnToggle(clientBoundaries, map.current);
-  }, [clientBoundaries]);
+  }, [clientBoundaries, mapReady, map.current]);
 
   // Jump Nav
   useEffect(() => {
@@ -167,7 +169,7 @@ export const Map = (props: any) => {
       console.dir(map_center);
       console.dir(e);
     }
-  }, [map_center, map_zoom, mapReady]);
+  }, [map_center, map_zoom, mapReady, map.current]);
 
 
   // User position tracking and marker
@@ -183,7 +185,7 @@ export const Map = (props: any) => {
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', !baseMapToggle && !HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
-  }, [baseMapToggle, HDToggle, mapReady]);
+  }, [baseMapToggle, HDToggle, mapReady, map.current]);
 
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
