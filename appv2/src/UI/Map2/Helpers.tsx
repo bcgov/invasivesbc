@@ -31,7 +31,8 @@ export const mapInit = (
   whats_here_toggle,
   api_base,
   getAuthHeaderCallback,
-  PUBLIC_MAP_URL
+  PUBLIC_MAP_URL,
+  map_center
 ) => {
   const coordinatesContainer = document.createElement('div');
   coordinatesContainer.style.position = 'absolute';
@@ -100,7 +101,7 @@ export const mapInit = (
     map.current = new maplibregl.Map({
       container: mapContainer.current,
       maxZoom: 24,
-      zoom: h.maxZoom - 2,
+      zoom: 3,
       minZoom: 0,
       transformRequest: (url, resourceType) => {
         if (url.includes(api_base)) {
@@ -115,7 +116,7 @@ export const mapInit = (
           url
         };
       },
-      center: [h.centerLon, h.centerLat],
+      center: [map_center[1], map_center[0]],
       style: {
         glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
         version: 8,

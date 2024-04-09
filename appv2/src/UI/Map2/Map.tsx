@@ -109,9 +109,17 @@ export const Map = (props: any) => {
 
   const PUBLIC_MAP_URL = useSelector((state: any) => state.Configuration.current.PUBLIC_MAP_URL);
 
+
+  useEffect(()=> {
+    if(!map.current || mapReady) return;
+    if(map.current.isStyleLoaded()) {
+      setMapReady(true);
+    }
+  },[map?.current?.isStyleLoaded()]);
+
   // Map Init
   useEffect(() => {
-    if (map.current || !authInitiated) return;
+    if (map.current || !authInitiated || !map_center) return;
     mapInit(
       map,
       mapContainer,
@@ -125,45 +133,46 @@ export const Map = (props: any) => {
       () => {
         return store.getState().Auth.requestHeaders;
       },
-      PUBLIC_MAP_URL
+      PUBLIC_MAP_URL,
+      map_center
     );
-  }, [authInitiated]);
+  }, [authInitiated, map_center]);
 
   // RecordSet Layers:
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
     console.log('all layers')
     console.dir(map.current.getStyle().layers);
-  }, [storeLayers,  map.current, map?.current?.isStyleLoaded()]);
+  }, [storeLayers,  map.current, mapReady]);
 
   // Layer picker:
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
     refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2,  map.current, map?.current?.isStyleLoaded()]);
+  }, [simplePickerLayers2,  map.current, mapReady]);
 
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     if (loggedIn) {
       addServerBoundariesIfNotExists(serverBoundaries, map.current);
       refreshServerBoundariesOnToggle(serverBoundaries, map.current);
     }
-  }, [serverBoundaries, loggedIn, map.current, map?.current?.isStyleLoaded()]);
+  }, [serverBoundaries, loggedIn, map.current, mapReady]);
 
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     addClientBoundariesIfNotExists(clientBoundaries, map.current);
     refreshClientBoundariesOnToggle(clientBoundaries, map.current);
-  }, [clientBoundaries,  map.current, map?.current?.isStyleLoaded()]);
+  }, [clientBoundaries,  map.current, mapReady]);
 
   // Jump Nav
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     try {
       if (map_center && map_zoom) map.current.jumpTo({ center: map_center, zoom: map_zoom });
     } catch (e) {
@@ -171,27 +180,27 @@ export const Map = (props: any) => {
       console.dir(map_center);
       console.dir(e);
     }
-  }, [map_center, map_zoom, map.current, map?.current?.isStyleLoaded()]);
+  }, [map_center, map_zoom]);
 
 
   // User position tracking and marker
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     handlePositionTracking(map.current, positionMarker, userCoords, accuracyCircle, accuracyToggle, positionTracking);
-  }, [userCoords, positionTracking, accuracyToggle, map?.current?.isStyleLoaded()]);
+  }, [userCoords, positionTracking, accuracyToggle, mapReady]);
 
   //Toggle Topo
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerHD', !baseMapToggle && HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', !baseMapToggle && !HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
-  }, [baseMapToggle, HDToggle,  map.current, map?.current?.isStyleLoaded()]);
+  }, [baseMapToggle, HDToggle,  map.current, mapReady]);
 
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     refreshDrawControls(
       map.current,
       draw,
@@ -203,11 +212,11 @@ export const Map = (props: any) => {
       activityGeo,
       drawingCustomLayer
     );
-  }, [whatsHereToggle, appModeUrl, mapReady, map.current, activityGeo, drawingCustomLayer, map?.current?.isStyleLoaded()]);
+  }, [whatsHereToggle, appModeUrl, mapReady, map.current, activityGeo, drawingCustomLayer, mapReady]);
 
   //Current Activity & IAPP Markers
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     refreshCurrentRecMakers(map.current, {
       activityGeo,
       currentActivityShortID,
@@ -216,11 +225,11 @@ export const Map = (props: any) => {
       activityMarker,
       IAPPMarker
     });
-  }, [currentActivityShortID, currentIAPPID, map.current, map?.current?.isStyleLoaded()]);
+  }, [currentActivityShortID, currentIAPPID, map.current, mapReady]);
 
   //Highlighted Record
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
     refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
 
     if (quickPanToRecord) {
@@ -251,12 +260,12 @@ export const Map = (props: any) => {
         setMapLoaded(map.current.areTilesLoaded());
       }
     }, 1000);
-  }, [map.current, map?.current?.isStyleLoaded()]);
+  }, [map.current]);
 
 
   // toggle public map pmtile layer
   useEffect(() => {
-    if (!map?.current?.isStyleLoaded()) return;
+    if (!mapReady) return;
 
     console.log('checking if logged in:', loggedIn)
     if (loggedIn) {
@@ -266,7 +275,7 @@ export const Map = (props: any) => {
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector-label', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector-label', false);
     }
-  }, [loggedIn, map.current, map?.current?.isStyleLoaded()]);
+  }, [loggedIn, map.current, mapReady]);
 
   return (
     <div className='MapWrapper'>
