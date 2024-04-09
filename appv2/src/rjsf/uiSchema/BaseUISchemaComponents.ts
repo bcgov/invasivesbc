@@ -4,6 +4,8 @@
  *
  */
 
+import { JourneyDetails, WatercraftDetails_PreviousAISKnowledge, WatercraftDetails_PreviousInspection } from "sharedAPI/src/openapi/api-doc/Components/Mussels_Sub_Form";
+
 /**
  * ------------------  Styling  -----------------------
  */
@@ -970,7 +972,24 @@ const Observation_PlantAquatic_Information = {
 };
 
 const Observation_Mussels_Information = {
-  ...TwoColumnStyle,
+  BasicInformation: {
+    ...TwoColumnStyle,
+  },
+  WatercraftDetails: {
+    WatercraftDetails_BasicInformation: {
+      ...TwoColumnStyle,
+      commerciallyHauled: { 'ui:widget': 'radio' },
+    },
+    WatercraftDetails_PreviousAISKnowledge: {
+      previousAISKnowledge: { 'ui:widget': 'radio' },
+    },
+    WatercraftDetails_PreviousInspection: {
+      previousInspection: { 'ui:widget': 'radio' },
+    },
+  },
+  JourneyDetails: {
+    ...TwoColumnStyle
+  }
 };
 
 const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
