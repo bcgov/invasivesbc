@@ -12,7 +12,7 @@
     overflow: scroll;
 
 }
-
+label { text-align: left; }
 table {
     width: 100%;
     /*border: 1px solid black;*/
