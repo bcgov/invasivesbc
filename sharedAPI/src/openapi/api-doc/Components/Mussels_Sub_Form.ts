@@ -133,6 +133,7 @@ export const PreviousMajorCity = {
 };
 
 export const PreviousWaterBody = {
+	title: 'invisible',
 	type: 'object',
 	properties: {
 		waterbody: {
@@ -208,6 +209,7 @@ export const PreviousToggles = {
 		}
 	]
 }
+/* End of Previous */
 
 /* Destination */
 export const DestinationMajorCity = {
@@ -282,7 +284,7 @@ export const DestinationToggles = {
 			else: {
 				properties: {
 					destinationWaterBody: {
-						title: 'invisible',
+						title: 'Add a Destination Waterbody',
 						...DestinationWaterBody
 					}
 				}
@@ -290,6 +292,159 @@ export const DestinationToggles = {
 		}
 	]
 }
+/* End of Destination */
+/* End of Journey Details */
+
+/* Inspection Details */
+export const k9Inspection = {
+	title: 'invisible',
+	type: 'object',
+	properties: {
+		k9Inspection: {
+			title: 'K9 Inspection',
+			...NullSwitch
+		}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					k9Inspection: {
+						const: false
+					}
+				}
+			},
+			then: {
+				properties: {}
+			},
+			else: {
+				properties: {
+					k9InspectionResults: {
+						title: 'K9 Inspection Result',
+						type: 'string',
+						enum: [
+							'K9 detected/indicated',
+							'K9 did not indicate'
+						]
+					}
+				}
+			},
+			required: ['k9InspectionResults'],
+		}
+	]
+};
+/* End of Inspection Details */
+
+/* High Risk Assessment / Inspection Outcomes */
+
+export const StandingWaterLocation = {
+	title: 'invisible',
+	type: 'object',
+	properties: {
+		standingWaterLocation: {
+			title: 'Add a Standing Water Location',
+			type: 'string',
+			enum: [
+				'Engine',
+				'Hull',
+				'Gimbal'
+			]
+		}
+	}
+}
+
+export const StandingWaterLocationArray = {
+	type: 'array',
+	items: {
+		...StandingWaterLocation
+	}
+}
+
+export const StandingWaterPresent = {
+	type: 'object',
+	title: "Standing Water Present",
+	properties: {
+		standingWaterPresent: {
+			...NullSwitch
+		}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					standingWaterPresent: {
+						const: false
+					}
+				}
+			},
+			then: {
+				properties: {}
+			},
+			else: {
+				properties: {
+					standingWaterLocation: {
+						title: 'Add a Standing Water Location',
+						...StandingWaterLocationArray,
+					}
+				}
+			},
+			required: ['standingWaterLocation']
+		}
+	]
+};
+
+export const AdultDreissenidMusselsFound = {
+	title: "Adult Dreissenid Mussels Found",
+	...NullSwitch
+};
+
+export const DecontaminationPerformed = {
+	title: "Decontamination Performed",
+	...NullSwitch
+};
+
+export const DecontaminationOrderIssued = {
+	title: "Decontamination Order Issued",
+	...NullSwitch
+};
+
+export const DecontaminationAppendixB = {
+	title: "Appendix B completed and served",
+	...NullSwitch
+};
+
+export const SealIssued = {
+	title: "Seal Issued",
+	...NullSwitch
+};
+
+
+export const InspectionOutcomes = {
+	title: 'invisible',
+	type: 'object',
+	properties: {
+		standingWaterPresent: {
+			...StandingWaterPresent
+		},
+		adultDreissenidMusselsFound: {
+			...AdultDreissenidMusselsFound
+		},
+		decontaminationPerformed: {
+			...DecontaminationPerformed
+		},
+		decontaminationOrderIssued: {
+			...DecontaminationOrderIssued
+		},
+		decontaminationAppendixB: {
+			...DecontaminationAppendixB
+		},
+		sealIssued: {
+			...SealIssued
+		}
+	}
+}
+
+/* End of High Risk Assessment /Inspection Outcomes */
 
 export const BasicInformation = {
 	title: 'Basic Information',
@@ -358,7 +513,7 @@ export const JourneyDetails = {
 	title: 'Journey Details',
 	type: 'object',
 	properties: {
-		PreviousJourneyDetails: {
+		previousJourneyDetails: {
 			title: 'Previous Waterbody',
 			type: 'object',
 			properties: {
@@ -368,7 +523,7 @@ export const JourneyDetails = {
 				}
 			}
 		},
-		DestinationJourneyDetails: {
+		destinationJourneyDetails: {
 			title: 'Destination Waterbody',
 			type: 'object',
 			properties: {
@@ -379,4 +534,70 @@ export const JourneyDetails = {
 			}
 		}
 	}
-}
+};
+
+export const InspectionDetails = {
+	title: 'Inspection Details',
+	type: 'object',
+	properties: {
+		aquaticPlantsFound: {
+			title: 'Aquatic plants found',
+			...NullSwitch
+		},
+		marineMusselsFound: {
+			title: 'Marine Mussels Found',
+			...NullSwitch
+		},
+		highRiskArea: {
+			title: 'Watercraft coming from a high risk area for whirling disease',
+			...NullSwitch
+		},
+		dreissenidMusselsFoundPrevious: {
+			title: 'Dreissenid mussels found during inspection and FULL decontamination already completed/determined to be CDD',
+			...NullSwitch
+		},
+		k9Inspection: {
+			...k9Inspection
+		},
+	}
+};
+
+export const HighRiskAssessment = {
+	title: 'High Risk Assessment Fields',
+	type: 'object',
+	properties: {
+		highRisk: {
+			type: 'string',
+			enum: [
+				'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found',
+				'The watercraft is NOT Clean, Drain, Dry after full inspection and further action must be taken AND/OR a full inspection can not be completed.',
+				'Adult Dreissenid Mussels Found',
+				'Both - not Clean, Drain Dry and Adult Dreissenid Mussels Found'
+			],
+			default: 'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found'
+		}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					highRisk: {
+						const: 'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found'
+					}
+				}
+			},
+			then: {
+				properties: {}
+			},
+			else: {
+				properties: {
+					InspectionOutcomes: {
+						title: 'Inspection Outcomes',
+						...InspectionOutcomes
+					}
+				}
+			},
+		}
+	]
+};
+

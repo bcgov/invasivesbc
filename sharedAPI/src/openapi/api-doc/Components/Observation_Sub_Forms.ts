@@ -1,5 +1,7 @@
 import {
   BasicInformation,
+  HighRiskAssessment,
+  InspectionDetails,
   JourneyDetails,
   WatercraftDetails,
 } from '../Components/Mussels_Sub_Form';
@@ -104,6 +106,8 @@ export const Observation_Mussels_Information = {
   properties: {
     BasicInformation: BasicInformation,
     WatercraftDetails: WatercraftDetails,
-    JourneyDetails: JourneyDetails
+    JourneyDetails: JourneyDetails,
+    InspectionDetails: InspectionDetails,
+    HighRiskAssessment: HighRiskAssessment
   }
 };
