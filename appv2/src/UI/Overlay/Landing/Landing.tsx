@@ -136,10 +136,10 @@ export const LandingComponent = (props) => {
             <Box mt={4}>
               For training materials and more info:{' '}
               <a
-                href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
+                href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc"
                 target="_blank"
                 rel="noreferrer">
-                www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species
+                www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc
               </a>
             </Box>
             <Box mt={4}>
@@ -155,9 +155,7 @@ export const LandingComponent = (props) => {
         )}
         {connected && !activated && (
           <Box mt={2} paddingBottom={'50px'}>
-            <Button variant="outlined" color="primary" 
-            onClick={requestAccess}
-            >
+            <Button variant="outlined" color="primary" onClick={requestAccess}>
               Request Access
             </Button>
           </Box>
@@ -180,10 +178,10 @@ export const LandingComponent = (props) => {
             </Box>
             <Box mt={4}>
               <strong>To request access: </strong> click the “REQUEST ACCESS” button at the top of the page and fill out
-              the request access form. Please note that the employer and funding agency information provided will be used
-              to autofill those fields into the activity forms, therefore it is important you complete the full access
-              form with your current employer and all potential funding agencies. An active IDIR or Business BCEID is
-              required to request access.
+              the request access form. Please note that the employer and funding agency information provided will be
+              used to autofill those fields into the activity forms, therefore it is important you complete the full
+              access form with your current employer and all potential funding agencies. An active IDIR or Business
+              BCEID is required to request access.
             </Box>
             <Box mt={8}>
               <u>
@@ -194,8 +192,8 @@ export const LandingComponent = (props) => {
               <strong>To log in: </strong> click the person icon at the top right of the page and select "log in".
             </Box>
             <Box mt={4}>
-              <strong>To update or change your account details: </strong> log in and then choose "update my info" from the
-              person icon on the top right.
+              <strong>To update or change your account details: </strong> log in and then choose "update my info" from
+              the person icon on the top right.
             </Box>
             <Box mt={8}>
               <u>
@@ -219,4 +217,4 @@ export const LandingComponent = (props) => {
       </Container>
     </>
   );
-}
+};

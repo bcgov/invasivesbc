@@ -7,7 +7,6 @@ import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import './Report.css';
 
-
 const EmbeddedReportsPage: React.FC = () => {
   const api = useInvasivesApi();
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
@@ -53,16 +52,16 @@ const EmbeddedReportsPage: React.FC = () => {
   return (
     <Container style={{ paddingBottom: '50px' }}>
       <Box style={{ paddingTop: '30px', paddingBottom: '10px', display: 'flex', justifyContent: 'center' }}>
-        <Typography variant='h4' align='center'>
+        <Typography variant="h4" align="center">
           <Box
             style={{ paddingTop: '1rem' }}
-            component='img'
-            alignContent='center'
+            component="img"
+            alignContent="center"
             sx={{
               height: 37,
               width: 37
             }}
-            alt='Metabase Icon'
+            alt="Metabase Icon"
             src={metabaseIconUrl}
           />
           Metabase Reports
@@ -77,13 +76,14 @@ const EmbeddedReportsPage: React.FC = () => {
         }}>
         <i>
           Reports are embedded Metabase reports accessible from the InvasivesBC application. To view a Metabase report,
-          select which report you'd like to view from the dropdown below.
+          select which report you'd like to view from the dropdown below. Reports are generated every night at midnight.
+          Changes made to data in a given day will not be reflected in reports until the subsequent day.
         </i>
       </Box>
       <Box style={{ paddingBottom: '30px', display: 'flex', justifyContent: 'center' }}>
         {/* MUI Dropdown for list of metabase report types */}
         <Autocomplete
-          id='metabase-report-select'
+          id="metabase-report-select"
           disablePortal
           options={options}
           groupBy={(option) => option.category}
@@ -92,7 +92,7 @@ const EmbeddedReportsPage: React.FC = () => {
           onChange={(event, report) => {
             setActiveReport(report.id);
           }}
-          renderInput={(params) => <TextField {...params} label='Select a Metabase Report' />}
+          renderInput={(params) => <TextField {...params} label="Select a Metabase Report" />}
         />
       </Box>
       <Container>

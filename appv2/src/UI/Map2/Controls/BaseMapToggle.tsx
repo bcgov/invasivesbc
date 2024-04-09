@@ -28,7 +28,7 @@ export const BaseMapToggle = (props) => {
             onClick={() => {
               dispatch({ type: MAP_TOGGLE_BASEMAP });
             }}>
-            {baseMapToggle ? 'TOPO' : 'SAT'}
+            {baseMapToggle ? 'SAT' : 'TOPO'}
           </IconButton>
         </span>
       </Tooltip>
