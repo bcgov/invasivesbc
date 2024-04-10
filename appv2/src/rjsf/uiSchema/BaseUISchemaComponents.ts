@@ -975,12 +975,24 @@ const Mussels_Officer_Shift = {
       orderable: false
     },
     items: {
-      ...TwoColumnStyle
+      ...TwoColumnStyle,
+      reportedToRapp: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
     }
   },
   shiftInformation: {
     shiftEnd: {
-      ...TwoColumnStyle
+      ...TwoColumnStyle,
+      k9OnShift: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
+      boatsInspected: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
     },
     shiftStart: {
       ...TwoColumnStyle
