@@ -16,7 +16,7 @@ const FourColumnStyle = {
 const TwoColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 6,
-  'ui:column-lg': 4
+  'ui:column-lg': 6
 };
 /*const TwoColumnStyle = {
   'ui:column-xs': 12,
@@ -994,13 +994,18 @@ const Mussels_Officer_Shift = {
 
 const Observation_Mussels_Information = {
   BasicInformation: {
-    ...TwoColumnStyle,
+    provinceAndTime: {
+      ...TwoColumnStyle,
+    },
+    vehicleTypeInspectedCount: {
+      ...FourColumnStyle,
+    }
   },
   WatercraftDetails: {
     WatercraftDetails_BasicInformation: {
       ...OneColumnStyle,
-      commerciallyHauled: { 
-        'ui:inline': true,
+      commerciallyHauled: {
+        'ui:inline': true, 
         'ui:widget': 'radio'
       },
     },
@@ -1045,17 +1050,49 @@ const Observation_Mussels_Information = {
     }
   },
   HighRiskAssessment: {
-    highriskAIS: { 'ui:widget': 'radio' },
-    adultDreissenidFound: { 'ui:widget': 'radio' },
+    highriskAIS: {
+      'ui:inline': true,
+      'ui:widget': 'radio' 
+    },
+    adultDreissenidFound: {
+      'ui:inline': true,
+      'ui:widget': 'radio' 
+    },
     InspectionOutcomes: {
       standingWaterPresent: {
-        standingWaterPresent: { 'ui:widget': 'radio' },
+        standingWaterPresent: {
+          'ui:inline': true,
+          'ui:widget': 'radio' 
+        },
       },
-      adultDreissenidMusselsFound: { 'ui:widget': 'radio' },
-      decontaminationPerformed: { 'ui:widget': 'radio' },
-      decontaminationOrderIssued: { 'ui:widget': 'radio' },
-      decontaminationAppendixB: { 'ui:widget': 'radio' },
-      sealIssued: { 'ui:widget': 'radio' },
+      adultDreissenidMusselsFound: {
+        adultDreissenidMusselsFound: {
+          'ui:inline': true,
+          'ui:widget': 'radio' 
+        },
+      },
+      decontaminationPerformed: {
+        decontaminationPerformed: {
+          'ui:inline': true,
+          'ui:widget': 'radio' 
+        },
+      },
+      decontaminationOrderIssued: {
+        decontaminationOrderIssued: {
+          'ui:inline': true,
+          'ui:widget': 'radio' 
+        },
+      },
+      decontaminationAppendixB: {
+        'ui:inline': true,
+        'ui:widget': 'radio' 
+      },
+      sealIssued: {
+        sealIssued: {
+          'ui:inline': true,
+          'ui:widget': 'radio' 
+        },
+      }
     }
   }
 };

@@ -12,6 +12,7 @@ export const NullSwitch = {
 	]
 };
 
+/*** Watercraft Details ***/
 export const WatercraftDetails_BasicInformation = {
 	title: 'invisible',
 	type: 'object',
@@ -114,8 +115,9 @@ export const WatercraftDetails_PreviousInspection = {
 		}
 	]
 };
+/*** End of Watercraft Details ***/
 
-/* Journey Details Sub Form */
+/*** Journey Details Sub Form ***/
 /* Previous */
 export const PreviousMajorCity = {
 	type: 'object',
@@ -142,14 +144,35 @@ export const PreviousWaterBody = {
 			enum: [
 				'Snake River',
 				'Columbia River',
-				'Kootenay River'
-			]
+				'Kootenay River',
+				'Other'
+			],
+			default: ''
 		},
 		numberOfDaysOut: {
 			title: 'Number of days out of waterbody',
 			type: 'integer'
 		}
-	}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					waterbody: {
+						const: 'Other'
+					}
+				}
+			},
+			then: {
+				properties: {
+					previousMajorCity: {
+						title: 'invisible',
+						...PreviousMajorCity
+					}
+				}
+			}
+		}
+	]
 }
 
 export const PreviousWaterBodyArray = {
@@ -162,47 +185,39 @@ export const PreviousWaterBodyArray = {
 export const PreviousToggles = {
 	type: 'object',
 	properties: {
-		previousUnknownCommercialStorage: {
-			title: 'Unknown Previous Waterbody, Commercially Stored, or Dry Storage',
-			type: 'boolean',
+		previousUnknownCommercialStorageDropdown: {
+			title: 'Previous Unknown Commercial Storage Dropdown',
+			type: 'string',
 			enum: [
-				true,
-				false
-			],
-			default: false
+				'Known Waterbody',
+				'Unknown Previous Waterbody',
+				'Commercial Manufacturer as Previous Water Body',
+				'Previous Dry Storage'
+			]
 		}
 	},
 	allOf: [
 		{
 			if: {
 				properties: {
-					previousUnknownCommercialStorage: {
-						const: true
+					previousUnknownCommercialStorageDropdown: {
+						const: 'Known Waterbody'
 					}
 				}
 			},
 			then: {
 				properties: {
-					previousUnknownCommercialStorageDropdown: {
-						title: 'Previous Unknown Commercial Storage Dropdown',
-						type: 'string',
-						enum: [
-							'Unknown Previous Waterbody',
-							'Commercial Manufacturer as Previous Water Body',
-							'Previous Dry Storage'
-						]
-					},
-					previousMajorCity: {
-						title: 'invisible',
-						...PreviousMajorCity
+					previousWaterBody: {
+						title: 'Add a Previous Waterbody',
+						...PreviousWaterBodyArray,
 					}
 				}
 			},
 			else: {
 				properties: {
-					previousWaterBody: {
-						title: 'Add a Previous Waterbody',
-						...PreviousWaterBodyArray,
+					previousMajorCity: {
+						title: 'invisible',
+						...PreviousMajorCity
 					}
 				}
 			}
@@ -236,56 +251,69 @@ export const DestinationWaterBody = {
 			enum: [
 				'Snake River',
 				'Columbia River',
-				'Kootenay River'
-			]
-		}
-	}
-}
-
-export const DestinationToggles = {
-	type: 'object',
-	properties: {
-		destinationUnknownCommercialStorage: {
-			title: 'Unknown Destination Waterbody, Commercially Stored, or Dry Storage',
-			type: 'boolean',
-			enum: [
-				true,
-				false
+				'Kootenay River',
+				'Other'
 			],
-			default: false
+			default: ''
 		}
 	},
 	allOf: [
 		{
 			if: {
 				properties: {
-					destinationUnknownCommercialStorage: {
-						const: true
+					waterbody: {
+						const: 'Other'
 					}
 				}
 			},
 			then: {
 				properties: {
-					destinationUnknownCommercialStorageDropdown: {
-						title: 'Destination Unknown Commercial Storage Dropdown',
-						type: 'string',
-						enum: [
-							'Unknown Destination Waterbody',
-							'Commercial Manufacturer as Destination Water Body',
-							'Destination Dry Storage'
-						]
-					},
 					destinationMajorCity: {
 						title: 'invisible',
 						...DestinationMajorCity
 					}
 				}
+			}
+		}
+	]
+}
+
+export const DestinationToggles = {
+	type: 'object',
+	properties: {
+		destinationUnknownCommercialStorageDropdown: {
+			title: 'Destination Unknown Commercial Storage Dropdown',
+			type: 'string',
+			enum: [
+				'Known Waterbody',
+				'Unknown Destination Waterbody',
+				'Commercial Manufacturer as Destination Water Body',
+				'Destination Dry Storage'
+			]
+		}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					destinationUnknownCommercialStorageDropdown: {
+						const: 'Known Waterbody'
+					}
+				}
 			},
-			else: {
+			then: {
 				properties: {
 					destinationWaterBody: {
 						title: 'Add a Destination Waterbody',
 						...DestinationWaterBody
+					}
+				}
+			},
+			else: {
+				properties: {
+					destinationMajorCity: {
+						title: 'invisible',
+						...DestinationMajorCity
 					}
 				}
 			}
@@ -293,9 +321,9 @@ export const DestinationToggles = {
 	]
 }
 /* End of Destination */
-/* End of Journey Details */
+/*** End of Journey Details ***/
 
-/* Inspection Details */
+/*** Inspection Details /***/
 export const k9Inspection = {
 	title: 'invisible',
 	type: 'object',
@@ -333,16 +361,76 @@ export const k9Inspection = {
 		}
 	]
 };
-/* End of Inspection Details */
+/*** End of Inspection Details ***/
 
-/* High Risk Assessment / Inspection Outcomes */
+/*** High Risk Assessment / Inspection Outcomes ***/
 
+/* Adult Dreissenid Mussels Found */
+export const AdultDreissenidMusselsFoundLocation = {
+	title: 'invisible',
+	type: 'object',
+	properties: {
+		adultDreissenidMusselsFoundLocation: {
+			title: 'Add a location',
+			type: 'string',
+			enum: [
+				'Engine',
+				'Hull',
+				'Gimbal'
+			]
+		}
+	}
+}
+
+export const AdultDreissenidMusselsFoundLocationArray = {
+	type: 'array',
+	items: {
+		...AdultDreissenidMusselsFoundLocation
+	}
+}
+
+export const AdultDreissenidMusselsFound = {
+	type: 'object',
+	title: 'invisible',
+	properties: {
+		adultDreissenidMusselsFound: {
+			title: 'Adult Dreissenid Mussels Found',
+			...NullSwitch
+		}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					adultDreissenidMusselsFound: {
+						const: false
+					}
+				}
+			},
+			then: {
+				properties: {}
+			},
+			else: {
+				properties: {
+					adultDreissenidMusselsFoundLocation: {
+						title: 'Add a Location where Mussels were found',
+						...AdultDreissenidMusselsFoundLocationArray,
+					}
+				}
+			},
+			required: ['adultDreissenidMusselsFoundLocation']
+		}
+	]
+};
+/* End of Adult Dreissenid Mussels Found */
+
+/* Standing Water Location */
 export const StandingWaterLocation = {
 	title: 'invisible',
 	type: 'object',
 	properties: {
 		standingWaterLocation: {
-			title: 'Add a Standing Water Location',
+			title: 'Add a Location',
 			type: 'string',
 			enum: [
 				'Engine',
@@ -362,9 +450,10 @@ export const StandingWaterLocationArray = {
 
 export const StandingWaterPresent = {
 	type: 'object',
-	title: "Standing Water Present",
+	title: 'invisible',
 	properties: {
 		standingWaterPresent: {
+			title: 'Standing Water Present',
 			...NullSwitch
 		}
 	},
@@ -392,31 +481,131 @@ export const StandingWaterPresent = {
 		}
 	]
 };
+/* End of Standing Water Location */
 
-export const AdultDreissenidMusselsFound = {
-	title: "Adult Dreissenid Mussels Found",
-	...NullSwitch
-};
-
+/* Decontamination Order Performed */
 export const DecontaminationPerformed = {
-	title: "Decontamination Performed",
-	...NullSwitch
+	type: 'object',
+	title: 'invisible',
+	properties: {
+		decontaminationPerformed: {
+			title: 'Decontamination Performed',
+			...NullSwitch
+		}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					decontaminationPerformed: {
+						const: false
+					}
+				}
+			},
+			then: {
+				properties: {}
+			},
+			else: {
+				properties: {
+					decontaminationReference: {
+						title: 'Record of Decontamination number',
+						type: 'string'
+					}
+				}
+			},
+			required: ['decontaminationPerformed']
+		}
+	]
 };
+/* End of Decontamination Order Performed */
 
+/* Decontamination Order Issued */
 export const DecontaminationOrderIssued = {
-	title: "Decontamination Order Issued",
-	...NullSwitch
+	type: 'object',
+	title: 'invisible',
+	properties: {
+		decontaminationOrderIssued: {
+			title: 'Decontamination Order Issued',
+			...NullSwitch
+		}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					decontaminationOrderIssued: {
+						const: false
+					}
+				}
+			},
+			then: {
+				properties: {}
+			},
+			else: {
+				properties: {
+					decontaminationOrderNumber: {
+						title: 'Decontamination order number',
+						type: 'string'
+					},
+					decontaminationOrderReason: {
+						title: 'Reason for issuing decontamination order',
+						type: 'string',
+						enum: [
+							'Inspection/decontamination could not be performed',
+							'No decontamination - non-compliant refusing decontamination',
+							'No decontamination - pressure washer not working',
+							'No decontamination - watercraft too complex',
+							'Partial decontamination only'
+						]
+					}
+				}
+			},
+			required: ['decontaminationOrderIssued']
+		}
+	]
 };
+/* End of Decontamination Order Issued */
 
 export const DecontaminationAppendixB = {
 	title: "Appendix B completed and served",
 	...NullSwitch
 };
 
+/* Seal Issued */
 export const SealIssued = {
-	title: "Seal Issued",
-	...NullSwitch
+	type: 'object',
+	title: 'invisible',
+	properties: {
+		sealIssued: {
+			title: 'Seal Issued',
+			...NullSwitch
+		}
+	},
+	allOf: [
+		{
+			if: {
+				properties: {
+					sealIssued: {
+						const: false
+					}
+				}
+			},
+			then: {
+				properties: {}
+			},
+			else: {
+				properties: {
+					sealNumber: {
+						title: 'Seal #',
+						type: 'string'
+					}
+				}
+			},
+			required: ['sealIssued']
+		}
+	]
 };
+/* End of Seal Issued */
 
 
 export const InspectionOutcomes = {
@@ -428,6 +617,16 @@ export const InspectionOutcomes = {
 		},
 		adultDreissenidMusselsFound: {
 			...AdultDreissenidMusselsFound
+		},
+		otherInspectionFindings: {
+			title: 'Other Inspection Findings',
+			type: 'string',
+			enum: [
+				'Aquatic plants found',
+				'Dirty hull or bilge',
+				'Live bait',
+				'Live fish',
+			]
 		},
 		decontaminationPerformed: {
 			...DecontaminationPerformed
@@ -443,52 +642,63 @@ export const InspectionOutcomes = {
 		}
 	}
 }
-
 /* End of High Risk Assessment /Inspection Outcomes */
 
 export const BasicInformation = {
 	title: 'Basic Information',
 	type: 'object',
 	properties: {
-		province: {
-			title: 'Province / State',
-			type: 'string',
-			enum: [
-				'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
-				'Nova Scotia', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan',
-				'Northwest Territories', 'Nunavut', 'Yukon', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-				'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-				'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-				'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-				'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
-				'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-				'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
-				'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-				'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-				'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-			],
-			default: 'BC'
+		provinceAndTime: {
+			title: 'invisible',
+			type: 'object',
+			properties: {
+				province: {
+					title: 'Province / State',
+					type: 'string',
+					enum: [
+						'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
+						'Nova Scotia', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan',
+						'Northwest Territories', 'Nunavut', 'Yukon', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+						'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+						'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+						'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+						'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
+						'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+						'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+						'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
+						'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+						'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+					],
+					default: 'BC'
+				},
+				inspection_time: {
+					title: 'Inspection Time',
+					type: 'string',
+					format: 'date-time',
+				}
+			}
 		},
-		inspection_time: {
-			title: 'Inspection Time',
-			type: 'string',
-			format: 'date-time',
-		},
-		non_motorized: {
-			type: 'integer',
-			title: 'Non Motorized'
-		},
-		motorized: {
-			type: 'integer',
-			title: 'Motorized'
-		},
-		simple: {
-			type: 'integer',
-			title: 'Simple'
-		},
-		complex: {
-			type: 'integer',
-			title: 'Complex'
+		vehicleTypeInspectedCount: {
+			title: 'invisible',
+			type: 'object',
+			properties: {
+				non_motorized: {
+					type: 'integer',
+					title: 'Non Motorized'
+				},
+				motorized: {
+					type: 'integer',
+					title: 'Motorized'
+				},
+				simple: {
+					type: 'integer',
+					title: 'Simple'
+				},
+				complex: {
+					type: 'integer',
+					title: 'Complex'
+				}
+			}
 		}
 	}
 };
@@ -566,7 +776,7 @@ export const HighRiskAssessment = {
 	title: 'High Risk Assessment Fields',
 	type: 'object',
 	properties: {
-		highRisk: {
+		'High Risk Fields': {
 			type: 'string',
 			enum: [
 				'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found',
