@@ -1,14 +1,19 @@
 import { NullSwitch } from "./Mussels_Sub_Form"
-
+import { Observation_Mussels_Information } from "./Observation_Sub_Forms"
+/** @desc Reusable Time String input field */
 export const TimeCapture = {
   type: 'string',
   format: 'time'
 }
-
+/** @desc Reusable date-time input field */
 export const DateCapture = {
   type: 'string',
   format: 'date-time'
 }
+/**
+ * @desc Station Workers are assigned to at start of day
+ * TODO: Convert Populate fields from API
+ */
 export const Station = {
   type: 'string',
   enum: [
@@ -19,6 +24,7 @@ export const Station = {
     'Victoria',
   ]
 }
+
 export const Blowby = {
   type: 'object',
   title: 'invisible',
@@ -49,7 +55,7 @@ export const Blowby = {
   ]
 }
 
-export const ShiftStart = {
+export const ShiftStartSection = {
   type: 'object',
   properties: {
     shiftStartTime: {
@@ -71,7 +77,7 @@ export const ShiftStart = {
   ]
 }
 
-export const ShiftEnd = {
+export const ShiftEndSection = {
   type: 'object',
   properties: {
     k9OnShift: {
@@ -98,18 +104,20 @@ export const ShiftEnd = {
   ]
 }
 
+/**
+ * @desc Overview for an inspect officers work.
+ * Captures the high level information surrounding the shift, containing relevant collections of
+ * Blow-bys and Boat Inspections.
+ */
 export const ShiftOverview = {
   title: 'Shift Overview',
   type: 'object',
   properties: {
     inspections: {
       title: 'Inspections',
-      type: 'object',
-      properties: {
-        placeHolderText: {
-          type: 'null',
-          title: 'Officer Inspections'
-        }
+      type: 'array',
+      items: {
+        ...Observation_Mussels_Information,
       }
     },
     Blowbys: {
@@ -125,11 +133,11 @@ export const ShiftOverview = {
       properties: {
         shiftStart: {
           title: 'Shift Start',
-          ...ShiftStart
+          ...ShiftStartSection
         },
         shiftEnd: {
           title: 'Shift End',
-          ...ShiftEnd
+          ...ShiftEndSection
         }
       }
     }
