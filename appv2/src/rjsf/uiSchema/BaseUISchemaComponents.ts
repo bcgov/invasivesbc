@@ -969,40 +969,6 @@ const Observation_PlantAquatic_Information = {
   'ui:order': ['suitable_for_biocontrol_agent']
 };
 
-const Mussels_Officer_Shift = {
-  Blowbys: {
-    'ui:options': {
-      orderable: false
-    },
-    items: {
-      ...TwoColumnStyle,
-      reportedToRapp: {
-        'ui:inline': true,
-        'ui:widget': 'radio'
-      },
-    }
-  },
-  shiftInformation: {
-    shiftEnd: {
-      ...TwoColumnStyle,
-      k9OnShift: {
-        'ui:inline': true,
-        'ui:widget': 'radio'
-      },
-      boatsInspected: {
-        'ui:inline': true,
-        'ui:widget': 'radio'
-      },
-    },
-    shiftStart: {
-      ...TwoColumnStyle
-    }
-    
-  },
-  ShiftEnd: {
-
-  }
-}
 
 const Observation_Mussels_Information = {
   BasicInformation: {
@@ -1108,6 +1074,44 @@ const Observation_Mussels_Information = {
     }
   }
 };
+/**
+ * @desc UI styling for the Inspection Officers Shift Overview Form
+ */
+const Mussels_Officer_Shift = {
+  Blowbys: {
+    'ui:options': {
+      orderable: false
+    },
+    items: {
+      ...TwoColumnStyle,
+      reportedToRapp: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
+    }
+  },
+  inspections : {
+    items: {
+      ...Observation_Mussels_Information
+    }
+  },
+  shiftInformation: {
+    shiftEnd: {
+      ...TwoColumnStyle,
+      k9OnShift: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
+      boatsInspected: {
+        'ui:inline': true,
+        'ui:widget': 'radio'
+      },
+    },
+    shiftStart: {
+      ...TwoColumnStyle
+    }
+  },
+}
 
 const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,
