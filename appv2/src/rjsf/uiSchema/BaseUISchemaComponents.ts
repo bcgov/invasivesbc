@@ -18,12 +18,11 @@ const TwoColumnStyle = {
   'ui:column-md': 6,
   'ui:column-lg': 6
 };
-/*const TwoColumnStyle = {
+const ThreeColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 6,
-  'ui:column-lg': 6
+  'ui:column-lg': 4
 };
-*/
 const OneColumnStyle = {
   'ui:column-xs': 12,
   'ui:column-md': 12,
@@ -971,6 +970,41 @@ const Observation_PlantAquatic_Information = {
 
 
 const Observation_Mussels_Information = {
+  isPassportHolder: {
+    'ui:inline': true, 
+    'ui:widget': 'radio'
+  },
+  isNewPassportIssued: {
+    'ui:inline': true, 
+    'ui:widget': 'radio'
+  },
+  Passport: {
+    ...ThreeColumnStyle,
+    launchedOutsideBC: {
+      'ui:inline': true, 
+      'ui:widget': 'radio'
+    },
+    k9Inspection: {
+      k9Inspection: {
+        'ui:inline': true, 
+        'ui:widget': 'radio'
+      }
+    },
+    marineSpeciesFound: {
+      'ui:inline': true, 
+      'ui:widget': 'radio'
+    },
+    aquaticPlantsFound: {
+      'ui:inline': true, 
+      'ui:widget': 'radio'
+    },
+    decontaminationPerformed: {
+      decontaminationPerformed: {
+        'ui:inline': true, 
+        'ui:widget': 'radio'
+      }
+    }
+  },
   BasicInformation: {
     provinceAndTime: {
       ...TwoColumnStyle,

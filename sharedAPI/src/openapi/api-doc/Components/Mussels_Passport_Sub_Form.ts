@@ -1,3 +1,5 @@
+import { BasicInformation } from "./Mussels_Sub_Form";
+
 export const NullSwitch = {
 	type: 'boolean',
 	oneOf: [
@@ -628,9 +630,6 @@ export const InspectionOutcomes = {
 				'Live fish',
 			]
 		},
-		decontaminationPerformed: {
-			...DecontaminationPerformed
-		},
 		decontaminationOrderIssued: {
 			...DecontaminationOrderIssued
 		},
@@ -644,40 +643,12 @@ export const InspectionOutcomes = {
 }
 /* End of High Risk Assessment /Inspection Outcomes */
 
-export const BasicInformation = {
+/*** End of Passport Information ***/
+
+export const Passport_BasicInformation = {
 	title: 'Basic Information',
 	type: 'object',
 	properties: {
-		provinceAndTime: {
-			title: 'invisible',
-			type: 'object',
-			properties: {
-				province: {
-					title: 'Province / State',
-					type: 'string',
-					enum: [
-						'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
-						'Nova Scotia', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan',
-						'Northwest Territories', 'Nunavut', 'Yukon', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-						'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-						'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-						'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-						'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
-						'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-						'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
-						'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-						'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-						'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-					],
-					default: 'BC'
-				},
-				inspection_time: {
-					title: 'Inspection Time',
-					type: 'string',
-					format: 'date-time',
-				}
-			}
-		},
 		vehicleTypeInspectedCount: {
 			title: 'invisible',
 			type: 'object',
@@ -703,7 +674,7 @@ export const BasicInformation = {
 	}
 };
 
-export const WatercraftDetails = {
+export const Passport_WatercraftDetails = {
 	title: 'Watercraft Details',
 	type: 'object',
 	properties: {
@@ -719,7 +690,7 @@ export const WatercraftDetails = {
 	}
 };
 
-export const JourneyDetails = {
+export const Passport_JourneyDetails = {
 	title: 'Journey Details',
 	type: 'object',
 	properties: {
@@ -746,14 +717,10 @@ export const JourneyDetails = {
 	}
 };
 
-export const InspectionDetails = {
+export const Passport_InspectionDetails = {
 	title: 'Inspection Details',
 	type: 'object',
 	properties: {
-		aquaticPlantsFound: {
-			title: 'Aquatic plants found',
-			...NullSwitch
-		},
 		marineMusselsFound: {
 			title: 'Marine Mussels Found',
 			...NullSwitch
@@ -765,14 +732,11 @@ export const InspectionDetails = {
 		dreissenidMusselsFoundPrevious: {
 			title: 'Dreissenid mussels found during inspection and FULL decontamination already completed/determined to be CDD',
 			...NullSwitch
-		},
-		k9Inspection: {
-			...k9Inspection
-		},
+		}
 	}
 };
 
-export const HighRiskAssessment = {
+export const Passport_HighRiskAssessment = {
 	title: 'High Risk Assessment Fields',
 	type: 'object',
 	properties: {
@@ -811,3 +775,52 @@ export const HighRiskAssessment = {
 	]
 };
 
+/*** Passport Information ***/
+export const Passport_SimpleBasicInformation = {
+	title: 'Basic Information',
+	type: 'object',
+	properties: {
+		province: {
+			title: 'Province / State',
+			type: 'string',
+			enum: [
+				'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
+				'Nova Scotia', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan',
+				'Northwest Territories', 'Nunavut', 'Yukon', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
+				'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
+				'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
+				'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
+				'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
+				'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
+				'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
+				'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
+				'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
+				'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
+			],
+			default: 'BC'
+		},
+		inspection_time: {
+			title: 'Inspection Time',
+			type: 'string',
+			format: 'date-time',
+		},
+		launchedOutsideBC: {
+			title: 'Launched Outside BC/AB in the last 30 days',
+			...NullSwitch
+		},
+		k9Inspection: {
+			...k9Inspection
+		},
+		marineSpeciesFound: {
+			title: 'Marine Species Found',
+			...NullSwitch
+		},
+		aquaticPlantsFound: {
+			title: 'Aquatic plants found',
+			...NullSwitch
+		},
+		decontaminationPerformed: {
+			...DecontaminationPerformed
+		},
+	}
+};
