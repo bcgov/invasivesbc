@@ -6,6 +6,15 @@ import {
   WatercraftDetails,
 } from '../Components/Mussels_Sub_Form';
 
+import {
+  Passport_SimpleBasicInformation,
+  Passport_HighRiskAssessment,
+  Passport_InspectionDetails,
+  Passport_JourneyDetails,
+  Passport_BasicInformation,
+  Passport_WatercraftDetails,
+} from '../Components/Mussels_Passport_Sub_Form';
+
 export const Observation_PlantTerrestrial_Information = {
   type: 'object',
   title: 'Observation Plant Terrestrial Information',
@@ -104,10 +113,80 @@ export const Observation_Mussels_Information = {
   type: 'object',
   title: 'invisible',
   properties: {
-    BasicInformation: BasicInformation,
-    WatercraftDetails: WatercraftDetails,
-    JourneyDetails: JourneyDetails,
-    InspectionDetails: InspectionDetails,
-    HighRiskAssessment: HighRiskAssessment
-  }
+    isPassportHolder: {
+      title: 'Is this a Passport Holder?',
+      type: 'boolean',
+      oneOf: [
+        {
+          title: 'Yes',
+          const: true
+        },
+        {
+          title: 'No',
+          const: false
+        }
+      ],
+      default: false
+    }
+  },
+  allOf: [
+    {
+      if: {
+        properties: {
+          isPassportHolder: {
+            const: true
+          }
+        }
+      },
+      then: {
+        properties: {
+          isNewPassportIssued: {
+            title: 'Was a new passport issued?',
+            type: 'boolean',
+            oneOf: [
+              {
+                title: 'Yes',
+                const: true
+              },
+              {
+                title: 'No',
+                const: false
+              }
+            ],
+            default: false
+          },
+          Passport: Passport_SimpleBasicInformation
+        },
+        allOf: [
+          {
+            if: {
+              properties: {
+                isNewPassportIssued: {
+                  const: true
+                }
+              }
+            },
+            then: {
+              properties: {
+                BasicInformation: Passport_BasicInformation,
+                WatercraftDetails: Passport_WatercraftDetails,
+                JourneyDetails: Passport_JourneyDetails,
+                InspectionDetails: Passport_InspectionDetails,
+                HighRiskAssessment: Passport_HighRiskAssessment
+              }
+            }
+          }
+        ]
+      },
+      else: {
+        properties: {
+          BasicInformation: BasicInformation,
+          WatercraftDetails: WatercraftDetails,
+          JourneyDetails: JourneyDetails,
+          InspectionDetails: InspectionDetails,
+          HighRiskAssessment: HighRiskAssessment
+        }
+      }
+    }
+  ]
 };
