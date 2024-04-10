@@ -1,3 +1,5 @@
+import { NullSwitch } from "./Mussels_Sub_Form"
+
 export const TimeCapture = {
   type: 'string',
   format: 'time'
@@ -36,9 +38,8 @@ export const Blowby = {
       ...TimeCapture
     },
     reportedToRapp: {
-      title: 'Reported to RAPP',
-      type: 'boolean',
-      default: false
+      title: '📝 Reported to RAPP',
+      ...NullSwitch
     },
   },
   required: [
@@ -75,13 +76,11 @@ export const ShiftEnd = {
   properties: {
     k9OnShift: {
       title: '🐕 K9 on Shift',
-      type: 'boolean',
-      default: false
+      ...NullSwitch
     },
     boatsInspected: {
       title: '⛵️ Boats Inspected',
-      type: 'boolean',
-      default: false
+      ...NullSwitch
     },
     shiftEndTime: {
       title: 'Shift end time',
@@ -93,7 +92,9 @@ export const ShiftEnd = {
     }
   },
   required: [
-    'shiftEndTime'
+    'shiftEndTime',
+    'boatsInspected',
+    'k9OnShift'
   ]
 }
 
