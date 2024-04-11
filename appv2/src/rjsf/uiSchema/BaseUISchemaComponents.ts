@@ -985,10 +985,8 @@ const Observation_Mussels_Information = {
       'ui:widget': 'radio'
     },
     k9Inspection: {
-      k9Inspection: {
-        'ui:inline': true, 
-        'ui:widget': 'radio'
-      }
+      'ui:inline': true, 
+      'ui:widget': 'radio'
     },
     marineSpeciesFound: {
       'ui:inline': true, 
@@ -999,10 +997,8 @@ const Observation_Mussels_Information = {
       'ui:widget': 'radio'
     },
     decontaminationPerformed: {
-      decontaminationPerformed: {
-        'ui:inline': true, 
-        'ui:widget': 'radio'
-      }
+      'ui:inline': true, 
+      'ui:widget': 'radio'
     }
   },
   BasicInformation: {
@@ -1071,25 +1067,25 @@ const Observation_Mussels_Information = {
       'ui:widget': 'radio' 
     },
     InspectionOutcomes: {
-      standingWaterPresent: {
+      standingWaterPresentLogic: {
         standingWaterPresent: {
           'ui:inline': true,
           'ui:widget': 'radio' 
         },
       },
-      adultDreissenidMusselsFound: {
+      adultDreissenidMusselsFoundLogic: {
         adultDreissenidMusselsFound: {
           'ui:inline': true,
           'ui:widget': 'radio' 
         },
       },
-      decontaminationPerformed: {
+      decontaminationPerformedLogic: {
         decontaminationPerformed: {
           'ui:inline': true,
           'ui:widget': 'radio' 
         },
       },
-      decontaminationOrderIssued: {
+      decontaminationOrderIssuedLogic: {
         decontaminationOrderIssued: {
           'ui:inline': true,
           'ui:widget': 'radio' 
@@ -1099,11 +1095,15 @@ const Observation_Mussels_Information = {
         'ui:inline': true,
         'ui:widget': 'radio' 
       },
-      sealIssued: {
+      sealIssuedLogic: {
         sealIssued: {
           'ui:inline': true,
           'ui:widget': 'radio' 
         },
+      },
+      quarantinePeriodIssued: {
+        'ui:inline': true,
+        'ui:widget': 'radio' 
       }
     }
   }
