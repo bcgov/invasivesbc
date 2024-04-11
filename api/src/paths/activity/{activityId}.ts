@@ -10,6 +10,7 @@ import { getActivitySQL } from './../../queries/activity-queries';
 import { getFileFromS3 } from './../../utils/file-utils';
 import { getLogger } from './../../utils/logger';
 import { getMediaItemsList } from './../media';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('activity');
 
@@ -65,7 +66,10 @@ GET.apiDoc = {
  * @return {RequestHandler}
  */
 function getActivity(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req: InvasivesRequest, res, next) => {
+    if(req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user'})
+    }
     defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
 
     const activityId = req.params.activityId;

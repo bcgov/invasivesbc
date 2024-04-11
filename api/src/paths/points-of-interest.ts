@@ -11,6 +11,7 @@ import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-in
 import { getLogger } from '../utils/logger';
 import { versionedKey } from '../utils/cache/cache-utils';
 import { createHash } from 'crypto';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -80,7 +81,10 @@ export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
  * @return {RequestHandler}
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
+    if(req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user'})
+    }
     const criteria = JSON.parse(<string>req.query['query']);
 
     defaultLog.debug({

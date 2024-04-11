@@ -711,7 +711,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     components={{
                       NoRowsOverlay: CustomNoRowsOverlay
                     }}
-                    onSelectionModelChange={handleAccessRequestRowSelection}
+                    onRowSelectionModelChange={handleAccessRequestRowSelection}
                     rows={requestRows}
                     columns={requestColumns}
                     pageSize={5}

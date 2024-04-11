@@ -28,6 +28,9 @@ GET.apiDoc = {
 
 function tile(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
+    if(req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user'})
+    }
     const rawBodyCriteria = JSON.parse(decodeURI(req.query.filterObject as string))
     const { source } = req.params;
     let filterObj = null 

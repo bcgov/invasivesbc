@@ -264,6 +264,9 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
 function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
   const reqID = getuid();
   return async (req: InvasivesRequest, res) => {
+    if(req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user'})
+    }
     const rawBodyCriteria = req.body['filterObjects'];
     const filterObject = sanitizeIAPPFilterObject(rawBodyCriteria?.[0], req);
     defaultLog.debug({ label: 'v2/IAPP', message: 'getIAPPBySearchFilterCriteria v2', body: '' });

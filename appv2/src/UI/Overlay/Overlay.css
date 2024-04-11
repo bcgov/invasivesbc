@@ -44,7 +44,7 @@
     transform: translateY(0vh);
     display: flex;
     overflow-y: visible;;
-    z-index: 9999999999;
+    /*z-index: 9999999999;*/
 
 }
 
