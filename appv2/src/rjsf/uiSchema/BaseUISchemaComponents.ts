@@ -985,8 +985,10 @@ const Observation_Mussels_Information = {
       'ui:widget': 'radio'
     },
     k9Inspection: {
-      'ui:inline': true, 
-      'ui:widget': 'radio'
+      k9Inspection: {
+        'ui:inline': true, 
+        'ui:widget': 'radio'
+      }
     },
     marineSpeciesFound: {
       'ui:inline': true, 
@@ -997,8 +999,10 @@ const Observation_Mussels_Information = {
       'ui:widget': 'radio'
     },
     decontaminationPerformed: {
-      'ui:inline': true, 
-      'ui:widget': 'radio'
+      decontaminationPerformed: {
+        'ui:inline': true, 
+        'ui:widget': 'radio'
+      }
     }
   },
   BasicInformation: {

@@ -100,7 +100,7 @@ export const PreviousAISKnowledgeSource = {
 };
 
 export const PreviousInspection = {
-	title: 'Previous Inspection',
+	title: 'Previous inspection and/or agency notification',
 	...NullSwitch
 };
 
@@ -296,30 +296,30 @@ export const AdultDreissenidMusselsLocationArray = {
 export const AdultDreissenidMusselsFoundLogic = {
 	type: 'object',
 	title: 'invisible',
-	required: ['adultDreissenidMusselsFound'],
 	properties: {
 		adultDreissenidMusselsFound: AdultDreissenidMusselsFound
 	},
-	allOf: [
-		{
-			if: {
-				properties: {
-					adultDreissenidMusselsFound: {
-						const: false
+	dependencies: {
+		adultDreissenidMusselsFound: {
+			oneOf: [
+				{
+					properties: {
+						adultDreissenidMusselsFound: {
+							const: false
+						}
+					}
+				},
+				{
+					properties: {
+						adultDreissenidMusselsFound: {
+							const: true
+						},
+						adultDreissenidMusselsLocation: AdultDreissenidMusselsLocationArray
 					}
 				}
-			},
-			then: {
-				properties: {}
-			},
-			else: {
-				properties: {
-					AdultDreissenidMusselsLocation: AdultDreissenidMusselsLocationArray
-				}
-			},
-			required: ['AdultDreissenidMusselsLocation']
+			]
 		}
-	]
+	}
 }
 
 export const StandingWaterPresent = {
@@ -354,30 +354,30 @@ export const StandingWaterLocationArray = {
 export const StandingWaterLogic = {
 	type: 'object',
 	title: 'invisible',
-	required: ['standingWaterPresent'],
 	properties: {
 		standingWaterPresent: StandingWaterPresent
 	},
-	allOf: [
-		{
-			if: {
-				properties: {
-					standingWaterPresent: {
-						const: false
+	dependencies: {
+		standingWaterPresent: {
+			oneOf: [
+				{
+					properties: {
+						standingWaterPresent: {
+							const: false
+						}
+					}
+				},
+				{
+					properties: {
+						standingWaterPresent: {
+							const: true
+						},
+						standingWaterLocation: StandingWaterLocationArray
 					}
 				}
-			},
-			then: {
-				properties: {}
-			},
-			else: {
-				properties: {
-					standingWaterLocation: StandingWaterLocationArray,
-				}
-			},
-			required: ['standingWaterLocation']
+			]
 		}
-	]
+	}
 }
 
 export const OtherInspectionFindings = {
@@ -408,26 +408,27 @@ export const DecontaminationPerformedLogic = {
 	properties: {
 		decontaminationPerformed: DecontaminationPerformed,
 	},
-	allOf: [
-		{
-			if: {
-				properties: {
-					decontaminationPerformed: {
-						const: false
+	dependencies: {
+		decontaminationPerformed: {
+			oneOf: [
+				{
+					properties: {
+						decontaminationPerformed: {
+							const: false
+						}
+					}
+				},
+				{
+					properties: {
+						decontaminationPerformed: {
+							const: true
+						},
+						decontaminationReference: DecontaminationReference
 					}
 				}
-			},
-			then: {
-				properties: {}
-			},
-			else: {
-				properties: {
-					decontaminationReference: DecontaminationReference
-				}
-			},
-			required: ['decontaminationReference']
+			]
 		}
-	]
+	}
 };
 
 export const DecontaminationOrderIssued = {
@@ -459,27 +460,28 @@ export const DecontaminationOrderIssuedLogic = {
 	properties: {
 		decontaminationOrderIssued: DecontaminationOrderIssued
 	},
-	allOf: [
-		{
-			if: {
-				properties: {
-					decontaminationOrderIssued: {
-						const: false
+	dependencies: {
+		decontaminationOrderIssued: {
+			oneOf: [
+				{
+					properties: {
+						decontaminationOrderIssued: {
+							const: false
+						}
+					}
+				},
+				{
+					properties: {
+						decontaminationOrderIssued: {
+							const: true
+						},
+						decontaminationOrderNumber: DecontaminationOrderNumber,
+						decontaminationOrderReason: DecontaminationOrderReason
 					}
 				}
-			},
-			then: {
-				properties: {}
-			},
-			else: {
-				properties: {
-					decontaminationOrderNumber: DecontaminationOrderNumber,
-					decontaminationOrderReason: DecontaminationOrderReason,
-				}
-			},
-			required: ['decontaminationOrderNumber', 'decontaminationOrderReason']
+			]
 		}
-	]
+	}
 };
 
 export const DecontaminationAppendixB = {
@@ -504,26 +506,27 @@ export const SealIssuedLogic = {
 	properties: {
 		sealIssued: SealIssued
 	},
-	allOf: [
-		{
-			if: {
-				properties: {
-					sealIssued: {
-						const: false
+	dependencies: {
+		sealIssued: {
+			oneOf: [
+				{
+					properties: {
+						sealIssued: {
+							const: false
+						}
+					}
+				},
+				{
+					properties: {
+						sealIssued: {
+							const: true
+						},
+						sealNumber: SealNumber
 					}
 				}
-			},
-			then: {
-				properties: {}
-			},
-			else: {
-				properties: {
-					sealNumber: SealNumber
-				}
-			},
-			required: ['sealNumber']
+			]
 		}
-	]
+	}
 };
 
 export const QuarantinePeriodIssued = {
@@ -551,26 +554,27 @@ export const WatercraftDetails_PreviousAISKnowledge = {
 	properties: {
 		previousAISKnowledge: PreviousAISKnowledge
 	},
-	allOf: [
-		{
-			if: {
-				properties: {
-					previousAISKnowledge: {
-						const: false
+	dependencies: {
+		previousAISKnowledge: {
+			oneOf: [
+				{
+					properties: {
+						previousAISKnowledge: {
+							const: false
+						}
+					}
+				},
+				{
+					properties: {
+						previousAISKnowledge: {
+							const: true
+						},
+						previousAISKnowledgeSource: PreviousAISKnowledgeSource
 					}
 				}
-			},
-			then: {
-				properties: {}
-			},
-			else: {
-				properties: {
-					previousAISKnowledgeSource: PreviousAISKnowledgeSource
-				}
-			},
-			required: ['previousAISKnowledgeSource']
+			]
 		}
-	]
+	}
 };
 
 export const WatercraftDetails_PreviousInspection = {
@@ -580,27 +584,28 @@ export const WatercraftDetails_PreviousInspection = {
 	properties: {
 		previousInspection: PreviousInspection
 	},
-	allOf: [
-		{
-			if: {
-				properties: {
-					previousInspection: {
-						const: false
+	dependencies: {
+		previousInspection: {
+			oneOf: [
+				{
+					properties: {
+						previousInspection: {
+							const: false
+						}
+					}
+				},
+				{
+					properties: {
+						previousInspection: {
+							const: true
+						},
+						previousInspectionSource: PreviousInspectionSource,
+						previousInspectionDays: PreviousInspectionDays
 					}
 				}
-			},
-			then: {
-				properties: {}
-			},
-			else: {
-				properties: {
-					previousInspectionSource: PreviousInspectionSource,
-					previousInspectionDays: PreviousInspectionDays
-				}
-			},
-			required: ['previousInspectionSource', 'previousInspectionDays']
+			]
 		}
-	]
+	}
 }
 /*** End of Watercraft Details ***/
 
@@ -786,7 +791,10 @@ export const DestinationToggles = {
 						destinationUnknownCommercialStorageDropdown: {
 							enum: ['Unknown Destination Waterbody']
 						},
-						destinationMajorCity: DestinationMajorCity
+						destinationMajorCity: {
+							title: 'Add Major City',
+							...DestinationMajorCity
+						}
 					}
 				},
 				{
@@ -820,26 +828,28 @@ export const K9InspectionLogic = {
 	properties: {
 		k9Inspection: K9Inspection
 	},
-	allOf: [
-		{
-			if: {
-				properties: {
-					k9Inspection: {
-						const: false
+	dependencies: {
+		k9Inspection: {
+			oneOf: [
+				{
+					properties: {
+						K9Inspection: {
+							const: false
+						}
 					}
+				},
+				{
+					properties: {
+						K9Inspection: {
+							const: true
+						},
+						k9InspectionResults: K9InspectionResults
+					},
+					required: ['k9InspectionResults']
 				}
-			},
-			then: {
-				properties: {}
-			},
-			else: {
-				properties: {
-					k9InspectionResults: K9InspectionResults
-				}
-			},
-			required: ['k9InspectionResults'],
+			]
 		}
-	]
+	}
 };
 /*** End of Inspection Details ***/
 
@@ -851,7 +861,6 @@ export const BasicInformation = {
 		provinceAndTime: {
 			title: 'invisible',
 			type: 'object',
-			required: ['province', 'inspection_time'],
 			properties: {
 				province: Province,
 				inspection_time: InspectionTime
@@ -866,7 +875,7 @@ export const BasicInformation = {
 				simple: VehicleSimple,
 				complex: VehicleComplex
 			}
-		}
+		},
 	}
 };
 
@@ -910,7 +919,7 @@ export const JourneyDetails = {
 export const InspectionDetails = {
 	title: 'Inspection Details',
 	type: 'object',
-	required: ['dreissenidMusselsFoundPrevious', 'k9Inspection'],
+	required: ['dreissenidMusselsFoundPrevious'],
 	properties: {
 		aquaticPlantsFound: AquaticPlantsFound,
 		marineMusselsFound: MarineMusselsFound,
@@ -923,7 +932,7 @@ export const InspectionDetails = {
 export const InspectionOutcomes = {
 	title: 'invisible',
 	type: 'object',
-	required: ['decontaminationPerformed', 'decontaminationOrderIssued', 'decontaminationAppendixB', 'sealIssued'],
+	required: ['decontaminationAppendixB', 'quarantinePeriodIssued'],
 	properties: {
 		watercraftRegistration: WatercraftRegistration,
 		standingWaterPresentLogic: StandingWaterLogic,
@@ -997,7 +1006,6 @@ export const Passport_BasicInformation = {
 		provinceAndTime: {
 			title: 'invisible',
 			type: 'object',
-			required: ['province'],
 			properties: {
 				province: Province,
 			}
@@ -1015,47 +1023,10 @@ export const Passport_BasicInformation = {
 	}
 };
 
-export const Passport_WatercraftDetails = {
-	title: 'Watercraft Details',
-	type: 'object',
-	properties: {
-		WatercraftDetails_BasicInformation: WatercraftDetails_BasicInformation,
-		WatercraftDetails_PreviousAISKnowledge: WatercraftDetails_PreviousAISKnowledge,
-		WatercraftDetails_PreviousInspection: WatercraftDetails_PreviousInspection
-	}
-};
-
-export const Passport_JourneyDetails = {
-	title: 'Journey Details',
-	type: 'object',
-	properties: {
-		previousJourneyDetails: {
-			title: 'Previous Waterbody',
-			type: 'object',
-			properties: {
-				previousToggles: {
-					title: 'invisible',
-					...PreviousToggles
-				}
-			}
-		},
-		destinationJourneyDetails: {
-			title: 'Destination Waterbody',
-			type: 'object',
-			properties: {
-				destinationToggles: {
-					title: 'invisible',
-					...DestinationToggles
-				}
-			}
-		}
-	}
-};
-
 export const Passport_InspectionDetails = {
 	title: 'Inspection Details',
 	type: 'object',
-	required: ['marineMusselsFound', 'highRiskArea', 'dreissenidMusselsFoundPrevious'],
+	required: ['dreissenidMusselsFoundPrevious'],
 	properties: {
 		marineMusselsFound: MarineMusselsFound,
 		highRiskArea: HighRiskArea,
@@ -1067,7 +1038,7 @@ export const Passport_InspectionDetails = {
 export const Passport_InspectionOutcomes = {
 	title: 'invisible',
 	type: 'object',
-	required: ['decontaminationOrderIssued', 'decontaminationAppendixB', 'sealIssued'],
+	required: ['decontaminationAppendixB', 'quarantinePeriodIssued'],
 	properties: {
 		watercraftRegistration: WatercraftRegistration,
 		standingWaterPresentLogic: StandingWaterLogic,
