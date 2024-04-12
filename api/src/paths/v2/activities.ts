@@ -83,7 +83,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
     serverSideNamedFilters: {},
     selectColumns: [],
     clientReqTableFilters: [],
-    ids_to_filter: [],
+    ids_to_filter: []
   } as any;
 
   defaultLog.debug({
@@ -109,7 +109,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   }
 
   const ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES = [
-  /*  
+    /*  
     Expected behaviour for now is nobody sees anyone else's drafts, but if the requirement flip flops we can use this:
     'administrator_plants',
     'administrator_animals',
@@ -119,7 +119,9 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   // see if the user has ANY of those roles above (does not need to be the first/primary role)
   let intersectingRoles = [];
   if (req.authContext.roles) {
-    intersectingRoles = ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES.filter(v => (req as any).authContext.roles.find(z => z['role_name'] == v));
+    intersectingRoles = ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES.filter((v) =>
+      (req as any).authContext.roles.find((z) => z['role_name'] == v)
+    );
   }
 
   if (intersectingRoles.length > 0) {
@@ -141,26 +143,25 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
-  let id_list_valid = true
+  let id_list_valid = true;
   try {
-  for(let i = 0; i < filterObject?.ids_to_filter?.length - 1; i++){
-    if(typeof(filterObject?.ids_to_filter[i]) !== 'string' || filterObject.ids_to_filter[i].length !== 36){
-      id_list_valid = false;
-      break;
+    for (let i = 0; i < filterObject?.ids_to_filter?.length - 1; i++) {
+      if (typeof filterObject?.ids_to_filter[i] !== 'string' || filterObject.ids_to_filter[i].length !== 36) {
+        id_list_valid = false;
+        break;
+      }
     }
+  } catch (e) {
+    defaultLog.debug({ label: 'id_list_valid', message: 'error', body: e });
+    id_list_valid = false;
   }
-}
-catch(e) {
-  defaultLog.debug({ label: 'id_list_valid', message: 'error', body: e});
-  id_list_valid = false
-}
 
-  if(id_list_valid){
+  if (id_list_valid && filterObject?.ids_to_filter?.length > 0) {
     sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
-  }
-  else {
+  } else if (filterObject?.ids_to_filter?.length > 0 && !id_list_valid){
     throw new Error('Invalid id list');
   }
+
   let selectColumns = [];
 
   if (filterObject?.selectColumns?.length > 0) {
@@ -306,14 +307,9 @@ catch(e) {
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
   const reqID = getuid();
   return async (req: InvasivesRequest, res) => {
-
-
-    if(req.authContext.roles.length === 0) {
-      res.status(401).json({ message: 'No Role for user'})
+    if (req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user' });
     }
-
-
-
 
     const rawBodyCriteria = req.body['filterObjects'];
     const filterObject = sanitizeActivityFilterObject(rawBodyCriteria?.[0], req);
@@ -456,8 +452,8 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          clientFilterGeometries AS (
              SELECT
                  unnest(array[${filterObject.clientFilterGeometries
-      .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
-      .join(',')}]) AS geojson
+                   .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
+                   .join(',')}]) AS geojson
          ),
 
           clientFilterGeometriesIntersecting as (
@@ -520,7 +516,6 @@ activities as (
 
   sqlStatement.append(`
     )  `);
-
 
   defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
 
@@ -632,7 +627,9 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   let tableAlias = filterObject.isCSV ? 'b' : 'activities';
-  const where = filterObject.vt_request ? sqlStatement.append(`and 1=1 and ${tableAlias}.iscurrent = true  `) : sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `);
+  const where = filterObject.vt_request
+    ? sqlStatement.append(`and 1=1 and ${tableAlias}.iscurrent = true  `)
+    : sqlStatement.append(`where 1=1 and ${tableAlias}.iscurrent = true  `);
 
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
@@ -644,7 +641,11 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
 
   if (filterObject.restrictVisibleDraftActivities) {
     if (filterObject.preferredUsername) {
-      where.append(`and (${tableAlias}.form_status = 'Submitted' or (${tableAlias}.created_by=${escapeLiteral(filterObject.preferredUsername)} and ${tableAlias}.form_status <> 'Submitted')) `);
+      where.append(
+        `and (${tableAlias}.form_status = 'Submitted' or (${tableAlias}.created_by=${escapeLiteral(
+          filterObject.preferredUsername
+        )} and ${tableAlias}.form_status <> 'Submitted')) `
+      );
     } else {
       where.append(`and (${tableAlias}.form_status = 'Submitted') `);
     }
@@ -828,8 +829,10 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
     }
   });
 
-  if(filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0){
-    where.append(` and  ${tableAlias}.activity_id in (${filterObject.ids_to_filter.map(id => "'" + id + "'").join(',')}) `);
+  if (filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0) {
+    where.append(
+      ` and  ${tableAlias}.activity_id in (${filterObject.ids_to_filter.map((id) => "'" + id + "'").join(',')}) `
+    );
   }
 
   return where;

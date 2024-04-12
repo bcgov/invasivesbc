@@ -172,20 +172,46 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {
 
 export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(action) {
   const search_feature = action.payload.search_feature;
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, {
-    activity_subtype: action.payload.activity_subtype,
-    search_feature,
-    form_status: ['Submitted']
+  // convert to v2 endpoint call:
+
+  let filterObject: any = {
+    recordSetType: 'Activity',
+    tableFilters: [
+      { id: '2', field: 'form_status', operator: 'CONTAINS', filterType: 'tableFilter', filter: 'Submitted' },
+      {
+        id: '3',
+        field: 'activity_subtype',
+        operator: 'CONTAINS',
+        filterType: 'tableFilter',
+        filter: action.payload.activity_subtype[0]
+      }
+    ],
+    selectColumns: ['activity_id', 'short_id']
+  };
+
+  console
+  if (action.payload.search_feature?.features?.[0]) {
+    filterObject.tableFilters.push({
+      filterType: 'spatialFilterDrawn',
+      operator: 'CONTAINED IN',
+      filter: '0.113619259813296791712616073543',
+      geojson: search_feature?.features?.[0] 
+    });
+  }
+
+  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+    filterObjects: [filterObject]
   });
 
   let treatments = [];
   const result = networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result;
   if (result && result.length > 0) {
     treatments = result.map((treatment, i) => {
-      const shortActID = getShortActivityID(treatment);
+      console.dir(treatment);
+      //const shortActID = getShortActivityID(treatment);
       return {
-        label: shortActID,
-        title: shortActID,
+        label: treatment.short_id, //shortActID,
+        title: treatment.short_id, //shortActID,
         value: treatment.activity_id,
         'x-code_sort_order': i + 1
       };

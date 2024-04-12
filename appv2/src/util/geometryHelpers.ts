@@ -1,5 +1,6 @@
 import area from '@turf/area';
 import center from '@turf/center';
+import centroid from '@turf/centroid';
 import * as turf from '@turf/helpers';
 import { Feature } from 'geojson';
 
@@ -63,13 +64,13 @@ export function calculateLatLng(geom: Feature[]) {
   } else if (geo.type === 'LineString') {
     latitude = firstCoord[1];
     longitude = firstCoord[0];
-  } else if (!geom[0]?.properties?.isRectangle) {
+  } else if (geom[0]?.properties?.isRectangle) {
     latitude = firstCoord[0][1];
     longitude = firstCoord[0][0];
   } else {
-    const centerPoint = center(turf.polygon(geo['coordinates'])).geometry;
-    latitude = centerPoint.coordinates[1];
-    longitude = centerPoint.coordinates[0];
+    const centerPoint = centroid(geom[0] as any) //center(turf.polygon(geo['coordinates'])).geometry;
+    latitude = centerPoint.geometry.coordinates[1];
+    longitude = centerPoint.geometry.coordinates[0];
   }
 
   const latlng = {

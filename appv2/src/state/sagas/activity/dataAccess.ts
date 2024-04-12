@@ -179,7 +179,13 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     //validate its in bc and within max geometry:
 
     let isWithinBC = false;
-    if (action.payload.geometry) isWithinBC = booleanContains(bcArea.features[0] as any, action.payload.geometry[0]);
+    let geoToTest;
+    if (action.payload.geometry[0].geometry.type === 'MultiPolygon') {
+      geoToTest = centroid(action.payload.geometry[0].geometry);
+    } else {
+      geoToTest = action.payload.geometry[0];
+    }
+    if (action.payload.geometry) isWithinBC = booleanContains(bcArea.features[0] as any, geoToTest as any);
 
     if (!isWithinBC) {
       yield put({
@@ -363,7 +369,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       (oldLinkedId !== linked_id || oldCopyGeometry !== 'Yes')
     ) {
       const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
-      const linked_geo = networkReturn.data.geometry[0]
+      const linked_geo = networkReturn.data.geometry[0];
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [linked_geo] } });
       yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
     } else if (
