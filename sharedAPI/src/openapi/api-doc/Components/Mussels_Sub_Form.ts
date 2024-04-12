@@ -305,14 +305,14 @@ export const AdultDreissenidMusselsFoundLogic = {
 				{
 					properties: {
 						adultDreissenidMusselsFound: {
-							const: false
+							enum: [ false ]
 						}
 					}
 				},
 				{
 					properties: {
 						adultDreissenidMusselsFound: {
-							const: true
+							enum: [ true ]
 						},
 						adultDreissenidMusselsLocation: AdultDreissenidMusselsLocationArray
 					}
@@ -363,14 +363,14 @@ export const StandingWaterLogic = {
 				{
 					properties: {
 						standingWaterPresent: {
-							const: false
+							enum: [ false ]
 						}
 					}
 				},
 				{
 					properties: {
 						standingWaterPresent: {
-							const: true
+							enum: [ true ]
 						},
 						standingWaterLocation: StandingWaterLocationArray
 					}
@@ -414,17 +414,18 @@ export const DecontaminationPerformedLogic = {
 				{
 					properties: {
 						decontaminationPerformed: {
-							const: false
+							enum: [ false ]
 						}
 					}
 				},
 				{
 					properties: {
 						decontaminationPerformed: {
-							const: true
+							enum: [ true ]
 						},
 						decontaminationReference: DecontaminationReference
-					}
+					},
+					required: ['decontaminationReference']
 				}
 			]
 		}
@@ -466,18 +467,19 @@ export const DecontaminationOrderIssuedLogic = {
 				{
 					properties: {
 						decontaminationOrderIssued: {
-							const: false
+							enum: [ false ]
 						}
 					}
 				},
 				{
 					properties: {
 						decontaminationOrderIssued: {
-							const: true
+							enum: [ true ]
 						},
 						decontaminationOrderNumber: DecontaminationOrderNumber,
 						decontaminationOrderReason: DecontaminationOrderReason
-					}
+					},
+					required: ['decontaminationOrderNumber', 'decontaminationOrderReason']
 				}
 			]
 		}
@@ -512,17 +514,18 @@ export const SealIssuedLogic = {
 				{
 					properties: {
 						sealIssued: {
-							const: false
+							enum: [ false ]
 						}
 					}
 				},
 				{
 					properties: {
 						sealIssued: {
-							const: true
+							enum: [ true ]
 						},
 						sealNumber: SealNumber
-					}
+					},
+					required: ['sealNumber']
 				}
 			]
 		}
@@ -570,7 +573,8 @@ export const WatercraftDetails_PreviousAISKnowledge = {
 							const: true
 						},
 						previousAISKnowledgeSource: PreviousAISKnowledgeSource
-					}
+					},
+					required: ['previousAISKnowledgeSource']
 				}
 			]
 		}
@@ -601,7 +605,8 @@ export const WatercraftDetails_PreviousInspection = {
 						},
 						previousInspectionSource: PreviousInspectionSource,
 						previousInspectionDays: PreviousInspectionDays
-					}
+					},
+					required: ['previousInspectionSource', 'previousInspectionDays']
 				}
 			]
 		}
@@ -833,15 +838,15 @@ export const K9InspectionLogic = {
 			oneOf: [
 				{
 					properties: {
-						K9Inspection: {
-							const: false
+						k9Inspection: {
+							enum: [ false ]
 						}
 					}
 				},
 				{
 					properties: {
-						K9Inspection: {
-							const: true
+						k9Inspection: {
+							enum: [ true ]
 						},
 						k9InspectionResults: K9InspectionResults
 					},
@@ -975,9 +980,7 @@ export const HighRiskAssessment = {
 			},
 			else: {
 				properties: {
-					InspectionOutcomes: {
-						...InspectionOutcomes
-					}
+					InspectionOutcomes: InspectionOutcomes
 				}
 			},
 		}
@@ -1082,7 +1085,7 @@ export const Passport_HighRiskAssessment = {
 				properties: {
 					InspectionOutcomes: Passport_InspectionOutcomes
 				}
-			},
+			}
 		}
 	]
 };
