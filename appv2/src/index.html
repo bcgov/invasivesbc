@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang='en'>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <meta charset='UTF-8'>
+  <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+  <link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet'>
 
-
-
-  <title>Vite App</title>
+  <title>Invasive Species BC</title>
 </head>
 
-  <div id="root"></div>
-  <script type="module" src="./main.tsx"></script>
-<script type="module">
-  import RefreshRuntime from "/@react-refresh"
-  RefreshRuntime.injectIntoGlobalHook(window)
-  window.$RefreshReg$ = () => {}
-  window.$RefreshSig$ = () => (type) => type
-  window.__vite_plugin_react_preamble_installed__ = true
-  </script>
+<div id='root'></div>
+
+
+<script type='module' src='./main.tsx'></script>
+<script type='module'>
+  import RefreshRuntime from '/@react-refresh';
+
+  RefreshRuntime.injectIntoGlobalHook(window);
+  window.$RefreshReg$ = () => {
+  };
+  window.$RefreshSig$ = () => (type) => type;
+  window.__vite_plugin_react_preamble_installed__ = true;
+</script>
 </html>
