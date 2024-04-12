@@ -63,6 +63,7 @@ import { getClosestWells } from 'util/closestWellsHelpers';
 import { calc_utm } from 'util/utm';
 import { calculateGeometryArea, calculateLatLng } from 'util/geometryHelpers';
 import { kinks } from '@turf/turf';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -361,9 +362,8 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       linked_id &&
       (oldLinkedId !== linked_id || oldCopyGeometry !== 'Yes')
     ) {
-      const linked_geo = mapState.activitiesGeoJSON?.features?.find(
-        (activity) => activity?.properties?.id === linked_id
-      );
+      const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
+      const linked_geo = networkReturn.data.geometry[0]
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [linked_geo] } });
       yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
     } else if (

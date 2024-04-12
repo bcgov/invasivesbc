@@ -63,7 +63,7 @@ export function calculateLatLng(geom: Feature[]) {
   } else if (geo.type === 'LineString') {
     latitude = firstCoord[1];
     longitude = firstCoord[0];
-  } else if (!geom[0].properties.isRectangle) {
+  } else if (!geom[0]?.properties?.isRectangle) {
     latitude = firstCoord[0][1];
     longitude = firstCoord[0][0];
   } else {
