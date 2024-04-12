@@ -8,11 +8,18 @@ import App from './UI/App';
 import './main.css';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register(
+    import.meta.env.MODE === 'production' ? '/worker.js' : '/dev-sw.js?dev-sw',
+    { type: import.meta.env.MODE === 'production' ? 'classic' : 'module' }
+  );
+}
+
 // For tests, please leave:
-export let exportStore
+export let exportStore;
 import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) => {
-const { store, persistor }  = setupStore(CONFIG);
-exportStore = store
+  const { store, persistor } = setupStore(CONFIG);
+  exportStore = store;
 
   const container = document.getElementById('root');
   if (container && store) {

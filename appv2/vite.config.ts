@@ -4,16 +4,19 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
+import { VitePWA } from 'vite-plugin-pwa';
 
 // sets up constants in the code, based on build environment
 function buildSpecificDefines() {
   const defines = {};
 
+  defines['minify'] = false;
+
   const isMobile = JSON.stringify('TRUE' === process.env.MOBILE);
 
   defines['ENABLE_JEEPSQLITE'] = JSON.stringify('TRUE' === process.env.JEEPSQLITE);
   defines['CONFIGURATION_IS_MOBILE'] = JSON.stringify(isMobile);
-  defines['CONFIGURATION_TEST'] = false
+  defines['CONFIGURATION_TEST'] = false;
 
   if (process.env.CONFIGURATION_SOURCE === undefined || process.env.CONFIGURATION_SOURCE === 'Hardcoded') {
     const commitHash = execSync('git rev-parse --short HEAD').toString();
@@ -42,6 +45,8 @@ function buildSpecificDefines() {
     defines['CONFIGURATION_IAPP_GEOJSON_URL'] = JSON.stringify(process.env['IAPP_GEOJSON_URL']);
     defines['CONFIGURATION_KEYCLOAK_ADAPTER'] = JSON.stringify('web');
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
+    defines['minify'] = true;
+
     defines['CONFIGURATION_SOURCE'] = JSON.stringify('Caddy');
 
     if (process.env['OPENSHIFT_BUILD_COMMIT'] !== undefined) {
@@ -70,7 +75,7 @@ export default defineConfig({
   build: {
     // Relative to the root
     outDir: '../dist',
-    minify: false,
+    minify: buildSpecificDefines()['minify'],
     sourcemap: true,
     cssCodeSplit: false,
 
@@ -99,6 +104,21 @@ export default defineConfig({
       include: '**/*.{jsx,tsx}',
       //jsxImportSource: process.env['NODE_ENV'] === "development" ? "@welldone-software/why-did-you-render" : "react"
       jsxImportSource: '@welldone-software/why-did-you-render'
+    }),
+    VitePWA({
+      srcDir: '.',
+      filename: 'worker.ts',
+      strategies: 'injectManifest',
+      injectRegister: false,
+      //manifest: true,
+      injectManifest: {
+        maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
+        globPatterns: ['**/*.{js,css,svg,gif,png,jpg}']
+      },
+      devOptions: {
+        enabled: true,
+        type: 'module'
+      },
     })
   ],
   optimizeDeps: {
@@ -111,7 +131,7 @@ export default defineConfig({
       buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
-      stream: 'rollup-plugin-node-polyfills/polyfills/stream',
+      stream: 'rollup-plugin-node-polyfills/polyfills/stream'
     }
   }
 });
