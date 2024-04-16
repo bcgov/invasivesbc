@@ -34,6 +34,7 @@ export const getUnnestedFieldsForActivity = (activity) => {
       'description'
     ),
     jurisdiction_display: activity?.jurisdiction_display,
+    invasive_plant: activity?.invasive_plant,
     species_positive_full: activity?.species_positive_full,
     species_negative_full: activity?.species_negative_full,
     has_current_positive: activity?.has_current_positive ? 'Yes' : 'No',
@@ -110,6 +111,10 @@ export const activityColumnsToDisplay = [
   {
     key: 'jurisdiction_display',
     name: 'Jurisdiction'
+  },
+  {
+    key: 'invasive_plant',
+    name: 'Invasive Plant'
   },
   {
     key: 'species_positive_full',
