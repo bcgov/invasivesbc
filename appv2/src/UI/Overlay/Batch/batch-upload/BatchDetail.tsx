@@ -63,24 +63,24 @@ const BatchMetadata = ({ batch }) => {
       <table className={'batch-details'}>
         <tbody>
           <tr>
-              <td style={{width: '20%'}}>Created At</td>
-              <td>{batch['created_at']}</td>
+            <td style={{ width: '20%' }}>Created At</td>
+            <td>{batch['created_at']}</td>
           </tr>
           <tr>
-              <td>Status</td>
-              <td>{batch['status']}</td>
+            <td>Status</td>
+            <td>{batch['status']}</td>
           </tr>
           <tr>
-              <td>Template</td>
-              <td>{batch['template']?.name}</td>
+            <td>Template</td>
+            <td>{batch['template']?.name}</td>
           </tr>
           <tr>
-              <td>Download CSV Data (for revision)</td>
-              <td>
-                <Button variant={'contained'} onClick={() => downloadCSV()}>
-                  Download
-                </Button>
-              </td>
+            <td>Download CSV Data (for revision)</td>
+            <td>
+              <Button variant={'contained'} onClick={() => downloadCSV()}>
+                Download
+              </Button>
+            </td>
           </tr>
           {batch['status'] === 'NEW' && (
             <>
@@ -98,29 +98,32 @@ const BatchMetadata = ({ batch }) => {
                 <td>&nbsp;</td>
               </tr>
               <tr>
-                <td>
-                  State for created activities:
-                </td>
+                <td>State for created activities:</td>
                 <td>
                   <select
                     value={execFinalState}
                     onChange={(e) => {
-                      console.log('changed')
+                      console.log('changed');
                       setExecFinalState(e.target.value);
                     }}>
-                    <option value='' disabled>Select</option>
+                    <option value="" disabled>
+                      Select
+                    </option>
                     <option value={'Draft'}>Draft</option>
                     <option value={'Submitted'}>Submitted</option>
                   </select>
-                  </td>
+                </td>
               </tr>
               <tr>
-                  <td>&nbsp;</td>
-                  <td>
-                    <Button variant={'contained'} onClick={() => doBatchExec()} disabled={(!execFinalState || !batch?.canProceed)}>
-                      Execute
-                    </Button>
-                  </td>
+                <td>&nbsp;</td>
+                <td>
+                  <Button
+                    variant={'contained'}
+                    onClick={() => doBatchExec()}
+                    disabled={!execFinalState || !batch?.canProceed}>
+                    Execute
+                  </Button>
+                </td>
               </tr>
             </>
           )}
@@ -148,7 +151,7 @@ const BatchGlobalValidationErrors = ({ batch }) => {
 };
 
 const BatchDetail = ({ id }) => {
-  const { working, error, item: batch } = useSelector(selectBatch);
+  const { working, error, item: batch, errorMessage } = useSelector(selectBatch);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -160,7 +163,12 @@ const BatchDetail = ({ id }) => {
       return <Spinner />;
     }
     if (error) {
-      return <Error />;
+      return (
+        <>
+          <Error />
+          {errorMessage}
+        </>
+      );
     }
     if (batch == null) {
       return <span>No batch found</span>;
@@ -169,7 +177,10 @@ const BatchDetail = ({ id }) => {
       <>
         <BatchMetadata batch={batch}></BatchMetadata>
         <BatchGlobalValidationErrors batch={batch} />
-        <BatchTable jsonRepresentation={batch['json_representation']} created_activities={batch['created_activities']} />
+        <BatchTable
+          jsonRepresentation={batch['json_representation']}
+          created_activities={batch['created_activities']}
+        />
       </>
     );
   }
