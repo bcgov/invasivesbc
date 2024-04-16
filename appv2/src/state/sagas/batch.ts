@@ -20,7 +20,8 @@ import {
   BATCH_TEMPLATE_LIST_REQUEST,
   BATCH_TEMPLATE_LIST_SUCCESS,
   BATCH_UPDATE_REQUEST,
-  BATCH_UPDATE_SUCCESS
+  BATCH_UPDATE_SUCCESS,
+  BATCH_EXECUTE_ERROR
 } from '../actions';
 import { Http } from '@capacitor-community/http';
 
@@ -195,7 +196,7 @@ function* executeBatch(action) {
   const { requestHeaders } = yield select(selectAuth);
   const { id } = action.payload;
 
-  const { data } = yield Http.request({
+  const { data, status } = yield Http.request({
     method: 'POST',
     url: configuration.API_BASE + `/api/batch/${id}/execute`,
     headers: {
@@ -207,9 +208,12 @@ function* executeBatch(action) {
       treatmentOfErrorRows: action.payload.treatmentOfErrorRows
     }
   });
-
-  yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
-  yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+  if (!(status < 200 || status > 299)) {
+    yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
+    yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+  } else {
+    yield put({ type: BATCH_EXECUTE_ERROR, payload: data });
+  }
 }
 
 function* batchSaga() {
