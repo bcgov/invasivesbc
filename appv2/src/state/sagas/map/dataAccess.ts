@@ -395,6 +395,7 @@ function getSelectColumnsByRecordSetType(recordSetType: any) {
       'activity_subtype',
       'project_code',
       'jurisdiction_display',
+      'invasive_plant',
       'species_positive_full',
       'species_negative_full',
       'has_current_positive',
