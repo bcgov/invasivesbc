@@ -705,6 +705,13 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
           }  LOWER('%${filter.filter}%') `
         );
         break;
+      case 'invasive_plant':
+        where.append(
+          `and LOWER(${tableAlias}.invasive_plant) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
+        );
+        break;
       case 'species_positive_full':
         where.append(
           `and LOWER(${tableAlias}.species_positive_full) ${
