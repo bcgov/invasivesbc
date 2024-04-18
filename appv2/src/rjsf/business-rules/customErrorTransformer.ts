@@ -10,6 +10,11 @@ import { globalStore } from 'state/store';
 export const getCustomErrorTransformer = () => {
   return (errors: any[]) => {
     return errors.filter((error) => {
+      if (error.message.includes('must have required property')) {
+        error.message = 'is a required field';
+        return error;
+      }
+
       if (error.message === 'should be equal to one of the allowed values') {
         return false;
       }
@@ -29,8 +34,7 @@ export const getCustomErrorTransformer = () => {
         return false;
       }
 
-      if( error.message === 'must be equal to one of the allowed values')
-      {
+      if (error.message === 'must be equal to one of the allowed values') {
         return false;
       }
 
