@@ -84,6 +84,7 @@ export const FormMenuButtons = (props) => {
         onClick={() => {
           dispatch({ type: ACTIVITY_DELETE_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });
+          setTimeout(()=> history.back(), 5000);
         }}
         variant="contained">
         DELETE

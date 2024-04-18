@@ -1,7 +1,7 @@
 import { Button, createTheme, ThemeOptions } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Route, useHistory } from 'react-router-dom';
+import { Route, useHistory, Redirect } from 'react-router-dom';
 import { getDesignTokens } from 'util/CustomThemeProvider';
 import './App.css';
 import { Footer } from './Footer/Footer';
@@ -69,6 +69,9 @@ const OverlayContentMemo = (props) => {
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
       <AppUrlListener />
+      <Route exact path="/">
+          <Redirect to="/Landing" /> : 
+  </Route>
       <Route path='/Landing' render={(props) => <LandingComponent />} />
       <Route exact={true} path='/Records' render={(props) => <Records />} />
       <Route
@@ -113,7 +116,7 @@ const OverlayContentMemo = (props) => {
                     history.push(url);
                   }}
                   variant='contained'>
-                  Open {}
+                  Open 
                 </Button>
               </OverlayMenu>
             )}
