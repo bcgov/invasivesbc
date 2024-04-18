@@ -107,7 +107,7 @@ export const Activity = (props) => {
           else return <div>loading</div>;
         }}
       />
-      <Snackbar open={notification?.visible} autoHideDuration={6000} onClose={handleAPIErrorClose}>
+      <Snackbar open={notification?.visible} autoHideDuration={3000} onClose={handleAPIErrorClose}>
         <Alert onClose={handleAPIErrorClose} severity={notification?.severity} sx={{width: '100%'}}>
           {notification?.message}
         </Alert>
