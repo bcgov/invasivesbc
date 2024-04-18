@@ -139,6 +139,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           draftState.activity.form_data = action.payload.activity.form_data;
           draftState.activity.species_positive = action.payload.activity.species_positive;
           draftState.activity.species_negative = action.payload.activity.species_negative;
+          draftState.activity.species_treated = action.payload.activity.species_treated;
           draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
           break;
         }
