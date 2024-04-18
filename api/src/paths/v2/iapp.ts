@@ -559,9 +559,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
     switch (filter.field) {
       case 'site_id':
         where.append(
-          `and LOWER((sites.site_id::text)) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'} LOWER('%${
+          `and LOWER((sites.site_id::text)) ${filter.operator === 'CONTAINS' ? '=' : '!='} LOWER('${
             filter.filter
-          }%') `
+          }') `
         );
         break;
       case 'site_paper_file_id':

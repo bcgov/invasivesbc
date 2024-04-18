@@ -4,12 +4,16 @@
 }
 
 .recordHeaderInfo {
-    width: 100%;
     border-color: black;
     text-align: left;
     display: flex;
     justify-content: left;
     overflow: scroll;
+    display: flex;
+    max-width: 80%;
+    padding-left: 15%;
+    padding-right: 15%;
+
 
 }
 label { text-align: left; }
