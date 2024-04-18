@@ -12,7 +12,7 @@ export const ActivityForm = (props) => {
   const ref = useRef(0);
   ref.current += 1;
   if(RENDER_DEBUG)
-  console.log('%Activity Form render:' + ref.current.toString(), 'color: yellow');
+  console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
 
   const dispatch = useDispatch();
 

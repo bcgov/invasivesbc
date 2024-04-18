@@ -79,3 +79,48 @@ td {
     
 
 }
+
+#herbicides_section {
+    display: flex;
+    flex-direction: column;
+}
+
+#herbicides_list {
+    display: flex;
+    flex-wrap: wrap 
+}
+
+
+.herbicide_list_item {
+    min-width:  200px;
+    padding: 10px;
+}
+
+.productApplicationRate {
+    padding: 10px;
+    width: 100%;
+
+}
+
+.amountOfMix {
+    padding-top: 30px;
+    padding-bottom: 10px;
+}
+
+#tank_mix_delivery_and_amount {
+    display: flex;
+    flex-direction: column;
+    width: 100%
+}
+
+#delivery_rate_of_mix_tank_mix {
+    display: flex;
+    width: 100%
+
+}
+
+#amount_of_mix_tank_mix {
+    display: flex;
+
+    width: 100%
+}
