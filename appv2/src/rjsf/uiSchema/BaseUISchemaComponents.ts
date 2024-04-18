@@ -1035,7 +1035,18 @@ const Observation_Mussels_Information = {
     },
   },
   JourneyDetails: {
-    ...TwoColumnStyle
+    ...TwoColumnStyle,
+    previousJourneyDetails: {
+      previousToggles: {
+        previousWaterBody: {
+          items: {
+            previousWaterbody: { 
+              waterbody_name: { 'ui:widget': 'single-select-autocomplete' }
+            }
+          }
+        }
+      }
+    }
   },
   InspectionDetails: {
     aquaticPlantsFound: {

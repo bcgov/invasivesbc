@@ -1,3 +1,5 @@
+import { title } from "process";
+
 /*** Common Fields ***/
 export const NullSwitch = {
 	type: 'boolean',
@@ -159,16 +161,23 @@ export const ManualWaterbodyCountry = {
 };
 
 export const PreviousWaterbody = {
-	title: 'Add Previous Waterbody',
-	type: 'string',
-	enum: [
-		'',
-		'Snake River',
-		'Columbia River',
-		'Kootenay River',
-		'Other'
-	],
-	default: ''
+	type: 'object',
+	title: 'Previous Waterbody',
+	properties: {
+		waterbody_name: {
+		type: 'string',
+		title: 'Waterbody Name',
+		'x-enum-code': {
+			'x-enum-code-category-name': 'invasives',
+			'x-enum-code-header-name': 'waterbody_name',
+			'x-enum-code-name': 'code_name',
+			'x-enum-code-text': 'code_description',
+			'x-enum-code-sort-order': 'code_sort_order'
+		},
+		'x-tooltip-text':
+			'Waterbody name'
+		}
+	}
 };
 
 export const NumberOfDaysOut = {
