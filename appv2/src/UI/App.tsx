@@ -36,7 +36,7 @@ import CustomizeLayerMenu from './Map2/Controls/CustomizeLayerDialog';
 import { ConnectivityErrorHandler } from 'UI/ErrorHandler/ConnectivityErrorHandler';
 import { selectAuth } from 'state/reducers/auth';
 
-export const RENDER_DEBUG = false;
+export const RENDER_DEBUG = true;
 
 const AppUrlListener: React.FC<any> = () => {
   useEffect(() => {
@@ -161,7 +161,7 @@ const App: React.FC = () => {
       <Map>
         <ButtonContainer />
         <LayerPicker />
-      </Map>
+  </Map>
       <Overlay>
         <OverlayContentMemo />
       </Overlay>

@@ -1,13 +1,18 @@
 import { TextField, Tooltip } from '@mui/material';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import HerbicidesAccordion from '../accordions/HerbicidesAccordion';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 //import { useFormStyles } from '../../formStyles';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import isNumber from 'is-number';
+import { RENDER_DEBUG } from 'UI/App';
 
 const TankMix: React.FC = (props) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  if(RENDER_DEBUG)
+  console.log('%c FormCoTankMixntainer render:' + ref.current.toString(), 'color: yellow');
   const form_dataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = form_dataContext;
 
@@ -32,6 +37,7 @@ const TankMix: React.FC = (props) => {
         }
       }
     }));
+    console.log('tank mix hook')
   }, [currentTankMix]);
 
   const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>(
@@ -70,6 +76,8 @@ const TankMix: React.FC = (props) => {
 
       <HerbicidesAccordion insideTankMix={true} />
 
+<div id="tank_mix_delivery_and_amount">
+      <div id="amount_of_mix_tank_mix">
       <Tooltip
         style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
         placement="left"
@@ -103,7 +111,9 @@ const TankMix: React.FC = (props) => {
         }}
         defaultValue={undefined}
       />
+      </div>
 
+        <div id="delivery_rate_of_mix_tank_mix">
       <Tooltip
         style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
         placement="left"
@@ -137,6 +147,8 @@ const TankMix: React.FC = (props) => {
         }}
         defaultValue={undefined}
       />
+    </div>
+    </div>
     </>
   );
 };

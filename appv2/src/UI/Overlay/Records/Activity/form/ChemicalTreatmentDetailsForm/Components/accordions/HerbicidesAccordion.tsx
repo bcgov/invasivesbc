@@ -1,12 +1,16 @@
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionSummary, Typography, AccordionDetails, Box, Button } from '@mui/material';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import Herbicide from '../single-objects/Herbicide';
 import AddIcon from '@mui/icons-material/Add';
+import { RENDER_DEBUG } from 'UI/App';
 //import { useFormStyles } from '../../formStyles';
 
 const HerbicidesAccordion = (props) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  if (RENDER_DEBUG) console.log('%HerbicidesAccordion:' + ref.current.toString(), 'color: yellow');
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
@@ -14,13 +18,34 @@ const HerbicidesAccordion = (props) => {
   const tankMixOn = formDetails.form_data.tank_mix;
 
   return (
-    <Accordion
-      expanded={(tankMixOn && props.insideTankMix) || (!tankMixOn && !props.insideTankMix)}
-      disabled={(tankMixOn && !props.insideTankMix) || (!tankMixOn && props.insideTankMix)}>
-      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="herbicides-content" id="herbicides-header">
+    <div id="herbicides_section">
         <Typography variant="h5">Herbicides</Typography>
-      </AccordionSummary>
-      <AccordionDetails>
+          <div id="herbicides_list"
+         // className={classes.listContainer}
+          >
+            {props.insideTankMix
+              ? formDetails.form_data?.tank_mix_object?.herbicides?.map((herbicide, index) => (
+                  <Herbicide
+                    insideTankMix={props.insideTankMix}
+          //          classes={classes}
+                    key={index}
+                    index={index}
+                    herbicide={herbicide}
+                  />
+                ))
+              : formDetails?.form_data?.herbicides?.map((herbicide, index) => (
+                  <Herbicide
+                    insideTankMix={props.insideTankMix}
+           //         classes={classes}
+                    key={index}
+                    index={index}
+                    herbicide={herbicide}
+                  />
+                ))}
+          </div>
+
+
+
         <Box 
        // className={classes.accordionBody}
         >
@@ -69,32 +94,8 @@ const HerbicidesAccordion = (props) => {
             </Button>
           </Box>
 
-          <Box component="div" 
-         // className={classes.listContainer}
-          >
-            {props.insideTankMix
-              ? formDetails.form_data?.tank_mix_object?.herbicides?.map((herbicide, index) => (
-                  <Herbicide
-                    insideTankMix={props.insideTankMix}
-          //          classes={classes}
-                    key={index}
-                    index={index}
-                    herbicide={herbicide}
-                  />
-                ))
-              : formDetails?.form_data?.herbicides?.map((herbicide, index) => (
-                  <Herbicide
-                    insideTankMix={props.insideTankMix}
-           //         classes={classes}
-                    key={index}
-                    index={index}
-                    herbicide={herbicide}
-                  />
-                ))}
-          </Box>
         </Box>
-      </AccordionDetails>
-    </Accordion>
+        </div>
   );
 };
 

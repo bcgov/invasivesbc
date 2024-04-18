@@ -12,7 +12,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import CustomAutoComplete from './CustomAutoComplete';
 import {
@@ -27,9 +27,13 @@ import { runValidation } from 'sharedAPI';
 import { performCalculation } from 'sharedAPI';
 import { GeneralDialog, IGeneralDialog } from 'UI/Overlay/GeneralDialog';
 import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
+import { RENDER_DEBUG } from 'UI/App';
 
 const ChemicalTreatmentDetailsForm = (props) => {
   //const classes = useFormStyles();
+  const ref = useRef(0);
+  ref.current += 1;
+  if (RENDER_DEBUG) console.log('%cChemTreatmentDetailsForm:' + ref.current.toString(), 'color: yellow');
 
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
@@ -285,7 +289,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
           </Box>
         </Box>
 
-        <HerbicidesAccordion insideTankMix={false} />
+        { !tankMixOn? <HerbicidesAccordion insideTankMix={false} /> : <></>}
 
         <TankMixAccordion />
 

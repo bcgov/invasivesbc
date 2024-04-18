@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Accordion, AccordionSummary, Typography, AccordionDetails, Box, Button } from '@mui/material';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
@@ -8,8 +8,13 @@ import InvasivePlant from '../single-objects/InvasivePlant';
 
 
 import '../../../../Form.css'
+import { RENDER_DEBUG } from 'UI/App';
 
 const InvasivePlantsAccordion = () => {
+  const ref = useRef(0);
+  ref.current += 1;
+  if(RENDER_DEBUG)
+  console.log('%c InvasivePlantsAccordion render:' + ref.current.toString(), 'color: yellow');
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
   const [accordionExpanded, setAccordionExpanded] = useState(true);
