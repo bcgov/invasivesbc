@@ -950,7 +950,10 @@ export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
           id: layer.url,
           type: 'raster',
           source: layer.url,
-          minzoom: 0
+          minzoom: 0,
+          paint: {
+            'raster-opacity': layer.opacity? layer.opacity: 1 
+          }
         });
   });
 };
