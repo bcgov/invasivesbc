@@ -11,13 +11,24 @@ import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 export const ActivityForm = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
 
   const dispatch = useDispatch();
 
-  const { short_id, form_status, activity_type, activity_subtype, form_data, created_by, date_created, updated_by, received_timestamp, batch_id } =
-    useSelector((state: any) => state.ActivityPage?.activity);
+  const {
+    short_id,
+    form_status,
+    activity_type,
+    activity_subtype,
+    form_data,
+    created_by,
+    date_created,
+    updated_by,
+    received_timestamp,
+    batch_id
+  } = useSelector((state: any) => state.ActivityPage?.activity);
+
+  const invasive_plant = useSelector((state: any) => state.ActivityPage?.activity?.invasive_plant);
 
   const manualUTMEntry = () => {
     let validZone = false;
@@ -100,7 +111,10 @@ export const ActivityForm = (props) => {
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Activity Date:</td>
-              <td className={'leftValueCol'}>{new Date(form_data.activity_data.activity_date_time).toLocaleDateString()}</td> <br />
+              <td className={'leftValueCol'}>
+                {new Date(form_data.activity_data.activity_date_time).toLocaleDateString()}
+              </td>{' '}
+              <br />
             </tr>
           </tbody>
         </table>

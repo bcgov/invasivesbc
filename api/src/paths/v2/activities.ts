@@ -826,9 +826,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'batch_id':
         where.append(
-          `and LOWER(${tableAlias}.batch_id::text) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `and LOWER(${tableAlias}.batch_id::text) ${filter.operator === 'CONTAINS' ? '=' : '!='}  LOWER('${
             filter.filter
-          }%') `
+          }') `
         );
         break;
       default:
