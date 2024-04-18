@@ -36,7 +36,7 @@ import CustomizeLayerMenu from './Map2/Controls/CustomizeLayerDialog';
 import { ConnectivityErrorHandler } from 'UI/ErrorHandler/ConnectivityErrorHandler';
 import { selectAuth } from 'state/reducers/auth';
 
-export const RENDER_DEBUG = true;
+export const RENDER_DEBUG = false;
 
 const AppUrlListener: React.FC<any> = () => {
   useEffect(() => {
