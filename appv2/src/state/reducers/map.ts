@@ -95,7 +95,9 @@ const DEFAULT_LOCAL_LAYERS = [
     title: 'Regional Districts',
     type: 'wms',
     url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
-    toggle: false
+    toggle: false,
+    opacity: 0.4
+    
   },
   {
     title: 'BC Parks',
@@ -128,7 +130,8 @@ const DEFAULT_LOCAL_LAYERS = [
     url:
       'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
       'WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP',
-    toggle: false
+    toggle: false,
+    opacity: 0.5
   },
   {
     title: 'BC Major Watersheds',
