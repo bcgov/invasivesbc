@@ -1,10 +1,11 @@
 import { Typography, Box, TextField, Button, Tooltip } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { IInvasivePlant } from '../../Models';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import { RENDER_DEBUG } from 'UI/App';
 
 export interface IInvasivePlantComponent {
   index: number;
@@ -14,6 +15,9 @@ export interface IInvasivePlantComponent {
 }
 
 const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, classes }) => {
+  const ref = useRef(0);
+  ref.current += 1;
+  if (RENDER_DEBUG) console.log('%cInvasivePlant:' + ref.current.toString(), 'color: yellow');
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 

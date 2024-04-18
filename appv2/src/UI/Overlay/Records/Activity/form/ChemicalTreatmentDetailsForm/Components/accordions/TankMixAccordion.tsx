@@ -1,11 +1,16 @@
 import { Accordion, AccordionSummary, Typography, AccordionDetails, Box } from '@mui/material';
-import React, { useContext } from 'react';
+import React, { useContext, useRef } from 'react';
 import TankMix from '../single-objects/TankMix';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
+import { RENDER_DEBUG } from 'UI/App';
 //import { useFormStyles } from '../../formStyles';
 
 const TankMixAccordion = () => {
+  const ref = useRef(0);
+  ref.current += 1;
+  if(RENDER_DEBUG)
+  console.log('%c TankMixAccordion render:' + ref.current.toString(), 'color: yellow');
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails } = formDataContext;
 

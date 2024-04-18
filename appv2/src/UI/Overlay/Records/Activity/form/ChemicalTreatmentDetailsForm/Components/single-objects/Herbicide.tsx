@@ -149,10 +149,8 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
   }, [currentHerbicide]);
 
   return (
-    <>
-      <Box component="span" 
-      //</>className={classes.listItemContainer}
-      >
+    <div className={'herbicide_list_item'}>
+      
         <Typography 
         //className={classes.speciesHeading} 
         variant="h5">
@@ -163,6 +161,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
 
         <Tooltip
           //classes={{ tooltip: 'toolTip' }}
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
           placement="left"
           title="Choose whether the herbicide being used is liquid or granular">
           <HelpOutlineIcon />
@@ -188,7 +187,9 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
           }}
         />
 
-        <Tooltip placement="left" classes={{ tooltip: 'toolTip' }} title="Choose which herbicide you are using">
+        <Tooltip placement="left" 
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        title="Choose which herbicide you are using">
           <HelpOutlineIcon />
         </Tooltip>
         <CustomAutoComplete
@@ -211,9 +212,9 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
         />
 
         {!tankMixOn && (
-          <>
+          <div >
             <Tooltip
-              classes={{ tooltip: 'toolTip' }}
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
               placement="left"
               title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution. Expressed as the percent of herbicide in the solution.">
               <HelpOutlineIcon />
@@ -236,13 +237,13 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
                 });
               }}
             />
-          </>
+          </div>
         )}
 
         {tankMixOn && (
-          <>
+          <div className="productApplicationRate">
             <Tooltip
-              classes={{ tooltip: 'toolTip' }}
+              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
               placement="left"
               title="Recommended label rate for herbicide (L/ha) used for this treatment">
               <HelpOutlineIcon />
@@ -290,11 +291,11 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               }}
               defaultValue={undefined}
             />
-          </>
+          </div>
         )}
 
         {!tankMixOn && (
-          <>
+          <div className="amountOfMix">
             <Tooltip
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
               placement="left"
@@ -338,7 +339,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
               }}
               defaultValue={undefined}
             />
-          </>
+          </div>
         )}
 
         {!tankMixOn && currentHerbicide?.calculation_type === 'D' ? (
@@ -589,8 +590,7 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
           color="secondary">
           Remove Herbicide
         </Button>
-      </Box>
-    </>
+    </div>
   );
 };
 
