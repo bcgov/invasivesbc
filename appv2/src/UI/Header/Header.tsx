@@ -31,7 +31,7 @@ const Tab = (props: any) => {
   const history = useHistory();
 
   const dispatch = useDispatch();
-  const authenticated = useSelector((state: any) => state?.Auth.authenticated);
+  const authenticated = useSelector((state: any) => state?.Auth.authenticated && state?.Auth.roles.length > 0);
 
   const canDisplayCallBack = useCallback(() => {
     if (props.loggedOutOnly && authenticated) {
