@@ -134,16 +134,30 @@ export const ActivityForm = (props) => {
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Updated At:</td>
-              <td className={'rightValueCol'}>{new Date(received_timestamp? received_timestamp: date_created).toLocaleDateString()}</td> <br />
+              <td className={'rightValueCol'}>
+                {new Date(received_timestamp ? received_timestamp : date_created).toLocaleDateString()}
+              </td>{' '}
+              <br />
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Batch ID</td>
               <td className={'rightValueCol'}>{batch_id}</td> <br />
             </tr>
+            {invasive_plant && invasive_plant != '' && (
+              <tr>
+                <td className={'rightHeaderCol'}>Invasive Plant</td>
+                <td className={'rightValueCol'}>{invasive_plant}</td> <br />
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
-        <Button onClick={manualUTMEntry} variant="outlined" sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>Click to enter UTM manually</Button>
+      <Button
+        onClick={manualUTMEntry}
+        variant="outlined"
+        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>
+        Click to enter UTM manually
+      </Button>
       <FormContainer />
     </>
   );
