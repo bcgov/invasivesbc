@@ -6,8 +6,15 @@ import Spinner from 'UI/Spinner/Spinner';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import './Report.css';
+import { useHistory } from 'react-router-dom';
 
 const EmbeddedReportsPage: React.FC = () => {
+  const authenticated = useSelector((state: any) => state?.Auth.authenticated && state?.Auth.roles.length > 0);
+  const history = useHistory();
+
+  if(!authenticated){
+    history.push('/')
+  }
   const api = useInvasivesApi();
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
   const [reports, setReports] = useState([]);
