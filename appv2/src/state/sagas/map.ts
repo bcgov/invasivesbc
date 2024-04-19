@@ -988,7 +988,10 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
     let width = null;
     while (typeof width !== 'number') {
       try {
-        width = Number(prompt('Enter width in m for line to be buffered: '));
+        const raw = prompt('Enter width in m for line to be buffered: ');
+        width = Number(raw);
+        if(typeof raw === 'object')
+          return
       } catch (e) {
         alert('Not a number');
       }
