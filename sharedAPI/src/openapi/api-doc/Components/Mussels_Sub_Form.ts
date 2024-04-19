@@ -29,24 +29,19 @@ export const MarineSpeciesFound = {
 
 /* Basic Information */
 export const Province = {
-	title: 'Province / State',
 	type: 'string',
-	enum: [
-		'Alberta', 'British Columbia', 'Manitoba', 'New Brunswick', 'Newfoundland and Labrador',
-		'Nova Scotia', 'Ontario', 'Prince Edward Island', 'Quebec', 'Saskatchewan',
-		'Northwest Territories', 'Nunavut', 'Yukon', 'Alabama', 'Alaska', 'Arizona', 'Arkansas', 'California',
-		'Colorado', 'Connecticut', 'Delaware', 'Florida', 'Georgia',
-		'Hawaii', 'Idaho', 'Illinois', 'Indiana', 'Iowa',
-		'Kansas', 'Kentucky', 'Louisiana', 'Maine', 'Maryland',
-		'Massachusetts', 'Michigan', 'Minnesota', 'Mississippi', 'Missouri',
-		'Montana', 'Nebraska', 'Nevada', 'New Hampshire', 'New Jersey',
-		'New Mexico', 'New York', 'North Carolina', 'North Dakota', 'Ohio',
-		'Oklahoma', 'Oregon', 'Pennsylvania', 'Rhode Island', 'South Carolina',
-		'South Dakota', 'Tennessee', 'Texas', 'Utah', 'Vermont',
-		'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
-	],
-	default: 'BC'
+	title: 'Province/State Name',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'province_state_name',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Province / state name'
 };
+
 
 export const InspectionTime = {
 	title: 'Inspection Time',
@@ -92,14 +87,18 @@ export const PreviousAISKnowledge = {
 };
 
 export const PreviousAISKnowledgeSource = {
-	title: 'Previous AIS Knowledge Source',
 	type: 'string',
-	enum: [
-		'Brochure',
-		'Highway Billboard Signs',
-		'Highway Inspection Signs'
-	],
-};
+	title: 'Source of Previous AIS Knowledge or Clean, Drain, Dry',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'previous_ais_knowledge_source',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Source of Previous AIS Knowledge or Clean, Drain, Dry'
+}
 
 export const PreviousInspection = {
 	title: 'Previous inspection and/or agency notification',
@@ -107,14 +106,18 @@ export const PreviousInspection = {
 };
 
 export const PreviousInspectionSource = {
-	title: 'Previous Inspection Source',
 	type: 'string',
-	enum: [
-		'Alabama',
-		'Arkansas',
-		'CBSA Referral - Abbostford/Huntington'
-	]
-};
+	title: 'Previous Inspection and/or Agency Notification Source',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'previous_inspection_source',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Previous Inspection and/or Agency Notification Source'
+}
 
 export const PreviousInspectionDays = {
 	title: 'Previous Inspection Days',
@@ -206,17 +209,18 @@ export const DestinationMajorCity = {
 };
 
 export const DestinationWaterbody = {
-	title: 'Add Destination Waterbody',
 	type: 'string',
-	enum: [
-		'',
-		'Snake River',
-		'Columbia River',
-		'Kootenay River',
-		'Other'
-	],
-	default: ''
-};
+	title: 'Waterbody Name',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'waterbody_name',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Waterbody name'
+}
 
 export const DestinationUnknownCommercialStorageDropdown = {
 	title: 'Destination Location Known?',
@@ -279,20 +283,18 @@ export const AdultDreissenidMusselsFound = {
 };
 
 export const AdultDreissenidMusselsLocation = {
-	title: 'invisible',
-	type: 'object',
-	properties: {
-		AdultDreissenidMusselsLocation: {
-			title: 'Add a Location',
-			type: 'string',
-			enum: [
-				'Engine',
-				'Hull',
-				'Gimbal'
-			]
-		}
-	}
-};
+	type: 'string',
+	title: 'Add a location',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'watercraft_locations',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Location on watercraft where standing water / mussels were found'
+}
 
 export const AdultDreissenidMusselsLocationArray = {
 	title: 'Adult Dreissenid Mussels Location',
@@ -337,20 +339,18 @@ export const StandingWaterPresent = {
 };
 
 export const StandingWaterLocation = {
-	title: 'invisible',
-	type: 'object',
-	properties: {
-		standingWaterLocation: {
-			title: 'Add a Location',
-			type: 'string',
-			enum: [
-				'Engine',
-				'Hull',
-				'Gimbal'
-			]
-		}
-	}
-};
+	type: 'string',
+	title: 'Add a location',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'watercraft_locations',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Location on watercraft where standing water / mussels were found'
+}
 
 export const StandingWaterLocationArray = {
 	title: 'Standing Water Location',
@@ -452,16 +452,18 @@ export const DecontaminationOrderNumber = {
 };
 
 export const DecontaminationOrderReason = {
-	title: 'Reason for issuing decontamination order',
 	type: 'string',
-	enum: [
-		'Inspection/decontamination could not be performed',
-		'No decontamination - non-compliant refusing decontamination',
-		'No decontamination - pressure washer not working',
-		'No decontamination - watercraft too complex',
-		'Partial decontamination only'
-	]
-};
+	title: 'Reason for issuing decontamination order',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'decontamination_order_reason',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Reason for issuing decontamination order'
+}
 
 export const DecontaminationOrderIssuedLogic = {
 	type: 'object',
