@@ -1008,6 +1008,7 @@ const Observation_Mussels_Information = {
   BasicInformation: {
     provinceAndTime: {
       ...TwoColumnStyle,
+      province: { 'ui:widget': 'single-select-autocomplete' }
     },
     vehicleTypeInspectedCount: {
       ...FourColumnStyle,
@@ -1026,12 +1027,14 @@ const Observation_Mussels_Information = {
         'ui:inline': true,
         'ui:widget': 'radio'
       },
+      previousAISKnowledgeSource: { 'ui:widget': 'single-select-autocomplete' }
     },
     WatercraftDetails_PreviousInspection: {
       previousInspection: {
         'ui:inline': true,
         'ui:widget': 'radio'
       },
+      previousInspectionSource: { 'ui:widget': 'single-select-autocomplete' }
     },
   },
   JourneyDetails: {
@@ -1043,6 +1046,15 @@ const Observation_Mussels_Information = {
             previousWaterbody: { 
               waterbody_name: { 'ui:widget': 'single-select-autocomplete' }
             }
+          }
+        }
+      }
+    },
+    destinationJourneyDetails: {
+      destinationToggles: {
+        destinationWaterBody: {
+          destinationWaterbody: { 
+            waterbody_name: { 'ui:widget': 'single-select-autocomplete' }
           }
         }
       }
@@ -1087,12 +1099,18 @@ const Observation_Mussels_Information = {
           'ui:inline': true,
           'ui:widget': 'radio' 
         },
+        standingWaterLocation: {
+          items: { 'ui:widget': 'single-select-autocomplete' }
+        }
       },
       adultDreissenidMusselsFoundLogic: {
         adultDreissenidMusselsFound: {
           'ui:inline': true,
           'ui:widget': 'radio' 
         },
+        adultDreissenidMusselsLocation: {
+          items: { 'ui:widget': 'single-select-autocomplete' }
+        }
       },
       decontaminationPerformedLogic: {
         decontaminationPerformed: {
@@ -1105,6 +1123,7 @@ const Observation_Mussels_Information = {
           'ui:inline': true,
           'ui:widget': 'radio' 
         },
+        decontaminationOrderReason: { 'ui:widget': 'single-select-autocomplete' }
       },
       decontaminationAppendixB: {
         'ui:inline': true,
