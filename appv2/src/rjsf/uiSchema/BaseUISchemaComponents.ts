@@ -1034,7 +1034,8 @@ const Observation_Mussels_Information = {
         'ui:inline': true,
         'ui:widget': 'radio'
       },
-      previousInspectionSource: { 'ui:widget': 'single-select-autocomplete' }
+      previousInspectionSource: { 'ui:widget': 'single-select-autocomplete' },
+      previousInspectionDays: { 'ui:widget': 'single-select-autocomplete' }
     },
   },
   JourneyDetails: {
@@ -1043,20 +1044,20 @@ const Observation_Mussels_Information = {
       previousToggles: {
         previousWaterBody: {
           items: {
-            previousWaterbody: { 
-              waterbody_name: { 'ui:widget': 'single-select-autocomplete' }
-            }
+            previousWaterbody: { 'ui:widget': 'single-select-autocomplete' },
+            previousMajorCity: { 'ui:widget': 'single-select-autocomplete' }
           }
-        }
+        },
+        previousMajorCity: { 'ui:widget': 'single-select-autocomplete' }
       }
     },
     destinationJourneyDetails: {
       destinationToggles: {
         destinationWaterBody: {
-          destinationWaterbody: { 
-            waterbody_name: { 'ui:widget': 'single-select-autocomplete' }
-          }
-        }
+          destinationWaterbody: { 'ui:widget': 'single-select-autocomplete' },
+          destinationMajorCity: { 'ui:widget': 'single-select-autocomplete' }
+        },
+        destinationMajorCity: { 'ui:widget': 'single-select-autocomplete' }
       }
     }
   },
