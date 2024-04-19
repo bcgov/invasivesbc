@@ -120,26 +120,33 @@ export const PreviousInspectionSource = {
 }
 
 export const PreviousInspectionDays = {
-	title: 'Previous Inspection Days',
 	type: 'string',
-	enum: [
-		'< 30 Days',
-		'> 1 Year',
-		'> 30 Days',
-		'Same day'
-	]
+	title: 'Previous Inspection and/or Agency Notification Number of Days',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'previous_inspection_days',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Previous Inspection and/or Agency Notification Number of Days'
 };
 /* End of Watercraft Details */
 
 /* Journey Details */
 export const MajorCity = {
-	title: 'Add Major City',
 	type: 'string',
-	enum: [
-		'Calgary',
-		'Edmonton',
-		'Red Deer'
-	]
+	title: 'Major city name',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'major_cities',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Major city name'
 };
 
 export const ManualWaterbody = {
@@ -164,23 +171,17 @@ export const ManualWaterbodyCountry = {
 };
 
 export const PreviousWaterbody = {
-	type: 'object',
-	title: 'Previous Waterbody',
-	properties: {
-		waterbody_name: {
-		type: 'string',
-		title: 'Waterbody Name',
-		'x-enum-code': {
-			'x-enum-code-category-name': 'invasives',
-			'x-enum-code-header-name': 'waterbody_name',
-			'x-enum-code-name': 'code_name',
-			'x-enum-code-text': 'code_description',
-			'x-enum-code-sort-order': 'code_sort_order'
-		},
-		'x-tooltip-text':
-			'Waterbody name'
-		}
-	}
+	type: 'string',
+	title: 'Waterbody Name',
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'waterbody_name',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	},
+	'x-tooltip-text':
+		'Waterbody name'
 };
 
 export const NumberOfDaysOut = {
@@ -220,7 +221,7 @@ export const DestinationWaterbody = {
 	},
 	'x-tooltip-text':
 		'Waterbody name'
-}
+};
 
 export const DestinationUnknownCommercialStorageDropdown = {
 	title: 'Destination Location Known?',
@@ -644,22 +645,6 @@ export const PreviousWaterBodyLogic = {
 						previousWaterbody: PreviousWaterbody,
 						numberOfDaysOut: NumberOfDaysOut
 					},
-					allOf: [
-						{
-							if: {
-								properties: {
-									previousWaterbody: {
-										enum: ['Other']
-									}
-								}
-							},
-							then: {
-								properties: {
-									previousMajorCity: PreviousMajorCity
-								}
-							},
-						}
-					]
 				},
 				{
 					properties: {
@@ -669,7 +654,10 @@ export const PreviousWaterBodyLogic = {
 						manualWaterbodyName: ManualWaterbodyName,
 						manualWaterbodyCity: ManualWaterbodyCity,
 						manualWaterbodyCountry: ManualWaterbodyCountry,
-						numberOfDaysOut: NumberOfDaysOut
+						numberOfDaysOut: NumberOfDaysOut,
+						previousMajorCity: {
+							...PreviousMajorCity
+						}
 					}
 				}
 			]
@@ -750,24 +738,6 @@ export const DestinationWaterBodyLogic = {
 						},
 						destinationWaterbody: DestinationWaterbody
 					},
-					allOf: [
-						{
-							if: {
-								properties: {
-									destinationWaterbody: {
-										enum: ['Other']
-									}
-								}
-							},
-							then: {
-								properties: {
-									destinationMajorCity: {
-										...DestinationMajorCity	
-									}
-								}
-							},
-						}
-					]
 				},
 				{
 					properties: {
@@ -777,6 +747,7 @@ export const DestinationWaterBodyLogic = {
 						manualWaterbodyName: ManualWaterbodyName,
 						manualWaterbodyCity: ManualWaterbodyCity,
 						manualWaterbodyCountry: ManualWaterbodyCountry,
+						destinationMajorCity: DestinationMajorCity	
 					}
 				}
 			]
@@ -1003,7 +974,6 @@ export const Passport_SimpleBasicInformation = {
 	title: 'Basic Information',
 	type: 'object',
 	properties: {
-		province: Province,
 		inspection_time: InspectionTime,
 		launchedOutsideBC: LaunchedOutsideBC,
 		k9Inspection: K9InspectionLogic,
