@@ -79,6 +79,13 @@ export function setupStore(configuration: AppConfig) {
     });
   }
 
+  const lastLocalStorageMigration = localStorage.getItem('lastLocalStorageMigration');
+  if(!lastLocalStorageMigration || lastLocalStorageMigration < '2024-04-21') {
+    console.log('clearing local storage')
+    localStorage.clear();
+    localStorage.setItem('lastLocalStorageMigration', '2024-04-21');
+  }
+
   sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(activityPageSaga);
   sagaMiddleware.run(iappPageSaga);
