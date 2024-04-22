@@ -371,7 +371,7 @@ export const Header: React.FC = () => {
 
         <AdminPanelMemo />
 
-        <Tab key={'tab8'} path={'/'} label='Map' loggedOutOnly={true} panelOpen={false}>
+        <Tab key={'tab8'} path={'/Map'} label='Map' loggedOutOnly={true} panelOpen={false}>
           <Map />
         </Tab>
 
