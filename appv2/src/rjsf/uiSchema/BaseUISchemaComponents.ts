@@ -1160,7 +1160,7 @@ const Mussels_Officer_Shift = {
       },
       watercraftComplexity: {
        'ui:widget': 'single-select-autocomplete' 
-      }
+      },
     }
   },
   inspections : {
@@ -1181,7 +1181,10 @@ const Mussels_Officer_Shift = {
       },
     },
     shiftStart: {
-      ...TwoColumnStyle
+      ...TwoColumnStyle,
+      station: {
+        'ui:widget': 'single-select-autocomplete'
+      }
     }
   },
 }
