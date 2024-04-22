@@ -387,9 +387,9 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
     type: 'circle',
     paint: {
       'circle-color': getPaintBySchemeOrColor(layer),
-      'circle-radius': 3
+      'circle-radius': 4
     },
-    maxzoom: 10,
+    maxzoom: 24,
     minzoom: 0
   };
 
@@ -838,8 +838,10 @@ export const initDrawModes = (
     const feature = e.features[0];
     try {
       console.dir(draw);
-      draw.deleteAll();
-      draw.add(feature);
+      if (draw) {
+        draw.deleteAll();
+        draw.add(feature);
+      }
     } catch (e) {
       console.log(e);
     }
