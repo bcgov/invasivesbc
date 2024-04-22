@@ -47,6 +47,7 @@ export const InspectionTime = {
 	title: 'Inspection Time',
 	type: 'string',
 	format: 'date-time',
+	'x-tooltip-text': 'Time inspection occurred'
 };
 
 export const  VehicleNonMotorized = {
@@ -185,8 +186,15 @@ export const PreviousWaterbody = {
 };
 
 export const NumberOfDaysOut = {
+	type: 'string',
 	title: 'Number of days out of waterbody',
-	type: 'integer'
+	'x-enum-code': {
+		'x-enum-code-category-name': 'invasives',
+		'x-enum-code-header-name': 'time_out_of_waterbody',
+		'x-enum-code-name': 'code_name',
+		'x-enum-code-text': 'code_description',
+		'x-enum-code-sort-order': 'code_sort_order'
+	}
 };
 
 export const PreviousMajorCity = {
