@@ -526,9 +526,20 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.vt_request) {
     sqlStatement.append(`
     , mvtgeom AS
-    (  SELECT ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
+    (  select case when ${filterObject.z} < 10 then ST_AsMVTGeom(ST_Transform(ST_PointN(ST_Exteriorring(geog::geometry), 1), 3857)
+           
+          
+    ,
                                             ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}), extent => 4096,
-                                            buffer => 64) AS geom,
+                                            buffer => 64)
+                                            
+           else ST_AsMVTGeom(ST_Transform(geog::geometry, 3857)
+     
+    
+    ,
+                                            ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}), extent => 4096,
+                                            buffer => 64)          
+                                            end AS geom,
                                activity_incoming_data_id                    as feature_id,
                                activity_id                    ,
                                short_id,
