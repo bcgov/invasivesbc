@@ -106,7 +106,29 @@ export function* handle_ACTIVITY_PASTE_REQUEST(action) {
     yield put({ type: ACTIVITY_PASTE_FAILURE, payload: {} });
   }
 }
+const checkForMisLabledMultiPolygon = (input) => {
+  if (input.type !== 'MultiPolygon') {
+    console.log('***banana');
+    return false;
+  }
+  if (
+    input.type === 'MultiPolygon' &&
+    input.geometry.coordinates.length === 1 &&
+    input.geometry.coordinates[0][0][0].length === 2
+  ) {
+    console.log('***apple');
+    return true;
+  }
+  return false;
+};
 
+const fixMisLabledMultiPolygon = (input) => {
+  if (checkForMisLabledMultiPolygon(input)) {
+    return { ...input, type: 'Feature', geometry: { ...input.geometry, coordinates: input.geometry.coordinates[0] } };
+  } else {
+    return input;
+  }
+};
 export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   try {
     // get spatial fields based on geo
@@ -129,10 +151,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       });
       return;
     }
-
-    const isPointGeometry = action.payload.geometry[0].geometry.type === 'Point';
+    const sanitizedGeo = fixMisLabledMultiPolygon(action.payload.geometry[0]);
+    const isPointGeometry = sanitizedGeo.geometry.type === 'Point';
     if (!isPointGeometry) {
-      const hasSelfIntersections = kinks(action.payload.geometry[0].geometry).features.length > 0;
+      const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       if (hasSelfIntersections) {
         yield put({
           type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
@@ -153,7 +175,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     if (reported_area < MAX_AREA) {
       let nearestWells = null;
       if (latitude && longitude) {
-        nearestWells = yield getClosestWells(action.payload.geometry, true);
+        nearestWells = yield getClosestWells(sanitizedGeo, true);
       }
       if (!nearestWells || !nearestWells.well_objects || nearestWells.well_objects.length < 1) {
         wellInformationArr = [
@@ -180,12 +202,12 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
 
     let isWithinBC = false;
     let geoToTest;
-    if (action.payload.geometry[0].geometry.type === 'MultiPolygon') {
-      geoToTest = centroid(action.payload.geometry[0].geometry);
+    if (sanitizedGeo.geometry.type === 'MultiPolygon') {
+      geoToTest = centroid(sanitizedGeo.geometry);
     } else {
-      geoToTest = action.payload.geometry[0];
+      geoToTest = sanitizedGeo;
     }
-    if (action.payload.geometry) isWithinBC = booleanContains(bcArea.features[0] as any, geoToTest as any);
+    if (sanitizedGeo) isWithinBC = booleanContains(bcArea.features[0] as any, geoToTest as any);
 
     if (!isWithinBC) {
       yield put({
@@ -205,7 +227,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     yield put({
       type: ACTIVITY_UPDATE_GEO_SUCCESS,
       payload: {
-        geometry: action.payload.geometry,
+        geometry: [sanitizedGeo],
         utm: utm,
         lat: latitude,
         long: longitude,
