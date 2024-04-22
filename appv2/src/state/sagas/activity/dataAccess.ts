@@ -107,16 +107,15 @@ export function* handle_ACTIVITY_PASTE_REQUEST(action) {
   }
 }
 const checkForMisLabledMultiPolygon = (input) => {
-  if (input.type !== 'MultiPolygon') {
-    console.log('***banana');
+  if (input.geometry.type !== 'MultiPolygon') {
     return false;
   }
   if (
-    input.type === 'MultiPolygon' &&
+    input.geometry.type === 'MultiPolygon' &&
     input.geometry.coordinates.length === 1 &&
     input.geometry.coordinates[0][0][0].length === 2
   ) {
-    console.log('***apple');
+    console.log('MultiPolygon mislabeled as Polygon, correcting...')
     return true;
   }
   return false;
@@ -124,7 +123,7 @@ const checkForMisLabledMultiPolygon = (input) => {
 
 const fixMisLabledMultiPolygon = (input) => {
   if (checkForMisLabledMultiPolygon(input)) {
-    return { ...input, type: 'Feature', geometry: { ...input.geometry, coordinates: input.geometry.coordinates[0] } };
+    return { ...input, type: 'Feature', geometry: { ...input.geometry,type: "Polygon", coordinates: [...input.geometry.coordinates[0]] } };
   } else {
     return input;
   }
