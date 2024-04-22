@@ -1,10 +1,11 @@
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import './Header.css';
 import { Avatar, Box, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import {
+  AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
   AUTH_SIGNIN_REQUEST,
   AUTH_SIGNOUT_REQUEST,
   NETWORK_GO_OFFLINE,
@@ -14,7 +15,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { AdminPanelSettings, Assessment, FileUpload, Home, Map, School, WarningOutlined } from '@mui/icons-material';
+import { AdminPanelSettings, Assessment, FileUpload, Home, Map, School } from '@mui/icons-material';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
@@ -22,8 +23,32 @@ import { RENDER_DEBUG } from 'UI/App';
 import { Switch } from '@mui/base';
 import { useSelector } from '../../util/use_selector';
 import { selectAuth } from 'state/reducers/auth';
+import { selectConfiguration } from 'state/reducers/configuration';
 
-const Tab = (props: any) => {
+type TabPredicate =
+  'authenticated_any'
+  | 'authenticated_online'
+  | 'working_offline'
+  | 'unauthenticated'
+  | 'always'
+  | 'never'
+
+interface TabProps extends PropsWithChildren<any> {
+  predicate: TabPredicate;
+  path: string;
+  label: string;
+  panelOpen: boolean;
+  panelFullScreen: boolean;
+}
+
+const Tab: React.FC<TabProps> = ({
+                                   predicate,
+                                   children,
+                                   path,
+                                   label,
+                                   panelOpen,
+                                   panelFullScreen
+                                 }) => {
   const ref = useRef(0);
   ref.current += 1;
 
@@ -32,32 +57,24 @@ const Tab = (props: any) => {
 
   const dispatch = useDispatch();
   const authenticated = useSelector((state: any) => state?.Auth.authenticated && state?.Auth.roles.length > 0);
+  const  workingOffline  = useSelector((state: any) => state?.Auth.workingOffline);
 
   const canDisplayCallBack = useCallback(() => {
-    if (props.loggedOutOnly && authenticated) {
-      return false;
+    switch (predicate) {
+      case 'always':
+        return true;
+      case 'never':
+        return false;
+      case 'unauthenticated':
+        return !workingOffline && !authenticated;
+      case 'authenticated_online':
+        return authenticated && !workingOffline;
+      case 'working_offline':
+        return workingOffline;
+      case 'authenticated_any':
+        return authenticated || workingOffline;
     }
-
-    if (props.loggedOutOnly && !authenticated) {
-      return true;
-    }
-
-    if (props.loggedInOnly && !authenticated) {
-      return false;
-    }
-
-    if (props.loggedInOnly && authenticated) {
-      return true;
-    }
-
-    if (!props.loggedInOnly) {
-      return true;
-    }
-
-    if (!authenticated) {
-      return false;
-    }
-  }, [JSON.stringify(authenticated), JSON.stringify(props.loggedInOnly), JSON.stringify(props.path)]);
+  }, [authenticated, workingOffline, predicate, JSON.stringify(path)]);
 
   useEffect(() => {
     const scrollContainer = document.getElementById('ButtonWrapper');
@@ -89,16 +106,16 @@ const Tab = (props: any) => {
     <>
       {canDisplayCallBack() ? (
         <div
-          className={'Tab' + (urlFromAppModeState === props.path ? ' Tab__Indicator' : '')}
+          className={'Tab' + (urlFromAppModeState === path ? ' Tab__Indicator' : '')}
           onClick={() => {
-            history.push(props.path);
+            history.push(path);
             dispatch({
               type: TOGGLE_PANEL,
-              payload: { panelOpen: props.panelOpen, fullScreen: props.panelFullScreen }
+              payload: { panelOpen: panelOpen, fullScreen: panelFullScreen }
             });
           }}>
-          <div className='Tab__Content'>{props.children}</div>
-          <div className='Tab__Label'>{props.label}</div>
+          <div className='Tab__Content'>{children}</div>
+          <div className='Tab__Label'>{label}</div>
         </div>
       ) : (
         <></>
@@ -121,7 +138,7 @@ const ButtonWrapper = (props: any) => {
   );
 };
 
-const LoginButton = () => {
+const LoginButton = ({ labelText = 'Login' }) => {
   const dispatch = useDispatch();
   return (
     <MenuItem
@@ -131,7 +148,7 @@ const LoginButton = () => {
       <ListItemIcon>
         <VpnKeyIcon />
       </ListItemIcon>
-      Login
+      {labelText}
     </MenuItem>
   );
 };
@@ -178,7 +195,7 @@ const ActivityTabMemo = (props) => {
       key={'tab3'}
       path={'/Records/Activity:' + activeActivity + '/form'}
       label='Current Activity'
-      loggedInOnly={true}
+      predicate={'authenticated_online'}
       panelOpen={true}
       panelFullScreen={false}>
       <AssignmentIcon />
@@ -193,7 +210,7 @@ const IAPPTabMemo = (props) => {
       key={'tab4'}
       path={'/Records/IAPP/' + activeIAPP + '/summary'}
       label='Current IAPP'
-      loggedInOnly={true}
+      predicate={'authenticated_online'}
       panelOpen={true}
       panelFullScreen={false}>
       <img alt='iapp logo' src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
@@ -206,7 +223,13 @@ const AdminPanelMemo = (props) => {
   return (
     <>
       {roles.find((role) => role.role_id === 18) ? (
-        <Tab key={'tab9'} path={'/Admin'} label='Admin' panelOpen={true} loggedInOnly={true} panelFullScreen={true}>
+        <Tab
+          key={'tab9'}
+          path={'/Admin'}
+          label='Admin'
+          panelOpen={true}
+          predicate={'authenticated_online'}
+          panelFullScreen={true}>
           <AdminPanelSettings />
         </Tab>
       ) : (
@@ -219,13 +242,33 @@ const AdminPanelMemo = (props) => {
 const LoginOrOutMemo = React.memo((props) => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const authenticated = useSelector((state: any) => state?.Auth?.authenticated);
+  const { MOBILE } = useSelector(selectConfiguration);
+  const { authenticated, offlineUsers, workingOffline } = useSelector(selectAuth);
   const activated = useSelector((state: any) => state?.UserInfo?.activated);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
+  const [offlineUserSelectionAvailable, setOfflineUserSelectionAvailable] = useState(false);
+
+  useEffect(() => {
+      if (!MOBILE) {
+        setOfflineUserSelectionAvailable(false);
+        return;
+      }
+      if (workingOffline) {
+        setOfflineUserSelectionAvailable(false);
+        return;
+      }
+      if (offlineUsers.length > 0) {
+        setOfflineUserSelectionAvailable(true);
+      }
+    },
+    [offlineUsers, workingOffline]
+  );
+
   const handleClose = () => {
     setAnchorEl(null);
     // setOpen(false);
@@ -287,10 +330,30 @@ const LoginOrOutMemo = React.memo((props) => {
             Request Access
           </MenuItem>
         )}
-        {authenticated ? <LogoutButton /> : <LoginButton />}
+        {offlineUserSelectionAvailable &&
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+
+              dispatch({
+                type: AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
+                payload: { state: true }
+              });
+
+            }}>
+            <ListItemIcon>
+              <AssignmentIcon />
+            </ListItemIcon>
+            Choose Offline User
+          </MenuItem>
+        }
+        {(!authenticated && !workingOffline) && <LoginButton />}
+        {workingOffline && <LoginButton labelText={'Go Online'} />}
+        {(authenticated || workingOffline) && <LogoutButton />}
       </Menu>
     </Box>
-  );
+  )
+    ;
 });
 
 const NetworkStateControl: React.FC = () => {
@@ -330,14 +393,21 @@ export const Header: React.FC = () => {
           key={'tab1'}
           currentPath={history.location.pathname}
           path={'/Landing'}
-          loggedInOnly={false}
+          predicate={'always'}
           label='Home'
           panelOpen={true}
           panelFullScreen={true}>
           <Home />
         </Tab>
 
-        <Tab key={'tab2'} path='/Records' label='Records' loggedInOnly={true} panelOpen={true} panelFullScreen={false}>
+        <Tab
+          key={'tab2'}
+          path='/Records'
+          label='Records'
+          predicate={'authenticated_any'}
+          panelOpen={true}
+          panelFullScreen={false}
+        >
           <ManageSearchIcon />
         </Tab>
 
@@ -349,13 +419,20 @@ export const Header: React.FC = () => {
           key={'tab5'}
           path={'/Batch/list'}
           label='Batch'
-          loggedInOnly={true}
+          predicate={'authenticated_online'}
           panelOpen={true}
           panelFullScreen={true}>
           <FileUpload />
         </Tab>
 
-        <Tab key={'tab6'} path={'/Reports'} label='Reports' loggedInOnly={true} panelOpen={true} panelFullScreen={true}>
+        <Tab
+          key={'tab6'}
+          path={'/Reports'}
+          label='Reports'
+          predicate={'authenticated_online'}
+          panelOpen={true}
+          panelFullScreen={true}
+        >
           <Assessment />
         </Tab>
 
@@ -363,7 +440,7 @@ export const Header: React.FC = () => {
           key={'tab7'}
           path={'/Training'}
           label='Training'
-          loggedInOnly={false}
+          predicate={'always'}
           panelOpen={true}
           panelFullScreen={true}>
           <School />
@@ -371,7 +448,17 @@ export const Header: React.FC = () => {
 
         <AdminPanelMemo />
 
+<<<<<<< HEAD
         <Tab key={'tab8'} path={'/Map'} label='Map' loggedOutOnly={true} panelOpen={false}>
+=======
+        <Tab
+          key={'tab8'}
+          path={'/'}
+          label='Map'
+          predicate={'unauthenticated'}
+          panelOpen={false}
+        >
+>>>>>>> 19544fbe (Select a remembered offline user when working on mobile)
           <Map />
         </Tab>
 

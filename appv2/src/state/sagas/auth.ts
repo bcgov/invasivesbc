@@ -20,7 +20,7 @@ import {
   AUTH_REFRESH_TOKEN,
   AUTH_REINIT,
   AUTH_REQUEST_COMPLETE,
-  AUTH_REQUEST_ERROR,
+  AUTH_REQUEST_ERROR, AUTH_SAVE_CURRENT_TO_OFFLINE,
   AUTH_SET_DISRUPTED,
   AUTH_SET_RECOVERED_FROM_DISRUPTION,
   AUTH_SIGNIN_REQUEST,
@@ -35,7 +35,6 @@ import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
 import { selectAuth, selectAuthHeaders } from '../reducers/auth';
 import { Http } from '@capacitor-community/http';
-import { END } from 'redux-saga';
 
 const MIN_TOKEN_FRESHNESS = 20; //want our token to be good for at least this long at all times
 const TOKEN_REFRESH_INTERVAL = 5 * 1000;
@@ -245,6 +244,11 @@ function* refreshRoles() {
         userInfo: userData.result.extendedInfo
       }
     });
+
+    yield put({
+      type: AUTH_SAVE_CURRENT_TO_OFFLINE
+    });
+
     yield put({
       type: TABS_GET_INITIAL_STATE_REQUEST,
       payload: {

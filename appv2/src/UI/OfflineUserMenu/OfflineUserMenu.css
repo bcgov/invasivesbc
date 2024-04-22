@@ -1,0 +1,20 @@
+.offlineUserDialogSubtitle {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.userList {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.userSelection {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.userButton {
+  flex-grow: 2;
+}
