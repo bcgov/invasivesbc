@@ -1158,6 +1158,9 @@ const Mussels_Officer_Shift = {
         'ui:inline': true,
         'ui:widget': 'radio'
       },
+      watercraftComplexity: {
+       'ui:widget': 'single-select-autocomplete' 
+      }
     }
   },
   inspections : {
