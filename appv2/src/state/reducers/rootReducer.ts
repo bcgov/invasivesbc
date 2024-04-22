@@ -17,6 +17,7 @@ import { errorHandlerReducer } from './error_handler';
 
 import storage from 'redux-persist/lib/storage';
 import hardSet from 'redux-persist/lib/stateReconciler/hardSet';
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 
 import { persistReducer } from 'redux-persist';
 import { createOfflineActivityReducer } from './offlineActivity';
@@ -25,7 +26,12 @@ function createRootReducer(config: AppConfig) {
   return combineReducers({
     AppMode: appMode,
     Configuration: createConfigurationReducerWithDefaultState(config),
-    Auth: createAuthReducer(config),
+    Auth: persistReducer({
+      key: 'auth',
+      storage,
+      stateReconciler: autoMergeLevel2,
+      whitelist: ['offlineUsers']
+    }, createAuthReducer(config)),
     UserInfo: createUserInfoReducer({ loaded: false, accessRequested: false, activated: false }),
     Network: createNetworkReducer({ connected: true }),
     ActivityPage: createActivityReducer(config),

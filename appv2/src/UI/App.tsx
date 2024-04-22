@@ -35,6 +35,8 @@ import { ButtonContainer } from './Map2/Controls/ButtonContainer';
 import CustomizeLayerMenu from './Map2/Controls/CustomizeLayerDialog';
 import { ConnectivityErrorHandler } from 'UI/ErrorHandler/ConnectivityErrorHandler';
 import { selectAuth } from 'state/reducers/auth';
+import { OfflineUserMenu } from 'UI/OfflineUserMenu/OfflineUserMenu';
+import { MobileOnly } from 'UI/Predicates/MobileOnly';
 
 export const RENDER_DEBUG = false;
 
@@ -118,7 +120,7 @@ const OverlayContentMemo = (props) => {
                     history.push(url);
                   }}
                   variant='contained'>
-                  Open 
+                  Open
                 </Button>
               </OverlayMenu>
             )}
@@ -166,12 +168,15 @@ const App: React.FC = () => {
       <Map>
         <ButtonContainer />
         <LayerPicker />
-  </Map>
+      </Map>
       <Overlay>
         <OverlayContentMemo />
       </Overlay>
       <Footer />
       <NewRecordDialog />
+      <MobileOnly>
+        <OfflineUserMenu />
+      </MobileOnly>
       <CustomizeLayerMenu />
     </div>
   );

@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import { createRootReducer } from './reducers/rootReducer';
 import { createLogger } from 'redux-logger';
-import { AUTH_INITIALIZE_REQUEST, RECORDSET_UPDATE_FILTER, URL_CHANGE } from './actions';
+import { AUTH_INITIALIZE_REQUEST, URL_CHANGE } from './actions';
 import activityPageSaga from './sagas/activity';
 import authenticationSaga from './sagas/auth';
 import batchSaga from './sagas/batch';
@@ -52,8 +52,7 @@ export function setupStore(configuration: AppConfig) {
   });
 
 
-
-  if(!configuration.TEST && configuration.DEBUG) {
+  if (!configuration.TEST && configuration.DEBUG) {
     globalStore = configureStore({
       reducer: createRootReducer(configuration),
       middleware: (getDefaultMiddleware) => {
@@ -110,6 +109,7 @@ export function setupStore(configuration: AppConfig) {
   storeRef.store = globalStore;
 
   return { store: globalStore, persistor: persistStore(globalStore) };
+
 }
 
 export { historySingleton };
