@@ -1045,6 +1045,7 @@ const Observation_Mussels_Information = {
         previousWaterBody: {
           items: {
             previousWaterbody: { 'ui:widget': 'single-select-autocomplete' },
+            numberOfDaysOut: {'ui:widget': 'single-select-autocomplete'},
             previousMajorCity: { 'ui:widget': 'single-select-autocomplete' }
           }
         },
