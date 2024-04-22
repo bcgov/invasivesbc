@@ -72,6 +72,8 @@ const OverlayContentMemo = (props) => {
       <Route exact path="/">
           <Redirect to="/Landing" /> : 
   </Route>
+
+      <Route path='/Map' render={(props) => <></>} />
       <Route path='/Landing' render={(props) => <LandingComponent />} />
       <Route exact={true} path='/Records' render={(props) => <Records />} />
       <Route
