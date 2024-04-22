@@ -1,5 +1,4 @@
 import { NullSwitch } from "./Mussels_Sub_Form"
-import { Observation_Mussels_Information } from "./Observation_Sub_Forms"
 /** @desc Reusable Time String input field */
 export const TimeCapture = {
   type: 'string',
@@ -32,12 +31,13 @@ export const Blowby = {
     watercraftComplexity: {
       title: 'Watercraft Complexity',
       type: 'string',
-      enum: [
-        'Non-motorized',
-        'Simple',
-        'Complex',
-        'Very Complex'
-      ]
+      'x-enum-code': {
+        'x-enum-code-category-name': 'invasives',
+        'x-enum-code-header-name': 'watercraft_complexity',
+        'x-enum-code-name': 'code_name',
+        'x-enum-code-text': 'code_description',
+        'x-enum-code-sort-order': 'code_sort_order'
+      },
     },
     blowbyTime: {
       title: 'Blowby Time',
