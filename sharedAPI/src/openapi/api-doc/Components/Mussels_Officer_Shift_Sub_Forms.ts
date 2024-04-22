@@ -15,13 +15,14 @@ export const DateCapture = {
  */
 export const Station = {
   type: 'string',
-  enum: [
-    'Osoyoos',
-    'Prince George',
-    'Richmond',
-    'Vancouver',
-    'Victoria',
-  ]
+  title: 'Station',
+  'x-enum-code': {
+    'x-enum-code-category-name': 'invasives',
+    'x-enum-code-header-name': 'inspect_officer_station',
+    'x-enum-code-name': 'code_name',
+    'x-enum-code-text': 'code_description',
+    'x-enum-code-sort-order': 'code_sort_order'
+  }
 }
 
 export const Blowby = {
