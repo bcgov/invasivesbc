@@ -113,13 +113,6 @@ export const ShiftOverview = {
   title: 'Shift Overview',
   type: 'object',
   properties: {
-    inspections: {
-      title: 'Inspections',
-      type: 'array',
-      items: {
-        ...Observation_Mussels_Information,
-      }
-    },
     Blowbys: {
       title: 'Shift Blowbys',
       type: 'array',
