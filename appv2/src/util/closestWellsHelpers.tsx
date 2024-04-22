@@ -7,7 +7,7 @@ import { getDataFromDataBCv2 } from './WFSConsumer';
 
 //gets layer data based on the layer name
 export function* getClosestWells(inputGeometry, online) {
-  const firstFeature = inputGeometry[0];
+  const firstFeature = inputGeometry;
   //get the map extent as geoJson polygon feature
   const bufferedGeo = buffer(firstFeature, 1, { units: 'kilometers' });
   //if well layer is selected
