@@ -870,7 +870,7 @@ export const initDrawModes = (
   // dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature})
 
   const customDrawListenerSelectionChange = (e) => {
-    const editedGeo = draw.getAll()?.features[0];
+    const editedGeo = draw?.getAll()?.features[0];
 
     /* try {
       console.dir(draw);
@@ -883,7 +883,7 @@ export const initDrawModes = (
 
     console.dir(e);
     console.dir(editedGeo);
-    if (editedGeo.id !== e?.features[0]?.id) {
+    if (editedGeo?.id !== e?.features?.[0]?.id) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
   };
