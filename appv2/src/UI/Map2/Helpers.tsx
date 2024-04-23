@@ -837,6 +837,7 @@ draw) => {
     //enforce one at a time everywhere
     const feature = e.features[0];
     try {
+      console.log('creating feature')
       console.dir(localDraw);
       if (localDraw) {
         localDraw?.deleteAll();
