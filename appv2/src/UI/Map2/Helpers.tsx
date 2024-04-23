@@ -834,7 +834,6 @@ draw) => {
   }
 
   const customDrawListenerCreate = (e) => {
-    alert('create')
     //enforce one at a time everywhere
     const feature = e.features[0];
     try {
