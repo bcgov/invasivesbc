@@ -212,7 +212,7 @@ export const Map = (props: any) => {
       activityGeo,
       drawingCustomLayer
     );
-  }, [whatsHereToggle, appModeUrl, mapReady, map.current, activityGeo, drawingCustomLayer, mapReady]);
+  }, [whatsHereToggle, appModeUrl, dispatch, map.current, activityGeo, drawingCustomLayer, mapReady]);
 
   //Current Activity & IAPP Markers
   useEffect(() => {
