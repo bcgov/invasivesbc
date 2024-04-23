@@ -727,8 +727,7 @@ export const initDrawModes = (
   hideControls,
   activityGeo,
   whats_here_toggle,
-  drawingCustomLayer
-) => {
+  drawingCustomLayer) => {
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map?._listeners[eName]?.map((l) => {
       if (/customDrawListener/.test(l.name)) {
@@ -839,8 +838,8 @@ export const initDrawModes = (
     try {
       console.dir(draw);
       if (draw) {
-        draw.deleteAll();
-        draw.add(feature);
+        draw?.deleteAll();
+        draw?.add(feature);
       }
     } catch (e) {
       console.log(e);
@@ -888,9 +887,11 @@ export const initDrawModes = (
     }
   };
 
+  map.on('load', () => {
   map.on('draw.create', customDrawListenerCreate);
   map.on('draw.update', customDrawListenerUpdate);
   map.on('draw.selectionchange', customDrawListenerSelectionChange);
+  });
 };
 
 export const handlePositionTracking = (
