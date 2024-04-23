@@ -729,6 +729,10 @@ export const initDrawModes = (
   whats_here_toggle,
   drawingCustomLayer, 
 draw) => {
+
+  console.log('Map event listeners:')
+  console.dir(map?._listeners)
+
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map?._listeners[eName]?.map((l) => {
       if (/customDrawListener/.test(l.name)) {
