@@ -727,7 +727,8 @@ export const initDrawModes = (
   hideControls,
   activityGeo,
   whats_here_toggle,
-  drawingCustomLayer) => {
+  drawingCustomLayer, 
+draw) => {
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map?._listeners[eName]?.map((l) => {
       if (/customDrawListener/.test(l.name)) {
@@ -802,7 +803,7 @@ export const initDrawModes = (
   };
 
   // Add the new draw mode to the MapboxDraw object
-  var draw = new MapboxDraw({
+  var localDraw = new MapboxDraw({
     displayControlsDefault: !hideControls,
     controls: {
       combine_features: false,
@@ -820,26 +821,27 @@ export const initDrawModes = (
       MapboxDraw.modes
     )
   });
-  map.addControl(draw, 'top-left');
+  map.addControl(localDraw, 'top-left');
 
   //  if(activityGeo)
   // draw.add(activityGeo[0])
 
-  drawSetter(draw);
+  drawSetter(localDraw);
 
   if (activityGeo) {
     console.dir(activityGeo);
-    draw.add({ type: 'FeatureCollection', features: activityGeo });
+    localDraw.add({ type: 'FeatureCollection', features: activityGeo });
   }
 
   const customDrawListenerCreate = (e) => {
+    alert('create')
     //enforce one at a time everywhere
     const feature = e.features[0];
     try {
-      console.dir(draw);
-      if (draw) {
-        draw?.deleteAll();
-        draw?.add(feature);
+      console.dir(localDraw);
+      if (localDraw) {
+        localDraw?.deleteAll();
+        localDraw?.add(feature);
       }
     } catch (e) {
       console.log(e);
@@ -869,7 +871,7 @@ export const initDrawModes = (
   // dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature})
 
   const customDrawListenerSelectionChange = (e) => {
-    const editedGeo = draw?.getAll()?.features[0];
+    const editedGeo = localDraw?.getAll()?.features[0];
 
     /* try {
       console.dir(draw);
@@ -887,11 +889,12 @@ export const initDrawModes = (
     }
   };
 
-  map.on('load', () => {
+  while(!localDraw) {
+    console.log('waiting for draw to init')
+  }
   map.on('draw.create', customDrawListenerCreate);
   map.on('draw.update', customDrawListenerUpdate);
   map.on('draw.selectionchange', customDrawListenerSelectionChange);
-  });
 };
 
 export const handlePositionTracking = (
@@ -1011,12 +1014,12 @@ export const refreshDrawControls = (
 
   if (!map.draw) {
     if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
-      initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle, null);
+      initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle, null, draw);
     } else if (/Records/.test(appModeUrl)) {
       if (/Activity/.test(appModeUrl)) {
-        initDrawModes(map, drawSetter, dispatch, uHistory, false, activityGeo, whatsHereToggle, drawingCustomLayer);
+        initDrawModes(map, drawSetter, dispatch, uHistory, false, activityGeo, whatsHereToggle, drawingCustomLayer, draw);
       } else {
-        initDrawModes(map, drawSetter, dispatch, uHistory, false, null, whatsHereToggle, drawingCustomLayer);
+        initDrawModes(map, drawSetter, dispatch, uHistory, false, null, whatsHereToggle, drawingCustomLayer, draw);
       }
     }
   }
