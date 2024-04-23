@@ -291,7 +291,7 @@ export const mapInit = (
     let nav = new NavigationControl();
     map.current.addControl(scale, 'top-left');
     map.current.addControl(nav, 'top-left');
-    refreshDrawControls(
+    /*refreshDrawControls(
       map.current,
       null,
       drawSetter,
@@ -301,7 +301,7 @@ export const mapInit = (
       appModeUrl,
       activityGeo,
       null
-    );
+    );*/
   });
 };
 
