@@ -885,10 +885,6 @@ export const initDrawModes = (
 
   drawSetter(localDraw);
 
-  if (activityGeo) {
-    console.dir(activityGeo);
-    localDraw.add({ type: 'FeatureCollection', features: activityGeo });
-  }
 
   const drawCreateListener = customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle);
   const drawUpdatelistener = customDrawListenerUpdate(localDraw);
@@ -903,6 +899,11 @@ export const initDrawModes = (
   attachedListeners.push(new WeakRef(drawCreateListener));
 
   map.addControl(localDraw, 'top-left');
+
+  if (activityGeo) {
+    console.dir(activityGeo);
+    localDraw.add({ type: 'FeatureCollection', features: activityGeo });
+  }
 };
 
 export const handlePositionTracking = (
