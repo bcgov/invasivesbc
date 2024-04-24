@@ -11,6 +11,7 @@ import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { MAP_WHATS_HERE_FEATURE, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import { feature } from '@turf/helpers';
 import proj4 from 'proj4';
+import { attach } from 'ionicons/icons';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
 // @ts-ignore
@@ -761,6 +762,8 @@ const customDrawListenerSelectionChange = (drawInstance: MapboxDraw, dispatch) =
 };
 
 
+const attachedListeners = [];
+
 export const initDrawModes = (
   map,
   drawSetter,
@@ -777,7 +780,11 @@ export const initDrawModes = (
 
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map._listeners[eName]?.map((l) => {
-      map.off(eName, l);
+      if (attachedListeners.includes(l)) {
+        // remove from ref list
+        attachedListeners.slice(attachedListeners.indexOf(l), 1);
+        map.off(eName, l);
+      }
     });
   });
 
@@ -873,9 +880,17 @@ export const initDrawModes = (
     localDraw.add({ type: 'FeatureCollection', features: activityGeo });
   }
 
-  map.on('draw.create', customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle));
-  map.on('draw.update', customDrawListenerUpdate(localDraw));
-  map.on('draw.selectionchange', customDrawListenerSelectionChange(localDraw, dispatch));
+  const draw_createListener = customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle);
+  const draw_updatelistener = customDrawListenerUpdate(localDraw);
+  const draw_selectionchangeListener = customDrawListenerSelectionChange(localDraw, dispatch);
+
+  map.on('draw.create', draw_createListener);
+  map.on('draw.update', draw_updatelistener);
+  map.on('draw.selectionchange', draw_selectionchangeListener);
+
+  attachedListeners.push(draw_selectionchangeListener);
+  attachedListeners.push(draw_updatelistener);
+  attachedListeners.push(draw_createListener);
 
   map.addControl(localDraw, 'top-left');
 };
