@@ -68,7 +68,6 @@ export const ShiftStartSection = {
       type: 'string'
     },
     station: {
-      title: 'Station',
       ...Station
     },
   },
