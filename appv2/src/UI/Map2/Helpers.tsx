@@ -49,7 +49,7 @@ export const mapInit = (
       return;
     }
 
-    if(!e?.clientX || !e?.clientY) {
+    if (!e?.clientX || !e?.clientY) {
       return;
     }
 
@@ -719,6 +719,48 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
 };
 
+
+const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_toggle) => (e) => {
+  //enforce one at a time everywhere
+  const feature = e.features[0];
+  try {
+    console.log('creating feature');
+    if (drawInstance) {
+      drawInstance.deleteAll();
+      drawInstance.add(feature);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+
+  // For whats here
+  if (whats_here_toggle) {
+    dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
+    uHistory.push('/WhatsHere');
+  } else {
+    dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
+  }
+};
+
+const customDrawListenerUpdate = (drawInstance: MapboxDraw) => (e) => {
+  const feature = e.features[0];
+  console.dir(feature);
+
+};
+
+const customDrawListenerSelectionChange = (drawInstance: MapboxDraw, dispatch) => (e) => {
+  console.dir(e);
+
+  const editedGeo = drawInstance.getAll().features[0];
+
+  console.dir(e);
+  console.dir(editedGeo);
+  if (editedGeo?.id !== e?.features?.[0]?.id) {
+    dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
+  }
+};
+
+
 export const initDrawModes = (
   map,
   drawSetter,
@@ -728,21 +770,19 @@ export const initDrawModes = (
   activityGeo,
   whats_here_toggle,
   drawingCustomLayer,
-draw) => {
+  draw) => {
 
   console.log('Map event listeners:');
   console.dir(map?._listeners);
 
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
-    map?._listeners[eName]?.map((l) => {
-      if (/customDrawListener/.test(l.name)) {
-        map.off(eName, l);
-      }
+    map._listeners[eName]?.map((l) => {
+      map.off(eName, l);
     });
   });
 
   var DoNothing: any = {};
-  DoNothing.onSetup = function (opts) {
+  DoNothing.onSetup = function(opts) {
     //  if(map.draw && activityGeo)
     if (activityGeo) {
       this.addFeature(this.newFeature(activityGeo[0]));
@@ -752,11 +792,11 @@ draw) => {
     state.count = opts.count || 0;
     return state;
   };
-  DoNothing.onClick = function (state, e) {
+  DoNothing.onClick = function(state, e) {
     this.changeMode('draw_polygon');
   };
 
-  DoNothing.toDisplayFeatures = function (state, geojson, display) {
+  DoNothing.toDisplayFeatures = function(state, geojson, display) {
     geojson.properties.active = MapboxDraw.constants.activeStates.ACTIVE;
     display(geojson);
   };
@@ -771,14 +811,14 @@ draw) => {
   // When the mode starts this function will be called.
   // The `opts` argument comes from `draw.changeMode('lotsofpoints', {count:7})`.
   // The value returned should be an object and will be passed to all other lifecycle functions
-  LotsOfPointsMode.onSetup = function (opts) {
+  LotsOfPointsMode.onSetup = function(opts) {
     var state: any = {};
     state.count = opts.count || 0;
     return state;
   };
 
   // Whenever a user clicks on the map, Draw will call `onClick`
-  LotsOfPointsMode.onClick = function (state, e) {
+  LotsOfPointsMode.onClick = function(state, e) {
     // `this.newFeature` takes geojson and makes a DrawFeature
     var point = this.newFeature({
       type: 'Feature',
@@ -794,7 +834,7 @@ draw) => {
   };
 
   // Whenever a user clicks on a key while focused on the map, it will be sent here
-  LotsOfPointsMode.onKeyUp = function (state, e) {
+  LotsOfPointsMode.onKeyUp = function(state, e) {
     if (e.keyCode === 27) return this.changeMode('simple_select');
   };
 
@@ -802,12 +842,12 @@ draw) => {
   // It decides which features currently in Draw's data store will be rendered on the map.
   // All features passed to `display` will be rendered, so you can pass multiple display features per internal feature.
   // See `styling-draw` in `API.md` for advice on making display features
-  LotsOfPointsMode.toDisplayFeatures = function (state, geojson, display) {
+  LotsOfPointsMode.toDisplayFeatures = function(state, geojson, display) {
     display(geojson);
   };
 
   // Add the new draw mode to the MapboxDraw object
-  var localDraw = new MapboxDraw({
+  const localDraw = new MapboxDraw({
     displayControlsDefault: !hideControls,
     controls: {
       combine_features: false,
@@ -825,10 +865,6 @@ draw) => {
       MapboxDraw.modes
     )
   });
-  map.addControl(localDraw, 'top-left');
-
-  //  if(activityGeo)
-  // draw.add(activityGeo[0])
 
   drawSetter(localDraw);
 
@@ -837,68 +873,11 @@ draw) => {
     localDraw.add({ type: 'FeatureCollection', features: activityGeo });
   }
 
-  const customDrawListenerCreate = (e) => {
-    //enforce one at a time everywhere
-    const feature = e.features[0];
-    try {
-      console.log('creating feature')
-      console.dir(localDraw);
-      if (localDraw) {
-        localDraw?.deleteAll();
-        localDraw?.add(feature);
-      }
-    } catch (e) {
-      console.log(e);
-    }
+  map.on('draw.create', customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle));
+  map.on('draw.update', customDrawListenerUpdate(localDraw));
+  map.on('draw.selectionchange', customDrawListenerSelectionChange(localDraw, dispatch));
 
-    // For whats here
-    if (whats_here_toggle) {
-      dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
-      uHistory.push('/WhatsHere');
-    } else {
-      dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
-    }
-  };
-
-  const customDrawListenerUpdate = (e) => {
-    const feature = e.features[0];
-    console.dir(feature);
-    /* try {
-      console.dir(draw);
-      draw.deleteAll();
-      draw.add(feature);
-    } catch (e) {
-      console.log(e);
-    }
-    */
-  };
-  // dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature})
-
-  const customDrawListenerSelectionChange = (e) => {
-    const editedGeo = localDraw?.getAll()?.features[0];
-
-    /* try {
-      console.dir(draw);
-      draw.deleteAll();
-      draw.add(feature);
-    } catch (e) {
-      console.log(e);
-    }
-    */
-
-    console.dir(e);
-    console.dir(editedGeo);
-    if (editedGeo?.id !== e?.features?.[0]?.id) {
-      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
-    }
-  };
-
-  while(!localDraw) {
-    console.log('waiting for draw to init')
-  }
-  map.on('draw.create', customDrawListenerCreate);
-  map.on('draw.update', customDrawListenerUpdate);
-  map.on('draw.selectionchange', customDrawListenerSelectionChange);
+  map.addControl(localDraw, 'top-left');
 };
 
 export const handlePositionTracking = (
@@ -962,7 +941,7 @@ export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
           source: layer.url,
           minzoom: 0,
           paint: {
-            'raster-opacity': layer.opacity? layer.opacity: 1
+            'raster-opacity': layer.opacity ? layer.opacity : 1
           }
         });
   });
