@@ -45,7 +45,7 @@ export const Blowby = {
       ...TimeCapture
     },
     reportedToRapp: {
-      title: '📝 Reported to RAPP',
+      title: 'Reported to RAPP',
       ...NullSwitch
     },
   },
@@ -81,11 +81,11 @@ export const ShiftEndSection = {
   type: 'object',
   properties: {
     k9OnShift: {
-      title: '🐕 K9 on Shift',
+      title: 'K9 on Shift',
       ...NullSwitch
     },
     boatsInspected: {
-      title: '⛵️ Boats Inspected',
+      title: 'Boats Inspected',
       ...NullSwitch
     },
     shiftEndTime: {
