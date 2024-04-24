@@ -762,7 +762,7 @@ const customDrawListenerSelectionChange = (drawInstance: MapboxDraw, dispatch) =
 };
 
 
-const attachedListeners = [];
+const attachedListeners: WeakRef<Function>[] = [];
 
 export const initDrawModes = (
   map,
@@ -780,9 +780,19 @@ export const initDrawModes = (
 
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map._listeners[eName]?.map((l) => {
-      if (attachedListeners.includes(l)) {
+      let indexToSplice = -1;
+      let refFound = false;
+
+      for (let i = 0; i < attachedListeners.length; i++) {
+        if (attachedListeners[i].deref() === l) {
+          refFound = true;
+          indexToSplice = i;
+        }
+      }
+
+      if (refFound) {
         // remove from ref list
-        attachedListeners.slice(attachedListeners.indexOf(l), 1);
+        attachedListeners.splice(indexToSplice, 1);
         map.off(eName, l);
       }
     });
@@ -880,17 +890,17 @@ export const initDrawModes = (
     localDraw.add({ type: 'FeatureCollection', features: activityGeo });
   }
 
-  const draw_createListener = customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle);
-  const draw_updatelistener = customDrawListenerUpdate(localDraw);
-  const draw_selectionchangeListener = customDrawListenerSelectionChange(localDraw, dispatch);
+  const drawCreateListener = customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle);
+  const drawUpdatelistener = customDrawListenerUpdate(localDraw);
+  const drawSelectionchangeListener = customDrawListenerSelectionChange(localDraw, dispatch);
 
-  map.on('draw.create', draw_createListener);
-  map.on('draw.update', draw_updatelistener);
-  map.on('draw.selectionchange', draw_selectionchangeListener);
+  map.on('draw.create', drawCreateListener);
+  map.on('draw.update', drawUpdatelistener);
+  map.on('draw.selectionchange', drawSelectionchangeListener);
 
-  attachedListeners.push(draw_selectionchangeListener);
-  attachedListeners.push(draw_updatelistener);
-  attachedListeners.push(draw_createListener);
+  attachedListeners.push(new WeakRef(drawSelectionchangeListener));
+  attachedListeners.push(new WeakRef(drawUpdatelistener));
+  attachedListeners.push(new WeakRef(drawCreateListener));
 
   map.addControl(localDraw, 'top-left');
 };
