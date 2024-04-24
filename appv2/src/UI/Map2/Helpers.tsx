@@ -727,11 +727,11 @@ export const initDrawModes = (
   hideControls,
   activityGeo,
   whats_here_toggle,
-  drawingCustomLayer, 
+  drawingCustomLayer,
 draw) => {
 
-  console.log('Map event listeners:')
-  console.dir(map?._listeners)
+  console.log('Map event listeners:');
+  console.dir(map?._listeners);
 
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map?._listeners[eName]?.map((l) => {
@@ -962,7 +962,7 @@ export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
           source: layer.url,
           minzoom: 0,
           paint: {
-            'raster-opacity': layer.opacity? layer.opacity: 1 
+            'raster-opacity': layer.opacity? layer.opacity: 1
           }
         });
   });
