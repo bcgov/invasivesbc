@@ -134,7 +134,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     const { latitude, longitude } = calculateLatLng(action.payload.geometry) || {};
     let utm;
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
-    const reported_area = calculateGeometryArea(action.payload.geometry);
+    let reported_area = calculateGeometryArea(action.payload.geometry);
 
     if (action.payload.geometry.length < 1) {
       yield put({
@@ -152,6 +152,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     }
     const sanitizedGeo = fixMisLabledMultiPolygon(action.payload.geometry[0]);
     const isPointGeometry = sanitizedGeo.geometry.type === 'Point';
+    reported_area = calculateGeometryArea([sanitizedGeo]);
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       if (hasSelfIntersections) {
