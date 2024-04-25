@@ -27,12 +27,7 @@ export async function up(knex: Knex) {
       ('Non-Provincial Government Staff - Plants', 'indigenous_riso_staff_plants', 'standard_user'),
       ('Non-Provincial Government Staff - Both', 'indigenous_riso_staff_both', 'standard_user'),
       ('Master Administrator', 'master_administrator', 'master_admin'),
-      ('Administrator - Mussels Only', 'administrator_mussels', 'standard_user'),
-      ('BC Government Staff User - Mussels', 'bcgov_staff_mussels', 'standard_user'),
-      ('Contractor Manager - Mussels', 'contractor_manager_mussels', 'standard_user'),
-      ('Contractor Staff - Mussels', 'contractor_staff_mussels', 'standard_user'),
-      ('Non-Provincial Government Manager - Mussels', 'indigenous_riso_manager_mussels', 'standard_user'),
-      ('Non-Provincial Government Staff - Mussels', 'indigenous_riso_staff_mussels', 'standard_user')
+      ('Mussels Inspection Officer', 'mussel_inspection_officer', 'standard_user')
     ) AS new_role(role_description, role_name, metabase_group)
   WHERE NOT EXISTS (
     SELECT 1 
@@ -47,6 +42,6 @@ export async function down(knex: Knex) {
     DELETE FROM
       invasivesbc.user_role
     WHERE
-      role_description ILIKE '%MUSSELS%';
+      role_description = 'Mussels Inspection Officer';
   `);
 }
