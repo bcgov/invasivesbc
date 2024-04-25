@@ -1310,7 +1310,18 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     });
 
     return { data, status, url };
-  } else {
+  }
+  else if (method === 'DELETE' && endpoint.includes('admin-defined-shapes')) {
+    const { data, status, url } = yield Http.request({
+      method: method,
+      headers: { ...options.headers, 'Content-Type': 'application/json'},
+      url: options.baseUrl + endpoint,
+      data: payloadData
+    });
+
+    return { data, status, url };
+  }
+  else {
     const { data, status, url } = yield Http.request({
       method: method,
       headers: { ...options.headers },
