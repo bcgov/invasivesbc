@@ -166,12 +166,6 @@ export const mapInit = (
         },
         layers: [
           {
-            id: 'Esri-Sat-Label',
-            type: 'raster',
-            source: 'Esri-Sat-Label',
-            minzoom: 0
-          },
-          {
             id: 'Esri-Sat-LayerHD',
             type: 'raster',
             source: 'Esri-Sat-LayerHD',
@@ -181,6 +175,12 @@ export const mapInit = (
             id: 'Esri-Sat-LayerSD',
             type: 'raster',
             source: 'Esri-Sat-LayerSD',
+            minzoom: 0
+          },
+          {
+            id: 'Esri-Sat-Label',
+            type: 'raster',
+            source: 'Esri-Sat-Label',
             minzoom: 0
           },
           {
