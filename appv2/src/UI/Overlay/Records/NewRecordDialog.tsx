@@ -47,13 +47,11 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   useEffect(() => {
     const categories = [];
     categories.push('Plant');
-    categories.push('Mussels');
-    if (
-      accessRoles.some((role) => {
-        return role.role_name === 'frep';
-      })
-    ) {
+    if (accessRoles.some((role: Record<string, any>) => role.role_name === 'frep')) {
       categories.push('FREP');
+    }
+    if (accessRoles.some((role: Record<string, any>) => role.role_name === 'mussel_inspection_officer' || role.role_name === 'master_administrator')) {
+      categories.push('Mussels');
     }
     setActivityCategorySelectOptions(categories);
     // TODO: Update this to cache for mobile as well

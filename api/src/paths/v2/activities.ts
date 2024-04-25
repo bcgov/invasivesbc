@@ -135,6 +135,11 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   } else {
     sanitizedSearchCriteria.serverSideNamedFilters.hideTreatmentsAndMonitoring = false;
   }
+  if (!isAuth || !roleName || !(roleName.includes('mussel_inspection_officer') || roleName.includes('master_administrator'))) {
+    sanitizedSearchCriteria.serverSideNamedFilters.hideMusselsInspections = true;
+  } else {
+    sanitizedSearchCriteria.serverSideNamedFilters.hideMusselsInspections = false;
+  }
   if (!isAuth) {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = true;
   } else {
@@ -642,7 +647,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
   }
-
+  if ( filterObject.serverSideNamedFilters.hideMusselsInspections) {
+    where.append(`and ${tableAlias}.activity_subtype not in ('Activity_Observation_Mussels', 'Activity_Officer_Shift')`);
+  }
   if (filterObject.restrictVisibleDraftActivities) {
     if (filterObject.preferredUsername) {
       where.append(
