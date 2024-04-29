@@ -1,4 +1,4 @@
-name: AppV2 Android
+name: app Android
 on:
   workflow_dispatch: {}
   push:
@@ -18,12 +18,12 @@ jobs:
         with:
           node-version: 18.x
 
-      - name: Cache appv2 deps
+      - name: Cache app deps
         uses: actions/cache@v3
-        id: cache-appv2-deps
+        id: cache-app-deps
         with:
-          path: appv2/node_modules
-          key: ${{ runner.os }}-appv2-deps-${{ hashFiles('appv2/package-lock.json') }}
+          path: app/node_modules
+          key: ${{ runner.os }}-app-deps-${{ hashFiles('app/package-lock.json') }}
 
       - name: Cache shared deps
         uses: actions/cache@v3
@@ -38,14 +38,14 @@ jobs:
         run: |
           npm install
 
-      - name: Install Appv2 dependencies
-        if: steps.cache-appv2-deps.outputs.cache-hit != 'true'
-        working-directory: ./appv2
+      - name: Install app dependencies
+        if: steps.cache-app-deps.outputs.cache-hit != 'true'
+        working-directory: ./app
         run: |
           npm install --legacy-peer-deps
 
       - name: Run build
-        working-directory: ./appv2
+        working-directory: ./app
         env:
           NODE_OPTIONS: --max-old-space-size=6000
           REDIRECT_URI: ${{ secrets.APPV2_REDIRECT_URI }}
@@ -60,13 +60,13 @@ jobs:
 
       - name: Capacitor update
         run: npx cap update android
-        working-directory: ./appv2
+        working-directory: ./app
 
       - name: Capacitor copy
         run: npx cap copy android
-        working-directory: ./appv2
+        working-directory: ./app
 
       - name: Build For Release
-        working-directory: ./appv2/android
+        working-directory: ./app/android
         run: |
           ./gradlew bundleRelease

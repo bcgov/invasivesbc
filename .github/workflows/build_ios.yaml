@@ -1,4 +1,4 @@
-name: AppV2 IOS
+name: app IOS
 on:
   workflow_dispatch: {}
   push:
@@ -35,15 +35,15 @@ jobs:
         id: cache-dd-restore
         uses: actions/cache/restore@v4
         with:
-          path: appv2/ios/App/xcbuild/Build
+          path: app/ios/App/xcbuild/Build
           key: ${{ runner.os }}-dd
 
-      - name: Cache appv2 deps
+      - name: Cache app deps
         uses: actions/cache@v4
-        id: cache-appv2-deps
+        id: cache-app-deps
         with:
-          path: appv2/node_modules
-          key: ${{ runner.os }}-arm64-appv2-deps-${{ hashFiles('appv2/package-lock.json') }}
+          path: app/node_modules
+          key: ${{ runner.os }}-arm64-app-deps-${{ hashFiles('app/package-lock.json') }}
 
       - name: Cache shared deps
         uses: actions/cache@v4
@@ -56,7 +56,7 @@ jobs:
         uses: actions/cache@v4
         id: cache-pods
         with:
-          path: appv2/ios/App/Pods
+          path: app/ios/App/Pods
           key: ${{ runner.os }}-arm64-pods-${{ hashFiles('**/Podfile.lock') }}
 
       - name: Install sharedAPI dependencies
@@ -65,14 +65,14 @@ jobs:
         run: |
           npm install
 
-      - name: Install Appv2 dependencies
-        if: steps.cache-appv2-deps.outputs.cache-hit != 'true'
-        working-directory: ./appv2
+      - name: Install app dependencies
+        if: steps.cache-app-deps.outputs.cache-hit != 'true'
+        working-directory: ./app
         run: |
           npm install --legacy-peer-deps
 
       - name: Run build
-        working-directory: ./appv2
+        working-directory: ./app
         env:
           NODE_OPTIONS: --max-old-space-size=6000
           REDIRECT_URI: ${{ secrets.APPV2_REDIRECT_URI }}
@@ -87,19 +87,19 @@ jobs:
 
       - name: Capacitor update
         run: npx cap update ios
-        working-directory: ./appv2
+        working-directory: ./app
 
       - name: Capacitor copy
         run: npx cap copy ios
-        working-directory: ./appv2
+        working-directory: ./app
 
       - name: CocoaPod Install
         if: steps.cache-pods.outputs.cache-hit != 'true'
-        working-directory: ./appv2/ios/App
+        working-directory: ./app/ios/App
         run: pod install
 
       - name: Increment Build No.
-        working-directory: ./appv2/ios/App
+        working-directory: ./app/ios/App
         env:
           BUILD_NO: ${{ github.run_number }}
         run: |
@@ -136,7 +136,7 @@ jobs:
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles
 
       - name: Build For Release
-        working-directory: ./appv2/ios/App
+        working-directory: ./app/ios/App
         run: |
           xcodebuild \
           -workspace $PROJECT \
@@ -148,7 +148,7 @@ jobs:
           archive
 
       - name: Export Archive
-        working-directory: ./appv2/ios/App
+        working-directory: ./app/ios/App
         run: |
           xcodebuild \
           -exportArchive \
@@ -161,13 +161,13 @@ jobs:
         id: cache-dd-save
         uses: actions/cache/save@v4
         with:
-          path: appv2/ios/App/xcbuild/Build
+          path: app/ios/App/xcbuild/Build
           key: ${{ steps.cache-dd-restore.outputs.cache-primary-key }}
 
       - uses: actions/upload-artifact@v4
         with:
           name: Exported
-          path: appv2/ios/App/export/Invasives.ipa
+          path: app/ios/App/export/Invasives.ipa
           retention-days: 1
           if-no-files-found: error
 
@@ -177,7 +177,7 @@ jobs:
           APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
           APP_STORE_CONNECT_KEY_IDENTIFIER: ${{ secrets.APP_STORE_CONNECT_KEY_IDENTIFIER_95 }}
           APP_STORE_CONNECT_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_PRIVATE_KEY_95 }}
-        working-directory: ./appv2/ios/App
+        working-directory: ./app/ios/App
         run: |
           mkdir $HOME/.private_keys/
           echo -n "$APP_STORE_CONNECT_PRIVATE_KEY" > $HOME/.private_keys/AuthKey_${APP_STORE_CONNECT_KEY_IDENTIFIER}.p8
