@@ -73,7 +73,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       recordType: cachedType,
       recordSubtype: cachedSubtype
     });
-  }, []);
+  }, [accessRoles]);
 
   useEffect(() => {
     if (!newRecordDialogState.recordCategory) {
