@@ -7,9 +7,14 @@ export async function up(knex: Knex) {
     `
     set search_path = invasivesbc,public;
 
-    ALTER TABLE invasivesbc.activity_incoming_data ADD COLUMN centroid GEOMETRY;
-    UPDATE invasivesbc.activity_incoming_data SET centroid = st_centroid(st_multi(geog::geometry));
+    ALTER TABLE invasivesbc.activity_incoming_data ADD COLUMN IF NOT EXISTS centroid GEOMETRY;
     
+    CREATE INDEX centroid_idx
+    ON invasivesbc.activity_incoming_data
+    USING GIST (centroid);  
+    
+    UPDATE invasivesbc.activity_incoming_data SET centroid = st_centroid(st_multi(geog::geometry));
+
 
     CREATE OR REPLACE FUNCTION update_centroid()
     RETURNS TRIGGER AS $$
