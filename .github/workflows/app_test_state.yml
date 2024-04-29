@@ -18,7 +18,7 @@ jobs:
         run: |
           cd sharedAPI
           npm install --legacy-peer-deps
-          cd ../appv2
+          cd ../app
           npm install
 
       - name: Test
@@ -35,6 +35,6 @@ jobs:
           OPENSHIFT_BUILD_COMMIT: ''
           SOURCE_GIT_COMMIT: $GITHUB_SHA
         run: |
-          cd appv2
+          cd app
           npm run test
 

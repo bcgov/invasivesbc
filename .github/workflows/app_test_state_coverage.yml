@@ -27,7 +27,7 @@ jobs:
         run: |
           cd sharedAPI
           npm install --legacy-peer-deps
-          cd ../appv2
+          cd ../app
           npm install
       - name: "Test"
         env:
@@ -42,12 +42,12 @@ jobs:
           CONFIGURATION_SOURCE: 'Provided'
           OPENSHIFT_BUILD_COMMIT: ''
           SOURCE_GIT_COMMIT: $GITHUB_SHA
-        run: cd appv2 && npm run state_test_coverage_gh
+        run: cd app && npm run state_test_coverage_gh
       - name: "Upload Coverage"
         uses: actions/upload-artifact@v4
         with:
           name: coverage-${{ matrix.branch }}
-          path: appv2/src/coverage
+          path: app/src/coverage
 
   report-coverage:
     needs: test
