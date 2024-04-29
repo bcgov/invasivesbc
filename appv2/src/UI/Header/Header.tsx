@@ -448,17 +448,14 @@ export const Header: React.FC = () => {
 
         <AdminPanelMemo />
 
-<<<<<<< HEAD
-        <Tab key={'tab8'} path={'/Map'} label='Map' loggedOutOnly={true} panelOpen={false}>
-=======
         <Tab
           key={'tab8'}
-          path={'/'}
+          path={'/Map'}
           label='Map'
           predicate={'unauthenticated'}
+          panelFullScreen={false}
           panelOpen={false}
         >
->>>>>>> 19544fbe (Select a remembered offline user when working on mobile)
           <Map />
         </Tab>
 
