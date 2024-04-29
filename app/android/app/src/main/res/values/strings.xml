@@ -1,6 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">InvasivesBC</string>
-    <string name="title_activity_main">InvasivesBC</string>
-    <string name="package_name">gov.bc.invasivesbc</string>
-</resources>

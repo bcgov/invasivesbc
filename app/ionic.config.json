@@ -1,7 +1,0 @@
-{
-  "name": "InvasivesBC-Ionic",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "react"
-}
