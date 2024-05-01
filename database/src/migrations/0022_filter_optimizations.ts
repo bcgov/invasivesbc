@@ -32,12 +32,12 @@ create materialized view if not exists invasivesbc.current_negative_observations
 create materialized view if not exists invasivesbc.activity_date_for_filters_materialized as (
   select activity_incoming_data_id, substring((activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) as activity_date_for_filter
   from invasivesbc.activity_incoming_data
-  )
+  );
 
   create materialized view if not exists invasivesbc.project_code_for_filters_materialized as (
     select activity_incoming_data_id,  (activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text as project_code_for_filter
     from invasivesbc.activity_incoming_data
-    )
+    );
 
     CREATE INDEX IF NOT EXISTS activity_date_for_filters_materialized_activity_incoming_data_id_idx ON invasivesbc.activity_date_for_filters_materialized (activity_incoming_data_id);
     CREATE INDEX IF NOT EXISTS activity_date_for_filters_materialized_activity_date_for_filter_idx ON invasivesbc.activity_date_for_filters_materialized (activity_date_for_filter);
