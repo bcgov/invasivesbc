@@ -13,6 +13,7 @@ import {
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
+  RECORDSET_SET_SORT,
   RECORDSET_UPDATE_FILTER,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
   USER_SETTINGS_ADD_RECORD_SET,
@@ -161,6 +162,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               break;
           }
           localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
+          break;
+        }
+        case RECORDSET_SET_SORT: {
+          draftState.recordSets[action.payload.setID].sortOrder  = action.payload.sortColumn === draftState.recordSets[action.payload.setID].sortColumn ? draftState.recordSets[action.payload.setID].sortOrder === 'ASC' ? 'DESC' : 'ASC' : 'ASC';
+          draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
           break;
         }
         case RECORDSET_REMOVE_FILTER: {

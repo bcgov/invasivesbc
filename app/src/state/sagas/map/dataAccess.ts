@@ -176,7 +176,8 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
   };
   const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
   const recordSetType = JSON.parse(JSON.stringify(recordSetsState?.recordSets?.[recordSetID]?.recordSetType))
-  const sortColumns = recordSet?.sortColumns;
+  const sortColumn = recordSet?.sortColumn;
+  const sortOrder = recordSet?.sortOrder;
   const tableFilters = recordSet?.tableFilters;
   let modifiedTableFilters = tableFilters?.map((filter) => {
     return filter.filterType !== 'spatialFilterDrawn'
@@ -189,7 +190,8 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
 
   return {
     recordSetType: recordSetType,
-    sortColumns: sortColumns,
+    sortColumn: sortColumn,
+    sortOrder: sortOrder,
     tableFilters: modifiedTableFilters,
     selectColumns: selectColumns
   } as any;

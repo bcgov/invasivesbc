@@ -8,6 +8,7 @@ import { escapeLiteral } from 'pg';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from '../../utils/logger';
 import { streamActivitiesResult } from '../../utils/iapp-json-utils';
+import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = 'Activities v2 - Fat';
@@ -83,7 +84,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
     serverSideNamedFilters: {},
     selectColumns: [],
     clientReqTableFilters: [],
-    ids_to_filter: []
+    ids_to_filter: [],
   } as any;
 
   defaultLog.debug({
@@ -287,6 +288,15 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
       filter: 'Submitted',
       filterType: 'tableFilter'
     });
+  }
+
+
+  const validOrderByColumns = validActivitySortColumns
+
+
+  if(!filterObject?.vt_request && filterObject?.sortColumn && filterObject?.sortOrder && validOrderByColumns.includes(filterObject.sortColumn)){
+    sanitizedSearchCriteria.orderBy = filterObject.sortColumn;
+    sanitizedSearchCriteria.orderByType = filterObject.sortOrder;
   }
 
   sanitizedSearchCriteria.serverFilterGeometries = serverFilterGeometries;
@@ -862,7 +872,7 @@ function groupByStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function orderByStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const orderBy = sqlStatement.append(``);
+  const orderBy = filterObject.orderBy? sqlStatement.append(` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${filterObject.ordeByType === 'DESC'? 'FIRST ': 'LAST'} `): sqlStatement.append(` `);
   return orderBy;
 }
 
