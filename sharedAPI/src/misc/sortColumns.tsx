@@ -2,6 +2,8 @@ export const validActivitySortColumns = [
   'short_id',
   'activity_type',
   'form_status',
+  'activity_date',
+  'project_code',
   'activity_subtype',
   'jurisdiction_display',
   'invasive_plant',
