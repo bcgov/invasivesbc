@@ -9,6 +9,7 @@ import { InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from '../../utils/logger';
 import { streamIAPPResult } from '../../utils/iapp-json-utils';
 import { filter } from 'lodash';
+import { validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
 
 const defaultLog = getLogger('IAPP');
 const CACHENAME = 'IAPPv2 - Fat';
@@ -241,7 +242,11 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
   else {
     throw new Error('Invalid site_id list');
   }
-
+  const validOrderByColumns = validIAPPSortColumns
+  if(!filterObject?.vt_request && filterObject?.sortColumn && filterObject?.sortOrder && validOrderByColumns.includes(filterObject.sortColumn)){
+    sanitizedSearchCriteria.orderBy = filterObject.sortColumn;
+    sanitizedSearchCriteria.orderByType = filterObject.sortOrder;
+  }
   defaultLog.debug({
     label: 'getIAPPBySearchFilterCriteria',
     message: 'sanitizedObject',
@@ -695,7 +700,7 @@ function groupByStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function orderByStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const orderBy = sqlStatement.append(``);
+  const orderBy = filterObject.orderBy? sqlStatement.append(` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${filterObject.ordeByType === 'DESC'? 'FIRST ': 'LAST'} `): sqlStatement.append(` `);
   return orderBy;
 }
 

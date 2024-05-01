@@ -53,6 +53,7 @@ import {
   RECORD_SET_TO_EXCEL_SUCCESS,
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
+  RECORDSET_SET_SORT,
   RECORDSET_UPDATE_FILTER,
   REFETCH_SERVER_BOUNDARIES,
   REMOVE_CLIENT_BOUNDARY,
@@ -1022,6 +1023,18 @@ function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
   yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
 }
 
+
+function* handle_RECORDSET_SET_SORT(action) {
+  const userSettingsState = yield select(selectUserSettings);
+  const recordSetType = userSettingsState.recordSets?.[action.payload.setID]?.recordSetType;
+  const tableFiltersHash = userSettingsState.recordSets?.[action.payload.setID]?.tableFiltersHash;
+  if (recordSetType === 'Activity') {
+    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID, limit: 20, page: 0,tableFiltersHash: tableFiltersHash } });
+  } else {
+    yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID,limit: 20, page: 0, tableFiltersHash: tableFiltersHash  } });
+  }
+}
+
 function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
   yield all([
@@ -1031,6 +1044,8 @@ function* activitiesPageSaga() {
     takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
 
     takeEvery(REMOVE_CLIENT_BOUNDARY, handle_REMOVE_CLIENT_BOUNDARY),
+
+    takeEvery(RECORDSET_SET_SORT, handle_RECORDSET_SET_SORT),
 
     // handle hiding and showing the panel when drawing boundaries:
     takeEvery(DRAW_CUSTOM_LAYER, handle_DRAW_CUSTOM_LAYER),
