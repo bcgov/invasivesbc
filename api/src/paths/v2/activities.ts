@@ -294,7 +294,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   const validOrderByColumns = validActivitySortColumns
 
 
-  if(!filterObject?.vt_request && filterObject?.sortColumn && filterObject?.sortOrder && validOrderByColumns.includes(filterObject.sortColumn)){
+  if(!filterObject?.vt_request && filterObject.selectColumns.length > 1 &&  filterObject?.sortColumn && filterObject?.sortOrder && validOrderByColumns.includes(filterObject.sortColumn)){
     sanitizedSearchCriteria.orderBy = filterObject.sortColumn;
     sanitizedSearchCriteria.orderByType = filterObject.sortOrder;
   }
@@ -416,15 +416,7 @@ function initialWithStatement(sqlStatement: SQLStatement) {
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
   //todo: only do this when applicable
-  const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
-                                                                                 string_agg(cpo.invasive_plant, ', ') AS current_positive_species
-                                                                          FROM invasivesbc.current_positive_observations_materialized cpo
-                                                                          GROUP BY cpo.activity_incoming_data_id),
-                                          CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
-                                                                                 string_agg(cno.invasive_plant, ', ') AS current_negative_species
-                                                                          FROM invasivesbc.current_negative_observations_materialized cno
-                                                                          GROUP BY cno.activity_incoming_data_id),
-  `);
+  const cte = sqlStatement.append(`  with placeHolder as (select 1),  `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -494,9 +486,11 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 
   sqlStatement.append(`
 activities as (
-    select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species,
-    case when CurrentPositiveObservations.current_positive_species is null then false else true end as has_current_positive,
-    case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative
+    select a.*, current_positive_observations_aggregated_invasive_plant_materialized.current_positive_species, current_negative_observations_aggregated_invasive_plant_materialized.current_negative_species,
+    case when current_positive_observations_aggregated_invasive_plant_materialized.current_positive_species is null then false else true end as has_current_positive,
+    case when current_negative_observations_aggregated_invasive_plant_materialized.current_negative_species is null then false else true end as has_current_negative,
+    activity_date_for_filters_materialized.activity_date_for_filter as activity_date,
+    project_code_for_filters_materialized.project_code_for_filter as project_code
     `);
 
   /*if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -512,9 +506,10 @@ activities as (
 
   sqlStatement.append(`
     from activity_incoming_data a
-    left join CurrentPositiveObservations on CurrentPositiveObservations.activity_incoming_data_id = a.activity_incoming_data_id
-    left join CurrentNegativeObservations on CurrentNegativeObservations.activity_incoming_data_id = a.activity_incoming_data_id
-
+    left join current_negative_observations_aggregated_invasive_plant_materialized on current_negative_observations_aggregated_invasive_plant_materialized.activity_incoming_data_id = a.activity_incoming_data_id
+    left join current_positive_observations_aggregated_invasive_plant_materialized on current_positive_observations_aggregated_invasive_plant_materialized.activity_incoming_data_id = a.activity_incoming_data_id
+    left join activity_date_for_filters_materialized on activity_date_for_filters_materialized.activity_incoming_data_id = a.activity_incoming_data_id
+    left join project_code_for_filters_materialized on project_code_for_filters_materialized.activity_incoming_data_id = a.activity_incoming_data_id
     `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -707,14 +702,16 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'activity_date':
         where.append(
-          `and substring((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) ${
+          //`and substring((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) ${
+          `and activity_date ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  '%${filter.filter}%' `
         );
         break;
       case 'project_code':
         where.append(
-          `and LOWER((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text) ${
+          //`and LOWER((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text) ${
+          `and LOWER(project_code) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
           }  LOWER('%${filter.filter}%') `
         );

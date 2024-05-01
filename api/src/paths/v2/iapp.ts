@@ -243,7 +243,7 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     throw new Error('Invalid site_id list');
   }
   const validOrderByColumns = validIAPPSortColumns
-  if(!filterObject?.vt_request && filterObject?.sortColumn && filterObject?.sortOrder && validOrderByColumns.includes(filterObject.sortColumn)){
+  if(!filterObject?.vt_request  && filterObject.selectColumns.length > 1 && filterObject?.sortColumn && filterObject?.sortOrder && validOrderByColumns.includes(filterObject.sortColumn)){
     sanitizedSearchCriteria.orderBy = filterObject.sortColumn;
     sanitizedSearchCriteria.orderByType = filterObject.sortOrder;
   }
