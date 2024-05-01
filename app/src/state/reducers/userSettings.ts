@@ -165,8 +165,32 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           break;
         }
         case RECORDSET_SET_SORT: {
-          draftState.recordSets[action.payload.setID].sortOrder  = action.payload.sortColumn === draftState.recordSets[action.payload.setID].sortColumn ? draftState.recordSets[action.payload.setID].sortOrder === 'ASC' ? 'DESC' : 'ASC' : 'ASC';
-          draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
+          //if the sort column is the same as the current sort column, toggle the sort order
+          // if its already desc, remove the sort column and order
+
+          // handle no sort order:
+          if (
+            !draftState.recordSets[action.payload.setID].sortOrder ||
+            draftState.recordSets[action.payload.setID].sortColumn !== action.payload.sortColumn
+          ) {
+            draftState.recordSets[action.payload.setID].sortOrder = 'ASC';
+            draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
+          }
+
+          // handle toggle to desc:
+          else if (
+            draftState.recordSets[action.payload.setID].sortOrder === 'ASC' &&
+            draftState.recordSets[action.payload.setID].sortColumn === action.payload.sortColumn
+          ) {
+            draftState.recordSets[action.payload.setID].sortOrder = 'DESC';
+          }
+
+          // handle toggle off:
+          else {
+            delete draftState.recordSets[action.payload.setID].sortOrder;
+            delete draftState.recordSets[action.payload.setID].sortColumn;
+          }
+
           break;
         }
         case RECORDSET_REMOVE_FILTER: {
@@ -267,6 +291,9 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               }
             ];
           }
+          // clear sort:
+          delete draftState.recordSets[action.payload.setID].sortOrder;
+          delete draftState.recordSets[action.payload.setID].sortColumn;
           localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
@@ -338,7 +365,10 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           Object.keys(action.payload.updatedSet).forEach((key) => {
             draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
           });
-          draftState.recordSets[action.payload.setName].labelToggle = draftState.recordSets[action.payload.setName].labelToggle && draftState.recordSets[action.payload.setName].mapToggle || false;
+          draftState.recordSets[action.payload.setName].labelToggle =
+            (draftState.recordSets[action.payload.setName].labelToggle &&
+              draftState.recordSets[action.payload.setName].mapToggle) ||
+            false;
           break;
         }
         case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
