@@ -55,9 +55,9 @@ export const  VehicleNonMotorized = {
 	title: 'Non Motorized'
 };
 
-export const  VehicleMotorized = {
+export const  VehicleVeryComplex = {
 	type: 'integer',
-	title: 'Motorized'
+	title: 'Very Complex'
 };
 
 export const  VehicleSimple = {
@@ -866,9 +866,9 @@ export const BasicInformation = {
 			type: 'object',
 			properties: {
 				non_motorized: VehicleNonMotorized,
-				motorized: VehicleMotorized,
 				simple: VehicleSimple,
-				complex: VehicleComplex
+				complex: VehicleComplex,
+				motorized: VehicleVeryComplex
 			}
 		},
 	}
@@ -1007,9 +1007,9 @@ export const Passport_BasicInformation = {
 			type: 'object',
 			properties: {
 				non_motorized: VehicleNonMotorized,
-				motorized: VehicleMotorized,
 				simple: VehicleSimple,
-				complex: VehicleComplex
+				complex: VehicleComplex,
+				motorized: VehicleVeryComplex,
 			}
 		}
 	}
