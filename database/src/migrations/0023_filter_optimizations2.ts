@@ -39,14 +39,14 @@ create materialized view if not exists invasivesbc.activity_date_for_filters as 
     from invasivesbc.activity_incoming_data
     );
 
-    CREATE INDEX IF NOT EXISTS activity_date_for_filters_materialized_activity_incoming_data_id_idx ON invasivesbc.activity_date_for_filters (activity_incoming_data_id);
-    CREATE INDEX IF NOT EXISTS activity_date_for_filters_materialized_activity_date_for_filter_idx ON invasivesbc.activity_date_for_filters (activity_date_for_filter);
-    CREATE INDEX IF NOT EXISTS project_code_for_filters_materialized_activity_incoming_data_id_idx ON invasivesbc.project_code_for_filters (activity_incoming_data_id);
-    CREATE INDEX IF NOT EXISTS project_code_for_filters_materialized_project_code_for_filter_idx ON invasivesbc.project_code_for_filters (project_code_for_filter);
-    CREATE INDEX IF NOT EXISTS current_negative_observations_aggregated_invasive_plant_aid_idx ON invasivesbc.current_negative_observations_aggregated_invasive_plant (activity_incoming_data_id);
-    CREATE INDEX IF NOT EXISTS current_positive_observations_aggregated_invasive_plant_aid_idx ON invasivesbc.current_positive_observations_aggregated_invasive_plant (activity_incoming_data_id);
-    CREATE INDEX IF NOT EXISTS current_positive_observations_aggregated_invasive_plant_spec_idx ON invasivesbc.current_positive_observations_aggregated_invasive_plant (current_positive_species);
-    CREATE INDEX IF NOT EXISTS current_negative_observations_aggregated_invasive_plant_spec_idx ON invasivesbc.current_negative_observations_aggregated_invasive_plant (current_negative_species);
+    CREATE INDEX IF NOT EXISTS activity_date_for_filters_idx ON invasivesbc.activity_date_for_filters (activity_incoming_data_id);
+    CREATE INDEX IF NOT EXISTS activity_date_for_filters_date_idx ON invasivesbc.activity_date_for_filters (activity_date_for_filter);
+    CREATE INDEX IF NOT EXISTS project_code_for_filters_id_idx ON invasivesbc.project_code_for_filters (activity_incoming_data_id);
+    CREATE INDEX IF NOT EXISTS project_code_for_filters_code_idx ON invasivesbc.project_code_for_filters (project_code_for_filter);
+    CREATE INDEX IF NOT EXISTS current_negative_observations_aggregated_ip_id_idx ON invasivesbc.current_negative_observations_aggregated_invasive_plant (activity_incoming_data_id);
+    CREATE INDEX IF NOT EXISTS current_positive_observations_aggregated_p_idx ON invasivesbc.current_positive_observations_aggregated_invasive_plant (activity_incoming_data_id);
+    CREATE INDEX IF NOT EXISTS current_positive_observations_aggregated_ip_id_idx ON invasivesbc.current_positive_observations_aggregated_invasive_plant (current_positive_species);
+    CREATE INDEX IF NOT EXISTS current_negative_observations_aggregated_p_idx ON invasivesbc.current_negative_observations_aggregated_invasive_plant (current_negative_species);
 
 
 
