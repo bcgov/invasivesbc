@@ -486,11 +486,11 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 
   sqlStatement.append(`
 activities as (
-    select a.*, current_positive_observations_aggregated_invasive_plant_materialized.current_positive_species, current_negative_observations_aggregated_invasive_plant_materialized.current_negative_species,
-    case when current_positive_observations_aggregated_invasive_plant_materialized.current_positive_species is null then false else true end as has_current_positive,
-    case when current_negative_observations_aggregated_invasive_plant_materialized.current_negative_species is null then false else true end as has_current_negative,
-    activity_date_for_filters_materialized.activity_date_for_filter as activity_date,
-    project_code_for_filters_materialized.project_code_for_filter as project_code
+    select a.*, current_positive_observations_aggregated_invasive_plant.current_positive_species, current_negative_observations_aggregated_invasive_plant.current_negative_species,
+    case when current_positive_observations_aggregated_invasive_plant.current_positive_species is null then false else true end as has_current_positive,
+    case when current_negative_observations_aggregated_invasive_plant.current_negative_species is null then false else true end as has_current_negative,
+    activity_date_for_filters.activity_date_for_filter as activity_date,
+    project_code_for_filters.project_code_for_filter as project_code
     `);
 
   /*if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -506,10 +506,10 @@ activities as (
 
   sqlStatement.append(`
     from activity_incoming_data a
-    left join current_negative_observations_aggregated_invasive_plant_materialized on current_negative_observations_aggregated_invasive_plant_materialized.activity_incoming_data_id = a.activity_incoming_data_id
-    left join current_positive_observations_aggregated_invasive_plant_materialized on current_positive_observations_aggregated_invasive_plant_materialized.activity_incoming_data_id = a.activity_incoming_data_id
-    left join activity_date_for_filters_materialized on activity_date_for_filters_materialized.activity_incoming_data_id = a.activity_incoming_data_id
-    left join project_code_for_filters_materialized on project_code_for_filters_materialized.activity_incoming_data_id = a.activity_incoming_data_id
+    left join current_negative_observations_aggregated_invasive_plant on current_negative_observations_aggregated_invasive_plant.activity_incoming_data_id = a.activity_incoming_data_id
+    left join current_positive_observations_aggregated_invasive_plant on current_positive_observations_aggregated_invasive_plant.activity_incoming_data_id = a.activity_incoming_data_id
+    left join activity_date_for_filters on activity_date_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
+    left join project_code_for_filters on project_code_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
     `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
