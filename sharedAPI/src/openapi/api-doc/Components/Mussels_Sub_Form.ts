@@ -868,7 +868,7 @@ export const BasicInformation = {
 				non_motorized: VehicleNonMotorized,
 				simple: VehicleSimple,
 				complex: VehicleComplex,
-				motorized: VehicleVeryComplex
+				very_complex: VehicleVeryComplex
 			}
 		},
 	}
