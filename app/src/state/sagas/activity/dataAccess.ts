@@ -24,6 +24,7 @@ import {
   ACTIVITY_COPY_FAILURE,
   ACTIVITY_COPY_SUCCESS,
   ACTIVITY_CREATE_FAILURE,
+  ACTIVITY_CREATE_LOCAL,
   ACTIVITY_CREATE_NETWORK,
   ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_NETWORK_REQUEST,
@@ -31,7 +32,7 @@ import {
   ACTIVITY_DELETE_PHOTO_SUCCESS,
   ACTIVITY_EDIT_PHOTO_FAILURE,
   ACTIVITY_EDIT_PHOTO_SUCCESS,
-  ACTIVITY_GET_INITIAL_STATE_FAILURE,
+  ACTIVITY_GET_INITIAL_STATE_FAILURE, ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
@@ -64,11 +65,19 @@ import { calc_utm } from 'util/utm';
 import { calculateGeometryArea, calculateLatLng } from 'util/geometryHelpers';
 import { kinks } from '@turf/turf';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import { selectConfiguration } from 'state/reducers/configuration';
+import { selectNetworkConnected } from 'state/reducers/network';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
+  const { MOBILE } = yield select(selectConfiguration);
+
   try {
-    // if mobile or web
-    yield put({ type: ACTIVITY_GET_NETWORK_REQUEST, payload: { activityID: action.payload.activityID } });
+    if (MOBILE) {
+      yield put({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: action.payload.activityID } });
+    } else {
+      yield put({ type: ACTIVITY_GET_NETWORK_REQUEST, payload: { activityID: action.payload.activityID } });
+    }
+
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -106,6 +115,7 @@ export function* handle_ACTIVITY_PASTE_REQUEST(action) {
     yield put({ type: ACTIVITY_PASTE_FAILURE, payload: {} });
   }
 }
+
 const checkForMisLabledMultiPolygon = (input) => {
   if (input.geometry.type !== 'MultiPolygon') {
     return false;
@@ -115,7 +125,7 @@ const checkForMisLabledMultiPolygon = (input) => {
     input.geometry.coordinates.length === 1 &&
     input.geometry.coordinates[0][0][0].length === 2
   ) {
-    console.log('MultiPolygon mislabeled as Polygon, correcting...')
+    console.log('MultiPolygon mislabeled as Polygon, correcting...');
     return true;
   }
   return false;
@@ -123,11 +133,16 @@ const checkForMisLabledMultiPolygon = (input) => {
 
 const fixMisLabledMultiPolygon = (input) => {
   if (checkForMisLabledMultiPolygon(input)) {
-    return { ...input, type: 'Feature', geometry: { ...input.geometry,type: "Polygon", coordinates: [...input.geometry.coordinates[0]] } };
+    return {
+      ...input,
+      type: 'Feature',
+      geometry: { ...input.geometry, type: 'Polygon', coordinates: [...input.geometry.coordinates[0]] }
+    };
   } else {
     return input;
   }
 };
+
 export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   try {
     // get spatial fields based on geo
@@ -263,10 +278,15 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
 }
 
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
-  const { connected } = yield select((state) => state.Network);
   const activityState = yield select(selectActivity);
+  const { MOBILE } = yield select(selectConfiguration);
 
-  if (connected) {
+  if (MOBILE) {
+    yield put({
+      type: ACTIVITY_SAVE_OFFLINE,
+      payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }
+    });
+  } else {
     try {
       yield put({
         type: ACTIVITY_SAVE_NETWORK_REQUEST,
@@ -276,11 +296,6 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
       console.error(e);
       yield put({ type: ACTIVITY_SAVE_NETWORK_FAILURE });
     }
-  } else {
-    yield put({
-      type: ACTIVITY_SAVE_OFFLINE,
-      payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }
-    });
   }
 }
 
@@ -300,6 +315,9 @@ export function* handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
+  const { MOBILE } = yield select(selectConfiguration);
+
+
   try {
     const authState = yield select(selectAuth);
     //    const { extendedInfo, displayName, roles } = useSelector(selectAuth);
@@ -313,7 +331,13 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action) {
       authState.extendedInfo.pac_number
     );
 
-    yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: newActivity } });
+
+    if (MOBILE) {
+      yield put({ type: ACTIVITY_CREATE_LOCAL, payload: { id: newActivity.activity_id, data: newActivity } });
+    } else {
+      yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: newActivity } });
+    }
+
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_CREATE_FAILURE });
@@ -462,11 +486,15 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
 }
 
 export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
+  const connected = yield select(selectNetworkConnected);
+
   try {
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-      payload: { search_feature: action.payload.search_feature }
-    });
+    if (connected) {
+      yield put({
+        type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
+        payload: { search_feature: action.payload.search_feature }
+      });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -474,11 +502,16 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
+
+  const connected = yield select(selectNetworkConnected);
+
   try {
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-      payload: {}
-    });
+    if (connected) {
+      yield put({
+        type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
+        payload: {}
+      });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -514,9 +547,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
 
     const search_feature = payloadActivity.geometry?.[0]
       ? {
-          type: 'FeatureCollection',
-          features: payloadActivity.geometry
-        }
+        type: 'FeatureCollection',
+        features: payloadActivity.geometry
+      }
       : false;
 
     if (linkedActivitySubtypes.length > 0) {

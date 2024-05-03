@@ -13,6 +13,7 @@ export interface AppConfig {
   KEYCLOAK_ADAPTER: string;
 
   REDIRECT_URI: string;
+  SILENT_CHECK_URI: string;
 
   PUBLIC_MAP_URL: string;
 
@@ -35,6 +36,7 @@ declare global {
   const CONFIGURATION_KEYCLOAK_URL: string | null;
   const CONFIGURATION_KEYCLOAK_ADAPTER: string | null;
   const CONFIGURATION_REDIRECT_URI: string | null;
+  const CONFIGURATION_SILENT_CHECK_URI: string | null;
   const CONFIGURATION_PUBLIC_MAP_URL: string | null;
   const CONFIGURATION_IS_MOBILE: string | null;
   const INJECTED_COMMIT_HASH: string | null;
@@ -59,6 +61,7 @@ switch (CONFIGURATION_SOURCE) {
       REDIRECT_URI: '{{env "REDIRECT_URI"}}',
       PUBLIC_MAP_URL: '{{env "PUBLIC_MAP_URL"}}',
       IAPP_GEOJSON_URL: '{{env "IAPP_GEOJSON_URL"}}',
+      SILENT_CHECK_URI: '{{env "SILENT_CHECK_URI"}}',
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
         EMBEDDED_REPORTS: true,
@@ -79,6 +82,7 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_ADAPTER: CONFIGURATION_KEYCLOAK_ADAPTER,
       REDIRECT_URI: CONFIGURATION_REDIRECT_URI,
       PUBLIC_MAP_URL: CONFIGURATION_PUBLIC_MAP_URL,
+      SILENT_CHECK_URI: CONFIGURATION_SILENT_CHECK_URI,
       IAPP_GEOJSON_URL: CONFIGURATION_IAPP_GEOJSON_URL,
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
@@ -99,6 +103,7 @@ switch (CONFIGURATION_SOURCE) {
       KEYCLOAK_REALM: 'onestopauth-business',
       KEYCLOAK_URL: 'https://dev.oidc.gov.bc.ca/auth',
       KEYCLOAK_ADAPTER: 'web',
+      SILENT_CHECK_URI: 'https://invasivesbc.gov.bc.ca/check_sso.html',
       REDIRECT_URI: 'http://localhost:3000/home/landing',
       PUBLIC_MAP_URL: 'https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles',
       IAPP_GEOJSON_URL: 'https://nrs.objectstore.gov.bc.ca/seeds/iapp_geojson_gzip.gz',

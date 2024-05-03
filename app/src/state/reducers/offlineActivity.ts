@@ -1,18 +1,32 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { AppConfig } from '../config';
-import { ACTIVITY_SAVE_OFFLINE } from '../actions';
+import {
+  ACTIVITY_CREATE_LOCAL, ACTIVITY_OFFLINE_DELETE_ITEM, ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
+  ACTIVITY_RUN_OFFLINE_SYNC, ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
+  ACTIVITY_SAVE_OFFLINE,
+  ACTIVITY_UPDATE_SYNC_STATE
+} from '../actions';
 import moment from 'moment';
 
+export interface OfflineActivityRecord {
+  data: string;
+  saved_at: number;
+  sync_state: 'LOCALLY_MODIFIED' | 'SYNCHRONIZED' | 'ERROR' | 'OPTIMISTIC_LOCKING_FAILURE';
+};
+
 interface OfflineActivityState {
+  working: boolean,
+  statusDialogOpen: boolean,
+  serial: number,
   serializedActivities: {
-    [id: string]: {
-      data: string;
-      saved_at: number;
-    };
+    [id: string]: OfflineActivityRecord;
   };
 }
 
 const initialState: OfflineActivityState = {
+  working: false,
+  statusDialogOpen: false,
+  serial: moment.now(),
   serializedActivities: {}
 };
 
@@ -23,12 +37,52 @@ function createOfflineActivityReducer(
     return createNextState(state, (draftState) => {
       const { type, payload } = action;
       switch (type) {
+        case ACTIVITY_CREATE_LOCAL:
+          draftState.serializedActivities[payload.id] = {
+            data: JSON.stringify(payload.data, null, 2),
+            saved_at: moment.now(),
+            sync_state: 'LOCALLY_MODIFIED'
+          };
+          draftState.serial = moment.now();
+          break;
         case ACTIVITY_SAVE_OFFLINE:
           draftState.serializedActivities[payload.id] = {
             data: JSON.stringify(payload.data, null, 2),
-            saved_at: moment.now()
+            saved_at: moment.now(),
+            sync_state: 'LOCALLY_MODIFIED'
           };
+          draftState.serial = moment.now();
           break;
+        case ACTIVITY_RUN_OFFLINE_SYNC: {
+          draftState.working = true;
+          break;
+        }
+        case ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE: {
+          draftState.working = false;
+          break;
+        }
+        case ACTIVITY_UPDATE_SYNC_STATE: {
+          const found = draftState.serializedActivities[payload.id];
+          if (found)
+            draftState.serializedActivities[payload.id] = {
+              ...found,
+              sync_state: payload.sync_state
+            };
+          draftState.serial = moment.now();
+          break;
+        }
+        case ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE: {
+          draftState.statusDialogOpen = action.payload.open;
+          break;
+        }
+        case ACTIVITY_OFFLINE_DELETE_ITEM: {
+          const found = draftState.serializedActivities[payload.id];
+          if (found) {
+            delete draftState.serializedActivities[payload.id];
+          }
+          draftState.serial = moment.now();
+          break;
+        }
       }
     });
   };

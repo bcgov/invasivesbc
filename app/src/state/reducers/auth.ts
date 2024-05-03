@@ -248,6 +248,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           }
           case AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG:
             draftState.offlineUserDialogOpen = action.payload.state;
+            break;
 
           case AUTH_FORGET_OFFLINE_USER: {
             let foundIndex = draftState.offlineUsers.findIndex(o => o.displayName === action.payload.displayName);

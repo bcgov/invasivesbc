@@ -24,6 +24,7 @@ import { Switch } from '@mui/base';
 import { useSelector } from '../../util/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 
 type TabPredicate =
   'authenticated_any'
@@ -57,7 +58,7 @@ const Tab: React.FC<TabProps> = ({
 
   const dispatch = useDispatch();
   const authenticated = useSelector((state: any) => state?.Auth.authenticated && state?.Auth.roles.length > 0);
-  const  workingOffline  = useSelector((state: any) => state?.Auth.workingOffline);
+  const workingOffline = useSelector((state: any) => state?.Auth.workingOffline);
 
   const canDisplayCallBack = useCallback(() => {
     switch (predicate) {
@@ -458,6 +459,8 @@ export const Header: React.FC = () => {
         >
           <Map />
         </Tab>
+
+        {MOBILE && <OfflineSyncHeaderButton />}
 
         {(DEBUG || MOBILE) && <NetworkStateControl />}
       </ButtonWrapper>
