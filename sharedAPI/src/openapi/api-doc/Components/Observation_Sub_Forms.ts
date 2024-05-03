@@ -1,6 +1,7 @@
 import {
   BasicInformation,
   HighRiskAssessment,
+  InspectionComments,
   InspectionDetails,
   JourneyDetails,
   WatercraftDetails,
@@ -161,7 +162,8 @@ export const Observation_Mussels_Information = {
                     WatercraftDetails: WatercraftDetails,
                     JourneyDetails: JourneyDetails,
                     InspectionDetails: Passport_InspectionDetails,
-                    HighRiskAssessment: Passport_HighRiskAssessment
+                    HighRiskAssessment: Passport_HighRiskAssessment,
+                    InspectionComments: InspectionComments
                   }
                 },
               ]
@@ -177,7 +179,8 @@ export const Observation_Mussels_Information = {
             WatercraftDetails: WatercraftDetails,
             JourneyDetails: JourneyDetails,
             InspectionDetails: InspectionDetails,
-            HighRiskAssessment: HighRiskAssessment
+            HighRiskAssessment: HighRiskAssessment,
+            InspectionComments: InspectionComments
           }
         }
       ]
