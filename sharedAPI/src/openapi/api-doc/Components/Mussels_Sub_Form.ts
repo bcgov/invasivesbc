@@ -22,6 +22,11 @@ const LaunchedOutsideBC = {
 	...NullSwitch
 };
 
+const PassportNumber = {
+	title: 'Passport Number',
+	type: 'string'
+}
+
 export const MarineSpeciesFound = {
 	title: 'Marine Species Found',
 	...NullSwitch
@@ -945,7 +950,7 @@ export const HighRiskAssessment = {
 	title: 'High Risk Assessment Fields',
 	type: 'object',
 	properties: {
-		'High Risk Fields': {
+		high_risk_fields: {
 			type: 'string',
 			enum: [
 				'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found',
@@ -960,7 +965,7 @@ export const HighRiskAssessment = {
 		{
 			if: {
 				properties: {
-					'High Risk Fields': {
+					high_risk_fields: {
 						const: 'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found'
 					}
 				}
@@ -983,6 +988,7 @@ export const Passport_SimpleBasicInformation = {
 	type: 'object',
 	properties: {
 		inspection_time: InspectionTime,
+		passport_number: PassportNumber,
 		launchedOutsideBC: LaunchedOutsideBC,
 		k9Inspection: K9InspectionLogic,
 		marineSpeciesFound: MarineSpeciesFound,
@@ -1047,7 +1053,7 @@ export const Passport_HighRiskAssessment = {
 	title: 'High Risk Assessment Fields',
 	type: 'object',
 	properties: {
-		'High Risk Fields': {
+		high_risk_fields: {
 			type: 'string',
 			enum: [
 				'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found',
@@ -1062,7 +1068,7 @@ export const Passport_HighRiskAssessment = {
 		{
 			if: {
 				properties: {
-					'High Risk Fields': {
+					high_risk_fields: {
 						const: 'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found'
 					}
 				}
@@ -1078,3 +1084,17 @@ export const Passport_HighRiskAssessment = {
 		}
 	]
 };
+
+/*** End of Passport High Risk Assessment / Inspection Outcomes ***/
+
+/** Inspection Comments */
+export const InspectionComments = {
+	title: 'Comments',
+	type: 'object',
+	properties: {
+		comment: {
+			title: "Inspection Comments",
+			type: 'string'
+		}
+	}
+}
