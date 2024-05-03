@@ -1,7 +1,6 @@
 import { Knex } from 'knex';
 
 export async function up(knex: Knex) {
-
   await knex.raw(
     //language=PostgreSQL
     `
@@ -9,7 +8,7 @@ export async function up(knex: Knex) {
 
     ALTER TABLE invasivesbc.activity_incoming_data ADD COLUMN IF NOT EXISTS centroid GEOMETRY;
     
-    CREATE INDEX centroid_idx
+    CREATE INDEX IF NOT EXISTS centroid_idx
     ON invasivesbc.activity_incoming_data
     USING GIST (centroid);  
     
@@ -31,21 +30,18 @@ export async function up(knex: Knex) {
     for each row
 
     execute function update_centroid();
-    
-
-
-
-
-    `);
-
+  `
+  );
 }
 
 export async function down(knex: Knex) {
   await knex.raw(
     //language=PostgreSQL
     `
-        set search_path to invasivesbc, public;
-
-
-    `);
+    DROP TRIGGER IF EXISTS update_centroid_trigger ON invasivesbc.activity_incoming_data;
+    DROP FUNCTION IF EXISTS update_centroid();
+    DROP INDEX IF EXISTS centroid_idx;
+    ALTER TABLE invasivesbc.activity_incoming_data DROP COLUMN IF EXISTS centroid;
+    `
+  );
 }
