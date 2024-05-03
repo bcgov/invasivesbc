@@ -504,6 +504,7 @@ activities as (
     `);
     */
   sqlStatement.append(`
+  activities as (
   select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species,
   case when CurrentPositiveObservations.current_positive_species is null then false else true end as has_current_positive,
   case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative,
