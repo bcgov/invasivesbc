@@ -416,7 +416,16 @@ function initialWithStatement(sqlStatement: SQLStatement) {
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
   //todo: only do this when applicable
-  const cte = sqlStatement.append(`  with placeHolder as (select 1),  `);
+//  const cte = sqlStatement.append(`  with placeHolder as (select 1),  `);
+const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
+  string_agg(cpo.invasive_plant, ', ') AS current_positive_species
+FROM invasivesbc.current_positive_observations_materialized cpo
+GROUP BY cpo.activity_incoming_data_id),
+CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
+  string_agg(cno.invasive_plant, ', ') AS current_negative_species
+FROM invasivesbc.current_negative_observations_materialized cno
+GROUP BY cno.activity_incoming_data_id),
+`);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -484,11 +493,20 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
          `);
   }
 
+  /*
   sqlStatement.append(`
 activities as (
     select a.*, current_positive_observations_aggregated_invasive_plant.current_positive_species, current_negative_observations_aggregated_invasive_plant.current_negative_species,
     case when current_positive_observations_aggregated_invasive_plant.current_positive_species is null then false else true end as has_current_positive,
     case when current_negative_observations_aggregated_invasive_plant.current_negative_species is null then false else true end as has_current_negative,
+    activity_date_for_filters.activity_date_for_filter as activity_date,
+    project_code_for_filters.project_code_for_filter as project_code
+    `);
+    */
+  sqlStatement.append(`
+  select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species,
+  case when CurrentPositiveObservations.current_positive_species is null then false else true end as has_current_positive,
+  case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative,
     activity_date_for_filters.activity_date_for_filter as activity_date,
     project_code_for_filters.project_code_for_filter as project_code
     `);
@@ -504,10 +522,18 @@ activities as (
     `);
   }*/
 
-  sqlStatement.append(`
+  /*sqlStatement.append(`
     from activity_incoming_data a
     left join current_negative_observations_aggregated_invasive_plant on current_negative_observations_aggregated_invasive_plant.activity_incoming_data_id = a.activity_incoming_data_id
     left join current_positive_observations_aggregated_invasive_plant on current_positive_observations_aggregated_invasive_plant.activity_incoming_data_id = a.activity_incoming_data_id
+    left join activity_date_for_filters on activity_date_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
+    left join project_code_for_filters on project_code_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
+    `);
+    */
+  sqlStatement.append(`
+    from activity_incoming_data a
+    left join CurrentPositiveObservations on CurrentPositiveObservations.activity_incoming_data_id = a.activity_incoming_data_id
+    left join CurrentNegativeObservations on CurrentNegativeObservations.activity_incoming_data_id = a.activity_incoming_data_id
     left join activity_date_for_filters on activity_date_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
     left join project_code_for_filters on project_code_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
     `);
