@@ -37,6 +37,7 @@ import { ConnectivityErrorHandler } from 'UI/ErrorHandler/ConnectivityErrorHandl
 import { selectAuth } from 'state/reducers/auth';
 import { OfflineUserMenu } from 'UI/OfflineUserMenu/OfflineUserMenu';
 import { MobileOnly } from 'UI/Predicates/MobileOnly';
+import { OfflineDataSyncDialog } from 'UI/OfflineDataSync/OfflineDataSyncDialog';
 
 export const RENDER_DEBUG = false;
 
@@ -71,9 +72,9 @@ const OverlayContentMemo = (props) => {
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
       <AppUrlListener />
-      <Route exact path="/">
-          <Redirect to="/Landing" /> : 
-  </Route>
+      <Route exact path='/'>
+        <Redirect to='/Landing' /> :
+      </Route>
 
       <Route path='/Map' render={(props) => <></>} />
       <Route path='/Landing' render={(props) => <LandingComponent />} />
@@ -175,6 +176,7 @@ const App: React.FC = () => {
       <Footer />
       <NewRecordDialog />
       <MobileOnly>
+        <OfflineDataSyncDialog />
         <OfflineUserMenu />
       </MobileOnly>
       <CustomizeLayerMenu />

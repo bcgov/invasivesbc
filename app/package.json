@@ -198,6 +198,7 @@
     "lint:fix": "npm run lint -- --fix",
     "start": "CONFIGURATION_SOURCE=Provided vite serve --port 3000 --strictPort",
     "start:jeep": "CONFIGURATION_SOURCE=Provided JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
+    "start:mobileMode": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE KEYCLOAK_ADAPTER=web JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
     "build": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Provided vite build",
     "build-prod": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Caddy vite build -l error",
     "preview": "vite preview --port 3000"

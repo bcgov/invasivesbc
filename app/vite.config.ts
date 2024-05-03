@@ -43,7 +43,13 @@ function buildSpecificDefines() {
     defines['CONFIGURATION_REDIRECT_URI'] = JSON.stringify(process.env['REDIRECT_URI']);
     defines['CONFIGURATION_PUBLIC_MAP_URL'] = JSON.stringify(process.env['PUBLIC_MAP_URL']);
     defines['CONFIGURATION_IAPP_GEOJSON_URL'] = JSON.stringify(process.env['IAPP_GEOJSON_URL']);
-    defines['CONFIGURATION_KEYCLOAK_ADAPTER'] = JSON.stringify('web');
+    defines['CONFIGURATION_SILENT_CHECK_URI'] = JSON.stringify(process.env['SILENT_CHECK_URI']);
+    if (process.env.KEYCLOAK_ADAPTER === undefined) {
+      defines['CONFIGURATION_KEYCLOAK_ADAPTER'] = JSON.stringify('web');
+    } else {
+      defines['CONFIGURATION_KEYCLOAK_ADAPTER'] = JSON.stringify(process.env['KEYCLOAK_ADAPTER']);
+    }
+
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines['minify'] = true;
 
@@ -102,7 +108,6 @@ export default defineConfig({
     react({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}',
-      //jsxImportSource: process.env['NODE_ENV'] === "development" ? "@welldone-software/why-did-you-render" : "react"
       jsxImportSource: '@welldone-software/why-did-you-render'
     }),
     VitePWA({
@@ -118,7 +123,7 @@ export default defineConfig({
       devOptions: {
         enabled: true,
         type: 'module'
-      },
+      }
     })
   ],
   optimizeDeps: {

@@ -1,4 +1,4 @@
-import { all, put, select, takeEvery, takeLatest, delay } from 'redux-saga/effects';
+import { all, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -30,7 +30,6 @@ import {
   ACTIVITY_PERSIST_REQUEST,
   ACTIVITY_RESTORE_OFFLINE,
   ACTIVITY_SAVE_NETWORK_REQUEST,
-  ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_FAILURE,
@@ -45,7 +44,6 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   ACTIVITY_UPDATE_PHOTO_REQUEST,
-  IAPP_GET_REQUEST,
   MAP_INIT_REQUEST,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
@@ -87,8 +85,7 @@ import {
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
 import { selectActivity } from 'state/reducers/activity';
-import { selectUserSettings } from 'state/reducers/userSettings';
-import { handle_ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE } from './activity/offline';
+import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -260,7 +257,6 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SAVE_SUCCESS),
     takeEvery(ACTIVITY_TOGGLE_NOTIFICATION_REQUEST, handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST),
     takeEvery(ACTIVITY_SAVE_NETWORK_REQUEST, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
-    takeEvery(ACTIVITY_SAVE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE),
     takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
     takeEvery(ACTIVITY_CREATE_REQUEST, handle_ACTIVITY_CREATE_REQUEST),
     takeEvery(ACTIVITY_CREATE_NETWORK, handle_ACTIVITY_CREATE_NETWORK),
@@ -286,7 +282,8 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_SUBMIT_REQUEST, () => console.log('ACTIVITY_SUBMIT_REQUEST')),
     takeEvery(ACTIVITY_DELETE_REQUEST, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(ACTIVITY_DELETE_NETWORK_REQUEST, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
-    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY)
+    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
+    ...OFFLINE_ACTIVITY_SAGA_HANDLERS
   ]);
 }
 

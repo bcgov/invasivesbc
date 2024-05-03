@@ -25,10 +25,10 @@ const post_put_apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Activity post request object.',
@@ -113,8 +113,8 @@ const post_put_apiDoc = {
                       type: 'array',
                       title: 'Media',
                       items: {
-                      //  $ref: '#/components/schemas/Media'
-                      type: 'object'
+                        //  $ref: '#/components/schemas/Media'
+                        type: 'object'
                       }
                     },
                     geometry: {
@@ -136,9 +136,9 @@ const post_put_apiDoc = {
 //                        { $ref: '#/components/schemas/Activity_Treatment_BiologicalPlant' },
                         { $ref: '#/components/schemas/Activity_Monitoring_ChemicalTerrestrialAquaticPlant' },
                         { $ref: '#/components/schemas/Activity_Monitoring_MechanicalTerrestrialAquaticPlant' },
-                    //    { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
-             //           { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
-                 //       { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
+                        //    { $ref: '#/components/schemas/Activity_Monitoring_BiologicalTerrestrialPlant' },
+                        //           { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalTerrestrial' },
+                        //       { $ref: '#/components/schemas/Activity_AnimalActivity_AnimalAquatic' },
                         { $ref: '#/components/schemas/Activity_Transect_FireMonitoring' },
                         { $ref: '#/components/schemas/Activity_Transect_Vegetation' },
                         { $ref: '#/components/schemas/Activity_Transect_BiocontrolEfficacy' },
@@ -417,9 +417,9 @@ function updateActivity(): RequestHandler {
     if (!isAdmin) {
 
       // some batch record guids don't have the suffix or id.  this will still work for the new ones though
-      const containsOldIDAndIsOK = sanitizedActivityData.updated_by_with_guid.includes(response.rows[0]?.created_by_with_guid?.toLowerCase())
+      const containsOldIDAndIsOK = sanitizedActivityData.updated_by_with_guid.includes(response.rows[0]?.created_by_with_guid?.toLowerCase());
 
-      if ((sanitizedActivityData.updated_by_with_guid?.replace('bceid-business', 'bceidbusiness') !== response.rows[0]?.created_by_with_guid.replace('bceid-business','bceidbusiness') && !containsOldIDAndIsOK) &&
+      if ((sanitizedActivityData.updated_by_with_guid?.replace('bceid-business', 'bceidbusiness') !== response.rows[0]?.created_by_with_guid.replace('bceid-business', 'bceidbusiness') && !containsOldIDAndIsOK) &&
         (response.rows[0].created_by_with_guid !== null)) { // some old records are null
         return res.status(401).json({
           message: 'Invalid request, user is not authorized to update this record',
@@ -430,29 +430,30 @@ function updateActivity(): RequestHandler {
       }
     }
 
-    if (response.rows[0].activity_type === 'Monitoring' && req?.body?.form_data?.activity_type_data?.linked_id) {
-      const sqlStatementForCheck = getActivitySQL(req.body.form_data.activity_type_data.linked_id);
-      const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
-      const linked_species_treated = response.rows[0].species_treated;
+    if (response.rows.length > 0) {
+      if (response.rows[0].activity_type === 'Monitoring' && req?.body?.form_data?.activity_type_data?.linked_id) {
+        const sqlStatementForCheck = getActivitySQL(req.body.form_data.activity_type_data.linked_id);
+        const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
+        const linked_species_treated = response.rows[0].species_treated;
 
-      // make sure monitoring a subset
-      sanitizedActivityData.species_treated.forEach((species) => {
-        defaultLog.info({message: 'species check', species});
+        // make sure monitoring a subset
+        sanitizedActivityData.species_treated.forEach((species) => {
+            defaultLog.info({ message: 'species check', species });
 
-        if (linked_species_treated.includes(species) === false) {
-          defaultLog.debug({message: 'linked_species_treated', linked_species_treated});
-          // otherwise throw 400
-          return res.status(400).json({
-            message: 'Invalid request, species in monitoring not included in linked treatment',
-            request: req.body,
-            namespace: 'activity',
-            code: 401
-          });
-        }
+            if (linked_species_treated.includes(species) === false) {
+              defaultLog.debug({ message: 'linked_species_treated', linked_species_treated });
+              // otherwise throw 400
+              return res.status(400).json({
+                message: 'Invalid request, species in monitoring not included in linked treatment',
+                request: req.body,
+                namespace: 'activity',
+                code: 401
+              });
+            }
+          }
+        );
       }
-    )
     }
-
     /*
     if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
           return res.status(400).json({
@@ -463,12 +464,12 @@ function updateActivity(): RequestHandler {
           });
     }
     */
-   /* disabled for now
-    if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
-      req.body.form_status = 'Submitted'
-      sanitizedActivityData.form_status = 'Submitted'
-    }
-    */
+    /* disabled for now
+     if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
+       req.body.form_status = 'Submitted'
+       sanitizedActivityData.form_status = 'Submitted'
+     }
+     */
 
     try {
       const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);

@@ -115,19 +115,36 @@ function* reinitAuth() {
   }
 
   if (config.MOBILE) {
-    yield call(keycloakInstance.init, {
+    const kcArgs = {
       checkLoginIframe: false,
       silentCheckSsoFallback: false,
-      silentCheckSsoRedirectUri: 'https://invasivesbc.gov.bc.ca/check_sso.html',
+      silentCheckSsoRedirectUri: config.SILENT_CHECK_URI,
       redirectUri: config.REDIRECT_URI,
       enableLogging: true,
       responseMode: 'query',
-      adapter: new CapacitorBrowserKeycloakAdapter(keycloakInstance),
       onLoad: 'check-sso',
       pkceMethod: 'S256'
-    });
+    };
 
-    yield delay(3000);
+    if (config.KEYCLOAK_ADAPTER === 'custom') {
+      kcArgs['adapter'] = new CapacitorBrowserKeycloakAdapter(keycloakInstance);
+    }
+
+    const FAIL_LIMIT = 3;
+    let failCount = 0;
+    while (failCount < FAIL_LIMIT) {
+      try {
+        yield call(keycloakInstance.init, kcArgs);
+        break;
+      } catch (e) {
+        console.dir(e);
+        if (failCount >= FAIL_LIMIT) {
+          yield put({ type: AUTH_SIGNOUT_REQUEST });
+        }
+        failCount++;
+        yield delay(1000);
+      }
+    }
   } else {
     const FAIL_LIMIT = 3;
     let failCount = 0;
@@ -199,6 +216,8 @@ function* refreshRoles() {
   const configuration = yield select(selectConfiguration);
   let authHeaders = yield select(selectAuthHeaders);
 
+  console.log('rr1');
+
   for (let i = 0; i < 3; i++) {
     if (authHeaders.authorization !== null && authHeaders.authorization.length > 0) {
       // we've got a valid header
@@ -208,6 +227,7 @@ function* refreshRoles() {
     yield delay(500);
     authHeaders = yield select(selectAuthHeaders);
   }
+  console.log('rr2');
 
   try {
     const { data: userData } = yield Http.request({
@@ -219,6 +239,7 @@ function* refreshRoles() {
       }
     });
 
+    console.log('rr3');
     const { data: rolesData } = yield Http.request({
       method: 'GET',
       url: configuration.API_BASE + `/api/roles`,
@@ -227,6 +248,8 @@ function* refreshRoles() {
         accept: 'application/json'
       }
     });
+
+    console.log('rr4');
 
     yield put({
       type: AUTH_REFRESH_ROLES_COMPLETE,

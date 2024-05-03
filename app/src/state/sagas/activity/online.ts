@@ -162,64 +162,71 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
+  try {
+    const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
 
-  yield put({
-    type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-    payload: { suggestedPersons: networkReturn.data.result }
-  });
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
+      payload: { suggestedPersons: networkReturn.data.result }
+    });
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(action) {
-  const search_feature = action.payload.search_feature;
-  // convert to v2 endpoint call:
+  try {
+    const search_feature = action.payload.search_feature;
+    // convert to v2 endpoint call:
 
-  let filterObject: any = {
-    recordSetType: 'Activity',
-    tableFilters: [
-      { id: '2', field: 'form_status', operator: 'CONTAINS', filterType: 'tableFilter', filter: 'Submitted' },
-      {
-        id: '3',
-        field: 'activity_subtype',
-        operator: 'CONTAINS',
-        filterType: 'tableFilter',
-        filter: action.payload.activity_subtype[0]
-      }
-    ],
-    selectColumns: ['activity_id', 'short_id']
-  };
+    let filterObject: any = {
+      recordSetType: 'Activity',
+      tableFilters: [
+        { id: '2', field: 'form_status', operator: 'CONTAINS', filterType: 'tableFilter', filter: 'Submitted' },
+        {
+          id: '3',
+          field: 'activity_subtype',
+          operator: 'CONTAINS',
+          filterType: 'tableFilter',
+          filter: action.payload.activity_subtype[0]
+        }
+      ],
+      selectColumns: ['activity_id', 'short_id']
+    };
 
-  console
-  if (action.payload.search_feature?.features?.[0]) {
-    filterObject.tableFilters.push({
-      filterType: 'spatialFilterDrawn',
-      operator: 'CONTAINED IN',
-      filter: '0.113619259813296791712616073543',
-      geojson: search_feature?.features?.[0] 
+    if (action.payload.search_feature?.features?.[0]) {
+      filterObject.tableFilters.push({
+        filterType: 'spatialFilterDrawn',
+        operator: 'CONTAINED IN',
+        filter: '0.113619259813296791712616073543',
+        geojson: search_feature?.features?.[0]
+      });
+    }
+
+    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+      filterObjects: [filterObject]
     });
-  }
 
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-    filterObjects: [filterObject]
-  });
+    let treatments = [];
+    const result = networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result;
+    if (result && result.length > 0) {
+      treatments = result.map((treatment, i) => {
+        console.dir(treatment);
+        //const shortActID = getShortActivityID(treatment);
+        return {
+          label: treatment.short_id, //shortActID,
+          title: treatment.short_id, //shortActID,
+          value: treatment.activity_id,
+          'x-code_sort_order': i + 1
+        };
+      });
+    }
 
-  let treatments = [];
-  const result = networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result;
-  if (result && result.length > 0) {
-    treatments = result.map((treatment, i) => {
-      console.dir(treatment);
-      //const shortActID = getShortActivityID(treatment);
-      return {
-        label: treatment.short_id, //shortActID,
-        title: treatment.short_id, //shortActID,
-        value: treatment.activity_id,
-        'x-code_sort_order': i + 1
-      };
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
+      payload: { suggestedTreatmentIDs: treatments }
     });
+  } catch (e) {
+    console.error(e);
   }
-
-  yield put({
-    type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
-    payload: { suggestedTreatmentIDs: treatments }
-  });
 }
