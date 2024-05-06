@@ -108,7 +108,7 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC(action) {
         ...hydrated,
         form_status: ActivityStatus.DRAFT
       });
-      if (networkReturn.status >= 200 && networkReturn.status <= 300) {
+      if (networkReturn.status >= 200 && networkReturn.status < 300) {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE, payload: {
             id: hydrated.activity_id,
