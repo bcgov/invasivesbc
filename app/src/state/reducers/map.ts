@@ -1082,8 +1082,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           if (action.payload?.pathname === '/') {
             // draftState.panelOpen = false;
           }
-          if (!action?.payload?.pathname?.includes('WhatsHere')) {
+          if (!action?.payload?.url?.includes('WhatsHere')) {
             draftState.whatsHere.toggle = false;
+            draftState.whatsHere.feature = null;
           }
           break;
         }

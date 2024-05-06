@@ -5,6 +5,14 @@
   cursor: pointer;
   padding: 0;
 }
+.whatsHereMarkerEl {
+  display: block;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  padding: 0;
+
+}
 .IAPPMarkerEl {
   display: block;
   border: none;

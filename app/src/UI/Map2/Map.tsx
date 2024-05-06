@@ -26,7 +26,8 @@ import {
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle,
   addClientBoundariesIfNotExists,
-  refreshClientBoundariesOnToggle
+  refreshClientBoundariesOnToggle,
+  refreshWhatsHereFeature
 } from './Helpers';
 import { useSelector } from 'util/use_selector';
 import { opacify } from 'color2k';
@@ -89,7 +90,10 @@ export const Map = (props: any) => {
   const HDToggle = useSelector((state: any) => state.Map?.HDToggle);
 
   // Draw tools - determing who needs edit and where the geos get dispatched, what tools to display etc
+  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
+  const whatsHereFeature = useSelector((state: any) => state.Map?.whatsHere?.feature);
   const whatsHereToggle = useSelector((state: any) => state.Map?.whatsHere?.toggle);
+  const whatsHereMarker = new maplibregl.Marker({ element: whatsHereMarkerEl });
   const appModeUrl = useSelector((state: any) => state.AppMode.url);
   // also used with current marker below:
   const activityGeo = useSelector((state: any) => state.ActivityPage?.activity?.geometry);
@@ -222,13 +226,17 @@ export const Map = (props: any) => {
       currentActivityShortID,
       currentIAPPID,
       currentIAPPGeo,
+      userRecordOnHoverRecordRow,
       activityMarker,
-      IAPPMarker
+      IAPPMarker,
+      whatsHereMarker,
+      whatsHereFeature
     });
-  }, [currentActivityShortID, currentIAPPID, map.current, mapReady]);
+  }, [currentActivityShortID, currentIAPPID, map.current, mapReady, userRecordOnHoverRecordRow]);
 
   //Highlighted Record
   useEffect(() => {
+    console.log('***highlighted rec hook')
     if (!mapReady) return;
     refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
 
@@ -277,6 +285,11 @@ export const Map = (props: any) => {
     }
   }, [loggedIn, map.current, mapReady]);
 
+
+  useEffect(()=> {
+    refreshWhatsHereFeature(map.current,{ whatsHereFeature})
+  },[whatsHereFeature, appModeUrl, map.current, mapReady])
+
   return (
     <div className='MapWrapper'>
       <div ref={mapContainer} className='Map' />
@@ -305,3 +318,9 @@ IAPPMarkerEl.className = 'IAPPMarkerEl';
 IAPPMarkerEl.style.backgroundImage = 'url(/assets/iapp_logo.gif)';
 IAPPMarkerEl.style.width = `32px`;
 IAPPMarkerEl.style.height = `32px`;
+
+const whatsHereMarkerEl = document.createElement('div');
+whatsHereMarkerEl.className = 'whatsHereMarkerEl';
+whatsHereMarkerEl.style.backgroundImage = 'url(/assets/icon/pin.svg)';
+whatsHereMarkerEl.style.width = `32px`;
+whatsHereMarkerEl.style.height = `32px`;
