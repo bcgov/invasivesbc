@@ -216,8 +216,6 @@ function* refreshRoles() {
   const configuration = yield select(selectConfiguration);
   let authHeaders = yield select(selectAuthHeaders);
 
-  console.log('rr1');
-
   for (let i = 0; i < 3; i++) {
     if (authHeaders.authorization !== null && authHeaders.authorization.length > 0) {
       // we've got a valid header
@@ -227,7 +225,6 @@ function* refreshRoles() {
     yield delay(500);
     authHeaders = yield select(selectAuthHeaders);
   }
-  console.log('rr2');
 
   try {
     const { data: userData } = yield Http.request({
@@ -239,7 +236,6 @@ function* refreshRoles() {
       }
     });
 
-    console.log('rr3');
     const { data: rolesData } = yield Http.request({
       method: 'GET',
       url: configuration.API_BASE + `/api/roles`,
@@ -248,8 +244,6 @@ function* refreshRoles() {
         accept: 'application/json'
       }
     });
-
-    console.log('rr4');
 
     yield put({
       type: AUTH_REFRESH_ROLES_COMPLETE,

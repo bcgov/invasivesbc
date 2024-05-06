@@ -1,4 +1,3 @@
-import { Action } from 'redux';
 import { OVERLAY_MENU_TOGGLE, SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
 import { createNextState } from '@reduxjs/toolkit';
 
