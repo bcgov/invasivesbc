@@ -1042,6 +1042,66 @@ export const refreshDrawControls = (
     */
 };
 
+
+export const refreshWhatsHereFeature = (map, options: any) => {
+
+  const layerID = 'WhatsHereFeatureLayer';
+  try {
+
+  if (map && map.getLayer(layerID + 'shape')) {
+    map.removeLayer(layerID + 'shape');
+  }
+  if (map && map.getLayer(layerID + 'outline')) {
+    map.removeLayer(layerID + 'outline');
+  }
+  if (map && map.getSource(layerID)) {
+    map.removeSource(layerID);
+  }
+  }
+  catch(e) {
+    console.log(e);
+  }
+
+
+  console.log('***whatsherefeature')
+  console.dir(options)
+
+  if (
+    map &&
+    options?.whatsHereFeature?.geometry 
+  ) {
+    map
+      .addSource(layerID, {
+        type: 'geojson',
+        data: options.whatsHereFeature.geometry
+      })
+      .addLayer({
+        id: layerID + 'shape',
+        source: layerID,
+        type: 'fill',
+        paint: {
+          'fill-color': 'yellow',
+          'fill-outline-color': 'yellow',
+          'fill-opacity': 0.5
+        },
+        minzoom: 0,
+        maxzoom: 24
+      })
+      .addLayer({
+        id: layerID + 'outline',
+        source: layerID,
+        type: 'line',
+        paint: {
+          'line-color': 'yellow',
+          'line-opacity': 1,
+          'line-width': 3
+        },
+        minzoom: 0,
+        maxzoom: 24
+      })
+  }
+}
+
 export const refreshCurrentRecMakers = (map, options: any) => {
   if (options.IAPPMarker && options.currentIAPPGeo?.geometry && options.currentIAPPID) {
     options.IAPPMarker.setLngLat(options.currentIAPPGeo.geometry.coordinates);
@@ -1050,6 +1110,12 @@ export const refreshCurrentRecMakers = (map, options: any) => {
   if (options.activityMarker && options.activityGeo?.[0]?.geometry && options.currentActivityShortID) {
     options.activityMarker.setLngLat(centroid(options.activityGeo[0]).geometry.coordinates);
     options.activityMarker.addTo(map);
+  }
+
+  if(options.whatsHereMarker && (options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry)) {
+    console.dir(options)
+    options.whatsHereMarker.setLngLat(centroid(options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry).geometry?.coordinates)
+    options.whatsHereMarker.addTo(map);
   }
 };
 
