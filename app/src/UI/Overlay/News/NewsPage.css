@@ -1,0 +1,45 @@
+#newsPageContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+#newsPageHeader {
+    font-size: 3rem;
+    padding-top:5rem;
+
+}
+
+#newsPageContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+#newsList {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.newsListItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid black;
+    max-width: 55rem;
+    
+}
+
+.newsListItemTitle {
+    font-size: 1.75rem;
+}
+
+.newsListItemContent {
+    font-size: 1rem;
+    text-align: left;
+    justify-content: left;
+    white-space: pre-wrap;
+}

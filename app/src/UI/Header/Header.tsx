@@ -15,7 +15,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { AdminPanelSettings, Assessment, FileUpload, Home, Map, School } from '@mui/icons-material';
+import { AdminPanelSettings, Assessment, FileUpload, Home, Map, Newspaper, School } from '@mui/icons-material';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
@@ -435,6 +435,17 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <Assessment />
+        </Tab>
+
+        <Tab
+        key='tab7-1/2'
+        path='/News'
+        label='News'
+        predicate={'authenticated_online'}
+        panelOpen={true}
+        panelFullScreen={true}
+        >
+        <Newspaper/>
         </Tab>
 
         <Tab
