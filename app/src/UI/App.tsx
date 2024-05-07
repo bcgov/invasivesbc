@@ -38,6 +38,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { OfflineUserMenu } from 'UI/OfflineUserMenu/OfflineUserMenu';
 import { MobileOnly } from 'UI/Predicates/MobileOnly';
 import { OfflineDataSyncDialog } from 'UI/OfflineDataSync/OfflineDataSyncDialog';
+import { NewsPage } from './Overlay/News/NewsPage';
 
 export const RENDER_DEBUG = false;
 
@@ -136,6 +137,7 @@ const OverlayContentMemo = (props) => {
       <Route path='/Batch/new' render={(props) => <BatchCreateNew />} />
       <Route path='/Batch/templates' render={(props) => <BatchTemplates />} />
       <Route path='/Reports' render={(props) => <EmbeddedReportsPage />} />
+      <Route path='/News' render={(props) => <NewsPage />} />
       <Route path='/Training' render={(props) => <TrainingPage />} />
       <Route path='/Legend' render={(props) => <LegendsPopup />} />
       <Route path='/AccessRequest' render={(props) => <AccessRequestPage />} />

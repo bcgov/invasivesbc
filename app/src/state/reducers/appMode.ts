@@ -40,7 +40,7 @@ export default function appMode(state = initialState, action: any) {
     case URL_CHANGE:
       const nextState = createNextState(state, (draftState: any) => {
         draftState.url = action?.payload?.url;
-        if (['Batch', 'Reports', 'Training', 'Legend', 'Landing'].includes(action.payload.url.split('/')[1])) {
+        if (['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News'].includes(action.payload.url.split('/')[1])) {
           draftState.panelFullScreen = true;
         }
         else
