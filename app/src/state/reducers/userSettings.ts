@@ -8,6 +8,7 @@ import {
   CLOSE_NEW_RECORD_MENU,
   GET_API_DOC_SUCCESS,
   IAPP_GET_SUCCESS,
+  INIT_CACHE_RECORDSET,
   MAP_TOGGLE_WHATS_HERE,
   OPEN_NEW_RECORD_MENU,
   RECORDSET_ADD_FILTER,
@@ -191,6 +192,10 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             delete draftState.recordSets[action.payload.setID].sortColumn;
           }
 
+          break;
+        }
+        case INIT_CACHE_RECORDSET: {
+          draftState.recordSets[action.payload.setID].isCaching = true;
           break;
         }
         case RECORDSET_REMOVE_FILTER: {
