@@ -187,6 +187,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
           id: '3',
           field: 'activity_subtype',
           operator: 'CONTAINS',
+          operator2: 'AND',
           filterType: 'tableFilter',
           filter: action.payload.activity_subtype[0]
         }
@@ -198,6 +199,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
       filterObject.tableFilters.push({
         filterType: 'spatialFilterDrawn',
         operator: 'CONTAINED IN',
+          operator2: 'AND',
         filter: '0.113619259813296791712616073543',
         geojson: search_feature?.features?.[0]
       });

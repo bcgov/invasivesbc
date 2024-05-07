@@ -47,8 +47,8 @@ export const RecordSet = (props) => {
   const recordSet = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]);
   const tableType = recordSet?.recordSetType;
 
-
-  const onlyFilterIsForDrafts = recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
+  const onlyFilterIsForDrafts =
+    recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
 
   switch (recordSet) {
     case undefined:
@@ -106,7 +106,9 @@ export const RecordSet = (props) => {
                   ) : (
                     <>
                       Show Filters{' '}
-                      {(recordSet?.tableFilters?.length || 0) > 0 && !onlyFilterIsForDrafts && `(${recordSet?.tableFilters?.length})`}
+                      {(recordSet?.tableFilters?.length || 0) > 0 &&
+                        !onlyFilterIsForDrafts &&
+                        `(${recordSet?.tableFilters?.length})`}
                       <VisibilityIcon />
                       <FilterAltIcon />
                     </>
@@ -129,6 +131,7 @@ export const RecordSet = (props) => {
                         field: tableType === 'Activity' ? 'short_id' : 'site_id',
                         setID: props.setID,
                         operator: 'CONTAINS',
+                        operator2: 'AND',
                         blockFetchForNow: true
                       }
                     });
@@ -145,8 +148,9 @@ export const RecordSet = (props) => {
                 <table className="recordSetFilterTable">
                   <tbody>
                     <tr>
+                      <th>Operator 1</th>
+                      <th>Operator 2</th>
                       <th>Filter type</th>
-                      <th>Operator</th>
                       <th>Filter On</th>
                       <th>Value</th>
                       <th></th>
@@ -263,6 +267,10 @@ const Filter = (props) => {
     (filter) => filter.id === props.id
   )?.operator;
 
+  const operator2InState = userSettingsState?.recordSets?.[props.setID]?.tableFilters?.find(
+    (filter) => filter.id === props.id
+  )?.operator2;
+
   const value = useRef();
 
   //const debouncedUpdate = debounce((value) => {
@@ -362,6 +370,114 @@ const Filter = (props) => {
     <tr>
       <td>
         <select
+          className="filterSelect"
+          key={'operand2' + props.name}
+          value={operator2InState}
+          onChange={(e) => {
+            console.dir(e.target.value);
+
+            dispatch({
+              type: RECORDSET_UPDATE_FILTER,
+              payload: {
+                //filterType: 'tableFilter',
+                setID: props.setID,
+                filterID: props.id,
+                operator2: e.target.value
+              }
+            });
+          }}>
+          {
+            {
+              tableFilter: (
+                <>
+                  <option key={Math.random()} value={'AND'} label={'AND'}>
+                    AND
+                  </option>
+                  <option key={Math.random()} value={'OR'} label={'OR'}>
+                    OR
+                  </option>
+                </>
+              ),
+              spatialFilterDrawn: (
+                <>
+                  <option key={Math.random()} value={'AND'} label={'AND'}>
+                    AND
+                  </option>
+                  <option disabled key={Math.random()} value={'OR'} label={'OR'}>
+                    OR  (Not yet available for this filter type)
+                  </option>
+                </>
+              ),
+              spatialFilterUploaded: (
+                <>
+                  <option key={Math.random()} value={'AND'} label={'AND'}>
+                    AND
+                  </option>
+                  <option disabled key={Math.random()} value={'OR'} label={'OR'}>
+                    OR (Not yet available for this filter type)
+                  </option>
+                </>
+              )
+            }[filterTypeInState]
+          }
+        </select>
+      </td>
+      <td>
+        <select
+          className="filterSelect"
+          key={'operand' + props.name}
+          value={operatorInState}
+          onChange={(e) => {
+            console.dir(e.target.value);
+
+            dispatch({
+              type: RECORDSET_UPDATE_FILTER,
+              payload: {
+                //filterType: 'tableFilter',
+                setID: props.setID,
+                filterID: props.id,
+                operator: e.target.value
+              }
+            });
+          }}>
+          {
+            {
+              tableFilter: (
+                <>
+                  <option key={Math.random()} value={'CONTAINS'} label={'CONTAINS'}>
+                    CONTAINS
+                  </option>
+                  <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
+                    DOES NOT CONTAIN
+                  </option>
+                </>
+              ),
+              spatialFilterDrawn: (
+                <>
+                  <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
+                    CONTAINED IN
+                  </option>
+                  <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
+                    NOT CONTAINED IN  (Not yet available for this filter type)
+                  </option>
+                </>
+              ),
+              spatialFilterUploaded: (
+                <>
+                  <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
+                    CONAINED IN
+                  </option>
+                  <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
+                    NOT CONTAINED IN  (Not yet available for this filter type)
+                  </option>
+                </>
+              )
+            }[filterTypeInState]
+          }
+        </select>
+      </td>
+      <td>
+        <select
           className="filterTypeSelect"
           key={'filterTypeSelect' + props.name}
           value={filterTypeInState}
@@ -403,60 +519,6 @@ const Filter = (props) => {
             label={'Spatial - Uploaded'}>
             Spatial - Uploaded
           </option>
-        </select>
-      </td>
-      <td>
-        <select
-          className="filterSelect"
-          key={'operand' + props.name}
-          value={operatorInState}
-          onChange={(e) => {
-            console.dir(e.target.value);
-
-            dispatch({
-              type: RECORDSET_UPDATE_FILTER,
-              payload: {
-                //filterType: 'tableFilter',
-                setID: props.setID,
-                filterID: props.id,
-                operator: e.target.value
-              }
-            });
-          }}>
-          {
-            {
-              tableFilter: (
-                <>
-                  <option key={Math.random()} value={'CONTAINS'} label={'CONTAINS'}>
-                    CONTAINS
-                  </option>
-                  <option key={Math.random()} value={'DOES NOT CONTAIN'} label={'DOES NOT CONTAIN'}>
-                    DOES NOT CONTAIN
-                  </option>
-                </>
-              ),
-              spatialFilterDrawn: (
-                <>
-                  <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
-                    CONTAINED IN
-                  </option>
-                  <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
-                    NOT CONTAINED IN
-                  </option>
-                </>
-              ),
-              spatialFilterUploaded: (
-                <>
-                  <option key={Math.random()} value={'CONTAINED IN'} label={'CONTAINED IN'}>
-                    CONAINED IN
-                  </option>
-                  <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
-                    NOT CONTAINED IN
-                  </option>
-                </>
-              )
-            }[filterTypeInState]
-          }
         </select>
       </td>
       <td>

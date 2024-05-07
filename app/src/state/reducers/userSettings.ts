@@ -156,6 +156,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
                 field: action.payload.field,
                 filterType: action.payload.filterType,
                 operator: action.payload.operator ? action.payload.operator : 'CONTAINS',
+                operator2: action.payload.operator2 ? action.payload.operator2 : 'AND',
                 filter: action.payload.filter ? action.payload.filter : ''
               });
               break;
@@ -260,6 +261,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             );
             if (index !== -1)
               draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
+          }
+          if (action.payload.operator2) {
+            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+              (filter) => filter.id === action.payload.filterID
+            );
+            if (index !== -1)
+              draftState.recordSets[action.payload.setID].tableFilters[index].operator2 = action.payload.operator2;
           }
 
           //re used for spatial filters
