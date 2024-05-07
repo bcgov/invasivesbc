@@ -41,6 +41,57 @@ const TOKEN_REFRESH_INTERVAL = 5 * 1000;
 
 let keycloakInstance = null;
 
+class CapacitorInAppKeycloakAdapter implements KeycloakAdapter {
+  private kc: Keycloak;
+
+  constructor(instance: Keycloak) {
+    this.kc = instance;
+  }
+
+  async accountManagement(): Promise<void> {
+    const url = this.kc.createAccountUrl();
+    window.location.href = url;
+    //return Browser.open({ url });
+  }
+
+  async login(options?: KeycloakLoginOptions): Promise<void> {
+    const url = this.kc.createLoginUrl(options);
+
+    const p: Promise<void> = new Promise(async (resolve, reject) => {
+      window.location.href = url;
+      // await Browser.open({ url, presentationStyle: 'popover' });
+      // await Browser.addListener('browserFinished', () => {
+      //   Browser.removeAllListeners();
+      //   resolve();
+      // });
+    });
+
+    return p;
+  }
+
+  async logout(options?: KeycloakLogoutOptions): Promise<void> {
+    const url = this.kc.createLogoutUrl(options);
+    window.location.href = url;
+    //return Browser.open({ url });
+  }
+
+  redirectUri(options: { redirectUri: string }, encodeHash: boolean): string {
+    if (options && options.redirectUri) {
+      return options.redirectUri;
+    } else if (this.kc.redirectUri) {
+      return this.kc.redirectUri;
+    } else {
+      return window.location.href;
+    }
+  }
+
+  async register(options?: KeycloakRegisterOptions): Promise<void> {
+    const url = this.kc.createRegisterUrl(options);
+    window.location.href = url;
+    //return Browser.open({ url });
+  }
+}
+
 class CapacitorBrowserKeycloakAdapter implements KeycloakAdapter {
   private kc: Keycloak;
 
@@ -118,7 +169,7 @@ function* reinitAuth() {
     const kcArgs = {
       checkLoginIframe: false,
       silentCheckSsoFallback: false,
-      silentCheckSsoRedirectUri: config.SILENT_CHECK_URI,
+      //silentCheckSsoRedirectUri: config.SILENT_CHECK_URI,
       redirectUri: config.REDIRECT_URI,
       enableLogging: true,
       responseMode: 'query',

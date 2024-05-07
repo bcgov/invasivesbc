@@ -14,8 +14,7 @@ dependencies {
     implementation project(':capacitor-browser')
     implementation project(':capacitor-camera')
     implementation project(':capacitor-geolocation')
-    //noinspection GradleDependency
-    implementation 'androidx.webkit:webkit:1.6.0'
+    implementation "androidx.webkit:webkit:1.4.0"
 }
 
 

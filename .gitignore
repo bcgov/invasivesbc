@@ -78,6 +78,7 @@ typings/
 # dotenv environment variables file
 .env
 .env.test
+.env.*
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -119,4 +120,5 @@ mingw-w64-x86_64-github-cli-1.13.1-1-any.pkg.tar.zst
 app/ios/DerivedData
 invasivesbc.code-workspace
 
-app/ios
+Caddyfile-local
+

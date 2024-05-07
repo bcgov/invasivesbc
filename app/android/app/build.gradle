@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     namespace "bc.gov.invasivesbc"
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "bc.gov.invasivesbc"
         minSdkVersion rootProject.ext.minSdkVersion
