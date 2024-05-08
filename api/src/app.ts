@@ -10,6 +10,8 @@ import { getLogger } from 'utils/logger';
 import { MDC, MDCAsyncLocal } from 'mdc';
 import { getAllPaths } from 'paths';
 
+import EventEmitter from 'events';
+
 const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
@@ -57,6 +59,19 @@ app.use(function (req: any, res: any, next: any) {
     next();
   }
 });
+
+const readyBus = new EventEmitter();
+let ready = false;
+
+async function waitForAppReady() {
+  if (ready) {
+    return;
+  }
+  await new Promise((resolve) => {
+    readyBus.once('ready', resolve);
+  });
+  ready = true;
+}
 
 getAllPaths().then((allPaths) => {
   initialize({
@@ -108,7 +123,9 @@ getAllPaths().then((allPaths) => {
       }
     }
   }).then(() => {
+    readyBus.emit('ready');
     defaultLog.info({ message: 'all paths initialized' });
   });
 });
-export { app };
+
+export { app, waitForAppReady };

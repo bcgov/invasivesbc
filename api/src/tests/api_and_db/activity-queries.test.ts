@@ -1,21 +1,17 @@
 // test stuff:
-import { expect } from 'chai';
 import { describe } from 'mocha';
 import request from 'supertest';
-import { app } from 'app';
+import { app, waitForAppReady } from 'app';
 import { BC_AREA, getShortActivityID } from 'sharedAPI';
 import { faker } from '@faker-js/faker';
+import random from 'geojson-random';
+import { expect } from 'chai';
 
 // activity stuff
 import { v4 as uuidv4 } from 'uuid';
 
 // @todo: Geojson factory
 import bbox from '@turf/bbox';
-
-// needs to be in this order:
-require('dotenv').config({ path: './env_config/env.local', debug: false });
-
-var random = require('geojson-random');
 
 const activityTypes = [
   {
@@ -102,6 +98,10 @@ export const newRecord = () => {
 };
 
 describe.skip('can create activities', () => {
+  before(async () => {
+    await waitForAppReady();
+  });
+  
   it('should give 201 on create', async () => {
     const response = await request(app).post('/activity').set('Content-type', 'application/json').send(newRecord());
     expect(response.status).to.equal(201);
@@ -109,10 +109,7 @@ describe.skip('can create activities', () => {
 
   it('should be able to make 100 in a hurry', async () => {
     for (let i = 0; i < 200; i++) {
-      const response = await await request(app)
-        .post('/activity')
-        .set('Content-type', 'application/json')
-        .send(newRecord());
+      const response = await request(app).post('/activity').set('Content-type', 'application/json').send(newRecord());
       expect(response.status).to.equal(201);
     }
   });
