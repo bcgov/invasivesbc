@@ -1,27 +1,24 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../database/db';
-import { getLogger } from '../utils/logger';
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
 import { SQLStatement } from 'sql-template-strings';
 import {
   deleteAdministrativelyDefinedShapesSQL,
   getAdministrativelyDefinedShapesSQL
-} from '../queries/admin-defined-shapes';
-import { atob } from 'js-base64';
+} from 'queries/admin-defined-shapes';
 import { QueryResult } from 'pg';
 import { FeatureCollection } from 'geojson';
-import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from '../utils/kml-import';
-import { InvasivesRequest } from '../utils/auth-utils';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { simplifyGeojson } from '../utils/map-shaper-util';
+import { GeoJSONFromKML, KMZToKML, sanitizeGeoJSON } from 'utils/kml-import';
+import { InvasivesRequest } from 'utils/auth-utils';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { simplifyGeojson } from 'utils/map-shaper-util';
 
 const defaultLog = getLogger('admin-defined-shapes');
 
-export const GET: Operation = [getAdministrativelyDefinedShapes()];
-export const POST: Operation = [uploadShape()];
-export const DELETE: Operation = [deleteShape()];
+const GET: Operation = [getAdministrativelyDefinedShapes()];
+const POST: Operation = [uploadShape()];
+const DELETE: Operation = [deleteShape()];
 
 GET.apiDoc = {
   description: 'Fetches a GeoJSON object to display boundaries of administratively-defined shapes (KML uploads)',
@@ -38,7 +35,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            $ref: '#/components/schemas/AdminDefinedShapeResponse',
+            $ref: '#/components/schemas/AdminDefinedShapeResponse'
           }
         }
       }
@@ -181,8 +178,8 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
 
           if (feature.type === 'GeometryCollection') {
             if (feature?.geometries === null) return;
-            for (let geometry of feature.geometries) {
-              let shape = {
+            for (const geometry of feature.geometries) {
+              const shape = {
                 type: 'Feature',
                 properties: {},
                 geometry: {
@@ -194,7 +191,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
             }
           } else {
             if (feature?.coordinates === null) return;
-            for (let coords of feature.coordinates) {
+            for (const coords of feature.coordinates) {
               let shape;
               switch (feature?.type) {
                 case 'MultiPoint':
@@ -245,7 +242,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         code: 200
       });
     } catch (error) {
-      defaultLog.debug({label: 'getAdministrativelyDefinedShapes', message: 'error', error});
+      defaultLog.debug({ label: 'getAdministrativelyDefinedShapes', message: 'error', error });
       return res.status(500).json({
         message: 'Failed to get administratively defined shapes',
         request: req.body,
@@ -411,3 +408,5 @@ function deleteShape(): RequestHandler {
     }
   };
 }
+
+export default { GET, POST, DELETE };

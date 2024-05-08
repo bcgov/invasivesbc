@@ -1,26 +1,24 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { InvasivesRequest } from '../utils/auth-utils';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { InvasivesRequest } from 'utils/auth-utils';
+import { getLogger } from 'utils/logger';
 import csvParser from 'csv-parser';
 import { Readable } from 'stream';
 
-export const GET: Operation = [listBatches()];
-export const POST: Operation = [createBatch()];
+const GET: Operation = [listBatches()];
+const POST: Operation = [createBatch()];
 
 const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 
@@ -33,10 +31,10 @@ const POST_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Batch upload processor',
@@ -212,3 +210,5 @@ function createBatch(): RequestHandler {
     });
   };
 }
+
+export default { GET, POST };

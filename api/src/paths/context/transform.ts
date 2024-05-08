@@ -1,14 +1,12 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity');
 
-export const GET: Operation = [getContext()];
+const GET: Operation = [getContext()];
 
 GET.apiDoc = {
   description: 'Transform from geographic coordinates to any EPSG codded coordinate',
@@ -137,3 +135,5 @@ function getContext(): RequestHandler {
     defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });
   };
 }
+
+export default { GET };

@@ -1,16 +1,14 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { renewUserSQL } from '../../queries/user-queries';
+import { renewUserSQL } from 'queries/user-queries';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity/{activityId}');
 
-export const POST: Operation = [renewUser()];
+const POST: Operation = [renewUser()];
 
 POST.apiDoc = {
   description: 'Renew a user',
@@ -90,3 +88,5 @@ function renewUser(): RequestHandler {
     }
   };
 }
+
+export default { POST };

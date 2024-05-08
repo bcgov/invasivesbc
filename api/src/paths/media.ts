@@ -1,19 +1,17 @@
-'use strict';
-
 import { GetObjectOutput, ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IMediaItem, MediaBase64 } from '../models/media';
-import { getFileFromS3, uploadFileToS3 } from '../utils/file-utils';
-import { getLogger } from '../utils/logger';
-import { retrieveGetDoc } from '../docs/getDoc';
+import { IMediaItem, MediaBase64 } from 'models/media';
+import { getFileFromS3, uploadFileToS3 } from 'utils/file-utils';
+import { getLogger } from 'utils/logger';
+import { retrieveGetDoc } from 'docs/getDoc';
 
 const defaultLog = getLogger('media');
 
 /**
  * GET api/media?key=123;key=456;key=789
  */
-export const GET: Operation = [getMedia()];
+const GET: Operation = [getMedia()];
 
 GET.apiDoc = {
   tags: ['media'],
@@ -132,3 +130,5 @@ export function getMediaItemsList(s3ObjectList: GetObjectOutput[], keys: string[
 
   return mediaItems;
 }
+
+export default { GET };

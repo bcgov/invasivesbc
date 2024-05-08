@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
 import { OPEN_NEW_RECORD_MENU } from 'state/actions';
 import 'UI/Global.css';

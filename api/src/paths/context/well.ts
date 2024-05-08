@@ -1,5 +1,3 @@
-'use strict';
-
 import distance from '@turf/distance';
 import { point } from '@turf/helpers';
 import nearestPoint from '@turf/nearest-point';
@@ -7,12 +5,12 @@ import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import proj4 from 'proj4';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity');
 
-export const GET: Operation = proxyWell();
+const GET: Operation = proxyWell();
 
 GET.apiDoc = {
   description:
@@ -203,3 +201,4 @@ function proxyWell(): RequestHandler {
 
 // Make available as a model as well.
 export { getWell };
+export default { GET };

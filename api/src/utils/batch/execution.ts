@@ -1,5 +1,5 @@
 import { Template } from './definitions';
-import { getLogger } from '../logger';
+import { getLogger } from 'utils/logger';
 import { PoolClient } from 'pg';
 import { randomUUID } from 'crypto';
 import moment from 'moment';
@@ -40,7 +40,8 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
     mapped?.form_data?.activity_data?.invasive_species_agency_code &&
     mapped.form_data.activity_data.invasive_species_agency_code.length > 0
   ) {
-    mapped.form_data.activity_data.invasive_species_agency_code = mapped.form_data.activity_data.invasive_species_agency_code.join();
+    mapped.form_data.activity_data.invasive_species_agency_code =
+      mapped.form_data.activity_data.invasive_species_agency_code.join();
   }
 
   if (['Activity_Treatment_ChemicalPlantTerrestrial', 'Activity_Treatment_ChemicalPlantAquatic'].includes(subtype)) {
@@ -121,13 +122,12 @@ export const BatchExecutionService = {
         }
         if (errorRow && errorRowsBehaviour === 'Skip') continue;
 
-        const { id: activityId, shortId, payload, geog } = _mapToDBObject(
-          row,
-          desiredFinalStatus,
-          template.type,
-          template.subtype,
-          userInfo
-        );
+        const {
+          id: activityId,
+          shortId,
+          payload,
+          geog
+        } = _mapToDBObject(row, desiredFinalStatus, template.type, template.subtype, userInfo);
 
         let guid = null;
         if (userInfo?.idir_userid !== null) {
@@ -137,12 +137,12 @@ export const BatchExecutionService = {
         }
         const qc = {
           text: `INSERT INTO activity_incoming_data (activity_id, short_id, activity_payload, batch_id, activity_type,
-                                                   activity_subtype, form_status, created_by, updated_by,
-                                                   created_by_with_guid, updated_by_with_guid, geog, row_number,
-                                                   species_positive,
-                                                   species_negative,
-                                                   species_treated)
-               values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+                                                     activity_subtype, form_status, created_by, updated_by,
+                                                     created_by_with_guid, updated_by_with_guid, geog, row_number,
+                                                     species_positive,
+                                                     species_negative,
+                                                     species_treated)
+                 values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
           values: [
             activityId,
             shortId,

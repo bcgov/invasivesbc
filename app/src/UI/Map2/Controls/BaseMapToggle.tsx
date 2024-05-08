@@ -2,7 +2,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { MAP_TOGGLE_BASEMAP } from 'state/actions';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import LayersIcon from '@mui/icons-material/Layers';
 import LayersClearIcon from '@mui/icons-material/LayersClear';
 import 'UI/Global.css';
@@ -12,7 +12,6 @@ export const BaseMapToggle = (props) => {
   const dispatch = useDispatch();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
-
 
   return (
     <div ref={divRef} className={baseMapToggle ? 'map-btn-selected' : 'map-btn'}>

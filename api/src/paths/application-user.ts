@@ -1,16 +1,13 @@
-'use strict';
-
-import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { getUsersSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getUserByBCEIDSQL, getUserByIDIRSQL, getUsersSQL } from 'queries/user-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity/{activityId}');
 
-export const GET: Operation = [getHandler()];
+const GET: Operation = [getHandler()];
 
 GET.apiDoc = {
   description: 'Fetches a list of users from the database',
@@ -192,3 +189,5 @@ async function getUserByIDIR(req, res, next, idir) {
     connection.release();
   }
 }
+
+export default { GET };

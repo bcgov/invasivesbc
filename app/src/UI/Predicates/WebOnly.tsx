@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from 'react';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { selectConfiguration } from 'state/reducers/configuration';
 
 const WebOnly = ({ children }: PropsWithChildren<any>) => {

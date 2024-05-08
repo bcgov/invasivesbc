@@ -1,16 +1,14 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { getAllRolesSQL } from '../queries/role-queries';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getAllRolesSQL } from 'queries/role-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('roles');
 
-export const GET: Operation = [getRoles()];
+const GET: Operation = [getRoles()];
 
 GET.apiDoc = {
   description: 'Get some information about users and their roles',
@@ -97,3 +95,5 @@ function getRoles(): RequestHandler {
     }
   };
 }
+
+export default { GET };

@@ -1,16 +1,14 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { getAccessRequestForUserSQL } from '../queries/access-request-queries';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getAccessRequestForUserSQL } from 'queries/access-request-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('access-request');
 
-export const POST: Operation = [getAccessRequestData()];
+const POST: Operation = [getAccessRequestData()];
 
 POST.apiDoc = {
   description: 'Get access request record.',
@@ -61,8 +59,6 @@ POST.apiDoc = {
 function getAccessRequestData(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'access-request', message: 'create', body: req.body });
-
-
 
     const connection = await getDBConnection();
     if (!connection) {
@@ -115,3 +111,5 @@ function getAccessRequestData(): RequestHandler {
     }
   };
 }
+
+export default { POST };

@@ -1,17 +1,17 @@
 import { Template, TemplateColumn } from '../definitions';
 import {
   autofillFromPostGIS,
+  multipolygonIsConnected,
+  parsedGeoType,
   parseGeoJSONasWKT,
   parseWKTasGeoJSON,
-  parsedGeoType,
-  validateAsWKT,
-  multipolygonIsConnected
+  validateAsWKT
 } from './spatial-validation';
 import slugify from 'slugify';
 import moment from 'moment';
 import { _mapToDBObject } from '../execution';
 import { lookupAreaLimit } from 'sharedAPI';
-import { getLogger } from '../../logger';
+import { getLogger } from 'utils/logger';
 import circle from '@turf/circle';
 
 const defaultLog = getLogger('batch');
@@ -203,14 +203,20 @@ async function _validateCell(
           messageDetail: e.toString()
         });
       }
-      if (templateColumn.validations.minValue !== null && result.parsedValue < templateColumn.validations.minValue) {
+      if (
+        templateColumn.validations.minValue !== null &&
+        (result.parsedValue as number) < templateColumn.validations.minValue
+      ) {
         result.validationMessages.push({
           severity: 'error',
           messageTitle: `Below minimum value`,
           messageDetail: `Value ${result.parsedValue} below minimum required: ${templateColumn.validations.minValue}`
         });
       }
-      if (templateColumn.validations.maxValue !== null && result.parsedValue > templateColumn.validations.maxValue) {
+      if (
+        templateColumn.validations.maxValue !== null &&
+        (result.parsedValue as number) > templateColumn.validations.maxValue
+      ) {
         result.validationMessages.push({
           severity: 'error',
           messageTitle: `Above maximum value`,
@@ -304,97 +310,94 @@ async function _validateCell(
       break;
     case 'WKT':
       try {
-
-      // validate if not polygon first to avoid WKT autofill and subsequent crashes
-      const shape = data.split(' (')[0];
-      if (shape !== 'POLYGON' && shape !== 'MULTIPOLYGON' && !template.key.includes('temp')) {
-        result.validationMessages.push({
-          severity: 'error',
-          messageTitle: `Geometry shape must be a Polygon or Multipolygon, value read as ${shape}`
-        });
-        break;
-      } else if (shape !== 'POINT' && template.key.includes('temp')) {
-        result.validationMessages.push({
-          severity: 'error',
-          messageTitle: `Geometry shape must be a Point, value read as ${shape}`
-        });
-        break;
-      }
-
-      // if doesn't break from polygon or multipolygon, check for possible segments
-      if (shape === 'MULTIPOLYGON' && !multipolygonIsConnected(data)) {
-        result.validationMessages.push({
-          severity: 'error',
-          messageTitle: `This multipolygon has more than one distinct polygons`
-        });
-      }
-
-      // hack for year one garbage import data
-      if (shape === 'POINT') {
-        const geojson = parseWKTasGeoJSON(data);
-        const parsedArea = parseInt(row?.['data']?.['Area']);
-        if (geojson !== null && !(parsedArea > 0)) {
+        // validate if not polygon first to avoid WKT autofill and subsequent crashes
+        const shape = data.split(' (')[0];
+        if (shape !== 'POLYGON' && shape !== 'MULTIPOLYGON' && !template.key.includes('temp')) {
           result.validationMessages.push({
             severity: 'error',
-            messageTitle: `Area needs to be a number`
+            messageTitle: `Geometry shape must be a Polygon or Multipolygon, value read as ${shape}`
+          });
+          break;
+        } else if (shape !== 'POINT' && template.key.includes('temp')) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: `Geometry shape must be a Point, value read as ${shape}`
+          });
+          break;
+        }
+
+        // if doesn't break from polygon or multipolygon, check for possible segments
+        if (shape === 'MULTIPOLYGON' && !multipolygonIsConnected(data)) {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: `This multipolygon has more than one distinct polygons`
           });
         }
-        if (geojson !== null && parsedArea > 0) {
-          const radius = Math.sqrt(parsedArea / Math.PI);
-          const newPoly = circle(geojson, radius, { units: 'meters', steps: 46 });
-          const newWKT = parseGeoJSONasWKT(newPoly);
-          data = newWKT;
-        }
-      }
 
-      if (validateAsWKT(data)) {
+        // hack for year one garbage import data
+        if (shape === 'POINT') {
+          const geojson = parseWKTasGeoJSON(data);
+          const parsedArea = parseInt(row?.['data']?.['Area']);
+          if (geojson !== null && !(parsedArea > 0)) {
+            result.validationMessages.push({
+              severity: 'error',
+              messageTitle: `Area needs to be a number`
+            });
+          }
+          if (geojson !== null && parsedArea > 0) {
+            const radius = Math.sqrt(parsedArea / Math.PI);
+            const newPoly = circle(geojson, radius, { units: 'meters', steps: 46 });
+            const newWKT = parseGeoJSONasWKT(newPoly);
+            data = newWKT;
+          }
+        }
+
+        if (validateAsWKT(data)) {
+          try {
+            result.parsedValue = await autofillFromPostGIS(data);
+          } catch (e) {
+            result.validationMessages.push({
+              severity: 'informational',
+              messageTitle: 'A problem occurred when checking area, geometry validity is uncertain',
+              messageDetail: e
+            });
+          }
+        } else {
+          result.validationMessages.push({
+            severity: 'error',
+            messageTitle: 'Could not be interpreted as a WKT geometry.'
+            //          messageDetail: data
+          });
+        }
         try {
-          result.parsedValue = await autofillFromPostGIS(data);
+          const inBounds = (result.parsedValue as parsedGeoType).within_bc;
+          if (!inBounds) {
+            result.validationMessages.push({
+              severity: 'error',
+              messageTitle: 'Is not wholly within the bounds of the Province of British Columbia'
+            });
+          }
         } catch (e) {
           result.validationMessages.push({
             severity: 'informational',
-            messageTitle: 'A problem occurred when checking area, geometry validity is uncertain',
+            messageTitle: 'A problem occurred when checking bounds, geometry validity is uncertain',
             messageDetail: e
           });
         }
-      } else {
-        result.validationMessages.push({
-          severity: 'error',
-          messageTitle: 'Could not be interpreted as a WKT geometry.'
-          //          messageDetail: data
-        });
-      }
-      try {
-        const inBounds = (result.parsedValue as parsedGeoType).within_bc;
-        if (!inBounds) {
+
+        if ((result.parsedValue as parsedGeoType).area > lookupAreaLimit(template.subtype)) {
           result.validationMessages.push({
             severity: 'error',
-            messageTitle: 'Is not wholly within the bounds of the Province of British Columbia'
+            messageTitle: `Area cannot be larger than ${lookupAreaLimit(template.subtype)}`
           });
         }
       } catch (e) {
         result.validationMessages.push({
-          severity: 'informational',
-          messageTitle: 'A problem occurred when checking bounds, geometry validity is uncertain',
-          messageDetail: e
-        });
-      }
-
-      if ((result.parsedValue as parsedGeoType).area > lookupAreaLimit(template.subtype)) {
-        result.validationMessages.push({
           severity: 'error',
-          messageTitle: `Area cannot be larger than ${lookupAreaLimit(template.subtype)}`
+          messageTitle: 'Unhandled geometry error for cell',
+          messageDetail: e.message || e.messageDetail || e
         });
       }
-    }
-    catch(e)
-    {
-      result.validationMessages.push({
-        severity: 'error',
-        messageTitle: 'Unhandled geometry error for cell',
-        messageDetail: e.message || e.messageDetail || e
-      });
-    }
 
       break;
     case 'tristate':

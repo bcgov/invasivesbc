@@ -1,13 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getLogger } from '../utils/logger';
+import { getLogger } from 'utils/logger';
 import * as fs from 'fs';
 
 const logger = getLogger('training_videos');
 
-export const GET: Operation = [getTrainingVideos()];
+const GET: Operation = [getTrainingVideos()];
 
 GET.apiDoc = {
   description: 'Get training video metadata',
@@ -64,3 +62,5 @@ function getTrainingVideos(): RequestHandler {
     });
   };
 }
+
+export default { GET };

@@ -1,16 +1,14 @@
-'use strict';
-
-import { RequestHandler, response } from 'express';
+import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { getJurisdictionsSQL } from '../queries/iapp-jurisdiction-queries';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getJurisdictionsSQL } from 'queries/iapp-jurisdiction-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('iapp-jurisdictions');
 
-export const GET: Operation = [getJurisdictions()];
+const GET: Operation = [getJurisdictions()];
 
 GET.apiDoc = {
   description: 'Fetches all iapp jurisdictions.',
@@ -31,8 +29,7 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
-              properties: {
-              }
+              properties: {}
             }
           }
         }
@@ -122,3 +119,5 @@ function getJurisdictions(): RequestHandler {
     }
   };
 }
+
+export default { GET };

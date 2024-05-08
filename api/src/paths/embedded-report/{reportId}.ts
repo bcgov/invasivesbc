@@ -1,29 +1,29 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
-import { sign } from 'jsonwebtoken';
-import { getDBConnection } from '../../database/db';
-import { getEmbeddedReport } from '../../queries/embedded-report-queries';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getLogger } from 'utils/logger';
+import jwt from 'jsonwebtoken';
+import { getDBConnection } from 'database/db';
+import { getEmbeddedReport } from 'queries/embedded-report-queries';
+
+const { sign } = jwt;
 
 const defaultLog = getLogger('metabase-query');
 
 const METABASE_URL: string = process.env.METABASE_URL || 'http://localhost:2000';
 const EMBEDDING_KEY: string = process.env.METABASE_EMBEDDING_KEY || null;
 
-export const GET: Operation = [getMetabaseEmbeddedReport()];
+const GET: Operation = [getMetabaseEmbeddedReport()];
 
 GET.apiDoc = {
   description: 'Returns a signed url for access to metabase embedded reports',
   tags: ['metabase'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   parameters: [
     {
@@ -91,7 +91,6 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         });
       }
 
-
       const sql = getEmbeddedReport(reportId);
       const response = await connection.query(sql.text, sql.values);
 
@@ -119,7 +118,7 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         embeddedUrl
       });
     } catch (error) {
-      defaultLog.debug({ label: 'getMetabaseEmbeddedReport', message: 'error', error });
+      defaultLog.error({ label: 'getMetabaseEmbeddedReport', message: 'error', error });
 
       return res.status(500).json({
         message: 'Error getting metabase url',
@@ -127,11 +126,10 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         namespace: 'embedded-report/{reportId}',
         code: 500
       });
-    }
-    finally {
-
+    } finally {
       connection.release();
     }
-
   };
 }
+
+export default { GET };

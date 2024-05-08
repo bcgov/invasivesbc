@@ -1,16 +1,14 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
-import { getOverlappingBCGridCellsSQL } from '../../queries/activity-queries';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getOverlappingBCGridCellsSQL } from 'queries/activity-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('bc-grid');
 
-export const POST: Operation = [getOverlapingBCGridCells()];
+const POST: Operation = [getOverlapingBCGridCells()];
 
 POST.apiDoc = {
   description: 'Fetches grid cells of bc grid that overlap given geometry.',
@@ -135,3 +133,5 @@ export function getOverlapingBCGridCells(): RequestHandler {
     }
   };
 }
+
+export default { POST };

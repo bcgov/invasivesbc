@@ -1,15 +1,13 @@
-'use strict';
-
 import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
-import {closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL} from "../../utils/metabase-session";
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SECURITY_ON } from 'constants/misc';
+import { getLogger } from 'utils/logger';
+import { closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL } from 'utils/metabase-session';
 
 const defaultLog = getLogger('metabase-query');
 
-export const GET: Operation = [getMetabaseQueryResults()];
+const GET: Operation = [getMetabaseQueryResults()];
 
 GET.apiDoc = {
   description: 'Fetches all activity and point of interest ids from an existing Metabase query.',
@@ -141,3 +139,5 @@ function getMetabaseQueryResults(): RequestHandler {
     }
   };
 }
+
+export default { GET };

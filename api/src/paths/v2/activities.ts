@@ -1,29 +1,30 @@
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getuid } from 'process';
 import SQL, { SQLStatement } from 'sql-template-strings';
-import { escapeLiteral } from 'pg';
+import pg from 'pg';
 import { InvasivesRequest } from 'utils/auth-utils';
-import { getLogger } from '../../utils/logger';
-import { streamActivitiesResult } from '../../utils/iapp-json-utils';
+import { getLogger } from 'utils/logger';
+import { streamActivitiesResult } from 'utils/iapp-json-utils';
 import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
 
-const defaultLog = getLogger('activity');
-const CACHENAME = 'Activities v2 - Fat';
+const { escapeLiteral } = pg;
 
-export const POST: Operation = [getActivitiesBySearchFilterCriteria()];
+const defaultLog = getLogger('activity');
+
+const POST: Operation = [getActivitiesBySearchFilterCriteria()];
 
 POST.apiDoc = {
   description: 'Fetches all activities based on search criteria.',
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Activities Request Object',
@@ -80,11 +81,11 @@ POST.apiDoc = {
 };
 
 export function sanitizeActivityFilterObject(filterObject: any, req: any) {
-  let sanitizedSearchCriteria = {
+  const sanitizedSearchCriteria = {
     serverSideNamedFilters: {},
     selectColumns: [],
     clientReqTableFilters: [],
-    ids_to_filter: [],
+    ids_to_filter: []
   } as any;
 
   defaultLog.debug({
@@ -110,7 +111,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   }
 
   const ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES = [
-    /*  
+    /*
     Expected behaviour for now is nobody sees anyone else's drafts, but if the requirement flip flops we can use this:
     'administrator_plants',
     'administrator_animals',
@@ -136,7 +137,11 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   } else {
     sanitizedSearchCriteria.serverSideNamedFilters.hideTreatmentsAndMonitoring = false;
   }
-  if (!isAuth || !roleName || !(roleName.includes('mussel_inspection_officer') || roleName.includes('master_administrator'))) {
+  if (
+    !isAuth ||
+    !roleName ||
+    !(roleName.includes('mussel_inspection_officer') || roleName.includes('master_administrator'))
+  ) {
     sanitizedSearchCriteria.serverSideNamedFilters.hideMusselsInspections = true;
   } else {
     sanitizedSearchCriteria.serverSideNamedFilters.hideMusselsInspections = false;
@@ -164,7 +169,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   if (id_list_valid && filterObject?.ids_to_filter?.length > 0) {
     sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
-  } else if (filterObject?.ids_to_filter?.length > 0 && !id_list_valid){
+  } else if (filterObject?.ids_to_filter?.length > 0 && !id_list_valid) {
     throw new Error('Invalid id list');
   }
 
@@ -223,12 +228,12 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   sanitizedSearchCriteria.selectColumns = selectColumns;
 
-  let sanitizedTableFilters = [];
+  const sanitizedTableFilters = [];
   //sanitize serverFilterGeometries
-  let serverFilterGeometries = [];
+  const serverFilterGeometries = [];
 
   //sanitize clientFilterGeometries
-  let clientFilterGeometries = [];
+  const clientFilterGeometries = [];
 
   if (filterObject?.tableFilters?.length > 0) {
     filterObject.tableFilters.forEach((filter) => {
@@ -291,11 +296,15 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
     });
   }
 
+  const validOrderByColumns = validActivitySortColumns;
 
-  const validOrderByColumns = validActivitySortColumns
-
-
-  if(!filterObject?.vt_request && filterObject.selectColumns.length > 1 &&  filterObject?.sortColumn && filterObject?.sortOrder && validOrderByColumns.includes(filterObject.sortColumn)){
+  if (
+    !filterObject?.vt_request &&
+    filterObject.selectColumns.length > 1 &&
+    filterObject?.sortColumn &&
+    filterObject?.sortOrder &&
+    validOrderByColumns.includes(filterObject.sortColumn)
+  ) {
     sanitizedSearchCriteria.orderBy = filterObject.sortColumn;
     sanitizedSearchCriteria.orderByType = filterObject.sortOrder;
   }
@@ -417,16 +426,16 @@ function initialWithStatement(sqlStatement: SQLStatement) {
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
   //todo: only do this when applicable
-//  const cte = sqlStatement.append(`  with placeHolder as (select 1),  `);
-const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
-  string_agg(cpo.invasive_plant, ', ') AS current_positive_species
-FROM invasivesbc.current_positive_observations_materialized cpo
-GROUP BY cpo.activity_incoming_data_id),
-CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
-  string_agg(cno.invasive_plant, ', ') AS current_negative_species
-FROM invasivesbc.current_negative_observations_materialized cno
-GROUP BY cno.activity_incoming_data_id),
-`);
+  //  const cte = sqlStatement.append(`  with placeHolder as (select 1),  `);
+  const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
+                                                                                 string_agg(cpo.invasive_plant, ', ') AS current_positive_species
+                                                                          FROM invasivesbc.current_positive_observations_materialized cpo
+                                                                          GROUP BY cpo.activity_incoming_data_id),
+                                          CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
+                                                                                 string_agg(cno.invasive_plant, ', ') AS current_negative_species
+                                                                          FROM invasivesbc.current_negative_observations_materialized cno
+                                                                          GROUP BY cno.activity_incoming_data_id),
+  `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -569,7 +578,7 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
                                             buffer => 64)
               else ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
                                             ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}), extent => 4096,
-                                            buffer => 64)          
+                                            buffer => 64)
                                             end AS geom,
                                activity_incoming_data_id                    as feature_id,
                                activity_id                    ,
@@ -668,7 +677,7 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
-  let tableAlias = filterObject.isCSV ? 'b' : 'activities';
+  const tableAlias = filterObject.isCSV ? 'b' : 'activities';
   const where = filterObject.vt_request
     ? sqlStatement.append(`and 1=1 and (${tableAlias}.iscurrent = true  `)
     : sqlStatement.append(`where 1=1 and (${tableAlias}.iscurrent = true  `);
@@ -680,8 +689,10 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
   }
-  if ( filterObject.serverSideNamedFilters.hideMusselsInspections) {
-    where.append(`and ${tableAlias}.activity_subtype not in ('Activity_Observation_Mussels', 'Activity_Officer_Shift')`);
+  if (filterObject.serverSideNamedFilters.hideMusselsInspections) {
+    where.append(
+      `and ${tableAlias}.activity_subtype not in ('Activity_Observation_Mussels', 'Activity_Officer_Shift')`
+    );
   }
   if (filterObject.restrictVisibleDraftActivities) {
     if (filterObject.preferredUsername) {
@@ -695,8 +706,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
     }
   }
 
-
-      where.append(`) and ( 1 = 1 `);
+  where.append(`) and ( 1 = 1 `);
 
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
@@ -884,7 +894,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
     }
   });
-      where.append(` ) `);
+  where.append(` ) `);
 
   if (filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0) {
     where.append(
@@ -901,7 +911,11 @@ function groupByStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function orderByStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const orderBy = filterObject.orderBy? sqlStatement.append(` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${filterObject.ordeByType === 'DESC'? 'FIRST ': 'LAST'} `): sqlStatement.append(` `);
+  const orderBy = filterObject.orderBy
+    ? sqlStatement.append(
+        ` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${filterObject.ordeByType === 'DESC' ? 'FIRST ' : 'LAST'} `
+      )
+    : sqlStatement.append(` `);
   return orderBy;
 }
 
@@ -914,3 +928,5 @@ function offSetStatement(sqlStatement: SQLStatement, filterObject: any) {
   const offset = sqlStatement.append(` offset ${filterObject.offset};`);
   return offset;
 }
+
+export default { POST };

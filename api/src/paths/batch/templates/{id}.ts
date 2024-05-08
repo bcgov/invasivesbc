@@ -1,20 +1,18 @@
-'use strict';
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { TemplateService } from 'utils/batch/template-utils';
 
-import {RequestHandler} from 'express';
-import {Operation} from 'express-openapi';
-import {ALL_ROLES, SECURITY_ON} from '../../../constants/misc';
-import {TemplateService} from '../../../utils/batch/template-utils';
-
-export const GET: Operation = [downloadTemplate()];
+const GET: Operation = [downloadTemplate()];
 
 const GET_API_DOC = {
   tags: ['batch', 'template'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 
@@ -46,3 +44,5 @@ function downloadTemplate(): RequestHandler {
     }
   };
 }
+
+export default { GET };

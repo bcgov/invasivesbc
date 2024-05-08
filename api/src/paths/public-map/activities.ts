@@ -1,16 +1,14 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { InvasivesRequest } from 'utils/auth-utils';
-import { getDBConnection } from '../../database/db';
-import { getLogger } from '../../utils/logger';
-import { getPublicActivitiesSQL } from '../../queries/public-queries';
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
+import { getPublicActivitiesSQL } from 'queries/public-queries';
 
 const defaultLog = getLogger('activity');
 
-export const GET: Operation = [getPublicActivities()];
+const GET: Operation = [getPublicActivities()];
 
 GET.apiDoc = {
   description: 'Fetches all activities based on search criteria.',
@@ -111,3 +109,5 @@ function getPublicActivities(): RequestHandler {
     }
   };
 }
+
+export default { GET };

@@ -1,11 +1,10 @@
 // mostly taken from map-shaper.ts
-'use strict';
-
-import { applyCommands } from 'mapshaper';
 import proj4 from 'proj4';
 import reproject from 'reproject';
-import {getLogger} from "./logger";
+import { getLogger } from 'utils/logger';
+import mapshaper from 'mapshaper';
 
+const { applyCommands } = mapshaper;
 const defaultLog = getLogger('map-shaper');
 
 proj4.defs(
@@ -18,7 +17,7 @@ const albersToGeog = (featureCollection) => {
     const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
     return reprojected;
   } catch (e) {
-    defaultLog.warn({message: 'error converting back to geog from albers', error: e});
+    defaultLog.warn({ message: 'error converting back to geog from albers', error: e });
   }
 };
 
@@ -37,15 +36,15 @@ async function simplifyGeojson(data, percentage, returnCallback) {
             jsonArr.push(output['out2.json']);
           }
 
-          let totalEdit = {
+          const totalEdit = {
             type: 'FeatureCollection',
             features: []
           };
 
           jsonArr.forEach((json) => {
-            let parsed = JSON.parse(json);
+            const parsed = JSON.parse(json);
 
-            let newFeatures = parsed?.features?.map((feature) => {
+            const newFeatures = parsed?.features?.map((feature) => {
               if (typeof feature.properties === 'object' && feature.properties !== null) {
                 return feature;
               } else {

@@ -1,19 +1,15 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { getDBConnection } from '../../database/db';
-import { undeleteActivitiesSQL } from '../../queries/activity-queries';
-import { getLogger } from '../../utils/logger';
-import { DELETE as activitiesDeleteApiDoc } from '../activities';
+import { getDBConnection } from 'database/db';
+import { undeleteActivitiesSQL } from 'queries/activity-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity');
 
-export const POST: Operation = [undeleteActivitiesByIds()];
+const POST: Operation = [undeleteActivitiesByIds()];
 
 POST.apiDoc = {
-  ...activitiesDeleteApiDoc.apiDoc,
   description: 'Un-deletes all activities based on a list of ids.'
 };
 
@@ -76,3 +72,5 @@ function undeleteActivitiesByIds(): RequestHandler {
     }
   };
 }
+
+export default { POST };

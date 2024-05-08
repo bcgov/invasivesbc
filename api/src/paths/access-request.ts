@@ -1,34 +1,34 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
 import {
-  approveAccessRequestsSQL, createAccessRequestSQL, getAccessRequestsSQL,
+  approveAccessRequestsSQL,
+  createAccessRequestSQL,
+  getAccessRequestsSQL,
   updateAccessRequestStatusSQL
-} from '../queries/access-request-queries';
-import { grantRoleByValueSQL, revokeAllRolesExceptAdmin } from '../queries/role-queries';
-import { getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
-import { getLogger } from '../utils/logger';
-import { buildMailer } from '../utils/mailer';
+} from 'queries/access-request-queries';
+import { grantRoleByValueSQL, revokeAllRolesExceptAdmin } from 'queries/role-queries';
+import { getUserByBCEIDSQL, getUserByIDIRSQL } from 'queries/user-queries';
+import { getLogger } from 'utils/logger';
+import { buildMailer } from 'utils/mailer';
 import { getEmailTemplatesFromDB } from './email-templates';
 
 const defaultLog = getLogger('access-request');
 
-export const POST: Operation = [postHandler()];
-export const GET: Operation = [getAccessRequests()];
+const POST: Operation = [postHandler()];
+const GET: Operation = [getAccessRequests()];
 
 POST.apiDoc = {
   description: 'Create a new access request.',
   tags: ['access-request'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Access request post request object.',
@@ -68,10 +68,10 @@ GET.apiDoc = {
   tags: ['access-request'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -223,11 +223,14 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
   try {
     const requests = approvedAccessRequests;
     for (const request of requests) {
-      if (!request.requested_roles)
-        continue;
+      if (!request.requested_roles) continue;
       try {
         // Update request status
-        const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'APPROVED', request.access_request_id);
+        const sqlStatement2: SQLStatement = updateAccessRequestStatusSQL(
+          request.primary_email,
+          'APPROVED',
+          request.access_request_id
+        );
         if (!sqlStatement2) {
           return res.status(500).json({
             message: 'Failed to build SQL statement',
@@ -237,7 +240,9 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
           });
         }
         await connection.query(sqlStatement2.text, sqlStatement2.values);
-        const sqlStatement5: SQLStatement = request.idir_userid ? getUserByIDIRSQL(request.idir_userid) : getUserByBCEIDSQL(request.bceid_userid);
+        const sqlStatement5: SQLStatement = request.idir_userid
+          ? getUserByIDIRSQL(request.idir_userid)
+          : getUserByBCEIDSQL(request.bceid_userid);
         if (!sqlStatement5) {
           return res.status(500).json({
             message: 'Failed to generate SQL statement',
@@ -282,12 +287,14 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         await connection.query(sqlStatement.text, sqlStatement.values);
         const mailer = await buildMailer();
         const templatesResponse = await getEmailTemplatesFromDB();
-        const approvedTemplate = templatesResponse.result?.find(template => template.templatename === 'Approved')
-        mailer.sendEmail([request.primary_email],
+        const approvedTemplate = templatesResponse.result?.find((template) => template.templatename === 'Approved');
+        mailer.sendEmail(
+          [request.primary_email],
           approvedTemplate.fromemail,
           approvedTemplate.emailsubject,
           approvedTemplate.emailbody,
-          'html');
+          'html'
+        );
       } catch (error) {
         defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'database encountered an error', error });
       }
@@ -317,7 +324,11 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
   }
   try {
     const request = declinedAccessRequest;
-    const sqlStatement: SQLStatement = updateAccessRequestStatusSQL(request.primary_email, 'DECLINED', request.access_request_id);
+    const sqlStatement: SQLStatement = updateAccessRequestStatusSQL(
+      request.primary_email,
+      'DECLINED',
+      request.access_request_id
+    );
     if (!sqlStatement) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
@@ -330,12 +341,14 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
     const result = response.rows;
     const mailer = await buildMailer();
     const templatesResponse = await getEmailTemplatesFromDB();
-    const declinedTemplate = templatesResponse.result?.find(template => template.templatename === 'Declined')
-    mailer.sendEmail([request.primary_email],
+    const declinedTemplate = templatesResponse.result?.find((template) => template.templatename === 'Declined');
+    mailer.sendEmail(
+      [request.primary_email],
       declinedTemplate.fromemail,
       declinedTemplate.emailsubject,
       declinedTemplate.emailbody,
-      'html');
+      'html'
+    );
     return res.status(200).json({
       message: 'Access request declined',
       request: req.body,
@@ -356,3 +369,5 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
     connection.release();
   }
 }
+
+export default { POST, GET };

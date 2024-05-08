@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { getDBConnection } from '../database/db';
+import { getDBConnection } from 'database/db';
 import { getLogger } from './logger';
-import { getWell } from '../paths/context/well';
-import { insertWellDistanceSQL } from './../queries/context-queries';
+import { getWell } from 'paths/context/well';
+import { insertWellDistanceSQL } from 'queries/context-queries';
 import { SQL, SQLStatement } from 'sql-template-strings';
 
 const defaultLog = getLogger('context-queries');

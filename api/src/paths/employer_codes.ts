@@ -1,14 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
 import { SQLStatement } from 'sql-template-strings';
-import { getEmployerCodesSQL } from '../queries/code-queries';
-// import { getEmployers, getFundingAgencies } from '../utils/code-utils';
+import { getEmployerCodesSQL } from 'queries/code-queries';
 
-export const GET: Operation = [getEmployerCodes()];
+const GET: Operation = [getEmployerCodes()];
 
 GET.apiDoc = {
   description: 'Fetches employer codes',
@@ -87,3 +84,5 @@ function getEmployerCodes(): RequestHandler {
     }
   };
 }
+
+export default { GET };

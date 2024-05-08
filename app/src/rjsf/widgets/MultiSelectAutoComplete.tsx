@@ -1,8 +1,8 @@
 import chroma from 'chroma-js';
 import React, { useState } from 'react';
 import { MultipleSelect } from 'react-select-material-ui';
-import { useSelector } from 'util/use_selector';
-import { WidgetProps } from "@rjsf/utils";
+import { useSelector } from 'utils/use_selector';
+import { WidgetProps } from '@rjsf/utils';
 
 const MultiSelectAutoComplete = (props: WidgetProps) => {
   // @ts-ignore
@@ -133,7 +133,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
         onChange={handleOnChange}
         values={props.value ? props.value?.split(',') : undefined}
         //error={props.rawErrors?.length > 0 && props.rawErrors[0] !== 'should be equal to one of the allowed values' }
-        error={props.rawErrors?.length > 0 && props.rawErrors?.[0] !== 'should be equal to one of the allowed values' }
+        error={props.rawErrors?.length > 0 && props.rawErrors?.[0] !== 'should be equal to one of the allowed values'}
         disabled={props.disabled}
         label={props.label}
         onFocus={() => {

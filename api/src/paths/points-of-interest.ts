@@ -1,21 +1,19 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { streamIAPPResult } from '../utils/iapp-json-utils';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-import { getPointsOfInterestSQL, getSpeciesMapSQL } from '../queries/point-of-interest-queries';
-import { getLogger } from '../utils/logger';
-import { versionedKey } from '../utils/cache/cache-utils';
+import { streamIAPPResult } from 'utils/iapp-json-utils';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
+import { getPointsOfInterestSQL, getSpeciesMapSQL } from 'queries/point-of-interest-queries';
+import { getLogger } from 'utils/logger';
+import { versionedKey } from 'utils/cache/cache-utils';
 import { createHash } from 'crypto';
 import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('point-of-interest');
 
-export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
+const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
 GET.apiDoc = {
   description: 'Fetches all points of interest based on search criteria.',
@@ -82,8 +80,8 @@ export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
  */
 function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    if(req.authContext.roles.length === 0) {
-      res.status(401).json({ message: 'No Role for user'})
+    if (req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user' });
     }
     const criteria = JSON.parse(<string>req.query['query']);
 
@@ -238,3 +236,5 @@ async function getMappedFilterRows(codeArray) {
 
   return speciesNames;
 }
+
+export default { GET };

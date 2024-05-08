@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { selectAuth } from 'state/reducers/auth';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { Button, Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import {
@@ -17,7 +17,6 @@ const UserSelection = ({ user, handleClose }) => {
 
   return (
     <div className={'userSelection'}>
-
       <Button
         variant={'outlined'}
         className={'userButton'}
@@ -40,7 +39,6 @@ const UserSelection = ({ user, handleClose }) => {
 };
 
 export const OfflineUserMenu: React.FC = () => {
-
   const { offlineUsers, offlineUserDialogOpen, displayName, authenticated } = useSelector(selectAuth);
   const dispatch = useDispatch();
 
@@ -49,18 +47,15 @@ export const OfflineUserMenu: React.FC = () => {
   };
 
   return (
-    <Dialog
-      open={offlineUserDialogOpen}
-      onClose={closeHandler}>
+    <Dialog open={offlineUserDialogOpen} onClose={closeHandler}>
       <DialogTitle>Select A User</DialogTitle>
       <DialogContent>
         <Typography variant={'subtitle1'} className={'offlineUserDialogSubtitle'}>
-          While working offline, online features will not be available. You can create activities for later
-          upload.
+          While working offline, online features will not be available. You can create activities for later upload.
         </Typography>
         <div className={'userList'}>
-          {offlineUsers.map(u => {
-            return (<UserSelection key={`${u.displayName}`} user={u} handleClose={closeHandler} />);
+          {offlineUsers.map((u) => {
+            return <UserSelection key={`${u.displayName}`} user={u} handleClose={closeHandler} />;
           })}
         </div>
       </DialogContent>

@@ -1,4 +1,4 @@
-import { getLogger } from '../logger';
+import { getLogger } from 'utils/logger';
 import { InMemoryCacheService } from './in-memory-cache';
 import { MemcacheCacheService } from './memcache-cache';
 import { AbstractCacheService } from './cache-utils';

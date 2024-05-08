@@ -5,8 +5,8 @@ import {
   BasicInformation,
   BasicInformationRowValidators,
   PositiveObservationPlantValidator,
-  SlopeAspectValidator,
-  ProjectInformation
+  ProjectInformation,
+  SlopeAspectValidator
 } from '../shared-columns';
 
 const ObservationTerrestrialPlantTemp = new Template(

@@ -1,20 +1,18 @@
-'use strict';
-
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from './../../database/db';
-import { getActivitySQL } from './../../queries/activity-queries';
-import { getFileFromS3 } from './../../utils/file-utils';
-import { getLogger } from './../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getActivitySQL } from 'queries/activity-queries';
+import { getFileFromS3 } from 'utils/file-utils';
+import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from './../media';
 import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('activity');
 
-export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
+const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 
 GET.apiDoc = {
   description: 'Fetches a single activity based on its primary key.',
@@ -67,8 +65,8 @@ GET.apiDoc = {
  */
 function getActivity(): RequestHandler {
   return async (req: InvasivesRequest, res, next) => {
-    if(req.authContext.roles.length === 0) {
-      res.status(401).json({ message: 'No Role for user'})
+    if (req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user' });
     }
     defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
 
@@ -155,20 +153,18 @@ function getMedia(): RequestHandler {
 function returnActivity(): RequestHandler {
   return async (req, res) => {
     if (req['activity'] === null) {
-      return res
-        .status(404)
-        .json({
-          message: 'Activity not found.  Maybe it was deleted.',
-          request: req.body,
-          namespace: 'activity/{activityId}',
-          code: 404
-        });
+      return res.status(404).json({
+        message: 'Activity not found.  Maybe it was deleted.',
+        request: req.body,
+        namespace: 'activity/{activityId}',
+        code: 404
+      });
     }
     // original blob from client:
-    let originalPayload = { ...req['activity'].activity_payload };
+    const originalPayload = { ...req['activity'].activity_payload };
 
     // other columns in activity_incoming_data:
-    let supplementalFields = { ...req['activity'] };
+    const supplementalFields = { ...req['activity'] };
     delete supplementalFields.activity_payload;
 
     // merge the two
@@ -177,3 +173,5 @@ function returnActivity(): RequestHandler {
     return res.status(200).json(returnVal);
   };
 }
+
+export default { GET };

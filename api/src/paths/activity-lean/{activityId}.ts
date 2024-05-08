@@ -1,17 +1,15 @@
-'use strict';
-
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from './../../database/db';
-import { getFileFromS3 } from './../../utils/file-utils';
-import { getLogger } from './../../utils/logger';
-import { getMediaItemsList } from './../media';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getFileFromS3 } from 'utils/file-utils';
+import { getLogger } from 'utils/logger';
+import { getMediaItemsList } from 'paths/media';
 
 const defaultLog = getLogger('activity');
 
-export const GET: Operation = [getActivity(), getMedia(), returnActivity()];
+const GET: Operation = [getActivity(), getMedia(), returnActivity()];
 
 GET.apiDoc = {
   description: 'Fetches a single activity based on its primary key.',
@@ -81,20 +79,17 @@ function getActivity(): RequestHandler {
 
     try {
       const sql = `
-        select
-        jsonb_build_object (
-          'type', 'Feature',
-          'properties', json_build_object(
-            'activity_id', activity_id,
-            'activity_type', activity_type,
-            'activity_subtype', activity_subtype
-          ),
-          'geometry', public.st_asGeoJSON(geog)::jsonb
-        ) as "geojson"
-      from
-        invasivesbc.activity_incoming_data
-      where
-        activity_id = '${activityId}'
+        select jsonb_build_object(
+                 'type', 'Feature',
+                 'properties', json_build_object(
+                   'activity_id', activity_id,
+                   'activity_type', activity_type,
+                   'activity_subtype', activity_subtype
+                               ),
+                 'geometry', public.st_asGeoJSON(geog)::jsonb
+               ) as "geojson"
+        from invasivesbc.activity_incoming_data
+        where activity_id = '${activityId}'
       `;
       // TODO: Query most recent. Deleted timestamp null
 
@@ -155,3 +150,5 @@ function returnActivity(): RequestHandler {
     return res.status(200).json(req['activity']);
   };
 }
+
+export default { GET };

@@ -1,11 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { TemplateService } from '../../utils/batch/template-utils';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { TemplateService } from 'utils/batch/template-utils';
 
-export const GET: Operation = [listTemplates()];
+const GET: Operation = [listTemplates()];
 
 const GET_API_DOC = {
   tags: ['batch', 'template'],
@@ -28,3 +26,5 @@ function listTemplates(): RequestHandler {
     return res.status(200).json(await TemplateService.listTemplatesShallow());
   };
 }
+
+export default { GET };

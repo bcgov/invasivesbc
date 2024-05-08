@@ -1,16 +1,14 @@
-'use strict';
-
 import bodyParser from 'body-parser';
 import express from 'express';
 import compression from 'compression';
 
 import { initialize } from 'express-openapi';
-import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
-import { applyApiDocSecurityFilters } from './utils/api-doc-security-filter';
-import { authenticate, InvasivesRequest } from './utils/auth-utils';
-import { getLogger } from './utils/logger';
-import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from './admin/metabase_groups';
-import { MDC, MDCAsyncLocal } from './mdc';
+import { api_doc } from 'sharedAPI';
+import { applyApiDocSecurityFilters } from 'utils/api-doc-security-filter';
+import { authenticate, InvasivesRequest } from 'utils/auth-utils';
+import { getLogger } from 'utils/logger';
+import { MDC, MDCAsyncLocal } from 'mdc';
+import { getAllPaths } from 'paths';
 
 const defaultLog = getLogger('app');
 
@@ -58,67 +56,59 @@ app.use(function (req: any, res: any, next: any) {
   } else {
     next();
   }
-
 });
 
-// Initialize express-openapi framework
-initialize({
-  validateApiDoc: false,
-  apiDoc: api_doc as any, // base open api spec
-  app: app, // express app to initialize
-  paths: './src/paths', // base folder for endpoint routes
-  routesGlob: '**/*.{ts,js}', // updated default to allow .ts
-  routesIndexFileRegExp: /(?:index)?\.[tj]s$/, // updated default to allow .ts
-  promiseMode: true, // allow endpoint handlers to return promises
-  consumesMiddleware: {
-    'application/json': bodyParser.json({ limit: '50mb' }),
-    'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: '50mb', extended: true })
-  },
-  securityHandlers: {
-    Bearer: async function (req) {
-      try {
-        let mdc = MDCAsyncLocal.getStore();
-        if (!mdc) {
-          mdc = new MDC();
-          await MDCAsyncLocal.run(mdc, authenticate, <InvasivesRequest>req);
-        } else {
-          await authenticate(<InvasivesRequest>req);
+getAllPaths().then((allPaths) => {
+  initialize({
+    validateApiDoc: false,
+    apiDoc: api_doc as any, // base open api spec
+    app: app, // express app to initialize
+    paths: allPaths,
+    promiseMode: true, // allow endpoint handlers to return promises
+    consumesMiddleware: {
+      'application/json': bodyParser.json({ limit: '50mb' }),
+      'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: '50mb', extended: true })
+    },
+    securityHandlers: {
+      Bearer: async function (req) {
+        try {
+          let mdc = MDCAsyncLocal.getStore();
+          if (!mdc) {
+            mdc = new MDC();
+            await MDCAsyncLocal.run(mdc, authenticate, <InvasivesRequest>req);
+          } else {
+            await authenticate(<InvasivesRequest>req);
+          }
+        } catch (e) {
+          defaultLog.error({ error: e });
+          return false;
         }
-      } catch (e) {
-        defaultLog.error({ error: e });
-        return false;
+        //  await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
+        return true;
       }
-      //  await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
-      return true;
+    },
+
+    securityFilter: applyApiDocSecurityFilters,
+    errorTransformer: function (openapiError: object, ajvError: object): object {
+      // Transform openapi-request-validator and openapi-response-validator errors
+      defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
+      return ajvError;
+    },
+    // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    errorMiddleware: function (error, req, res, next) {
+      defaultLog.error({
+        label: 'errorHandler',
+        message: 'unexpected error',
+        error: error?.message + error?.stack || error
+      });
+      if (!res.headersSent) {
+        // streaming responses cannot alter headers after dispatch
+        res.status(error.status || error.code || 500).json(error);
+      }
     }
-  },
-
-  securityFilter: applyApiDocSecurityFilters,
-  errorTransformer: function (openapiError: object, ajvError: object): object {
-    // Transform openapi-request-validator and openapi-response-validator errors
-    defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
-    return ajvError;
-  },
-  // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  errorMiddleware: function (error, req, res, next) {
-    defaultLog.error({
-      label: 'errorHandler',
-      message: 'unexpected error',
-      error: error?.message + error?.stack || error
-    });
-    if (!res.headersSent) {
-      // streaming responses cannot alter headers after dispatch
-      res.status(error.status || error.code || 500).json(error);
-    } else {
-
-    }
-
-  }
+  }).then(() => {
+    defaultLog.info({ message: 'all paths initialized' });
+  });
 });
-
-const adminApp: express.Express = express();
-adminApp.get('/metabase_groups', getMetabaseGroupMappings);
-adminApp.post('/metabase_sync', postSyncMetabaseGroupMappings);
-
-export { adminApp, app };
+export { app };

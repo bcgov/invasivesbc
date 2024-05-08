@@ -1,6 +1,4 @@
-'use strict';
-
-import { verify } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import jwksRsa from 'jwks-rsa';
 import { getLogger } from './logger';
 import {
@@ -11,7 +9,9 @@ import {
   KeycloakAccountType
 } from './user-utils';
 import { Request } from 'express';
-import { MDCAsyncLocal } from '../mdc';
+import { MDCAsyncLocal } from 'mdc';
+
+const { verify } = jwt;
 
 const defaultLog = getLogger('auth-utils');
 

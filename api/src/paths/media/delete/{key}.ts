@@ -1,11 +1,8 @@
-'use strict';
-
-// import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { deleteFileFromS3 } from './../../../utils/file-utils';
+import { deleteFileFromS3 } from 'utils/file-utils';
 
-export const DELETE: Operation = [deleteMedia()];
+const DELETE: Operation = [deleteMedia()];
 
 DELETE.apiDoc = {
   description: 'Deletes a photo from activity record',
@@ -65,3 +62,5 @@ export function deleteMedia(): RequestHandler {
     });
   };
 }
+
+export default { DELETE };

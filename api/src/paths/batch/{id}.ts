@@ -1,29 +1,27 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
-import { InvasivesRequest } from '../../utils/auth-utils';
-import { TemplateService } from '../../utils/batch/template-utils';
-import { BatchValidationService } from '../../utils/batch/validation/validation';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { InvasivesRequest } from 'utils/auth-utils';
+import { TemplateService } from 'utils/batch/template-utils';
+import { BatchValidationService } from 'utils/batch/validation/validation';
 import csvParser from 'csv-parser';
 import { Readable } from 'stream';
-import { getLogger } from '../../utils/logger';
+import { getLogger } from 'utils/logger';
 
-export const GET: Operation = [getBatch()];
-export const PUT: Operation = [updateBatch()];
-export const DELETE: Operation = [deleteBatch()];
+const GET: Operation = [getBatch()];
+const PUT: Operation = [updateBatch()];
+const DELETE: Operation = [deleteBatch()];
 
 const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 
@@ -36,10 +34,10 @@ const PUT_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Batch upload processor',
@@ -107,7 +105,10 @@ function getBatch(): RequestHandler {
                 json_representation,
                 validation_messages,
                 template,
-                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id, 'form_status', aid.form_status, 'row_number', aid.row_number) from activity_incoming_data aid where aid.batch_id = b.id) as created_activities,
+                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id, 'form_status',
+                                               aid.form_status, 'row_number', aid.row_number)
+                      from activity_incoming_data aid
+                      where aid.batch_id = b.id) as created_activities,
                 created_at,
                 created_by
          from batch_uploads b
@@ -125,15 +126,15 @@ function getBatch(): RequestHandler {
       }
 
       const retrievedBatch = response.rows[0];
-      let created_activities_with_skiped_rows = []
+      const created_activities_with_skiped_rows = [];
       let hasSkippedRows = false;
       for (let index = 0; index < retrievedBatch['json_representation'].rows.length; index++) {
-        created_activities_with_skiped_rows[index] = retrievedBatch['created_activities'].find(activity => activity.row_number == index)
-        if (created_activities_with_skiped_rows[index])
-          hasSkippedRows = true;
+        created_activities_with_skiped_rows[index] = retrievedBatch['created_activities'].find(
+          (activity) => activity.row_number == index
+        );
+        if (created_activities_with_skiped_rows[index]) hasSkippedRows = true;
       }
-      if (hasSkippedRows)
-        retrievedBatch['created_activities'] = created_activities_with_skiped_rows;
+      if (hasSkippedRows) retrievedBatch['created_activities'] = created_activities_with_skiped_rows;
       const template = await TemplateService.getTemplateWithExistingDBConnection(retrievedBatch.template, connection);
       if (!template) {
         return res.status(500).json({
@@ -320,10 +321,10 @@ const DELETE_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 
@@ -349,8 +350,11 @@ function deleteBatch(): RequestHandler {
 
     try {
       const rereadResponse: QueryResult = await connection.query(
-        `delete from batch_uploads
-         where status = 'NEW' and id = $1 and created_by = $2`,
+        `delete
+         from batch_uploads
+         where status = 'NEW'
+           and id = $1
+           and created_by = $2`,
         [id, req.authContext.user.user_id]
       );
 
@@ -383,3 +387,5 @@ function deleteBatch(): RequestHandler {
     }
   };
 }
+
+export default { GET, PUT, DELETE };

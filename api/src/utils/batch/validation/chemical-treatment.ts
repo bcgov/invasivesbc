@@ -10,7 +10,7 @@ import {
   validate_tank_mix_herbicides
 } from 'sharedAPI';
 import { BatchCellValidationMessage, RowValidationResult } from './validation';
-import { getLogger } from '../../logger';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('batch');
 

@@ -1,10 +1,10 @@
 import { TemplateColumnBuilder } from './definitions';
 import { RowValidationResult } from './validation/validation';
 import {
+  SUBSTRATE_TYPE_CODES,
   WATER_LEVEL_MANAGEMENT_CODES,
-  WIND_DIRECTION_CODES,
   WATERBODY_TYPE_CODES,
-  SUBSTRATE_TYPE_CODES
+  WIND_DIRECTION_CODES
 } from './hard-coded-codes';
 
 export const BasicInformation = [

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { Error } from '@mui/icons-material';
 import BatchTable from './BatchTable';
 import BatchFileComponent from './BatchFileComponent';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Spinner/Spinner';
 import { BATCH_EXECUTE_REQUEST, BATCH_RETRIEVE_REQUEST, BATCH_UPDATE_REQUEST } from 'state/actions';

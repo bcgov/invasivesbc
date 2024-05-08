@@ -1,5 +1,5 @@
 import React from 'react';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { AccuracyToggle } from './AccuracyToggle';
 import { BaseMapToggle } from './BaseMapToggle';
 import './ButtonContainer.css';
@@ -17,18 +17,18 @@ export const ButtonContainer = (props) => {
 
   return (
     <div id="map-btn-container">
-      <HDToggle /> 
+      <HDToggle />
       <BaseMapToggle />
       {isAuth && <FindMeToggle />}
       <LegendsButton />
       <AccuracyToggle />
       {isAuth && <WhatsHereButton />}
 
-      { isAuth && <NewRecord />}
-      { isAuth && <CenterCurrentRecord type="Activity" />}
-      { isAuth && <CenterCurrentRecord type="IAPP" />}
+      {isAuth && <NewRecord />}
+      {isAuth && <CenterCurrentRecord type="Activity" />}
+      {isAuth && <CenterCurrentRecord type="IAPP" />}
       <QuickPanToRecordToggle />
-      { isAuth  && <MapModeToggle/>}
+      {isAuth && <MapModeToggle />}
       {/*
 
       {isAuth && <WhatsHereCurrentRecordHighlighted />}

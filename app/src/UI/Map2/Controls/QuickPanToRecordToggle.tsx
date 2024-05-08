@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import 'UI/Global.css';
 import { TOGGLE_QUICK_PAN_TO_RECORD } from 'state/actions';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 
 export const QuickPanToRecordToggle = (props) => {
   const dispatch = useDispatch();
@@ -14,7 +14,6 @@ export const QuickPanToRecordToggle = (props) => {
   const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
 
   const [show, setShow] = React.useState(false);
-
 
   if (true && isAuth) {
     return (

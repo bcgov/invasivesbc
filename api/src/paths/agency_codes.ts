@@ -1,14 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
 import { SQLStatement } from 'sql-template-strings';
-import { getFundingAgencyCodesSQL } from '../queries/code-queries';
-// import { getEmployers, getFundingAgencies } from '../utils/code-utils';
+import { getFundingAgencyCodesSQL } from 'queries/code-queries';
 
-export const GET: Operation = [getAgencyCodes()];
+const GET: Operation = [getAgencyCodes()];
 
 GET.apiDoc = {
   description: 'Fetches agency codes',
@@ -78,3 +75,5 @@ function getAgencyCodes(): RequestHandler {
     }
   };
 }
+
+export default { GET };

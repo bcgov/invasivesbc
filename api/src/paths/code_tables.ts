@@ -1,13 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
 import { SQLStatement } from 'sql-template-strings';
-import { listCodeTablesSQL } from '../queries/code-queries';
+import { listCodeTablesSQL } from 'queries/code-queries';
 
-export const GET: Operation = [listCodeTables()];
+const GET: Operation = [listCodeTables()];
 
 const LIST_API_DOC = {
   tags: ['template'],
@@ -64,3 +62,5 @@ function listCodeTables(): RequestHandler {
     }
   };
 }
+
+export default { GET };

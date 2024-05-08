@@ -1,8 +1,8 @@
-import { getBetaAccessForUserSQL, getRolesForUserSQL } from '../queries/role-queries';
+import { getBetaAccessForUserSQL, getRolesForUserSQL } from 'queries/role-queries';
 import { SQLStatement } from 'sql-template-strings';
-import { getDBConnection } from '../database/db';
-import { createUserSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from '../queries/user-queries';
-import { getLogger } from './logger';
+import { getDBConnection } from 'database/db';
+import { createUserSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from 'queries/user-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('user-utils');
 
@@ -152,10 +152,10 @@ export async function getV2BetaAccessForUser(userId) {
       };
     }
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', response});
+    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', response });
 
     const result = (response?.rows?.[0]?.v2beta as unknown as boolean) || false;
-    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', result});
+    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', result });
     return result;
   } catch (error) {
     defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'error', error });

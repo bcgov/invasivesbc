@@ -1,14 +1,11 @@
-'use strict';
-
 import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
-import { getDBConnection } from '../../../database/db';
-import { getLogger } from '../../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity');
-
-export const GET: Operation = [getContext()];
+const GET: Operation = [getContext()];
 
 GET.apiDoc = {
   description: 'Fetch internal contextual data for a single point.',
@@ -86,15 +83,12 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
   }
 
   const sql = `
-    select
-      target.${attr} "target"
-    from
-      public.${table} "target"
-    where
-      public.st_intersects(
-        public.st_geographyFromText('POINT(${lon} ${lat})'),
-        target.geog
-      )
+    select target.${attr} "target"
+    from public.${table} "target"
+    where public.st_intersects(
+            public.st_geographyFromText('POINT(${lon} ${lat})'),
+            target.geog
+          )
   `;
 
   try {
@@ -158,3 +152,5 @@ function getContext(): RequestHandler {
     defaultLog.debug({ label: 'context', message: 'getContext', body: req.body });
   };
 }
+
+export default { GET };

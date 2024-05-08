@@ -4,7 +4,7 @@
  * @export
  * @class RISOPostRequestBody
  */
- export class RISOPostRequestBody {
+export class RISOPostRequestBody {
   risoPostBody: object;
   risoResponseBody: object;
 

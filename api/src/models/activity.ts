@@ -1,4 +1,4 @@
-import { SEARCH_LIMIT_MAX } from '../constants/misc';
+import { SEARCH_LIMIT_MAX } from 'constants/misc';
 import { IMediaItem } from './media';
 
 /**

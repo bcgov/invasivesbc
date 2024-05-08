@@ -1,9 +1,9 @@
-'use strict';
+import pg from 'pg';
+import { PoolClient, PoolConfig } from 'pg';
+import { getLogger } from 'utils/logger';
 
-import {Pool, PoolConfig, PoolClient, QueryConfig} from 'pg';
+const { Pool } = pg;
 
-import { getLogger } from '../utils/logger';
-import {exitOnError} from "winston";
 const defaultLog = getLogger('db');
 
 const DB_HOST: string = process.env.DB_HOST || 'localhost';
@@ -24,14 +24,14 @@ const poolConfig: PoolConfig = {
   idleTimeoutMillis: 10000 // default
 };
 
-
 defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
 
-let pool: Pool = null;
+let pool = null;
 
 try {
   pool = new Pool(poolConfig);
 } catch (error) {
+  console.dir(error);
   defaultLog.error({ label: 'create db pool', message: 'failed to create pool', error, poolConfig });
   process.exit(1);
 }

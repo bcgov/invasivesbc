@@ -1,9 +1,5 @@
 import { Http } from '@capacitor-community/http';
 import qs from 'qs';
-import { useContext } from 'react';
-import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
-import { DocType } from '../constants/database';
-//import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
   ICreateMetabaseQuery,
@@ -12,12 +8,11 @@ import {
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria,
   IRisoSearchCriteria
-} from '../interfaces/useInvasivesApi-interfaces';
-import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
-import { selectConfiguration } from '../state/reducers/configuration';
-import { selectAuthHeaders } from '../state/reducers/auth';
+} from 'interfaces/useInvasivesApi-interfaces';
+import { selectConfiguration } from 'state/reducers/configuration';
+import { selectAuthHeaders } from 'state/reducers/auth';
 import { select } from 'redux-saga/effects';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 
 /**
  * Returns a set of supported api methods.
@@ -25,8 +20,6 @@ import { useSelector } from 'util/use_selector';
  * @return {object} object whose properties are supported api methods.
  */
 export const useInvasivesApi = () => {
-  const databaseContext = useContext({} as any);
-  // const errorContext = useContext(ErrorContext);
   const errorContext = {} as any;
   const { API_BASE } = useSelector(selectConfiguration);
   const DEBUG = false;
@@ -263,11 +256,11 @@ export const useInvasivesApi = () => {
      * for Leaflet to consume. Will hopefully replace the default
      * output data.
      const geojsonData = await Http.request({
-      method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
-      url: options.baseUrl + `/api/points-of-interest-lean/`,
-      data: pointsOfInterestSearchCriteria
-    });
+     method: 'POST',
+     headers: { ...options.headers, 'Content-Type': 'application/json' },
+     url: options.baseUrl + `/api/points-of-interest-lean/`,
+     data: pointsOfInterestSearchCriteria
+     });
      */
 
     /*const features = geojsonData.data.rows.map((d) => d.geojson);
@@ -850,159 +843,6 @@ export const useInvasivesApi = () => {
 
     return data.result;
   };
-  const { MOBILE } = useSelector(selectConfiguration);
-  /**
-   * Fetch the api json-schema spec and save it in the local database.
-   * If the request fails (due to lack of internet connection, etc), then return the cached copy of the api spec.
-   *
-   * @return {*}  {Promise<any>}
-   */
-  const getCachedApiSpec = async (): Promise<any> => {
-    try {
-      // on mobile - think there is internet:
-      if (MOBILE) {
-        // try to cache spec, then return it:
-        try {
-          const webResponse = await getApiSpec();
-          cacheSpec(webResponse);
-          return webResponse;
-        } catch (e) {
-          console.dir(e);
-          return await getSpecFromCache();
-        }
-      } else {
-        // must be web, try online:
-        return await getApiSpec();
-      }
-    } catch (e) {
-      console.log('Unable to get api spec');
-      console.log(JSON.stringify(e));
-    }
-  };
-
-  const getSpecFromCache = async () => {
-    let data = await databaseContext.asyncQueue({
-      asyncTask: async () => {
-        let res = await query(
-          {
-            type: QueryType.DOC_TYPE_AND_ID,
-            docType: DocType.API_SPEC,
-            ID: '1'
-          },
-          databaseContext
-        );
-        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        return res;
-      }
-    });
-
-    if (data?.result?.length > 0) {
-      data = JSON.parse(data.result[0].json);
-      return data.result;
-    }
-  };
-
-  const cacheUserInfo = async (data) => {
-    if (data) {
-      console.log('Attempting to cachce user info...');
-      try {
-        await databaseContext.asyncQueue({
-          asyncTask: () => {
-            return upsert(
-              [
-                {
-                  type: UpsertType.DOC_TYPE_AND_ID,
-                  docType: DocType.USER_INFO,
-                  json: data,
-                  ID: '1'
-                }
-              ],
-              databaseContext
-            );
-          }
-        });
-        return true;
-      } catch (e) {
-        alert('Unable to cache user info and roles');
-        console.log('ERROR: ', e);
-      }
-    }
-    return false;
-  };
-
-  const clearUserInfoFromCache = async () => {
-    console.log('Clearing user info from cache...');
-    try {
-      await databaseContext.asyncQueue({
-        asyncTask: async () => {
-          return upsert(
-            [
-              {
-                type: UpsertType.DOC_TYPE_AND_ID_DELETE,
-                ID: '1',
-                docType: DocType.USER_INFO
-              }
-            ],
-            databaseContext
-          );
-        }
-      });
-      return true;
-    } catch (e) {
-      alert('unable to remove user info from cache');
-    }
-    return false;
-  };
-
-  const getUserInfoFromCache = async () => {
-    let data = await databaseContext.asyncQueue({
-      asyncTask: async () => {
-        let res = await query(
-          {
-            type: QueryType.DOC_TYPE_AND_ID,
-            docType: DocType.USER_INFO,
-            ID: '1'
-          },
-          databaseContext
-        );
-        res = res?.length > 0 ? JSON.parse(res[0].json) : null;
-        return res;
-      }
-    });
-    if (data) {
-      return JSON.parse(JSON.stringify(data));
-    } else {
-      console.log('No information found when attempting to fetch cached user');
-    }
-  };
-
-  const cacheSpec = async (data) => {
-    if (data.components) {
-      console.log('caching spec');
-      //cache if on mobile
-      try {
-        await databaseContext.asyncQueue({
-          asyncTask: () => {
-            return upsert(
-              [
-                {
-                  type: UpsertType.DOC_TYPE_AND_ID,
-                  docType: DocType.API_SPEC,
-                  json: data,
-                  ID: '1'
-                }
-              ],
-              databaseContext
-            );
-          }
-        });
-        return true;
-      } catch (e) {
-        alert('unable to cache api spec');
-      }
-    }
-    return false;
-  };
 
   /**
    * Fetch species details.
@@ -1031,7 +871,7 @@ export const useInvasivesApi = () => {
    // * @param {IBatchUploadRequest} uploadRequest
    * @return {*}  {Promise<any>}
    */
-  const postBatchUpload = async (uploadRequest: IBatchUploadRequest): Promise<any> => {
+  const postBatchUpload = async (uploadRequest: any): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       method: 'POST',
@@ -1119,7 +959,7 @@ export const useInvasivesApi = () => {
    // * @param {IShapeUploadRequest} uploadRequest
    * @return {*}  {Promise<any>}
    */
-  const postAdminUploadShape = async (uploadRequest: IShapeUploadRequest): Promise<any> => {
+  const postAdminUploadShape = async (uploadRequest: any): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       method: 'POST',
@@ -1212,7 +1052,6 @@ export const useInvasivesApi = () => {
     createActivity,
     updateActivity,
     getApiSpec,
-    getCachedApiSpec,
     getGridItemsThatOverlapPolygon,
     getPointsOfInterest,
     getPointsOfInterestLean,
@@ -1227,9 +1066,6 @@ export const useInvasivesApi = () => {
     fetchCodeTable,
     getJurisdictions,
     getRISOs,
-    cacheUserInfo,
-    getUserInfoFromCache,
-    clearUserInfoFromCache,
     getApplicationUsers,
     submitAccessRequest,
     getEmployers,
@@ -1310,18 +1146,16 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     });
 
     return { data, status, url };
-  }
-  else if (method === 'DELETE' && endpoint.includes('admin-defined-shapes')) {
+  } else if (method === 'DELETE' && endpoint.includes('admin-defined-shapes')) {
     const { data, status, url } = yield Http.request({
       method: method,
-      headers: { ...options.headers, 'Content-Type': 'application/json'},
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + endpoint,
       data: payloadData
     });
 
     return { data, status, url };
-  }
-  else {
+  } else {
     const { data, status, url } = yield Http.request({
       method: method,
       headers: { ...options.headers },

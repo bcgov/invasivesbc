@@ -2,16 +2,16 @@ import { ChemTreatmentValidators } from '../validation/chemical-treatment';
 import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersonsWithApplicatorLicense,
+  ApplicationMethodType,
+  ApplicationMethodValidator,
   BasicInformation,
   BasicInformationRowValidators,
   ChemicalPlantTreatmentInformation,
+  GranularHerbicideRate,
   HerbicidesInformation,
   PmpValidator,
   ProjectInformation,
-  WindDirectionValidator,
-  ApplicationMethodType,
-  ApplicationMethodValidator,
-  GranularHerbicideRate
+  WindDirectionValidator
 } from '../shared-columns';
 
 const TreatmentChemicalTerrestrialPlantTemp = new Template(

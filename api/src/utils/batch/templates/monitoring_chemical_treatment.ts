@@ -3,8 +3,7 @@ import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
-  ProjectInformation,
-  WellInformation
+  ProjectInformation
 } from '../shared-columns';
 
 const MonitoringChemical = new Template('monitoring_chemical', 'Monitoring - Chemical', null);

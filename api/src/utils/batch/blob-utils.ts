@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { getLogger } from '../logger';
+import { getLogger } from 'utils/logger';
 import { TemplateColumn } from './definitions';
 import { parsedGeoType } from './validation/spatial-validation';
 

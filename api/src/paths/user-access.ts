@@ -1,33 +1,31 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
 import {
   getRolesForUserSQL,
   getUsersForRoleSQL,
   grantRoleToUserSQL,
   revokeRoleFromUserSQL
-} from '../queries/role-queries';
-import { getLogger } from '../utils/logger';
+} from 'queries/role-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('user-access');
 
-export const POST: Operation = [batchGrantRoleToUser()];
-export const DELETE: Operation = [revokeRoleFromUser()];
-export const GET: Operation = [decideGET()];
+const POST: Operation = [batchGrantRoleToUser()];
+const DELETE: Operation = [revokeRoleFromUser()];
+const GET: Operation = [decideGET()];
 
 GET.apiDoc = {
   description: 'Get some information about users and their roles',
   tags: ['user-access'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   parameters: [
     {
@@ -358,7 +356,6 @@ async function getRolesForUser(req, res, next, userId) {
 }
 
 async function getRolesForSelf(req, res, next) {
-
   return res.status(200).json({
     message: 'Successfully retrieved roles for self',
     request: req.body,
@@ -382,3 +379,5 @@ async function getRolesForSelf(req, res, next) {
     code: 200
   });
 }
+
+export default { GET, POST, DELETE };

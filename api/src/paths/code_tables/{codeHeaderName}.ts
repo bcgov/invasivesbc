@@ -1,13 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
-import { fetchCodeTablesSQL } from '../../queries/code-queries';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { fetchCodeTablesSQL } from 'queries/code-queries';
 
-export const GET: Operation = [getCodeTableValues()];
+const GET: Operation = [getCodeTableValues()];
 
 GET.apiDoc = {
   description: 'Fetches a single code table based on its name.',
@@ -87,3 +85,5 @@ function getCodeTableValues(): RequestHandler {
     }
   };
 }
+
+export default { GET };

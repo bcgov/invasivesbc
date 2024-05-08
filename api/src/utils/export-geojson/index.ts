@@ -5,16 +5,14 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { createWriteStream } from 'node:fs';
 
-import { exec } from 'child_process';
-
 import * as Path from 'path';
 import * as fs from 'fs';
-import { getLogger } from '../logger';
-import { S3ACLRole } from '../../constants/misc';
+import { getLogger } from 'utils/logger';
+import { S3ACLRole } from 'constants/misc';
 import AWS from 'aws-sdk';
-import { ALL_ACTIVITY_SQL, PUBLIC_IAPP_SQL } from '../../queries/export-queries';
+import { ALL_ACTIVITY_SQL, PUBLIC_IAPP_SQL } from 'queries/export-queries';
 import Cursor from 'pg-cursor';
-import { DELETE_STALE_EXPORT_RECORD, STALE_EXPORTS_SQL } from '../../queries/export-record-queries';
+import { DELETE_STALE_EXPORT_RECORD, STALE_EXPORTS_SQL } from 'queries/export-record-queries';
 
 const defaultLog = getLogger('exports');
 

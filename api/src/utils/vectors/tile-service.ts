@@ -31,11 +31,10 @@ export const PostgresTileService: TileService = {
           let { text, values } = getIAPPSQLv2(filterObj);
           return Buffer.from((await connection.query(text, values)).rows[0].data);
         }
-        case 'activities':
-          {
-            let { text, values } = getActivitiesSQLv2(filterObj);
+        case 'activities': {
+          let { text, values } = getActivitiesSQLv2(filterObj);
           return Buffer.from((await connection.query(text, values)).rows[0].data);
-          }
+        }
         default:
           return null;
       }

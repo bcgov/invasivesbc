@@ -2,13 +2,13 @@ import { call, put, select, take } from 'redux-saga/effects';
 import { selectMap } from 'state/reducers/map';
 import center from '@turf/center';
 import centroid from '@turf/centroid';
-import bcArea from '../../../UI/Overlay/Records/Activity/BC_AREA.json';
 import booleanContains from '@turf/boolean-contains';
 import {
   activity_create_function,
   ActivityStatus,
   ActivitySubtype,
   ActivityType,
+  BC_AREA,
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
@@ -32,7 +32,8 @@ import {
   ACTIVITY_DELETE_PHOTO_SUCCESS,
   ACTIVITY_EDIT_PHOTO_FAILURE,
   ACTIVITY_EDIT_PHOTO_SUCCESS,
-  ACTIVITY_GET_INITIAL_STATE_FAILURE, ACTIVITY_GET_LOCAL_REQUEST,
+  ACTIVITY_GET_INITIAL_STATE_FAILURE,
+  ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
@@ -58,11 +59,11 @@ import {
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
-import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'util/addActivity';
+import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
 import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
-import { getClosestWells } from 'util/closestWellsHelpers';
-import { calc_utm } from 'util/utm';
-import { calculateGeometryArea, calculateLatLng } from 'util/geometryHelpers';
+import { getClosestWells } from 'utils/closestWellsHelpers';
+import { calc_utm } from 'utils/utm';
+import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { kinks } from '@turf/turf';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectConfiguration } from 'state/reducers/configuration';
@@ -77,7 +78,6 @@ export function* handle_ACTIVITY_GET_REQUEST(action) {
     } else {
       yield put({ type: ACTIVITY_GET_NETWORK_REQUEST, payload: { activityID: action.payload.activityID } });
     }
-
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -222,7 +222,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     } else {
       geoToTest = sanitizedGeo;
     }
-    if (sanitizedGeo) isWithinBC = booleanContains(bcArea.features[0] as any, geoToTest as any);
+    if (sanitizedGeo) isWithinBC = booleanContains(BC_AREA.features[0] as any, geoToTest as any);
 
     if (!isWithinBC) {
       yield put({
@@ -317,7 +317,6 @@ export function* handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST(action) {
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
 
-
   try {
     const authState = yield select(selectAuth);
     //    const { extendedInfo, displayName, roles } = useSelector(selectAuth);
@@ -331,13 +330,11 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action) {
       authState.extendedInfo.pac_number
     );
 
-
     if (MOBILE) {
       yield put({ type: ACTIVITY_CREATE_LOCAL, payload: { id: newActivity.activity_id, data: newActivity } });
     } else {
       yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: newActivity } });
     }
-
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_CREATE_FAILURE });
@@ -502,7 +499,6 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
-
   const connected = yield select(selectNetworkConnected);
 
   try {
@@ -547,9 +543,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
 
     const search_feature = payloadActivity.geometry?.[0]
       ? {
-        type: 'FeatureCollection',
-        features: payloadActivity.geometry
-      }
+          type: 'FeatureCollection',
+          features: payloadActivity.geometry
+        }
       : false;
 
     if (linkedActivitySubtypes.length > 0) {

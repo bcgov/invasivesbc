@@ -1,5 +1,5 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
-import { JurisdictionSearchCriteria } from '../models/jurisdiction';
+import { JurisdictionSearchCriteria } from 'models/jurisdiction';
 
 /**
  * SQL query to fetch jurisdiction records based on search criteria.
@@ -31,7 +31,7 @@ export const getJurisdictionsSQL = (searchCriteria: JurisdictionSearchCriteria):
       'layer', 'jurisdiction'
     ),
     'geometry', public.st_asGeoJSON(j.geog)::jsonb
-  ) as "geojson", COUNT(*) OVER() AS "total_rows_count" 
+  ) as "geojson", COUNT(*) OVER() AS "total_rows_count"
     FROM public.jurisdiction j , inputData i
     where public.ST_Intersects2(j.geog :: geometry, i.geom);
   `);

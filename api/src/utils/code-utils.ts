@@ -1,6 +1,6 @@
 import { QueryResult, QueryResultRow } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
-import { getDBConnection } from '../database/db';
+import { getDBConnection } from 'database/db';
 import {
   getCodeCategoriesSQL,
   getCodeHeadersSQL,
@@ -8,7 +8,7 @@ import {
   getEmployerCodesSQL,
   getFundingAgencyCodesSQL,
   getServiceLicenseCodesSQL
-} from '../queries/code-queries';
+} from 'queries/code-queries';
 import { getLogger } from './logger';
 
 const defaultLog = getLogger('code-utils');
@@ -116,15 +116,17 @@ export async function getAllCodeEntities(user?: any, filterForSelectable?: boole
       }
       filteredPSNCodes.push(responses[5].rows.find((psnCode: any) => psnCode.code_name === 'NRQ'));
 
-      const employerCodeHeaderId = responses[1].rows.find((code: any) => code.code_header_name === 'employer_code')
-        .code_header_id;
+      const employerCodeHeaderId = responses[1].rows.find(
+        (code: any) => code.code_header_name === 'employer_code'
+      ).code_header_id;
 
       const agencyCodeHeaderId = responses[1].rows.find(
         (code: any) => code.code_header_name === 'invasive_species_agency_code'
       ).code_header_id;
 
-      const psnCodeHeaderId = responses[1].rows.find((code: any) => code.code_header_name === 'service_license_code')
-        .code_header_id;
+      const psnCodeHeaderId = responses[1].rows.find(
+        (code: any) => code.code_header_name === 'service_license_code'
+      ).code_header_id;
 
       const filteredCodes = responses[2].rows.filter((code: any) => {
         if (user) {

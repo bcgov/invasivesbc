@@ -1,6 +1,6 @@
 import { Operation } from 'express-openapi';
 
-export const GET: Operation = [
+const GET: Operation = [
   (req, res) => {
     const versionInfo = {
       version: process.env.VERSION || '0',
@@ -46,3 +46,4 @@ GET.apiDoc = {
     }
   }
 };
+export default { GET };

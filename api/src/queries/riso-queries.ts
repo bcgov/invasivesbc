@@ -1,4 +1,4 @@
-import SQL, { SQLStatement } from 'sql-template-strings';
+import { SQL, SQLStatement } from 'sql-template-strings';
 import { RISOSearchCriteria } from 'models/riso';
 
 export const getRISOsSQL = (searchCriteria: RISOSearchCriteria): SQLStatement => {
@@ -24,7 +24,7 @@ export const getRISOsSQL = (searchCriteria: RISOSearchCriteria): SQLStatement =>
         'layer', 'regional_invasive_species_organization_areas'
       ),
       'geometry', public.st_asGeoJSON(r.geog)::jsonb
-    ) as "geojson", COUNT(*) OVER() AS "total_rows_count" 
+    ) as "geojson", COUNT(*) OVER() AS "total_rows_count"
       FROM public.regional_invasive_species_organization_areas r , inputData i
       where public.ST_Intersects2(r.geog :: geometry, i.geom);
     `);

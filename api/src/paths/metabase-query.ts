@@ -1,22 +1,21 @@
-'use strict';
-
 import axios, { AxiosRequestConfig } from 'axios';
 import moment from 'moment';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON, SEARCH_LIMIT_MAX } from '../constants/misc';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SEARCH_LIMIT_MAX, SECURITY_ON } from 'constants/misc';
+import { getLogger } from 'utils/logger';
 import {
   closeMetabaseSession,
   getMetabaseSession,
   METABASE_COLLECTION_ID,
-  METABASE_TIMEOUT, METABASE_URL
-} from '../utils/metabase-session';
+  METABASE_TIMEOUT,
+  METABASE_URL
+} from 'utils/metabase-session';
 
 const defaultLog = getLogger('metabase-query');
 
-export const POST: Operation = [createMetabaseQuery()];
-export const GET: Operation = [getMetabaseQueryOptions()];
+const POST: Operation = [createMetabaseQuery()];
+const GET: Operation = [getMetabaseQueryOptions()];
 
 POST.apiDoc = {
   description: 'Creates new Metabase queries for a list of activities and points of interest.',
@@ -370,3 +369,5 @@ function getMetabaseQueryOptions(): RequestHandler {
     }
   };
 }
+
+export default { GET, POST };

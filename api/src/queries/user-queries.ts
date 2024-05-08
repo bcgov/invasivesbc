@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from "../utils/logger";
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('user-queries');
 
@@ -41,6 +41,7 @@ export enum userTypeEnum {
   bceid = 'bceid',
   bceid_business = 'bceid_business'
 }
+
 /**
  * SQL statement to create users.
  *
