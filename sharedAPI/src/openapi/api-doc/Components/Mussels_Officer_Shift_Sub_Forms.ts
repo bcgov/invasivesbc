@@ -132,7 +132,11 @@ export const ShiftOverview = {
           title: 'Shift End',
           ...ShiftEndSection
         }
-      }
+      },
+      required: [
+        'shiftStart',
+        'shiftEnd'
+      ]
     }
   }
 }
