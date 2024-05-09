@@ -21,18 +21,18 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { RENDER_DEBUG } from 'UI/App';
 import { Switch } from '@mui/base';
-import { useSelector } from '../../util/use_selector';
+import { useSelector } from '../../utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 
 type TabPredicate =
-  'authenticated_any'
+  | 'authenticated_any'
   | 'authenticated_online'
   | 'working_offline'
   | 'unauthenticated'
   | 'always'
-  | 'never'
+  | 'never';
 
 interface TabProps extends PropsWithChildren<any> {
   predicate: TabPredicate;
@@ -42,14 +42,7 @@ interface TabProps extends PropsWithChildren<any> {
   panelFullScreen: boolean;
 }
 
-const Tab: React.FC<TabProps> = ({
-                                   predicate,
-                                   children,
-                                   path,
-                                   label,
-                                   panelOpen,
-                                   panelFullScreen
-                                 }) => {
+const Tab: React.FC<TabProps> = ({ predicate, children, path, label, panelOpen, panelFullScreen }) => {
   const ref = useRef(0);
   ref.current += 1;
 
@@ -115,8 +108,8 @@ const Tab: React.FC<TabProps> = ({
               payload: { panelOpen: panelOpen, fullScreen: panelFullScreen }
             });
           }}>
-          <div className='Tab__Content'>{children}</div>
-          <div className='Tab__Label'>{label}</div>
+          <div className="Tab__Content">{children}</div>
+          <div className="Tab__Label">{label}</div>
         </div>
       ) : (
         <></>
@@ -127,13 +120,13 @@ const Tab: React.FC<TabProps> = ({
 
 const ButtonWrapper = (props: any) => {
   return (
-    <div className='ButtonWrapperContainer'>
-      <div id='left-icon-container'>
-        <ArrowLeftIcon className='direction-icon' />
+    <div className="ButtonWrapperContainer">
+      <div id="left-icon-container">
+        <ArrowLeftIcon className="direction-icon" />
       </div>
-      <div id='ButtonWrapper'>{props.children}</div>
-      <div id='right-icon-container'>
-        <ArrowRightIcon className='direction-icon' />
+      <div id="ButtonWrapper">{props.children}</div>
+      <div id="right-icon-container">
+        <ArrowRightIcon className="direction-icon" />
       </div>
     </div>
   );
@@ -171,7 +164,7 @@ const LogoutButton = () => {
 
 const InvIcon = () => {
   return (
-    <div className='inv-icon'>
+    <div className="inv-icon">
       <img
         src={invbclogo}
         style={{
@@ -180,11 +173,11 @@ const InvIcon = () => {
           borderRadius: 4,
           padding: 5
         }}
-        height='20'
-        width='20'
-        alt='B.C. Government Logo'
+        height="20"
+        width="20"
+        alt="B.C. Government Logo"
       />
-      <div id='appTitle'>InvasivesBC</div>
+      <div id="appTitle">InvasivesBC</div>
     </div>
   );
 };
@@ -195,7 +188,7 @@ const ActivityTabMemo = (props) => {
     <Tab
       key={'tab3'}
       path={'/Records/Activity:' + activeActivity + '/form'}
-      label='Current Activity'
+      label="Current Activity"
       predicate={'authenticated_online'}
       panelOpen={true}
       panelFullScreen={false}>
@@ -210,11 +203,11 @@ const IAPPTabMemo = (props) => {
     <Tab
       key={'tab4'}
       path={'/Records/IAPP/' + activeIAPP + '/summary'}
-      label='Current IAPP'
+      label="Current IAPP"
       predicate={'authenticated_online'}
       panelOpen={true}
       panelFullScreen={false}>
-      <img alt='iapp logo' src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
+      <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
     </Tab>
   );
 };
@@ -227,7 +220,7 @@ const AdminPanelMemo = (props) => {
         <Tab
           key={'tab9'}
           path={'/Admin'}
-          label='Admin'
+          label="Admin"
           panelOpen={true}
           predicate={'authenticated_online'}
           panelFullScreen={true}>
@@ -255,20 +248,18 @@ const LoginOrOutMemo = React.memo((props) => {
   const [offlineUserSelectionAvailable, setOfflineUserSelectionAvailable] = useState(false);
 
   useEffect(() => {
-      if (!MOBILE) {
-        setOfflineUserSelectionAvailable(false);
-        return;
-      }
-      if (workingOffline) {
-        setOfflineUserSelectionAvailable(false);
-        return;
-      }
-      if (offlineUsers.length > 0) {
-        setOfflineUserSelectionAvailable(true);
-      }
-    },
-    [offlineUsers, workingOffline]
-  );
+    if (!MOBILE) {
+      setOfflineUserSelectionAvailable(false);
+      return;
+    }
+    if (workingOffline) {
+      setOfflineUserSelectionAvailable(false);
+      return;
+    }
+    if (offlineUsers.length > 0) {
+      setOfflineUserSelectionAvailable(true);
+    }
+  }, [offlineUsers, workingOffline]);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -303,11 +294,11 @@ const LoginOrOutMemo = React.memo((props) => {
 
   return (
     <Box sx={{ flexGrow: 0, float: 'right', marginRight: '1rem' }}>
-      <IconButton onClick={handleClick} size='small'>
+      <IconButton onClick={handleClick} size="small">
         <Avatar></Avatar>
       </IconButton>
       <Menu
-        id='menu-appbar'
+        id="menu-appbar"
         anchorEl={anchorEl}
         open={openMenu}
         onClose={handleClose}
@@ -331,7 +322,7 @@ const LoginOrOutMemo = React.memo((props) => {
             Request Access
           </MenuItem>
         )}
-        {offlineUserSelectionAvailable &&
+        {offlineUserSelectionAvailable && (
           <MenuItem
             onClick={() => {
               setAnchorEl(null);
@@ -340,21 +331,19 @@ const LoginOrOutMemo = React.memo((props) => {
                 type: AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
                 payload: { state: true }
               });
-
             }}>
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>
             Choose Offline User
           </MenuItem>
-        }
-        {(!authenticated && !workingOffline) && <LoginButton />}
+        )}
+        {!authenticated && !workingOffline && <LoginButton />}
         {workingOffline && <LoginButton labelText={'Go Online'} />}
         {(authenticated || workingOffline) && <LogoutButton />}
       </Menu>
     </Box>
-  )
-    ;
+  );
 });
 
 const NetworkStateControl: React.FC = () => {
@@ -371,7 +360,7 @@ const NetworkStateControl: React.FC = () => {
             }}
           />
         }
-        label='Online'
+        label="Online"
       />
     </FormGroup>
   );
@@ -386,7 +375,7 @@ export const Header: React.FC = () => {
   const { DEBUG, MOBILE } = useSelector((state) => state.Configuration.current);
 
   return (
-    <div className='HeaderBar'>
+    <div className="HeaderBar">
       <InvIcon />
 
       <ButtonWrapper>
@@ -395,7 +384,7 @@ export const Header: React.FC = () => {
           currentPath={history.location.pathname}
           path={'/Landing'}
           predicate={'always'}
-          label='Home'
+          label="Home"
           panelOpen={true}
           panelFullScreen={true}>
           <Home />
@@ -403,12 +392,11 @@ export const Header: React.FC = () => {
 
         <Tab
           key={'tab2'}
-          path='/Records'
-          label='Records'
+          path="/Records"
+          label="Records"
           predicate={'authenticated_any'}
           panelOpen={true}
-          panelFullScreen={false}
-        >
+          panelFullScreen={false}>
           <ManageSearchIcon />
         </Tab>
 
@@ -419,7 +407,7 @@ export const Header: React.FC = () => {
         <Tab
           key={'tab5'}
           path={'/Batch/list'}
-          label='Batch'
+          label="Batch"
           predicate={'authenticated_online'}
           panelOpen={true}
           panelFullScreen={true}>
@@ -429,29 +417,27 @@ export const Header: React.FC = () => {
         <Tab
           key={'tab6'}
           path={'/Reports'}
-          label='Reports'
+          label="Reports"
           predicate={'authenticated_online'}
           panelOpen={true}
-          panelFullScreen={true}
-        >
+          panelFullScreen={true}>
           <Assessment />
         </Tab>
 
         <Tab
-        key='tab7-1/2'
-        path='/News'
-        label='News'
-        predicate={'authenticated_online'}
-        panelOpen={true}
-        panelFullScreen={true}
-        >
-        <Newspaper/>
+          key="tab7-1/2"
+          path="/News"
+          label="News"
+          predicate={'authenticated_online'}
+          panelOpen={true}
+          panelFullScreen={true}>
+          <Newspaper />
         </Tab>
 
         <Tab
           key={'tab7'}
           path={'/Training'}
-          label='Training'
+          label="Training"
           predicate={'always'}
           panelOpen={true}
           panelFullScreen={true}>
@@ -463,11 +449,10 @@ export const Header: React.FC = () => {
         <Tab
           key={'tab8'}
           path={'/Map'}
-          label='Map'
+          label="Map"
           predicate={'unauthenticated'}
           panelFullScreen={false}
-          panelOpen={false}
-        >
+          panelOpen={false}>
           <Map />
         </Tab>
 
@@ -475,7 +460,6 @@ export const Header: React.FC = () => {
 
         {(DEBUG || MOBILE) && <NetworkStateControl />}
       </ButtonWrapper>
-
 
       <LoginOrOutMemo />
     </div>

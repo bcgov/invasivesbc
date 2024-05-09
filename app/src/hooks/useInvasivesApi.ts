@@ -17,7 +17,7 @@ import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShape
 import { selectConfiguration } from '../state/reducers/configuration';
 import { selectAuthHeaders } from '../state/reducers/auth';
 import { select } from 'redux-saga/effects';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 
 /**
  * Returns a set of supported api methods.
@@ -263,11 +263,11 @@ export const useInvasivesApi = () => {
      * for Leaflet to consume. Will hopefully replace the default
      * output data.
      const geojsonData = await Http.request({
-      method: 'POST',
-      headers: { ...options.headers, 'Content-Type': 'application/json' },
-      url: options.baseUrl + `/api/points-of-interest-lean/`,
-      data: pointsOfInterestSearchCriteria
-    });
+     method: 'POST',
+     headers: { ...options.headers, 'Content-Type': 'application/json' },
+     url: options.baseUrl + `/api/points-of-interest-lean/`,
+     data: pointsOfInterestSearchCriteria
+     });
      */
 
     /*const features = geojsonData.data.rows.map((d) => d.geojson);
@@ -1310,18 +1310,16 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     });
 
     return { data, status, url };
-  }
-  else if (method === 'DELETE' && endpoint.includes('admin-defined-shapes')) {
+  } else if (method === 'DELETE' && endpoint.includes('admin-defined-shapes')) {
     const { data, status, url } = yield Http.request({
       method: method,
-      headers: { ...options.headers, 'Content-Type': 'application/json'},
+      headers: { ...options.headers, 'Content-Type': 'application/json' },
       url: options.baseUrl + endpoint,
       data: payloadData
     });
 
     return { data, status, url };
-  }
-  else {
+  } else {
     const { data, status, url } = yield Http.request({
       method: method,
       headers: { ...options.headers },

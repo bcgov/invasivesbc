@@ -13,7 +13,7 @@ import {
   Typography
 } from '@mui/material';
 import React from 'react';
-import {getReportedAreaOutput} from "../../../util/IAPPHelpers";
+import { getReportedAreaOutput } from '../../../utils/IAPPHelpers';
 
 interface SurveyColumn {
   id:

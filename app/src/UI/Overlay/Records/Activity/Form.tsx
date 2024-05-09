@@ -5,7 +5,7 @@ import './Form.css';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
-import { calc_lat_long_from_utm } from 'util/utm';
+import { calc_lat_long_from_utm } from 'utils/utm';
 import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 
 export const ActivityForm = (props) => {
@@ -40,8 +40,7 @@ export const ActivityForm = (props) => {
 
     while (!validZone) {
       zone = prompt('Enter a valid UTM Zone');
-      if(zone === null)
-        return;
+      if (zone === null) return;
       if (!isNaN(Number(zone))) {
         validZone = true;
         break;
@@ -52,8 +51,7 @@ export const ActivityForm = (props) => {
     }
     while (!validEasting) {
       easting = prompt('Enter a valid UTM Easting');
-      if(easting === null)
-        return;
+      if (easting === null) return;
       if (!isNaN(Number(easting))) {
         validEasting = true;
         break;
@@ -65,8 +63,7 @@ export const ActivityForm = (props) => {
     }
     while (!validNorthing) {
       northing = prompt('Enter a valid UTM Northing');
-      if(northing === null)
-        return;
+      if (northing === null) return;
       if (!isNaN(Number(northing))) {
         validNorthing = true;
         break;
@@ -86,7 +83,7 @@ export const ActivityForm = (props) => {
       properties: {}
     };
 
-    dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [geo]}})
+    dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [geo] } });
   };
   return (
     <>
@@ -95,19 +92,23 @@ export const ActivityForm = (props) => {
           <tbody>
             <tr>
               <td className={'leftHeaderCol'}>Activity ID:</td>
-              <td className={'leftValueCol'}>{short_id}</td> <br />
+              <td className={'leftValueCol'}>{short_id}</td>
+              <br />
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Form Status:</td>
-              <td className={'leftValueCol'}>{form_status}</td> <br />
+              <td className={'leftValueCol'}>{form_status}</td>
+              <br />
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Activity Type:</td>
-              <td className={'leftValueCol'}>{activity_type}</td> <br />
+              <td className={'leftValueCol'}>{activity_type}</td>
+              <br />
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Activity Sub-type:</td>
-              <td className={'leftValueCol'}>{ActivitySubtypeShortLabels[activity_subtype]}</td> <br />
+              <td className={'leftValueCol'}>{ActivitySubtypeShortLabels[activity_subtype]}</td>
+              <br />
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Activity Date:</td>
@@ -122,15 +123,18 @@ export const ActivityForm = (props) => {
           <tbody>
             <tr>
               <td className={'rightHeaderCol'}>Created By:</td>
-              <td className={'rightValueCol'}>{created_by}</td> <br />
+              <td className={'rightValueCol'}>{created_by}</td>
+              <br />
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Created At:</td>
-              <td className={'rightValueCol'}>{new Date(date_created).toLocaleDateString()}</td> <br />
+              <td className={'rightValueCol'}>{new Date(date_created).toLocaleDateString()}</td>
+              <br />
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Updated By:</td>
-              <td className={'rightValueCol'}>{updated_by}</td> <br />
+              <td className={'rightValueCol'}>{updated_by}</td>
+              <br />
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Updated At:</td>
@@ -141,12 +145,14 @@ export const ActivityForm = (props) => {
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Batch ID</td>
-              <td className={'rightValueCol'}>{batch_id}</td> <br />
+              <td className={'rightValueCol'}>{batch_id}</td>
+              <br />
             </tr>
             {invasive_plant && invasive_plant != '' && (
               <tr>
                 <td className={'rightHeaderCol'}>Invasive Plant</td>
-                <td className={'rightValueCol'}>{invasive_plant}</td> <br />
+                <td className={'rightValueCol'}>{invasive_plant}</td>
+                <br />
               </tr>
             )}
           </tbody>

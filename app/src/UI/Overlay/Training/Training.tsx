@@ -1,10 +1,10 @@
 import { Box, Container, Grid, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import Spinner from 'UI/Spinner/Spinner';
 import { TRAINING_VIDEOS_LIST_REQUEST } from 'state/actions';
-import "UI/Styles/training.scss";
+import 'UI/Styles/training.scss';
 
 export const TrainingPage = () => {
   const working = useSelector((state: any) => state.TrainingVideos?.working);
@@ -27,7 +27,11 @@ export const TrainingPage = () => {
         </Typography>
       </Box>
       <Grid container spacing={4}>
-        {videos.length === 0 && (<Grid item><span>No videos are available at this time.</span></Grid>)}
+        {videos.length === 0 && (
+          <Grid item>
+            <span>No videos are available at this time.</span>
+          </Grid>
+        )}
         {videos.map((v) => (
           <Grid key={v.id} item xs={12} lg={6}>
             <div className={'trainingVideo'}>

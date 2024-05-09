@@ -9,7 +9,7 @@ import {
   ACTIVITY_SUBMIT_REQUEST,
   OVERLAY_MENU_TOGGLE
 } from 'state/actions';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 
 export const FormMenuButtons = (props) => {
   const dispatch = useDispatch();
@@ -84,7 +84,7 @@ export const FormMenuButtons = (props) => {
         onClick={() => {
           dispatch({ type: ACTIVITY_DELETE_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });
-          setTimeout(()=> history.back(), 5000);
+          setTimeout(() => history.back(), 5000);
         }}
         variant="contained">
         DELETE

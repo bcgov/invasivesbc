@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Download } from '@mui/icons-material';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import { BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, BATCH_TEMPLATE_DOWNLOAD_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
@@ -67,7 +67,13 @@ const TemplatePreview = ({ name, id }) => {
   function renderAcceptableValues(col) {
     switch (col.dataType) {
       case 'text':
-        return <>Valid text value - if using excel special characters (like quotes or commas) that can affect the CSV output are handled automatically - so just put text in the field.  If not using Excel, these are valid values:  value, "quoted value", "value containing ""escaped"" quotes"</>;
+        return (
+          <>
+            Valid text value - if using excel special characters (like quotes or commas) that can affect the CSV output
+            are handled automatically - so just put text in the field. If not using Excel, these are valid values:
+            value, "quoted value", "value containing ""escaped"" quotes"
+          </>
+        );
       case 'numeric':
         return (
           <>
@@ -135,7 +141,7 @@ const TemplatePreview = ({ name, id }) => {
     }
     return (
       <div className="template-description">
-        <table className={`template-preview ${darkTheme? 'template-dark-preview' : ''}`}>
+        <table className={`template-preview ${darkTheme ? 'template-dark-preview' : ''}`}>
           <thead>
             <tr>
               <th>Column</th>

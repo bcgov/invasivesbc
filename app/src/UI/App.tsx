@@ -2,7 +2,7 @@ import { Button, createTheme, ThemeOptions } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { Route, useHistory, Redirect } from 'react-router-dom';
-import { getDesignTokens } from 'util/CustomThemeProvider';
+import { getDesignTokens } from 'utils/CustomThemeProvider';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
@@ -73,15 +73,15 @@ const OverlayContentMemo = (props) => {
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
       <AppUrlListener />
-      <Route exact path='/'>
-        <Redirect to='/Landing' /> :
+      <Route exact path="/">
+        <Redirect to="/Landing" /> :
       </Route>
 
-      <Route path='/Map' render={(props) => <></>} />
-      <Route path='/Landing' render={(props) => <LandingComponent />} />
-      <Route exact={true} path='/Records' render={(props) => <Records />} />
+      <Route path="/Map" render={(props) => <></>} />
+      <Route path="/Landing" render={(props) => <LandingComponent />} />
+      <Route exact={true} path="/Records" render={(props) => <Records />} />
       <Route
-        path='/Records/Activity:id'
+        path="/Records/Activity:id"
         render={(props) => (
           <>
             {!overlayMenuOpen ? (
@@ -96,7 +96,7 @@ const OverlayContentMemo = (props) => {
       />
 
       <Route
-        path='/Records/IAPP/:id'
+        path="/Records/IAPP/:id"
         render={(props) => (
           <>
             <IAPPRecord />
@@ -106,7 +106,7 @@ const OverlayContentMemo = (props) => {
 
       <Route
         exact={true}
-        path='/Records/List/Local:id'
+        path="/Records/List/Local:id"
         render={(props) => (
           <>
             {!userRecordOnClickMenuOpen ? (
@@ -121,7 +121,7 @@ const OverlayContentMemo = (props) => {
                         : '/Records/IAPP/' + userRecordOnClickRecordID + '/summary';
                     history.push(url);
                   }}
-                  variant='contained'>
+                  variant="contained">
                   Open
                 </Button>
               </OverlayMenu>
@@ -129,20 +129,20 @@ const OverlayContentMemo = (props) => {
           </>
         )}
       />
-      <Route exact={true} path='/Batch/list' render={(props) => <BatchList />} />
+      <Route exact={true} path="/Batch/list" render={(props) => <BatchList />} />
       <Route
-        path='/Batch/list/:id'
+        path="/Batch/list/:id"
         render={(props) => <BatchView match={props.match as any} history={undefined} location={undefined} />}
       />
-      <Route path='/Batch/new' render={(props) => <BatchCreateNew />} />
-      <Route path='/Batch/templates' render={(props) => <BatchTemplates />} />
-      <Route path='/Reports' render={(props) => <EmbeddedReportsPage />} />
-      <Route path='/News' render={(props) => <NewsPage />} />
-      <Route path='/Training' render={(props) => <TrainingPage />} />
-      <Route path='/Legend' render={(props) => <LegendsPopup />} />
-      <Route path='/AccessRequest' render={(props) => <AccessRequestPage />} />
-      <Route path='/Admin' render={(props) => <UserAccessPage />} />
-      <Route path='/WhatsHere' render={(props) => <WhatsHereTable />} />
+      <Route path="/Batch/new" render={(props) => <BatchCreateNew />} />
+      <Route path="/Batch/templates" render={(props) => <BatchTemplates />} />
+      <Route path="/Reports" render={(props) => <EmbeddedReportsPage />} />
+      <Route path="/News" render={(props) => <NewsPage />} />
+      <Route path="/Training" render={(props) => <TrainingPage />} />
+      <Route path="/Legend" render={(props) => <LegendsPopup />} />
+      <Route path="/AccessRequest" render={(props) => <AccessRequestPage />} />
+      <Route path="/Admin" render={(props) => <UserAccessPage />} />
+      <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
     </div>
   );
 };
@@ -155,7 +155,7 @@ const App: React.FC = () => {
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
 
-  if (!authInitiated) return <div id='app-pre-auth-init' />;
+  if (!authInitiated) return <div id="app-pre-auth-init" />;
 
   if (disrupted) {
     return <ConnectivityErrorHandler />;
@@ -166,7 +166,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div id='app' className='App'>
+    <div id="app" className="App">
       <Header />
       <Map>
         <ButtonContainer />

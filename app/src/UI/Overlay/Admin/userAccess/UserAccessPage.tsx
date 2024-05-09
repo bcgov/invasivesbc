@@ -33,7 +33,7 @@ import {
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { selectAuth } from 'state/reducers/auth';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { CustomNoRowsOverlay } from '../CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
 
@@ -73,6 +73,7 @@ interface IAccessRequestPage {
 function escapeRegExp(value: string): string {
   return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
 }
+
 interface QuickSearchToolbarProps {
   clearSearch: () => void;
   onChange: () => void;
@@ -624,9 +625,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   return (
-    <Container 
-   // className={classes?.container} 
-    style={{ paddingBottom: '50px' }}>
+    <Container
+      // className={classes?.container}
+      style={{ paddingBottom: '50px' }}>
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">

@@ -8,7 +8,7 @@ import {
   iappColumnsToDisplay
 } from './RecordTableHelpers';
 import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
-import { detectTouchDevice } from 'util/detectTouch';
+import { detectTouchDevice } from 'utils/detectTouch';
 import { validActivitySortColumns, validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
 
 export const RecordTableHeader = (props) => {};

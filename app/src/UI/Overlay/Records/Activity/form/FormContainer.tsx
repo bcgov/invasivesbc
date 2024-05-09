@@ -12,7 +12,7 @@ import {
   ThemeProvider,
   Typography
 } from '@mui/material';
-import { Form } from '@rjsf/mui'
+import { Form } from '@rjsf/mui';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 import { SelectAutoCompleteContextProvider } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
@@ -24,7 +24,7 @@ import MultiSelectAutoComplete from 'rjsf/widgets/MultiSelectAutoComplete';
 import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from 'UI/Overlay/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import {
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -40,8 +40,7 @@ import { RENDER_DEBUG } from 'UI/App';
 const FormContainer: React.FC<any> = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
 
   const authenticated = useSelector((state) => state.Auth.authenticated);
   const username = useSelector((state) => state.Auth.username);
@@ -74,12 +73,10 @@ const FormContainer: React.FC<any> = (props) => {
   }, 1000);
 
   const errorTransformers = useCallback(() => {
-
     return getCustomErrorTransformer;
   }, []);
 
   const customValidators = useCallback(() => {
-
     return validatorForActivity(activity_subtype, null);
   }, [JSON.stringify(activity_subtype)]);
 
@@ -109,7 +106,7 @@ const FormContainer: React.FC<any> = (props) => {
   useEffect(() => {
     const currentState = formRef.current?.state;
     dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
-  //}, [formDataState]);
+    //}, [formDataState]);
   }, [formRef]);
 
   //Dialog Proceed OnClick func
@@ -160,7 +157,6 @@ const FormContainer: React.FC<any> = (props) => {
               Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can however
               save in progress work, and come back later.
             </Typography>
-
           </div>
         ) : null}
       </>
@@ -169,7 +165,6 @@ const FormContainer: React.FC<any> = (props) => {
 
   useEffect(() => {
     const getApiSpec = async () => {
-
       const subtype = activity_subtype;
       if (!subtype) throw new Error('Activity has no Subtype specified');
       let components;
@@ -258,7 +253,6 @@ const FormContainer: React.FC<any> = (props) => {
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
-
     const notMine = username !== created_by;
     const notAdmin =
       accessRoles?.filter((role) => {
@@ -270,7 +264,6 @@ const FormContainer: React.FC<any> = (props) => {
       setIsDisabled(false);
     }
   }, [JSON.stringify(accessRoles), JSON.stringify(username)]);
-
 
   // useEffect() => {
   //   () => {
@@ -285,7 +278,7 @@ const FormContainer: React.FC<any> = (props) => {
     return <CircularProgress />;
   } else {
     return (
-      <Box sx={{pl: '15%', pr: '15%'}} >
+      <Box sx={{ pl: '15%', pr: '15%' }}>
         <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
           <SelectAutoCompleteContextProvider>
             <>
@@ -313,7 +306,6 @@ const FormContainer: React.FC<any> = (props) => {
                 transformErrors={getCustomErrorTransformer()}
                 autoComplete="off"
                 onChange={(event) => {
-
                   debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
                     //setformData(updatedFormData);
                   });
