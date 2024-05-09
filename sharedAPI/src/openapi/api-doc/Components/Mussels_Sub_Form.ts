@@ -55,31 +55,36 @@ export const InspectionTime = {
 	'x-tooltip-text': 'Time inspection occurred'
 };
 
-export const  VehicleNonMotorized = {
+export const VehicleNonMotorized = {
 	type: 'integer',
-	title: 'Non Motorized'
+	title: 'Non Motorized',
+	default: 0
 };
 
-export const  VehicleVeryComplex = {
+export const VehicleVeryComplex = {
 	type: 'integer',
-	title: 'Very Complex'
+	title: 'Very Complex',
+	default: 0
 };
 
-export const  VehicleSimple = {
+export const VehicleSimple = {
 	type: 'integer',
-	title: 'Simple'
+	title: 'Simple',
+	default: 0
 };
 
-export const  VehicleComplex = {
+export const VehicleComplex = {
 	type: 'integer',
-	title: 'Complex'
+	title: 'Complex',
+	default: 0
 };
 /* End of Basic Information */
 
 /* Watercraft Details */
 export const NumberOfPeopleInParty = {
 	type: 'integer',
-	title: 'Number of People in the Party'
+	title: 'Number of People in the Party',
+	default: 0
 };
 
 export const CommerciallyHauled = {
@@ -143,7 +148,7 @@ export const PreviousInspectionDays = {
 /* Journey Details */
 export const MajorCity = {
 	type: 'string',
-	title: 'Major city name',
+	title: "Major city name",
 	'x-enum-code': {
 		'x-enum-code-category-name': 'invasives',
 		'x-enum-code-header-name': 'major_cities',
@@ -307,12 +312,13 @@ export const AdultDreissenidMusselsLocation = {
 		'x-enum-code-sort-order': 'code_sort_order'
 	},
 	'x-tooltip-text':
-		'Location on watercraft where standing water / mussels were found'
+		'Location on watercraft where standing water / mussels were found',
 }
 
 export const AdultDreissenidMusselsLocationArray = {
 	title: 'Adult Dreissenid Mussels Location',
 	type: 'array',
+	minItems: 1,
 	items: {
 		...AdultDreissenidMusselsLocation
 	}
@@ -324,6 +330,9 @@ export const AdultDreissenidMusselsFoundLogic = {
 	properties: {
 		adultDreissenidMusselsFound: AdultDreissenidMusselsFound
 	},
+	required: [
+		'adultDreissenidMusselsFound'
+	],
 	dependencies: {
 		adultDreissenidMusselsFound: {
 			oneOf: [
@@ -340,7 +349,11 @@ export const AdultDreissenidMusselsFoundLogic = {
 							enum: [ true ]
 						},
 						adultDreissenidMusselsLocation: AdultDreissenidMusselsLocationArray
-					}
+					},
+					required: [
+						'adultDreissenidMusselsFound',
+						'adultDreissenidMusselsLocation'
+					]
 				}
 			]
 		}
@@ -369,6 +382,7 @@ export const StandingWaterLocation = {
 export const StandingWaterLocationArray = {
 	title: 'Standing Water Location',
 	type: 'array',
+	minItems: 1,
 	items: {
 		...StandingWaterLocation
 	}
@@ -380,6 +394,9 @@ export const StandingWaterLogic = {
 	properties: {
 		standingWaterPresent: StandingWaterPresent
 	},
+	required: [
+		'standingWaterPresent',
+	],
 	dependencies: {
 		standingWaterPresent: {
 			oneOf: [
@@ -396,7 +413,10 @@ export const StandingWaterLogic = {
 							enum: [ true ]
 						},
 						standingWaterLocation: StandingWaterLocationArray
-					}
+					},
+					required: [
+						'standingWaterLocation'
+					]
 				}
 			]
 		}
@@ -658,6 +678,10 @@ export const PreviousWaterBodyLogic = {
 						previousWaterbody: PreviousWaterbody,
 						numberOfDaysOut: NumberOfDaysOut
 					},
+					required: [
+						'previousWaterbody',
+						'numberOfDaysOut'
+					]
 				},
 				{
 					properties: {
@@ -668,10 +692,15 @@ export const PreviousWaterBodyLogic = {
 						manualWaterbodyCity: ManualWaterbodyCity,
 						manualWaterbodyCountry: ManualWaterbodyCountry,
 						numberOfDaysOut: NumberOfDaysOut,
-						previousMajorCity: {
-							...PreviousMajorCity
-						}
-					}
+						previousMajorCity: PreviousMajorCity
+					},
+					required: [
+						'manualWaterbodyName',
+						'manualWaterbodyCity',
+						'manualWaterbodyCountry',
+						'numberOfDaysOut',
+						'previousMajorCity'
+					]
 				}
 			]
 		}
@@ -680,6 +709,7 @@ export const PreviousWaterBodyLogic = {
 
 export const PreviousWaterBodyArray = {
 	type: 'array',
+	minItems: 1,
 	items: {
 		...PreviousWaterBodyLogic
 	}
@@ -702,7 +732,10 @@ export const PreviousToggles = {
 							title: 'Add a Previous Waterbody',
 							...PreviousWaterBodyArray,
 						}
-					}
+					},
+					required: [
+						'previousWaterBody'
+					]
 				},
 				{
 					properties: {
@@ -710,7 +743,10 @@ export const PreviousToggles = {
 							enum: ['Unknown Previous Waterbody']
 						},
 						previousMajorCity: PreviousMajorCity
-					}
+					},
+					required: [
+						'previousMajorCity'
+					]
 				},
 				{
 					properties: {
@@ -718,7 +754,10 @@ export const PreviousToggles = {
 							enum: ['Commercial Manufacturer as Previous Water Body']
 						},
 						previousMajorCity: PreviousMajorCity
-					}
+					},
+					required: [
+						'previousMajorCity'
+					]
 				},
 				{
 					properties: {
@@ -726,7 +765,10 @@ export const PreviousToggles = {
 							enum: ['Previous Dry Storage']
 						},
 						previousMajorCity: PreviousMajorCity
-					}
+					},
+					required: [
+						'previousMajorCity'
+					]
 				}
 			]
 		}
@@ -739,8 +781,9 @@ export const DestinationWaterBodyLogic = {
 	title: 'Add a Destination Waterbody',
 	type: 'object',
 	properties: {
-		manualWaterbody: ManualWaterbody
+		manualWaterbody: ManualWaterbody,
 	},
+	required: ['manualWaterbody'],
 	dependencies: {
 		manualWaterbody: {
 			oneOf: [
@@ -751,6 +794,9 @@ export const DestinationWaterBodyLogic = {
 						},
 						destinationWaterbody: DestinationWaterbody
 					},
+					required: [
+						'destinationWaterbody'
+					]
 				},
 				{
 					properties: {
@@ -761,11 +807,17 @@ export const DestinationWaterBodyLogic = {
 						manualWaterbodyCity: ManualWaterbodyCity,
 						manualWaterbodyCountry: ManualWaterbodyCountry,
 						destinationMajorCity: DestinationMajorCity	
-					}
+					},
+					required: [
+						'manualWaterbodyName',
+						'manualWaterbodyCity',
+						'manualWaterbodyCountry',
+						'destinationMajorCity'
+					]
 				}
 			]
 		}
-	},
+	}
 }
 
 export const DestinationToggles = {
@@ -792,26 +844,39 @@ export const DestinationToggles = {
 							enum: ['Unknown Destination Waterbody']
 						},
 						destinationMajorCity: {
-							title: 'Add Major City',
 							...DestinationMajorCity
 						}
-					}
+					},
+					required: [
+						'destinationMajorCity'
+					]
 				},
 				{
 					properties: {
 						destinationUnknownCommercialStorageDropdown: {
 							enum: ['Commercial Manufacturer as Destination Water Body']
 						},
-						destinationMajorCity: DestinationMajorCity
-					}
+						destinationMajorCity: {
+							...DestinationMajorCity
+						}
+					},
+					required: [
+						'destinationMajorCity'
+					]
 				},
 				{
 					properties: {
 						destinationUnknownCommercialStorageDropdown: {
 							enum: ['Destination Dry Storage']
 						},
-						destinationMajorCity: DestinationMajorCity
-					}
+						destinationMajorCity: {
+							...DestinationMajorCity
+						},
+					},
+					required: [
+						'destinationUnknownCommercialStorageDropdown',
+						'destinationMajorCity'
+					]
 				}
 			]
 		}
@@ -864,7 +929,11 @@ export const BasicInformation = {
 			properties: {
 				province: Province,
 				inspection_time: InspectionTime
-			}
+			},
+			required: [
+				'province',
+				'inspection_time'
+			]
 		},
 		vehicleTypeInspectedCount: {
 			title: 'invisible',
@@ -874,19 +943,34 @@ export const BasicInformation = {
 				simple: VehicleSimple,
 				complex: VehicleComplex,
 				very_complex: VehicleVeryComplex
-			}
+			},
+			required: [
+				'non_motorized',
+				'simple',
+				'complex',
+				'very_complex'
+			]
 		},
-	}
+	},
+	required: [
+		'provinceAndTime',
+		'vehicleTypeInspectedCount'
+	]
 };
 
 export const WatercraftDetails = {
 	title: 'Watercraft Details',
 	type: 'object',
 	properties: {
-		WatercraftDetails_BasicInformation: WatercraftDetails_BasicInformation,
-		WatercraftDetails_PreviousAISKnowledge: WatercraftDetails_PreviousAISKnowledge,
-		WatercraftDetails_PreviousInspection: WatercraftDetails_PreviousInspection
-	}
+		WatercraftDetails_BasicInformation,
+		WatercraftDetails_PreviousAISKnowledge,
+		WatercraftDetails_PreviousInspection
+	},
+	required: [
+		'WatercraftDetails_BasicInformation',
+		'WatercraftDetails_PreviousAISKnowledge',
+		'WatercraftDetails_PreviousInspection'
+	]
 };
 
 export const JourneyDetails = {
@@ -919,20 +1003,25 @@ export const JourneyDetails = {
 export const InspectionDetails = {
 	title: 'Inspection Details',
 	type: 'object',
-	required: ['dreissenidMusselsFoundPrevious'],
 	properties: {
 		aquaticPlantsFound: AquaticPlantsFound,
 		marineMusselsFound: MarineMusselsFound,
 		highRiskArea: HighRiskArea,
 		dreissenidMusselsFoundPrevious: DreissenidMusselsFoundPrevious,
 		k9Inspection: K9InspectionLogic
-	}
+	},
+	required: [
+		'aquaticPlantsFound',
+		'marineMusselsFound',
+		'highRiskArea',
+		'dreissenidMusselsFoundPrevious',
+		'k9Inspection',
+	]
 };
 
 export const InspectionOutcomes = {
 	title: 'invisible',
 	type: 'object',
-	required: ['decontaminationAppendixB', 'quarantinePeriodIssued'],
 	properties: {
 		watercraftRegistration: WatercraftRegistration,
 		standingWaterPresentLogic: StandingWaterLogic,
@@ -943,7 +1032,19 @@ export const InspectionOutcomes = {
 		decontaminationAppendixB: DecontaminationAppendixB,
 		sealIssuedLogic: SealIssuedLogic,
 		quarantinePeriodIssued: QuarantinePeriodIssued,
-	}
+	},
+	required: [
+		'watercraftRegistration',
+		'standingWaterPresentLogic',
+		'adultDreissenidMusselsFoundLogic',
+		'otherInspectionFindings',
+		'decontaminationPerformedLogic',
+		'decontaminationOrderIssuedLogic',
+		'decontaminationAppendixB',
+		'sealIssuedLogic',
+		'quarantinePeriodIssued',
+		
+	]
 }
 
 export const HighRiskAssessment = {
@@ -951,6 +1052,7 @@ export const HighRiskAssessment = {
 	type: 'object',
 	properties: {
 		high_risk_fields: {
+			title: "High Risk Fields",
 			type: 'string',
 			enum: [
 				'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found',
@@ -961,6 +1063,9 @@ export const HighRiskAssessment = {
 			default: 'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found'
 		}
 	},
+	required: [
+		'high_risk_fields'
+	],
 	allOf: [
 		{
 			if: {
@@ -975,8 +1080,11 @@ export const HighRiskAssessment = {
 			},
 			else: {
 				properties: {
-					InspectionOutcomes: InspectionOutcomes
-				}
+					InspectionOutcomes
+				},
+				required: [
+					'InspectionOutcomes'
+				]
 			},
 		}
 	]
@@ -994,7 +1102,16 @@ export const Passport_SimpleBasicInformation = {
 		marineSpeciesFound: MarineSpeciesFound,
 		aquaticPlantsFound: AquaticPlantsFound,
 		decontaminationPerformed: DecontaminationPerformedLogic,
-	}
+	},
+	required: [
+		'inspection_time',
+		'passport_number',
+		'launchedOutsideBC',
+		'k9Inspection',
+		'marineSpeciesFound',
+		'aquaticPlantsFound',
+		'decontaminationPerformed'
+	]
 };
 
 export const Passport_BasicInformation = {
@@ -1024,19 +1141,22 @@ export const Passport_BasicInformation = {
 export const Passport_InspectionDetails = {
 	title: 'Inspection Details',
 	type: 'object',
-	required: ['dreissenidMusselsFoundPrevious'],
 	properties: {
 		marineMusselsFound: MarineMusselsFound,
 		highRiskArea: HighRiskArea,
 		dreissenidMusselsFoundPrevious: DreissenidMusselsFoundPrevious,
-	}
+	},
+	required: [
+		'marineMusselsFound',
+		'highRiskArea',
+		'dreissenidMusselsFoundPrevious'
+	]
 };
 
 /*** Passport High Risk Assessment / Inspection Outcomes ***/
 export const Passport_InspectionOutcomes = {
 	title: 'invisible',
 	type: 'object',
-	required: ['decontaminationAppendixB', 'quarantinePeriodIssued'],
 	properties: {
 		watercraftRegistration: WatercraftRegistration,
 		standingWaterPresentLogic: StandingWaterLogic,
@@ -1046,7 +1166,17 @@ export const Passport_InspectionOutcomes = {
 		decontaminationAppendixB: DecontaminationAppendixB,
 		sealIssuedLogic: SealIssuedLogic,
 		quarantinePeriodIssued: QuarantinePeriodIssued,
-	}
+	},
+	required: [
+		'watercraftRegistration',
+		'standingWaterPresentLogic',
+		'adultDreissenidMusselsFoundLogic',
+		'otherInspectionFindings',
+		'decontaminationOrderIssuedLogic',
+		'decontaminationAppendixB',
+		'sealIssuedLogic',
+		'quarantinePeriodIssued',
+	]
 }
 
 export const Passport_HighRiskAssessment = {
@@ -1054,6 +1184,7 @@ export const Passport_HighRiskAssessment = {
 	type: 'object',
 	properties: {
 		high_risk_fields: {
+			title: "High Risk Fields",
 			type: 'string',
 			enum: [
 				'Watercraft is Clean, Drain, Dry / Adult Dreissenid Mussels NOT found',
@@ -1079,7 +1210,10 @@ export const Passport_HighRiskAssessment = {
 			else: {
 				properties: {
 					InspectionOutcomes: Passport_InspectionOutcomes
-				}
+				},
+				required: [
+					'InspectionOutcomes'
+				]
 			}
 		}
 	]

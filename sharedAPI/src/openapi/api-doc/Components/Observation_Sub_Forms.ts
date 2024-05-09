@@ -150,6 +150,11 @@ export const Observation_Mussels_Information = {
             },
             Passport: Passport_SimpleBasicInformation
           },
+          required: [
+            'isPassportHolder',
+            'isNewPassportIssued',
+            'Passport'
+          ],
           dependencies: {
             isNewPassportIssued: {
               oneOf: [
@@ -159,12 +164,20 @@ export const Observation_Mussels_Information = {
                       enum: [ true ]
                     },
                     BasicInformation: Passport_BasicInformation,
-                    WatercraftDetails: WatercraftDetails,
-                    JourneyDetails: JourneyDetails,
+                    WatercraftDetails,
+                    JourneyDetails,
                     InspectionDetails: Passport_InspectionDetails,
                     HighRiskAssessment: Passport_HighRiskAssessment,
-                    InspectionComments: InspectionComments
-                  }
+                    InspectionComments
+                  },
+                  required: [
+                    'BasicInformation',
+                    'WatercraftDetails',
+                    'JourneyDetails',
+                    'InspectionDetails',
+                    'HighRiskAssessment',
+                    'InspectionComments',
+                  ]
                 },
               ]
             }
@@ -175,13 +188,21 @@ export const Observation_Mussels_Information = {
             isPassportHolder: {
               enum: [ false ]
             },
-            BasicInformation: BasicInformation,
-            WatercraftDetails: WatercraftDetails,
-            JourneyDetails: JourneyDetails,
-            InspectionDetails: InspectionDetails,
-            HighRiskAssessment: HighRiskAssessment,
-            InspectionComments: InspectionComments
-          }
+            BasicInformation,
+            WatercraftDetails,
+            JourneyDetails,
+            InspectionDetails,
+            HighRiskAssessment,
+            InspectionComments
+          },
+          required: [
+            'BasicInformation',
+            'WatercraftDetails',
+            'JourneyDetails',
+            'InspectionDetails',
+            'HighRiskAssessment',
+            'InspectionComments',
+          ]
         }
       ]
     }
