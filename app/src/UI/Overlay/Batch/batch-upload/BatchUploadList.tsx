@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import { Error } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import { BATCH_DELETE_REQUEST, BATCH_LIST_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
@@ -14,7 +14,7 @@ import { selectAuth } from 'state/reducers/auth';
 const BatchUploadList = () => {
   const { working, error, list, templates, errorMessage } = useSelector(selectBatch);
   const dispatch = useDispatch();
-  const {darkTheme} = useSelector(selectUserSettings);
+  const { darkTheme } = useSelector(selectUserSettings);
   const [serial, setSerial] = useState(1);
   const authState = useSelector(selectAuth);
 
@@ -32,10 +32,10 @@ const BatchUploadList = () => {
 
   function renderError() {
     return (
-    <>
-        <Error /> { errorMessage }
-    </>
-    )
+      <>
+        <Error /> {errorMessage}
+      </>
+    );
   }
 
   function renderContent() {
@@ -48,7 +48,7 @@ const BatchUploadList = () => {
     return (
       <>
         <p>Batch uploads. Click a row for a detailed view.</p>
-        <table className={`batchList ${darkTheme? 'batchDarkList' : ''}`}>
+        <table className={`batchList ${darkTheme ? 'batchDarkList' : ''}`}>
           <thead>
             <tr>
               <th>ID</th>
@@ -65,7 +65,7 @@ const BatchUploadList = () => {
                 <td>{b.id}</td>
                 <td>{b.status}</td>
                 <td>{b.created_at}</td>
-                <td>{templates.find(t => b.template === t.key)?.name}</td>
+                <td>{templates.find((t) => b.template === t.key)?.name}</td>
                 <td>
                   <Link to={`/Batch/list/${b.id}`}>View This Batch</Link>
                 </td>
@@ -82,7 +82,7 @@ const BatchUploadList = () => {
     <Paper>
       <Box mx={3} my={3} py={3}>
         <Typography variant={'h4'}>Batch Uploads</Typography>
-        { error ? renderError() : ''}
+        {error ? renderError() : ''}
         {renderContent()}
       </Box>
     </Paper>

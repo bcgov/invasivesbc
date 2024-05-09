@@ -3,7 +3,7 @@ import { Box, Button, Typography } from '@mui/material';
 import BatchFileComponent from './BatchFileComponent';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import { BATCH_CREATE_REQUEST_WITH_CALLBACK, BATCH_TEMPLATE_LIST_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';

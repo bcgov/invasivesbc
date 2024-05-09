@@ -6,7 +6,7 @@ import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } f
 import { selectAuth } from 'state/reducers/auth';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { getSearchCriteriaFromFilters } from '../../util/miscYankedFromComponents';
+import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_REQUEST,
@@ -454,7 +454,14 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
     const slicedIDs = mapState.whatsHere.ActivityIDs.slice(startRecord, endRecord);
 
     const filterObject = {
-      selectColumns: ['activity_id', 'short_id', 'activity_payload', 'activity_type', 'jurisdiction_display', 'map_symbol'],
+      selectColumns: [
+        'activity_id',
+        'short_id',
+        'activity_payload',
+        'activity_type',
+        'jurisdiction_display',
+        'map_symbol'
+      ],
       limit: 200000,
       ids_to_filter: slicedIDs
     };
@@ -991,7 +998,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
       try {
         const raw = prompt('Enter width in m for line to be buffered: ');
         width = Number(raw);
-        if(typeof raw === 'object') {
+        if (typeof raw === 'object') {
           return;
         }
       } catch (e) {
@@ -1005,6 +1012,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo ? newGeo : action.payload] } });
   }
 }
+
 function* handle_MAP_ON_SHAPE_UPDATE(action) {
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
@@ -1023,15 +1031,20 @@ function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
   yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
 }
 
-
 function* handle_RECORDSET_SET_SORT(action) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSetType = userSettingsState.recordSets?.[action.payload.setID]?.recordSetType;
   const tableFiltersHash = userSettingsState.recordSets?.[action.payload.setID]?.tableFiltersHash;
   if (recordSetType === 'Activity') {
-    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID, limit: 20, page: 0,tableFiltersHash: tableFiltersHash } });
+    yield put({
+      type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+      payload: { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash }
+    });
   } else {
-    yield put({ type: IAPP_TABLE_ROWS_GET_REQUEST, payload: { recordSetID: action.payload.setID,limit: 20, page: 0, tableFiltersHash: tableFiltersHash  } });
+    yield put({
+      type: IAPP_TABLE_ROWS_GET_REQUEST,
+      payload: { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash }
+    });
   }
 }
 

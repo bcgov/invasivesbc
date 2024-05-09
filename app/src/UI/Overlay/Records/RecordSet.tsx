@@ -29,7 +29,7 @@ import { OverlayHeader } from '../OverlayHeader';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { TouchHoldHandler } from '../TouchHoldHandler/TouchHoldHandler';
-import { detectTouchDevice } from 'util/detectTouch';
+import { detectTouchDevice } from 'utils/detectTouch';
 import ExcelExporter from './ExcelExporter';
 
 export const RecordSet = (props) => {
@@ -404,7 +404,7 @@ const Filter = (props) => {
                     AND
                   </option>
                   <option disabled key={Math.random()} value={'OR'} label={'OR'}>
-                    OR  (Not yet available for this filter type)
+                    OR (Not yet available for this filter type)
                   </option>
                 </>
               ),
@@ -458,7 +458,7 @@ const Filter = (props) => {
                     CONTAINED IN
                   </option>
                   <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
-                    NOT CONTAINED IN  (Not yet available for this filter type)
+                    NOT CONTAINED IN (Not yet available for this filter type)
                   </option>
                 </>
               ),
@@ -468,7 +468,7 @@ const Filter = (props) => {
                     CONAINED IN
                   </option>
                   <option key={Math.random()} disabled={true} value={'NOT CONTAINED IN'} label={'NOT CONTAINED IN'}>
-                    NOT CONTAINED IN  (Not yet available for this filter type)
+                    NOT CONTAINED IN (Not yet available for this filter type)
                   </option>
                 </>
               )

@@ -2,7 +2,7 @@ import { Button, Dialog, DialogActions, DialogTitle, Grid, Tooltip, Zoom } from 
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { useDispatch } from 'react-redux';
 import { ACTIVITY_DELETE_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
@@ -47,9 +47,9 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
     const activityIds = [activity_id];
     dataAccess.deleteActivities(activityIds).then(() => {
       localStorage.removeItem('activeActivity');
-      console.log('***DELETED')
+      console.log('***DELETED');
       history.push('/home/activities');
-    //* dispatch({ type: ACTIVITY_DELETE_SUCCESS });
+      //* dispatch({ type: ACTIVITY_DELETE_SUCCESS });
     });
   };
 

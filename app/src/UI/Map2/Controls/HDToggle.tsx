@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { MAP_TOGGLE_HD } from 'state/actions';
 import 'UI/Global.css';
 

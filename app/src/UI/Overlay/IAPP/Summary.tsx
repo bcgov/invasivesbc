@@ -1,19 +1,18 @@
 import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import React from 'react';
-import {getJurisdictions} from "../../../util/IAPPHelpers";
-import {SurveysTable} from "./SurveyTable";
-import {TreatmentsTable} from "./TreatmentsTable";
+import { getJurisdictions } from '../../../utils/IAPPHelpers';
+import { SurveysTable } from './SurveyTable';
+import { TreatmentsTable } from './TreatmentsTable';
 // import { TreatmentsTable } from './ExtractTables';
 // import { getJurisdictions } from './IAPP-Functions';
 // import { SurveysTable } from './SurveyTable';
-
 
 export interface IAPPSitePropType {
   record: any;
 }
 
-export const Summary: React.FC<IAPPSitePropType> = ({record}) => {
+export const Summary: React.FC<IAPPSitePropType> = ({ record }) => {
   const form_data = record.point_of_interest_payload?.form_data;
   const site = {
     ...form_data?.point_of_interest_data,
@@ -208,8 +207,6 @@ export const Summary: React.FC<IAPPSitePropType> = ({record}) => {
       {biological_dispersals.length > 0 && (
         <TreatmentsTable type={'Biological Dispersal'} treatments={biological_dispersals} />
       )}
-
-
     </Container>
   );
 };

@@ -1,5 +1,5 @@
 import React, { PropsWithChildren, useEffect, useState } from 'react';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { selectNetworkConnected } from 'state/reducers/network';
 
 interface RequiresNetworkProps extends PropsWithChildren<any> {

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { Badge, Button, CircularProgress } from '@mui/material';
 import { ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE } from 'state/actions';
@@ -14,31 +14,43 @@ export const OfflineSyncHeaderButton = () => {
 
   const iconComponent = useMemo(() => {
     if (working) {
-      return (<CircularProgress />);
+      return <CircularProgress />;
     }
-    const buckets = Object.values(serializedActivities).map(s => (s as OfflineActivityRecord).sync_state).reduce((a, c) => ({
-      ...a,
-      [c]: (a[c] || 0) + 1
-    }), {
-      // they don't actually /need/ to be defined here, this is just for clarity of the logic below
-      'LOCALLY_MODIFIED': 0,
-      'SYNCHRONIZED': 0,
-      'ERROR': 0,
-      'OPTIMISTIC_LOCKING_FAILURE': 0
-    });
+    const buckets = Object.values(serializedActivities)
+      .map((s) => (s as OfflineActivityRecord).sync_state)
+      .reduce(
+        (a, c) => ({
+          ...a,
+          [c]: (a[c] || 0) + 1
+        }),
+        {
+          // they don't actually /need/ to be defined here, this is just for clarity of the logic below
+          LOCALLY_MODIFIED: 0,
+          SYNCHRONIZED: 0,
+          ERROR: 0,
+          OPTIMISTIC_LOCKING_FAILURE: 0
+        }
+      );
 
     if (buckets.ERROR > 0 || buckets.OPTIMISTIC_LOCKING_FAILURE > 0) {
       // errors take precedence, show a warning
       const errorCount = buckets.ERROR + buckets.OPTIMISTIC_LOCKING_FAILURE;
-      return (<Badge badgeContent={`${errorCount}`} color={'error'}><SyncProblem /></Badge>);
+      return (
+        <Badge badgeContent={`${errorCount}`} color={'error'}>
+          <SyncProblem />
+        </Badge>
+      );
     }
 
     if (buckets.LOCALLY_MODIFIED > 0) {
-      return (<Badge badgeContent={`${buckets.LOCALLY_MODIFIED}`} color={'primary'}><Sync /></Badge>);
+      return (
+        <Badge badgeContent={`${buckets.LOCALLY_MODIFIED}`} color={'primary'}>
+          <Sync />
+        </Badge>
+      );
     }
 
-    return (<Sync />);
-
+    return <Sync />;
   }, [working, serial]);
 
   return (

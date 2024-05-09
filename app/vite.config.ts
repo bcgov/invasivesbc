@@ -49,7 +49,6 @@ function buildSpecificDefines() {
     } else {
       defines['CONFIGURATION_KEYCLOAK_ADAPTER'] = JSON.stringify(process.env['KEYCLOAK_ADAPTER']);
     }
-
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines['minify'] = true;
 
@@ -86,6 +85,13 @@ export default defineConfig({
     cssCodeSplit: false,
 
     rollupOptions: {
+      onLog(level, log, handler) {
+        // @ts-ignore
+        if (log.cause && log.cause.message === `Can't resolve original location of error.`) {
+          return;
+        }
+        handler(level, log);
+      },
       plugins: [rollupNodePolyFill()],
       output: {
         manualChunks(id) {
@@ -133,6 +139,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      util: 'rollup-plugin-node-polyfills/polyfills/util',
       buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       process: 'rollup-plugin-node-polyfills/polyfills/process-es6',

@@ -6,7 +6,7 @@ import { UnfoldLess, UnfoldMore } from '@mui/icons-material';
 import { USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
 import { useHistory } from 'react-router-dom';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import 'UI/Styles/batch.scss';
 
 export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?: string; length?: number }) => {
@@ -178,7 +178,7 @@ const BatchTable = ({ jsonRepresentation, created_activities }) => {
                       <Button
                         key={created_activities[row.rowIndex - 1]?.id}
                         onClick={() => {
-                          const url = '/Records/Activity:' +  created_activities[row.rowIndex - 1].id + '/form';
+                          const url = '/Records/Activity:' + created_activities[row.rowIndex - 1].id + '/form';
                           history.push(url);
                         }}>
                         {created_activities[row.rowIndex - 1]?.short_id}

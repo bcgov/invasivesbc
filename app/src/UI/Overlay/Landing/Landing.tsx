@@ -4,7 +4,7 @@ import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserInfo } from 'state/reducers/userInfo';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import { AUTH_SIGNIN_REQUEST, TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router';
@@ -30,36 +30,36 @@ export const LandingComponent = (props) => {
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
   return (
     <>
-      <Container className='container'>
-        <Box display='flex' justifyContent='space-between'>
-          <Typography variant='h4'>Welcome to the InvasivesBC Application BETA!</Typography>
+      <Container className="container">
+        <Box display="flex" justifyContent="space-between">
+          <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
         </Box>
         {(userInfoLoaded || workingOffline) && (
           <>
             <Box mt={2}>
-              <Typography variant='h5'>User Information</Typography>
+              <Typography variant="h5">User Information</Typography>
               <br />
-              <Grid className='userInfoItemGrid' container spacing={2}>
+              <Grid className="userInfoItemGrid" container spacing={2}>
                 <Grid item md={3}>
-                  <Box overflow='hidden' textOverflow='ellipsis'>
+                  <Box overflow="hidden" textOverflow="ellipsis">
                     <Typography>
                       <strong>Name</strong>
                     </Typography>
                     {displayName}
                   </Box>
                 </Grid>
-                <Divider flexItem={true} orientation='vertical' />
+                <Divider flexItem={true} orientation="vertical" />
                 <Grid item md={3}>
-                  <Box overflow='hidden' textOverflow='ellipsis'>
+                  <Box overflow="hidden" textOverflow="ellipsis">
                     <Typography>
                       <strong>Email</strong>
                     </Typography>
                     {email}
                   </Box>
                 </Grid>
-                <Divider flexItem={true} orientation='vertical' />
+                <Divider flexItem={true} orientation="vertical" />
                 <Grid item md={3}>
-                  <Box overflow='hidden' textOverflow='ellipsis'>
+                  <Box overflow="hidden" textOverflow="ellipsis">
                     <Typography>
                       <strong>Username</strong>
                     </Typography>
@@ -69,24 +69,23 @@ export const LandingComponent = (props) => {
               </Grid>
             </Box>
             <Box mt={6}>
-              <Grid className='userInfoItemGrid' container spacing={2}>
-                {!workingOffline &&
-                  (<>
-                      <Grid item md={3}>
-                        <Box overflow='hidden' textOverflow='ellipsis'>
-                          <Typography>
-                            <strong>Activation Status</strong>
-                          </Typography>
-                          {activated ? 'Activated' : 'Not Activated'}
-                        </Box>
-                      </Grid>
-                      <Divider flexItem={true} orientation='vertical' />
-                    </>
-                  )
-                }
+              <Grid className="userInfoItemGrid" container spacing={2}>
+                {!workingOffline && (
+                  <>
+                    <Grid item md={3}>
+                      <Box overflow="hidden" textOverflow="ellipsis">
+                        <Typography>
+                          <strong>Activation Status</strong>
+                        </Typography>
+                        {activated ? 'Activated' : 'Not Activated'}
+                      </Box>
+                    </Grid>
+                    <Divider flexItem={true} orientation="vertical" />
+                  </>
+                )}
                 {roles.length > 0 && (
                   <Grid item md={3}>
-                    <Box overflow='hidden' textOverflow='ellipsis'>
+                    <Box overflow="hidden" textOverflow="ellipsis">
                       <Typography>
                         <strong>Roles</strong>
                       </Typography>
@@ -111,17 +110,14 @@ export const LandingComponent = (props) => {
                 <li>
                   Names, addresses or other information that could be used to identify an individual that is not
                   registered as a user in this system are not permitted and will be deleted from a record if found. Eg:
-                  a
-                  location description that contains an address or a person's name.
+                  a location description that contains an address or a person's name.
                 </li>
                 <li>
-                  InvasivesBC has a drinking well warning system built in that will notify the user if
-                  a <u>mapped</u>{' '}
+                  InvasivesBC has a drinking well warning system built in that will notify the user if a <u>mapped</u>{' '}
                   well or water license is located within close proximity to the geometry of the record being entered.
                   This tool is to be used for information only, and the absence of a well warning does NOT confirm there
                   are not wells or water licences in close proximity. Many wells and water licences are unmapped in BC.
-                  It
-                  remains the responsibility of the pesticide applicator to confirm water sources and wells prior to
+                  It remains the responsibility of the pesticide applicator to confirm water sources and wells prior to
                   application of pesticides, and not rely solely on the well indicator in InvasivesBC.
                 </li>
               </ul>
@@ -129,7 +125,7 @@ export const LandingComponent = (props) => {
             <Box mt={4}>
               By using this application, you agree to&nbsp;
               <a
-                href=''
+                href=""
                 // onClick={redirectToAgreement}
               >
                 the Data Sharing Agreement
@@ -143,26 +139,26 @@ export const LandingComponent = (props) => {
             <Box mt={4}>
               For training materials and more info:{' '}
               <a
-                href='https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc'
-                target='_blank'
-                rel='noreferrer'>
+                href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc"
+                target="_blank"
+                rel="noreferrer">
                 www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc
               </a>
             </Box>
             <Box mt={4}>
-              Or email us at <a href='mailto:InvasivesBC@gov.bc.ca'>InvasivesBC@gov.bc.ca</a>
+              Or email us at <a href="mailto:InvasivesBC@gov.bc.ca">InvasivesBC@gov.bc.ca</a>
             </Box>
           </>
         )}
         {roles.length === 0 && (
-          <Typography variant='h5'>
+          <Typography variant="h5">
             <br />
             <strong>To gain full access to the InvasivesBC application, please submit an access request.</strong>
           </Typography>
         )}
         {connected && !activated && (
           <Box mt={2} paddingBottom={'50px'}>
-            <Button variant='outlined' color='primary' onClick={requestAccess}>
+            <Button variant="outlined" color="primary" onClick={requestAccess}>
               Request Access
             </Button>
           </Box>
@@ -210,14 +206,14 @@ export const LandingComponent = (props) => {
             <Box mt={4}>
               For training materials and more info:{' '}
               <a
-                href='https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species'
-                target='_blank'
-                rel='noreferrer'>
+                href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
+                target="_blank"
+                rel="noreferrer">
                 www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species
               </a>
             </Box>
             <Box mt={4}>
-              Or email us at <a href='mailto:InvasivesBC@gov.bc.ca'>InvasivesBC@gov.bc.ca</a>
+              Or email us at <a href="mailto:InvasivesBC@gov.bc.ca">InvasivesBC@gov.bc.ca</a>
             </Box>
           </>
         )}

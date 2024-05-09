@@ -29,7 +29,7 @@ import {
   refreshClientBoundariesOnToggle,
   refreshWhatsHereFeature
 } from './Helpers';
-import { useSelector } from 'util/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { opacify } from 'color2k';
 
 /*
@@ -113,13 +113,12 @@ export const Map = (props: any) => {
 
   const PUBLIC_MAP_URL = useSelector((state: any) => state.Configuration.current.PUBLIC_MAP_URL);
 
-
-  useEffect(()=> {
-    if(!map.current || mapReady) return;
-    if(map.current.isStyleLoaded()) {
+  useEffect(() => {
+    if (!map.current || mapReady) return;
+    if (map.current.isStyleLoaded()) {
       setMapReady(true);
     }
-  },[map?.current?.isStyleLoaded()]);
+  }, [map?.current?.isStyleLoaded()]);
 
   // Map Init
   useEffect(() => {
@@ -149,16 +148,16 @@ export const Map = (props: any) => {
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-    console.log('all layers')
+    console.log('all layers');
     console.dir(map.current.getStyle().layers);
-  }, [storeLayers,  map.current, mapReady]);
+  }, [storeLayers, map.current, mapReady]);
 
   // Layer picker:
   useEffect(() => {
     if (!mapReady) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
     refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2,  map.current, mapReady]);
+  }, [simplePickerLayers2, map.current, mapReady]);
 
   useEffect(() => {
     if (!mapReady) return;
@@ -172,7 +171,7 @@ export const Map = (props: any) => {
     if (!mapReady) return;
     addClientBoundariesIfNotExists(clientBoundaries, map.current);
     refreshClientBoundariesOnToggle(clientBoundaries, map.current);
-  }, [clientBoundaries,  map.current, mapReady]);
+  }, [clientBoundaries, map.current, mapReady]);
 
   // Jump Nav
   useEffect(() => {
@@ -185,7 +184,6 @@ export const Map = (props: any) => {
       console.dir(e);
     }
   }, [map_center, map_zoom]);
-
 
   // User position tracking and marker
   useEffect(() => {
@@ -200,7 +198,7 @@ export const Map = (props: any) => {
     toggleLayerOnBool(map.current, 'Esri-Sat-LayerSD', !baseMapToggle && !HDToggle);
     toggleLayerOnBool(map.current, 'Esri-Sat-Label', !baseMapToggle);
     toggleLayerOnBool(map.current, 'Esri-Topo', baseMapToggle);
-  }, [baseMapToggle, HDToggle,  map.current, mapReady]);
+  }, [baseMapToggle, HDToggle, map.current, mapReady]);
 
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
@@ -236,7 +234,7 @@ export const Map = (props: any) => {
 
   //Highlighted Record
   useEffect(() => {
-    console.log('***highlighted rec hook')
+    console.log('***highlighted rec hook');
     if (!mapReady) return;
     refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
 
@@ -245,7 +243,6 @@ export const Map = (props: any) => {
         if (userRecordOnHoverRecordRow.geometry) {
           map.current.jumpTo({ center: centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates, zoom: 15 });
         }
-
       }
       if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'Activity') {
         if (userRecordOnHoverRecordRow.geometry?.[0]) {
@@ -270,12 +267,11 @@ export const Map = (props: any) => {
     }, 1000);
   }, [map.current]);
 
-
   // toggle public map pmtile layer
   useEffect(() => {
     if (!mapReady) return;
 
-    console.log('checking if logged in:', loggedIn)
+    console.log('checking if logged in:', loggedIn);
     if (loggedIn) {
       console.log('logged in');
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
@@ -285,15 +281,14 @@ export const Map = (props: any) => {
     }
   }, [loggedIn, map.current, mapReady]);
 
-
-  useEffect(()=> {
-    refreshWhatsHereFeature(map.current,{ whatsHereFeature})
-  },[whatsHereFeature, appModeUrl, map.current, mapReady])
+  useEffect(() => {
+    refreshWhatsHereFeature(map.current, { whatsHereFeature });
+  }, [whatsHereFeature, appModeUrl, map.current, mapReady]);
 
   return (
-    <div className='MapWrapper'>
-      <div ref={mapContainer} className='Map' />
-      <div id='LoadingMap' className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
+    <div className="MapWrapper">
+      <div ref={mapContainer} className="Map" />
+      <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
         Loading tiles...
       </div>
       {props.children}
