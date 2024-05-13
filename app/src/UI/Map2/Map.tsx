@@ -285,6 +285,14 @@ export const Map = (props: any) => {
     refreshWhatsHereFeature(map.current, { whatsHereFeature });
   }, [whatsHereFeature, appModeUrl, map.current, mapReady]);
 
+
+  useEffect(()=> {
+    if(!mapReady) return;
+    if(!userCoords?.heading) return;
+    console.log('heading:', userCoords?.heading )
+    positionMarkerEl.style.transform = `rotate(${userCoords?.heading}deg)`;
+  }, [userCoords?.heading, mapReady])
+
   return (
     <div className="MapWrapper">
       <div ref={mapContainer} className="Map" />
