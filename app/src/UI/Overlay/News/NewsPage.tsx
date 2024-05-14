@@ -2,7 +2,11 @@ import React from 'react';
 import './NewsPage.css';
 
 export const NewsPage = (props: any) => {
-  const newsItems = [
+  const newsItems = [{title: 'May 14, 2024: Heading Indicator', content: `
+• The blue "Find Me"/"Current Location Indicator" dot now includes an arrow that points in the direction you are moving.  
+• This is a new and still somewhat experimental feature, however we feel it is useful enough now in its current version to justify releasing. 
+• Note that this is not functional on desktop, and works best when outside, moving, and not on WIFI.
+• Some devices may have the old blue dot image cached, and will need their browser cache cleared to see the new image.`},
     {
       title: 'May 7, 2024: Improvements to sorting and filtering',
       content: `

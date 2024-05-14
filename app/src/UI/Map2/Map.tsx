@@ -285,13 +285,18 @@ export const Map = (props: any) => {
     refreshWhatsHereFeature(map.current, { whatsHereFeature });
   }, [whatsHereFeature, appModeUrl, map.current, mapReady]);
 
-
-  useEffect(()=> {
-    if(!mapReady) return;
-    if(!userCoords?.heading) return;
-    console.log('heading:', userCoords?.heading )
-    positionMarkerEl.style.transform = `rotate(${userCoords?.heading}deg)`;
-  }, [userCoords?.heading, mapReady])
+  useEffect(() => {
+    try {
+      if (!mapReady) return;
+      if (!userCoords?.heading) return;
+      if (positionMarker?.getRotation() === userCoords?.heading) return;
+      positionMarker?.setRotationAlignment('map');
+      positionMarker?.setRotation(userCoords?.heading);
+    } catch (e) {
+      console.log('error rotating marker');
+      console.dir(e);
+    }
+  }, [userCoords?.heading, mapReady]);
 
   return (
     <div className="MapWrapper">
