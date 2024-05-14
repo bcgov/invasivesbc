@@ -290,6 +290,7 @@ export const Map = (props: any) => {
       if (!mapReady) return;
       if (!userCoords?.heading) return;
       if (positionMarker?.getRotation() === userCoords?.heading) return;
+      positionMarker?.setRotationAlignment('map');
       positionMarker?.setRotation(userCoords?.heading);
     } catch (e) {
       console.log('error rotating marker');
