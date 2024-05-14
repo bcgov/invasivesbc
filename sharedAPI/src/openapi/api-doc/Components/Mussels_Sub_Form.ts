@@ -61,38 +61,13 @@ export const InspectionTime = {
 };
 
 /* Vehicle Counter form subcomponents */
-export const VehicleNonMotorized = {
+export const IntStepper = {
 	type: 'integer',
-	title: 'Non Motorized',
-	default: 0
-};
-
-export const VehicleVeryComplex = {
-	type: 'integer',
-	title: 'Very Complex',
-	default: 0
-};
-
-export const VehicleSimple = {
-	type: 'integer',
-	title: 'Simple',
-	default: 0
-};
-
-export const VehicleComplex = {
-	type: 'integer',
-	title: 'Complex',
 	default: 0
 };
 
 /* End of 'Basic Information' form subcomponents */
 /* 'Watercraft Details' form subcomponents */
-
-export const NumberOfPeopleInParty = {
-	type: 'integer',
-	title: 'Number of People in the Party',
-	default: 0
-};
 
 export const CommerciallyHauled = {
 	title: 'Commercially Hauled',
@@ -617,7 +592,10 @@ export const WatercraftDetails_BasicInformation = {
 	type: 'object',
 	required: ['numberOfPeopleInParty', 'commerciallyHauled'],
 	properties: {
-		numberOfPeopleInParty: NumberOfPeopleInParty,
+		numberOfPeopleInParty: {
+			title: 'Number of People in the Party',
+			...IntStepper
+		},
 		commerciallyHauled: CommerciallyHauled
 	}
 };
@@ -966,10 +944,22 @@ export const BasicInformation = {
 			title: 'invisible',
 			type: 'object',
 			properties: {
-				nonMotorized: VehicleNonMotorized,
-				simple: VehicleSimple,
-				complex: VehicleComplex,
-				veryComplex: VehicleVeryComplex
+				nonMotorized: {
+					title: "Non-Motorized",
+					...IntStepper
+				},
+				simple: {
+					title: "Simple",
+					...IntStepper
+				},
+				complex: {
+					title: "Complex",
+					...IntStepper
+				},
+				veryComplex: {
+					title: "Very Complex",
+					...IntStepper
+				},
 			},
 			required: [
 				'nonMotorized',
@@ -1156,10 +1146,22 @@ export const Passport_BasicInformation = {
 			title: 'invisible',
 			type: 'object',
 			properties: {
-				nonMotorized: VehicleNonMotorized,
-				simple: VehicleSimple,
-				complex: VehicleComplex,
-				veryComplex: VehicleVeryComplex,
+				nonMotorized: {
+					title: "Non-Motorized",
+					...IntStepper
+				},
+				simple: {
+					title: "Simple",
+					...IntStepper
+				},
+				complex: {
+					title: "Complex",
+					...IntStepper
+				},
+				veryComplex: {
+					title: "Very Complex",
+					...IntStepper
+				},
 			}
 		}
 	}
