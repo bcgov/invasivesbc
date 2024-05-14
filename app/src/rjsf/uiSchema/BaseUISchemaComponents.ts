@@ -1015,21 +1015,21 @@ const Observation_Mussels_Information = {
     }
   },
   watercraftDetails: {
-    WatercraftDetails_BasicInformation: {
+    watercraftDetails_BasicInformation: {
       ...OneColumnStyle,
       commerciallyHauled: {
         'ui:inline': true,
         'ui:widget': 'radio'
       },
     },
-    WatercraftDetails_PreviousAISKnowledge: {
+    watercraftDetails_PreviousAISKnowledge: {
       previousAISKnowledge: {
         'ui:inline': true,
         'ui:widget': 'radio'
       },
       previousAISKnowledgeSource: { 'ui:widget': 'single-select-autocomplete' }
     },
-    WatercraftDetails_PreviousInspection: {
+    watercraftDetails_PreviousInspection: {
       previousInspection: {
         'ui:inline': true,
         'ui:widget': 'radio'
