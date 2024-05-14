@@ -107,7 +107,7 @@ function getBatch(): RequestHandler {
                 json_representation,
                 validation_messages,
                 template,
-                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id, 'form_status', aid.form_status, 'row_number', aid.row_number) from activity_incoming_data aid where aid.batch_id = b.id) as created_activities,
+                array(select json_build_object('id', aid.activity_id, 'short_id', aid.short_id, 'form_status', aid.form_status, 'row_number', aid.row_number) from activity_incoming_data aid where aid.batch_id = b.id and aid.iscurrent) as created_activities,
                 created_at,
                 created_by
          from batch_uploads b
