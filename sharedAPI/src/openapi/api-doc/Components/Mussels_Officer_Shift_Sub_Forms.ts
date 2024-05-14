@@ -11,7 +11,6 @@ export const DateCapture = {
 }
 /**
  * @desc Station Workers are assigned to at start of day
- * TODO: Convert Populate fields from API
  */
 export const Station = {
   type: 'string',
@@ -106,14 +105,14 @@ export const ShiftEndSection = {
 
 /**
  * @desc Overview for an inspect officers work.
- * Captures the high level information surrounding the shift, containing relevant collections of
- * Blow-bys and Boat Inspections.
+ *       Captures the high level information surrounding the shift, containing relevant collections of
+ *       Blow-bys and Boat Inspections.
  */
 export const ShiftOverview = {
   title: 'Shift Overview',
   type: 'object',
   properties: {
-    Blowbys: {
+    blowbys: {
       title: 'Shift Blowbys',
       type: 'array',
       items: {

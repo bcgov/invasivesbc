@@ -971,36 +971,36 @@ const Observation_PlantAquatic_Information = {
 
 const Observation_Mussels_Information = {
   isPassportHolder: {
-    'ui:inline': true, 
+    'ui:inline': true,
     'ui:widget': 'radio'
   },
   isNewPassportIssued: {
-    'ui:inline': true, 
+    'ui:inline': true,
     'ui:widget': 'radio'
   },
   Passport: {
     ...ThreeColumnStyle,
     launchedOutsideBC: {
-      'ui:inline': true, 
+      'ui:inline': true,
       'ui:widget': 'radio'
     },
     k9Inspection: {
       k9Inspection: {
-        'ui:inline': true, 
+        'ui:inline': true,
         'ui:widget': 'radio'
       }
     },
     marineSpeciesFound: {
-      'ui:inline': true, 
+      'ui:inline': true,
       'ui:widget': 'radio'
     },
     aquaticPlantsFound: {
-      'ui:inline': true, 
+      'ui:inline': true,
       'ui:widget': 'radio'
     },
     decontaminationPerformed: {
       decontaminationPerformed: {
-        'ui:inline': true, 
+        'ui:inline': true,
         'ui:widget': 'radio'
       }
     }
@@ -1018,7 +1018,7 @@ const Observation_Mussels_Information = {
     WatercraftDetails_BasicInformation: {
       ...OneColumnStyle,
       commerciallyHauled: {
-        'ui:inline': true, 
+        'ui:inline': true,
         'ui:widget': 'radio'
       },
     },
@@ -1045,7 +1045,7 @@ const Observation_Mussels_Information = {
         previousWaterBody: {
           items: {
             previousWaterbody: { 'ui:widget': 'single-select-autocomplete' },
-            numberOfDaysOut: {'ui:widget': 'single-select-autocomplete'},
+            numberOfDaysOut: { 'ui:widget': 'single-select-autocomplete' },
             previousMajorCity: { 'ui:widget': 'single-select-autocomplete' }
           }
         },
@@ -1079,7 +1079,7 @@ const Observation_Mussels_Information = {
       'ui:inline': true,
       'ui:widget': 'radio'
     },
-    k9Inspection: { 
+    k9Inspection: {
       k9Inspection: {
         'ui:inline': true,
         'ui:widget': 'radio'
@@ -1089,17 +1089,17 @@ const Observation_Mussels_Information = {
   HighRiskAssessment: {
     highriskAIS: {
       'ui:inline': true,
-      'ui:widget': 'radio' 
+      'ui:widget': 'radio'
     },
     adultDreissenidFound: {
       'ui:inline': true,
-      'ui:widget': 'radio' 
+      'ui:widget': 'radio'
     },
-    InspectionOutcomes: {
+    inspectionOutcomes: {
       standingWaterPresentLogic: {
         standingWaterPresent: {
           'ui:inline': true,
-          'ui:widget': 'radio' 
+          'ui:widget': 'radio'
         },
         standingWaterLocation: {
           items: { 'ui:widget': 'single-select-autocomplete' }
@@ -1108,7 +1108,7 @@ const Observation_Mussels_Information = {
       adultDreissenidMusselsFoundLogic: {
         adultDreissenidMusselsFound: {
           'ui:inline': true,
-          'ui:widget': 'radio' 
+          'ui:widget': 'radio'
         },
         adultDreissenidMusselsLocation: {
           items: { 'ui:widget': 'single-select-autocomplete' }
@@ -1117,29 +1117,29 @@ const Observation_Mussels_Information = {
       decontaminationPerformedLogic: {
         decontaminationPerformed: {
           'ui:inline': true,
-          'ui:widget': 'radio' 
+          'ui:widget': 'radio'
         },
       },
       decontaminationOrderIssuedLogic: {
         decontaminationOrderIssued: {
           'ui:inline': true,
-          'ui:widget': 'radio' 
+          'ui:widget': 'radio'
         },
         decontaminationOrderReason: { 'ui:widget': 'single-select-autocomplete' }
       },
       decontaminationAppendixB: {
         'ui:inline': true,
-        'ui:widget': 'radio' 
+        'ui:widget': 'radio'
       },
       sealIssuedLogic: {
         sealIssued: {
           'ui:inline': true,
-          'ui:widget': 'radio' 
+          'ui:widget': 'radio'
         },
       },
       quarantinePeriodIssued: {
         'ui:inline': true,
-        'ui:widget': 'radio' 
+        'ui:widget': 'radio'
       }
     }
   }
@@ -1159,11 +1159,11 @@ const Mussels_Officer_Shift = {
         'ui:widget': 'radio'
       },
       watercraftComplexity: {
-       'ui:widget': 'single-select-autocomplete' 
+        'ui:widget': 'single-select-autocomplete'
       },
     }
   },
-  inspections : {
+  inspections: {
     items: {
       ...Observation_Mussels_Information
     }
@@ -1424,9 +1424,9 @@ const Biocontrol_Release_Information = {
 */
 const BaseUISchemaComponents = {
   column_styles: {
-  //  FourColumnStyle,
-  //  TwoColumnStyle,
-  //  OneColumnStyle,
+    //  FourColumnStyle,
+    //  TwoColumnStyle,
+    //  OneColumnStyle,
     TwoColumnStyle
   },
   activity_data_objects: {
