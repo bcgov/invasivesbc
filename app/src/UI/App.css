@@ -1,26 +1,31 @@
-  @font-face {
-    font-family: 'BCSans';
-    font-style: normal;
-    src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff') format('woff');
-  }
-  @font-face {
-    font-family: 'BCSans-Italic';
-    font-style: italic;
-    src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Italic.woff') format('woff');
-  }
-  @font-face {
-    font-family: 'BCSans-Bold';
-    font-weight: 700;
-    src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff') format('woff');
-  }
-  @font-face {
-    font-family: 'BCSans-BoldItalic';
-    font-style: italic;
-    font-weight: 700;
-    src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff') format('woff');
-  }
+@font-face {
+  font-family: 'BCSans';
+  font-style: normal;
+  src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'BCSans-Italic';
+  font-style: italic;
+  src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Italic.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'BCSans-Bold';
+  font-weight: 700;
+  src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff') format('woff');
+}
+
+@font-face {
+  font-family: 'BCSans-BoldItalic';
+  font-style: italic;
+  font-weight: 700;
+  src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff') format('woff');
+}
+
 body {
   margin: 0;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
 }
 
 .App {
@@ -33,7 +38,7 @@ body {
   flex: 1;
   flex-direction: column;
   flex-wrap: wrap;
-  max-height: 100vh;
+  max-height: 100svh;
   max-width: 100%;
   overflow: hidden;
 }
@@ -56,6 +61,7 @@ body {
   width: 100%;
   height: 100%;
 }
+
 .overlay-content {
   width: 100%;
 }
