@@ -131,7 +131,7 @@ export const Observation_Mussels_Information = {
         {
           properties: {
             isPassportHolder: {
-              enum: [ true ]
+              enum: [true]
             },
             isNewPassportIssued: {
               title: 'Was a new passport issued?',
@@ -148,12 +148,12 @@ export const Observation_Mussels_Information = {
               ],
               default: false
             },
-            Passport: Passport_SimpleBasicInformation
+            passport: Passport_SimpleBasicInformation
           },
           required: [
             'isPassportHolder',
             'isNewPassportIssued',
-            'Passport'
+            'passport'
           ],
           dependencies: {
             isNewPassportIssued: {
@@ -161,22 +161,22 @@ export const Observation_Mussels_Information = {
                 {
                   properties: {
                     isNewPassportIssued: {
-                      enum: [ true ]
+                      enum: [true]
                     },
-                    BasicInformation: Passport_BasicInformation,
-                    WatercraftDetails,
-                    JourneyDetails,
+                    basicInformation: Passport_BasicInformation,
+                    watercraftDetails: WatercraftDetails,
+                    journeyDetails: JourneyDetails,
                     InspectionDetails: Passport_InspectionDetails,
                     HighRiskAssessment: Passport_HighRiskAssessment,
-                    InspectionComments
+                    inspectionComments: InspectionComments
                   },
                   required: [
-                    'BasicInformation',
-                    'WatercraftDetails',
-                    'JourneyDetails',
-                    'InspectionDetails',
-                    'HighRiskAssessment',
-                    'InspectionComments',
+                    'basicInformation',
+                    'watercraftDetails',
+                    'journeyDetails',
+                    'inspectionDetails',
+                    'highRiskAssessment',
+                    'inspectionComments',
                   ]
                 },
               ]
@@ -186,22 +186,22 @@ export const Observation_Mussels_Information = {
         {
           properties: {
             isPassportHolder: {
-              enum: [ false ]
+              enum: [false]
             },
-            BasicInformation,
-            WatercraftDetails,
-            JourneyDetails,
-            InspectionDetails,
-            HighRiskAssessment,
-            InspectionComments
+            basicInformation: BasicInformation,
+            watercraftDetails: WatercraftDetails,
+            journeyDetails: JourneyDetails,
+            inspectionDetails: InspectionDetails,
+            highRiskAssessment: HighRiskAssessment,
+            inspectionComments: InspectionComments
           },
           required: [
-            'BasicInformation',
-            'WatercraftDetails',
-            'JourneyDetails',
-            'InspectionDetails',
-            'HighRiskAssessment',
-            'InspectionComments',
+            'basicInformation',
+            'watercraftDetails',
+            'journeyDetails',
+            'inspectionDetails',
+            'highRiskAssessment',
+            'inspectionComments',
           ]
         }
       ]
