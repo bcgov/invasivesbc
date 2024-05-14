@@ -1005,7 +1005,7 @@ const Observation_Mussels_Information = {
       }
     }
   },
-  BasicInformation: {
+  basicInformation: {
     provinceAndTime: {
       ...TwoColumnStyle,
       province: { 'ui:widget': 'single-select-autocomplete' }
@@ -1014,7 +1014,7 @@ const Observation_Mussels_Information = {
       ...FourColumnStyle,
     }
   },
-  WatercraftDetails: {
+  watercraftDetails: {
     WatercraftDetails_BasicInformation: {
       ...OneColumnStyle,
       commerciallyHauled: {
@@ -1038,7 +1038,7 @@ const Observation_Mussels_Information = {
       previousInspectionDays: { 'ui:widget': 'single-select-autocomplete' }
     },
   },
-  JourneyDetails: {
+  journeyDetails: {
     ...TwoColumnStyle,
     previousJourneyDetails: {
       previousToggles: {
@@ -1062,7 +1062,7 @@ const Observation_Mussels_Information = {
       }
     }
   },
-  InspectionDetails: {
+  inspectionDetails: {
     aquaticPlantsFound: {
       'ui:inline': true,
       'ui:widget': 'radio'
@@ -1086,7 +1086,7 @@ const Observation_Mussels_Information = {
       },
     }
   },
-  HighRiskAssessment: {
+  highRiskAssessment: {
     highriskAIS: {
       'ui:inline': true,
       'ui:widget': 'radio'
@@ -1148,7 +1148,7 @@ const Observation_Mussels_Information = {
  * @desc UI styling for the Inspection Officers Shift Overview Form
  */
 const Mussels_Officer_Shift = {
-  Blowbys: {
+  blowbys: {
     'ui:options': {
       orderable: false
     },
