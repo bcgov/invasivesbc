@@ -1,3 +1,7 @@
+/**
+ * @desc Shift logic for Watercraft Inspectors. Contains all the subcomponents used to document shifts
+ * @author LocalNewsTV davidclaveau
+ */
 import { NullSwitch } from "./Mussels_Sub_Form"
 /** @desc Reusable Time String input field */
 export const TimeCapture = {
