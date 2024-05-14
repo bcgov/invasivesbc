@@ -989,14 +989,14 @@ export const WatercraftDetails = {
 	title: 'Watercraft Details',
 	type: 'object',
 	properties: {
-		WatercraftDetails_BasicInformation,
-		WatercraftDetails_PreviousAISKnowledge,
-		WatercraftDetails_PreviousInspection
+		watercraftDetails_BasicInformation: WatercraftDetails_BasicInformation,
+		watercraftDetails_PreviousAISKnowledge: WatercraftDetails_PreviousAISKnowledge,
+		watercraftDetails_PreviousInspection: WatercraftDetails_PreviousInspection
 	},
 	required: [
-		'WatercraftDetails_BasicInformation',
-		'WatercraftDetails_PreviousAISKnowledge',
-		'WatercraftDetails_PreviousInspection'
+		'watercraftDetails_BasicInformation',
+		'watercraftDetails_PreviousAISKnowledge',
+		'watercraftDetails_PreviousInspection'
 	]
 };
 
