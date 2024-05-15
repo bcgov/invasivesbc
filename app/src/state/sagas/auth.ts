@@ -19,8 +19,8 @@ import {
   AUTH_REFRESH_ROLES_REQUEST,
   AUTH_REFRESH_TOKEN,
   AUTH_REINIT,
-  AUTH_REQUEST_COMPLETE,
-  AUTH_REQUEST_ERROR, AUTH_SAVE_CURRENT_TO_OFFLINE,
+  AUTH_REQUEST_ERROR,
+  AUTH_SAVE_CURRENT_TO_OFFLINE,
   AUTH_SET_DISRUPTED,
   AUTH_SET_RECOVERED_FROM_DISRUPTION,
   AUTH_SIGNIN_REQUEST,
@@ -35,6 +35,7 @@ import { AppConfig } from '../config';
 import { selectConfiguration } from '../reducers/configuration';
 import { selectAuth, selectAuthHeaders } from '../reducers/auth';
 import { Http } from '@capacitor-community/http';
+import AuthBridge from 'utils/AuthBridge';
 
 const MIN_TOKEN_FRESHNESS = 20; //want our token to be good for at least this long at all times
 const TOKEN_REFRESH_INTERVAL = 5 * 1000;
@@ -166,36 +167,38 @@ function* reinitAuth() {
   }
 
   if (config.MOBILE) {
-    const kcArgs = {
-      checkLoginIframe: false,
-      silentCheckSsoFallback: false,
-      //silentCheckSsoRedirectUri: config.SILENT_CHECK_URI,
-      redirectUri: config.REDIRECT_URI,
-      enableLogging: true,
-      responseMode: 'query',
-      onLoad: 'check-sso',
-      pkceMethod: 'S256'
-    };
-
-    if (config.KEYCLOAK_ADAPTER === 'custom') {
-      kcArgs['adapter'] = new CapacitorBrowserKeycloakAdapter(keycloakInstance);
-    }
-
-    const FAIL_LIMIT = 3;
-    let failCount = 0;
-    while (failCount < FAIL_LIMIT) {
-      try {
-        yield call(keycloakInstance.init, kcArgs);
-        break;
-      } catch (e) {
-        console.dir(e);
-        if (failCount >= FAIL_LIMIT) {
-          yield put({ type: AUTH_SIGNOUT_REQUEST });
-        }
-        failCount++;
-        yield delay(1000);
-      }
-    }
+    // const kcArgs = {
+    //   checkLoginIframe: false,
+    //   silentCheckSsoFallback: false,
+    //   //silentCheckSsoRedirectUri: config.SILENT_CHECK_URI,
+    //   redirectUri: config.REDIRECT_URI,
+    //   enableLogging: true,
+    //   responseMode: 'query',
+    //   onLoad: 'check-sso',
+    //   pkceMethod: 'S256'
+    // };
+    //
+    // if (config.KEYCLOAK_ADAPTER === 'custom') {
+    //   kcArgs['adapter'] = new CapacitorBrowserKeycloakAdapter(keycloakInstance);
+    // }
+    //
+    // const FAIL_LIMIT = 3;
+    // let failCount = 0;
+    // while (failCount < FAIL_LIMIT) {
+    //   try {
+    //     yield call(keycloakInstance.init, kcArgs);
+    //     break;
+    //   } catch (e) {
+    //     console.dir(e);
+    //     if (failCount >= FAIL_LIMIT) {
+    //       yield put({ type: AUTH_SIGNOUT_REQUEST });
+    //     }
+    //     failCount++;
+    //     yield delay(1000);
+    //   }
+    // }
+    let status = yield AuthBridge.authStatus({});
+    console.dir(status);
   } else {
     const FAIL_LIMIT = 3;
     let failCount = 0;
@@ -331,74 +334,86 @@ function* refreshRoles() {
 }
 
 function* keepTokenFresh() {
-
   const RETRY_LIMIT = 10;
 
   try {
-    let refreshRetryCount = 0;
-
-    while (!(yield cancelled())) {
-
-      if (!keycloakInstance) {
-        // KC is not yet initialized
-        yield delay(TOKEN_REFRESH_INTERVAL);
-        continue;
-      }
-      const { authenticated, disrupted } = yield select(selectAuth);
-
-      if (!authenticated) {
-        // not logged in yet, nothing to do
-        yield delay(TOKEN_REFRESH_INTERVAL);
-        continue;
-      }
-
-      try {
-        if (keycloakInstance.isTokenExpired(MIN_TOKEN_FRESHNESS)) {
-
-          const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
-          if (refreshed) {
-            yield put({ type: AUTH_UPDATE_TOKEN_STATE });
-          }
-          if (disrupted) {
-            yield put({ type: AUTH_SET_RECOVERED_FROM_DISRUPTION });
-            refreshRetryCount = 0;
-          }
-        }
-      } catch (e) {
-        console.log('auth refresh failure');
-        console.dir(e);
-        if (!disrupted) {
-          yield put({ type: AUTH_SET_DISRUPTED });
-        }
-
-        refreshRetryCount++;
-        if (refreshRetryCount >= RETRY_LIMIT) {
-          put({ type: AUTH_SIGNOUT_REQUEST });
-        }
-      } finally {
-        yield delay(TOKEN_REFRESH_INTERVAL);
-      }
+    const result = yield AuthBridge.token({});
+    if (result.accessToken) {
     }
   } finally {
-    if (yield cancelled()) {
-      console.log('token freshness task shutting down');
-    }
+    yield delay(TOKEN_REFRESH_INTERVAL);
   }
+
+  // try {
+  //   let refreshRetryCount = 0;
+  //
+  //   while (!(yield cancelled())) {
+  //     if (!keycloakInstance) {
+  //       // KC is not yet initialized
+  //       yield delay(TOKEN_REFRESH_INTERVAL);
+  //       continue;
+  //     }
+  //     const { authenticated, disrupted } = yield select(selectAuth);
+  //
+  //     if (!authenticated) {
+  //       // not logged in yet, nothing to do
+  //       yield delay(TOKEN_REFRESH_INTERVAL);
+  //       continue;
+  //     }
+  //
+  //     try {
+  //       if (keycloakInstance.isTokenExpired(MIN_TOKEN_FRESHNESS)) {
+  //         const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
+  //         if (refreshed) {
+  //           yield put({ type: AUTH_UPDATE_TOKEN_STATE });
+  //         }
+  //         if (disrupted) {
+  //           yield put({ type: AUTH_SET_RECOVERED_FROM_DISRUPTION });
+  //           refreshRetryCount = 0;
+  //         }
+  //       }
+  //     } catch (e) {
+  //       console.log('auth refresh failure');
+  //       console.dir(e);
+  //       if (!disrupted) {
+  //         yield put({ type: AUTH_SET_DISRUPTED });
+  //       }
+  //
+  //       refreshRetryCount++;
+  //       if (refreshRetryCount >= RETRY_LIMIT) {
+  //         put({ type: AUTH_SIGNOUT_REQUEST });
+  //       }
+  //     } finally {
+  //       yield delay(TOKEN_REFRESH_INTERVAL);
+  //     }
+  //   }
+  // } finally {
+  //   if (yield cancelled()) {
+  //     console.log('token freshness task shutting down');
+  //   }
+  // }
 }
 
 function* handleSigninRequest(action) {
-  const config: AppConfig = yield select(selectConfiguration);
-
-  try {
-    yield call(keycloakInstance.login, {
-      redirectUri: config.REDIRECT_URI
-    });
-
-    yield put({ type: AUTH_REQUEST_COMPLETE, payload: {} });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: AUTH_REQUEST_ERROR });
+  const result = yield AuthBridge.authStart({ value: 'foo' });
+  console.log('auth result');
+  
+  console.dir(result);
+  if (result.authorized) {
+    //   yield put({ type: AUTH_REQUEST_COMPLETE, payload: {} });
   }
+  // const config: AppConfig = yield select(selectConfiguration);
+  //
+  // try {
+  //   yield call(keycloakInstance.login, {
+  //     redirectUri: config.REDIRECT_URI
+  //   });
+  //
+  //   yield put({ type: AUTH_REQUEST_COMPLETE, payload: {} });
+  // } catch (e) {
+  //   console.error(e);
+  //   yield put({ type: AUTH_REQUEST_ERROR });
+  // }
 }
 
 function* handleSignoutRequest(action) {
