@@ -5,3 +5,6 @@ sonar-runner
 uploads
 
 .vscode
+.docker
+README.md
+
