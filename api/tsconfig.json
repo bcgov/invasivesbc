@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
-    "lib": ["dom", "dom.iterable", "es5", "esnext"],
+    "lib": ["ESNext"],
+    "module": "ESNext",
     "baseUrl": "src",
     "outDir": "dist",
-    "jsx": "react",
-    "target": "es5",
+    "target": "ESNext",
     "sourceMap": true,
     "allowJs": false,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
+    "downlevelIteration": true,
     "noUnusedLocals": false,
     "esModuleInterop": true,
     "emitDecoratorMetadata": true,
@@ -20,12 +21,14 @@
     "resolveJsonModule": true,
     "strict": false,
     "isolatedModules": true,
-    "noEmit": false,
-    "types": ["jest"],
-    "typeRoots": ["node_modules/@types", "src/types"],
-    //"typeRoots": ["node_modules/@types"],
-    "noFallthroughCasesInSwitch": true,
+    "noEmit": true,
+    "typeRoots": ["node_modules/@types"],
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "**/*.ts"],
+  "include": [
+    "src",
+    "**/*.ts",
+    "node_modules/@types/node/globals.d.ts"
+  ],
   "exclude": ["**/*.spec.ts", "**/node_modules", "**/dist"]
 }
