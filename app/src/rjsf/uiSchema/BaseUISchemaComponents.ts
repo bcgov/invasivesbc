@@ -978,7 +978,7 @@ const Observation_Mussels_Information = {
     'ui:inline': true,
     'ui:widget': 'radio'
   },
-  Passport: {
+  passport: {
     ...ThreeColumnStyle,
     launchedOutsideBC: {
       'ui:inline': true,

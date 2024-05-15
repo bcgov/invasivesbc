@@ -166,8 +166,8 @@ export const Observation_Mussels_Information = {
                     basicInformation: Passport_BasicInformation,
                     watercraftDetails: WatercraftDetails,
                     journeyDetails: JourneyDetails,
-                    InspectionDetails: Passport_InspectionDetails,
-                    HighRiskAssessment: Passport_HighRiskAssessment,
+                    inspectionDetails: Passport_InspectionDetails,
+                    highRiskAssessment: Passport_HighRiskAssessment,
                     inspectionComments: InspectionComments
                   },
                   required: [
@@ -179,6 +179,14 @@ export const Observation_Mussels_Information = {
                     'inspectionComments',
                   ]
                 },
+                {
+                  properties: {
+                    isNewPassportIssued: {
+                      enum: [false]
+                    },
+                    inspectionComments: InspectionComments,
+                  },
+                }
               ]
             }
           }
