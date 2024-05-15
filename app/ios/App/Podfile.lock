@@ -1,4 +1,10 @@
 PODS:
+  - AppAuth (1.7.5):
+    - AppAuth/Core (= 1.7.5)
+    - AppAuth/ExternalUserAgent (= 1.7.5)
+  - AppAuth/Core (1.7.5)
+  - AppAuth/ExternalUserAgent (1.7.5):
+    - AppAuth/Core
   - Capacitor (6.0.0):
     - CapacitorCordova
   - CapacitorApp (6.0.0):
@@ -16,6 +22,7 @@ PODS:
     - CapacitorCordova
 
 DEPENDENCIES:
+  - AppAuth
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
@@ -24,6 +31,10 @@ DEPENDENCIES:
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+
+SPEC REPOS:
+  trunk:
+    - AppAuth
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -44,6 +55,7 @@ EXTERNAL SOURCES:
     :path: "../capacitor-cordova-ios-plugins"
 
 SPEC CHECKSUMS:
+  AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   Capacitor: 559d073c4ca6c27f8e7002c807eea94c3ba435a9
   CapacitorApp: 9d53aec7101f7b030a950c5bdc4df8612576b279
   CapacitorBrowser: 7e1e2cdbb3e372f09f0bad0c4c21a6d187b679ad
@@ -53,6 +65,6 @@ SPEC CHECKSUMS:
   CapacitorGeolocation: 1f12bbe372b65116e851bd8e3a94cf0ef9bacebb
   CordovaPlugins: 3575b94ab79514bf97bec2bd7c5f840afe388850
 
-PODFILE CHECKSUM: e36d42b68a863913dc203ecaef2ee582fc3dba9d
+PODFILE CHECKSUM: b752acbd4855c7ca1b6b3e934d512613ff53b454
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.15.2
