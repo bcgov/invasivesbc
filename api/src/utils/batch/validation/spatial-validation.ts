@@ -1,11 +1,9 @@
-import { getDBConnection } from '../../../database/db';
-
-import { parse, polygon } from 'wkt';
-import { stringify } from 'wkt';
+import { parse, stringify } from 'wkt';
 import * as turf from '@turf/helpers';
 import booleanOverlap from '@turf/boolean-overlap';
 import booleanWithin from '@turf/boolean-within';
-import { getLogger } from '../../logger';
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('batch');
 
@@ -35,27 +33,23 @@ export const parseWKTasGeoJSON = (input: string) => {
   let parsed;
   try {
     parsed = parse(input);
-    return parsed !== null? parsed : null;
+    return parsed !== null ? parsed : null;
   } catch (e) {
     defaultLog.error({ message: 'invalid wkt', input, error: e });
   }
   return parsed;
-
-  }
-
+};
 
 export const parseGeoJSONasWKT = (input: any) => {
   let parsed;
   try {
     parsed = stringify(input);
-    return parsed !== null? parsed : null;
+    return parsed !== null ? parsed : null;
   } catch (e) {
     defaultLog.error({ message: 'invalid wkt', input, error: e });
   }
   return parsed;
-
-  }
-
+};
 
 export const autofillFromPostGIS = async (input: string, inputArea?: number): Promise<parsedGeoType> => {
   const connection = await getDBConnection();
@@ -72,7 +66,7 @@ export const autofillFromPostGIS = async (input: string, inputArea?: number): Pr
                     utm_zone,
                     utm_easting,
                     utm_northing,
-                    area, 
+                    area,
                     geog
              from compute_geo_autofill($1)`,
       values: [input]
@@ -88,14 +82,10 @@ export const autofillFromPostGIS = async (input: string, inputArea?: number): Pr
       area: res.rows[0]['area'],
       geog: res.rows[0]['geog']
     };
-
-  }
-  catch(e) {
-
-    console.log('error in autofillFromPostGIS', e)
-    throw new Error('Error validating geometry in the database' + e.message );
-
-  }finally {
+  } catch (e) {
+    console.log('error in autofillFromPostGIS', e);
+    throw new Error('Error validating geometry in the database' + e.message);
+  } finally {
     connection.release();
   }
 };
@@ -123,7 +113,7 @@ const checkPolygonsConnected = (polygons: Array<turf.Polygon>) => {
     visited[index] = true;
 
     const overlapped = getOverlappedIndexes(polygons, index);
-    for (let i of overlapped) {
+    for (const i of overlapped) {
       if (!visited[i]) {
         dfs(i);
       }

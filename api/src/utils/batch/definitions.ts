@@ -1,6 +1,6 @@
 import { SQL } from 'sql-template-strings';
 import { PoolClient } from 'pg';
-import { RowValidationResult } from './validation/validation';
+import { RowValidationResult } from 'utils/batch/validation/validation';
 
 type templateDataType =
   | 'text'
@@ -65,11 +65,19 @@ export class TemplateColumn {
 }
 
 export class CodeEntry {
-  constructor(readonly header: string, readonly code: string, readonly description: string) {}
+  constructor(
+    readonly header: string,
+    readonly code: string,
+    readonly description: string
+  ) {}
 }
 
 export class TemplateColumnBuilder {
-  constructor(readonly name, readonly dataType: templateDataType, readonly mappedPath = null) {
+  constructor(
+    readonly name,
+    readonly dataType: templateDataType,
+    readonly mappedPath = null
+  ) {
     this.validations = {
       minLength: null,
       maxLength: null,
@@ -157,7 +165,11 @@ export class TemplateColumnBuilder {
 type RowValidator = (rowData) => RowValidationResult;
 
 export class Template {
-  constructor(readonly key: string, readonly name: string, readonly helpText: string) {
+  constructor(
+    readonly key: string,
+    readonly name: string,
+    readonly helpText: string
+  ) {
     this.rowValidators = [];
     this.subtype = name;
   }

@@ -1,5 +1,3 @@
-'use strict';
-
 import distance from '@turf/distance';
 import { point } from '@turf/helpers';
 import nearestPoint from '@turf/nearest-point';
@@ -7,8 +5,8 @@ import axios from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import proj4 from 'proj4';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity');
 

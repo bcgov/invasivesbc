@@ -1,11 +1,9 @@
-'use strict';
-
 import AWS from 'aws-sdk';
 import { GetObjectOutput, ManagedUpload, Metadata, DeleteObjectOutput } from 'aws-sdk/clients/s3';
 import { v4 as uuidv4 } from 'uuid';
-import { S3ACLRole } from '../constants/misc';
-import { MediaBase64 } from '../models/media';
 import { getLogger } from './logger';
+import { S3ACLRole } from 'constants/misc';
+import { MediaBase64 } from 'models/media';
 
 const defaultLog = getLogger('file-utils');
 

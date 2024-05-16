@@ -1,14 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import {
-  getEmailSettingsSQL, updateEmailSettingsSQL
-} from '../queries/email-settings-queries';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getEmailSettingsSQL, updateEmailSettingsSQL } from 'queries/email-settings-queries';
+import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('email-settings');
@@ -21,10 +17,10 @@ PUT.apiDoc = {
   tags: ['email-settings'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'email setting put request object.',
@@ -64,10 +60,10 @@ GET.apiDoc = {
   tags: ['email-settings'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -130,17 +126,18 @@ export async function getEmailSettingsFromDB() {
     connection.release();
   }
 }
+
 function getEmailSettings(): RequestHandler {
   return async (req, res) => {
     const response = await getEmailSettingsFromDB();
     return res.status(response.code).json({ ...response, request: req.body });
   };
-};
+}
 
 function updateEmailSettings(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'email-settings', message: 'updateEmailSettings', body: req.params });
-    const isAdmin = (req as any).authContext.roles.find(role => role.role_id === 18)
+    const isAdmin = (req as any).authContext.roles.find((role) => role.role_id === 18);
     if (!isAdmin) {
       return res.status(401).json({
         message: 'Invalid request, user is not authorized to update this record',
@@ -160,7 +157,14 @@ function updateEmailSettings(): RequestHandler {
       });
     }
     try {
-      const sqlStatement = updateEmailSettingsSQL(data.enabled, data.authenticationURL, data.emailServiceURL, data.clientId, data.clientSecret, data.id);
+      const sqlStatement = updateEmailSettingsSQL(
+        data.enabled,
+        data.authenticationURL,
+        data.emailServiceURL,
+        data.clientId,
+        data.clientSecret,
+        data.id
+      );
       if (!sqlStatement) {
         return res.status(500).json({
           message: 'Failed to build SQL statement.',
@@ -174,7 +178,7 @@ function updateEmailSettings(): RequestHandler {
         message: 'Updated successfully',
         request: req.body,
         namespace: 'email-settings',
-        code: 200,
+        code: 200
       });
     } catch (error) {
       defaultLog.debug({ label: 'updateEmailSettings', message: 'error', error });
@@ -189,4 +193,4 @@ function updateEmailSettings(): RequestHandler {
       connection.release();
     }
   };
-};
+}

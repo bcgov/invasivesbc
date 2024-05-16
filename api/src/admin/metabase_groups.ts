@@ -1,8 +1,8 @@
-import { getDBConnection } from '../database/db';
-import { getMetabaseGroupsSQL } from '../queries/role-queries';
-import { closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL } from '../utils/metabase-session';
 import axios from 'axios';
-import { getLogger } from '../utils/logger';
+import { getDBConnection } from 'database/db';
+import { getMetabaseGroupsSQL } from 'queries/role-queries';
+import { closeMetabaseSession, getMetabaseSession, METABASE_TIMEOUT, METABASE_URL } from 'utils/metabase-session';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('admin/metabase_groups');
 
@@ -80,12 +80,13 @@ async function postSyncMetabaseGroupMappings(req, res) {
     for (const group of GROUP_MAPPING) {
       const matchedGroup = groupsResponse.data.find((metabaseGroup) => metabaseGroup.name === group.metabaseGroup);
       if (!matchedGroup) {
-        throw new Error(`'Could not locate matching metabase group with name ${group.metabaseGroup}`);
+        defaultLog.error(`'Could not locate matching metabase group with name ${group.metabaseGroup}`);
+        return;
       }
       group.metabaseGroupId = matchedGroup.id;
     }
 
-    defaultLog.debug({message: `resolved metabase groups as:  ${GROUP_MAPPING}`});
+    defaultLog.debug({ message: `resolved metabase groups as:  ${GROUP_MAPPING}` });
 
     // get all active metabase users for comparison to our own user data
     const users = await axios({
@@ -131,7 +132,9 @@ async function postSyncMetabaseGroupMappings(req, res) {
       }
     }
 
-    defaultLog.debug({message: `Total actions required to align metabase permissions with ours: ${totalActionsRequired}`});
+    defaultLog.debug({
+      message: `Total actions required to align metabase permissions with ours: ${totalActionsRequired}`
+    });
 
     // we now know what needs to be done. make it so.
     const actionsTaken: IActionTaken[] = [];

@@ -41,11 +41,9 @@ export const getUpdateRequestForUserSQL = (username: string, email?: string): SQ
 
 export function appendNRQ(input: string) {
   if (input)
-    if (input.indexOf('NRQ') == -1)
-      return input + ',NRQ'
-    else
-      return input
-  return 'NRQ'
+    if (input.indexOf('NRQ') == -1) return input + ',NRQ';
+    else return input;
+  return 'NRQ';
 }
 /**
  * SQL query to create an access request.
@@ -148,7 +146,8 @@ export const approveUpdateRequestsSQL = (updateRequest): SQLStatement => {
             pac_number=${updateRequest.pac_number},
             pac_service_number_1=${updateRequest.pac_service_number_1},
             pac_service_number_2=${updateRequest.pac_service_number_2}
-            where (bceid_userid is not null and bceid_userid=${updateRequest.bceid_userid
-    }) OR (idir_userid is not null and idir_userid=${updateRequest.idir_userid});
+            where (bceid_userid is not null and bceid_userid=${
+              updateRequest.bceid_userid
+            }) OR (idir_userid is not null and idir_userid=${updateRequest.idir_userid});
     `;
 };

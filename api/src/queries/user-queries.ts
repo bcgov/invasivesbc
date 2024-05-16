@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from "../utils/logger";
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('user-queries');
 
@@ -10,19 +10,24 @@ const defaultLog = getLogger('user-queries');
  */
 export const getUsersSQL = (): SQLStatement => {
   return SQL`
-    SELECT * FROM application_user;
+    SELECT *
+    FROM application_user;
   `;
 };
 
 export const getUserByIDIRSQL = (idir_userid: string): SQLStatement => {
   return SQL`
-    SELECT * FROM application_user WHERE idir_userid = ${idir_userid};
+    SELECT *
+    FROM application_user
+    WHERE idir_userid = ${idir_userid};
   `;
 };
 
 export const getUserByBCEIDSQL = (bceid_userid: string): SQLStatement => {
   return SQL`
-    SELECT * FROM application_user WHERE bceid_userid = ${bceid_userid};
+    SELECT *
+    FROM application_user
+    WHERE bceid_userid = ${bceid_userid};
   `;
 };
 
@@ -30,8 +35,8 @@ export const renewUserSQL = (userId: string): SQLStatement => {
   const today = new Date();
   const expiryDate = new Date(today.getFullYear() + 1, today.getMonth(), today.getDate()).toUTCString();
   return SQL`
-    UPDATE application_user SET
-      expiry_date = ${expiryDate}
+    UPDATE application_user
+    SET expiry_date = ${expiryDate}
     WHERE user_id = ${parseInt(userId)};
   `;
 };
@@ -41,6 +46,7 @@ export enum userTypeEnum {
   bceid = 'bceid',
   bceid_business = 'bceid_business'
 }
+
 /**
  * SQL statement to create users.
  *
@@ -60,8 +66,11 @@ export const createUserSQL = (userType: string, id: string, username: string, em
     case 'idir':
       try {
         const returnVal = SQL`
-        insert into application_user (idir_userid, preferred_username, email, activation_status) values (${id}, ${username}, ${email}, 0) on conflict (idir_userid) where idir_userid is not null do nothing;
-      `;
+          insert into application_user (idir_userid, preferred_username, email, activation_status)
+          values (${id}, ${username}, ${email}, 0)
+          on conflict (idir_userid)
+          where idir_userid is not null do nothing;
+        `;
         return returnVal;
       } catch (e) {
         defaultLog.error({ error: e });
@@ -70,8 +79,11 @@ export const createUserSQL = (userType: string, id: string, username: string, em
     case 'bceid':
       try {
         const returnVal = SQL`
-        insert into application_user (bceid_userid, preferred_username, email, activation_status) values (${id}, ${username}, ${email}, 0) on conflict (bceid_userid) where bceid_userid is not null do nothing;
-      `;
+          insert into application_user (bceid_userid, preferred_username, email, activation_status)
+          values (${id}, ${username}, ${email}, 0)
+          on conflict (bceid_userid)
+          where bceid_userid is not null do nothing;
+        `;
         return returnVal;
       } catch (e) {
         defaultLog.error({ error: e });

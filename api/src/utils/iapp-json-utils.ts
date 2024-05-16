@@ -1,18 +1,21 @@
-import { speciesRefSql } from '../queries/species_ref';
-import { SQL, SQLStatement } from 'sql-template-strings';
-import { getDBConnection } from '../database/db';
-import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from '../queries/iapp-queries';
-import { getLogger } from './logger';
-import { densityMap, distributionMap, mapAspect, mapSlope } from './iapp-payload/iapp-function-utils';
+import { SQLStatement } from 'sql-template-strings';
+import Cursor from 'pg-cursor';
+import { v4 as uuidv4 } from 'uuid';
+import { densityMap, distributionMap, mapSlope } from './iapp-payload/iapp-function-utils';
 import {
-  biologicalTreatmentsJSON,
   biologicalDispersalJSON,
+  biologicalTreatmentsJSON,
   chemicalTreatmentJSON,
   mechanicalTreatmenntsJSON
 } from './iapp-payload/extracts-json-utils';
 import { generateSitesCSV } from './iapp-csv-utils';
-import Cursor from 'pg-cursor';
-import { getActivitiesSQL } from '../queries/activity-queries';
+
+import { getS3SignedURL } from './file-utils';
+import { getLogger } from 'utils/logger';
+import { getActivitiesSQL } from 'queries/activity-queries';
+import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
+import { getDBConnection } from 'database/db';
+import { speciesRefSql } from 'queries/species_ref';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -217,34 +220,30 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
       if (returnVal) return returnVal;
       else return [];
     });
-    (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = relevant_biological_treatment_extracts.map(
-      (x) => {
+    (iapp_site as any).point_of_interest_payload.form_data.biological_treatments =
+      relevant_biological_treatment_extracts.map((x) => {
         const returnVal = biologicalTreatmentsJSON(x, relevant_biological_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
-      }
-    );
-    (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals = relevant_biological_dispersal_extracts.map(
-      (x) => {
+      });
+    (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals =
+      relevant_biological_dispersal_extracts.map((x) => {
         const returnVal = biologicalDispersalJSON(x);
         if (returnVal) return returnVal;
         else return [];
-      }
-    );
-    (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments = relevant_chemical_treatment_extracts.map(
-      (x) => {
+      });
+    (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments =
+      relevant_chemical_treatment_extracts.map((x) => {
         const returnVal = chemicalTreatmentJSON(x, relevant_chemical_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
-      }
-    );
-    (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments = relevant_mechanical_treatment_extracts.map(
-      (x) => {
+      });
+    (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments =
+      relevant_mechanical_treatment_extracts.map((x) => {
         const returnVal = mechanicalTreatmenntsJSON(x, relevant_mechanical_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
-      }
-    );
+      });
 
     // monitored flag
     const monitored =
@@ -355,10 +354,9 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
   }
 };
 
-var AWS = require('aws-sdk');
 const { Readable, PassThrough } = require('stream');
-import { v4 as uuidv4 } from 'uuid';
-import { getS3SignedURL } from './file-utils';
+const AWS = require('aws-sdk');
+
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
 
@@ -371,9 +369,9 @@ const S3 = new AWS.S3({
 });
 
 function upload(S3, key) {
-  let pass = new PassThrough();
+  const pass = new PassThrough();
 
-  let params = {
+  const params = {
     Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
     Key: key,
     Body: pass
@@ -390,8 +388,9 @@ function upload(S3, key) {
 export async function streamActivitiesResult(searchCriteria: any, res: any, sqlStatementOverride?: SQLStatement) {
   const connection = await getDBConnection();
 
-
-  const sqlStatement: SQLStatement = (sqlStatementOverride)? sqlStatementOverride: getActivitiesSQL(searchCriteria, false, true);
+  const sqlStatement: SQLStatement = sqlStatementOverride
+    ? sqlStatementOverride
+    : getActivitiesSQL(searchCriteria, false, true);
 
   if (!sqlStatement) {
     throw {
@@ -411,7 +410,7 @@ export async function streamActivitiesResult(searchCriteria: any, res: any, sqlS
     readable.pipe(upload(S3, key)).on('end', async () => {
       // get signed url
 
-      await new Promise(r => setTimeout(r, 2000));
+      await new Promise((r) => setTimeout(r, 2000));
       const url = await getS3SignedURL(key);
       res.status(200).send(url);
       res.end();
@@ -443,7 +442,9 @@ export const streamIAPPResult = async (searchCriteria: any, res: any, sqlStateme
     };
   }
 
-  const sqlStatement: SQLStatement = sqlStatementOverride? sqlStatementOverride: getSitesBasedOnSearchCriteriaSQL(searchCriteria);
+  const sqlStatement: SQLStatement = sqlStatementOverride
+    ? sqlStatementOverride
+    : getSitesBasedOnSearchCriteriaSQL(searchCriteria);
 
   if (!sqlStatement) {
     throw {
@@ -464,7 +465,7 @@ export const streamIAPPResult = async (searchCriteria: any, res: any, sqlStateme
         // get signed url
         const url = await getS3SignedURL(key);
 
-      await new Promise(r => setTimeout(r, 2000));
+        await new Promise((r) => setTimeout(r, 2000));
 
         res.status(200).send(url);
         res.end();
@@ -478,7 +479,7 @@ export const streamIAPPResult = async (searchCriteria: any, res: any, sqlStateme
   } else {
     try {
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-      var returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
+      const returnVal2 = response.rowCount > 0 ? await mapSitesRowsToJSON(response, searchCriteria) : [];
 
       res.setHeader('Content-Type', 'application/json; charset=utf-8');
 

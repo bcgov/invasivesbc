@@ -1,7 +1,6 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { InvasivesRequest } from 'utils/auth-utils';
-import { getLogger } from '../utils/logger';
-import { ActivityPostRequestBody, ActivitySearchCriteria } from './../models/activity';
+import { getLogger } from 'utils/logger';
+import { ActivityPostRequestBody, ActivitySearchCriteria } from 'models/activity';
 
 /**
  * SQL query to insert a new activity, and return the inserted record.
@@ -797,10 +796,10 @@ export const getOverlappingBCGridCellsSQL = (
                     public.ST_SetSRID(
                       public.ST_GeomFromGeoJSON(${geometry}),
                       4326
-                      )
                     )
                   )
-                );
+                )
+              );
       `;
       break;
     case '0':
@@ -818,10 +817,10 @@ export const getOverlappingBCGridCellsSQL = (
                 public.ST_SetSRID(
                   public.ST_GeomFromGeoJSON(${geometry}),
                   4326
-                  )
                 )
               )
-            );
+            )
+                );
         `;
       }
       break;

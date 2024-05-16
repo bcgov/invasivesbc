@@ -1,13 +1,11 @@
-'use strict';
-
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from './../../database/db';
-import { getFileFromS3 } from './../../utils/file-utils';
-import { getLogger } from './../../utils/logger';
-import { getMediaItemsList } from './../media';
+import { getMediaItemsList } from 'paths/media';
+import { getFileFromS3 } from 'utils/file-utils';
+import { getLogger } from 'utils/logger';
+import { getDBConnection } from 'database/db';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 
 const defaultLog = getLogger('activity');
 
@@ -81,20 +79,17 @@ function getActivity(): RequestHandler {
 
     try {
       const sql = `
-        select
-        jsonb_build_object (
-          'type', 'Feature',
-          'properties', json_build_object(
-            'activity_id', activity_id,
-            'activity_type', activity_type,
-            'activity_subtype', activity_subtype
-          ),
-          'geometry', public.st_asGeoJSON(geog)::jsonb
-        ) as "geojson"
-      from
-        invasivesbc.activity_incoming_data
-      where
-        activity_id = '${activityId}'
+        select jsonb_build_object(
+                 'type', 'Feature',
+                 'properties', json_build_object(
+                   'activity_id', activity_id,
+                   'activity_type', activity_type,
+                   'activity_subtype', activity_subtype
+                               ),
+                 'geometry', public.st_asGeoJSON(geog)::jsonb
+               ) as "geojson"
+        from invasivesbc.activity_incoming_data
+        where activity_id = '${activityId}'
       `;
       // TODO: Query most recent. Deleted timestamp null
 

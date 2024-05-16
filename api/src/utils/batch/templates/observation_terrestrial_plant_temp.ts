@@ -1,5 +1,5 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
-import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
+import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
+import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
@@ -7,7 +7,7 @@ import {
   PositiveObservationPlantValidator,
   SlopeAspectValidator,
   ProjectInformation
-} from '../shared-columns';
+} from 'utils/batch/shared-columns';
 
 const ObservationTerrestrialPlantTemp = new Template(
   'observation_terrestrial_plant_temp',

@@ -1,14 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../database/db';
-import { getLogger } from '../utils/logger';
-import { CacheKeys } from '../constants/misc';
-import { getAllCodeEntities, IAllCodeEntities } from '../utils/code-utils';
-import { retrieveGetDoc } from '../docs/getDoc';
-import cacheService from "../utils/cache/cache-service";
-import CacheService from "../utils/cache/cache-service";
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
+import { CacheKeys } from 'constants/misc';
+import { getAllCodeEntities, IAllCodeEntities } from 'utils/code-utils';
+import { retrieveGetDoc } from 'docs/getDoc';
+import cacheService from 'utils/cache/cache-service';
 
 const defaultLog = getLogger('species');
 

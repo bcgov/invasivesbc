@@ -1,18 +1,15 @@
-import { SECURITY_ON, ALL_ROLES } from '../../constants/misc';
-import { createHash } from 'crypto';
-import { getDBConnection } from '../../database/db';
-import { RequestHandler } from 'express';
-import { Operation } from 'express-openapi';
 import { getuid } from 'process';
+import { Operation } from 'express-openapi';
+import { RequestHandler } from 'express';
 import SQL, { SQLStatement } from 'sql-template-strings';
-import { InvasivesRequest } from 'utils/auth-utils';
-import { getLogger } from '../../utils/logger';
-import { streamIAPPResult } from '../../utils/iapp-json-utils';
-import { filter } from 'lodash';
 import { validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
+import { getLogger } from 'utils/logger';
+import { streamIAPPResult } from 'utils/iapp-json-utils';
+import { getDBConnection } from 'database/db';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('IAPP');
-const CACHENAME = 'IAPPv2 - Fat';
 
 export const POST: Operation = [getIAPPSitesBySearchFilterCriteria()];
 
@@ -81,11 +78,11 @@ POST.apiDoc = {
 };
 
 export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
-  let sanitizedSearchCriteria = {
+  const sanitizedSearchCriteria = {
     serverSideNamedFilters: {},
     selectColumns: [],
     clientReqTableFilters: [],
-    ids_to_filter: [],
+    ids_to_filter: []
   } as any;
 
   if (req.params.x) {
@@ -115,7 +112,7 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = false;
   }
 
-  let selectColumns = [];
+  const selectColumns = [];
   const acceptableColumns = [
     'site_id',
     'site_paper_file_id',
@@ -178,12 +175,12 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
 
   sanitizedSearchCriteria.selectColumns = selectColumns;
 
-  let sanitizedTableFilters = [];
+  const sanitizedTableFilters = [];
   //sanitize serverFilterGeometries
-  let serverFilterGeometries = [];
+  const serverFilterGeometries = [];
 
   //sanitize clientFilterGeometries
-  let clientFilterGeometries = [];
+  const clientFilterGeometries = [];
 
   if (filterObject?.tableFilters?.length > 0) {
     filterObject.tableFilters.forEach((filter) => {
@@ -228,22 +225,27 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
   sanitizedSearchCriteria.clientFilterGeometries = clientFilterGeometries;
   sanitizedSearchCriteria.clientReqTableFilters = sanitizedTableFilters;
 
-  let id_list_valid = true
-  for(let i = 0; i < filterObject?.ids_to_filter?.length -1; i++){
-    if(isNaN(parseInt(filterObject.ids_to_filter[i]))){
+  let id_list_valid = true;
+  for (let i = 0; i < filterObject?.ids_to_filter?.length - 1; i++) {
+    if (isNaN(parseInt(filterObject.ids_to_filter[i]))) {
       id_list_valid = false;
       break;
     }
   }
 
-  if(id_list_valid){
+  if (id_list_valid) {
     sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
-  }
-  else {
+  } else {
     throw new Error('Invalid site_id list');
   }
-  const validOrderByColumns = validIAPPSortColumns
-  if(!filterObject?.vt_request  && filterObject.selectColumns.length > 1 && filterObject?.sortColumn && filterObject?.sortOrder && validOrderByColumns.includes(filterObject.sortColumn)){
+  const validOrderByColumns = validIAPPSortColumns;
+  if (
+    !filterObject?.vt_request &&
+    filterObject.selectColumns.length > 1 &&
+    filterObject?.sortColumn &&
+    filterObject?.sortOrder &&
+    validOrderByColumns.includes(filterObject.sortColumn)
+  ) {
     sanitizedSearchCriteria.orderBy = filterObject.sortColumn;
     sanitizedSearchCriteria.orderByType = filterObject.sortOrder;
   }
@@ -269,8 +271,8 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
 function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
   const reqID = getuid();
   return async (req: InvasivesRequest, res) => {
-    if(req.authContext.roles.length === 0) {
-      res.status(401).json({ message: 'No Role for user'})
+    if (req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user' });
     }
     const rawBodyCriteria = req.body['filterObjects'];
     const filterObject = sanitizeIAPPFilterObject(rawBodyCriteria?.[0], req);
@@ -347,10 +349,8 @@ export function getIAPPSQLv2(filterObject: any) {
 
 function initialWithStatement(sqlStatement: SQLStatement) {
   const withStatement = sqlStatement.append(
-    `with iapp_sites AS (
-      SELECT a.site_id, a.geog
-      FROM
-      invasivesbc.iapp_spatial a ),  `
+    `with iapp_sites AS (SELECT a.site_id, a.geog
+                         FROM invasivesbc.iapp_spatial a),  `
   );
   return withStatement;
 }
@@ -360,29 +360,29 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
-     
+
         serverFilterGeometryIDs as (
- 
+
           select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
-         
+
           ),
          serverFilterGeometries AS (
           select a.id, title, st_subdivide(a.geog::geometry, 255)::geography as geo
           from invasivesbc.admin_defined_shapes a
           inner join serverFilterGeometryIDs b on a.id = b.id
          ),
-         
+
           serverFilterGeometriesIntersecting as (
-         
+
             select a.site_id, b.id
             from invasivesbc.iapp_spatial a
             inner join serverFilterGeometries b on  st_intersects(a.geog, b.geo)
             group by a.site_id, b.id
-         
-         
+
+
          ),
           serverFilterGeometriesIntersectingAll as (
-         
+
             select a.site_id, count(*)
             from invasivesbc.iapp_spatial a
             inner join serverFilterGeometriesIntersecting b on a.site_id  = b.site_id
@@ -403,21 +403,21 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
                    )
                    .join(',')}]) AS geojson
          ),
-         
+
           clientFilterGeometriesIntersecting as (
-         
-         select a.site_id 
+
+         select a.site_id
          from iapp_spatial a
          inner join clientFilterGeometries on st_intersects(a.geog, geojson)
-         
+
          ),
           clientFilterGeometriesIntersectingAll as (
-         
+
          select a.site_id, count(*)
          from iapp_spatial a
          inner join clientFilterGeometriesIntersecting b on a.site_id  = b.site_id
-         group by a.site_id 
-         
+         group by a.site_id
+
          having count(*) = (select count(*) from clientFilterGeometries)
          ),
          `);
@@ -425,8 +425,8 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 
   sqlStatement.append(`
 sites as (
-  select 
-        
+  select
+
    array_to_string(b.jurisdictions, ', ') as jurisdictions_flattened,
   b.site_id,
   b.site_paper_file_id,
@@ -446,7 +446,7 @@ sites as (
   b.invasive_plant_management_area,
   b.geojson,
   b.geog as geog
-  
+
   `);
 
   /*if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -462,7 +462,7 @@ sites as (
   */
 
   sqlStatement.append(`
-    from iapp_site_summary_and_geojson b 
+    from iapp_site_summary_and_geojson b
     join iapp_sites a on a.site_id = b.site_id`);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -516,7 +516,7 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
-  let from = filterObject.vt_request ? sqlStatement.append(' ') : sqlStatement.append(`from sites  `);
+  const from = filterObject.vt_request ? sqlStatement.append(' ') : sqlStatement.append(`from sites  `);
   if (filterObject.isCSV) {
     switch (filterObject.CSVType) {
       case 'site_selection_extract':
@@ -555,12 +555,12 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const where = filterObject.vt_request?  sqlStatement.append(`and 1=1 `) :  sqlStatement.append(`where 1=1  `)
+  const where = filterObject.vt_request ? sqlStatement.append(`and 1=1 `) : sqlStatement.append(`where 1=1  `);
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     //TODO do i need to hide any    where.append(`and iapp_sites.activity_type not in ('Treatment','Monitoring') `);
   }
 
-        where.append( ' and ( 1=1 ')
+  where.append(' and ( 1=1 ');
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
       case 'site_id':
@@ -687,9 +687,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
     }
   });
-        where.append( ' )  ')
+  where.append(' )  ');
 
-  if(filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0){
+  if (filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0) {
     where.append(`and sites.site_id in (${filterObject.ids_to_filter.join(',')}) `);
   }
 
@@ -702,7 +702,11 @@ function groupByStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function orderByStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const orderBy = filterObject.orderBy? sqlStatement.append(` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${filterObject.ordeByType === 'DESC'? 'FIRST ': 'LAST'} `): sqlStatement.append(` `);
+  const orderBy = filterObject.orderBy
+    ? sqlStatement.append(
+        ` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${filterObject.ordeByType === 'DESC' ? 'FIRST ' : 'LAST'} `
+      )
+    : sqlStatement.append(` `);
   return orderBy;
 }
 

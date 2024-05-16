@@ -1,17 +1,14 @@
-'use strict';
-
+import { createHash } from 'crypto';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { getSpeciesCodesFromIAPPDescriptionList, getSpeciesRef } from '../utils/iapp-json-utils';
-import { getDBConnection } from '../database/db';
-import { PointOfInterestSearchCriteria } from '../models/point-of-interest';
-import { getPointsOfInterestLeanSQL } from '../queries/point-of-interest-queries';
-
-import { getLogger } from '../utils/logger';
-import cacheService from '../utils/cache/cache-service';
-import { createHash } from 'crypto';
-import { versionedKey } from '../utils/cache/cache-utils';
+import cacheService from 'utils/cache/cache-service';
+import { getSpeciesCodesFromIAPPDescriptionList, getSpeciesRef } from 'utils/iapp-json-utils';
+import { getDBConnection } from 'database/db';
+import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
+import { getPointsOfInterestLeanSQL } from 'queries/point-of-interest-queries';
+import { getLogger } from 'utils/logger';
+import { versionedKey } from 'utils/cache/cache-utils';
 
 const defaultLog = getLogger('point-of-interest');
 const CACHENAME = 'POI-LEAN';
@@ -101,9 +98,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
 
     // check the cache tag to see if, perhaps, the user already has the latest
     try {
-      const cacheQueryResult = await connection.query(`select updated_at from cache_versions where cache_name = $1`, [
-        'iapp_site_summary'
-      ]);
+      const cacheQueryResult = await connection.query(
+        `select updated_at
+         from cache_versions
+         where cache_name = $1`,
+        ['iapp_site_summary']
+      );
       const cacheVersion = cacheQueryResult.rows[0].updated_at;
 
       // because we have parameters and user roles, the actual resource cache tag is

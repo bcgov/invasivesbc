@@ -1,7 +1,7 @@
-import winston, { Logform } from 'winston';
+import winston from 'winston';
 import _ from 'lodash';
 import YAML from 'js-yaml';
-import { MDCAsyncLocal } from '../mdc';
+import { MDCAsyncLocal } from 'mdc';
 
 /**
  * Logger input.

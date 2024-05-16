@@ -1,5 +1,5 @@
-import { SEARCH_LIMIT_MAX } from '../constants/misc';
-import { IMediaItem } from './media';
+import { SEARCH_LIMIT_MAX } from 'constants/misc';
+import { IMediaItem } from 'models/media';
 
 /**
  * PointOfInterest post request body.
@@ -81,7 +81,6 @@ export class PointOfInterestSearchCriteria {
   page: number;
   limit: number;
 
-
   //for use in csv endpoint
   isCSV?: boolean;
   CSVType?: string;
@@ -120,8 +119,6 @@ export class PointOfInterestSearchCriteria {
    */
   //NOSONAR
   constructor(obj?: any) {
-
-
     //csv export stuff:
     this.isCSV = (obj && obj.isCSV) || false;
     this.CSVType = (obj && obj.CSVType) || null;

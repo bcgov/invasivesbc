@@ -1,10 +1,8 @@
-'use strict';
-
 import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
-import { getDBConnection } from '../../../database/db';
-import { getLogger } from '../../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity');
 
@@ -86,15 +84,12 @@ const getPlanningArea = async (lon: any, lat: any, res: Response, attr: string, 
   }
 
   const sql = `
-    select
-      target.${attr} "target"
-    from
-      public.${table} "target"
-    where
-      public.st_intersects(
-        public.st_geographyFromText('POINT(${lon} ${lat})'),
-        target.geog
-      )
+    select target.${attr} "target"
+    from public.${table} "target"
+    where public.st_intersects(
+            public.st_geographyFromText('POINT(${lon} ${lat})'),
+            target.geog
+          )
   `;
 
   try {

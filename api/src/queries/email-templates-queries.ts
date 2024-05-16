@@ -5,7 +5,12 @@ export function getEmailTemplatesSQL(): SQLStatement {
     email_body as emailBody, email_template_id as id FROM email_templates order by email_template_id;`;
 }
 
-export function updateEmailTemplatesSQL(fromEmail: string, emailSubject: string, emailBody: string, id: number): SQLStatement {
+export function updateEmailTemplatesSQL(
+  fromEmail: string,
+  emailSubject: string,
+  emailBody: string,
+  id: number
+): SQLStatement {
   return SQL`
     update email_templates
     set from_email = ${fromEmail},
