@@ -1,15 +1,13 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { ALL_ROLES, SECURITY_ON } from '../../../constants/misc';
-import { getDBConnection } from '../../../database/db';
-import { InvasivesRequest } from '../../../utils/auth-utils';
-import { TemplateService } from '../../../utils/batch/template-utils';
-import { BatchValidationService } from '../../../utils/batch/validation/validation';
-import { getLogger } from '../../../utils/logger';
-import { BatchExecutionService } from '../../../utils/batch/execution';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { InvasivesRequest } from 'utils/auth-utils';
+import { TemplateService } from 'utils/batch/template-utils';
+import { BatchValidationService } from 'utils/batch/validation/validation';
+import { getLogger } from 'utils/logger';
+import { BatchExecutionService } from 'utils/batch/execution';
 
 export const POST: Operation = [execBatch()];
 
@@ -17,10 +15,10 @@ const POST_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Batch upload processor',

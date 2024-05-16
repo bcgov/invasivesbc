@@ -186,7 +186,7 @@ export const mechanicalTreatmenntsJSON = (treatment: any, all_monitoring: any[])
 
 const monitoringJSON = (props: any) => {
   const { type, item } = props;
-  var monitoringID;
+  let monitoringID;
   switch (type as string) {
     case 'mechanical':
       monitoringID = item.mechmonitoringid;

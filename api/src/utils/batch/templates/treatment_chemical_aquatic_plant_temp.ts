@@ -1,4 +1,4 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
+import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import {
   ActivityPersonsWithApplicatorLicense,
   ApplicationMethodType,
@@ -11,8 +11,8 @@ import {
   PmpValidator,
   ProjectInformation,
   WindDirectionValidator
-} from '../shared-columns';
-import { ChemTreatmentValidators } from '../validation/chemical-treatment';
+} from 'utils/batch/shared-columns';
+import { ChemTreatmentValidators } from 'utils/batch/validation/chemical-treatment';
 
 const TreatmentChemicalAquaticPlantTemp = new Template(
   'treatment_chemical_aquatic_plant_temp',

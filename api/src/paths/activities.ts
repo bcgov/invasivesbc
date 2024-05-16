@@ -1,19 +1,16 @@
-'use strict';
-
+import { createHash } from 'crypto';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SEARCH_LIMIT_MAX, SEARCH_LIMIT_DEFAULT, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { ActivitySearchCriteria } from '../models/activity';
-import { getActivitiesSQL, deleteActivitiesSQL } from '../queries/activity-queries';
-import { getLogger } from '../utils/logger';
-import { InvasivesRequest } from '../utils/auth-utils';
-import { createHash } from 'crypto';
-import cacheService from '../utils/cache/cache-service';
-import { versionedKey } from '../utils/cache/cache-utils';
-import { streamActivitiesResult, streamIAPPResult } from '../utils/iapp-json-utils';
-import { is } from 'date-fns/locale';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { streamActivitiesResult } from 'utils/iapp-json-utils';
+import { getDBConnection } from 'database/db';
+import { ActivitySearchCriteria } from 'models/activity';
+import { deleteActivitiesSQL, getActivitiesSQL } from 'queries/activity-queries';
+import { getLogger } from 'utils/logger';
+import { InvasivesRequest } from 'utils/auth-utils';
+import cacheService from 'utils/cache/cache-service';
+import { versionedKey } from 'utils/cache/cache-utils';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = 'Activities - Fat';
@@ -249,11 +246,11 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         }
 
         // needs to be mutable
-        let response = await connection.query(sqlStatement.text, sqlStatement.values);
+        const response = await connection.query(sqlStatement.text, sqlStatement.values);
         if (!isAuth) {
           if (response.rows.length > 0) {
             // remove sensitive data from json obj
-            for (var i in response.rows) {
+            for (const i in response.rows) {
               response.rows[i].activity_payload.created_by = null;
               response.rows[i].activity_payload.updated_by = null;
               response.rows[i].activity_payload.reviewed_by = null;

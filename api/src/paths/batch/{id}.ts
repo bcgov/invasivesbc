@@ -1,16 +1,14 @@
-'use strict';
-
+import { Readable } from 'stream';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { QueryResult } from 'pg';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getDBConnection } from '../../database/db';
-import { InvasivesRequest } from '../../utils/auth-utils';
-import { TemplateService } from '../../utils/batch/template-utils';
-import { BatchValidationService } from '../../utils/batch/validation/validation';
 import csvParser from 'csv-parser';
-import { Readable } from 'stream';
-import { getLogger } from '../../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { InvasivesRequest } from 'utils/auth-utils';
+import { TemplateService } from 'utils/batch/template-utils';
+import { BatchValidationService } from 'utils/batch/validation/validation';
+import { getLogger } from 'utils/logger';
 
 export const GET: Operation = [getBatch()];
 export const PUT: Operation = [updateBatch()];
@@ -20,10 +18,10 @@ const GET_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 
@@ -36,10 +34,10 @@ const PUT_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Batch upload processor',
@@ -125,15 +123,15 @@ function getBatch(): RequestHandler {
       }
 
       const retrievedBatch = response.rows[0];
-      let created_activities_with_skiped_rows = []
+      const created_activities_with_skiped_rows = [];
       let hasSkippedRows = false;
       for (let index = 0; index < retrievedBatch['json_representation'].rows.length; index++) {
-        created_activities_with_skiped_rows[index] = retrievedBatch['created_activities'].find(activity => activity.row_number == index)
-        if (created_activities_with_skiped_rows[index])
-          hasSkippedRows = true;
+        created_activities_with_skiped_rows[index] = retrievedBatch['created_activities'].find(
+          (activity) => activity.row_number == index
+        );
+        if (created_activities_with_skiped_rows[index]) hasSkippedRows = true;
       }
-      if (hasSkippedRows)
-        retrievedBatch['created_activities'] = created_activities_with_skiped_rows;
+      if (hasSkippedRows) retrievedBatch['created_activities'] = created_activities_with_skiped_rows;
       const template = await TemplateService.getTemplateWithExistingDBConnection(retrievedBatch.template, connection);
       if (!template) {
         return res.status(500).json({
@@ -320,10 +318,10 @@ const DELETE_API_DOC = {
   tags: ['batch'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : []
 };
 

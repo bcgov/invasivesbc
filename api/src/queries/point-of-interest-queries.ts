@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PointOfInterestPostRequestBody, PointOfInterestSearchCriteria } from '../models/point-of-interest';
+import { PointOfInterestPostRequestBody, PointOfInterestSearchCriteria } from 'models/point-of-interest';
 
 /**
  * SQL query to insert a new point_of_interest, and return the inserted record.
@@ -13,20 +13,18 @@ export const postPointOfInterestSQL = (point_of_interest: PointOfInterestPostReq
   }
 
   const sqlStatement: SQLStatement = SQL`
-    INSERT INTO point_of_interest_incoming_data (
-      point_of_interest_type,
-      point_of_interest_subtype,
-      species_positive,
-      received_timestamp,
-      point_of_interest_payload,
-      geog,
-      media_keys
-    ) VALUES (
-      ${point_of_interest.pointOfInterest_type},
-      ${point_of_interest.pointOfInterest_subtype},
-      ${point_of_interest.species_positive},
-      ${point_of_interest.received_timestamp},
-      ${point_of_interest.pointOfInterestPostBody}
+    INSERT INTO point_of_interest_incoming_data (point_of_interest_type,
+                                                 point_of_interest_subtype,
+                                                 species_positive,
+                                                 received_timestamp,
+                                                 point_of_interest_payload,
+                                                 geog,
+                                                 media_keys)
+    VALUES (${point_of_interest.pointOfInterest_type},
+            ${point_of_interest.pointOfInterest_subtype},
+            ${point_of_interest.species_positive},
+            ${point_of_interest.received_timestamp},
+            ${point_of_interest.pointOfInterestPostBody}
   `;
 
   if (point_of_interest.geoJSONFeature && point_of_interest.geoJSONFeature.length) {
@@ -80,15 +78,14 @@ export const postPointsOfInterestSQL = (data: Array<PointOfInterestPostRequestBo
   }
 
   const sqlStatement: SQLStatement = SQL`
-    INSERT INTO point_of_interest_incoming_data (
-      point_of_interest_type,
-      point_of_interest_subtype,
-      species_positive,
-      received_timestamp,
-      point_of_interest_payload,
-      geog,
-      media_keys
-    ) VALUES `;
+    INSERT INTO point_of_interest_incoming_data (point_of_interest_type,
+                                                 point_of_interest_subtype,
+                                                 species_positive,
+                                                 received_timestamp,
+                                                 point_of_interest_payload,
+                                                 geog,
+                                                 media_keys)
+    VALUES `;
 
   for (let i = 0; i < data.length; i++) {
     sqlStatement.append(SQL`(
@@ -280,7 +277,9 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
  * @returns {SQLStatement} sql query object
  */
 export const getPointOfInterestSQL = (point_of_interestId: number): SQLStatement => {
-  return SQL`SELECT * FROM point_of_interest_incoming_data where point_of_interest_incoming_data_id = ${point_of_interestId}`;
+  return SQL`SELECT *
+             FROM point_of_interest_incoming_data
+             where point_of_interest_incoming_data_id = ${point_of_interestId}`;
 };
 
 /**
@@ -294,30 +293,30 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
   const sqlStatement: SQLStatement = SQL``;
 
   if (searchCriteria.search_feature) {
-    sqlStatement.append(SQL`WITH 
-    multi_polygon_cte AS 
-      (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features->>'geometry')))::geography as geog
-        FROM (
-          SELECT json_array_elements(${searchCriteria.search_feature}::json->'features') AS array_features
-        ) AS anything), 
-    not_null_issag AS (SELECT site_id, geojson FROM iapp_site_summary_and_geojson WHERE (geojson->'geometry')::text != 'null'),
-    intersections as (
-      select 
-        site_id, 
-        ( public.ST_INTERSECTS( 
-            public.geography( public.ST_Force2D( public.ST_SetSRID( ( public.ST_GeomFromGeoJSON( ( (geojson -> 'geometry'):: text))), 4326))), 
-            ( SELECT geog FROM multi_polygon_cte))) as intersects 
-      from 
-        not_null_issag
-    )
-   `);
+    sqlStatement.append(SQL`WITH multi_polygon_cte AS
+                                   (SELECT (ST_Collect(ST_GeomFromGeoJSON(array_features ->> 'geometry')))::geography as geog
+                                    FROM (SELECT json_array_elements(${searchCriteria.search_feature}::json -> 'features') AS array_features) AS anything),
+                                 not_null_issag AS (SELECT site_id, geojson
+                                                    FROM iapp_site_summary_and_geojson
+                                                    WHERE (geojson -> 'geometry')::text != 'null'),
+                                 intersections as (select site_id,
+                                                          (public.ST_INTERSECTS(
+                                                            public.geography(public.ST_Force2D(public.ST_SetSRID(
+                                                              (public.ST_GeomFromGeoJSON(((geojson -> 'geometry'):: text))),
+                                                              4326))),
+                                                            (SELECT geog FROM multi_polygon_cte))) as intersects
+                                                   from not_null_issag)
+    `);
     sqlStatement.append(
-      SQL`SELECT a.site_id, b.intersects, geojson  FROM iapp_site_summary_and_geojson a join intersections b on a.site_id = b.site_id WHERE 1 = 1`
+      SQL`SELECT a.site_id, b.intersects, geojson
+          FROM iapp_site_summary_and_geojson a
+                 join intersections b on a.site_id = b.site_id
+          WHERE 1 = 1`
     );
   } else {
-    sqlStatement.append(
-      SQL`SELECT a.site_id, geojson  FROM iapp_site_summary_and_geojson a WHERE 1 = 1`
-    );
+    sqlStatement.append(SQL`SELECT a.site_id, geojson
+                            FROM iapp_site_summary_and_geojson a
+                            WHERE 1 = 1`);
   }
 
   enum PoiType {
@@ -416,7 +415,7 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
 
   if (searchCriteria.search_feature) {
     sqlStatement.append(SQL`
-      AND b.intersects IS TRUE 
+      AND b.intersects IS TRUE
     `);
   }
 
@@ -443,8 +442,10 @@ export const getPointsOfInterestLeanSQL = (searchCriteria: PointOfInterestSearch
  * @param {Array} codes
  * @returns {SQLStatement} sql query object
  */
-export const getSpeciesMapSQL = (codes: Array<String>): SQLStatement => {
-  const sqlStatement: SQLStatement = SQL`SELECT iapp_name FROM iapp_invbc_mapping WHERE char_code IN (`;
+export const getSpeciesMapSQL = (codes: Array<string>): SQLStatement => {
+  const sqlStatement: SQLStatement = SQL`SELECT iapp_name
+                                         FROM iapp_invbc_mapping
+                                         WHERE char_code IN (`;
   sqlStatement.append(SQL`${codes[0]}`);
 
   for (let idx = 1; idx < codes.length; idx++) {

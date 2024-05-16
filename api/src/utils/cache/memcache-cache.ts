@@ -1,8 +1,5 @@
-import { getLogger } from '../logger';
-import { AbstractCache, AbstractCacheService } from './cache-utils';
 import { MemcacheClient } from 'memcache-client';
-
-const defaultLog = getLogger('cache');
+import { AbstractCache, AbstractCacheService } from './cache-utils';
 
 class MemcacheCache extends AbstractCache {
   client: MemcacheClient;

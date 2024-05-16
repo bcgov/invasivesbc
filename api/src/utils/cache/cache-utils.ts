@@ -1,4 +1,4 @@
-import { getLogger } from '../logger';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('cache');
 

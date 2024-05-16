@@ -1,5 +1,5 @@
-import { getLogger } from '../logger';
 import { AbstractCache, AbstractCacheService } from './cache-utils';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('cache');
 

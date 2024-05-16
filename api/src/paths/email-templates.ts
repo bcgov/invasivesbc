@@ -1,14 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import {
-  getEmailTemplatesSQL, updateEmailTemplatesSQL
-} from '../queries/email-templates-queries';
-import { getLogger } from '../utils/logger';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getEmailTemplatesSQL, updateEmailTemplatesSQL } from 'queries/email-templates-queries';
+import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('email-templates');
@@ -21,10 +17,10 @@ PUT.apiDoc = {
   tags: ['email-templates'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'email template put request object.',
@@ -64,10 +60,10 @@ GET.apiDoc = {
   tags: ['email-templates'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -136,12 +132,12 @@ function getEmailTemplates(): RequestHandler {
     const response = await getEmailTemplatesFromDB();
     return res.status(response.code).json({ ...response, request: req.body });
   };
-};
+}
 
 function updateEmailTemplates(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'email-templates', message: 'updateEmailTemplates', body: req.params });
-    const isAdmin = (req as any).authContext.roles.find(role => role.role_id === 18)
+    const isAdmin = (req as any).authContext.roles.find((role) => role.role_id === 18);
     if (!isAdmin) {
       return res.status(401).json({
         message: 'Invalid request, user is not authorized to update this record',
@@ -175,7 +171,7 @@ function updateEmailTemplates(): RequestHandler {
         message: 'Updated successfully',
         request: req.body,
         namespace: 'email-templates',
-        code: 200,
+        code: 200
       });
     } catch (error) {
       defaultLog.debug({ label: 'updateEmailTemplates', message: 'error', error });
@@ -190,4 +186,4 @@ function updateEmailTemplates(): RequestHandler {
       connection.release();
     }
   };
-};
+}

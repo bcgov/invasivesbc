@@ -1,5 +1,5 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
-import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
+import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
+import { OBSERVATION_TYPE_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
@@ -10,7 +10,7 @@ import {
   ShorelineSumValidator,
   WaterbodyInformation,
   WaterQualityInformation
-} from '../shared-columns';
+} from 'utils/batch/shared-columns';
 
 const ObservationAquaticPlantTemp = new Template(
   'observation_aquatic_plant_temp',

@@ -1,3 +1,4 @@
+import { PoolClient } from 'pg';
 import { Template } from './definitions';
 import { ObservationTerrestrialPlant } from './templates/observation_terrestrial_plant';
 import { ObservationAquaticPlant } from './templates/observation_aquatic_plant';
@@ -11,14 +12,13 @@ import { TreatmentChemicalTerrestrialPlant } from './templates/treatment_chemica
 import { TreatmentChemicalAquaticPlant } from './templates/treatment_chemical_aquatic_plant';
 import { TreatmentMechanicalAquaticPlant } from './templates/treatment_mechanical_aquatic_plant';
 import { TreatmentMechanicalTerrestrialPlant } from './templates/treatment_mechanical_terrestrial_plant';
-import { getDBConnection } from '../../database/db';
-import { PoolClient } from 'pg';
 import { ObservationTerrestrialPlantTemp } from './templates/observation_terrestrial_plant_temp';
 import { TreatmentChemicalTerrestrialPlantTemp } from './templates/treatment_chemical_terrestrial_plant_temp';
 import { TreatmentMechanicalTerrestrialPlantTemp } from './templates/treatment_mechanical_terrestrial_plant_temp';
 import { ObservationAquaticPlantTemp } from './templates/observation_aquatic_plant_temp';
 import { TreatmentChemicalAquaticPlantTemp } from './templates/treatment_chemical_aquatic_plant_temp';
 import { TreatmentMechanicalAquaticPlantTemp } from './templates/treatment_mechanical_aquatic_plant_temp';
+import { getDBConnection } from 'database/db';
 
 const templateList: Template[] = [
   ObservationTerrestrialPlant,

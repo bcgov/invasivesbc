@@ -25,10 +25,6 @@
     "typeRoots": ["node_modules/@types"],
     "noFallthroughCasesInSwitch": true
   },
-  "include": [
-    "src",
-    "**/*.ts",
-    "node_modules/@types/node/globals.d.ts"
-  ],
+  "include": ["src", "**/*.ts", "node_modules/@types/node/globals.d.ts"],
   "exclude": ["**/*.spec.ts", "**/node_modules", "**/dist"]
 }

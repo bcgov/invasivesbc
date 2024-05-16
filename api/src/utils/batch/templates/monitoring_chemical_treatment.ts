@@ -1,11 +1,10 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
+import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
 import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
-  ProjectInformation,
-  WellInformation
-} from '../shared-columns';
+  ProjectInformation
+} from 'utils/batch/shared-columns';
 
 const MonitoringChemical = new Template('monitoring_chemical', 'Monitoring - Chemical', null);
 

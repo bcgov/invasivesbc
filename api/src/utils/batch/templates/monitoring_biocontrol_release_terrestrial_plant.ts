@@ -1,5 +1,5 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
-import { BIOCONTROL_MONITORING_TYPE_CODES, YES_NO_CODES } from '../hard-coded-codes';
+import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
+import { BIOCONTROL_MONITORING_TYPE_CODES, YES_NO_CODES } from 'utils/batch/hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
@@ -9,7 +9,7 @@ import {
   PhenologySumValidator,
   ProjectInformation,
   WeatherInformation
-} from '../shared-columns';
+} from 'utils/batch/shared-columns';
 
 const MonitoringBiocontrolReleaseTerrestrialPlant = new Template(
   'monitoring_biocontrol_release_terrestrial_plant',

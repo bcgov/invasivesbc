@@ -10,7 +10,14 @@ export function getEmailSettingsSQL(): SQLStatement {
         FROM email_settings;`;
 }
 
-export function updateEmailSettingsSQL(enabled: boolean, authenticationURL: string, emailServiceURL: string, clientId: string, clientSecret: string, id: number): SQLStatement {
+export function updateEmailSettingsSQL(
+  enabled: boolean,
+  authenticationURL: string,
+  emailServiceURL: string,
+  clientId: string,
+  clientSecret: string,
+  id: number
+): SQLStatement {
   return SQL`
     update email_settings
     set enabled = ${enabled},

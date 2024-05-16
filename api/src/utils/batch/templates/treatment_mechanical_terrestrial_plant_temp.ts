@@ -1,11 +1,11 @@
-import { Template, TemplateColumnBuilder } from '../definitions';
-import { DISPOSED_MATERIAL_FORMAT_CODES } from '../hard-coded-codes';
+import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
+import { DISPOSED_MATERIAL_FORMAT_CODES } from 'utils/batch/hard-coded-codes';
 import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
   ProjectInformation
-} from '../shared-columns';
+} from 'utils/batch/shared-columns';
 
 const TreatmentMechanicalTerrestrialPlantTemp = new Template(
   'treatment_mechanical_terrestrial_plant_temp',

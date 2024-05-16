@@ -1,7 +1,7 @@
-import { getLogger } from '../logger';
 import { InMemoryCacheService } from './in-memory-cache';
 import { MemcacheCacheService } from './memcache-cache';
 import { AbstractCacheService } from './cache-utils';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('cache');
 

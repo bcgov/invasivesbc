@@ -1,9 +1,7 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../../constants/misc';
-import { getS3SignedURL } from '../../utils/file-utils';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getS3SignedURL } from 'utils/file-utils';
 
 export const GET: Operation = [getSignedURL()];
 

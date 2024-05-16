@@ -1,12 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { getDBConnection } from '../../database/db';
-import { undeleteActivitiesSQL } from '../../queries/activity-queries';
-import { getLogger } from '../../utils/logger';
-import { DELETE as activitiesDeleteApiDoc } from '../activities';
+import { DELETE as activitiesDeleteApiDoc } from 'paths/activities';
+import { getDBConnection } from 'database/db';
+import { undeleteActivitiesSQL } from 'queries/activity-queries';
+import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('activity');
 

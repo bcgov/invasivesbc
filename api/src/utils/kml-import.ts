@@ -1,8 +1,8 @@
 import { JSDOM } from 'jsdom';
 import * as GeoJSON from '@mapbox/togeojson';
-import { getLogger } from './logger';
 import AdmZip from 'adm-zip';
 import { FeatureCollection } from 'geojson';
+import { getLogger } from 'utils/logger';
 
 function KMZToKML(data: Buffer): Buffer {
   const log = getLogger('KML');
@@ -52,7 +52,6 @@ function GeoJSONFromKML(data: Buffer) {
 }
 
 function sanitizeGeoJSON(data: FeatureCollection): FeatureCollection {
-
   if (!data || !data.type) {
     throw new Error(`Unrecognized input data format`);
   }

@@ -1,10 +1,8 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ALL_ROLES, SECURITY_ON } from '../constants/misc';
-import { getDBConnection } from '../database/db';
-import { getAllEmbeddedReports } from '../queries/embedded-report-queries';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
+import { getAllEmbeddedReports } from 'queries/embedded-report-queries';
 
 export const GET: Operation = [listValidEmbeddedReports()];
 
