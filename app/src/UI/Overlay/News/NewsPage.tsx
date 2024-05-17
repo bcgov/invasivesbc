@@ -2,7 +2,19 @@ import React from 'react';
 import './NewsPage.css';
 
 export const NewsPage = (props: any) => {
-  const newsItems = [{title: 'May 14, 2024: Heading Indicator', content: `
+  const newsItems = [
+    {
+      title: 'May 17, 2024: Photo editing, Draft Issue, and note on Decimals in the Chem Treatment Form', 
+      content: `
+• Photos had a bug where hitting the edit icon to rename them did nothing.  This has been fixed.
+• A user reported seeing their drafts in the other recordsets/layers.  They were still in fact drafts and excluded from reports however this was confusing.  This has been fixed.
+• Decimals on the Chem Treatment form.  You can enter decimal values such as "0.5" however note that if you try to add one to the middle of a number such as "15" to "1.5" it won't work.  
+  This is because there is always a decimal at the end if not specified.  Future versions of this form will make this behaviour less clunky however it is important to note how this works for the time being.
+`
+},
+    {
+      title: 'May 14, 2024: Heading Indicator', 
+      content: `
 • The blue "Find Me"/"Current Location Indicator" dot now includes an arrow that points in the direction you are moving.  
 • This is a new and still somewhat experimental feature, however we feel it is useful enough now in its current version to justify releasing. 
 • Note that this is not functional on desktop, and works best when outside, moving, and not on WIFI.
