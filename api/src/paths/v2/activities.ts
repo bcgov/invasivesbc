@@ -426,14 +426,14 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
   //todo: only do this when applicable
   //  const cte = sqlStatement.append(`  with placeHolder as (select 1),  `);
   const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
-                                                                                 string_agg(cpo.invasive_plant, ', ') AS current_positive_species
-                                                                          FROM invasivesbc.current_positive_observations_materialized cpo
-                                                                          GROUP BY cpo.activity_incoming_data_id),
-                                          CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
-                                                                                 string_agg(cno.invasive_plant, ', ') AS current_negative_species
-                                                                          FROM invasivesbc.current_negative_observations_materialized cno
-                                                                          GROUP BY cno.activity_incoming_data_id),
-  `);
+  string_agg(cpo.invasive_plant, ', ') AS current_positive_species
+FROM invasivesbc.current_positive_observations_materialized cpo
+GROUP BY cpo.activity_incoming_data_id),
+CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
+  string_agg(cno.invasive_plant, ', ') AS current_negative_species
+FROM invasivesbc.current_negative_observations_materialized cno
+GROUP BY cno.activity_incoming_data_id),
+`);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -693,16 +693,17 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
     );
   }
   if (filterObject.restrictVisibleDraftActivities) {
-    if (filterObject.preferredUsername) {
+    if (filterObject.preferredUsername && filterObject.form_status === 'Draft') {
       where.append(
-        `and (${tableAlias}.form_status = 'Submitted' or (${tableAlias}.created_by=${escapeLiteral(
+        `and (${tableAlias}.created_by=${escapeLiteral(
           filterObject.preferredUsername
         )} and ${tableAlias}.form_status <> 'Submitted')) `
       );
-    } else {
-      where.append(`and (${tableAlias}.form_status = 'Submitted') `);
-    }
+    }else {
+    where.append(`and (${tableAlias}.form_status = 'Submitted') `);
   }
+
+  } 
 
   where.append(`) and ( 1 = 1 `);
 
@@ -713,46 +714,46 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;*/
       case 'activity_id':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.activity_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'} LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(${tableAlias}.activity_id) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          } LOWER('%${filter.filter}%') `
         );
         break;
       case 'short_id':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.short_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(${tableAlias}.short_id) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'activity_type':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.activity_type) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(${tableAlias}.activity_type) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'activity_subtype':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.activity_subtype) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(${tableAlias}.activity_subtype) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'activity_date':
         where.append(
           //`and substring((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'activity_date_time'::text)::text, 2, 10) ${
-          `${filter.operator2} activity_date ${
-            filter.operator === 'CONTAINS' ? 'like' : 'not like'
-          }  '%${filter.filter}%' `
+          `${filter.operator2} activity_date ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  '%${
+            filter.filter
+          }%' `
         );
         break;
       case 'project_code':
         where.append(
           //`and LOWER((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text) ${
-          `${filter.operator2} LOWER(project_code) ${
-            filter.operator === 'CONTAINS' ? 'like' : 'not like'
-          }  LOWER('%${filter.filter}%') `
+          `${filter.operator2} LOWER(project_code) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+            filter.filter
+          }%') `
         );
         break;
       case 'jurisdiction_display':
@@ -764,9 +765,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'invasive_plant':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.invasive_plant) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(${tableAlias}.invasive_plant) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'species_positive_full':
@@ -785,12 +786,16 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'has_current_positive':
         where.append(
-          `${filter.operator2} ${tableAlias}.current_positive_species ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
+          `${filter.operator2} ${tableAlias}.current_positive_species ${
+            filter.operator === 'CONTAINS' ? 'is not' : 'is'
+          } null `
         );
         break;
       case 'has_current_negative':
         where.append(
-          `${filter.operator2} ${tableAlias}.current_negative_species  ${filter.operator === 'CONTAINS' ? 'is not' : 'is'} null `
+          `${filter.operator2} ${tableAlias}.current_negative_species  ${
+            filter.operator === 'CONTAINS' ? 'is not' : 'is'
+          } null `
         );
         break;
       case 'current_positive_species':
@@ -824,9 +829,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
       case 'created_by':
         if (filter.operator === 'CONTAINS') {
           where.append(
-            `${filter.operator2} LOWER(${tableAlias}.created_by) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-              filter.filter
-            }%') `
+            `${filter.operator2} LOWER(${tableAlias}.created_by) ${
+              filter.operator === 'CONTAINS' ? 'like' : 'not like'
+            }  LOWER('%${filter.filter}%') `
           );
         } else if (filter.operator === 'EQUALS') {
           where.append(`${filter.operator2} LOWER(${tableAlias}.created_by) = LOWER('${filter.filter}') `);
@@ -834,16 +839,16 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'updated_by':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.updated_by) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(${tableAlias}.updated_by) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'agency':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.agency) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(${tableAlias}.agency) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'regional_invasive_species_organization_areas':
@@ -876,16 +881,16 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'elevation':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.elevation) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(${tableAlias}.elevation) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${filter.filter}%') `
         );
         break;
       case 'batch_id':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.batch_id::text) ${filter.operator === 'CONTAINS' ? '=' : '!='}  LOWER('${
-            filter.filter
-          }') `
+          `${filter.operator2} LOWER(${tableAlias}.batch_id::text) ${
+            filter.operator === 'CONTAINS' ? '=' : '!='
+          }  LOWER('${filter.filter}') `
         );
         break;
       default:
@@ -911,7 +916,9 @@ function groupByStatement(sqlStatement: SQLStatement, filterObject: any) {
 function orderByStatement(sqlStatement: SQLStatement, filterObject: any) {
   const orderBy = filterObject.orderBy
     ? sqlStatement.append(
-        ` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${filterObject.ordeByType === 'DESC' ? 'FIRST ' : 'LAST'} `
+        ` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${
+          filterObject.ordeByType === 'DESC' ? 'FIRST ' : 'LAST'
+        } `
       )
     : sqlStatement.append(` `);
   return orderBy;
