@@ -68,16 +68,10 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
   }
 }
 
-
 export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
-
-  const currentState = yield select((state) => state.UserSettings );
-  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries );
-  let filterObject = getRecordFilterObjectFromStateForAPI(
-    action.payload.recordSetID,
-    currentState,
-    clientBoundaries
-  );
+  const currentState = yield select((state) => state.UserSettings);
+  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
+  let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
 
   // abort if already a stale hash
   const mapState = yield select((state) => state.Map);
@@ -89,27 +83,25 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
     return;
   }
 
-  yield put({type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, payload: {
-    filterObject: filterObject,
-    recordSetID: action.payload.recordSetID,
-    tableFiltersHash: action.payload.tableFiltersHash,
-    recordSetType: action.payload.recordSetType
-  }})
-
+  yield put({
+    type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
+    payload: {
+      filterObject: filterObject,
+      recordSetID: action.payload.recordSetID,
+      tableFiltersHash: action.payload.tableFiltersHash,
+      recordSetType: action.payload.recordSetType
+    }
+  });
 
   //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
-//  filterObject.limit = 200000;
- // filterObject.selectColumns = ['activity_id'];
+  //  filterObject.limit = 200000;
+  // filterObject.selectColumns = ['activity_id'];
 }
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
-  const currentState = yield select((state) => state.UserSettings );
-  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries );
-  let filterObject = getRecordFilterObjectFromStateForAPI(
-    action.payload.recordSetID,
-    currentState,
-    clientBoundaries
-  );
+  const currentState = yield select((state) => state.UserSettings);
+  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
+  let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
   //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
@@ -137,13 +129,9 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
 
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
-  const currentState = yield select((state) => state.UserSettings );
-  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries );
-    let filterObject = getRecordFilterObjectFromStateForAPI(
-      action.payload.recordSetID,
-      currentState,
-      clientBoundaries
-    );
+    const currentState = yield select((state) => state.UserSettings);
+    const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
+    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
     //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
     filterObject.limit = 200000;
     filterObject.selectColumns = ['site_id'];
@@ -175,7 +163,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
     })?.[0]?.geojson;
   };
   const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
-  const recordSetType = JSON.parse(JSON.stringify(recordSetsState?.recordSets?.[recordSetID]?.recordSetType))
+  const recordSetType = JSON.parse(JSON.stringify(recordSetsState?.recordSets?.[recordSetID]?.recordSetType));
   const sortColumn = recordSet?.sortColumn;
   const sortOrder = recordSet?.sortOrder;
   const tableFilters = recordSet?.tableFilters;
@@ -184,6 +172,19 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
       ? filter
       : { ...filter, geojson: getFilterWithDrawnShape(filter.filter) };
   });
+
+  console.log('recordSetID', recordSetID);
+  console.log('typof recordSetID', typeof recordSetID);
+  if (recordSetID !== '1' && recordSetType === 'Activity') {
+    // filter out drafts:
+    modifiedTableFilters.push({
+      field: 'form_status',
+      filterType: 'tableFilter',
+      operator: 'CONTAINS',
+      operator2: 'AND',
+      filter: 'Submitted'
+    });
+  }
   const selectColumns = recordSet?.selectColumns
     ? recordSet?.selectColumns
     : getSelectColumnsByRecordSetType(recordSetType);
@@ -200,8 +201,8 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   try {
     // new filter object:
-  const currentState = yield select((state) => state.UserSettings );
-    const mapState = yield select((state) => state.Map );
+    const currentState = yield select((state) => state.UserSettings);
+    const mapState = yield select((state) => state.Map);
     let filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
@@ -245,8 +246,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
 
 export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   try {
-    const currentState = yield select((state) => state.UserSettings );
-    const mapState = yield select((state) => state.Map );
+    const currentState = yield select((state) => state.UserSettings);
+    const mapState = yield select((state) => state.Map);
     let filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,

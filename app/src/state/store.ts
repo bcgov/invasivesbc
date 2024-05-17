@@ -35,16 +35,11 @@ export function setupStore(configuration: AppConfig) {
     duration: true,
     timestamp: true,
     logErrors: true,
-    diff: false,
+    diff: true,
     diffPredicate: (getState, action) => {
       if (
-        action.type.includes('WHATS_HERE') ||
-        action.type.includes('URL_CHANGE') ||
-        action.type.includes('URL_CHANGE')
+        action.type.includes('RECORDSET_SET_SORT')
       ) {
-        return true;
-      }
-      if (action.type.includes('WHATS_HERE')) {
         return true;
       }
       return false;
