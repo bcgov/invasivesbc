@@ -707,17 +707,17 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
 export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
   try {
     const beforeState = yield select(selectActivity);
-    const beforeActivity = beforeState.activity;
-    const photoIndex = beforeActivity.media.findIndex((photo) => photo.file_name === action.payload.photo.file_name);
+    let beforeActivityMedia = JSON.parse(JSON.stringify(beforeState.activity.media))
+    const photoIndex = beforeActivityMedia.findIndex((photo) => photo.file_name === action.payload.photo.file_name);
 
     if (photoIndex >= 0) {
-      beforeActivity.media[photoIndex] = action.payload.photo;
+      beforeActivityMedia[photoIndex] = action.payload.photo;
     }
 
     yield put({
       type: ACTIVITY_EDIT_PHOTO_SUCCESS,
       payload: {
-        media: beforeActivity.media
+        media: beforeActivityMedia
       }
     });
   } catch (e) {
