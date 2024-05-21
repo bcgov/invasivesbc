@@ -1,12 +1,10 @@
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { all, put, select, take, takeEvery } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
-import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import {
   AUTH_INITIALIZE_COMPLETE,
-  GET_API_DOC_FAILURE,
   GET_API_DOC_ONLINE,
   GET_API_DOC_REQUEST,
   GET_API_DOC_SUCCESS,
@@ -155,10 +153,8 @@ function* persistRecordSetsToLocalStorage(action) {
 }
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
-  const authState = yield select(selectAuth);
-
   const defaultRecordSet = {
-    ['1']: {
+    '1': {
       recordSetType: 'Activity',
       recordSetName: 'My Drafts',
       // add draft key
@@ -172,30 +168,28 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
           operator2: 'AND'
         }
       ],
-      colorScheme:
-        {
-          Biocontrol: '#845ec2',
-          FREP: '#de852c',
-          Monitoring: '#2138e0',
-          Observation: '#399c3e',
-          Treatment: '#c6c617'
-        },
+      colorScheme: {
+        Biocontrol: '#845ec2',
+        FREP: '#de852c',
+        Monitoring: '#2138e0',
+        Observation: '#399c3e',
+        Treatment: '#c6c617'
+      },
       drawOrder: 1
     },
-    ['2']: {
+    '2': {
       recordSetType: 'Activity',
       recordSetName: 'All InvasivesBC Activities',
-      colorScheme:
-        {
-          Biocontrol: '#845ec2',
-          FREP: '#de852c',
-          Monitoring: '#2138e0',
-          Observation: '#399c3e',
-          Treatment: '#c6c617'
-        },
+      colorScheme: {
+        Biocontrol: '#845ec2',
+        FREP: '#de852c',
+        Monitoring: '#2138e0',
+        Observation: '#399c3e',
+        Treatment: '#c6c617'
+      },
       drawOrder: 2
     },
-    ['3']: {
+    '3': {
       recordSetType: 'IAPP',
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
@@ -305,7 +299,6 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
 function* handle_GET_API_DOC_REQUEST(action) {
   yield put({ type: GET_API_DOC_ONLINE });
 }
-
 
 function* handle_GET_API_DOC_ONLINE(action) {
   try {

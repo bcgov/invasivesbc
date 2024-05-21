@@ -1,5 +1,4 @@
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import {
   BATCH_CREATE_REQUEST,
@@ -8,6 +7,7 @@ import {
   BATCH_DELETE_ERROR,
   BATCH_DELETE_REQUEST,
   BATCH_DELETE_SUCCESS,
+  BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
   BATCH_LIST_REQUEST,
@@ -20,21 +20,20 @@ import {
   BATCH_TEMPLATE_LIST_REQUEST,
   BATCH_TEMPLATE_LIST_SUCCESS,
   BATCH_UPDATE_REQUEST,
-  BATCH_UPDATE_SUCCESS,
-  BATCH_EXECUTE_ERROR
+  BATCH_UPDATE_SUCCESS
 } from '../actions';
 import { Http } from '@capacitor-community/http';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 function* listBatches(action) {
   yield call(listTemplates, action);
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
 
   const { data } = yield Http.request({
     method: 'GET',
     url: configuration.API_BASE + `/api/batch`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     }
   });
@@ -44,14 +43,13 @@ function* listBatches(action) {
 
 function* getBatch(action) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
   const { id } = action.payload;
 
   const { data } = yield Http.request({
     method: 'GET',
     url: configuration.API_BASE + `/api/batch/` + encodeURIComponent(id),
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     }
   });
@@ -60,13 +58,12 @@ function* getBatch(action) {
 
 function* createBatch(action) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
 
   const { data } = yield Http.request({
     method: 'POST',
     url: configuration.API_BASE + `/api/batch`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
     data: action.payload
@@ -77,15 +74,13 @@ function* createBatch(action) {
 
 function* createBatchWithCallback(action) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
-
   const { resolve, reject } = action.payload;
 
   const { data } = yield Http.request({
     method: 'POST',
     url: configuration.API_BASE + `/api/batch`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
     data: action.payload
@@ -97,14 +92,13 @@ function* createBatchWithCallback(action) {
 
 function* updateBatch(action) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
   const { id } = action.payload;
 
   const { data } = yield Http.request({
     method: 'PUT',
     url: configuration.API_BASE + `/api/batch/${id}`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
     data: action.payload
@@ -116,14 +110,13 @@ function* updateBatch(action) {
 
 function* deleteBatch(action: any) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
   const { id } = action.payload;
 
   const { data } = yield Http.request({
     method: 'DELETE',
     url: configuration.API_BASE + `/api/batch/${id}`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
     data: action.payload
@@ -137,13 +130,12 @@ function* deleteBatch(action: any) {
 
 function* listTemplates(action) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
 
   const { data } = yield Http.request({
     method: 'GET',
     url: configuration.API_BASE + `/api/batch/templates`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     }
   });
@@ -153,7 +145,6 @@ function* listTemplates(action) {
 
 function* templateCSV(action) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
 
   const { key, resolve } = action.payload;
 
@@ -161,7 +152,7 @@ function* templateCSV(action) {
     method: 'GET',
     url: configuration.API_BASE + `/api/batch/templates/${key}`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       Accept: 'text/csv'
     }
   });
@@ -171,13 +162,12 @@ function* templateCSV(action) {
 
 function* templateDetail(action) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
 
   const { data } = yield Http.request({
     method: 'GET',
     url: configuration.API_BASE + `/api/batch/templates/${action.payload.key}`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       Accept: 'application/json'
     }
   });
@@ -193,14 +183,13 @@ function* templateDetail(action) {
 
 function* executeBatch(action) {
   const configuration = yield select(selectConfiguration);
-  const { requestHeaders } = yield select(selectAuth);
   const { id } = action.payload;
 
   const { data, status } = yield Http.request({
     method: 'POST',
     url: configuration.API_BASE + `/api/batch/${id}/execute`,
     headers: {
-      Authorization: requestHeaders.authorization,
+      Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
     data: {

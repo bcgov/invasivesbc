@@ -8,10 +8,8 @@ import './map.css';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import { MAP_WHATS_HERE_FEATURE, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
-import { feature } from '@turf/helpers';
+import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE, MAP_WHATS_HERE_FEATURE } from 'state/actions';
 import proj4 from 'proj4';
-import { attach } from 'ionicons/icons';
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
 // @ts-ignore
@@ -31,7 +29,7 @@ export const mapInit = (
   activityGeo,
   whats_here_toggle,
   api_base,
-  getAuthHeaderCallback,
+  getAuthHeaderCallback: () => Promise<string>,
   PUBLIC_MAP_URL,
   map_center
 ) => {
@@ -99,210 +97,213 @@ export const mapInit = (
 
   // we first fetch the header so we can get the center lon, lat of the map.
   p.getHeader().then((h) => {
-    map.current = new maplibregl.Map({
-      container: mapContainer.current,
-      maxZoom: 24,
-      zoom: 3,
-      minZoom: 0,
-      transformRequest: (url, resourceType) => {
-        if (url.includes(api_base)) {
+    //now get the most current auth token from auth provider
+    getAuthHeaderCallback().then((authHeader) => {
+      map.current = new maplibregl.Map({
+        container: mapContainer.current,
+        maxZoom: 24,
+        zoom: 3,
+        minZoom: 0,
+        transformRequest: (url, resourceType) => {
+          if (url.includes(api_base)) {
+            return {
+              url,
+              headers: {
+                Authorization: authHeader
+              }
+            };
+          }
           return {
-            url,
-            headers: {
-              ...getAuthHeaderCallback()
-            }
+            url
           };
-        }
-        return {
-          url
-        };
-      },
-      center: [map_center[1], map_center[0]],
-      style: {
-        glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-        version: 8,
-        sources: {
-          'wms-test-source': {
-            type: 'raster',
-            tiles: [
-              'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
-            ],
-            tileSize: 256,
-            maxzoom: 24
-          },
-          'Esri-Sat-LayerHD': {
-            type: 'raster',
-            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-            tileSize: 256,
-            maxzoom: 24
-          },
-          'Esri-Sat-LayerSD': {
-            type: 'raster',
-            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-            tileSize: 256,
-            maxzoom: 18
-          },
-          'Esri-Sat-Label': {
-            type: 'raster',
-            tiles: [
-              'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
-            ],
-            tileSize: 256,
-            maxzoom: 18
-          },
-          'Esri-Topo': {
-            type: 'raster',
-            tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
-            tileSize: 256,
-            maxzoom: 18
-          },
-          public_layer: {
-            type: 'vector',
-            url: `pmtiles://${PMTILES_URL}`,
-            //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
-            // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
-            attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
-          }
         },
-        layers: [
-          {
-            id: 'Esri-Sat-LayerHD',
-            type: 'raster',
-            source: 'Esri-Sat-LayerHD',
-            minzoom: 0
-          },
-          {
-            id: 'Esri-Sat-LayerSD',
-            type: 'raster',
-            source: 'Esri-Sat-LayerSD',
-            minzoom: 0
-          },
-          {
-            id: 'Esri-Sat-Label',
-            type: 'raster',
-            source: 'Esri-Sat-Label',
-            minzoom: 0
-          },
-          {
-            id: 'Esri-Topo',
-            type: 'raster',
-            source: 'Esri-Topo',
-            minzoom: 0,
-            layout: {
-              visibility: 'none'
+        center: [map_center[1], map_center[0]],
+        style: {
+          glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+          version: 8,
+          sources: {
+            'wms-test-source': {
+              type: 'raster',
+              tiles: [
+                'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
+              ],
+              tileSize: 256,
+              maxzoom: 24
+            },
+            'Esri-Sat-LayerHD': {
+              type: 'raster',
+              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+              tileSize: 256,
+              maxzoom: 24
+            },
+            'Esri-Sat-LayerSD': {
+              type: 'raster',
+              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+              tileSize: 256,
+              maxzoom: 18
+            },
+            'Esri-Sat-Label': {
+              type: 'raster',
+              tiles: [
+                'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+              ],
+              tileSize: 256,
+              maxzoom: 18
+            },
+            'Esri-Topo': {
+              type: 'raster',
+              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
+              tileSize: 256,
+              maxzoom: 18
+            },
+            public_layer: {
+              type: 'vector',
+              url: `pmtiles://${PMTILES_URL}`,
+              //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
+              // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
+              attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
             }
           },
-          // {
-          //   id: 'wms-test-layer2',
-          //   type: 'raster',
-          //   source: 'wms-test-source',
-          //   minzoom: 0
-          // }
-          {
-            id: 'invasivesbc-pmtile-vector',
-            source: 'public_layer',
-            'source-layer': 'invasives',
-            type: 'fill',
-            paint: {
-              'fill-color': 'lightskyblue'
+          layers: [
+            {
+              id: 'Esri-Sat-LayerHD',
+              type: 'raster',
+              source: 'Esri-Sat-LayerHD',
+              minzoom: 0
             },
-            minzoom: 0,
-            maxzoom: 24
-          },
-          {
-            id: 'iapp-pmtile-vector',
-            source: 'public_layer',
-            'source-layer': 'iapp',
-            type: 'circle',
-            paint: {
-              'circle-color': 'limegreen'
+            {
+              id: 'Esri-Sat-LayerSD',
+              type: 'raster',
+              source: 'Esri-Sat-LayerSD',
+              minzoom: 0
             },
-            minzoom: 0,
-            maxzoom: 24
-          },
-          {
-            id: 'invasivesbc-pmtile-vector-label',
-            source: 'public_layer',
-            'source-layer': 'invasives',
-            type: 'symbol',
-            layout: {
-              //                'icon-image': 'dog-park-11',
-              'text-field': [
-                'format',
-                ['upcase', ['get', 'id']],
-                { 'font-scale': 0.9 },
-                '\n',
-                {},
-                ['get', 'map_symbol'],
-                { 'font-scale': 0.9 }
-              ],
-              // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-              'text-font': ['literal', ['Open Sans Bold']],
-              // 'text-font': ['literal', ['Open Sans Semibold']],
-              'text-offset': [0, 0.6],
-              'text-anchor': 'top'
+            {
+              id: 'Esri-Sat-Label',
+              type: 'raster',
+              source: 'Esri-Sat-Label',
+              minzoom: 0
             },
-            paint: {
-              'text-color': 'black',
-              'text-halo-color': 'white',
-              'text-halo-width': 1,
-              'text-halo-blur': 1
+            {
+              id: 'Esri-Topo',
+              type: 'raster',
+              source: 'Esri-Topo',
+              minzoom: 0,
+              layout: {
+                visibility: 'none'
+              }
             },
-            minzoom: 0,
-            maxzoom: 24
-          },
-          {
-            id: 'iapp-pmtile-vector-label',
-            source: 'public_layer',
-            'source-layer': 'iapp',
-            type: 'symbol',
-            layout: {
-              'text-field': [
-                'format',
-                ['concat', 'IAPP Site: ', ['get', 'site_id']],
-                { 'font-scale': 0.9 },
-                '\n',
-                {},
-                ['get', 'map_symbol'],
-                { 'font-scale': 0.9 }
-              ],
-              // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-              'text-font': ['literal', ['Open Sans Bold']],
-              // 'text-font': ['literal', ['Open Sans Semibold']],
-              'text-offset': [0, 0.6],
-              'text-anchor': 'top'
+            // {
+            //   id: 'wms-test-layer2',
+            //   type: 'raster',
+            //   source: 'wms-test-source',
+            //   minzoom: 0
+            // }
+            {
+              id: 'invasivesbc-pmtile-vector',
+              source: 'public_layer',
+              'source-layer': 'invasives',
+              type: 'fill',
+              paint: {
+                'fill-color': 'lightskyblue'
+              },
+              minzoom: 0,
+              maxzoom: 24
             },
-            paint: {
-              'text-color': 'black',
-              'text-halo-color': 'white',
-              'text-halo-width': 1,
-              'text-halo-blur': 1
+            {
+              id: 'iapp-pmtile-vector',
+              source: 'public_layer',
+              'source-layer': 'iapp',
+              type: 'circle',
+              paint: {
+                'circle-color': 'limegreen'
+              },
+              minzoom: 0,
+              maxzoom: 24
             },
-            minzoom: 0,
-            maxzoom: 24
-          }
-        ]
-      }
-    });
+            {
+              id: 'invasivesbc-pmtile-vector-label',
+              source: 'public_layer',
+              'source-layer': 'invasives',
+              type: 'symbol',
+              layout: {
+                //                'icon-image': 'dog-park-11',
+                'text-field': [
+                  'format',
+                  ['upcase', ['get', 'id']],
+                  { 'font-scale': 0.9 },
+                  '\n',
+                  {},
+                  ['get', 'map_symbol'],
+                  { 'font-scale': 0.9 }
+                ],
+                // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+                'text-font': ['literal', ['Open Sans Bold']],
+                // 'text-font': ['literal', ['Open Sans Semibold']],
+                'text-offset': [0, 0.6],
+                'text-anchor': 'top'
+              },
+              paint: {
+                'text-color': 'black',
+                'text-halo-color': 'white',
+                'text-halo-width': 1,
+                'text-halo-blur': 1
+              },
+              minzoom: 0,
+              maxzoom: 24
+            },
+            {
+              id: 'iapp-pmtile-vector-label',
+              source: 'public_layer',
+              'source-layer': 'iapp',
+              type: 'symbol',
+              layout: {
+                'text-field': [
+                  'format',
+                  ['concat', 'IAPP Site: ', ['get', 'site_id']],
+                  { 'font-scale': 0.9 },
+                  '\n',
+                  {},
+                  ['get', 'map_symbol'],
+                  { 'font-scale': 0.9 }
+                ],
+                // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+                'text-font': ['literal', ['Open Sans Bold']],
+                // 'text-font': ['literal', ['Open Sans Semibold']],
+                'text-offset': [0, 0.6],
+                'text-anchor': 'top'
+              },
+              paint: {
+                'text-color': 'black',
+                'text-halo-color': 'white',
+                'text-halo-width': 1,
+                'text-halo-blur': 1
+              },
+              minzoom: 0,
+              maxzoom: 24
+            }
+          ]
+        }
+      });
 
-    let scale = new ScaleControl({
-      maxWidth: 80,
-      unit: 'metric'
+      let scale = new ScaleControl({
+        maxWidth: 80,
+        unit: 'metric'
+      });
+      let nav = new NavigationControl();
+      map.current.addControl(scale, 'top-left');
+      map.current.addControl(nav, 'top-left');
+      /*refreshDrawControls(
+        map.current,
+        null,
+        drawSetter,
+        dispatch,
+        uHistory,
+        whats_here_toggle,
+        appModeUrl,
+        activityGeo,
+        null
+      );*/
     });
-    let nav = new NavigationControl();
-    map.current.addControl(scale, 'top-left');
-    map.current.addControl(nav, 'top-left');
-    /*refreshDrawControls(
-      map.current,
-      null,
-      drawSetter,
-      dispatch,
-      uHistory,
-      whats_here_toggle,
-      appModeUrl,
-      activityGeo,
-      null
-    );*/
   });
 };
 
@@ -720,7 +721,6 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
 };
 
-
 const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_toggle) => (e) => {
   //enforce one at a time everywhere
   const feature = e.features[0];
@@ -736,7 +736,10 @@ const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_t
 
   // For whats here
   if (whats_here_toggle) {
-    dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: { type: 'Feature', geometry: feature.geometry } } });
+    dispatch({
+      type: MAP_WHATS_HERE_FEATURE,
+      payload: { feature: { type: 'Feature', geometry: feature.geometry } }
+    });
     uHistory.push('/WhatsHere');
   } else {
     dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
@@ -746,7 +749,6 @@ const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_t
 const customDrawListenerUpdate = (drawInstance: MapboxDraw) => (e) => {
   const feature = e.features[0];
   console.dir(feature);
-
 };
 
 const customDrawListenerSelectionChange = (drawInstance: MapboxDraw, dispatch) => (e) => {
@@ -761,7 +763,6 @@ const customDrawListenerSelectionChange = (drawInstance: MapboxDraw, dispatch) =
   }
 };
 
-
 const attachedListeners: WeakRef<Function>[] = [];
 
 export const initDrawModes = (
@@ -773,8 +774,8 @@ export const initDrawModes = (
   activityGeo,
   whats_here_toggle,
   drawingCustomLayer,
-  draw) => {
-
+  draw
+) => {
   console.log('Map event listeners:');
   console.dir(map?._listeners);
 
@@ -799,7 +800,7 @@ export const initDrawModes = (
   });
 
   var DoNothing: any = {};
-  DoNothing.onSetup = function(opts) {
+  DoNothing.onSetup = function (opts) {
     //  if(map.draw && activityGeo)
     if (activityGeo) {
       this.addFeature(this.newFeature(activityGeo[0]));
@@ -809,11 +810,11 @@ export const initDrawModes = (
     state.count = opts.count || 0;
     return state;
   };
-  DoNothing.onClick = function(state, e) {
+  DoNothing.onClick = function (state, e) {
     this.changeMode('draw_polygon');
   };
 
-  DoNothing.toDisplayFeatures = function(state, geojson, display) {
+  DoNothing.toDisplayFeatures = function (state, geojson, display) {
     geojson.properties.active = MapboxDraw.constants.activeStates.ACTIVE;
     display(geojson);
   };
@@ -828,14 +829,14 @@ export const initDrawModes = (
   // When the mode starts this function will be called.
   // The `opts` argument comes from `draw.changeMode('lotsofpoints', {count:7})`.
   // The value returned should be an object and will be passed to all other lifecycle functions
-  LotsOfPointsMode.onSetup = function(opts) {
+  LotsOfPointsMode.onSetup = function (opts) {
     var state: any = {};
     state.count = opts.count || 0;
     return state;
   };
 
   // Whenever a user clicks on the map, Draw will call `onClick`
-  LotsOfPointsMode.onClick = function(state, e) {
+  LotsOfPointsMode.onClick = function (state, e) {
     // `this.newFeature` takes geojson and makes a DrawFeature
     var point = this.newFeature({
       type: 'Feature',
@@ -851,7 +852,7 @@ export const initDrawModes = (
   };
 
   // Whenever a user clicks on a key while focused on the map, it will be sent here
-  LotsOfPointsMode.onKeyUp = function(state, e) {
+  LotsOfPointsMode.onKeyUp = function (state, e) {
     if (e.keyCode === 27) return this.changeMode('simple_select');
   };
 
@@ -859,7 +860,7 @@ export const initDrawModes = (
   // It decides which features currently in Draw's data store will be rendered on the map.
   // All features passed to `display` will be rendered, so you can pass multiple display features per internal feature.
   // See `styling-draw` in `API.md` for advice on making display features
-  LotsOfPointsMode.toDisplayFeatures = function(state, geojson, display) {
+  LotsOfPointsMode.toDisplayFeatures = function (state, geojson, display) {
     display(geojson);
   };
 
@@ -884,7 +885,6 @@ export const initDrawModes = (
   });
 
   drawSetter(localDraw);
-
 
   const drawCreateListener = customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle);
   const drawUpdatelistener = customDrawListenerUpdate(localDraw);
@@ -1026,7 +1026,17 @@ export const refreshDrawControls = (
       initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle, null, draw);
     } else if (/Records/.test(appModeUrl)) {
       if (/Activity/.test(appModeUrl)) {
-        initDrawModes(map, drawSetter, dispatch, uHistory, false, activityGeo, whatsHereToggle, drawingCustomLayer, draw);
+        initDrawModes(
+          map,
+          drawSetter,
+          dispatch,
+          uHistory,
+          false,
+          activityGeo,
+          whatsHereToggle,
+          drawingCustomLayer,
+          draw
+        );
       } else {
         initDrawModes(map, drawSetter, dispatch, uHistory, false, null, whatsHereToggle, drawingCustomLayer, draw);
       }
@@ -1042,34 +1052,26 @@ export const refreshDrawControls = (
     */
 };
 
-
 export const refreshWhatsHereFeature = (map, options: any) => {
-
   const layerID = 'WhatsHereFeatureLayer';
   try {
-
-  if (map && map.getLayer(layerID + 'shape')) {
-    map.removeLayer(layerID + 'shape');
-  }
-  if (map && map.getLayer(layerID + 'outline')) {
-    map.removeLayer(layerID + 'outline');
-  }
-  if (map && map.getSource(layerID)) {
-    map.removeSource(layerID);
-  }
-  }
-  catch(e) {
+    if (map && map.getLayer(layerID + 'shape')) {
+      map.removeLayer(layerID + 'shape');
+    }
+    if (map && map.getLayer(layerID + 'outline')) {
+      map.removeLayer(layerID + 'outline');
+    }
+    if (map && map.getSource(layerID)) {
+      map.removeSource(layerID);
+    }
+  } catch (e) {
     console.log(e);
   }
 
+  console.log('***whatsherefeature');
+  console.dir(options);
 
-  console.log('***whatsherefeature')
-  console.dir(options)
-
-  if (
-    map &&
-    options?.whatsHereFeature?.geometry 
-  ) {
+  if (map && options?.whatsHereFeature?.geometry) {
     map
       .addSource(layerID, {
         type: 'geojson',
@@ -1098,9 +1100,9 @@ export const refreshWhatsHereFeature = (map, options: any) => {
         },
         minzoom: 0,
         maxzoom: 24
-      })
+      });
   }
-}
+};
 
 export const refreshCurrentRecMakers = (map, options: any) => {
   if (options.IAPPMarker && options.currentIAPPGeo?.geometry && options.currentIAPPID) {
@@ -1112,9 +1114,15 @@ export const refreshCurrentRecMakers = (map, options: any) => {
     options.activityMarker.addTo(map);
   }
 
-  if(options.whatsHereMarker && (options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry)) {
-    console.dir(options)
-    options.whatsHereMarker.setLngLat(centroid(options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry).geometry?.coordinates)
+  if (
+    options.whatsHereMarker &&
+    (options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry)
+  ) {
+    console.dir(options);
+    options.whatsHereMarker.setLngLat(
+      centroid(options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry)
+        .geometry?.coordinates
+    );
     options.whatsHereMarker.addTo(map);
   }
 };

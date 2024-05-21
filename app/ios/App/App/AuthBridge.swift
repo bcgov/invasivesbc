@@ -19,7 +19,8 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
     public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "authStart", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "authStatus", returnType: CAPPluginReturnPromise),
-        CAPPluginMethod(name: "token", returnType: CAPPluginReturnPromise)
+        CAPPluginMethod(name: "token", returnType: CAPPluginReturnPromise),
+        CAPPluginMethod(name: "logout", returnType: CAPPluginReturnPromise)
     ]
     
     @objc func token(_ call: CAPPluginCall) {
@@ -37,7 +38,13 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
               return
             }
             
-            call.resolve(["accessToken": accessToken]);
+            guard let idToken = idToken else {
+                call.resolve(["error": "No id token available"])
+
+              return
+            }
+            
+            call.resolve(["accessToken": accessToken, "idToken": idToken]);
         }
         
     }
@@ -50,14 +57,17 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         ])
     }
     
+    
+    @objc func logout(_ call: CAPPluginCall) {
+        self.authState = nil
+        call.resolve([:])
+    }
+    
     @objc func authStart(_ call: CAPPluginCall) {
-        let value = call.getString("value") ?? ""
-        
         let authorizationEndpoint = URL(string: "http://localhost:8080/auth/realms/invasives/protocol/openid-connect/auth")!
         let tokenEndpoint = URL(string: "http://localhost:8080/auth/realms/invasives/protocol/openid-connect/token")!
         let configuration = OIDServiceConfiguration(authorizationEndpoint: authorizationEndpoint,
                                                     tokenEndpoint: tokenEndpoint)
-        //let redirectURI = URL(string:"https://invasivesbc.gov.bc.ca/")!
         let redirectURI = URL(string:"invasivesbc://callback")!
         let clientID = "invasivesbc"
         
@@ -80,10 +90,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                     topController = presentedViewController
                 }
                 ivc = topController
-
-                // topController should now be your topmost view controller
             }
-            
             
             appDelegate.authBridgeInstance = self
             
@@ -93,7 +100,8 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                     self.authState = authState
                     call.resolve([
                         "authorized": true,
-                        "accessToken": authState.lastTokenResponse?.accessToken as Any
+                        "accessToken": authState.lastTokenResponse?.accessToken as Any,
+                        "idToken": authState.lastTokenResponse?.idToken as Any
                      ])
                     print("Got authorization tokens. Access token: " +
                           "\(authState.lastTokenResponse?.accessToken ?? "nil")")
