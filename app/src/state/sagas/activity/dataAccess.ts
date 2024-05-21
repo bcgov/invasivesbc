@@ -148,6 +148,7 @@ function isNumber(value?: string | number): boolean {
 }
 
 export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
+  const activityState = yield select(selectActivity);
   try {
     // get spatial fields based on geo
     const { latitude, longitude } = calculateLatLng(action.payload.geometry) || {};
@@ -207,8 +208,9 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     }
 
     let wellInformationArr = [];
+    let nearestWells = null;
+    let areWellsInside = false;
     if (reported_area < MAX_AREA) {
-      let nearestWells = null;
       if (latitude && longitude) {
         nearestWells = yield getClosestWells(sanitizedGeo, true);
       }
@@ -220,7 +222,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
           }
         ];
       } else {
-        const { well_objects, areWellsInside } = nearestWells;
+        const { well_objects} = nearestWells;
+        areWellsInside = nearestWells.areWellsInside;
         console.dir(well_objects);
         well_objects.forEach((well) => {
           if (well.proximity || well.inside) {
@@ -243,6 +246,21 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       geoToTest = sanitizedGeo;
     }
     if (sanitizedGeo) isWithinBC = booleanContains(BC_AREA.features[0] as any, geoToTest as any);
+
+
+    if (activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' && areWellsInside) {
+      yield put({
+        type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+        payload: {
+          notification: {
+            visible: true,
+            message: 'Warning!  Wells inside treatment area',
+            severity: 'warning'
+          }
+        }
+      });
+
+    }
 
     if (!isWithinBC) {
       yield put({
