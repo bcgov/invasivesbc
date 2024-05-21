@@ -2,13 +2,14 @@ import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
 import { Http } from '@capacitor-community/http';
 import { Store } from 'redux';
 import { RootState } from '../reducers/rootReducer';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
   return async (error: Error, errorInfo: { sagaStack: string }) => {
     console.error('unhandled error in saga');
     console.error(error.message);
     console.error(errorInfo.sagaStack);
-    console.error(error)
+    console.error(error);
 
     if (storeRefHolder.store == null) {
       console.error('Missing store ref when handling saga error');
@@ -59,7 +60,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
       await Http.request({
         method: 'POST',
         headers: {
-          ...state.Auth.requestHeaders,
+          Authorization: await getCurrentJWT(),
           'Content-Type': 'application/json'
         },
         url: state.Configuration.current.API_BASE + `/api/error/`,

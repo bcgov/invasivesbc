@@ -1,8 +1,7 @@
 import { Http } from '@capacitor-community/http';
 import qs from 'qs';
 import { useContext } from 'react';
-import { IBatchUploadRequest } from '../components/batch-upload/BatchUploader';
-import { DocType } from '../constants/database';
+import { DocType } from 'constants/database';
 //import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
   IActivitySearchCriteria,
@@ -12,12 +11,11 @@ import {
   IMetabaseQuerySearchCriteria,
   IPointOfInterestSearchCriteria,
   IRisoSearchCriteria
-} from '../interfaces/useInvasivesApi-interfaces';
-import { IShapeUploadRequest } from '../components/map-buddy-components/KMLShapesUpload';
-import { selectConfiguration } from '../state/reducers/configuration';
-import { selectAuthHeaders } from '../state/reducers/auth';
+} from 'interfaces/useInvasivesApi-interfaces';
+import { selectConfiguration } from 'state/reducers/configuration';
 import { select } from 'redux-saga/effects';
 import { useSelector } from 'utils/use_selector';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 /**
  * Returns a set of supported api methods.
@@ -30,10 +28,11 @@ export const useInvasivesApi = () => {
   const errorContext = {} as any;
   const { API_BASE } = useSelector(selectConfiguration);
   const DEBUG = false;
-  const requestHeaders = useSelector(selectAuthHeaders);
 
   const getRequestOptions = async () => {
-    if (!requestHeaders.authorization) {
+    const header = await getCurrentJWT();
+
+    if (!header) {
       console.error(`No authorization header in state`);
       return {
         baseUrl: API_BASE,
@@ -42,7 +41,7 @@ export const useInvasivesApi = () => {
     }
     return {
       baseUrl: API_BASE,
-      headers: { Authorization: `${requestHeaders.authorization}` }
+      headers: { Authorization: header }
     };
   };
 
@@ -1031,7 +1030,7 @@ export const useInvasivesApi = () => {
    // * @param {IBatchUploadRequest} uploadRequest
    * @return {*}  {Promise<any>}
    */
-  const postBatchUpload = async (uploadRequest: IBatchUploadRequest): Promise<any> => {
+  const postBatchUpload = async (uploadRequest): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       method: 'POST',
@@ -1119,7 +1118,7 @@ export const useInvasivesApi = () => {
    // * @param {IShapeUploadRequest} uploadRequest
    * @return {*}  {Promise<any>}
    */
-  const postAdminUploadShape = async (uploadRequest: IShapeUploadRequest): Promise<any> => {
+  const postAdminUploadShape = async (uploadRequest): Promise<any> => {
     const options = await getRequestOptions();
     const { data, status, url } = await Http.request({
       method: 'POST',
@@ -1259,13 +1258,6 @@ export const useInvasivesApi = () => {
   };
 };
 
-export const getRequestOptions = (config, requestHeaders) => {
-  return {
-    baseUrl: config.API_BASE,
-    headers: { Authorization: requestHeaders.authorization }
-  };
-};
-
 export async function InvasivesAPI_Callback(method, endpoint, payloadData?, options?) {
   const { data, status, url } = await Http.request({
     method: method,
@@ -1279,9 +1271,13 @@ export async function InvasivesAPI_Callback(method, endpoint, payloadData?, opti
 
 export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHeaders?) {
   // get config and request setup from store
-  const requestOptions = yield select(selectAuthHeaders);
   const config = yield select(selectConfiguration);
-  const options = getRequestOptions(config, requestOptions);
+  const options = {
+    headers: {
+      Authorization: yield getCurrentJWT()
+    },
+    baseUrl: config.API_BASE
+  };
 
   //this is a bit of a hack. this whole function needs a rewrite
   let params;

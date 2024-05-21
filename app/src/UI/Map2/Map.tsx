@@ -10,27 +10,26 @@ import centroid from '@turf/centroid';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useHistory } from 'react-router-dom';
 import {
-  mapInit,
-  rebuildLayersOnTableHashUpdate,
-  refreshColoursOnColourUpdate,
-  refreshVisibilityOnToggleUpdate,
-  removeDeletedRecordSetLayersOnRecordSetDelete,
+  addClientBoundariesIfNotExists,
+  addServerBoundariesIfNotExists,
   addWMSLayersIfNotExist,
   handlePositionTracking,
-  toggleLayerOnBool,
-  initDrawModes,
-  refreshDrawControls,
-  refreshCurrentRecMakers,
-  refreshHighlightedRecord,
-  refreshWMSOnToggle,
-  addServerBoundariesIfNotExists,
-  refreshServerBoundariesOnToggle,
-  addClientBoundariesIfNotExists,
+  mapInit,
+  rebuildLayersOnTableHashUpdate,
   refreshClientBoundariesOnToggle,
-  refreshWhatsHereFeature
+  refreshColoursOnColourUpdate,
+  refreshCurrentRecMakers,
+  refreshDrawControls,
+  refreshHighlightedRecord,
+  refreshServerBoundariesOnToggle,
+  refreshVisibilityOnToggleUpdate,
+  refreshWhatsHereFeature,
+  refreshWMSOnToggle,
+  removeDeletedRecordSetLayersOnRecordSetDelete,
+  toggleLayerOnBool
 } from './Helpers';
 import { useSelector } from 'utils/use_selector';
-import { opacify } from 'color2k';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 /*
 
@@ -133,8 +132,8 @@ export const Map = (props: any) => {
       activityGeo,
       null,
       API_BASE,
-      () => {
-        return store.getState().Auth.requestHeaders;
+      async () => {
+        return await getCurrentJWT();
       },
       PUBLIC_MAP_URL,
       map_center

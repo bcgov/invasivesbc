@@ -4,7 +4,7 @@ import { createRootReducer } from './reducers/rootReducer';
 import { createLogger } from 'redux-logger';
 import { AUTH_INITIALIZE_REQUEST, URL_CHANGE } from './actions';
 import activityPageSaga from './sagas/activity';
-import authenticationSaga from './sagas/auth';
+import authenticationSaga from './sagas/auth/auth';
 import batchSaga from './sagas/batch';
 import emailSettingsSaga from './sagas/email-setup/emailSettings';
 import emailTemplatesSaga from './sagas/email-setup/emailTemplates';
@@ -37,15 +37,12 @@ export function setupStore(configuration: AppConfig) {
     logErrors: true,
     diff: true,
     diffPredicate: (getState, action) => {
-      if (
-        action.type.includes('RECORDSET_SET_SORT')
-      ) {
+      if (action.type.includes('RECORDSET_SET_SORT')) {
         return true;
       }
       return false;
     }
   });
-
 
   if (!configuration.TEST && configuration.DEBUG) {
     globalStore = configureStore({
@@ -104,7 +101,6 @@ export function setupStore(configuration: AppConfig) {
   storeRef.store = globalStore;
 
   return { store: globalStore, persistor: persistStore(globalStore) };
-
 }
 
 export { historySingleton };
