@@ -70,35 +70,34 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
 
 export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
   try {
+    const currentState = yield select((state) => state?.UserSettings);
+    const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
+    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
 
-  const currentState = yield select((state) => state.UserSettings);
-  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
-  let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
 
-  // abort if already a stale hash
-  const mapState = yield select((state) => state.Map);
-  const tableFiltersHash = mapState?.layers?.filter((layer) => {
-    return layer?.recordSetID === action.payload.recordSetID;
-  })?.[0]?.tableFiltersHash;
 
-  if (!tableFiltersHash === action.payload.tableFiltersHash) {
-    return;
-  }
+    // abort if already a stale hash
+    const mapState = yield select((state) => state.Map);
+    const tableFiltersHash = mapState?.layers?.filter((layer) => {
+      return layer?.recordSetID === action.payload.recordSetID;
+    })?.[0]?.tableFiltersHash;
 
-  yield put({
-    type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-    payload: {
-      filterObject: filterObject,
-      recordSetID: action.payload.recordSetID,
-      tableFiltersHash: action.payload.tableFiltersHash,
-      recordSetType: action.payload.recordSetType
+    if (!tableFiltersHash === action.payload.tableFiltersHash) {
+      return;
     }
-  });
-  }
-  catch(e)
-  {
+
+    yield put({
+      type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
+      payload: {
+        filterObject: filterObject,
+        recordSetID: action.payload.recordSetID,
+        tableFiltersHash: action.payload.tableFiltersHash,
+        recordSetType: action.payload.recordSetType
+      }
+    });
+  } catch (e) {
     console.error(e);
-    throw e
+    throw e;
   }
 
   //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
@@ -180,6 +179,10 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
       ? filter
       : { ...filter, geojson: getFilterWithDrawnShape(filter.filter) };
   });
+
+  if(!modifiedTableFilters) {
+    modifiedTableFilters = [];
+  }
 
   console.log('recordSetID', recordSetID);
   console.log('typof recordSetID', typeof recordSetID);

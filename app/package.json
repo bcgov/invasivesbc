@@ -196,7 +196,7 @@
     "state_test_coverage": "CONFIGURATION_SOURCE=Provided vitest run --coverage --coverage.include=state/**/*.ts --config vitest.config.ts",
     "state_test_coverage_gh": "CONFIGURATION_SOURCE=Provided vitest run --coverage --coverage.include=state/**/*.ts  --coverage.reporter=json-summary --coverage.reporter=json --config vitest.config.ts",
     "lint:fix": "npm run lint -- --fix",
-    "start": "CONFIGURATION_SOURCE=Provided vite serve --port 3000 --strictPort",
+    "start": "CONFIGURATION_SOURCE=Provided vite serve --host --port 3000 --strictPort",
     "start:jeep": "CONFIGURATION_SOURCE=Provided JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
     "start:mobileMode": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE KEYCLOAK_ADAPTER=web JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
     "build": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Provided vite build",
