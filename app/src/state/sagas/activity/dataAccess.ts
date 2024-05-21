@@ -143,19 +143,39 @@ const fixMisLabledMultiPolygon = (input) => {
   }
 };
 
+function isNumber(value?: string | number): boolean {
+  return value != null && value !== '' && !isNaN(Number(value.toString()));
+}
+
 export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   try {
     // get spatial fields based on geo
     const { latitude, longitude } = calculateLatLng(action.payload.geometry) || {};
     let utm;
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
-    let reported_area = calculateGeometryArea(action.payload.geometry);
+    let modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry));
 
-    if (action.payload.geometry.length < 1) {
+    if (action.payload.geometry && action.payload.geometry.length > 0) {
+      if (action.payload.geometry[0].geometry.type === 'Point') {
+        // if not radius in properties:
+        if (!action.payload.geometry[0].properties.radius) {
+          let userEnteredArea = undefined;
+          while (!(isNumber(userEnteredArea) && userEnteredArea !== null && ([1,5,10].includes(Number(userEnteredArea))))) {
+            userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):'));
+          }
+          const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
+          modifiedPayload[0].properties.radius = radiusBasedOnArea;
+        }
+      }
+    }
+
+    let reported_area = calculateGeometryArea(modifiedPayload.geometry);
+
+    if (modifiedPayload.length < 1) {
       yield put({
         type: ACTIVITY_UPDATE_GEO_SUCCESS,
         payload: {
-          geometry: action.payload.geometry,
+          geometry: modifiedPayload.geometry,
           utm: utm,
           lat: latitude,
           long: longitude,
@@ -165,7 +185,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       });
       return;
     }
-    const sanitizedGeo = fixMisLabledMultiPolygon(action.payload.geometry[0]);
+    const sanitizedGeo = fixMisLabledMultiPolygon(modifiedPayload[0]);
     const isPointGeometry = sanitizedGeo.geometry.type === 'Point';
     reported_area = calculateGeometryArea([sanitizedGeo]);
     if (!isPointGeometry) {
@@ -707,7 +727,7 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
 export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
   try {
     const beforeState = yield select(selectActivity);
-    let beforeActivityMedia = JSON.parse(JSON.stringify(beforeState.activity.media))
+    let beforeActivityMedia = JSON.parse(JSON.stringify(beforeState.activity.media));
     const photoIndex = beforeActivityMedia.findIndex((photo) => photo.file_name === action.payload.photo.file_name);
 
     if (photoIndex >= 0) {
