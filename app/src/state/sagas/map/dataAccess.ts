@@ -69,6 +69,8 @@ export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
 }
 
 export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
+  try {
+
   const currentState = yield select((state) => state.UserSettings);
   const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
   let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
@@ -92,6 +94,12 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
       recordSetType: action.payload.recordSetType
     }
   });
+  }
+  catch(e)
+  {
+    console.error(e);
+    throw e
+  }
 
   //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
   //  filterObject.limit = 200000;
