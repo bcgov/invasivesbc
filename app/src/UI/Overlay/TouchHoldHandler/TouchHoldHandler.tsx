@@ -7,6 +7,7 @@ import './TouchHoldHandler.css';
 export const TouchHoldHandler = (props) => {
   const dispatch = useDispatch();
   const [shouldProgress, setShouldProgress] = useState(false);
+  const [shouldOpen, setShouldOpen] = useState(false);
   const [progress, setProgress] = useState(0);
 
   const userRecordOnHoverRecordType = useSelector((state: any) => state.Map?.userRecordOnHoverRecordType);
@@ -16,7 +17,10 @@ export const TouchHoldHandler = (props) => {
   useEffect(() => {
     let touchLoaderBar = document.getElementById('touch-loader-bar');
     let touchLoader = document.getElementById('touch-loader');
+    console.log('initial touch hook')
     window.addEventListener('touchstart', (event) => {
+      console.log('in touch event')
+      setProgress(0);
       touchLoader.style.visibility = 'visible';
       touchLoader.style.left = `${event.touches[0].clientX.toString()}px`;
       touchLoader.style.bottom = `${(window.innerHeight - event.touches[0].clientY).toString()}px`;
@@ -25,33 +29,25 @@ export const TouchHoldHandler = (props) => {
     });
 
     window.addEventListener('touchend', (event) => {
-      setShouldProgress(false);
-      setProgress(0);
       touchLoaderBar.style.width = 0 + '%';
       touchLoader.style.visibility = 'hidden';
     });
   }, []);
 
   useEffect(() => {
+    console.log('should progress hook')
     if (shouldProgress && progress == 0) {
       setProgress(1);
-      var width = 1;
 
+      var width = 1
       const frame = () => {
         let touchLoaderBar = document.getElementById('touch-loader-bar');
-        window.addEventListener('touchend', (event) => {
-          let touchLoader = document.getElementById('touch-loader');
-          if (touchLoader) touchLoader.style.visibility = 'hidden';
-          clearInterval(id);
-          setProgress(0);
-          setShouldProgress(false);
-        });
-        if (width >= 100) {
+        if (width >= 500) {
           clearInterval(id);
           openMenu();
           setProgress(0);
-        } else {
-          width++;
+        } else if(shouldProgress) {
+          width++
           if (touchLoaderBar) touchLoaderBar.style.width = width + '%';
         }
       };
@@ -60,7 +56,6 @@ export const TouchHoldHandler = (props) => {
   }, [shouldProgress]);
 
   const openMenu = () => {
-    if (shouldProgress) {
       dispatch({
         type: USER_CLICKED_RECORD,
         payload: {
@@ -69,7 +64,6 @@ export const TouchHoldHandler = (props) => {
           row: userRecordOnHoverRecordRow
         }
       });
-    }
   };
 
   return (
