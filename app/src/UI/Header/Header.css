@@ -1,25 +1,32 @@
-
-#appTitle {
-  font-weight: bold;
-  padding-left: 5px;
-  
-
+@media only screen and (max-width: 800px) {
+  #appTitle {
+    font-weight: bold;
+    padding-left: 5px;
+    overflow:hidden;
+    width: 0px;
+  }
+}
+@media only screen and (min-width: 801px) {
+  #appTitle {
+    font-weight: bold;
+    padding-left: 5px;
+  }
 }
 #menu-appbar {
   z-index: 9999999999;
 }
 .HeaderBar {
-   height: 5vh;
-    cursor: pointer;
-    width: 100vw;
-    background-color: #003366;
-    /*position: fixed;*/
-    z-index: 2147483646;
-    /*top: 0;
+  height: 5vh;
+  cursor: pointer;
+  width: 100vw;
+  background-color: #003366;
+  /*position: fixed;*/
+  z-index: 2147483646;
+  /*top: 0;
     left: 0;*/
-    color: white;
-    align-items: center;
-  }
+  color: white;
+  align-items: center;
+}
 
 .ButtonWrapperContainer {
   width: 55%;
@@ -40,7 +47,7 @@
   white-space: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar; 
+  -ms-overflow-style: -ms-autohiding-scrollbar;
   /* justify-content: center; */
   /* width: 80vw; */
 }
@@ -71,35 +78,31 @@
   color: black;
 }
 
-.Tab{
-    display: flex;
-    /* flex-direction: row;
+.Tab {
+  display: flex;
+  /* flex-direction: row;
     flex-flow: row wrap; */
-    align-items: center;
-    padding-right: .5rem;
-
+  align-items: center;
+  padding-right: 0.5rem;
 }
 
 .Tab__Label {
-/*    padding-top: 5px;*/
-    /* align-self: flex-start; */
-    font-size: small;
-
+  /*    padding-top: 5px;*/
+  /* align-self: flex-start; */
+  font-size: small;
 }
 
 .Tab__Content {
-    /* align-self: flex-start */
-
+  /* align-self: flex-start */
 }
 .Tab__Indicator {
   border-bottom-style: solid;
   /*border-radius: 2vh;*/
-  border-width: .5vh;
-  border-color: #FCBA19;
-
-
+  border-width: 0.5vh;
+  border-color: #fcba19;
 }
-.LoginButton, .LogoutButton {
+.LoginButton,
+.LogoutButton {
   display: flex;
   position: fixed;
   align-items: center;
@@ -108,7 +111,6 @@
   margin-right: 10px;
 }
 
-
 .inv-icon {
   display: flex;
   position: fixed;
@@ -116,4 +118,3 @@
   height: 5vh;
   margin: 0 10px;
 }
-  

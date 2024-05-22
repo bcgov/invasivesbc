@@ -4,6 +4,12 @@ import './NewsPage.css';
 export const NewsPage = (props: any) => {
   const newsItems = [
     {
+      title: 'May 21, 2024: Crash fix for some devices', 
+      content: `
+• Some users (particularly those on mobile) may have experienced a crash on startup.  This has been resolved.
+`
+},
+    {
       title: 'May 17, 2024: Photo editing, Draft Issue, and note on Decimals in the Chem Treatment Form', 
       content: `
 • Photos had a bug where hitting the edit icon to rename them did nothing.  This has been fixed.

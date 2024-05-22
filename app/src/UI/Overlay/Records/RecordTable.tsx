@@ -8,8 +8,9 @@ import {
   iappColumnsToDisplay
 } from './RecordTableHelpers';
 import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
-import { detectTouchDevice } from 'utils/detectTouch';
 import { validActivitySortColumns, validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
+import { detectTouchDevice } from 'utils/detectTouch';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
 export const RecordTableHeader = (props) => {};
 
@@ -46,6 +47,11 @@ export const RecordTable = (props) => {
       <table className="record_table">
         <tbody>
           <tr className="record_table_header">
+            {isTouch && (
+              <th className="record_table_header_column" style={{ width: '50px' }}>
+                View/Edit
+              </th>
+            )}
             {tableType === 'Activity'
               ? activityColumnsToDisplay.map((col: any, i) => {
                   return (
@@ -128,6 +134,23 @@ export const RecordTable = (props) => {
                 }}
                 className="record_table_row"
                 key={i}>
+                {isTouch && (
+                  <td
+                  
+                  onTouchStart={(e) => {
+                    dispatch({
+                      type: USER_CLICKED_RECORD,
+                      payload: {
+                        recordType: tableType,
+                        id: tableType === 'Activity' ? row.activity_id : row.site_id,
+                        row: row
+                      }
+                    })}}
+                  
+                  className="record_table_row_column" style={{ width: '50px' }}>
+                    <VisibilityIcon/>
+                  </td>
+                )}
                 {tableType === 'Activity'
                   ? activityColumnsToDisplay.map((col, j) => {
                       return (

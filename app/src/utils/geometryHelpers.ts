@@ -30,7 +30,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
     Otherwise, calculate the area of the polygon using turf
   */
   if (geo.geometry.type === 'Point' && !geo.properties.hasOwnProperty('radius')) {
-    totalArea = 1;
+      totalArea = 1;
   } else if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
     totalArea = Math.PI * Math.pow(geo.properties.radius, 2);
   } else if (geo.geometry.type === 'Polygon') {

@@ -29,7 +29,10 @@ export const LegendsButton = (props) => {
       <Tooltip
         open={show}
         classes={{ tooltip: 'toolTip' }}
-        onMouseEnter={() => setShow(true)}
+        onMouseEnter={() => {
+          setShow(true);
+          setTimeout(() => setShow(false), 3000);
+        }}
         onMouseLeave={() => setShow(false)}
         title="Map Legend"
         placement="top-end">
