@@ -63,7 +63,15 @@ function* handleSignoutRequest(action) {
 
 function* initializeAuthentication() {
   yield put({
-    type: AUTH_REQUEST_COMPLETE,
+    type: TABS_GET_INITIAL_STATE_REQUEST,
+    payload: {
+      authenticated: false,
+      activated: false
+    }
+  });
+
+  yield put({
+    type: AUTH_INITIALIZE_COMPLETE,
     payload: {
       idToken: null
     }

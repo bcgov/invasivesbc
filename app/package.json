@@ -178,17 +178,17 @@
     "react-error-overlay": "6.0.9"
   },
   "scripts": {
-    "build:android": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE vite build",
-    "build:ios": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE vite build",
-    "test": "CONFIGURATION_SOURCE=Provided vitest --config vitest.config.ts",
+    "build:android": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE VITE_MOBILE=TRUE vite build",
+    "build:ios": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE VITE_MOBILE=TRUE vite build",
+    "test": "CONFIGURATION_SOURCE=Provided VITE_MOBILE=FALSE vitest --config vitest.config.ts",
     "state_test_coverage": "CONFIGURATION_SOURCE=Provided vitest run --coverage --coverage.include=state/**/*.ts --config vitest.config.ts",
     "state_test_coverage_gh": "CONFIGURATION_SOURCE=Provided vitest run --coverage --coverage.include=state/**/*.ts  --coverage.reporter=json-summary --coverage.reporter=json --config vitest.config.ts",
     "lint:fix": "npm run lint -- --fix",
-    "start": "CONFIGURATION_SOURCE=Provided vite serve --host --port 3000 --strictPort",
-    "start:jeep": "CONFIGURATION_SOURCE=Provided JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
-    "start:mobileMode": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE KEYCLOAK_ADAPTER=web JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
-    "build": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Provided vite build",
-    "build-prod": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Caddy vite build -l error",
+    "start": "CONFIGURATION_SOURCE=Provided VITE_MOBILE=FALSE vite serve --port 3000 --strictPort",
+    "start:jeep": "CONFIGURATION_SOURCE=Provided JEEPSQLITE=TRUE VITE_MOBILE=FALSE vite serve --port 3000 --strictPort",
+    "start:mobileMode": "CONFIGURATION_SOURCE=Provided MOBILE=TRUE VITE_MOBILE=FALSE KEYCLOAK_ADAPTER=web JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
+    "build": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Provided VITE_MOBILE=FALSE vite build",
+    "build-prod": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Caddy VITE_MOBILE=FALSE vite build -l error",
     "preview": "vite preview --port 3000"
   },
   "jest": {

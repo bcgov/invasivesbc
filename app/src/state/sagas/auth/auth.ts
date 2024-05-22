@@ -19,7 +19,7 @@ type withCurrentJWTCallback = (header: string) => Promise<any>;
 
 async function withCurrentJWT(callback: withCurrentJWTCallback) {
   // make a build-time determination about which version of the function to use
-  if (import.meta.env['MOBILE']) {
+  if (import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true') {
     const { idToken } = await AuthBridge.token({});
     const header = `Bearer ${idToken}`;
     return await callback(header);

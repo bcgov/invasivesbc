@@ -58,6 +58,10 @@
 			</array>
 		</dict>
 	</array>
+	<key>SSO_BASE_URL</key>
+	<string>${SSO_BASE_URL}</string>
+	<key>SSO_CLIENT_ID</key>
+	<string>${SSO_CLIENT_ID}</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>

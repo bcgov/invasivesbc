@@ -376,6 +376,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "InvasivesBC - Plants and Animals - 2023/24";
+				SSO_BASE_URL = "http://localhost:8080/auth/realms/invasives";
+				SSO_CLIENT_ID = invasivesbc;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -409,6 +411,8 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "InvasivesBC - Plants and Animals - 2023/24";
+				SSO_BASE_URL = "http://localhost:8080/auth/realms/invasives";
+				SSO_CLIENT_ID = invasivesbc;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
