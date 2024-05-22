@@ -182,7 +182,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
     let filterObject: any = {
       recordSetType: 'Activity',
       tableFilters: [
-        { id: '2', field: 'form_status', operator: 'CONTAINS', filterType: 'tableFilter', filter: 'Submitted' },
+        { id: '2', field: 'form_status', operator1: 'CONTAINS', operator2: 'AND', filterType: 'tableFilter', filter: 'Submitted' },
         {
           id: '3',
           field: 'activity_subtype',

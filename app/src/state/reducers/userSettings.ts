@@ -300,7 +300,9 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
                 id: '1',
                 field: 'form_status',
                 filterType: 'tableFilter',
-                filter: 'Draft'
+                filter: 'Draft',
+                operator1: 'CONTAINS',
+                operator2: 'AND'
               }
             ];
           }

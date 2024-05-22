@@ -284,15 +284,6 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
       }
     });
   }
-  // check for form status in filters:
-  const formStatusFilter = sanitizedTableFilters.find((filter) => filter.field === 'form_status');
-  if (!formStatusFilter) {
-    sanitizedTableFilters.push({
-      field: 'form_status',
-      filter: 'Submitted',
-      filterType: 'tableFilter'
-    });
-  }
 
   const validOrderByColumns = validActivitySortColumns;
 
@@ -692,18 +683,28 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
       `and ${tableAlias}.activity_subtype not in ('Activity_Observation_Mussels', 'Activity_Officer_Shift')`
     );
   }
-  if (filterObject.restrictVisibleDraftActivities) {
-    if (filterObject.preferredUsername && filterObject.form_status === 'Draft') {
-      where.append(
-        `and (${tableAlias}.created_by=${escapeLiteral(
-          filterObject.preferredUsername
-        )} and ${tableAlias}.form_status <> 'Submitted')) `
-      );
-    }else {
-    where.append(`and (${tableAlias}.form_status = 'Submitted') `);
-  }
 
-  } 
+  // check if there is a filter for drafts:
+  let isDraftFilter = false;
+  filterObject.clientReqTableFilters.forEach((filter) => {
+    if (filter.field === 'form_status' && filter.filter === 'Draft') {
+      isDraftFilter = true;
+    }
+  });
+  if (filterObject.preferredUsername && isDraftFilter) {
+    where.append(
+      `and (${tableAlias}.created_by=${escapeLiteral(
+        filterObject.preferredUsername
+      )} and ${tableAlias}.form_status <> 'Submitted') `
+    );
+  }
+  else
+  {
+    where.append(
+      ` and ( ${tableAlias}.form_status = 'Submitted') `
+    );
+
+  }
 
   where.append(`) and ( 1 = 1 `);
 

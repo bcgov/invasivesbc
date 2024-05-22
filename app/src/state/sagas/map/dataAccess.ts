@@ -184,18 +184,6 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
     modifiedTableFilters = [];
   }
 
-  console.log('recordSetID', recordSetID);
-  console.log('typof recordSetID', typeof recordSetID);
-  if (recordSetID !== '1' && recordSetType === 'Activity') {
-    // filter out drafts:
-    modifiedTableFilters.push({
-      field: 'form_status',
-      filterType: 'tableFilter',
-      operator: 'CONTAINS',
-      operator2: 'AND',
-      filter: 'Submitted'
-    });
-  }
   const selectColumns = recordSet?.selectColumns
     ? recordSet?.selectColumns
     : getSelectColumnsByRecordSetType(recordSetType);
