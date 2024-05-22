@@ -64,12 +64,22 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
     }
     
     @objc func authStart(_ call: CAPPluginCall) {
-        let authorizationEndpoint = URL(string: "http://localhost:8080/auth/realms/invasives/protocol/openid-connect/auth")!
-        let tokenEndpoint = URL(string: "http://localhost:8080/auth/realms/invasives/protocol/openid-connect/token")!
+        guard let SSO_BASE_URL = Bundle.main.infoDictionary?["SSO_BASE_URL"] as? String else {
+            call.resolve(["error": "No sso base url configured"]);
+            return;
+        }
+        
+        guard let SSO_CLIENT_ID = Bundle.main.infoDictionary?["SSO_CLIENT_ID"] as? String else {
+            call.resolve(["error": "No sso client id configured"]);
+            return;
+        }
+        
+        let authorizationEndpoint = URL(string: "\(SSO_BASE_URL)/protocol/openid-connect/auth")!
+        let tokenEndpoint = URL(string: "\(SSO_BASE_URL)/protocol/openid-connect/token")!
         let configuration = OIDServiceConfiguration(authorizationEndpoint: authorizationEndpoint,
                                                     tokenEndpoint: tokenEndpoint)
         let redirectURI = URL(string:"invasivesbc://callback")!
-        let clientID = "invasivesbc"
+        let clientID = "\(SSO_CLIENT_ID)"
         
         let request = OIDAuthorizationRequest(configuration: configuration,
                                               clientId: clientID,

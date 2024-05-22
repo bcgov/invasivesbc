@@ -15,8 +15,9 @@
 <script type='module' src='./main.tsx'></script>
 <script type='module'>
   import RefreshRuntime from '/@react-refresh';
+  const mobileMode = "%VITE_MOBILE%".toLowerCase() === "true";
 
-  if (!import.meta.env['MOBILE']) {
+  if (mobileMode) {
     RefreshRuntime.injectIntoGlobalHook(window);
     window.$RefreshReg$ = () => {
     };
