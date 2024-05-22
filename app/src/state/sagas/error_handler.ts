@@ -8,6 +8,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
   return async (error: Error, errorInfo: { sagaStack: string }) => {
     console.error('unhandled error in saga');
     console.error(error.message);
+    console.error(error.cause);
     console.error(errorInfo.sagaStack);
     console.error(error);
 
@@ -22,7 +23,14 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
       type: CRASH_HANDLE_GLOBAL_ERROR,
       payload: {
         detail: {
-          error: JSON.parse(JSON.stringify(error)),
+          error: JSON.parse(
+            JSON.stringify({
+              name: error.name,
+              message: error.message,
+              cause: error.cause,
+              stack: error.stack
+            })
+          ),
           errorInfo: errorInfo
         },
         actions: [
