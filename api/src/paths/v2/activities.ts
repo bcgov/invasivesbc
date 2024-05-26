@@ -417,14 +417,14 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
   //todo: only do this when applicable
   //  const cte = sqlStatement.append(`  with placeHolder as (select 1),  `);
   const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
-  string_agg(cpo.invasive_plant, ', ') AS current_positive_species
-FROM invasivesbc.current_positive_observations_materialized cpo
-GROUP BY cpo.activity_incoming_data_id),
-CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
-  string_agg(cno.invasive_plant, ', ') AS current_negative_species
-FROM invasivesbc.current_negative_observations_materialized cno
-GROUP BY cno.activity_incoming_data_id),
-`);
+                                                                                 string_agg(cpo.invasive_plant, ', ') AS current_positive_species
+                                                                          FROM invasivesbc.current_positive_observations_materialized cpo
+                                                                          GROUP BY cpo.activity_incoming_data_id),
+                                          CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
+                                                                                 string_agg(cno.invasive_plant, ', ') AS current_negative_species
+                                                                          FROM invasivesbc.current_negative_observations_materialized cno
+                                                                          GROUP BY cno.activity_incoming_data_id),
+  `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
@@ -697,13 +697,8 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         filterObject.preferredUsername
       )} and ${tableAlias}.form_status <> 'Submitted') `
     );
-  }
-  else
-  {
-    where.append(
-      ` and ( ${tableAlias}.form_status = 'Submitted') `
-    );
-
+  } else {
+    where.append(` and ( ${tableAlias}.form_status = 'Submitted') `);
   }
 
   where.append(`) and ( 1 = 1 `);
@@ -752,7 +747,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
       case 'project_code':
         where.append(
           //`and LOWER((${tableAlias}.activity_payload::json->'form_data'->'activity_data'->'project_code'::text)::text) ${
-          `${filter.operator2} LOWER(project_code) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
+          `${filter.operator2} LOWER(${tableAlias}.project_code) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
             filter.filter
           }%') `
         );
