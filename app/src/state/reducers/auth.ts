@@ -17,6 +17,7 @@ import {
 import { AppConfig } from 'state/config';
 import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
+import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
 interface OfflineUserState {
   roles: { role_id: number; role_name: string }[];
@@ -44,7 +45,9 @@ interface OfflineUserState {
   bceid_user_guid: string | null;
 }
 
-interface AuthState {
+export interface AuthState {
+  [MIGRATION_VERSION_KEY]: number;
+
   initialized: boolean;
   error: boolean;
   authenticated: boolean;
@@ -115,6 +118,7 @@ function computeAccessRoles(
 }
 
 const initialState: AuthState = {
+  [MIGRATION_VERSION_KEY]: CURRENT_MIGRATION_VERSION,
   accessRoles: [],
   authenticated: false,
   bceid_user_guid: null,

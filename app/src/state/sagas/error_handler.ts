@@ -4,7 +4,7 @@ import { Store } from 'redux';
 import { RootState } from '../reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
-export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
+export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) {
   return async (error: Error, errorInfo: { sagaStack: string }) => {
     console.error('unhandled error in saga');
     console.error(error.message);
@@ -32,23 +32,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store }) {
             })
           ),
           errorInfo: errorInfo
-        },
-        actions: [
-          {
-            name: 'Clear app data',
-            execute: () => {
-              localStorage.clear();
-              window.location.reload();
-            }
-          },
-          {
-            name: 'Refresh page',
-            execute: () => {
-              localStorage.clear();
-              window.location.reload();
-            }
-          }
-        ]
+        }
       }
     });
 

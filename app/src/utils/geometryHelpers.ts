@@ -1,5 +1,4 @@
 import area from '@turf/area';
-import center from '@turf/center';
 import centroid from '@turf/centroid';
 import * as turf from '@turf/helpers';
 import { Feature } from 'geojson';
@@ -30,7 +29,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
     Otherwise, calculate the area of the polygon using turf
   */
   if (geo.geometry.type === 'Point' && !geo.properties.hasOwnProperty('radius')) {
-      totalArea = 1;
+    totalArea = 1;
   } else if (geo.geometry.type === 'Point' && geo.properties.hasOwnProperty('radius')) {
     totalArea = Math.PI * Math.pow(geo.properties.radius, 2);
   } else if (geo.geometry.type === 'Polygon') {
@@ -68,7 +67,7 @@ export function calculateLatLng(geom: Feature[]) {
     latitude = firstCoord[0][1];
     longitude = firstCoord[0][0];
   } else {
-    const centerPoint = centroid(geom[0] as any) //center(turf.polygon(geo['coordinates'])).geometry;
+    const centerPoint = centroid(geom[0] as any); //center(turf.polygon(geo['coordinates'])).geometry;
     latitude = centerPoint.geometry.coordinates[1];
     longitude = centerPoint.geometry.coordinates[0];
   }

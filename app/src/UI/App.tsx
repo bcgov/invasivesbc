@@ -1,7 +1,7 @@
 import { Button, createTheme, ThemeOptions } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
-import { Route, useHistory, Redirect } from 'react-router-dom';
+import { Redirect, Route, useHistory } from 'react-router-dom';
 import { getDesignTokens } from 'utils/CustomThemeProvider';
 import './App.css';
 import { Footer } from './Footer/Footer';

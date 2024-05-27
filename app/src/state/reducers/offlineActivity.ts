@@ -1,29 +1,35 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { AppConfig } from '../config';
 import {
-  ACTIVITY_CREATE_LOCAL, ACTIVITY_OFFLINE_DELETE_ITEM, ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
-  ACTIVITY_RUN_OFFLINE_SYNC, ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
+  ACTIVITY_CREATE_LOCAL,
+  ACTIVITY_OFFLINE_DELETE_ITEM,
+  ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
+  ACTIVITY_RUN_OFFLINE_SYNC,
+  ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_SYNC_STATE
 } from '../actions';
 import moment from 'moment';
+import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
 export interface OfflineActivityRecord {
   data: string;
   saved_at: number;
   sync_state: 'LOCALLY_MODIFIED' | 'SYNCHRONIZED' | 'ERROR' | 'OPTIMISTIC_LOCKING_FAILURE';
-};
+}
 
-interface OfflineActivityState {
-  working: boolean,
-  statusDialogOpen: boolean,
-  serial: number,
+export interface OfflineActivityState {
+  [MIGRATION_VERSION_KEY]: number;
+  working: boolean;
+  statusDialogOpen: boolean;
+  serial: number;
   serializedActivities: {
     [id: string]: OfflineActivityRecord;
   };
 }
 
 const initialState: OfflineActivityState = {
+  [MIGRATION_VERSION_KEY]: CURRENT_MIGRATION_VERSION,
   working: false,
   statusDialogOpen: false,
   serial: moment.now(),

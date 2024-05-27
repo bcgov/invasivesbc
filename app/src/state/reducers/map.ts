@@ -1,26 +1,33 @@
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
+  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
+  IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
+  IAPP_PAN_AND_ZOOM,
+  IAPP_TABLE_ROWS_GET_REQUEST,
   IAPP_TABLE_ROWS_GET_SUCCESS,
   INIT_SERVER_BOUNDARIES_GET,
-  LAYER_STATE_UPDATE,
-  LEAFLET_SET_WHOS_EDITING,
   MAIN_MAP_MOVE,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
+  MAP_MODE_SET,
+  MAP_ON_SHAPE_UPDATE,
   MAP_SET_COORDS,
   MAP_SET_WHATS_HERE_PAGE_LIMIT,
   MAP_SET_WHATS_HERE_SECTION,
   MAP_TOGGLE_ACCURACY,
   MAP_TOGGLE_BASEMAP,
+  MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_HD,
   MAP_TOGGLE_LEGENDS,
   MAP_TOGGLE_PANNED,
@@ -33,53 +40,45 @@ import {
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
   OVERLAY_MENU_TOGGLE,
   PAGE_OR_LIMIT_UPDATE,
-  RECORDSETS_TOGGLE_VIEW_FILTER,
-  RECORDSET_REMOVE_FILTER,
-  RECORDSET_UPDATE_FILTER,
+  PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
+  RECORDSET_REMOVE_FILTER,
+  RECORDSET_UPDATE_FILTER,
+  RECORDSETS_TOGGLE_VIEW_FILTER,
   REMOVE_CLIENT_BOUNDARY,
   SET_CURRENT_OPEN_SET,
   SET_TOO_MANY_LABELS_DIALOG,
   TOGGLE_BASIC_PICKER_LAYER,
   TOGGLE_CUSTOMIZE_LAYERS,
+  TOGGLE_DRAWN_LAYER,
+  TOGGLE_KML_LAYER,
+  TOGGLE_LAYER_PICKER_OPEN,
   TOGGLE_QUICK_PAN_TO_RECORD,
+  TOGGLE_WMS_LAYER,
   URL_CHANGE,
   USER_CLICKED_RECORD,
   USER_HOVERED_RECORD,
   USER_SETTINGS_DELETE_KML_SUCCESS,
+  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
+  USER_SETTINGS_REMOVE_RECORD_SET,
+  USER_SETTINGS_SET_RECORDSET,
   USER_TOUCHED_RECORD,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
+  WHATS_HERE_ID_CLICKED,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
-  WHATS_HERE_SORT_FILTER_UPDATE,
-  USER_SETTINGS_REMOVE_RECORD_SET,
-  USER_SETTINGS_SET_RECORDSET,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-  IAPP_TABLE_ROWS_GET_REQUEST,
-  PAN_AND_ZOOM_TO_ACTIVITY,
-  IAPP_PAN_AND_ZOOM,
-  WHATS_HERE_ID_CLICKED,
-  TOGGLE_WMS_LAYER,
-  TOGGLE_LAYER_PICKER_OPEN,
-  TOGGLE_KML_LAYER,
-  TOGGLE_DRAWN_LAYER,
-  MAP_ON_SHAPE_UPDATE,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  MAP_MODE_SET,
-  MAP_TOGGLE_GEOJSON_CACHE,
-  WHATS_HERE_SERVER_FILTERED_IDS_FETCHED
+  WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
+  WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 
 import { createNextState } from '@reduxjs/toolkit';
-import { Draft, immerable } from 'immer';
+import { Draft } from 'immer';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
+import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -97,7 +96,6 @@ const DEFAULT_LOCAL_LAYERS = [
     url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
     toggle: false,
     opacity: 0.4
-    
   },
   {
     title: 'BC Parks',
@@ -207,7 +205,8 @@ const DEFAULT_LOCAL_LAYERS = [
   }
 ];
 
-interface MapState {
+export interface MapState {
+  [MIGRATION_VERSION_KEY]: number;
   MapMode: string;
   CanTriggerCSV: boolean;
   HDToggle: boolean;
@@ -361,6 +360,8 @@ interface MapState {
 }
 
 const initialState: MapState = {
+  [MIGRATION_VERSION_KEY]: CURRENT_MIGRATION_VERSION,
+
   activity_center: [53, -127],
   activity_zoom: 7,
 
@@ -386,7 +387,7 @@ const initialState: MapState = {
   activityPageMapExtentToggle: false,
 
   baseMapToggle: false,
-  clientBoundaries: localStorage.getItem('CLIENT_BOUNDARIES') !== null ? JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES')) : [],
+  clientBoundaries: [],
   currentOpenSet: null,
   customizeLayersToggle: false,
   drawingCustomLayer: false,
@@ -397,7 +398,7 @@ const initialState: MapState = {
   layers: [],
   legendsPopup: undefined,
   linkToCSV: '',
-  MapMode: localStorage.getItem('MapMode') ? localStorage.getItem('MapMode') : 'VECTOR_ENDPOINT',
+  MapMode: 'VECTOR_ENDPOINT',
   panned: false,
   positionTracking: false,
   quickPanToRecord: false,
@@ -405,13 +406,9 @@ const initialState: MapState = {
   recordSetForCSV: 0,
   recordTables: {},
 
-  serverBoundaries: localStorage.getItem('serverLayersConf')
-    ? JSON.parse(localStorage.getItem('serverLayersConf'))
-    : [],
+  serverBoundaries: [],
   simplePickerLayers: undefined,
-  simplePickerLayers2: localStorage.getItem('localLayersConf')
-    ? JSON.parse(localStorage.getItem('localLayersConf'))
-    : DEFAULT_LOCAL_LAYERS,
+  simplePickerLayers2: DEFAULT_LOCAL_LAYERS,
   tooManyLabelsDialog: null,
 
   userCoords: null,
@@ -515,17 +512,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case TOGGLE_WMS_LAYER:
           const index = draftState.simplePickerLayers2.findIndex((layer) => layer.url === action.payload.layer.url);
           draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle;
-          localStorage.setItem('localLayersConf', JSON.stringify(draftState.simplePickerLayers2));
           break;
         case TOGGLE_DRAWN_LAYER: {
           const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
           draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
-          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           break;
         }
         case MAP_TOGGLE_GEOJSON_CACHE: {
           draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
-          localStorage.setItem('MapMode', draftState.MapMode);
           break;
         }
         case WHATS_HERE_ID_CLICKED:
@@ -714,7 +708,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             toggle: true
           });
           draftState.workingLayerName = null;
-          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           break;
         }
         case DRAW_CUSTOM_LAYER: {
@@ -732,7 +725,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               toggle: true
             });
             draftState.workingLayerName = null;
-            localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           }
           break;
         }
@@ -802,7 +794,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             delete returnVal.geojson;
             return returnVal;
           });
-          localStorage.setItem('serverLayersConf', JSON.stringify(strippedOfShapes));
           break;
         }
         case TOGGLE_KML_LAYER: {
@@ -814,7 +805,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             delete returnVal.geojson;
             return returnVal;
           });
-          localStorage.setItem('serverLayersConf', JSON.stringify(strippedOfShapes));
           break;
         }
         case USER_SETTINGS_SET_RECORDSET: {
@@ -1046,7 +1036,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case REMOVE_CLIENT_BOUNDARY: {
           const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload.id);
           draftState.clientBoundaries.splice(index, 1);
-          localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(draftState.clientBoundaries));
           break;
         }
         case SET_CURRENT_OPEN_SET: {
