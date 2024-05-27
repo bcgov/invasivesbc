@@ -7,15 +7,12 @@ import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from 'utils/api-doc-security-filter';
 import { authenticate, InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from 'utils/logger';
-import { getMetabaseGroupMappings, postSyncMetabaseGroupMappings } from 'admin/metabase_groups';
 import { MDC, MDCAsyncLocal } from 'mdc';
 
 const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST || 'localhost';
 const PORT = Number(process.env.API_PORT || '3002');
-
-export { HOST, PORT };
 
 // Get initial express app
 const app: express.Express = express();
@@ -96,7 +93,7 @@ initialize({
     defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
   },
-  // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
+  // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
     defaultLog.error({
@@ -112,8 +109,4 @@ initialize({
   }
 });
 
-const adminApp: express.Express = express();
-adminApp.get('/metabase_groups', getMetabaseGroupMappings);
-adminApp.post('/metabase_sync', postSyncMetabaseGroupMappings);
-
-export { adminApp, app };
+export { app, HOST, PORT };
