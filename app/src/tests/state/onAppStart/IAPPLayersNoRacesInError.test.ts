@@ -28,9 +28,6 @@ describe('Can load IAPP layer regardless of ID call or GeoJSON call happening fi
 
   // There might be a better way but this seems to work ok:
   beforeAll(async () => {
-    if (localStorage) {
-      localStorage.clear();
-    }
     require('../../../main');
     await waitFor(() => {
       expect(store).toBeDefined();
