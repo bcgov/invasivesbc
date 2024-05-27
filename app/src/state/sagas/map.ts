@@ -914,9 +914,6 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
 }
 
 function* handle_REMOVE_CLIENT_BOUNDARY(action) {
-  // save changes in local storage
-  yield persistClientBoundaries(action);
-
   // remove from record sets applied
   const state = yield select(selectUserSettings);
   const recordSets = state?.recordSets;
@@ -956,14 +953,6 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
       }
     })
   );
-}
-
-function* persistClientBoundaries(action) {
-  const state = yield select(selectMap);
-
-  console.dir(state.clientBoundaries);
-
-  localStorage.setItem('CLIENT_BOUNDARIES', JSON.stringify(state.clientBoundaries));
 }
 
 function* handle_REMOVE_SERVER_BOUNDARY(action) {
@@ -1099,7 +1088,6 @@ function* activitiesPageSaga() {
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
-    takeEvery(CUSTOM_LAYER_DRAWN, persistClientBoundaries),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE)
   ]);

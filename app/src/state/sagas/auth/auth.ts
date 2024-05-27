@@ -94,9 +94,7 @@ function* refreshRoles() {
 }
 
 function* authenticationSaga() {
-  const { MOBILE } = yield select(selectConfiguration);
-
-  if (MOBILE) {
+  if (import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true') {
     // use native authentication bridge for better user experience
     yield all([takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles), ...nativeAuthEffects]);
   } else {

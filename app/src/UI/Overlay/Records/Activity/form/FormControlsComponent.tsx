@@ -46,7 +46,6 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
     }
     const activityIds = [activity_id];
     dataAccess.deleteActivities(activityIds).then(() => {
-      localStorage.removeItem('activeActivity');
       console.log('***DELETED');
       history.push('/home/activities');
       //* dispatch({ type: ACTIVITY_DELETE_SUCCESS });

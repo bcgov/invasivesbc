@@ -7,13 +7,11 @@ interface ErrorHandlerState {
       sagaStack: string;
     } | null;
   } | null;
-  actions: Array<{ name: string; execute: () => void }>;
   hasCrashed: boolean;
 }
 
 const initialState: ErrorHandlerState = {
   hasCrashed: false,
-  actions: [],
   detail: null
 };
 
@@ -22,7 +20,6 @@ function errorHandlerReducer(state = initialState, action) {
     case CRASH_HANDLE_GLOBAL_ERROR: {
       return {
         detail: action.payload.detail,
-        actions: action.payload.actions,
         hasCrashed: true
       };
     }

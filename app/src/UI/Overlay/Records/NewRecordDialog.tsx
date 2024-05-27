@@ -50,29 +50,15 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     if (accessRoles.some((role: Record<string, any>) => role.role_name === 'frep')) {
       categories.push('FREP');
     }
-    if (accessRoles.some((role: Record<string, any>) => role.role_name === 'mussel_inspection_officer' || role.role_name === 'master_administrator')) {
+    if (
+      accessRoles.some(
+        (role: Record<string, any>) =>
+          role.role_name === 'mussel_inspection_officer' || role.role_name === 'master_administrator'
+      )
+    ) {
       categories.push('Mussels');
     }
     setActivityCategorySelectOptions(categories);
-    // TODO: Update this to cache for mobile as well
-    const cachedDialogState = localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE');
-    const cachedCategory =
-      cachedDialogState && JSON.parse(cachedDialogState).recordCategory
-        ? JSON.parse(cachedDialogState).recordCategory
-        : '';
-    const cachedType =
-      cachedDialogState && JSON.parse(cachedDialogState).recordType ? JSON.parse(cachedDialogState).recordType : '';
-    const cachedSubtype =
-      cachedDialogState && JSON.parse(cachedDialogState).recordSubtype
-        ? JSON.parse(cachedDialogState).recordSubtype
-        : '';
-
-    setNewRecordDialogState({
-      ...newRecordDialogState,
-      recordCategory: cachedCategory,
-      recordType: cachedType,
-      recordSubtype: cachedSubtype
-    });
   }, [accessRoles]);
 
   useEffect(() => {

@@ -17,7 +17,6 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": false,
-    "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": false,
     "esModuleInterop": true,
@@ -25,7 +24,8 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "strict": false,
+    "strict": true,
+    "strictNullChecks": true,
     "isolatedModules": true,
     "noEmit": false,
     "types": [
@@ -34,9 +34,9 @@
     ],
     "typeRoots": [
       "node_modules/@types",
+      "node_modules",
       "src/types"
     ],
-    //"typeRoots": ["node_modules/@types"],
     "noFallthroughCasesInSwitch": true
   },
   "include": [

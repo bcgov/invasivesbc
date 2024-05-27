@@ -14,20 +14,17 @@ import {
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST,
   USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
   USER_SETTINGS_ADD_RECORD_SET,
-  USER_SETTINGS_DELETE_BOUNDARY_FAILURE,
   USER_SETTINGS_DELETE_BOUNDARY_REQUEST,
   USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
   USER_SETTINGS_DELETE_KML_FAILURE,
   USER_SETTINGS_DELETE_KML_REQUEST,
   USER_SETTINGS_DELETE_KML_SUCCESS,
-  USER_SETTINGS_GET_INITIAL_STATE_FAILURE,
   USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_FAILURE,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
   USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS,
   USER_SETTINGS_REMOVE_RECORD_SET,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
@@ -39,27 +36,15 @@ import {
   USER_SETTINGS_SET_MAP_CENTER_FAILURE,
   USER_SETTINGS_SET_MAP_CENTER_REQUEST,
   USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
   USER_SETTINGS_SET_RECORDSET,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
 } from '../actions';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
-  try {
-    const userSettings = yield select(selectUserSettings);
-    const recordsExpanded = !userSettings.recordsExpanded;
-
-    const newRecordsExpandedState = localStorage.setItem('records-expanded', JSON.stringify({ recordsExpanded }));
-
-    yield put({ type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE });
-  }
+  yield put({ type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS });
 }
 
 function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST(action) {
@@ -67,10 +52,6 @@ function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST(action) {
     const userSettings = yield select(selectUserSettings);
     let sets = userSettings?.recordSets;
     const current = sets[action.payload.setName];
-
-    current.searchBoundary = null;
-
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...sets } }));
 
     yield put({ type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, payload: { recordSets: sets } });
   } catch (e) {
@@ -88,8 +69,6 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
     const boundary = JSON.parse(action.payload?.boundary);
     const patchedBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
     current.searchBoundary = patchedBoundary;
-
-    const newAppState = localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...sets } }));
 
     yield put({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, payload: { recordSets: sets } });
   } catch (e) {
@@ -112,23 +91,7 @@ function* handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST(action) {
 }
 
 function* handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST(action) {
-  try {
-    // needs mobile sqlite handling
-
-    // get local storage
-    const storedBoundaries = JSON.parse(localStorage.getItem('boundaries'));
-    // filter by id
-    const newBoundaries = storedBoundaries.filter((boundary) => {
-      return boundary.id !== action.payload.id;
-    });
-    // set local storage
-    localStorage.setItem('boundaries', JSON.stringify(newBoundaries));
-
-    yield put({ type: USER_SETTINGS_DELETE_BOUNDARY_SUCCESS, payload: action.payload });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_DELETE_BOUNDARY_FAILURE, payload: action.payload });
-  }
+  yield put({ type: USER_SETTINGS_DELETE_BOUNDARY_SUCCESS, payload: action.payload });
 }
 
 function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
@@ -149,10 +112,11 @@ function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
 
 function* persistRecordSetsToLocalStorage(action) {
   const state = yield select(selectUserSettings);
-  localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: state.recordSets }));
 }
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
+  const { recordSets } = yield select(selectUserSettings);
+
   const defaultRecordSet = {
     '1': {
       recordSetType: 'Activity',
@@ -197,92 +161,49 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     }
   };
 
-  try {
-    const oldID = localStorage.getItem('activeActivity');
-    const oldDesc = localStorage.getItem('activeActivityDescription');
-    const IAPPID = localStorage.getItem('activeIAPP');
-    // needs mobile later
-    const oldAppState = JSON.parse(localStorage.getItem('appstate-invasivesbc'));
-    const recordsExpandedState = JSON.parse(localStorage.getItem('records-expanded'));
+  yield put({ type: GET_API_DOC_REQUEST });
+  yield take(GET_API_DOC_SUCCESS);
 
-    const recordSets = oldAppState?.recordSets ? oldAppState.recordSets : defaultRecordSet;
-
-    yield put({ type: GET_API_DOC_REQUEST });
-    yield take(GET_API_DOC_SUCCESS);
-
-    yield put({
-      type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-      payload: {
-        activeActivity: oldID,
-        activeActivityDescription: oldDesc,
-        activeIAPP: IAPPID,
-        recordSets: recordSets
+  yield put({
+    type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
+    payload: {
+      recordSets: {
+        ...defaultRecordSet,
+        ...recordSets
       }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_FAILURE });
-  }
+    }
+  });
 }
 
 function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
-  try {
-    const newID = localStorage.setItem('activeActivity', action.payload.id);
-    const newdesc = localStorage.setItem('activeActivityDescription', action.payload.description);
-
-    yield put({
-      type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-      payload: {
-        ...action.payload,
-        activeActivity: action.payload.id
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE });
-  }
+  yield put({
+    type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
+    payload: {
+      ...action.payload,
+      activeActivity: action.payload.id
+    }
+  });
 }
 
 function* handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST(action) {
-  try {
-    const newID = localStorage.setItem('activeIAPP', action.payload.id);
-
-    yield put({
-      type: USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
-      payload: { activeIAPP: action.payload.id }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE });
-  }
+  yield put({
+    type: USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
+    payload: { activeIAPP: action.payload.id }
+  });
 }
 
 function* handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST(action) {
-  try {
-    // Store value in localstorage if on web
-    localStorage.setItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE', JSON.stringify(action.payload));
-    // TODO: Store value in cached db on mobile
-    yield put({
-      type: USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-      payload: action.payload
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE });
-  }
+  yield put({
+    type: USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
+    payload: action.payload
+  });
 }
 
 function* handle_APP_AUTH_READY(action) {
   if (action.payload.authenticated) yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_REQUEST });
 }
 
-function* handle_USER_SETTINGS_SET_DARK_THEME(action) {
-  const { DEBUG } = yield select(selectConfiguration);
-  if (DEBUG) {
-    console.log(`Changing theme: dark mode-enable = ${action.payload.enabled}`);
-  }
-  localStorage.setItem('USER_SETTINGS_DARK_THEME', JSON.stringify(action.payload.enabled));
-}
+function* handle_USER_SETTINGS_SET_DARK_THEME(action) {}
 
 function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
   try {

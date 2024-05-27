@@ -35,12 +35,15 @@ import {
 } from '../actions';
 
 import { AppConfig } from '../config';
+import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
 }
 
-interface UserSettingsState {
+export interface UserSettingsState {
+  [MIGRATION_VERSION_KEY]: number;
+
   initialized: boolean;
   error: boolean;
 
@@ -84,6 +87,8 @@ interface UserSettingsState {
 }
 
 const initialState: UserSettingsState = {
+  [MIGRATION_VERSION_KEY]: CURRENT_MIGRATION_VERSION,
+
   activeActivity: null,
   activeActivityDescription: null,
   activeIAPP: null,
@@ -96,14 +101,12 @@ const initialState: UserSettingsState = {
   recordSets: {},
   recordsExpanded: false,
   initialized: false,
-  darkTheme: localStorage.getItem('USER_SETTINGS_DARK_THEME')
-    ? JSON.parse(localStorage.getItem('USER_SETTINGS_DARK_THEME'))
-    : false,
+  darkTheme: false,
   mapCenter: [55, -128],
   newRecordDialogState: {
-    recordCategory: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordCategory || '',
-    recordType: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordType || '',
-    recordSubtype: JSON.parse(localStorage.getItem('USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE'))?.recordSubtype || ''
+    recordCategory: '',
+    recordType: '',
+    recordSubtype: ''
   }
 };
 
@@ -163,7 +166,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             default:
               break;
           }
-          localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
         case RECORDSET_SET_SORT: {
@@ -215,7 +217,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
             JSON.stringify(tableFiltersNotBlank)
           );
-          localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
         case RECORDSET_UPDATE_FILTER: {
@@ -288,7 +289,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
             JSON.stringify(tableFiltersNotBlank)
           );
-          localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
         case RECORDSET_CLEAR_FILTERS: {
@@ -309,17 +309,9 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           // clear sort:
           delete draftState.recordSets[action.payload.setID].sortOrder;
           delete draftState.recordSets[action.payload.setID].sortColumn;
-          localStorage.setItem('appstate-invasivesbc', JSON.stringify({ recordSets: { ...draftState.recordSets } }));
           break;
         }
         case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-          if (!draftState.activeActivity) draftState.activeActivity = action.payload.activeActivity;
-
-          if (!draftState.activeActivityDescription)
-            draftState.activeActivityDescription = action.payload.activeActivityDescription;
-
-          if (!draftState.activeIAPP) draftState.activeIAPP = action.payload.activeIAPP;
-
           draftState.recordSets = { ...action.payload.recordSets };
           draftState.recordsExpanded = action.payload.recordsExpanded;
           break;
