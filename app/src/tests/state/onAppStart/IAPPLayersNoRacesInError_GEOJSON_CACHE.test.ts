@@ -19,7 +19,7 @@ describe('Can load IAPP layer regardless of ID call or GeoJSON call happening fi
   const overRideHandlers = [
     {
       method: 'get',
-      url: process.env['IAPP_GEOJSON_URL'],      
+      url: process.env['IAPP_GEOJSON_URL'],
       req: null,
       responseBody: IAPPS3Repsonse_Mock(null),
       status: 200
@@ -35,11 +35,10 @@ describe('Can load IAPP layer regardless of ID call or GeoJSON call happening fi
       expect(store).toBeDefined();
 
       const MapMode = store.getState().Map.MapMode;
-      if(MapMode === 'VECTOR_ENDPOINT') {
-        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE })
-        expect(store.getState().Map.MapMode).toEqual('GEOJSON_CACHE');
+      if (MapMode === 'VECTOR_ENDPOINT') {
+        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
       }
-
+      expect(store.getState().Map.MapMode).toEqual('GEOJSON');
     });
   });
 

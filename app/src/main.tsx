@@ -16,7 +16,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // For tests, please leave:
-let exportStore;
+export let exportStore;
 import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) => {
   const { store, persistor } = setupStore(CONFIG);
   exportStore = store;

@@ -17,8 +17,8 @@ describe('Can load initial record set layer state on startup', function () {
       const MapMode = store.getState().Map.MapMode;
       if (MapMode === 'VECTOR_ENDPOINT') {
         store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
-        expect(store.getState().Map.MapMode).toEqual('GEOJSON_CACHE');
       }
+      expect(store.getState().Map.MapMode).toEqual('GEOJSON');
     });
   });
 

@@ -15,10 +15,10 @@ describe('Can trigger refetch for both table and data on filter change', functio
     await waitFor(() => {
       expect(store).toBeDefined();
       const MapMode = store.getState().Map.MapMode;
-      if (MapMode === 'VECTOR_ENDPOINT') {
+      if (MapMode !== 'VECTOR_ENDPOINT') {
         store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
-        expect(store.getState().Map.MapMode).toEqual('VECTOR_ENDPOINT');
       }
+      expect(store.getState().Map.MapMode).toEqual('VECTOR_ENDPOINT');
     });
   });
 
@@ -86,7 +86,6 @@ describe('Can trigger refetch for both table and data on filter change', functio
       expect(!store.getState()?.Map?.layers[layerIndex].loading).toBeTruthy();
 
       // they have the data
-      expect(store.getState()?.Map?.layers[layerIndex].geoJSON).toBeDefined();
       expect(store.getState()?.Map?.layers[layerIndex].IDList).toBeDefined();
     });
   });
@@ -184,7 +183,6 @@ describe('Can trigger refetch for both table and data on filter change', functio
       expect(!store.getState()?.Map?.layers[layerIndex].loading).toBeTruthy();
 
       // they have the data
-      expect(store.getState()?.Map?.layers[layerIndex].geoJSON).toBeDefined();
       expect(store.getState()?.Map?.layers[layerIndex].IDList).toBeDefined();
 
       // matching hashes

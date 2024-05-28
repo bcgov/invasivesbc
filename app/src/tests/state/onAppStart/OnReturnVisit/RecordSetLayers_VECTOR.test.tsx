@@ -85,10 +85,10 @@ describe('Can load initial record set layer state on return visit', function () 
     await waitFor(() => {
       expect(store).toBeDefined();
       const MapMode = store.getState().Map.MapMode;
-      if (MapMode === 'VECTOR_ENDPOINT') {
+      if (MapMode !== 'VECTOR_ENDPOINT') {
         store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
-        expect(store.getState().Map.MapMode).toEqual('VECTOR_ENDPOINT');
       }
+      expect(store.getState().Map.MapMode).toEqual('VECTOR_ENDPOINT');
     });
   });
 
