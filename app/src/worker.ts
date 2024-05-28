@@ -4,31 +4,34 @@ import { NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
 
+self.__WB_DISABLE_DEV_LOGS = true;
+
 cleanupOutdatedCaches();
 
 // this value is injected by vite
 precacheAndRoute(self.__WB_MANIFEST);
 
-const apiDocs = new Route(({ request, sameOrigin }) => {
-  return request.url.includes(`/api/api-docs`);
-}, new NetworkFirst({
-  cacheName: 'api-docs',
-  networkTimeoutSeconds: 10,
-  matchOptions: {
-    ignoreSearch: false,
-    ignoreVary: false,
+const apiDocs = new Route(
+  ({ request, sameOrigin }) => {
+    return request.url.includes(`/api/api-docs`);
   },
-  plugins: [
-    new ExpirationPlugin({
-      maxAgeSeconds: 3600 * 24 * 3 // 3 days
-    }),
-    new CacheableResponsePlugin({
-      statuses: [200]
-    })
-  ]
-}));
+  new NetworkFirst({
+    cacheName: 'api-docs',
+    networkTimeoutSeconds: 10,
+    matchOptions: {
+      ignoreSearch: false,
+      ignoreVary: false
+    },
+    plugins: [
+      new ExpirationPlugin({
+        maxAgeSeconds: 3600 * 24 * 3 // 3 days
+      }),
+      new CacheableResponsePlugin({
+        statuses: [200]
+      })
+    ]
+  })
+);
 
 // Register the new route
 registerRoute(apiDocs);
-
-

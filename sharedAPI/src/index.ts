@@ -5,8 +5,8 @@ import { ActivityLetter, ActivityStatus, ActivitySubtype, ActivitySyncStatus, Ac
 import { performCalculation } from './validation/herbicideCalculator';
 import { mapFormDataToLegacy } from './validation/chemTreatmentValidation';
 
-import BC_AREA from './misc/BC_AREA.json';
 import { api_doc } from './openapi/api-doc/api-doc';
+import BC_AREA from './misc/BC_AREA.json';
 
 export * from './validation/constants';
 export * from './validation/herbicideCalculator';
@@ -14,8 +14,9 @@ export * from './validation/chemTreatmentValidation';
 export * from './validation/herbicideApplicationRates';
 export * from './validation/areaLimitValidation';
 export * from './constants';
-export { BC_AREA };
+
 export { api_doc };
+export { BC_AREA };
 
 //export const autofillChemFields = (activity, codesForFiled) => {
 export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalMethodCodes) => {
@@ -107,7 +108,7 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
 
     return newActivity;
   } catch (e) {
-    console.log('error autofilling chem fields', e.stack);
+    console.log('error autofilling chem fields', (e as Error).stack);
     throw e;
   }
 };

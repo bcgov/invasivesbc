@@ -6,7 +6,7 @@ import Spinner from 'UI/Spinner/Spinner';
 import { TRAINING_VIDEOS_LIST_REQUEST } from 'state/actions';
 import 'UI/Styles/training.scss';
 
-export const TrainingPage = () => {
+const TrainingPage = () => {
   const working = useSelector((state: any) => state.TrainingVideos?.working);
   const videos = useSelector((state: any) => state.TrainingVideos?.list);
   const dispatch = useDispatch();
@@ -46,3 +46,5 @@ export const TrainingPage = () => {
     </Container>
   );
 };
+
+export default TrainingPage;
