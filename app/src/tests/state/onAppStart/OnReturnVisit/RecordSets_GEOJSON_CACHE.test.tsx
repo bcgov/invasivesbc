@@ -1,13 +1,18 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../../main';
 import { waitFor } from '@testing-library/react';
-import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, RECORDSET_UPDATE_FILTER } from 'state/actions';
+import {
+  AUTH_INITIALIZE_COMPLETE,
+  MAP_TOGGLE_BASEMAP,
+  MAP_TOGGLE_GEOJSON_CACHE,
+  RECORDSET_UPDATE_FILTER
+} from 'state/actions';
 import { server } from 'mocks/server';
 
 describe('Can load initial record set state on startup (return visit)', function () {
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
-  afterAll(() => server.close())
-  afterEach(() => server.resetHandlers())
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => server.close());
+  afterEach(() => server.resetHandlers());
   // There might be a better way but this seems to work ok:
   beforeAll(async () => {
     localStorage.clear();
@@ -84,6 +89,11 @@ describe('Can load initial record set state on startup (return visit)', function
     require('../../../../main');
     await waitFor(() => {
       expect(store).toBeDefined();
+      const MapMode = store.getState().Map.MapMode;
+      if (MapMode === 'VECTOR_ENDPOINT') {
+        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        expect(store.getState().Map.MapMode).toEqual('GEOJSON_CACHE');
+      }
     });
   });
 
@@ -98,13 +108,11 @@ describe('Can load initial record set state on startup (return visit)', function
     });
   });
 
-
   it('Restored filters are correct', async function () {
-
     await waitFor(() => {
       expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters).toBeDefined();
       expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters.length).toEqual(1);
       expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters[0].filter).toEqual('23');
     });
-  })
+  });
 });

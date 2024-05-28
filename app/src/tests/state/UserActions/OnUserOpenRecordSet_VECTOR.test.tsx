@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../main';
 import { waitFor } from '@testing-library/react';
-import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, RECORDSET_UPDATE_FILTER, URL_CHANGE } from 'state/actions';
+import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, MAP_TOGGLE_GEOJSON_CACHE, RECORDSET_UPDATE_FILTER, URL_CHANGE } from 'state/actions';
 import { server } from 'mocks/server';
 
 describe('Can trigger refetch for both table and data on filter change', function () {
@@ -14,6 +14,11 @@ describe('Can trigger refetch for both table and data on filter change', functio
     require('../../../main');
     await waitFor(() => {
       expect(store).toBeDefined();
+      const MapMode = store.getState().Map.MapMode;
+      if (MapMode !== 'VECTOR_ENDPOINT') {
+        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        expect(store.getState().Map.MapMode).toEqual('VECTOR_ENDPOINT');
+      }
     });
   });
 
@@ -57,7 +62,6 @@ describe('Can trigger refetch for both table and data on filter change', functio
 
       // they have the data
       expect(store.getState()?.Map.recordTables[2].rows).toBeDefined();
-      expect(store.getState()?.Map?.layers[layerIndex].geoJSON).toBeDefined();
       expect(store.getState()?.Map?.layers[layerIndex].IDList).toBeDefined();
     });
   })
