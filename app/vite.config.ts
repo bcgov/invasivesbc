@@ -102,7 +102,7 @@ export default defineConfig({
     // Relative to the root
     outDir: '../dist',
     minify: buildSpecificDefines()['minify'],
-    sourcemap: !buildSpecificDefines()['minify'],
+    sourcemap: true,
     cssCodeSplit: false,
 
     rollupOptions: {
