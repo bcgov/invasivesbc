@@ -5,7 +5,6 @@ import { IHerbicide } from '../../Models';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
-//import { isNumber } from 'lodash';
 import isNumber from 'is-number';
 
 export interface IHerbicideComponent {
@@ -150,446 +149,446 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
 
   return (
     <div className={'herbicide_list_item'}>
-      
-        <Typography 
-        //className={classes.speciesHeading} 
+      <Typography
+        //className={classes.speciesHeading}
         variant="h5">
-          {optionValueLabels[herbicide.herbicide_code]
-            ? optionValueLabels[herbicide.herbicide_code]
-            : `Herbicide #${index + 1}`}
-        </Typography>
+        {optionValueLabels[herbicide.herbicide_code]
+          ? optionValueLabels[herbicide.herbicide_code]
+          : `Herbicide #${index + 1}`}
+      </Typography>
 
-        <Tooltip
-          //classes={{ tooltip: 'toolTip' }}
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-          placement="left"
-          title="Choose whether the herbicide being used is liquid or granular">
-          <HelpOutlineIcon />
-        </Tooltip>
-        <CustomAutoComplete
-          disabled={formDetails.disabled}
-          choices={herbicideTypeChoices}
-          className={'inputField'}
-         // classes={classes}
-          id={'herbicide-type'}
-          key={'herbicide-type'}
-          actualValue={herbicide.herbicide_type_code}
-          label={'Herbicide Type'}
-          parentState={{ herbicide, setCurrentHerbicide }}
-          onChange={(event, value) => {
-            if (value === null) {
-              return;
-            }
+      <Tooltip
+        //classes={{ tooltip: 'toolTip' }}
+        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+        placement="left"
+        title="Choose whether the herbicide being used is liquid or granular">
+        <HelpOutlineIcon />
+      </Tooltip>
+      <CustomAutoComplete
+        disabled={formDetails.disabled}
+        choices={herbicideTypeChoices}
+        className={'inputField'}
+        // classes={classes}
+        id={'herbicide-type'}
+        key={'herbicide-type'}
+        actualValue={herbicide.herbicide_type_code}
+        label={'Herbicide Type'}
+        parentState={{ herbicide, setCurrentHerbicide }}
+        onChange={(event, value) => {
+          if (value === null) {
+            return;
+          }
 
-            setCurrentHerbicide((prevHerbicide) => {
-              return { ...prevHerbicide, herbicide_type_code: (value as any).value };
-            });
-          }}
-        />
+          setCurrentHerbicide((prevHerbicide) => {
+            return { ...prevHerbicide, herbicide_type_code: (value as any).value };
+          });
+        }}
+      />
 
-        <Tooltip placement="left" 
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+      <Tooltip
+        placement="left"
+        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
         title="Choose which herbicide you are using">
-          <HelpOutlineIcon />
-        </Tooltip>
-        <CustomAutoComplete
-          disabled={formDetails.disabled}
-          choices={herbicideChoices}
-          className={'inputField'}
-       //   classes={classes}
-          id={'herbicide-code'}
-          label={'Herbicide'}
-          actualValue={herbicide.herbicide_code}
-          parentState={{ herbicide, setCurrentHerbicide }}
-          onChange={(event, value) => {
-            if (value === null) {
-              return;
+        <HelpOutlineIcon />
+      </Tooltip>
+      <CustomAutoComplete
+        disabled={formDetails.disabled}
+        choices={herbicideChoices}
+        className={'inputField'}
+        //   classes={classes}
+        id={'herbicide-code'}
+        label={'Herbicide'}
+        actualValue={herbicide.herbicide_code}
+        parentState={{ herbicide, setCurrentHerbicide }}
+        onChange={(event, value) => {
+          if (value === null) {
+            return;
+          }
+          setCurrentHerbicide((prevHerbicide) => {
+            return { ...prevHerbicide, herbicide_code: (value as any).value };
+          });
+        }}
+      />
+
+      {!tankMixOn && (
+        <div>
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution. Expressed as the percent of herbicide in the solution.">
+            <HelpOutlineIcon />
+          </Tooltip>
+          <CustomAutoComplete
+            disabled={formDetails.disabled}
+            choices={calculationTypeChoices}
+            className={'inputField'}
+            //      classes={classes}
+            id={'calculation_type'}
+            label={'Calculation Type'}
+            actualValue={herbicide.calculation_type}
+            parentState={{ herbicide, setCurrentHerbicide }}
+            onChange={(event, value) => {
+              if (value === null) {
+                return;
+              }
+              setCurrentHerbicide((prevHerbicide) => {
+                return { ...prevHerbicide, calculation_type: (value as any).value };
+              });
+            }}
+          />
+        </div>
+      )}
+
+      {tankMixOn && (
+        <div className="productApplicationRate">
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title="Recommended label rate for herbicide (L/ha) used for this treatment">
+            <HelpOutlineIcon />
+          </Tooltip>
+          <TextField
+            disabled={formDetails.disabled}
+            //              className={classes.inputField}
+            type="text"
+            inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+            // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
+            label={
+              herbicide?.herbicide_type_code === 'G'
+                ? 'Product Application Rate (g/ha)'
+                : 'Product Application Rate (l/ha)'
             }
-            setCurrentHerbicide((prevHerbicide) => {
-              return { ...prevHerbicide, herbicide_code: (value as any).value };
-            });
-          }}
-        />
-
-        {!tankMixOn && (
-          <div >
-            <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-              placement="left"
-              title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution. Expressed as the percent of herbicide in the solution.">
-              <HelpOutlineIcon />
-            </Tooltip>
-            <CustomAutoComplete
-              disabled={formDetails.disabled}
-              choices={calculationTypeChoices}
-              className={'inputField'}
-        //      classes={classes}
-              id={'calculation_type'}
-              label={'Calculation Type'}
-              actualValue={herbicide.calculation_type}
-              parentState={{ herbicide, setCurrentHerbicide }}
-              onChange={(event, value) => {
-                if (value === null) {
-                  return;
-                }
-                setCurrentHerbicide((prevHerbicide) => {
-                  return { ...prevHerbicide, calculation_type: (value as any).value };
-                });
-              }}
-            />
-          </div>
-        )}
-
-        {tankMixOn && (
-          <div className="productApplicationRate">
-            <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-              placement="left"
-              title="Recommended label rate for herbicide (L/ha) used for this treatment">
-              <HelpOutlineIcon />
-            </Tooltip>
-            <TextField
-              disabled={formDetails.disabled}
-//              className={classes.inputField}
-              type="text"
-              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-              // error={currentHerbicideErrorSchema?.product_application_rate?.__errors?.length > 0 || false}
-              label={
-                herbicide?.herbicide_type_code === 'G'
-                  ? 'Product Application Rate (g/ha)'
-                  : 'Product Application Rate (l/ha)'
-              }
-              // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
-              value={herbicide?.product_application_rate?.toFixed(3)}
-              variant="outlined"
-              key={tankProductApplicationRateKey}
-              onKeyDown={(event) => {
-                if (event.code === 'Backspace') {
-                  setCurrentHerbicide((prevFields) => ({
-                    ...prevFields,
-                    product_application_rate: undefined
-                  }));
-                }
-              }}
-              onBlur={(event) => {
-                const input = event.target.value;
-                if (input === '') {
-                  console.log('is blank string');
-                  setCurrentHerbicide((prevFields) => ({
-                    ...prevFields,
-                    product_application_rate: undefined
-                  }));
-                }
-                if (!isNumber(input)) {
-                  setTankProductApplicationRateKey(Math.random().toString());
-                  return;
-                }
-                setCurrentHerbicide((prevFields) => ({
-                  ...prevFields,
-                  product_application_rate: Number(input)
-                }));
-              }}
-              defaultValue={undefined}
-            />
-          </div>
-        )}
-
-        {!tankMixOn && (
-          <div className="amountOfMix">
-            <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-              placement="left"
-              title="Volume in litres (ie 5.1 L) of herbicide and water mix">
-              <HelpOutlineIcon />
-            </Tooltip>
-            <TextField
-              disabled={formDetails.disabled}
-              id="amount-of-mix-used"
-            //  className={classes.inputField}
-              type="text"
-              label="Amount of Mix Used (L)"
-              value={herbicide?.amount_of_mix?.toFixed(4)}
-              variant="outlined"
-              key={amountOfMixUsedKey}
-              onKeyDown={(event) => {
-                if (event.code === 'Backspace') {
-                  setCurrentHerbicide((prevFields) => ({
-                    ...prevFields,
-                    amount_of_mix: undefined
-                  }));
-                }
-              }}
-              onBlur={(event) => {
-                const input = event.target.value;
-                if (input === '') {
-                  console.log('blank string');
-                  setCurrentHerbicide((prevFields) => ({
-                    ...prevFields,
-                    amount_of_mix: undefined
-                  }));
-                }
-                if (!isNumber(input)) {
-                  setAmountOfMixUsedKey(Math.random().toString());
-                  return;
-                }
-                setCurrentHerbicide((prevFields) => ({
-                  ...prevFields,
-                  amount_of_mix: Number(input)
-                }));
-              }}
-              defaultValue={undefined}
-            />
-          </div>
-        )}
-
-        {!tankMixOn && currentHerbicide?.calculation_type === 'D' ? (
-          <>
-            <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-              placement="left"
-              title="Percent (%) of product in the mix">
-              <HelpOutlineIcon />
-            </Tooltip>
-            <TextField
-              disabled={formDetails.disabled}
-              id="dilution"
-        //      className={classes.inputField}
-              type="text"
-              label="Dilution (%)"
-              value={herbicide?.dilution?.toFixed(4)}
-              variant="outlined"
-              key={dilutionPercentKey}
-              onBlur={(event) => {
-                const input = event.target.value;
-                if (input === '') {
-                  setCurrentHerbicide((prevFields) => ({
-                    ...prevFields,
-                    dilution: undefined
-                  }));
-                }
-                if (!isNumber(input)) {
-                  setDilutionPercentKey(Math.random().toString());
-                  return;
-                }
-                setCurrentHerbicide((prevFields) => ({
-                  ...prevFields,
-                  dilution: Number(input)
-                }));
-              }}
-              defaultValue={undefined}
-            />
-
-            <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-              placement="left"
-              title="Area Treated in square meters">
-              <HelpOutlineIcon />
-            </Tooltip>
-            <TextField
-              disabled={formDetails.disabled}
-              id="area-treated"
-         //     className={classes.inputField}
-              type="text"
-              label="Area Treated (sqm)"
-              value={herbicide?.area_treated_sqm?.toFixed(2)}
-              variant="outlined"
-              key={areaTreatedSqmKey}
-              onBlur={(event) => {
-                const input = event.target.value;
-                if (input === '') {
-                  setCurrentHerbicide((prevFields) => ({
-                    ...prevFields,
-                    area_treated_sqm: undefined
-                  }));
-                }
-                if (!isNumber(input)) {
-                  setAreaTreatedSqmKey(Math.random().toString());
-                  return;
-                }
-                setCurrentHerbicide((prevFields) => ({
-                  ...prevFields,
-                  area_treated_sqm: Number(input)
-                }));
-              }}
-              defaultValue={undefined}
-            />
-          </>
-        ) : !tankMixOn && currentHerbicide?.calculation_type === 'PAR' ? (
-          <>
-            <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-              placement="left"
-              title="Calibrated delivery rate of the device used to apply herbicide in L/ha">
-              <HelpOutlineIcon />
-            </Tooltip>
-            <TextField
-              disabled={formDetails.disabled}
-         //     className={classes.inputField}
-              type="text"
-              id="delivery-rate-of-mix"
-              label="Delivery Rate of Mix (L/ha)"
-              value={herbicide?.delivery_rate_of_mix?.toFixed(2)}
-              variant="outlined"
-              key={deliveryRateOfMixKey}
-              onKeyDown={(event) => {
-                if (event.code === 'Backspace') {
-                  setCurrentHerbicide((prevFields) => ({
-                    ...prevFields,
-                    delivery_rate_of_mix: undefined
-                  }));
-                }
-              }}
-              onBlur={(event) => {
-                const input = event.target.value;
-                if (input === '') {
-                  setCurrentHerbicide((prevFields) => ({
-                    ...prevFields,
-                    delivery_rate_of_mix: undefined
-                  }));
-                }
-                if (!isNumber(input)) {
-                  setDeliveryRateOfMixKey(Math.random().toString());
-                  return;
-                }
-                setCurrentHerbicide((prevFields) => ({
-                  ...prevFields,
-                  delivery_rate_of_mix: Number(input)
-                }));
-              }}
-              defaultValue={undefined}
-            />
-
-            <Tooltip
-              style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-              placement="left"
-              title={
-                currentHerbicide?.herbicide_type_code === 'G'
-                  ? 'Recommended label rate for herbicide (g/ha) used for this treatment'
-                  : 'Recommended label rate for herbicide (L/ha) used for this treatment'
-              }>
-              <HelpOutlineIcon />
-            </Tooltip>
-            <TextField
-              disabled={formDetails.disabled}
-          //    className={classes.inputField}
-              type="decimal"
-              id="product-application-rate"
-              label={
-                currentHerbicide?.herbicide_type_code === 'G'
-                  ? 'Product Application Rate (g/ha)'
-                  : 'Product Application Rate (L/ha)'
-              }
-              value={herbicide.product_application_rate?.toFixed(3)}
-              key={noTankProductApplicationRateKey}
-              variant="outlined"
-              onKeyDown={(event) => {
-                if (event.code === 'Backspace') {
-                  setproduct_application_rate(undefined);
-                }
+            // helperText={currentHerbicideErrorSchema?.product_application_rate?.__errors[0] || ''}
+            value={herbicide?.product_application_rate?.toFixed(3)}
+            variant="outlined"
+            key={tankProductApplicationRateKey}
+            onKeyDown={(event) => {
+              if (event.code === 'Backspace') {
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
                   product_application_rate: undefined
                 }));
-              }}
-              onBlur={(event) => {
-                const input = event.target.value;
-                if (event.target.value === '') {
-                  setproduct_application_rate(undefined);
-                }
-                if (!isNumber(event.target.value)) {
-                  setNoTankProductApplicationRateKey(Math.random().toString());
-                  return;
-                }
-                setproduct_application_rate(Number(input));
-              }}
-              defaultValue={undefined}
-            />
-            {currentHerbicide?.herbicide_type_code === 'G' && (
-              <>
-                <Tooltip
-                  style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-                  placement="left"
-                  title="Recommended label rate for herbicide (L/ha) used for this treatment">
-                  <HelpOutlineIcon />
-                </Tooltip>
-                <InputLabel>Product Application Rate (L/ha)</InputLabel>
-                <TextField
-                  disabled
+              }
+            }}
+            onBlur={(event) => {
+              const input = event.target.value;
+              if (input === '') {
+                console.log('is blank string');
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  product_application_rate: undefined
+                }));
+              }
+              if (!isNumber(input)) {
+                setTankProductApplicationRateKey(Math.random().toString());
+                return;
+              }
+              setCurrentHerbicide((prevFields) => ({
+                ...prevFields,
+                product_application_rate: Number(input)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+        </div>
+      )}
+
+      {!tankMixOn && (
+        <div className="amountOfMix">
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title="Volume in litres (ie 5.1 L) of herbicide and water mix">
+            <HelpOutlineIcon />
+          </Tooltip>
+          <TextField
+            disabled={formDetails.disabled}
+            id="amount-of-mix-used"
+            //  className={classes.inputField}
+            type="text"
+            label="Amount of Mix Used (L)"
+            value={herbicide?.amount_of_mix?.toFixed(4)}
+            variant="outlined"
+            key={amountOfMixUsedKey}
+            onKeyDown={(event) => {
+              if (event.code === 'Backspace') {
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  amount_of_mix: undefined
+                }));
+              }
+            }}
+            onBlur={(event) => {
+              const input = event.target.value;
+              if (input === '') {
+                console.log('blank string');
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  amount_of_mix: undefined
+                }));
+              }
+              if (!isNumber(input)) {
+                setAmountOfMixUsedKey(Math.random().toString());
+                return;
+              }
+              setCurrentHerbicide((prevFields) => ({
+                ...prevFields,
+                amount_of_mix: Number(input)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+        </div>
+      )}
+
+      {!tankMixOn && currentHerbicide?.calculation_type === 'D' ? (
+        <>
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title="Percent (%) of product in the mix">
+            <HelpOutlineIcon />
+          </Tooltip>
+          <TextField
+            disabled={formDetails.disabled}
+            id="dilution"
             //      className={classes.inputField}
-                  style={{ display: 'none' }}
-                  type="number"
-                  id="product-application-rate"
-                  // label="Product Application Rate (L/ha)"
-                  value={herbicide?.product_application_rate?.toFixed(3)}
-                  variant="outlined"
-                  key={noTankProductApplicationRateLHAKey}
-                  onKeyDown={(event) => {
-                    if (event.code === 'Backspace') {
-                      setCurrentHerbicide((prevFields) => ({
-                        ...prevFields,
-                        product_application_rate: undefined
-                      }));
-                    }
-                  }}
-                  onBlur={(event) => {
-                    const input = event.target.value;
-                    if (input === '') {
-                      setCurrentHerbicide((prevFields) => ({
-                        ...prevFields,
-                        product_application_rate: undefined
-                      }));
-                    }
-                    if (!isNumber(input)) {
-                      setNoTankProductApplicationRateLHAKey(Math.random().toString());
-                      return;
-                    }
+            type="text"
+            label="Dilution (%)"
+            value={herbicide?.dilution?.toFixed(4)}
+            variant="outlined"
+            key={dilutionPercentKey}
+            onBlur={(event) => {
+              const input = event.target.value;
+              if (input === '') {
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  dilution: undefined
+                }));
+              }
+              if (!isNumber(input)) {
+                setDilutionPercentKey(Math.random().toString());
+                return;
+              }
+              setCurrentHerbicide((prevFields) => ({
+                ...prevFields,
+                dilution: Number(input)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title="Area Treated in square meters">
+            <HelpOutlineIcon />
+          </Tooltip>
+          <TextField
+            disabled={formDetails.disabled}
+            id="area-treated"
+            //     className={classes.inputField}
+            type="text"
+            label="Area Treated (sqm)"
+            value={herbicide?.area_treated_sqm?.toFixed(2)}
+            variant="outlined"
+            key={areaTreatedSqmKey}
+            onBlur={(event) => {
+              const input = event.target.value;
+              if (input === '') {
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  area_treated_sqm: undefined
+                }));
+              }
+              if (!isNumber(input)) {
+                setAreaTreatedSqmKey(Math.random().toString());
+                return;
+              }
+              setCurrentHerbicide((prevFields) => ({
+                ...prevFields,
+                area_treated_sqm: Number(input)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+        </>
+      ) : !tankMixOn && currentHerbicide?.calculation_type === 'PAR' ? (
+        <>
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title="Calibrated delivery rate of the device used to apply herbicide in L/ha">
+            <HelpOutlineIcon />
+          </Tooltip>
+          <TextField
+            disabled={formDetails.disabled}
+            //     className={classes.inputField}
+            type="text"
+            id="delivery-rate-of-mix"
+            label="Delivery Rate of Mix (L/ha)"
+            value={herbicide?.delivery_rate_of_mix?.toFixed(2)}
+            variant="outlined"
+            key={deliveryRateOfMixKey}
+            onKeyDown={(event) => {
+              if (event.code === 'Backspace') {
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  delivery_rate_of_mix: undefined
+                }));
+              }
+            }}
+            onBlur={(event) => {
+              const input = event.target.value;
+              if (input === '') {
+                setCurrentHerbicide((prevFields) => ({
+                  ...prevFields,
+                  delivery_rate_of_mix: undefined
+                }));
+              }
+              if (!isNumber(input)) {
+                setDeliveryRateOfMixKey(Math.random().toString());
+                return;
+              }
+              setCurrentHerbicide((prevFields) => ({
+                ...prevFields,
+                delivery_rate_of_mix: Number(input)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title={
+              currentHerbicide?.herbicide_type_code === 'G'
+                ? 'Recommended label rate for herbicide (g/ha) used for this treatment'
+                : 'Recommended label rate for herbicide (L/ha) used for this treatment'
+            }>
+            <HelpOutlineIcon />
+          </Tooltip>
+          <TextField
+            disabled={formDetails.disabled}
+            //    className={classes.inputField}
+            type="decimal"
+            id="product-application-rate"
+            label={
+              currentHerbicide?.herbicide_type_code === 'G'
+                ? 'Product Application Rate (g/ha)'
+                : 'Product Application Rate (L/ha)'
+            }
+            value={herbicide.product_application_rate?.toFixed(3)}
+            key={noTankProductApplicationRateKey}
+            variant="outlined"
+            onKeyDown={(event) => {
+              if (event.code === 'Backspace') {
+                setproduct_application_rate(undefined);
+              }
+              setCurrentHerbicide((prevFields) => ({
+                ...prevFields,
+                product_application_rate: undefined
+              }));
+            }}
+            onBlur={(event) => {
+              const input = event.target.value;
+              if (event.target.value === '') {
+                setproduct_application_rate(undefined);
+              }
+              if (!isNumber(event.target.value)) {
+                setNoTankProductApplicationRateKey(Math.random().toString());
+                return;
+              }
+              setproduct_application_rate(Number(input));
+            }}
+            defaultValue={undefined}
+          />
+          {currentHerbicide?.herbicide_type_code === 'G' && (
+            <>
+              <Tooltip
+                style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+                placement="left"
+                title="Recommended label rate for herbicide (L/ha) used for this treatment">
+                <HelpOutlineIcon />
+              </Tooltip>
+              <InputLabel>Product Application Rate (L/ha)</InputLabel>
+              <TextField
+                disabled
+                //      className={classes.inputField}
+                style={{ display: 'none' }}
+                type="number"
+                id="product-application-rate"
+                // label="Product Application Rate (L/ha)"
+                value={herbicide?.product_application_rate?.toFixed(3)}
+                variant="outlined"
+                key={noTankProductApplicationRateLHAKey}
+                onKeyDown={(event) => {
+                  if (event.code === 'Backspace') {
                     setCurrentHerbicide((prevFields) => ({
                       ...prevFields,
-                      product_application_rate: Number(input)
+                      product_application_rate: undefined
                     }));
-                  }}
-                  defaultValue={undefined}
-                />
-              </>
-            )}
-          </>
-        ) : null}
-
-        <Button
-          disabled={formDetails.disabled}
-          onClick={() => {
-            if (insideTankMix) {
-              setFormDetails((prevDetails) => {
-                const newHerbicidesArr = [...prevDetails.form_data.tank_mix_object.herbicides];
-                newHerbicidesArr.splice(index, 1);
-                return {
-                  ...prevDetails,
-                  form_data: {
-                    ...prevDetails.form_data,
-                    tank_mix_object: {
-                      ...prevDetails.form_data.tank_mix_object,
-                      herbicides: newHerbicidesArr
-                    }
                   }
-                };
-              });
-            } else {
-              setFormDetails((prevDetails) => {
-                const newHerbicidesArr = [...prevDetails.form_data.herbicides];
-                newHerbicidesArr.splice(index, 1);
-                return {
-                  ...prevDetails,
-                  form_data: { ...prevDetails.form_data, herbicides: newHerbicidesArr }
-                };
-              });
-            }
-          }}
-          variant="contained"
-      //    className={classes.speciesRemoveButton}
-          startIcon={<DeleteIcon />}
-          color="secondary">
-          Remove Herbicide
-        </Button>
+                }}
+                onBlur={(event) => {
+                  const input = event.target.value;
+                  if (input === '') {
+                    setCurrentHerbicide((prevFields) => ({
+                      ...prevFields,
+                      product_application_rate: undefined
+                    }));
+                  }
+                  if (!isNumber(input)) {
+                    setNoTankProductApplicationRateLHAKey(Math.random().toString());
+                    return;
+                  }
+                  setCurrentHerbicide((prevFields) => ({
+                    ...prevFields,
+                    product_application_rate: Number(input)
+                  }));
+                }}
+                defaultValue={undefined}
+              />
+            </>
+          )}
+        </>
+      ) : null}
+
+      <Button
+        disabled={formDetails.disabled}
+        onClick={() => {
+          if (insideTankMix) {
+            setFormDetails((prevDetails) => {
+              const newHerbicidesArr = [...prevDetails.form_data.tank_mix_object.herbicides];
+              newHerbicidesArr.splice(index, 1);
+              return {
+                ...prevDetails,
+                form_data: {
+                  ...prevDetails.form_data,
+                  tank_mix_object: {
+                    ...prevDetails.form_data.tank_mix_object,
+                    herbicides: newHerbicidesArr
+                  }
+                }
+              };
+            });
+          } else {
+            setFormDetails((prevDetails) => {
+              const newHerbicidesArr = [...prevDetails.form_data.herbicides];
+              newHerbicidesArr.splice(index, 1);
+              return {
+                ...prevDetails,
+                form_data: { ...prevDetails.form_data, herbicides: newHerbicidesArr }
+              };
+            });
+          }
+        }}
+        variant="contained"
+        //    className={classes.speciesRemoveButton}
+        startIcon={<DeleteIcon />}
+        color="secondary">
+        Remove Herbicide
+      </Button>
     </div>
   );
 };

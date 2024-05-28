@@ -1,12 +1,12 @@
-import React from "react";
+import React from 'react';
 
 import './LegendsPopup.css';
 
-import invbclogo from "/assets/InvasivesBC_Icon.svg";
-import Button from "@mui/material/Button";
-import { useHistory } from "react-router";
+import invbclogo from '/assets/InvasivesBC_Icon.svg';
+import Button from '@mui/material/Button';
+import { useHistory } from 'react-router';
 
-export const LegendsPopup = (props) => {
+const LegendsPopup = () => {
   const history = useHistory();
   return (
     <div
@@ -29,7 +29,7 @@ export const LegendsPopup = (props) => {
           <div className="takeMeBack">
             <Button onClick={() => history.goBack()}>Go Back</Button>
           </div>
-        <img
+          <img
             src={invbclogo}
             style={{
               marginRight: '5px',
@@ -49,8 +49,10 @@ export const LegendsPopup = (props) => {
         <div className="row">
           <div className="col-md-12">
             <h2>1. InvasivesBC Activity Map Colours</h2>
-            <p>There are four categories of activities in InvasivesBC: Observations, Treatments, Biocontrol, and
-              Treatment Monitoring. Each category has a unique colour associated with their respective polygons.</p>
+            <p>
+              There are four categories of activities in InvasivesBC: Observations, Treatments, Biocontrol, and
+              Treatment Monitoring. Each category has a unique colour associated with their respective polygons.
+            </p>
             <table className="table">
               <thead>
                 <tr>
@@ -60,8 +62,12 @@ export const LegendsPopup = (props) => {
               </thead>
               <tbody>
                 <tr>
-                  <td><img src='/assets/activitycolors/green.jpg' alt='Green records'/></td>
-                  <td><img src='/assets/activitycolors/purple.jpg' alt='Purple records'/></td>
+                  <td>
+                    <img src="/assets/activitycolors/green.jpg" alt="Green records" />
+                  </td>
+                  <td>
+                    <img src="/assets/activitycolors/purple.jpg" alt="Purple records" />
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -74,8 +80,12 @@ export const LegendsPopup = (props) => {
               </thead>
               <tbody>
                 <tr>
-                <td><img src='/assets/activitycolors/yellow.jpg' alt='Yellow records'/></td>
-                <td><img src='/assets/activitycolors/blue.jpg' alt='Blue records'/></td>
+                  <td>
+                    <img src="/assets/activitycolors/yellow.jpg" alt="Yellow records" />
+                  </td>
+                  <td>
+                    <img src="/assets/activitycolors/blue.jpg" alt="Blue records" />
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -86,16 +96,18 @@ export const LegendsPopup = (props) => {
         <div className="row">
           <div className="col-md-12">
             <h2>2. Two letter invasive plant species map codes</h2>
-            <p>The following is a list of all possible map label species codes indicating the species are associated with
-              the record. Each record may have one or more invasive plant codes.</p>
+            <p>
+              The following is a list of all possible map label species codes indicating the species are associated with
+              the record. Each record may have one or more invasive plant codes.
+            </p>
             <table className="table table-striped table-blue-header">
               <thead>
                 <tr>
-                  <th style={{textAlign: 'left'}}>Map Label</th>
-                  <th style={{textAlign: 'left'}}>Common name</th>
-                  <th style={{textAlign: 'left'}}>Scientific name</th>
-                  <th style={{textAlign: 'left'}}>Genus</th>
-                  <th style={{textAlign: 'left'}}>Species</th>
+                  <th style={{ textAlign: 'left' }}>Map Label</th>
+                  <th style={{ textAlign: 'left' }}>Common name</th>
+                  <th style={{ textAlign: 'left' }}>Scientific name</th>
+                  <th style={{ textAlign: 'left' }}>Genus</th>
+                  <th style={{ textAlign: 'left' }}>Species</th>
                 </tr>
               </thead>
               <tbody>
@@ -1837,14 +1849,16 @@ export const LegendsPopup = (props) => {
         <div className="row">
           <div className="col-md-12">
             <h2>3. Source for layers in the layer picker</h2>
-            <p>There is a selection of layers which can be toggled on and off while using the map in the Recorded
+            <p>
+              There is a selection of layers which can be toggled on and off while using the map in the Recorded
               Activities and Current Activity tabs in InvasivesBC. The table below lists the name of each layer in the
               Layer Picker feature of the application with the source object name from the BC Data warehouse -
-              accessible through the <a href="https://catalogue.data.gov.bc.ca/">British Columbia Data Catalogue</a>.</p>
+              accessible through the <a href="https://catalogue.data.gov.bc.ca/">British Columbia Data Catalogue</a>.
+            </p>
             <table className="table table-blue-header">
               <thead>
                 <tr>
-                  <th>Layer Picker Label </th>
+                  <th>Layer Picker Label</th>
                   <th>Object Name</th>
                 </tr>
               </thead>
@@ -1905,3 +1919,5 @@ export const LegendsPopup = (props) => {
     </div>
   );
 };
+
+export default LegendsPopup;

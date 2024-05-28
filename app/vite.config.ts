@@ -1,9 +1,10 @@
 import { execSync } from 'child_process';
-import { defineConfig } from 'vite';
+import { defineConfig, PluginOption } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
+import { visualizer } from 'rollup-plugin-visualizer';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // sets up constants in the code, based on build environment
@@ -70,6 +71,26 @@ function buildSpecificDefines() {
   return defines;
 }
 
+function reactDevOptions() {
+  if (process.env['ENABLE_WDYR'] && process.env['ENABLE_WDYR'].toLowerCase() === 'true') {
+    return { jsxImportSource: '@welldone-software/why-did-you-render' };
+  }
+  return {};
+}
+
+function statsPlugin() {
+  if (process.env['ENABLE_STATS'] && process.env['ENABLE_STATS'].toLowerCase() === 'true') {
+    return [
+      visualizer({
+        template: 'flamegraph',
+        emitFile: true,
+        filename: 'bundle-stats.html'
+      }) as PluginOption
+    ];
+  }
+  return [];
+}
+
 export default defineConfig({
   root: 'src',
   publicDir: '../public',
@@ -81,7 +102,7 @@ export default defineConfig({
     // Relative to the root
     outDir: '../dist',
     minify: buildSpecificDefines()['minify'],
-    sourcemap: true,
+    sourcemap: !buildSpecificDefines()['minify'],
     cssCodeSplit: false,
 
     rollupOptions: {
@@ -92,7 +113,7 @@ export default defineConfig({
         }
         handler(level, log);
       },
-      plugins: [rollupNodePolyFill()],
+      plugins: [rollupNodePolyFill() as PluginOption, ...statsPlugin()],
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
@@ -114,7 +135,7 @@ export default defineConfig({
     react({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}',
-      jsxImportSource: '@welldone-software/why-did-you-render'
+      ...reactDevOptions()
     }),
     VitePWA({
       srcDir: '.',

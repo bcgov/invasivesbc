@@ -34,7 +34,7 @@ import {
 import validator from '@rjsf/validator-ajv8';
 import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
-import _ from 'lodash';
+import debounce from 'lodash.debounce';
 import { RENDER_DEBUG } from 'UI/App';
 
 const FormContainer: React.FC<any> = (props) => {
@@ -64,13 +64,15 @@ const FormContainer: React.FC<any> = (props) => {
 
   const dispatch = useDispatch();
 
-  const debouncedFormChange = _.debounce((event, ref, lastField, callbackFun) => {
-    //(event, ref, lastField, callbackFun) => {
-    dispatch({
-      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-      payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null }
-    });
-  }, 1000);
+  const debouncedFormChange = useCallback(
+    debounce((event, ref, lastField, callbackFun) => {
+      dispatch({
+        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
+        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null }
+      });
+    }, 1000),
+    []
+  );
 
   const errorTransformers = useCallback(() => {
     return getCustomErrorTransformer;
@@ -282,6 +284,7 @@ const FormContainer: React.FC<any> = (props) => {
         <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
           <SelectAutoCompleteContextProvider>
             <>
+              form!
               <Form
                 templates={{
                   ObjectFieldTemplate: ObjectFieldTemplate,
@@ -323,7 +326,6 @@ const FormContainer: React.FC<any> = (props) => {
                 ref={formRef}>
                 <React.Fragment />
               </Form>
-
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
                   disabled={props.isDisabled}

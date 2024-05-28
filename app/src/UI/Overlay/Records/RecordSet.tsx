@@ -1,34 +1,27 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useHistory } from 'react-router';
-import Accordion from '@mui/material/Accordion';
-import { AccordionSummary, Tooltip } from '@mui/material';
+import { Tooltip } from '@mui/material';
 import { RecordTable } from './RecordTable';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from './RecordTableHelpers';
-import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
-import { debounce, set, values } from 'lodash';
+
 import {
-  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   PAGE_OR_LIMIT_UPDATE,
-  RECORDSETS_TOGGLE_VIEW_FILTER,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
-  RECORDSET_UPDATE_FILTER
+  RECORDSET_UPDATE_FILTER,
+  RECORDSETS_TOGGLE_VIEW_FILTER
 } from 'state/actions';
 import { OverlayHeader } from '../OverlayHeader';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
-import { detectTouchDevice } from 'utils/detectTouch';
 import ExcelExporter from './ExcelExporter';
 
 export const RecordSet = (props) => {

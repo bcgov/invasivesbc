@@ -1,19 +1,14 @@
 import React from 'react';
-import {RouteComponentProps} from 'react-router';
 import BatchDetail from './batch-upload/BatchDetail';
-import BatchLayout from "./BatchLayout";
+import BatchLayout from './BatchLayout';
+import { useParams } from 'react-router-dom';
 
-interface BatchViewProps
-  extends RouteComponentProps<{
-    id: string;
-  }> {
-}
-
-const BatchView: React.FC<BatchViewProps> = ({match}) => {
+const BatchView = () => {
+  let { id } = useParams<{ id: string }>();
 
   return (
     <BatchLayout>
-      <BatchDetail id={match.params.id}/>
+      <BatchDetail id={id} />
     </BatchLayout>
   );
 };

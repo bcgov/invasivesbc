@@ -21,7 +21,6 @@ import {
 import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 import './NewRecordDialog.css';
-import FormContainer from './Activity/form/FormContainer';
 
 export interface INewRecordDialog {}
 

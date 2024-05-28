@@ -9,9 +9,9 @@ import {
   ActivitySubtype,
   ActivityType,
   MAX_AREA,
-  populateSpeciesArrays,
-  BC_AREA
+  populateSpeciesArrays
 } from 'sharedAPI';
+
 import {
   autoFillNameByPAC,
   autoFillSlopeAspect,
@@ -68,6 +68,8 @@ import { kinks } from '@turf/turf';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectNetworkConnected } from 'state/reducers/network';
+
+let BC_AREA: any = null;
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
@@ -161,7 +163,9 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
         // if not radius in properties:
         if (!action.payload.geometry[0].properties.radius) {
           let userEnteredArea = undefined;
-          while (!(isNumber(userEnteredArea) && userEnteredArea !== null && ([1,5,10].includes(Number(userEnteredArea))))) {
+          while (
+            !(isNumber(userEnteredArea) && userEnteredArea !== null && [1, 5, 10].includes(Number(userEnteredArea)))
+          ) {
             userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):'));
           }
           const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
@@ -222,7 +226,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
           }
         ];
       } else {
-        const { well_objects} = nearestWells;
+        const { well_objects } = nearestWells;
         areWellsInside = nearestWells.areWellsInside;
         console.dir(well_objects);
         well_objects.forEach((well) => {
@@ -245,8 +249,19 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     } else {
       geoToTest = sanitizedGeo;
     }
-    if (sanitizedGeo) isWithinBC = booleanContains(BC_AREA.features[0] as any, geoToTest as any);
-
+    if (sanitizedGeo) {
+      if (BC_AREA === null) {
+        try {
+          BC_AREA = (yield import('./_bcArea')).default;
+        } catch (e) {
+          console.error('could not load bc geometry file, unable to validate bounds');
+        }
+      }
+      // it's possible it's still null if the import failed
+      if (BC_AREA !== null) {
+        isWithinBC = booleanContains(BC_AREA.features[0] as any, geoToTest as any);
+      }
+    }
 
     if (activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' && areWellsInside) {
       yield put({
@@ -259,7 +274,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
           }
         }
       });
-
     }
 
     if (!isWithinBC) {

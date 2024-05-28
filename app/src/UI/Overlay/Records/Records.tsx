@@ -21,20 +21,17 @@ import {
   USER_SETTINGS_REMOVE_RECORD_SET,
   USER_SETTINGS_SET_RECORDSET
 } from 'state/actions';
-import { Activity } from './Record';
 import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
 import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
-import { set } from 'lodash';
-import { Wifi } from '@mui/icons-material';
 
 export const Records = () => {
   const MapMode = useSelector((state: any) => state.Map?.MapMode);
   // this version of layer 'highlighting' uses a usestate variable, but should be turned into a redux state variable
   // before getting the map layers to interact with the list item on hover.
   const recordSets = useSelector((state: any) => state.UserSettings?.recordSets);
-  const CONFIGURATION_IS_MOBILE =  useSelector((state: any) => state.Configuration?.current?.MOBILE);
+  const CONFIGURATION_IS_MOBILE = useSelector((state: any) => state.Configuration?.current?.MOBILE);
 
   const mapLayers = useSelector((state: any) => state.Map.layers);
 
