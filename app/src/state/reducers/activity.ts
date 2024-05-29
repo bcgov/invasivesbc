@@ -1,6 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit';
 import {
   ACTIVITY_ADD_PHOTO_SUCCESS,
+  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_COPY_SUCCESS,
   ACTIVITY_CREATE_REQUEST,
   ACTIVITY_CREATE_SUCCESS,
@@ -122,6 +123,11 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           draftState.activity = { ...action.payload.activity };
           draftState.suggestedTreatmentIDs = [];
           draftState.loading = false;
+          break;
+        }
+        case ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS: {
+          draftState.uiSchema = action.payload.uiSchema;
+          draftState.schema = action.payload.schema;
           break;
         }
         case ACTIVITY_UPDATE_GEO_SUCCESS: {
