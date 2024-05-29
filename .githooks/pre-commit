@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+cd api
+npm run pre-commit
+
+cd ../sharedAPI
+npm run pre-commit
+
+cd ../app
+npm run pre-commit
+
+cd ..
