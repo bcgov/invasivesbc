@@ -31,13 +31,13 @@ export interface IPhoto {
 
 export interface IPhotoContainerProps {
   classes?: any;
-//  photoState: { photos: IPhoto[]; setPhotos: (photo: IPhoto[]) => void };
+  //  photoState: { photos: IPhoto[]; setPhotos: (photo: IPhoto[]) => void };
   isDisabled?: boolean;
 }
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const dispatch = useDispatch();
-  const media = useSelector((state: any) => state.ActivityPage?.activity?.media)
+  const media = useSelector((state: any) => state.ActivityPage?.activity?.media);
 
   const takePhoto = async () => {
     try {
@@ -56,9 +56,12 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
         editing: false
       };
 
-      dispatch({ type: ACTIVITY_ADD_PHOTO_REQUEST, payload: { 
-        photo: photo
-      } });
+      dispatch({
+        type: ACTIVITY_ADD_PHOTO_REQUEST,
+        payload: {
+          photo: photo
+        }
+      });
 
       // props.photoState.setPhotos([...props.photoState.photos, photo]);
     } catch (e) {
@@ -79,11 +82,14 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   // };
 
   const deletePhoto = async (photo: any) => {
-    dispatch( {type: ACTIVITY_DELETE_PHOTO_REQUEST, payload: {
-      photo: photo
-    }});
+    dispatch({
+      type: ACTIVITY_DELETE_PHOTO_REQUEST,
+      payload: {
+        photo: photo
+      }
+    });
   };
-  
+
   // const [editing, setEditing] = useState(false);
   const [newPhotoDesc, setNewPhotoDesc] = useState('untitled');
   // const editPhotoDesc = () => {
@@ -113,17 +119,20 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                       <IconButton onClick={() => deletePhoto(photo)}>
                         <DeleteForever />
                       </IconButton>
-                      <IconButton disabled={photo.editing} onClick={() => {
-                        dispatch({
-                          type: ACTIVITY_EDIT_PHOTO_REQUEST,
-                          payload: {
-                            photo: {
-                              ...photo,
-                              editing: true
+                      <IconButton
+                        disabled={photo.editing}
+                        onClick={() => {
+                          dispatch({
+                            type: ACTIVITY_EDIT_PHOTO_REQUEST,
+                            payload: {
+                              photo: {
+                                ...photo,
+                                editing: true
+                              }
                             }
-                          }
-                        });
-                      }}>
+                          });
+                        }}
+                      >
                         <EditIcon />
                       </IconButton>
                     </CardActions>
@@ -154,7 +163,8 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                             });
                             // setEditing(false);
                             setNewPhotoDesc('untitled');
-                          }}>
+                          }}
+                        >
                           Save
                         </Button>
                       </>

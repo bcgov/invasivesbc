@@ -19,7 +19,7 @@ export const getUnnestedFieldsForActivity = (activity) => {
   };
 
   // needs to be consistent with API column names
-  let columns: any = {
+  const columns: any = {
     activity_id: activity?.activity_id,
     short_id: activity?.short_id,
     activity_type: activity?.activity_type,
@@ -63,7 +63,7 @@ export const getUnnestedFieldsForActivity = (activity) => {
 };
 
 export const getUnnestedFieldsForIAPP = (record) => {
-  let columns: any = {
+  const columns: any = {
     site_id: record.site_id,
     site_paper_file_id: record.site_paper_file_id,
     jurisdictions_flattened: record.jurisdictions_flattened,

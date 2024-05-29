@@ -4,14 +4,12 @@ import BatchLayout from './BatchLayout';
 import BatchUploadList from './batch-upload/BatchUploadList';
 
 const BatchList = () => {
-
   return (
     <BatchLayout>
       <Container maxWidth={'lg'}>
-        <BatchUploadList/>
+        <BatchUploadList />
       </Container>
     </BatchLayout>
-
   );
 };
 

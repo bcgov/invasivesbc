@@ -123,7 +123,8 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
                                           <AccordionSummary
                                             expandIcon={<ExpandMoreIcon />}
                                             aria-controls="panel1a-content"
-                                            id="panel1a-header">
+                                            id="panel1a-header"
+                                          >
                                             <Typography>Herbicide #{index + 1}</Typography>
                                           </AccordionSummary>
                                           <AccordionDetails>

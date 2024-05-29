@@ -32,7 +32,7 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
     }
   };
 
-  let optionArr: any[] = [];
+  const optionArr: any[] = [];
 
   if (enumOptions) {
     enumOptions.forEach(({ value, label }) => {

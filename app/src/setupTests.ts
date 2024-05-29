@@ -4,4 +4,3 @@ if (typeof window?.URL?.createObjectURL === 'undefined') {
     // Mock this function for mapbox-gl to work
   };
 }
-

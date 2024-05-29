@@ -378,7 +378,7 @@ const Row = (props: any) => {
   };
 
   const ExtractRow = () => {
-    var columnsObj;
+    let columnsObj;
 
     switch (type) {
       case 'Mechanical Treatment':
@@ -412,7 +412,8 @@ const Row = (props: any) => {
             if (column.id === 'treatment_id') {
               setOpen(!open);
             }
-          }}>
+          }}
+        >
           {monitoringRows.length > 0 && column.id === 'treatment_id' && (
             <>{open ? <KeyboardArrowDownIcon /> : <KeyboardArrowUpIcon />}</>
           )}
@@ -423,7 +424,7 @@ const Row = (props: any) => {
   };
 
   /// switch here if we have more than 2 options
-  var monitoringColumns = type === 'Biological Treatment' ? customMonitoringColumns : defaultMonitoringColumns;
+  const monitoringColumns = type === 'Biological Treatment' ? customMonitoringColumns : defaultMonitoringColumns;
 
   return (
     <React.Fragment>
@@ -455,7 +456,8 @@ const Row = (props: any) => {
                             <TableCell
                               key={column.id}
                               align={column.align}
-                              style={{ width: 'auto', tableLayout: 'fixed' }}>
+                              style={{ width: 'auto', tableLayout: 'fixed' }}
+                            >
                               {item[column.id]}
                             </TableCell>
                           ))}
@@ -498,8 +500,8 @@ export const TreatmentsTable = (props) => {
   };
 
   const createData = (treatment: any) => {
-    var method_code;
-    var returnObj;
+    let method_code;
+    let returnObj;
     switch (type) {
       case 'Mechanical':
         method_code = treatment.mechanical_method_code;
@@ -632,7 +634,7 @@ export const TreatmentsTable = (props) => {
   };
 
   const TreatmentTableHead = () => {
-    var columnsObj;
+    let columnsObj;
     switch (type) {
       case 'Mechanical Treatment':
         columnsObj = mechTreatmentColumns;

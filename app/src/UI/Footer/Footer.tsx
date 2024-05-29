@@ -25,7 +25,8 @@ export const Footer: React.FC = () => {
             } else {
               window.location.href = 'https://invasivesbc.gov.bc.ca';
             }
-          }}>
+          }}
+        >
           <option value={'v2'}>v2</option>
           <option value={'v1'}>v1</option>
         </select>

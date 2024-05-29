@@ -25,7 +25,8 @@ export const CenterCurrentRecord = (props) => {
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title={props.type === 'Activity' ? 'Center Current Activity' : 'Center Current IAPP'}
-          placement="top-end">
+          placement="top-end"
+        >
           <span>
             <IconButton
               onClick={() => {
@@ -35,7 +36,8 @@ export const CenterCurrentRecord = (props) => {
                     ? dispatch({ type: PAN_AND_ZOOM_TO_ACTIVITY })
                     : dispatch({ type: IAPP_PAN_AND_ZOOM });
                 }
-              }}>
+              }}
+            >
               {props.type === 'Activity' ? (
                 <AssignmentIcon />
               ) : (

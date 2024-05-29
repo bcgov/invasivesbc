@@ -1,10 +1,11 @@
 import { FormValidation } from '@rjsf/utils';
 import { useDispatch } from 'react-redux';
 import { ActivitySubtype, lookupAreaLimit, MAX_TEMP, MIN_TEMP } from 'sharedAPI';
-import { ACTIVITY_ERRORS } from 'state/actions';
 import validator from '@rjsf/validator-ajv8';
+import { ACTIVITY_ERRORS } from 'state/actions';
 
 import { globalStore } from 'state/store';
+
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
 function combineValidators(validators: rjsfValidator[]): rjsfValidator {
@@ -18,7 +19,7 @@ function combineValidators(validators: rjsfValidator[]): rjsfValidator {
   };
 }
 
-export function validatorForActivity(activity_subtype, linkedActivity) : rjsfValidator {
+export function validatorForActivity(activity_subtype, linkedActivity): rjsfValidator {
   return combineValidators([
     //validator as unknown as  rjsfValidator,
     getAreaValidator(activity_subtype),
@@ -250,7 +251,6 @@ export function getJurisdictionPercentValidator(): rjsfValidator {
         jurCodes.push(jurCode.jurisdiction_code);
       }
     });
-
 
     return errors;
   };
@@ -712,7 +712,7 @@ export function getPlotIdentificationTreesValidator(activitySubtype: string): rj
           formB.form_a.forEach((formA: any) => {
             // Check if plot identification trees section is valid
             if (formA.plot_identification_trees) {
-              let form = formA.plot_identification_trees;
+              const form = formA.plot_identification_trees;
               errors.activity_subtype_data['form_b'][form_b_index].form_a[
                 form_a_index
               ].plot_identification_trees.__errors = [];
@@ -803,7 +803,7 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
     // ? formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information
     // : formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information;
 
-    let informationArray = isChemical
+    const informationArray = isChemical
       ? formData.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information
       : formData.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information;
 
@@ -812,7 +812,7 @@ export function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
     }
 
     if (informationArray?.length > 0)
-      for (let object of informationArray) {
+      for (const object of informationArray) {
         if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
           errors['activity_subtype_data'][
             isChemical

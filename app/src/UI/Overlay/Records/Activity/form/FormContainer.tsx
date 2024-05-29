@@ -126,7 +126,7 @@ const FormContainer: React.FC<any> = (props) => {
         noValidationFields.push(field);
       }
       //set new state with updated array of noValidate fields
-      let newFormData = $this.state.formData;
+      const newFormData = $this.state.formData;
       newFormData.forceNoValidationFields = noValidationFields;
       $this.setState({ formData: newFormData }, () => {
         //revalidate formData after the setState is run
@@ -323,7 +323,8 @@ const FormContainer: React.FC<any> = (props) => {
                     console.log(e);
                   }
                 }}*/
-                ref={formRef}>
+                ref={formRef}
+              >
                 <React.Fragment />
               </Form>
               {isActivityChemTreatment() && (
@@ -355,7 +356,8 @@ const FormContainer: React.FC<any> = (props) => {
           open={open}
           onClose={handleClose}
           aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
+          aria-describedby="alert-dialog-description"
+        >
           <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
@@ -369,7 +371,8 @@ const FormContainer: React.FC<any> = (props) => {
                 proceedClick();
               }}
               color="primary"
-              autoFocus>
+              autoFocus
+            >
               Proceed
             </Button>
           </DialogActions>

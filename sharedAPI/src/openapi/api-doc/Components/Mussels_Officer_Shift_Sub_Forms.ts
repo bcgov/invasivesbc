@@ -2,17 +2,17 @@
  * @desc Shift logic for Watercraft Inspectors. Contains all the subcomponents used to document shifts
  * @author LocalNewsTV davidclaveau
  */
-import { NullSwitch } from "./Mussels_Sub_Form"
+import { NullSwitch } from './Mussels_Sub_Form';
 /** @desc Reusable Time String input field */
 export const TimeCapture = {
   type: 'string',
   format: 'time'
-}
+};
 /** @desc Reusable date-time input field */
 export const DateCapture = {
   type: 'string',
   format: 'date-time'
-}
+};
 /**
  * @desc Station Workers are assigned to at start of day
  */
@@ -26,7 +26,7 @@ export const Station = {
     'x-enum-code-text': 'code_description',
     'x-enum-code-sort-order': 'code_sort_order'
   }
-}
+};
 
 export const Blowby = {
   type: 'object',
@@ -41,7 +41,7 @@ export const Blowby = {
         'x-enum-code-name': 'code_name',
         'x-enum-code-text': 'code_description',
         'x-enum-code-sort-order': 'code_sort_order'
-      },
+      }
     },
     blowbyTime: {
       title: 'Blowby Time',
@@ -50,14 +50,10 @@ export const Blowby = {
     reportedToRapp: {
       title: 'Reported to RAPP',
       ...NullSwitch
-    },
+    }
   },
-  required: [
-    'reportedToRapp',
-    'watercraftComplexity',
-    'blowbyTime'
-  ]
-}
+  required: ['reportedToRapp', 'watercraftComplexity', 'blowbyTime']
+};
 
 export const ShiftStartSection = {
   type: 'object',
@@ -72,13 +68,10 @@ export const ShiftStartSection = {
     },
     station: {
       ...Station
-    },
+    }
   },
-  required: [
-    'shiftStartTime',
-    'station'
-  ]
-}
+  required: ['shiftStartTime', 'station']
+};
 
 export const ShiftEndSection = {
   type: 'object',
@@ -100,12 +93,8 @@ export const ShiftEndSection = {
       type: 'string'
     }
   },
-  required: [
-    'shiftEndTime',
-    'boatsInspected',
-    'k9OnShift'
-  ]
-}
+  required: ['shiftEndTime', 'boatsInspected', 'k9OnShift']
+};
 
 /**
  * @desc Overview for an inspect officers work.
@@ -136,10 +125,7 @@ export const ShiftOverview = {
           ...ShiftEndSection
         }
       },
-      required: [
-        'shiftStart',
-        'shiftEnd'
-      ]
+      required: ['shiftStart', 'shiftEnd']
     }
   }
-}
+};

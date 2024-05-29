@@ -968,7 +968,6 @@ const Observation_PlantAquatic_Information = {
   'ui:order': ['suitable_for_biocontrol_agent']
 };
 
-
 const Observation_Mussels_Information = {
   isPassportHolder: {
     'ui:inline': true,
@@ -1011,7 +1010,7 @@ const Observation_Mussels_Information = {
       province: { 'ui:widget': 'single-select-autocomplete' }
     },
     vehicleTypeInspectedCount: {
-      ...FourColumnStyle,
+      ...FourColumnStyle
     }
   },
   watercraftDetails: {
@@ -1020,7 +1019,7 @@ const Observation_Mussels_Information = {
       commerciallyHauled: {
         'ui:inline': true,
         'ui:widget': 'radio'
-      },
+      }
     },
     watercraftDetails_PreviousAISKnowledge: {
       previousAISKnowledge: {
@@ -1036,7 +1035,7 @@ const Observation_Mussels_Information = {
       },
       previousInspectionSource: { 'ui:widget': 'single-select-autocomplete' },
       previousInspectionDays: { 'ui:widget': 'single-select-autocomplete' }
-    },
+    }
   },
   journeyDetails: {
     ...TwoColumnStyle,
@@ -1083,7 +1082,7 @@ const Observation_Mussels_Information = {
       k9Inspection: {
         'ui:inline': true,
         'ui:widget': 'radio'
-      },
+      }
     }
   },
   highRiskAssessment: {
@@ -1118,7 +1117,7 @@ const Observation_Mussels_Information = {
         decontaminationPerformed: {
           'ui:inline': true,
           'ui:widget': 'radio'
-        },
+        }
       },
       decontaminationOrderIssuedLogic: {
         decontaminationOrderIssued: {
@@ -1135,7 +1134,7 @@ const Observation_Mussels_Information = {
         sealIssued: {
           'ui:inline': true,
           'ui:widget': 'radio'
-        },
+        }
       },
       quarantinePeriodIssued: {
         'ui:inline': true,
@@ -1160,7 +1159,7 @@ const Mussels_Officer_Shift = {
       },
       watercraftComplexity: {
         'ui:widget': 'single-select-autocomplete'
-      },
+      }
     }
   },
   inspections: {
@@ -1178,7 +1177,7 @@ const Mussels_Officer_Shift = {
       boatsInspected: {
         'ui:inline': true,
         'ui:widget': 'radio'
-      },
+      }
     },
     shiftStart: {
       ...TwoColumnStyle,
@@ -1186,8 +1185,8 @@ const Mussels_Officer_Shift = {
         'ui:widget': 'single-select-autocomplete'
       }
     }
-  },
-}
+  }
+};
 
 const Monitoring_ChemicalTerrestrialAquaticPlant_Information = {
   ...TwoColumnStyle,

@@ -3,14 +3,14 @@ import React, { ReactNode } from 'react';
 
 export interface IGeneralDialog {
   children?: ReactNode;
-  dialogTitle: String;
-  dialogContentText?: String;
+  dialogTitle: string;
+  dialogContentText?: string;
   dialogOpen: boolean;
   dialogActions: IDialogAction[];
 }
 
 interface IDialogAction {
-  actionName: String;
+  actionName: string;
   children?: any;
   usesChildren?: boolean;
   actionOnClick: () => void;
@@ -29,7 +29,8 @@ export const GeneralDialog = (props: IGeneralDialog) => {
       onClick={(e) => e.stopPropagation()}
       open={open}
       aria-labelledby="alert-dialog-title"
-      aria-describedby="alert-dialog-description">
+      aria-describedby="alert-dialog-description"
+    >
       <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
       {props.dialogContentText && (
         <DialogContent>
@@ -46,7 +47,8 @@ export const GeneralDialog = (props: IGeneralDialog) => {
                 onClick={action.actionOnClick}
                 key={'dialogue_action' + Math.random()}
                 color="primary"
-                autoFocus={action.autoFocus ? action.autoFocus : false}>
+                autoFocus={action.autoFocus ? action.autoFocus : false}
+              >
                 {action.actionName}
               </Button>
             );

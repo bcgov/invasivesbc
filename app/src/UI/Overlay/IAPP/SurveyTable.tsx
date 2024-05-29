@@ -114,7 +114,8 @@ const Row = (props: any) => {
               align={column.align}
               onClick={() => {
                 if (column.id === 'general_comment') setShortComment(!shortComment);
-              }}>
+              }}
+            >
               <Box>{outputValue(column.id, value)}</Box>
             </TableCell>
           );
@@ -186,7 +187,8 @@ export const SurveysTable = (props: any) => {
     <Accordion expanded={expanded} style={{ marginTop: 15, alignItems: 'center' }}>
       <AccordionSummary
         onClick={() => setExpanded(!expanded)}
-        style={{ fontWeight: 'bold', fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
+        style={{ fontWeight: 'bold', fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}
+      >
         Survey Details
       </AccordionSummary>
       <Paper sx={{ width: '100%', overflow: 'hidden' }}>

@@ -1,0 +1,10 @@
+node_modules
+
+openshift
+sonar-runner
+uploads
+
+.vscode
+.docker
+README.md
+

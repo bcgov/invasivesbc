@@ -60,7 +60,8 @@ function WhatsHerePagination(props) {
                   limit: pageLimit
                 }
               });
-            }}>
+            }}
+          >
             <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
           </Button>
         )}
@@ -81,7 +82,8 @@ function WhatsHerePagination(props) {
                   limit: pageLimit
                 }
               });
-            }}>
+            }}
+          >
             <ArrowLeftIcon></ArrowLeftIcon>
           </Button>
         )}
@@ -105,7 +107,8 @@ function WhatsHerePagination(props) {
                   limit: pageLimit
                 }
               });
-            }}>
+            }}
+          >
             <ArrowRightIcon></ArrowRightIcon>
           </Button>
         )}
@@ -166,7 +169,8 @@ export const RenderTableActivity = (props: any) => {
       <Box
         onMouseEnter={() => {
           dispatchUpdatedID(props.params);
-        }}>
+        }}
+      >
         {value} m&#178;
       </Box>
     );
@@ -183,7 +187,8 @@ export const RenderTableActivity = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
@@ -199,7 +204,8 @@ export const RenderTableActivity = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
@@ -215,7 +221,8 @@ export const RenderTableActivity = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}m
           </div>
         );
@@ -231,7 +238,8 @@ export const RenderTableActivity = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
@@ -247,7 +255,8 @@ export const RenderTableActivity = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
@@ -263,12 +272,13 @@ export const RenderTableActivity = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
       }
-    },
+    }
   ];
 
   const highlightActivity = async (params) => {
@@ -346,7 +356,7 @@ export const RenderTablePOI = (props: any) => {
   };
 
   // don't use the tables sort or paging - there can be too many records for table to handle, control state externally via store
-  let columns = [
+  const columns = [
     {
       field: 'id',
       headerName: 'IAPP ID',
@@ -357,7 +367,8 @@ export const RenderTablePOI = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
@@ -374,7 +385,8 @@ export const RenderTablePOI = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
@@ -406,7 +418,8 @@ export const RenderTablePOI = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
@@ -422,7 +435,8 @@ export const RenderTablePOI = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
@@ -438,12 +452,13 @@ export const RenderTablePOI = (props: any) => {
           <div
             onMouseEnter={() => {
               dispatchUpdatedID(params);
-            }}>
+            }}
+          >
             {params.value}
           </div>
         );
       }
-    },
+    }
   ];
 
   const highlightPOI = async (params) => {

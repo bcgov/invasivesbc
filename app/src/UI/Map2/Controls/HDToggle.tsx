@@ -26,13 +26,15 @@ export const HDToggle = (props) => {
         }}
         onMouseLeave={() => setShow(false)}
         title={`Max Zoom Resolution: ${!HDToggle ? 'Low Def' : 'High Def'}`}
-        placement="top-end">
+        placement="top-end"
+      >
         <span>
           <IconButton
             onClick={() => {
               dispatch({ type: MAP_TOGGLE_HD });
             }}
-            sx={{ color: '#000' }}>
+            sx={{ color: '#000' }}
+          >
             {HDToggle ? <HdIcon /> : <SdIcon />}
           </IconButton>
         </span>

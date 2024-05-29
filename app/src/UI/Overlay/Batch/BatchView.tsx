@@ -4,7 +4,7 @@ import BatchLayout from './BatchLayout';
 import { useParams } from 'react-router-dom';
 
 const BatchView = () => {
-  let { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
 
   return (
     <BatchLayout>

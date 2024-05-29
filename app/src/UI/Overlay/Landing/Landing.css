@@ -1,5 +1,5 @@
 body {
-  font-family: BCSans, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .userInfoItemGrid {
@@ -18,16 +18,14 @@ body {
 }
 
 .container {
-  font-family: BCSans, "Noto Sans", "Helvetica Neue", Arial, sans-serif;
+  font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
   text-align: left;
   margin: 1rem;
   padding: 4rem;
 }
 
-
-
 @media (min-device-width: 600px) {
   .cardWidth {
-    width: 600
+    width: 600;
   }
 }

@@ -1,36 +1,33 @@
 .form_wrapper {
-    height: 100%;
-
+  height: 100%;
 }
 
 .recordHeaderInfo {
-    border-color: black;
-    text-align: left;
-    display: flex;
-    justify-content: left;
-    overflow: scroll;
-    display: flex;
-    max-width: 80%;
-    padding-left: 15%;
-    padding-right: 15%;
-
-
+  border-color: black;
+  text-align: left;
+  display: flex;
+  justify-content: left;
+  overflow: scroll;
+  display: flex;
+  max-width: 80%;
+  padding-left: 15%;
+  padding-right: 15%;
 }
-label { text-align: left; }
+label {
+  text-align: left;
+}
 table {
-    width: 100%;
-    /*border: 1px solid black;*/
-    background-color: white !important;
-    border-style: hidden;
-    text-align: left;
-    justify-content: left;
-    overflow: scroll;
-
+  width: 100%;
+  /*border: 1px solid black;*/
+  background-color: white !important;
+  border-style: hidden;
+  text-align: left;
+  justify-content: left;
+  overflow: scroll;
 }
 
 td {
-    padding: 3px;
-
+  padding: 3px;
 }
 
 /*tr {
@@ -40,91 +37,80 @@ td {
 */
 
 .leftHeaderCol {
-    width: 30%
+  width: 30%;
 }
 
 .leftValueCol {
-    width: 100%
-
+  width: 100%;
 }
 .rightValueCol {
-    width: 100%
-
+  width: 100%;
 }
-
 
 .rightHeaderCol {
-    width: 30%
+  width: 30%;
 }
-
 
 #invasive_plants_section {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
-
-#invasive_plants_list{
-    display: flex;
-    flex-wrap: wrap
+#invasive_plants_list {
+  display: flex;
+  flex-wrap: wrap;
 }
 
-.invasive_plant { 
-    padding: 10px;
-    /*width: 50px*/
-
+.invasive_plant {
+  padding: 10px;
+  /*width: 50px*/
 }
 
 .removeInvasivePlantButton {
-    padding-top: 10px;
+  padding-top: 10px;
 }
 
 .invasive_plant_tooltip {
-    
-
 }
 
 #herbicides_section {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 #herbicides_list {
-    display: flex;
-    flex-wrap: wrap 
+  display: flex;
+  flex-wrap: wrap;
 }
 
-
 .herbicide_list_item {
-    min-width:  200px;
-    padding: 10px;
+  min-width: 200px;
+  padding: 10px;
 }
 
 .productApplicationRate {
-    padding: 10px;
-    width: 100%;
-
+  padding: 10px;
+  width: 100%;
 }
 
 .amountOfMix {
-    padding-top: 30px;
-    padding-bottom: 10px;
+  padding-top: 30px;
+  padding-bottom: 10px;
 }
 
 #tank_mix_delivery_and_amount {
-    display: flex;
-    flex-direction: column;
-    width: 100%
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 #delivery_rate_of_mix_tank_mix {
-    display: flex;
-    width: 100%
-
+  display: flex;
+  width: 100%;
 }
 
 #amount_of_mix_tank_mix {
-    display: flex;
+  display: flex;
 
-    width: 100%
+  width: 100%;
 }

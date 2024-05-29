@@ -34,7 +34,8 @@ export const ErrorHandler = ({ detail }) => {
             onClick={() => {
               navigator.clipboard.writeText(errorText);
               setCopied(true);
-            }}>
+            }}
+          >
             {copied ? 'Copied!' : 'Copy Error Detail To Clipboard'}
           </Button>
 
@@ -50,7 +51,8 @@ export const ErrorHandler = ({ detail }) => {
               } else {
                 window.location.reload();
               }
-            }}>
+            }}
+          >
             Clear App Data
           </Button>
         </div>

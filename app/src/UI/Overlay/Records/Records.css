@@ -92,8 +92,8 @@
 .selectedFormTab {
   border-bottom-style: solid !important;
   /*border-radius: 2vh;*/
-  border-width: .5vh !important;
-  border-color: #FCBA19 !important;
+  border-width: 0.5vh !important;
+  border-color: #fcba19 !important;
 }
 
 .records__activity__photos_button {

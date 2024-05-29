@@ -1,6 +1,6 @@
-import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
 import { Http } from '@capacitor-community/http';
 import { Store } from 'redux';
+import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
 import { RootState } from '../reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
@@ -37,7 +37,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) 
     });
 
     if (state.Auth.authenticated) {
-      let loggingState = JSON.parse(
+      const loggingState = JSON.parse(
         JSON.stringify({
           Auth: state.Auth,
           Configuration: state.Configuration,

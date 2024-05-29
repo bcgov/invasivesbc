@@ -67,7 +67,8 @@ const ExcelExporter = (props) => {
                   disabled={linkToCSV.length < 1}
                   sx={{ mr: 1, ml: 'auto' }}
                   size={'small'}
-                  variant="contained">
+                  variant="contained"
+                >
                   Download CSV
                   <DownloadIcon />
                 </Button>
@@ -88,7 +89,8 @@ const ExcelExporter = (props) => {
                     }
                     sx={{ mr: 1, ml: 'auto' }}
                     size={'small'}
-                    variant="contained">
+                    variant="contained"
+                  >
                     Generate CSV link
                     <DownloadIcon />
                   </Button>
@@ -106,7 +108,8 @@ const ExcelExporter = (props) => {
                 value={selection}
                 onChange={(e) => {
                   setSelection(e.target.value);
-                }}>
+                }}
+              >
                 {...items}
               </Select>
             </>

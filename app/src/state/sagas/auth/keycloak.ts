@@ -1,5 +1,6 @@
-import { AppConfig } from 'state/config';
 import { call, cancelled, delay, fork, put, select, takeLatest } from 'redux-saga/effects';
+import Keycloak from 'keycloak-js';
+import { AppConfig } from 'state/config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { historySingleton } from 'state/store';
 import {
@@ -19,7 +20,6 @@ import {
   TABS_GET_INITIAL_STATE_REQUEST,
   USERINFO_CLEAR_REQUEST
 } from 'state/actions';
-import Keycloak from 'keycloak-js';
 import { selectAuth } from 'state/reducers/auth';
 
 let keycloakInstance = null;

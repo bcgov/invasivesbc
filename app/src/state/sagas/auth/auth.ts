@@ -1,9 +1,9 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
 
+import { Http } from '@capacitor-community/http';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
-import { Http } from '@capacitor-community/http';
 import {
   AUTH_REFRESH_ROLES_COMPLETE,
   AUTH_REFRESH_ROLES_ERROR,

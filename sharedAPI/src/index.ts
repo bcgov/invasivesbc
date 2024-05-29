@@ -21,7 +21,7 @@ export { BC_AREA };
 //export const autofillChemFields = (activity, codesForFiled) => {
 export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalMethodCodes) => {
   try {
-    let newActivity = JSON.parse(JSON.stringify(activity));
+    const newActivity = JSON.parse(JSON.stringify(activity));
     const area = newActivity?.form_data?.activity_data?.reported_area ?? 0;
     const chemicalApplicationMethod =
       activity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method;
@@ -120,8 +120,8 @@ export const activity_create_function = (
   displayName: string,
   pac_number?: string
 ) => {
-  let activityV1 = generateDBActivityPayload({}, null, type, subType);
-  let activityV2 = populateSpeciesArrays(activityV1);
+  const activityV1 = generateDBActivityPayload({}, null, type, subType);
+  const activityV2 = populateSpeciesArrays(activityV1);
   activityV2.created_by = username;
 
   //    if ([ActivityType.Observation, ActivityType.Treatment].includes(activityV2.activity_type))
@@ -149,7 +149,7 @@ export function generateDBActivityPayload(
     activity_id: id,
     date_created: time
   });
-  let returnVal = {
+  const returnVal = {
     initial_autofill_done: false,
     _id: id,
     short_id: short_id,

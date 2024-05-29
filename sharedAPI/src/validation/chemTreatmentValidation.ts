@@ -62,7 +62,7 @@ export const validate_inv_plants_arr_length = (formData: IGeneralFields, errors:
   if (!formData || !formData.invasive_plants) {
     return errors;
   }
-  let newErrors = errors;
+  const newErrors = errors;
 
   if (formData.invasive_plants.length < 1) {
     newErrors.push('You must have at least one Invasive Plant added');
@@ -84,7 +84,7 @@ export const validate_inv_plants_fields = (formData: IGeneralFields, errors: any
   let negativePercentage: boolean = false;
   let totalPercentage: number = 0;
 
-  let plantCodeList = [];
+  const plantCodeList = [];
 
   for (let invPlantIndex = 0; invPlantIndex < formData.invasive_plants.length; invPlantIndex++) {
     if (!formData.invasive_plants[invPlantIndex].invasive_plant_code) {
@@ -219,7 +219,7 @@ export const validate_herbicide_fields = (
   let noDeliveryRate = false;
   let negativeDeliveryRate = false;
 
-  let herbCodeList = [];
+  const herbCodeList = [];
 
   formData.herbicides.forEach((herb) => {
     if (!herb.herbicide_code) {
@@ -414,7 +414,7 @@ export const validate_tank_mix_herbicides = (
   let noProdAppRate = false;
   let negativeProdAppRate = false;
 
-  let herbCodeList = [];
+  const herbCodeList = [];
 
   formData.tank_mix_object.herbicides.forEach((herb) => {
     if (!herb.product_application_rate || !herb.herbicide_code || skipAppRateValidation) {

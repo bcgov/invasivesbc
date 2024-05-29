@@ -17,7 +17,7 @@ export interface ICustomAutoComplete {
 }
 
 const CustomAutoComplete = ({
- // classes,
+  // classes,
   className,
   disabled,
   id,
@@ -27,7 +27,7 @@ const CustomAutoComplete = ({
   parentState,
   choices
 }) => {
-  let optionValueLabels = {};
+  const optionValueLabels = {};
   const [labelValuePair, setLabelValuePair] = useState({
     value: null,
     label: null

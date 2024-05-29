@@ -1,3 +1,5 @@
+import { Draft } from 'immer';
+import { createNextState } from '@reduxjs/toolkit';
 import {
   AUTH_CLEAR_ROLES,
   AUTH_FORGET_OFFLINE_USER,
@@ -15,8 +17,6 @@ import {
   AUTH_UPDATE_TOKEN_STATE
 } from '../actions';
 import { AppConfig } from 'state/config';
-import { Draft } from 'immer';
-import { createNextState } from '@reduxjs/toolkit';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
 interface OfflineUserState {
@@ -228,7 +228,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           if (!draftState.authenticated) {
             break;
           }
-          let found = draftState.offlineUsers.find((o) => o.displayName === draftState.displayName);
+          const found = draftState.offlineUsers.find((o) => o.displayName === draftState.displayName);
           if (found) {
             found.roles = draftState.roles;
             found.extendedInfo = draftState.extendedInfo;
@@ -259,7 +259,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           break;
 
         case AUTH_FORGET_OFFLINE_USER: {
-          let foundIndex = draftState.offlineUsers.findIndex((o) => o.displayName === action.payload.displayName);
+          const foundIndex = draftState.offlineUsers.findIndex((o) => o.displayName === action.payload.displayName);
           if (foundIndex == -1) {
             break;
           }
@@ -267,7 +267,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           break;
         }
         case AUTH_MAKE_OFFLINE_USER_CURRENT: {
-          let found = draftState.offlineUsers.find((o) => o.displayName === action.payload.displayName);
+          const found = draftState.offlineUsers.find((o) => o.displayName === action.payload.displayName);
           if (!found) {
             break;
           }

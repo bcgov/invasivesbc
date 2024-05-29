@@ -90,7 +90,8 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
         display: 'flex',
         alignItems: 'flex-start',
         flexWrap: 'wrap'
-      }}>
+      }}
+    >
       <div>
         <GridToolbarColumnsButton style={{ color: '#003366' }} onResize={undefined} onResizeCapture={undefined} />
         <GridToolbarFilterButton style={{ color: '#003366' }} onResize={undefined} onResizeCapture={undefined} />
@@ -116,7 +117,8 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
               aria-label="Clear"
               size="small"
               style={{ visibility: props.value ? 'visible' : 'hidden' }}
-              onClick={props.clearSearch}>
+              onClick={props.clearSearch}
+            >
               <ClearIcon fontSize="small" />
             </IconButton>
           )
@@ -199,7 +201,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           color="primary"
           onClick={() => {
             openDetailsDialog(params.row);
-          }}>
+          }}
+        >
           Details
         </Button>
       </Tooltip>
@@ -214,7 +217,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           color="primary"
           onClick={() => {
             openRequestDetailsDialog(params.row);
-          }}>
+          }}
+        >
           Details
         </Button>
       </Tooltip>
@@ -627,7 +631,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   return (
     <Container
       // className={classes?.container}
-      style={{ paddingBottom: '50px' }}>
+      style={{ paddingBottom: '50px' }}
+    >
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
@@ -675,7 +680,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     disabled={!selectedUsers || selectedUsers.length === 0}
                     variant="contained"
                     color="primary"
-                    onClick={() => openRoleDialog(Mode.GRANT)}>
+                    onClick={() => openRoleDialog(Mode.GRANT)}
+                  >
                     Select Role to Grant
                   </Button>
                 </Grid>
@@ -684,7 +690,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     disabled={!selectedUsers || selectedUsers.length > 1 || selectedUsers.length === 0}
                     variant="contained"
                     color="secondary"
-                    onClick={() => openRoleDialog(Mode.REVOKE)}>
+                    onClick={() => openRoleDialog(Mode.REVOKE)}
+                  >
                     Revoke Role
                   </Button>
                 </Grid>
@@ -732,7 +739,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     disabled={!selectedRequestUsers || selectedRequestUsers.length === 0}
                     variant="contained"
                     color="primary"
-                    onClick={() => openApproveDeclineDialog(Mode.APPROVE)}>
+                    onClick={() => openApproveDeclineDialog(Mode.APPROVE)}
+                  >
                     Approve Selected Users
                   </Button>
                 </Grid>
@@ -743,7 +751,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     }
                     variant="contained"
                     color="secondary"
-                    onClick={() => openApproveDeclineDialog(Mode.DECLINE)}>
+                    onClick={() => openApproveDeclineDialog(Mode.DECLINE)}
+                  >
                     Decline Selected User
                   </Button>
                 </Grid>
@@ -772,7 +781,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           maxWidth="sm"
-          fullWidth>
+          fullWidth
+        >
           <DialogTitle id="alert-dialog-title">
             <strong>{detailsDialogUser.firstName + ' ' + detailsDialogUser.lastName}</strong>
           </DialogTitle>
@@ -921,7 +931,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               variant="contained"
               color="secondary"
               onClick={renewUser}
-              autoFocus>
+              autoFocus
+            >
               Renew User
             </Button>
             <Button variant="contained" onClick={closeDetailsDialog} autoFocus>
@@ -943,7 +954,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           maxWidth="sm"
-          fullWidth>
+          fullWidth
+        >
           <DialogTitle id="alert-dialog-title">
             <strong>{detailsDialogRequestUser.firstName + ' ' + detailsDialogRequestUser.lastName}</strong>
           </DialogTitle>
@@ -1095,7 +1107,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         onClose={closeRoleDialog}
         aria-labelledby="form-dialog-title"
         maxWidth="sm"
-        fullWidth>
+        fullWidth
+      >
         <DialogTitle id="form-dialog-title">{mode === Mode.GRANT ? 'Grant Role' : 'Revoke Role'}</DialogTitle>
         <Divider />
         <DialogContent>
@@ -1124,7 +1137,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               multiple: false,
               value: selectedRole,
               onChange: handleSelectedRoleChange
-            }}>
+            }}
+          >
             {mode === Mode.GRANT
               ? availableRoles.map((role) => (
                   <MenuItem key={role.id} value={role.id}>
@@ -1165,7 +1179,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         onClose={closeApproveDeclineDialog}
         aria-labelledby="form-dialog-title"
         maxWidth="sm"
-        fullWidth>
+        fullWidth
+      >
         <DialogTitle id="form-dialog-title">
           {mode === Mode.APPROVE ? 'Approve Request' : 'Decline Request'}
         </DialogTitle>

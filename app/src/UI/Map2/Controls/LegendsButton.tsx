@@ -35,12 +35,14 @@ export const LegendsButton = (props) => {
         }}
         onMouseLeave={() => setShow(false)}
         title="Map Legend"
-        placement="top-end">
+        placement="top-end"
+      >
         <span>
           <IconButton
             onClick={() => {
               toggleLegend();
-            }}>
+            }}
+          >
             <InfoIcon />
           </IconButton>
         </span>

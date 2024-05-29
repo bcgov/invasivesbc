@@ -37,7 +37,8 @@ export const OfflineDataSyncTable = () => {
                   <Button
                     onClick={() => {
                       dispatch({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: key } });
-                    }}>
+                    }}
+                  >
                     <FileOpen></FileOpen>
                   </Button>
                 </td>
@@ -63,7 +64,8 @@ export const OfflineDataSyncTable = () => {
         variant={'contained'}
         onClick={() => {
           dispatch({ type: ACTIVITY_RUN_OFFLINE_SYNC });
-        }}>
+        }}
+      >
         Run Sync
       </Button>
       {working && <LinearProgress className={'progressBar'} />}

@@ -1,7 +1,7 @@
 import { Accordion, AccordionSummary, Paper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
-import Spinner from "../../Spinner/Spinner";
+import Spinner from '../../Spinner/Spinner';
 
 export const Photos = ({ media }) => {
   const [expanded, setExpanded] = React.useState(true);
@@ -14,7 +14,6 @@ export const Photos = ({ media }) => {
     setMediaURLs([]);
     setLoading(true);
     setError(false);
-
 
     const mediaKeysArray = media.map((m) => m.media_key);
     if (mediaKeysArray.length > 0) {
@@ -36,7 +35,7 @@ export const Photos = ({ media }) => {
 
   function renderContent() {
     if (loading) {
-      return <Spinner/>;
+      return <Spinner />;
     }
     if (error) {
       return <span>Error loading images</span>;
@@ -67,11 +66,12 @@ export const Photos = ({ media }) => {
             <dt>Reference Number</dt>
             <dd>{mediaData.reference_no}</dd>
 
-            {mediaData.treatment_id !== null && <>
-              <dt>Treatment ID</dt>
-              <dd>{mediaData.treatment_id}</dd>
-            </>
-            }
+            {mediaData.treatment_id !== null && (
+              <>
+                <dt>Treatment ID</dt>
+                <dd>{mediaData.treatment_id}</dd>
+              </>
+            )}
           </dl>
         </div>
       );
@@ -82,7 +82,8 @@ export const Photos = ({ media }) => {
     <Accordion expanded={expanded} style={{ marginTop: 15, alignItems: 'center' }}>
       <AccordionSummary
         onClick={() => setExpanded(!expanded)}
-        style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}>
+        style={{ fontSize: '1.125rem', marginLeft: 10, marginRight: 10 }}
+      >
         Media
       </AccordionSummary>
 

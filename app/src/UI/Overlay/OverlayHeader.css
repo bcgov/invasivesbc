@@ -3,74 +3,71 @@
   width: 100%;
   top: -1px;
   position: sticky;
-    background-color: #003366;
+  background-color: #003366;
   align-items: center;
   z-index: 99999;
 
   display: flex;
   flex-direction: row;
-  justify-content:space-between
+  justify-content: space-between;
 }
 .overlayResizeButton {
   background-color: white !important;
-  color:black !important;
+  color: black !important;
   --webkit-border-radius: 0px !important;
 }
 .leftOverlayResizeButton {
   background-color: white !important;
-  color:black !important;
-  border-bottom-left-radius:5px !important;
-  border-top-left-radius:5px !important;
-  border-top-right-radius:0px !important;
-  border-bottom-right-radius:0px !important;
+  color: black !important;
+  border-bottom-left-radius: 5px !important;
+  border-top-left-radius: 5px !important;
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
 }
 
 .rightOverlayResizeButton {
   background-color: white !important;
-  color:black !important;
-  border-bottom-left-radius:0px !important;
-  border-top-left-radius:0px !important;
-  border-top-right-radius:5px !important;
-  border-bottom-right-radius:5px !important;
-  margin-left:14.25px !important;
+  color: black !important;
+  border-bottom-left-radius: 0px !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+  margin-left: 14.25px !important;
 }
 
 .centerOverlayResizeButton {
   padding-left: 6vw;
   padding-right: 6vw;
   background-color: white !important;
-  color:black !important;
-  border-bottom-left-radius:0px !important;
-  border-top-left-radius:0px !important;
-  border-top-right-radius:0px !important;
-  border-bottom-right-radius:0px !important;
-  z-index:999
+  color: black !important;
+  border-bottom-left-radius: 0px !important;
+  border-top-left-radius: 0px !important;
+  border-top-right-radius: 0px !important;
+  border-bottom-right-radius: 0px !important;
+  z-index: 999;
 }
 
 .overlay-header-close-button {
-/*/  margin-right: auto; */
-width: 100px;
-height: 20px;
-justify-content: flex-start;
-display: flex;
+  /*/  margin-right: auto; */
+  width: 100px;
+  height: 20px;
+  justify-content: flex-start;
+  display: flex;
 }
 
 .overlay-header-menu-button_container {
-width: 100px;
-height: 20px;
-display: flex;
-justify-content: flex-end;
-
+  width: 100px;
+  height: 20px;
+  display: flex;
+  justify-content: flex-end;
 }
 .overlay-header-menu-button {
   background-color: white !important;
   color: black !important;
 }
 
-
 .dragMeToResize {
   height: auto;
-height: 20px;
+  height: 20px;
   width: 50px;
-
 }

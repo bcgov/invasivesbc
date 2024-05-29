@@ -12,8 +12,8 @@ const EmbeddedReportsPage: React.FC = () => {
   const authenticated = useSelector((state: any) => state?.Auth.authenticated && state?.Auth.roles.length > 0);
   const history = useHistory();
 
-  if(!authenticated){
-    history.push('/')
+  if (!authenticated) {
+    history.push('/');
   }
   const api = useInvasivesApi();
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
@@ -80,7 +80,8 @@ const EmbeddedReportsPage: React.FC = () => {
           marginRight: '15%',
           marginLeft: '15%',
           textAlign: 'center'
-        }}>
+        }}
+      >
         <i>
           Reports are embedded Metabase reports accessible from the InvasivesBC application. To view a Metabase report,
           select which report you'd like to view from the dropdown below. Reports are generated every night at midnight.

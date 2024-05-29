@@ -23,7 +23,8 @@ const UserSelection = ({ user, handleClose }) => {
         onClick={() => {
           dispatch({ type: AUTH_MAKE_OFFLINE_USER_CURRENT, payload: { displayName: user.displayName } });
           handleClose();
-        }}>
+        }}
+      >
         Work As {user.displayName}
       </Button>
       <Button
@@ -31,7 +32,8 @@ const UserSelection = ({ user, handleClose }) => {
         onClick={() => {
           dispatch({ type: AUTH_FORGET_OFFLINE_USER, payload: { displayName: user.displayName } });
           handleClose();
-        }}>
+        }}
+      >
         Forget This User
       </Button>
     </div>

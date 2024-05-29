@@ -6,7 +6,7 @@ export const getJurisdictions = (surveys: any[]) => {
       if (tempArr.length < 1) {
         tempArr.push(jurisdiction);
       } else {
-        var flag = 0;
+        let flag = 0;
 
         tempArr.forEach((item) => {
           if (item.jurisdiction_code === jurisdiction.jurisdiction_code) {
@@ -25,8 +25,8 @@ export const getJurisdictions = (surveys: any[]) => {
 };
 
 export const getLatestReportedArea = (surveys: any[]) => {
-  var tempSurveyDate = null;
-  var tempSurveyArea = null;
+  let tempSurveyDate = null;
+  let tempSurveyArea = null;
 
   if (surveys.length > 0) {
     surveys.forEach((survey) => {

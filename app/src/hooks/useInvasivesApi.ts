@@ -1,6 +1,7 @@
 import { Http } from '@capacitor-community/http';
 import qs from 'qs';
 import { useContext } from 'react';
+import { select } from 'redux-saga/effects';
 import { DocType } from 'constants/database';
 //import { DatabaseContext, query, QueryType, upsert, UpsertType } from '../contexts/DatabaseContext';
 import {
@@ -13,7 +14,6 @@ import {
   IRisoSearchCriteria
 } from 'interfaces/useInvasivesApi-interfaces';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { select } from 'redux-saga/effects';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
@@ -954,7 +954,7 @@ export const useInvasivesApi = () => {
   };
 
   const getUserInfoFromCache = async () => {
-    let data = await databaseContext.asyncQueue({
+    const data = await databaseContext.asyncQueue({
       asyncTask: async () => {
         let res = await query(
           {

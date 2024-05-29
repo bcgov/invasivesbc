@@ -1,3 +1,5 @@
+import { all, takeEvery, select, put } from 'redux-saga/effects';
+import { Http } from '@capacitor-community/http';
 import {
   EMAIL_SETTINGS_RETRIEVE_REQUEST,
   EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
@@ -5,10 +7,8 @@ import {
   EMAIL_SETTINGS_UPDATE_SUCCESS,
   EMAIL_SETTINGS_UPDATE_FAILURE
 } from 'state/actions';
-import { all, takeEvery, select, put } from 'redux-saga/effects';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectAuth } from 'state/reducers/auth';
-import { Http } from '@capacitor-community/http';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 function* fetchEmailSettings() {

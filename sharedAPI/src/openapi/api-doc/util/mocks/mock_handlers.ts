@@ -1,12 +1,12 @@
 //Will move all these mocks to shared API to be used for test on both ends
 
+import * as OpenAPISampler from 'openapi-sampler';
 import { api_doc } from '../../api-doc';
 import { AdminDefinedShapeResponse } from '../../Paths/AdminDefinedShapes';
 import { activitiesDraftsResponseStub, LeanActivityStub, s3_activitiesResponseStub } from './activities';
 import { IAPPSitesResponse_Stub } from './IAPPSites';
 import { example_s3_iapp } from './example_s3_iapp';
 import { exportConfigStub } from './export-config';
-import * as  OpenAPISampler from 'openapi-sampler';
 
 export const getAPIDoc = () => {
   return JSON.stringify(api_doc);

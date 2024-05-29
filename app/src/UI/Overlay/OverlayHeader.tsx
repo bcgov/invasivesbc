@@ -149,7 +149,8 @@ export const OverlayHeader = (props) => {
                 variant="contained"
                 onClick={() => {
                   dispatch({ type: OVERLAY_MENU_TOGGLE });
-                }}>
+                }}
+              >
                 Save Menu
                 <SaveAsIcon />
               </Button>

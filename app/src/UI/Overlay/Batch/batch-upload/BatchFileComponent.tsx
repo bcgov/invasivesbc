@@ -11,7 +11,6 @@ const dropzoneStyle = {
   cursor: 'pointer'
 } as React.CSSProperties;
 
-
 const BatchFileComponent = ({ setData, ready, disabled }) => {
   const [filename, setFilename] = useState(null);
   const [statusMessage, setStatusMessage] = useState(null);
@@ -24,7 +23,7 @@ const BatchFileComponent = ({ setData, ready, disabled }) => {
       reader.onerror = () => setStatusMessage('file reading has failed');
 
       reader.onload = () => {
-        const encodedString = btoa(unescape(encodeURIComponent(reader.result as string)))
+        const encodedString = btoa(unescape(encodeURIComponent(reader.result as string)));
 
         setData(encodedString);
       };
@@ -67,7 +66,8 @@ const BatchFileComponent = ({ setData, ready, disabled }) => {
             setFilename(null);
             setStatusMessage(null);
             setData(null);
-          }}>
+          }}
+        >
           Clear
         </Button>
       </div>

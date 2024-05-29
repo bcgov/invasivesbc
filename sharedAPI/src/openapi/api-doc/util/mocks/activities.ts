@@ -232,7 +232,7 @@ export const s3_activitiesResponseStub = {
 };
 
 export const LeanActivityStub = {
-    result: {
-      rows: s3_activitiesResponseStub.data
-    }
+  result: {
+    rows: s3_activitiesResponseStub.data
+  }
 };

@@ -1,4 +1,5 @@
 import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
+import { ActivityStatus } from 'sharedAPI';
 import {
   ACTIVITY_CREATE_LOCAL,
   ACTIVITY_CREATE_SUCCESS,
@@ -14,7 +15,6 @@ import {
 } from '../../actions';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkConnected } from 'state/reducers/network';
-import { ActivityStatus } from 'sharedAPI';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 export function* trigger_NETWORK_ONLINE() {
@@ -50,7 +50,6 @@ export function* handle_ACTIVITY_CREATE_LOCAL(action) {
 }
 
 export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
-
   const connected = yield select(selectNetworkConnected);
   const { serializedActivities } = yield select(selectOfflineActivity);
   const { activityID } = action.payload;
@@ -94,14 +93,14 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
   }
 }
 
-
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC(action) {
   const { serializedActivities } = yield select(selectOfflineActivity);
-  const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(s => s.hasOwnProperty('sync_state') && (s as OfflineActivityRecord).sync_state !== 'SYNCHRONIZED') as OfflineActivityRecord[];
+  const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
+    (s) => s.hasOwnProperty('sync_state') && (s as OfflineActivityRecord).sync_state !== 'SYNCHRONIZED'
+  ) as OfflineActivityRecord[];
 
   for (const activity of toSync) {
     const hydrated = JSON.parse(activity.data);
-
 
     try {
       const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
@@ -110,14 +109,16 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC(action) {
       });
       if (networkReturn.status >= 200 && networkReturn.status < 300) {
         yield put({
-          type: ACTIVITY_UPDATE_SYNC_STATE, payload: {
+          type: ACTIVITY_UPDATE_SYNC_STATE,
+          payload: {
             id: hydrated.activity_id,
             sync_state: 'SYNCHRONIZED'
           }
         });
       } else {
         yield put({
-          type: ACTIVITY_UPDATE_SYNC_STATE, payload: {
+          type: ACTIVITY_UPDATE_SYNC_STATE,
+          payload: {
             id: hydrated.activity_id,
             sync_state: 'ERROR'
           }
@@ -125,7 +126,8 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC(action) {
       }
     } catch (e) {
       yield put({
-        type: ACTIVITY_UPDATE_SYNC_STATE, payload: {
+        type: ACTIVITY_UPDATE_SYNC_STATE,
+        payload: {
           id: hydrated.activity_id,
           sync_state: 'ERROR'
         }
@@ -136,8 +138,7 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC(action) {
   yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE });
 }
 
-export function* handle_ACTIVITY_RESTORE_OFFLINE(action) {
-}
+export function* handle_ACTIVITY_RESTORE_OFFLINE(action) {}
 
 export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
   takeEvery(ACTIVITY_GET_LOCAL_REQUEST, handle_ACTIVITY_GET_LOCAL_REQUEST),

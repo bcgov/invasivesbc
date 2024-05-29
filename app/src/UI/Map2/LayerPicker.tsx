@@ -111,8 +111,9 @@ export const LayerPicker = (props: any) => {
           variant="outlined"
           onClick={() => {
             dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-          }}>
-            Add custom
+          }}
+        >
+          Add custom
           <LayersIcon sx={{ width: '15px' }} />
           <SettingsIcon sx={{ width: '15px' }} />
         </Button>

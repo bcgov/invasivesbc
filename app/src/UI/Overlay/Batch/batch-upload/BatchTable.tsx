@@ -94,7 +94,7 @@ const BatchTableCell = ({ field, row }) => {
   const DataTypeDisplay = (templateColumn) => {
     let prefix = '';
     let suffix = '';
-    let dt = `${templateColumn?.dataType}`;
+    const dt = `${templateColumn?.dataType}`;
 
     if (templateColumn?.dataType === 'numeric') {
       if (templateColumn.validations.minValue !== null) {
@@ -125,7 +125,8 @@ const BatchTableCell = ({ field, row }) => {
           displayedValue === null || (typeof displayedValue === 'string' && displayedValue?.trim().length === 0)
             ? 'empty'
             : ''
-        }`}>
+        }`}
+      >
         {row.data[field].templateColumn?.dataType === 'WKT' ? (
           <AbbreviatedDisplayWithCopy
             length={25}
@@ -180,7 +181,8 @@ const BatchTable = ({ jsonRepresentation, created_activities }) => {
                         onClick={() => {
                           const url = '/Records/Activity:' + created_activities[row.rowIndex - 1].id + '/form';
                           history.push(url);
-                        }}>
+                        }}
+                      >
                         {created_activities[row.rowIndex - 1]?.short_id}
                       </Button>
                     </div>
@@ -196,11 +198,7 @@ const BatchTable = ({ jsonRepresentation, created_activities }) => {
             return (
               <tr key={h}>
                 <td className={'fieldName'}>{h}</td>
-                <>
-                  {jsonRepresentation?.rows?.map((row) => (
-                    <BatchTableCell key={row.rowIndex} field={h} row={row} />
-                  ))}
-                </>
+                <>{jsonRepresentation?.rows?.map((row) => <BatchTableCell key={row.rowIndex} field={h} row={row} />)}</>
               </tr>
             );
           })}

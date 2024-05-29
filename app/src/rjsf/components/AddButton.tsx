@@ -15,7 +15,8 @@ const AddButton: React.FC<AddButtonProps> = (props) => {
         className={props.className}
         disabled={props.disabled}
         onClick={props.onClick}
-        color={darkTheme ? 'secondary' : 'primary'}>
+        color={darkTheme ? 'secondary' : 'primary'}
+      >
         <AddIcon /> Add Item
       </Button>
     </>

@@ -141,7 +141,8 @@ export const LandingComponent = (props) => {
               <a
                 href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc"
                 target="_blank"
-                rel="noreferrer">
+                rel="noreferrer"
+              >
                 www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc
               </a>
             </Box>
@@ -208,7 +209,8 @@ export const LandingComponent = (props) => {
               <a
                 href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
                 target="_blank"
-                rel="noreferrer">
+                rel="noreferrer"
+              >
                 www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species
               </a>
             </Box>

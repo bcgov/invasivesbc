@@ -26,7 +26,8 @@ export const WhatsHereButton = (props) => {
           onMouseLeave={() => setShow(false)}
           classes={{ tooltip: 'toolTip' }}
           title={`What's here?`}
-          placement="top-end">
+          placement="top-end"
+        >
           <span>
             <IconButton
               onClick={() => {
@@ -35,7 +36,8 @@ export const WhatsHereButton = (props) => {
                 } else {
                   history.goBack();
                 }
-              }}>
+              }}
+            >
               {(whatsHere as any)?.loadingActivities || (whatsHere as any)?.loadingIAPP ? <HourglassTopIcon /> : <></>}
               <DocumentScannerIcon />
             </IconButton>

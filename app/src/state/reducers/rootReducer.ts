@@ -1,4 +1,8 @@
 import { combineReducers } from 'redux';
+import localForage from 'localforage';
+import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
+import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
+import { persistReducer } from 'redux-persist';
 import appMode from './appMode';
 import { createActivityReducer } from './activity';
 import { AuthState, createAuthReducer } from './auth';
@@ -12,21 +16,14 @@ import { createIAPPSiteReducer } from './iappsite';
 import { createConfigurationReducerWithDefaultState } from './configuration';
 import { createNetworkReducer } from './network';
 import { createUserInfoReducer } from './userInfo';
-import { AppConfig } from 'state/config';
 import { errorHandlerReducer } from './error_handler';
-import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-
-import localForage from 'localforage';
-
-import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
-import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-
-import { persistReducer } from 'redux-persist';
 import { createOfflineActivityReducer, OfflineActivityState } from './offlineActivity';
+import { AppConfig } from 'state/config';
+import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
 // it will try indexdb first, then fall back to localstorage if not available.
 
-let platformStorage = localForage;
+const platformStorage = localForage;
 
 /* this should be replaced with an sqlite driver on mobile builds
  eg

@@ -380,8 +380,8 @@ export const autoFillTotalBioAgentQuantity = (formData: any) => {
   }
 
   let newFormData = {};
-  let totalEstimated = new Array(currentForm.length).fill(0);
-  let totalActual = new Array(currentForm.length).fill(0);
+  const totalEstimated = new Array(currentForm.length).fill(0);
+  const totalActual = new Array(currentForm.length).fill(0);
 
   currentForm.forEach((form, index) => {
     const { actual_biological_agents, estimated_biological_agents } = form;

@@ -45,7 +45,7 @@ interface IAccessRequestPage {
 const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const history = useHistory();
   const api = useInvasivesApi();
- // const classes = useStyles();
+  // const classes = useStyles();
   const [transferAccess] = useState('yes');
   const [accountType, setAccountType] = useState('');
 
@@ -87,8 +87,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
 
   let isUpdating = false;
 
-  const isValid = (decline: Boolean = false, valid: Boolean = true): Boolean => {
-    let requiredFields = [
+  const isValid = (decline: boolean = false, valid: boolean = true): boolean => {
+    const requiredFields = [
       { value: firstName, error: setFirstNameErrorText, text: 'Please enter First name ' },
       { value: lastName, error: setLastNameErrorText, text: 'Please enter Last name ' },
       { value: email, error: setEmailErrorText, text: 'Please enter primary Email ' }
@@ -376,7 +376,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                 aria-label="account-type"
                                 name="row-radio-buttons-group"
                                 value={accountType}
-                                onChange={handleAccountRadioChange}>
+                                onChange={handleAccountRadioChange}
+                              >
                                 <FormControlLabel value="IDIR" control={<Radio />} label="IDIR" />
                                 <FormControlLabel value="BCeID" control={<Radio />} label="BCeID" />
                               </RadioGroup>
@@ -493,7 +494,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                     ))}
                                   </Box>
                                 )}
-                                MenuProps={MenuProps}>
+                                MenuProps={MenuProps}
+                              >
                                 {employersList.map((employer) => (
                                   <MenuItem key={employer.code_id} value={employer.code_name}>
                                     {employer.code_description}
@@ -511,7 +513,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Tooltip
                             placement="left"
                             classes={{ tooltip: 'toolTip' }}
-                            title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer.">
+                            title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer."
+                          >
                             <>
                               <InputLabel htmlFor="funding-agency">Funding Agencies</InputLabel>
                               <Select
@@ -532,7 +535,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                     ))}
                                   </Box>
                                 )}
-                                MenuProps={MenuProps}>
+                                MenuProps={MenuProps}
+                              >
                                 {fundingAgenciesList.map((fundingAgency) => (
                                   <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
                                     {fundingAgency.code_description}
@@ -550,7 +554,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Tooltip
                             classes={{ tooltip: 'toolTip' }}
                             placement="left"
-                            title="Pesticide Applicator Certificate (PAC) Number">
+                            title="Pesticide Applicator Certificate (PAC) Number"
+                          >
                             <TextField
                               value={pacNumber}
                               type={'number'}
@@ -571,7 +576,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Tooltip
                             placement="left"
                             classes={{ tooltip: 'toolTip' }}
-                            title="Enter the Service licence Number and Company name separated by a dash and no spaces">
+                            title="Enter the Service licence Number and Company name separated by a dash and no spaces"
+                          >
                             <TextField
                               value={psn1}
                               onChange={(e) => setPsn1(e.target.value)}
@@ -586,7 +592,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Tooltip
                             placement="left"
                             classes={{ tooltip: 'toolTip' }}
-                            title="Enter the Service licence Number and Company name separated by a dash and no spaces">
+                            title="Enter the Service licence Number and Company name separated by a dash and no spaces"
+                          >
                             <TextField
                               value={psn2}
                               onChange={(e) => setPsn2(e.target.value)}
@@ -604,7 +611,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                             <Tooltip
                               placement="left"
                               classes={{ tooltip: 'toolTip' }}
-                              title="Select one or more roles to request.">
+                              title="Select one or more roles to request."
+                            >
                               <>
                                 <InputLabel htmlFor="requested-roles">Requested roles</InputLabel>
                                 <Select
@@ -625,7 +633,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                                       ))}
                                     </Box>
                                   )}
-                                  MenuProps={MenuProps}>
+                                  MenuProps={MenuProps}
+                                >
                                   {roles.map((role) => (
                                     <MenuItem key={role.role_id} value={role.role_name}>
                                       {role.role_description}
@@ -642,7 +651,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           <Tooltip
                             placement="left"
                             classes={{ tooltip: 'toolTip' }}
-                            title="If your employer or agency were not on our lists, please enter it here.">
+                            title="If your employer or agency were not on our lists, please enter it here."
+                          >
                             <TextField
                               style={{ width: 640 }}
                               //classes={{ root: classes.root }}
@@ -706,7 +716,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                     variant="outlined"
                     onClick={() => {
                       history.push('/');
-                    }}>
+                    }}
+                  >
                     Back
                   </Button>
                 </Grid>
@@ -717,7 +728,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                     style={{ maxWidth: '300px', minWidth: '225px' }}
                     variant="contained"
                     color="primary"
-                    onClick={transferAccess === 'yes' ? submitAccessRequest : declineAccess}>
+                    onClick={transferAccess === 'yes' ? submitAccessRequest : declineAccess}
+                  >
                     {transferAccess === 'yes' ? 'Submit Access Request' : 'Remove me from the list'}
                   </Button>
                 )}
@@ -726,7 +738,8 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                     style={{ maxWidth: '300px', minWidth: '225px' }}
                     variant="contained"
                     color="primary"
-                    onClick={submitUpdateRequest}>
+                    onClick={submitUpdateRequest}
+                  >
                     Submit Update Request
                   </Button>
                 )}

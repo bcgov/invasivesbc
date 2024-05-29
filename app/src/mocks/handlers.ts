@@ -16,12 +16,12 @@ const BASEURL = 'http://localhost:3002';
 // Later we can pass the req through to the mocking function so we can deal with edge cases like id only queries, and ultimately make them more dynamic when we need them to be
 const handlerConfig = [
   // very confused on this one:
-  { method: 'get', url: ('/'), req: null, responseBody: '', status: 200 },
+  { method: 'get', url: '/', req: null, responseBody: '', status: 200 },
 
   // not sure why I needed to add this one just now:
-  { method: 'get', url: ('/api/api-docs'), req: null, responseBody: getAPIDoc(), status: 200 },
+  { method: 'get', url: '/api/api-docs', req: null, responseBody: getAPIDoc(), status: 200 },
 
-  { method: 'get', url: (BASEURL + '/api/api-docs'), req: null, responseBody: getAPIDoc(), status: 200 },
+  { method: 'get', url: BASEURL + '/api/api-docs', req: null, responseBody: getAPIDoc(), status: 200 },
   {
     method: 'get',
     url: BASEURL + '/admin-defined-shapes',
@@ -72,16 +72,17 @@ const handlerConfig = [
     status: 200
   }
 ];
-export const mapHandlers = (inputHandlerConfig) => inputHandlerConfig.map((conf) => {
-  switch (conf.method) {
-    case 'get': {
-      return http.get(conf.url, () => HttpResponse.json(conf.responseBody, { status: conf.status }));
+export const mapHandlers = (inputHandlerConfig) =>
+  inputHandlerConfig.map((conf) => {
+    switch (conf.method) {
+      case 'get': {
+        return http.get(conf.url, () => HttpResponse.json(conf.responseBody, { status: conf.status }));
+      }
+      case 'post': {
+        return http.post(conf.url, () => HttpResponse.json(conf.responseBody, { status: conf.status }));
+      }
     }
-    case 'post': {
-      return http.post(conf.url, () => HttpResponse.json(conf.responseBody, { status: conf.status }));
-    }
-  }
-});
+  });
 
 // Define handlers that catch the corresponding requests and returns the mock data.
-export const handlers = mapHandlers(handlerConfig)
+export const handlers = mapHandlers(handlerConfig);

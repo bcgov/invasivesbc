@@ -1,11 +1,11 @@
 .overlayMenu {
-    display: flex;
+  display: flex;
   background-color: #333;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
 }
 
 .overlayMenu > * {
-    flex-grow:1
+  flex-grow: 1;
 }

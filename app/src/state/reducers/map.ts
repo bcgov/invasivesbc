@@ -1,3 +1,5 @@
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -73,9 +75,6 @@ import {
   WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
   WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
-
-import { createNextState } from '@reduxjs/toolkit';
-import { Draft } from 'immer';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -496,8 +495,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             localIAPPIDs = localIAPPIDs.concat(layer.IDList);
           });
 
-          let iappIDs = [];
-          let activityIDs = [];
+          const iappIDs = [];
+          const activityIDs = [];
           localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
           localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
 
@@ -780,7 +779,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case INIT_SERVER_BOUNDARIES_GET: {
           const withLocalToggles = action.payload.data?.map((incomingItem) => {
-            let returnVal = { ...incomingItem };
+            const returnVal = { ...incomingItem };
             const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
               oldItem.id === incomingItem;
             })?.toggle;
@@ -1160,15 +1159,15 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     (!draftState.IAPPGeoJSONDict && typeToFilter === 'IAPP')
   )
     return;
-  let index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
+  const index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
   const type = draftState.layers[index].type;
 
   if (index !== undefined && type === typeToFilter && type === 'Activity') {
-    let filtered = [];
+    const filtered = [];
     IDList.map((id) => {
       for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
         if (draftState.activitiesGeoJSONDict.hasOwnProperty(source)) {
-          let f = draftState.activitiesGeoJSONDict[source][id];
+          const f = draftState.activitiesGeoJSONDict[source][id];
           if (f !== undefined) {
             filtered.push(f);
           }
@@ -1182,9 +1181,9 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     };
     draftState.layers[index].loading = false;
   } else if (type === typeToFilter && type === 'IAPP') {
-    let filtered = [];
+    const filtered = [];
     IDList.map((id) => {
-      let f = draftState.IAPPGeoJSONDict[id];
+      const f = draftState.IAPPGeoJSONDict[id];
       if (f !== undefined && f !== null && f.geometry !== null) {
         filtered.push(f);
       }

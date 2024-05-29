@@ -1,6 +1,6 @@
+import moment from 'moment';
 import { AppConfig } from '../config';
 import { EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS } from '../actions';
-import moment from 'moment';
 
 interface ConfigurationState {
   current: AppConfig;

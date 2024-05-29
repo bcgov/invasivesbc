@@ -7,45 +7,43 @@
 .overlayMenuResizeButtons {
   display: flex;
   flex-direction: row;
-  
 }
 
 .map__overlay {
-    bottom: 3vh;
-    height: 0;
-    left: 0;
-    position: absolute;
-    right: 0;
-    background-color: #fff;
-    transition: all 0.2s ease;
-    transform: translateY(100%);
-    z-index:400;
-  }
-  .leaflet-control-container {
-    z-index: 499 !important;
-  }
+  bottom: 3vh;
+  height: 0;
+  left: 0;
+  position: absolute;
+  right: 0;
+  background-color: #fff;
+  transition: all 0.2s ease;
+  transform: translateY(100%);
+  z-index: 400;
+}
+.leaflet-control-container {
+  z-index: 499 !important;
+}
 
-  .mapOverlayContents { 
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-    /*/scroll-behavior: ;*/
-  }
-  
-  .map__overlay--show {
-    transform: translateY(0vh);
-    overflow-y: auto;
-    display: flex;
-/*    overflow-y: visible;; */
-  }
+.mapOverlayContents {
+  height: 100%;
+  width: 100%;
+  overflow-y: auto;
+  /*/scroll-behavior: ;*/
+}
+
+.map__overlay--show {
+  transform: translateY(0vh);
+  overflow-y: auto;
+  display: flex;
+  /*    overflow-y: visible;; */
+}
 
 .map__overlay--show-fullscreen {
-    height: 100% !important;
-    transform: translateY(0vh);
-    display: flex;
-    overflow-y: visible;;
-    /*z-index: 9999999999;*/
-
+  height: 100% !important;
+  transform: translateY(0vh);
+  display: flex;
+  overflow-y: visible;
+  /*z-index: 9999999999;*/
 }
 
 ::-webkit-resizer {

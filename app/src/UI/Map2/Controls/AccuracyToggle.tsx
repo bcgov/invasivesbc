@@ -27,12 +27,14 @@ export const AccuracyToggle = (props) => {
           onMouseLeave={() => setShow(false)}
           classes={{ tooltip: 'toolTip' }}
           title={accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
-          placement="top-end">
+          placement="top-end"
+        >
           <span>
             <IconButton
               onClick={() => {
                 dispatch({ type: MAP_TOGGLE_ACCURACY });
-              }}>
+              }}
+            >
               <AttributionIcon />
             </IconButton>
           </span>

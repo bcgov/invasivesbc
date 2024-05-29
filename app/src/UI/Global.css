@@ -1,4 +1,3 @@
-
 .toolTip {
   background-color: #003366 !important;
   color: white !important;
@@ -9,5 +8,5 @@
 }
 
 .toolTip:hover {
-  display:none
+  display: none;
 }

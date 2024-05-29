@@ -1,7 +1,7 @@
-import {InvasivesAPI_Call} from "hooks/useInvasivesApi";
-import {put, select, take} from "redux-saga/effects";
-import {AUTH_INITIALIZE_COMPLETE, IAPP_GET_SUCCESS} from "state/actions";
-import {selectAuth} from "../../reducers/auth";
+import { put, select, take } from 'redux-saga/effects';
+import { selectAuth } from '../../reducers/auth';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import { AUTH_INITIALIZE_COMPLETE, IAPP_GET_SUCCESS } from 'state/actions';
 
 export function* handle_IAPP_GET_NETWORK_REQUEST(action) {
   const authState = yield select(selectAuth);
@@ -15,5 +15,5 @@ export function* handle_IAPP_GET_NETWORK_REQUEST(action) {
     site_id_only: false
   });
   const data = networkReturn?.data?.result?.rows[0];
-  yield put({type: IAPP_GET_SUCCESS, payload: {iapp: data}});
+  yield put({ type: IAPP_GET_SUCCESS, payload: { iapp: data } });
 }

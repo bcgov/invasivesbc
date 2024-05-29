@@ -1,7 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
-import { createRootReducer } from './reducers/rootReducer';
 import { createLogger } from 'redux-logger';
+import { createBrowserHistory } from 'history';
+import { persistStore } from 'redux-persist';
+import { createRootReducer } from './reducers/rootReducer';
 import { AUTH_INITIALIZE_REQUEST, URL_CHANGE } from './actions';
 import activityPageSaga from './sagas/activity';
 import authenticationSaga from './sagas/auth/auth';
@@ -13,9 +15,7 @@ import activitiesPageSaga from './sagas/map';
 import trainingVideosSaga from './sagas/training_videos';
 import userSettingsSaga from './sagas/userSettings';
 import { AppConfig } from './config';
-import { createBrowserHistory } from 'history';
 import { createSagaCrashHandler } from './sagas/error_handler';
-import { persistStore } from 'redux-persist';
 
 const historySingleton = createBrowserHistory();
 

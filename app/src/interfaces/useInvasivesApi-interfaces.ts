@@ -1,6 +1,6 @@
 import { FeatureCollection } from '@turf/turf';
-import { PointOfInterestSubtype, PointOfInterestType } from 'constants/pointsOfInterest';
 import { Feature } from 'geojson';
+import { PointOfInterestSubtype, PointOfInterestType } from 'constants/pointsOfInterest';
 
 /**
  * Activity search filter criteria.
@@ -340,7 +340,7 @@ export interface IPointOfInterestSearchCriteria {
    * @type {string}
    * @memberof IPointOfInterestSearchCriteria
    */
-   jurisdiction?: string[];
+  jurisdiction?: string[];
   /**
    * List of species positively occurring in the point of interest to partially match
    *

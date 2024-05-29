@@ -9,8 +9,7 @@ import { RENDER_DEBUG } from 'UI/App';
 const TankMixAccordion = () => {
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%c TankMixAccordion render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) console.log('%c TankMixAccordion render:' + ref.current.toString(), 'color: yellow');
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails } = formDataContext;
 
@@ -22,13 +21,14 @@ const TankMixAccordion = () => {
         <Typography
           // color={herbicidesArrErrors?.length > 0 ? 'error' : 'textPrimary'}
           style={{ width: '33%', flexShrink: 0 }}
-          variant="h5">
+          variant="h5"
+        >
           Tank Mix
         </Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box 
-      //  className={classes.accordionBody}
+        <Box
+        //  className={classes.accordionBody}
         >
           <TankMix />
         </Box>

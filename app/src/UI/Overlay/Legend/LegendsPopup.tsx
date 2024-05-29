@@ -22,7 +22,8 @@ const LegendsPopup = () => {
         height: '100%',
         overflow: 'auto',
         zIndex: 1000000
-      }}>
+      }}
+    >
       {/* <Button onClick={goBack}>Go Back</Button> */}
       <div className="py-3">
         <div className="container" style={{ textAlign: 'center' }}>

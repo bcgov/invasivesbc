@@ -12,7 +12,8 @@ const Spinner: React.FC = () => {
         fill="none"
         stroke="rgba(0,0,0,0.7)"
         strokeWidth="3"
-        strokeLinecap="round"></circle>
+        strokeLinecap="round"
+      ></circle>
     </svg>
   );
 };

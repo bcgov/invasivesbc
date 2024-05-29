@@ -1,8 +1,8 @@
 /**
- * @desc Highest level component for Shifts of officers in the field 
+ * @desc Highest level component for Shifts of officers in the field
  * @author LocalNewsTV
  */
-import { ShiftOverview } from "../../Components/Mussels_Officer_Shift_Sub_Forms";
+import { ShiftOverview } from '../../Components/Mussels_Officer_Shift_Sub_Forms';
 
 export const Activity_Officer_Shift = {
   type: 'object',
@@ -13,4 +13,4 @@ export const Activity_Officer_Shift = {
       ...ShiftOverview
     }
   }
-}
+};

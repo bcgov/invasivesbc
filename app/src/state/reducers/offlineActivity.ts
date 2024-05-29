@@ -1,4 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
+import moment from 'moment';
 import { AppConfig } from '../config';
 import {
   ACTIVITY_CREATE_LOCAL,
@@ -9,7 +10,6 @@ import {
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_SYNC_STATE
 } from '../actions';
-import moment from 'moment';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
 export interface OfflineActivityRecord {

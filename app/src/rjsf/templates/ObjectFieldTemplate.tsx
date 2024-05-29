@@ -29,7 +29,7 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
       {props.description && (
         <DescriptionField id={`${props.idSchema.$id}-description`} description={props.description} />
       )}
-      <Grid container={true} spacing={2} >
+      <Grid container={true} spacing={2}>
         {props.properties.map((element: any, index: number) => (
           <Grid
             item={true}
@@ -54,7 +54,8 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
               12
             }
             key={index}
-            style={{ marginBottom: '10px' }}>
+            style={{ marginBottom: '10px' }}
+          >
             <>
               {element.content.props.schema['x-tooltip-text'] && (
                 <Tooltip
@@ -65,7 +66,8 @@ const ObjectFieldTemplate = (props: ObjectFieldTemplateProps) => {
                       ? element.content.props.schema['x-tooltip-text']
                       : 'There was no help text provided for this field'
                   }
-                  placement="left">
+                  placement="left"
+                >
                   <HelpOutlineIcon style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }} />
                 </Tooltip>
               )}

@@ -13,7 +13,7 @@ export function* getClosestWells(inputGeometry, online) {
   //if well layer is selected
   //if online, just get data from WFSonline consumer
   if (online) {
-    let returnVal = yield getDataFromDataBCv2('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo, true);
+    const returnVal = yield getDataFromDataBCv2('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo, true);
 
     if (!returnVal?.features) {
       return { well_objects: [], areWellsInside: undefined };
@@ -68,7 +68,7 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
 
   outputWells[0] = { ...outputWells[0], closest: true };
 
-  let fiveClosest = [];
+  const fiveClosest = [];
   const insideGeoWells = [];
 
   outputWells.forEach((well: any) => {

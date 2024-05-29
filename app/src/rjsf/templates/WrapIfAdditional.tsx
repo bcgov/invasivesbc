@@ -2,8 +2,7 @@ import { FormControl, Grid, Input, InputLabel } from '@mui/material';
 import { JSONSchema7 } from 'json-schema';
 import React from 'react';
 import IconButton from 'rjsf/components/IconButton';
-import {ADDITIONAL_PROPERTY_FLAG} from "@rjsf/utils";
-
+import { ADDITIONAL_PROPERTY_FLAG } from '@rjsf/utils';
 
 type WrapIfAdditionalProps = {
   children: React.ReactElement;

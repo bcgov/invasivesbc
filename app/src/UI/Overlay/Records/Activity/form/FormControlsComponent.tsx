@@ -53,7 +53,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
   };
 
   const checkIfNotAuthorized = () => {
-    for (let role of accessRoles) {
+    for (const role of accessRoles) {
       if (role.role_id === 18) {
         return false;
       }
@@ -118,7 +118,8 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
                   }
 
                   props.onSubmit();
-                }}>
+                }}
+              >
                 Save Record
               </Button>
             )}
@@ -146,7 +147,8 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
                       }
 
                       props.onSubmitAsOfficial();
-                    }}>
+                    }}
+                  >
                     {props.isAlreadySubmitted() ? 'Record Already Submitted' : 'Submit to Database'}
                   </Button>
                 </span>
@@ -165,7 +167,8 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
               <Tooltip
                 classes={{ tooltip: 'toolTip' }}
                 TransitionComponent={Zoom}
-                title="Copy the data from the fields, so that you can paste it when you create a new record.">
+                title="Copy the data from the fields, so that you can paste it when you create a new record."
+              >
                 <span>
                   <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
                     Copy Form Data
@@ -179,7 +182,8 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
               <Tooltip
                 classes={{ tooltip: 'toolTip' }}
                 TransitionComponent={Zoom}
-                title="Paste the data to the new record from the previously copied fields.">
+                title="Paste the data to the new record from the previously copied fields."
+              >
                 <span>
                   <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onPaste()}>
                     Paste Form Data
