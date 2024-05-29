@@ -2,7 +2,7 @@
   width: 100%;
   height: 100%;
   display: flex;
-  flex-direction: column
+  flex-direction: column;
 }
 
 .recordSet_header {
@@ -79,7 +79,6 @@
   flex-direction: row;
   justify-content: flex-end;
   width: 100%;
-
 }
 
 .deleteButton {
@@ -110,17 +109,14 @@
 
 .recordSetFilterTable {
   width: 100vw;
-
-
 }
 
-
 tr {
-  width: 50px
+  width: 50px;
 }
 
 td {
-  width: 50px
+  width: 50px;
 }
 
 .filterSelect {
@@ -137,8 +133,8 @@ td {
   bottom: 0;
   height: 3vh;
   width: 100%;
-    background-color: #003366;
+  background-color: #003366;
   align-items: center;
   display: flex;
-  position:  fixed;
+  position: fixed;
 }

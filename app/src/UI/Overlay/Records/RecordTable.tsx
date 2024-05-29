@@ -31,8 +31,8 @@ export const RecordTable = (props) => {
    */
 
   const mappedRows = unmappedRows?.map((row) => {
-    let unnestedRow = tableType === 'Activity' ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row);
-    let mappedRow = {};
+    const unnestedRow = tableType === 'Activity' ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row);
+    const mappedRow = {};
     Object.keys(unnestedRow).forEach((key) => {
       mappedRow[key] = unnestedRow[key];
     });
@@ -61,7 +61,8 @@ export const RecordTable = (props) => {
                       onClick={() => {
                         if (validActivitySortColumns.includes(col.key))
                           dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
-                      }}>
+                      }}
+                    >
                       {col.name}{' '}
                       {validActivitySortColumns.includes(sortColumn) && sortColumn === col.key
                         ? sortOrder === 'ASC'
@@ -79,7 +80,8 @@ export const RecordTable = (props) => {
                       onClick={() => {
                         if (validIAPPSortColumns.includes(col.key))
                           dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
-                      }}>
+                      }}
+                    >
                       {col.name}{' '}
                       {validIAPPSortColumns.includes(sortColumn) && sortColumn === col.key
                         ? sortOrder === 'ASC'
@@ -133,22 +135,24 @@ export const RecordTable = (props) => {
                   });
                 }}
                 className="record_table_row"
-                key={i}>
+                key={i}
+              >
                 {isTouch && (
                   <td
-                  
-                  onTouchStart={(e) => {
-                    dispatch({
-                      type: USER_CLICKED_RECORD,
-                      payload: {
-                        recordType: tableType,
-                        id: tableType === 'Activity' ? row.activity_id : row.site_id,
-                        row: row
-                      }
-                    })}}
-                  
-                  className="record_table_row_column" style={{ width: '50px' }}>
-                    <VisibilityIcon/>
+                    onTouchStart={(e) => {
+                      dispatch({
+                        type: USER_CLICKED_RECORD,
+                        payload: {
+                          recordType: tableType,
+                          id: tableType === 'Activity' ? row.activity_id : row.site_id,
+                          row: row
+                        }
+                      });
+                    }}
+                    className="record_table_row_column"
+                    style={{ width: '50px' }}
+                  >
+                    <VisibilityIcon />
                   </td>
                 )}
                 {tableType === 'Activity'

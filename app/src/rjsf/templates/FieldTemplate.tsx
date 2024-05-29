@@ -1,7 +1,7 @@
 import { FormControl, FormHelperText, List, ListItem, Typography } from '@mui/material';
 import React from 'react';
 import WrapIfAdditional from './WrapIfAdditional';
-import {FieldTemplateProps} from "@rjsf/utils";
+import { FieldTemplateProps } from '@rjsf/utils';
 
 const FieldTemplate = (props: FieldTemplateProps) => {
   return (
@@ -14,11 +14,13 @@ const FieldTemplate = (props: FieldTemplateProps) => {
       onKeyChange={props.onKeyChange}
       readonly={props.readonly}
       required={props.required}
-      schema={props.schema}>
+      schema={props.schema}
+    >
       <FormControl
         fullWidth={true}
         error={(props.rawErrors && props.rawErrors.length && true) || false}
-        required={props.required}>
+        required={props.required}
+      >
         {props.children}
         {props.displayLabel && props.rawDescription ? (
           <Typography variant="caption" color="textSecondary">

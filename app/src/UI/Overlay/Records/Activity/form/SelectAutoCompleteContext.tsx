@@ -35,7 +35,8 @@ export const SelectAutoCompleteContextProvider: React.FC = ({ children }) => {
         setLastFieldChanged: (data) => {
           dispatch({ type: 'setLastFieldChanged', data: data });
         }
-      }}>
+      }}
+    >
       {children}
     </SelectAutoCompleteContext.Provider>
   );

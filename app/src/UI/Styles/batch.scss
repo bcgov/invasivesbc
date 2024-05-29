@@ -1,5 +1,5 @@
 .batchNav {
-  background: #1A5A96;
+  background: #1a5a96;
   padding: 0;
   margin: 0;
   padding-bottom: 1px;
@@ -8,7 +8,7 @@
     text-decoration: none;
   }
   .current_batch_link {
-    border-bottom-color: #FCBA19;
+    border-bottom-color: #fcba19;
     border-bottom-width: 4px;
     border-bottom-style: solid;
   }
@@ -38,7 +38,6 @@ table.template-preview {
   border-collapse: collapse;
 
   tbody {
-
     tr:nth-child(2n) {
       background: #eeeeee;
     }
@@ -65,7 +64,6 @@ table.template-preview {
 
 table.template-dark-preview {
   tbody {
-
     tr:nth-child(2n) {
       background: #171717;
     }
@@ -76,9 +74,8 @@ table.template-dark-preview {
   }
 }
 
-
 code {
-  font-family: "Courier New", monospace;
+  font-family: 'Courier New', monospace;
   display: block;
 }
 
@@ -101,11 +98,9 @@ table.code-reference {
   padding: 0;
 }
 
-
 tr {
-  width: 50px
+  width: 50px;
 }
-
 
 table.batchAlternateLayout {
   border-collapse: collapse;
@@ -133,12 +128,9 @@ table.batchAlternateLayout {
     padding: 0;
   }
 
-
-
-tr {
-  width: 50px
-}
-
+  tr {
+    width: 50px;
+  }
 
   tbody {
     tr:hover,
@@ -154,7 +146,7 @@ tr {
           &.empty:after {
             font-weight: normal;
             font-style: italic;
-            content: "~";
+            content: '~';
           }
         }
 
@@ -189,11 +181,11 @@ tr {
 
       td.unknown {
         background-color: lime;
-
       }
     }
   }
-  tr > th:first-child, tr > td:first-child {
+  tr > th:first-child,
+  tr > td:first-child {
     position: sticky;
     left: 0;
     z-index: 1;
@@ -217,7 +209,8 @@ table.batchDarkLayout {
       }
     }
   }
-  tr > th:first-child, tr > td:first-child {
+  tr > th:first-child,
+  tr > td:first-child {
     background: #1b1b1b;
   }
 }
@@ -236,7 +229,7 @@ table.batchValidation {
   }
 
   tbody {
-    font-family: "Courier New", monospace;
+    font-family: 'Courier New', monospace;
 
     tr {
       border-top: 1px solid darkblue;
@@ -252,7 +245,6 @@ table.batchValidation {
       }
     }
   }
-
 }
 
 table.batchList {
@@ -295,7 +287,6 @@ table.batchDarkList {
     }
   }
 }
-
 
 table.batch-details {
   width: 70%;

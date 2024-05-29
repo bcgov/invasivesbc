@@ -47,7 +47,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
   //get business codes from schema
   const getBusinessCodes = () => {
     const newBusinessCodes = {};
-    for (let key of Object.keys(props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties)) {
+    for (const key of Object.keys(props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties)) {
       if (props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[key].anyOf) {
         newBusinessCodes[key] = props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[
           key
@@ -74,8 +74,8 @@ const ChemicalTreatmentDetailsForm = (props) => {
   const businessCodes = getBusinessCodes();
 
   //constructing herbicide dictionary to get the correct labels for herbicides when displaying errors
-  let herbicideDictionary = {};
-  let allHerbCodes = [
+  const herbicideDictionary = {};
+  const allHerbCodes = [
     ...(businessCodes as any).liquid_herbicide_code,
     ...(businessCodes as any).granular_herbicide_code
   ];
@@ -112,7 +112,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
         }
       },
       () => {
-        let lerrors = [];
+        const lerrors = [];
         //run validation
         const newErr = runValidation(
           reportedArea,
@@ -237,13 +237,15 @@ const ChemicalTreatmentDetailsForm = (props) => {
               classes={{ tooltip: 'toolTip' }}
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
               placement="left"
-              title="Check if there is a mix of herbicides in the tank">
+              title="Check if there is a mix of herbicides in the tank"
+            >
               <HelpOutlineIcon />
             </Tooltip>
             <FormLabel
               //className={classes.formLabel}
               style={{ marginTop: '25px' }}
-              component="legend">
+              component="legend"
+            >
               Tank Mix
             </FormLabel>
 
@@ -254,7 +256,8 @@ const ChemicalTreatmentDetailsForm = (props) => {
               value={tankMixOn}
               aria-label="tank_mix"
               //className={classes.tankMixRadioGroup}
-              name="tank_mix">
+              name="tank_mix"
+            >
               <FormControlLabel value={true} control={<Radio disabled={props.disabled} />} label="On" />
               <FormControlLabel value={false} control={<Radio disabled={props.disabled} />} label="Off" />
             </RadioGroup>
@@ -266,7 +269,8 @@ const ChemicalTreatmentDetailsForm = (props) => {
               classes={{ tooltip: 'toolTip' }}
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
               placement="left"
-              title="Choose treatment application method">
+              title="Choose treatment application method"
+            >
               <HelpOutlineIcon />
             </Tooltip>
             <CustomAutoComplete
@@ -289,7 +293,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
           </Box>
         </Box>
 
-        { !tankMixOn? <HerbicidesAccordion insideTankMix={false} /> : <></>}
+        {!tankMixOn ? <HerbicidesAccordion insideTankMix={false} /> : <></>}
 
         <TankMixAccordion />
 

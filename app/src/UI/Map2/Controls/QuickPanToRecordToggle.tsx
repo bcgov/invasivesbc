@@ -24,12 +24,14 @@ export const QuickPanToRecordToggle = (props) => {
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title={`Toggle Quick Pan to Record In Table`}
-          placement="top-end">
+          placement="top-end"
+        >
           <span>
             <IconButton
               onClick={() => {
                 dispatch({ type: TOGGLE_QUICK_PAN_TO_RECORD });
-              }}>
+              }}
+            >
               <PlaylistPlayIcon />
             </IconButton>
           </span>

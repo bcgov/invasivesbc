@@ -48,7 +48,7 @@ export const Records = () => {
   const [loadMap, setLoadMap] = React.useState({});
 
   useEffect(() => {
-    let rv = {};
+    const rv = {};
     mapLayers.forEach((layer) => {
       const geojson = layer?.type === 'Activity' ? isActivitiesGeoJSONLoaded : isIAPPGeoJSONLoaded;
       if (MapMode !== 'VECTOR_ENDPOINT') {
@@ -216,7 +216,8 @@ export const Records = () => {
                 <div className="record_sets_header_new_set_button">
                   <Tooltip
                     classes={{ tooltip: 'toolTip' }}
-                    title="Add a new list of records, and layer on map.  If toggled on, any records matching the filters for this recordset will also show up with the What's Here tool.">
+                    title="Add a new list of records, and layer on map.  If toggled on, any records matching the filters for this recordset will also show up with the What's Here tool."
+                  >
                     <Button variant="contained" onClick={(e) => onClickCreateRecordSet(false, e)}>
                       + Add List / Layer
                     </Button>
@@ -244,7 +245,8 @@ export const Records = () => {
                           : 'black',
                       borderStyle: 'solid',
                       borderWidth: typeof highlightedSet === 'string' && highlightedSet === set ? '5px' : '1px'
-                    }}>
+                    }}
+                  >
                     <div key={set + 'spinner'}>{!loadMap?.[set] ? <Spinner /> : <></>}</div>
                     <div className="records_set_left_hand_items">
                       <div className="records_set_name">
@@ -256,11 +258,13 @@ export const Records = () => {
                       {CONFIGURATION_IS_MOBILE && recordSets?.[set]?.cached ? (
                         <Tooltip
                           classes={{ tooltip: 'toolTip' }}
-                          title="Click to clear cached data for this layer of records">
+                          title="Click to clear cached data for this layer of records"
+                        >
                           <Button
                             className="records__set__layer_cache"
                             onClick={(e) => onClickInitClearCache(set, e)}
-                            variant="outlined">
+                            variant="outlined"
+                          >
                             {!recordSets?.[set]?.isDeletingCache ? <EjectIcon /> : 'Deleting Cache'}
                           </Button>
                         </Tooltip>
@@ -271,11 +275,13 @@ export const Records = () => {
                       {CONFIGURATION_IS_MOBILE && recordSets?.[set]?.cached ? (
                         <Tooltip
                           classes={{ tooltip: 'toolTip' }}
-                          title="Click to toggle viewing cached data or online if available">
+                          title="Click to toggle viewing cached data or online if available"
+                        >
                           <Button
                             className="records__set__layer_cache"
                             onClick={(e) => onClickToggleViewCache(set, e)}
-                            variant="outlined">
+                            variant="outlined"
+                          >
                             {recordSets?.[set]?.offlineMode ? <WifiOffIcon /> : <WifiIcon />}
                           </Button>
                         </Tooltip>
@@ -287,7 +293,8 @@ export const Records = () => {
                           <Button
                             className="records__set__layer_cache"
                             onClick={(e) => onClickInitCache(set, e)}
-                            variant="outlined">
+                            variant="outlined"
+                          >
                             {recordSets?.[set]?.cached ? (
                               <>
                                 <FileDownloadDoneIcon /> {recordSets?.[set]?.cachedTime}
@@ -307,22 +314,26 @@ export const Records = () => {
                       )}
                       <Tooltip
                         classes={{ tooltip: 'toolTip' }}
-                        title="Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time.">
+                        title="Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time."
+                      >
                         <Button
                           className="records__set__layer_toggle"
                           onClick={(e) => onClickToggleLabel(set, e)}
-                          variant="outlined">
+                          variant="outlined"
+                        >
                           {recordSets?.[set]?.labelToggle ? <LabelIcon /> : <LabelClearIcon />}
                         </Button>
                       </Tooltip>
 
                       <Tooltip
                         classes={{ tooltip: 'toolTip' }}
-                        title="Toggle viewing the layer on the map, and including these records in the Whats Here search results.">
+                        title="Toggle viewing the layer on the map, and including these records in the Whats Here search results."
+                      >
                         <Button
                           className="records__set__layer_toggle"
                           onClick={(e) => onClickToggleLayer(set, e)}
-                          variant="outlined">
+                          variant="outlined"
+                        >
                           {recordSets?.[set]?.mapToggle ? <LayersIcon /> : <LayersClearIcon />}
                         </Button>
                       </Tooltip>
@@ -337,7 +348,8 @@ export const Records = () => {
                             <Button
                               onClick={(e) => onClickCycleColour(set, e)}
                               style={{ backgroundColor: recordSets?.[set]?.color }}
-                              variant="contained">
+                              variant="contained"
+                            >
                               <ColorLensIcon />
                             </Button>
                           </Tooltip>
@@ -351,7 +363,8 @@ export const Records = () => {
                       ) : (
                         <Tooltip
                           classes={{ tooltip: 'toolTip' }}
-                          title="Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration.">
+                          title="Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration."
+                        >
                           <Button onClick={(e) => onClickDeleteRecordSet(set, e)} variant="outlined">
                             <Delete />
                           </Button>
@@ -363,12 +376,14 @@ export const Records = () => {
               })}
               <Button
                 onClick={() => dispatch({ type: USER_SETTINGS_ADD_RECORD_SET, payload: { recordSetType: 'Activity' } })}
-                className={'addRecordSet'}>
+                className={'addRecordSet'}
+              >
                 Add Layer of Records
               </Button>
               <Button
                 onClick={() => dispatch({ type: USER_SETTINGS_ADD_RECORD_SET, payload: { recordSetType: 'IAPP' } })}
-                className={'addRecordSet'}>
+                className={'addRecordSet'}
+              >
                 Add IAPP Layer of Records
               </Button>
             </>

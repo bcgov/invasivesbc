@@ -172,7 +172,8 @@ const TemplatePreview = ({ name, id }) => {
         expanded={expanded}
         onChange={() => {
           setExpanded(!expanded);
-        }}>
+        }}
+      >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Box sx={{ display: 'inline-flex', justifyContent: 'space-between', width: '100%' }}>
             <Typography>{name}</Typography>
@@ -181,7 +182,8 @@ const TemplatePreview = ({ name, id }) => {
               className={'template-download-link'}
               onClick={() => {
                 downloadTemplate(id);
-              }}>
+              }}
+            >
               Download Template CSV
               <Download fontSize={'medium'} />
             </Button>

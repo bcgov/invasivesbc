@@ -78,7 +78,8 @@ const CustomizeLayerMenu = (props) => {
                 <TextField
                   value={newLayerName}
                   onChange={(e) => setNewLayerName(e.target.value)}
-                  label="Name your new layer"></TextField>
+                  label="Name your new layer"
+                ></TextField>
               </FormControl>
             ),
             Remove: (
@@ -87,7 +88,8 @@ const CustomizeLayerMenu = (props) => {
                 <Select
                   value={layerToDelete}
                   onChange={(e) => setLayerToDelete(e.target.value)}
-                  label="Choose Layer to remove">
+                  label="Choose Layer to remove"
+                >
                   {customLayers.map((option) => (
                     <MenuItem key={'customlayermenuitem' + option.id} value={option.id}>
                       {option.title + ' - ' + option.type}
@@ -110,13 +112,15 @@ const CustomizeLayerMenu = (props) => {
                 <Button
                   onClick={() => {
                     setSubMenuType('New');
-                  }}>
+                  }}
+                >
                   Add new
                 </Button>
                 <Button
                   onClick={() => {
                     setSubMenuType('Remove');
-                  }}>
+                  }}
+                >
                   Remove existing
                 </Button>
               </>
@@ -137,13 +141,15 @@ const CustomizeLayerMenu = (props) => {
                       default:
                         cleanup();
                     }
-                  }}>
+                  }}
+                >
                   Create
                 </Button>
                 <Button
                   onClick={() => {
                     cleanup();
-                  }}>
+                  }}
+                >
                   Back
                 </Button>
               </>
@@ -168,13 +174,15 @@ const CustomizeLayerMenu = (props) => {
                         break;
                     }
                     cleanup();
-                  }}>
+                  }}
+                >
                   Remove
                 </Button>
                 <Button
                   onClick={() => {
                     cleanup();
-                  }}>
+                  }}
+                >
                   Back
                 </Button>
               </>
@@ -185,7 +193,8 @@ const CustomizeLayerMenu = (props) => {
           onClick={() => {
             dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
             cleanup();
-          }}>
+          }}
+        >
           Exit
         </Button>
       </DialogActions>

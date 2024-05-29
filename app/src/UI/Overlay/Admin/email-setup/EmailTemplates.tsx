@@ -17,22 +17,22 @@ const jsonSchemaEmailTemplates: RJSFSchema = {
       type: 'string',
       title: 'Template Name',
       enum: templateNames,
-      default: templateNames[0],
+      default: templateNames[0]
     },
     fromemail: {
       title: 'From email',
-      type: 'string',
+      type: 'string'
     },
     emailsubject: {
       title: 'Email subject',
-      type: 'string',
+      type: 'string'
     },
     emailbody: {
       title: 'Email body',
-      type: 'string',
-    },
+      type: 'string'
+    }
   }
-}
+};
 
 const uiSchemaEmailTemplates: UiSchema = {
   templatename: {
@@ -46,26 +46,25 @@ const uiSchemaEmailTemplates: UiSchema = {
   },
   emailbody: {
     'ui:widget': 'textarea'
-  },
-}
+  }
+};
 
 const EmailTemplates = (props) => {
-
   const emailTemplatesState = useSelector(selectEmailTemplates);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch({
-      type: EMAIL_TEMPLATES_RETRIEVE_REQUEST,
+      type: EMAIL_TEMPLATES_RETRIEVE_REQUEST
     });
-  }, [])
+  }, []);
 
   const onSubmitEmailTemplates = ({ formData }) => {
     dispatch({
       type: EMAIL_TEMPLATES_UPDATE,
       payload: formData
     });
-  }
+  };
 
   const onFormChange = (event) => {
     if (emailTemplatesState.activetemplate != event.formData.templatename)
@@ -73,20 +72,23 @@ const EmailTemplates = (props) => {
         type: EMAIL_TEMPLATES_SET_ACTIVE,
         payload: {
           ...emailTemplatesState,
-          'activetemplate': event.formData.templatename
+          activetemplate: event.formData.templatename
         }
-      })
-  }
+      });
+  };
   const getActiveTemplate = () => {
     if (emailTemplatesState.emailTemplates)
-      return emailTemplatesState.emailTemplates.find(template => template.templatename === emailTemplatesState.activetemplate)
-  }
+      return emailTemplatesState.emailTemplates.find(
+        (template) => template.templatename === emailTemplatesState.activetemplate
+      );
+  };
 
   return (
     <Grid item xs={6}>
       <Card elevation={8}>
         <CardContent>
-          <Form schema={jsonSchemaEmailTemplates}
+          <Form
+            schema={jsonSchemaEmailTemplates}
             validator={validator}
             uiSchema={uiSchemaEmailTemplates}
             onSubmit={onSubmitEmailTemplates}

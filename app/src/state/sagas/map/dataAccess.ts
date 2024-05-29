@@ -1,6 +1,7 @@
 import { put, select, take } from 'redux-saga/effects';
 import intersect from '@turf/intersect';
 
+import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
 import {
   ACTIVITIES_GEOJSON_GET_OFFLINE,
   ACTIVITIES_GEOJSON_GET_ONLINE,
@@ -24,7 +25,6 @@ import {
   WHATS_HERE_PAGE_POI
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
-import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
 import { selectUserSettings } from 'state/reducers/userSettings';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
@@ -72,9 +72,11 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
   try {
     const currentState = yield select((state) => state?.UserSettings);
     const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
-    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
-
-
+    const filterObject = getRecordFilterObjectFromStateForAPI(
+      action.payload.recordSetID,
+      currentState,
+      clientBoundaries
+    );
 
     // abort if already a stale hash
     const mapState = yield select((state) => state.Map);
@@ -108,7 +110,7 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   const currentState = yield select((state) => state.UserSettings);
   const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
-  let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
+  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
   //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
@@ -138,7 +140,11 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
     const currentState = yield select((state) => state.UserSettings);
     const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
-    let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
+    const filterObject = getRecordFilterObjectFromStateForAPI(
+      action.payload.recordSetID,
+      currentState,
+      clientBoundaries
+    );
     //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
     filterObject.limit = 200000;
     filterObject.selectColumns = ['site_id'];
@@ -180,7 +186,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
       : { ...filter, geojson: getFilterWithDrawnShape(filter.filter) };
   });
 
-  if(!modifiedTableFilters) {
+  if (!modifiedTableFilters) {
     modifiedTableFilters = [];
   }
 
@@ -202,7 +208,7 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
     // new filter object:
     const currentState = yield select((state) => state.UserSettings);
     const mapState = yield select((state) => state.Map);
-    let filterObject = getRecordFilterObjectFromStateForAPI(
+    const filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
       mapState?.clientBoundaries
@@ -247,7 +253,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
   try {
     const currentState = yield select((state) => state.UserSettings);
     const mapState = yield select((state) => state.Map);
-    let filterObject = getRecordFilterObjectFromStateForAPI(
+    const filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
       mapState?.clientBoundaries
@@ -308,7 +314,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
     return feature.properties.site_id;
   });
 
-  let unfilteredRecordSetIDs = [];
+  const unfilteredRecordSetIDs = [];
 
   currentMapState?.layers.map((layer) => {
     if (layer?.type === 'IAPP' && layer?.layerState.mapToggle) {
@@ -368,7 +374,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
     return feature.properties.id;
   });
 
-  let unfilteredRecordSetIDs = [];
+  const unfilteredRecordSetIDs = [];
   currentMapState?.layers?.map((layer) => {
     if (layer?.type === 'Activity' && layer?.layerState.mapToggle) {
       unfilteredRecordSetIDs.push(...layer?.IDList);

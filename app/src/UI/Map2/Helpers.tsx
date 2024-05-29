@@ -285,11 +285,11 @@ export const mapInit = (
         }
       });
 
-      let scale = new ScaleControl({
+      const scale = new ScaleControl({
         maxWidth: 80,
         unit: 'metric'
       });
-      let nav = new NavigationControl();
+      const nav = new NavigationControl();
       map.current.addControl(scale, 'top-left');
       map.current.addControl(nav, 'top-left');
       /*refreshDrawControls(
@@ -359,7 +359,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
     };
   }
 
-  let fillLayer = {
+  const fillLayer = {
     id: layerID,
     source: layerID,
     type: 'fill',
@@ -372,7 +372,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
     maxzoom: 24
   };
 
-  let borderLayer = {
+  const borderLayer = {
     id: 'polygon-border-' + layerID,
     source: layerID,
     type: 'line',
@@ -383,7 +383,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
     }
   };
 
-  let circleMarkerZoomedOutLayer = {
+  const circleMarkerZoomedOutLayer = {
     id: 'polygon-circle-' + layerID,
     source: layerID,
     type: 'circle',
@@ -395,7 +395,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
     minzoom: 0
   };
 
-  let labelLayer = {
+  const labelLayer = {
     id: 'label-' + layerID,
     type: 'symbol',
     source: layerID,
@@ -501,7 +501,7 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
     };
   }
 
-  let circleLayer = {
+  const circleLayer = {
     id: layerID,
     source: layerID,
     type: 'circle',
@@ -513,7 +513,7 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
     maxzoom: 24
   };
 
-  let labelLayer = {
+  const labelLayer = {
     id: 'label-' + layerID,
     type: 'symbol',
     source: layerID,
@@ -799,14 +799,14 @@ export const initDrawModes = (
     });
   });
 
-  var DoNothing: any = {};
+  const DoNothing: any = {};
   DoNothing.onSetup = function (opts) {
     //  if(map.draw && activityGeo)
     if (activityGeo) {
       this.addFeature(this.newFeature(activityGeo[0]));
     }
 
-    var state: any = {};
+    const state: any = {};
     state.count = opts.count || 0;
     return state;
   };
@@ -821,16 +821,16 @@ export const initDrawModes = (
 
   DoNothing.on;
 
-  var WhatsHereBoxMode: any = { ...DrawRectangle };
+  const WhatsHereBoxMode: any = { ...DrawRectangle };
 
   //Example from docs - keeping as template:
-  var LotsOfPointsMode: any = {};
+  const LotsOfPointsMode: any = {};
 
   // When the mode starts this function will be called.
   // The `opts` argument comes from `draw.changeMode('lotsofpoints', {count:7})`.
   // The value returned should be an object and will be passed to all other lifecycle functions
   LotsOfPointsMode.onSetup = function (opts) {
-    var state: any = {};
+    const state: any = {};
     state.count = opts.count || 0;
     return state;
   };
@@ -838,7 +838,7 @@ export const initDrawModes = (
   // Whenever a user clicks on the map, Draw will call `onClick`
   LotsOfPointsMode.onClick = function (state, e) {
     // `this.newFeature` takes geojson and makes a DrawFeature
-    var point = this.newFeature({
+    const point = this.newFeature({
       type: 'Feature',
       properties: {
         count: state.count
@@ -1213,8 +1213,6 @@ export const refreshHighlightedRecord = (map, options: any) => {
         maxzoom: 24
       });
   }
-
-
 
   /*
   highlightedACTIVITY

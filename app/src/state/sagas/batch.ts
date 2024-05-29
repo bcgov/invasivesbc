@@ -1,5 +1,5 @@
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import { selectConfiguration } from 'state/reducers/configuration';
+import { Http } from '@capacitor-community/http';
 import {
   BATCH_CREATE_REQUEST,
   BATCH_CREATE_REQUEST_WITH_CALLBACK,
@@ -22,7 +22,7 @@ import {
   BATCH_UPDATE_REQUEST,
   BATCH_UPDATE_SUCCESS
 } from '../actions';
-import { Http } from '@capacitor-community/http';
+import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 function* listBatches(action) {

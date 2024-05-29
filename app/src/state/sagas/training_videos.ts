@@ -1,7 +1,7 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
-import { selectConfiguration } from 'state/reducers/configuration';
-import { TRAINING_VIDEOS_LIST_REQUEST, TRAINING_VIDEOS_LIST_REQUEST_COMPLETE } from '../actions';
 import { Http } from '@capacitor-community/http';
+import { TRAINING_VIDEOS_LIST_REQUEST, TRAINING_VIDEOS_LIST_REQUEST_COMPLETE } from '../actions';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 function* listTrainingVideos(action) {
   const configuration = yield select(selectConfiguration);

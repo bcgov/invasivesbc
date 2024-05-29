@@ -1,8 +1,5 @@
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { all, put, select, take, takeEvery } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
-import { selectConfiguration } from 'state/reducers/configuration';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import {
   AUTH_INITIALIZE_COMPLETE,
   GET_API_DOC_ONLINE,
@@ -42,6 +39,9 @@ import {
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
 } from '../actions';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import { selectConfiguration } from 'state/reducers/configuration';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   yield put({ type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS });
@@ -50,7 +50,7 @@ function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
 function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST(action) {
   try {
     const userSettings = yield select(selectUserSettings);
-    let sets = userSettings?.recordSets;
+    const sets = userSettings?.recordSets;
     const current = sets[action.payload.setName];
 
     yield put({ type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, payload: { recordSets: sets } });
@@ -63,7 +63,7 @@ function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST(action) {
 function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
   try {
     const userSettings = yield select(selectUserSettings);
-    let sets = userSettings?.recordSets;
+    const sets = userSettings?.recordSets;
     const current = sets[action.payload.setName];
 
     const boundary = JSON.parse(action.payload?.boundary);

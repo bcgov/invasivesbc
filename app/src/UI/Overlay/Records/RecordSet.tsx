@@ -71,7 +71,8 @@ export const RecordSet = (props) => {
                       }
                     });
                   }}
-                  variant="contained">
+                  variant="contained"
+                >
                   Clear Filters
                   <FilterAltOffIcon />
                 </Button>
@@ -86,7 +87,8 @@ export const RecordSet = (props) => {
                       type: RECORDSETS_TOGGLE_VIEW_FILTER
                     });
                   }}
-                  variant="contained">
+                  variant="contained"
+                >
                   {viewFilters ? (
                     <>
                       Hide Filters
@@ -109,7 +111,8 @@ export const RecordSet = (props) => {
             <div className="recordSet_new_filter_button">
               <Tooltip
                 classes={{ tooltip: 'toolTip' }}
-                title="Add a new filter, drawn, uploaded KML, or just text search on a field.">
+                title="Add a new filter, drawn, uploaded KML, or just text search on a field."
+              >
                 <Button
                   size={'small'}
                   onClick={() => {
@@ -126,7 +129,8 @@ export const RecordSet = (props) => {
                       }
                     });
                   }}
-                  variant="contained">
+                  variant="contained"
+                >
                   Add Filter + <FilterAltIcon />
                 </Button>
               </Tooltip>
@@ -311,7 +315,8 @@ const Filter = (props) => {
                 filter: e.target.value
               }
             });
-          }}>
+          }}
+        >
           {serverBoundariesToDisplay?.map((option) => {
             return (
               <option key={option.value + option.label} value={option.value}>
@@ -340,7 +345,8 @@ const Filter = (props) => {
                 filter: e.target.value
               }
             });
-          }}>
+          }}
+        >
           {clientBoundariesToDisplay?.map((option) => {
             return (
               <option key={option.value + option.label} value={option.value}>
@@ -375,7 +381,8 @@ const Filter = (props) => {
                 operator2: e.target.value
               }
             });
-          }}>
+          }}
+        >
           {
             {
               tableFilter: (
@@ -429,7 +436,8 @@ const Filter = (props) => {
                 operator: e.target.value
               }
             });
-          }}>
+          }}
+        >
           {
             {
               tableFilter: (
@@ -472,7 +480,7 @@ const Filter = (props) => {
           key={'filterTypeSelect' + props.name}
           value={filterTypeInState}
           onChange={(e) => {
-            let payload = {
+            const payload = {
               filterType: e.target.value,
               setID: props.setID,
               filterID: props.id
@@ -491,7 +499,8 @@ const Filter = (props) => {
                 ...payload
               }
             });
-          }}>
+          }}
+        >
           <option key={Math.random()} value={'tableFilter'} label={'Field/Column'}>
             Field/Column
           </option>
@@ -499,14 +508,16 @@ const Filter = (props) => {
             disabled={clientBoundariesToDisplay.length < 1}
             key={Math.random()}
             value={'spatialFilterDrawn'}
-            label={'Spatial - Drawn'}>
+            label={'Spatial - Drawn'}
+          >
             Spatial - Drawn
           </option>
           <option
             disabled={serverBoundariesToDisplay.length < 1}
             key={Math.random()}
             value={'spatialFilterUploaded'}
-            label={'Spatial - Uploaded'}>
+            label={'Spatial - Uploaded'}
+          >
             Spatial - Uploaded
           </option>
         </select>
@@ -528,7 +539,8 @@ const Filter = (props) => {
                 field: e.target.value
               }
             });
-          }}>
+          }}
+        >
           {filterTypeInState === 'tableFilter' ? (
             filterOptions.map((option) => {
               return (
@@ -555,7 +567,8 @@ const Filter = (props) => {
                 type: RECORDSET_REMOVE_FILTER,
                 payload: { filterType: 'tableFilter', setID: props.setID, filterID: props.id }
               });
-            }}>
+            }}
+          >
             Delete
           </Button>
         </Tooltip>

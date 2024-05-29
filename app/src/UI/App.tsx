@@ -150,7 +150,8 @@ const OverlayContentMemo = (props) => {
                         : '/Records/IAPP/' + userRecordOnClickRecordID + '/summary';
                     history.push(url);
                   }}
-                  variant="contained">
+                  variant="contained"
+                >
                   Open
                 </Button>
               </OverlayMenu>

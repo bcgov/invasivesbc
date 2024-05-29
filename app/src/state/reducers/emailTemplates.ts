@@ -1,15 +1,24 @@
-import { EMAIL_TEMPLATES_RETRIEVE_REQUEST, EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS, EMAIL_TEMPLATES_SET_ACTIVE, EMAIL_TEMPLATES_UPDATE_FAILURE, EMAIL_TEMPLATES_UPDATE_SUCCESS } from "state/actions";
+import {
+  EMAIL_TEMPLATES_RETRIEVE_REQUEST,
+  EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS,
+  EMAIL_TEMPLATES_SET_ACTIVE,
+  EMAIL_TEMPLATES_UPDATE_FAILURE,
+  EMAIL_TEMPLATES_UPDATE_SUCCESS
+} from 'state/actions';
+
 interface EmailTemplates {
-  message: string,
-  activetemplate: string,
-  emailTemplates: [{
-    id: number,
-    fromemail: string,
-    emailsubject: string,
-    emailbody: string,
-    templatename: string
-  }]
-};
+  message: string;
+  activetemplate: string;
+  emailTemplates: [
+    {
+      id: number;
+      fromemail: string;
+      emailsubject: string;
+      emailbody: string;
+      templatename: string;
+    }
+  ];
+}
 
 function createEmailTemplatesReducer() {
   const initialState: EmailTemplates = {
@@ -26,7 +35,7 @@ function createEmailTemplatesReducer() {
           working: true,
           error: false,
           message: null,
-          emailTemplates: null,
+          emailTemplates: null
         };
       case EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS:
       case EMAIL_TEMPLATES_UPDATE_SUCCESS:
@@ -35,14 +44,14 @@ function createEmailTemplatesReducer() {
           ...state,
           working: false,
           error: false,
-          ...action.payload,
+          ...action.payload
         };
       case EMAIL_TEMPLATES_UPDATE_FAILURE:
         return {
           ...state,
           working: false,
           error: true,
-          ...action.payload,
+          ...action.payload
         };
       default:
         return state;
@@ -53,4 +62,3 @@ function createEmailTemplatesReducer() {
 const selectEmailTemplates: (state) => EmailTemplates = (state) => state.EmailTemplates;
 
 export { selectEmailTemplates, createEmailTemplatesReducer };
-

@@ -3,7 +3,7 @@ import ArrowDownward from '@mui/icons-material/ArrowDownward';
 import ArrowUpward from '@mui/icons-material/ArrowUpward';
 import Remove from '@mui/icons-material/Remove';
 import React from 'react';
-import { Button } from "@mui/material";
+import { Button } from '@mui/material';
 
 const mappings: any = {
   remove: <Remove />,

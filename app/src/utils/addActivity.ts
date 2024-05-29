@@ -1,8 +1,5 @@
-import { DocType } from '../constants/database';
 import { Feature } from 'geojson';
-import { IActivity } from '../interfaces/activity-interfaces';
 import moment from 'moment';
-import { getFieldsToCopy } from '../rjsf/business-rules/formDataCopyFields';
 import { v4 as uuidv4 } from 'uuid';
 import {
   ActivityStatus,
@@ -12,6 +9,9 @@ import {
   getShortActivityID,
   ReviewStatus
 } from 'sharedAPI';
+import { getFieldsToCopy } from '../rjsf/business-rules/formDataCopyFields';
+import { IActivity } from '../interfaces/activity-interfaces';
+import { DocType } from '../constants/database';
 
 export const activityDefaults = {
   doc_type: DocType.ACTIVITY,
@@ -67,7 +67,6 @@ export function generateActivityPayload(
 /*
   Function to generate activity payload for a new activity (in old pouchDB doc format)
 */
-
 
 export function cloneDBRecord(dbRecord) {
   const id = uuidv4();
@@ -137,7 +136,7 @@ export async function createLinkedActivity(
     linkedRecord.activitySubtype
   );
 
-  let formData: any = {
+  const formData: any = {
     activity_data: {
       ...activityData,
       activity_date_time: moment(new Date()).format()
@@ -169,12 +168,12 @@ export async function createLinkedActivity(
 /*
   function to determine if a Monitoring activity subtype requires a linked treatment ID.
 */
-export function isLinkedTreatmentSubtype(subType:ActivitySubtype): boolean {
-  return ([
+export function isLinkedTreatmentSubtype(subType: ActivitySubtype): boolean {
+  return [
     ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant,
     ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant,
     ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
-  ].includes(subType));
+  ].includes(subType);
 }
 // extract and set the species codes (both positive and negative) of a given activity (or POI, once they're editable)
 

@@ -1,5 +1,4 @@
 import { call, put, select, take } from 'redux-saga/effects';
-import { selectMap } from 'state/reducers/map';
 import center from '@turf/center';
 import centroid from '@turf/centroid';
 import booleanContains from '@turf/boolean-contains';
@@ -11,6 +10,8 @@ import {
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
+import { kinks } from '@turf/turf';
+import { selectMap } from 'state/reducers/map';
 
 import {
   autoFillNameByPAC,
@@ -64,7 +65,6 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 import { getClosestWells } from 'utils/closestWellsHelpers';
 import { calc_utm } from 'utils/utm';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
-import { kinks } from '@turf/turf';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectNetworkConnected } from 'state/reducers/network';
@@ -156,7 +156,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     const { latitude, longitude } = calculateLatLng(action.payload.geometry) || {};
     let utm;
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
-    let modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry));
+    const modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry));
 
     if (action.payload.geometry && action.payload.geometry.length > 0) {
       if (action.payload.geometry[0].geometry.type === 'Point') {
@@ -413,8 +413,8 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action) {
 
 export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
   try {
-    let beforeState = yield select(selectActivity);
-    let beforeActivity = beforeState.activity;
+    const beforeState = yield select(selectActivity);
+    const beforeActivity = beforeState.activity;
     const lastField = action.payload.lastField;
     const mapState = yield select(selectMap);
 
@@ -626,7 +626,7 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
     if (isPoint) {
       target = geometry.geometry;
     } else {
-      var acentroid = centroid(geometry);
+      const acentroid = centroid(geometry);
 
       target = acentroid.geometry;
     }
@@ -759,7 +759,7 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
 export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
   try {
     const beforeState = yield select(selectActivity);
-    let beforeActivityMedia = JSON.parse(JSON.stringify(beforeState.activity.media));
+    const beforeActivityMedia = JSON.parse(JSON.stringify(beforeState.activity.media));
     const photoIndex = beforeActivityMedia.findIndex((photo) => photo.file_name === action.payload.photo.file_name);
 
     if (photoIndex >= 0) {

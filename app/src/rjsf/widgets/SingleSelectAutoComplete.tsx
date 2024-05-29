@@ -56,17 +56,15 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
  */
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
- // console.dir(props)
-  const suggestedJurisdictionsInState = useSelector((state: any) => state.ActivityPage.suggestedJurisdictions)
-  const isenums = (props.options.enumOptions?.length > 0)? true:false
+  // console.dir(props)
+  const suggestedJurisdictionsInState = useSelector((state: any) => state.ActivityPage.suggestedJurisdictions);
+  const isenums = props.options.enumOptions?.length > 0 ? true : false;
   let enumOptions;
   if (isenums) {
-    enumOptions = JSON.parse(JSON.stringify(props.options.enumOptions || []))
+    enumOptions = JSON.parse(JSON.stringify(props.options.enumOptions || []));
+  } else {
+    enumOptions = JSON.parse(JSON.stringify(props?.schema?.options || []));
   }
-  else { 
-    enumOptions = JSON.parse(JSON.stringify(props?.schema?.options || []))
-  }
-
 
   if (!enumOptions) enumOptions = [];
   if (props.id.toString().includes('jurisdiction_code')) {
@@ -107,9 +105,9 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   }
   const selectAutoCompleteContext = useContext(SelectAutoCompleteContext);
   const { setLastFieldChanged, lastFieldChanged } = selectAutoCompleteContext;
-  let optionValueLabels = {};
-  let optionValueSuggested = {};
-  let optionValues = Object.values(enumOptions).map((option) => {
+  const optionValueLabels = {};
+  const optionValueSuggested = {};
+  const optionValues = Object.values(enumOptions).map((option) => {
     optionValueLabels[option.value] = option.label || option.title || option.value;
     optionValueSuggested[option.value] = (option as any).suggested || false;
     return option.value;
@@ -142,30 +140,26 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     setLastFieldChanged({ id: props.id, option: value });
   }, []);
 
+  const [renderKey, setRenderKey] = useState(props.id.toString() + Math.random());
 
-  const [renderKey, setRenderKey] = useState(props.id.toString() + Math.random())
-
-  useEffect(()=> {
-    if(props.id.toString().includes('jurisdiction_code'))
-    {
-      setRenderKey(props.id.toString() + Math.random())
+  useEffect(() => {
+    if (props.id.toString().includes('jurisdiction_code')) {
+      setRenderKey(props.id.toString() + Math.random());
     }
-  },[JSON.stringify(suggestedJurisdictionsInState)])
-
+  }, [JSON.stringify(suggestedJurisdictionsInState)]);
 
   return (
-    <div >
+    <div>
       <Autocomplete
         key={renderKey}
         autoHighlight
         autoSelect={props.required}
         blurOnSelect
         openOnFocus
-        renderOption={(props, option) => 
-          {
+        renderOption={(props, option) => {
           return (
             //@ts-ignore
-            <Box {...props} key={ `rjsfSingleSelect${Math.random()}`} style={{ display: 'flex', flexDirection: 'row' }}>
+            <Box {...props} key={`rjsfSingleSelect${Math.random()}`} style={{ display: 'flex', flexDirection: 'row' }}>
               {optionValueSuggested[option] && <StarIcon style={{ fontSize: 15, marginRight: 7 }} color="warning" />}
               <Typography>
                 {option ? optionValueLabels[option] : ''}

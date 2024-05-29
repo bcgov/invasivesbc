@@ -231,7 +231,7 @@ export const mSpecie_sLHerb_spray_usingProdAppRate = (
 
   let dilution: number = (product_application_rate_lha / delivery_rate_of_mix) * 100;
 
-  let species: any[] = [];
+  const species: any[] = [];
 
   for (let i = 0; i < percentages_of_treatment_on_species.length; i++) {
     species[i] = {};
@@ -337,9 +337,9 @@ export const mSpecie_sLHerb_spray_usingDilutionPercent = (
     return resultObj;
   }
 
-  let area_treated_hectares: number = area_treated_sqm / 10000;
+  const area_treated_hectares: number = area_treated_sqm / 10000;
 
-  let species: any[] = [];
+  const species: any[] = [];
 
   for (let i = 0; i < percentages_of_treatment_on_species.length; i++) {
     species[i] = {};
@@ -404,7 +404,7 @@ export const mSpecie_sGHerb_spray_usingProdAppRate = (
 
   let dilution: number = (product_application_rate_lha / 1000 / delivery_rate_of_mix) * 100;
 
-  let species: any[] = [];
+  const species: any[] = [];
 
   for (let i = 0; i < percentages_of_treatment_on_species.length; i++) {
     species[i] = {};
@@ -470,9 +470,9 @@ export const mSpecie_sGHerb_spray_usingDilutionPercent = (
     return resultObj;
   }
 
-  let area_treated_hectares: number = area_treated_sqm / 10000;
+  const area_treated_hectares: number = area_treated_sqm / 10000;
 
-  let species: any[] = [];
+  const species: any[] = [];
 
   for (let i = 0; i < percentages_of_treatment_on_species.length; i++) {
     species[i] = {};
@@ -556,18 +556,18 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
   species?: IInvasivePlant[],
   herbicides?: IHerbicide[]
 ) => {
-  let resultObj = {};
+  const resultObj = {};
 
   if (!area || !amount_of_mix || !delivery_rate_of_mix || !species || species.length < 1) {
     return resultObj;
   }
 
-  let outputInvPlantsArr = [];
+  const outputInvPlantsArr = [];
 
   species.forEach((specie, plant_index) => {
-    let outputSpecie: any = {};
+    const outputSpecie: any = {};
 
-    let percent_area_covered = specie.percent_area_covered ? specie.percent_area_covered : 100;
+    const percent_area_covered = specie.percent_area_covered ? specie.percent_area_covered : 100;
 
     outputSpecie.index = plant_index;
     outputSpecie.amount_of_mix_used = amount_of_mix * (percent_area_covered / 100);
@@ -578,7 +578,7 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
     outputSpecie.herbicides = [];
 
     herbicides.forEach((herb, index) => {
-      let outputHerb: any = {};
+      const outputHerb: any = {};
 
       outputHerb.plantIndex = plant_index;
       outputHerb.herbIndex = index;

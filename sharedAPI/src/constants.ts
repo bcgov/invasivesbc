@@ -1,4 +1,3 @@
-
 export enum ActivityCategory {
   Plant = 'Plant',
   Animal = 'Animal',
@@ -94,12 +93,8 @@ export const ActivitySubtypeRelations = {
     ]
   },
   [ActivityCategory.Mussels]: {
-    [ActivityType.Observation]: [
-      ActivitySubtype.Observation_Mussels
-    ],
-    [ActivityType.Shift]: [
-      ActivitySubtype.Mussels_Officer_Shift
-    ]
+    [ActivityType.Observation]: [ActivitySubtype.Observation_Mussels],
+    [ActivityType.Shift]: [ActivitySubtype.Mussels_Officer_Shift]
   },
   [ActivityCategory.FREP]: { [ActivityType.FREP]: [ActivitySubtype.Activity_FREP_FormC] }
 };
@@ -144,7 +139,6 @@ export enum ActivitySubtypeShortLabels {
   Activity_FREP_FormB = 'Form B',
   Activity_FREP_FormC = 'Form C'
 }
-
 
 export enum ActivityLetter {
   // Observations:

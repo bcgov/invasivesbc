@@ -1,7 +1,7 @@
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import qs from 'qs';
 import { put, select, take } from 'redux-saga/effects';
 import { ActivityStatus, getShortActivityID } from 'sharedAPI';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 import {
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
@@ -97,10 +97,10 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   };
 
   // handle delete photos if needed
-  let keys_to_delete = [];
+  const keys_to_delete = [];
   if (newActivity.media_delete_keys?.length) {
     const keys = newActivity.media_delete_keys;
-    for (let key of keys) {
+    for (const key of keys) {
       const deleteReturn = yield InvasivesAPI_Call('DELETE', `/api/media/delete/${key}`);
       if (deleteReturn) {
         keys_to_delete.push(key);
@@ -179,10 +179,17 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
     const search_feature = action.payload.search_feature;
     // convert to v2 endpoint call:
 
-    let filterObject: any = {
+    const filterObject: any = {
       recordSetType: 'Activity',
       tableFilters: [
-        { id: '2', field: 'form_status', operator1: 'CONTAINS', operator2: 'AND', filterType: 'tableFilter', filter: 'Submitted' },
+        {
+          id: '2',
+          field: 'form_status',
+          operator1: 'CONTAINS',
+          operator2: 'AND',
+          filterType: 'tableFilter',
+          filter: 'Submitted'
+        },
         {
           id: '3',
           field: 'activity_subtype',
@@ -199,7 +206,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
       filterObject.tableFilters.push({
         filterType: 'spatialFilterDrawn',
         operator: 'CONTAINED IN',
-          operator2: 'AND',
+        operator2: 'AND',
         filter: '0.113619259813296791712616073543',
         geojson: search_feature?.features?.[0]
       });

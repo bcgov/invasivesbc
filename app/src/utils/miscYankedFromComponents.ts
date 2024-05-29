@@ -1,4 +1,4 @@
-import { ActivityStatus } from "sharedAPI/src/constants";
+import { ActivityStatus } from 'sharedAPI/src/constants';
 
 export const getSearchCriteriaFromFilters = (
   advancedFilterRows: any,
@@ -14,7 +14,7 @@ export const getSearchCriteriaFromFilters = (
   const form_status_filter = advancedFilterRows?.filter((x) => x.filterField === 'record_status');
   const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
   const form_status = form_status_filter?.length === 1 ? form_status_filter[0].filterValue : ActivityStatus.SUBMITTED;
-  let filter: any = {};
+  const filter: any = {};
   if (created_by) {
     filter.created_by = [created_by];
   }

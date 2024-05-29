@@ -11,8 +11,7 @@ import { RENDER_DEBUG } from 'UI/App';
 const TankMix: React.FC = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if(RENDER_DEBUG)
-  console.log('%c FormCoTankMixntainer render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) console.log('%c FormCoTankMixntainer render:' + ref.current.toString(), 'color: yellow');
   const form_dataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = form_dataContext;
 
@@ -37,7 +36,7 @@ const TankMix: React.FC = (props) => {
         }
       }
     }));
-    console.log('tank mix hook')
+    console.log('tank mix hook');
   }, [currentTankMix]);
 
   const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>(
@@ -51,7 +50,8 @@ const TankMix: React.FC = (props) => {
       <Tooltip
         style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
         placement="left"
-        title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution.">
+        title="Product application rate: the label recommended rate for treatment of this species that was used to mix the treatment solution. In litres per hectare. Dilution % : the label recommended percent solution used to treat this species that was used to mix the treatment solution."
+      >
         <HelpOutlineIcon />
       </Tooltip>
       <CustomAutoComplete
@@ -76,79 +76,81 @@ const TankMix: React.FC = (props) => {
 
       <HerbicidesAccordion insideTankMix={true} />
 
-<div id="tank_mix_delivery_and_amount">
-      <div id="amount_of_mix_tank_mix">
-      <Tooltip
-        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-        placement="left"
-        title="Volume in litres (ie 5.1 L) of herbicide and water mix">
-        <HelpOutlineIcon />
-      </Tooltip>
-      <TextField
-        disabled={formDetails.disabled}
-      ///  className={classes.inputField}
-        type="text"
-        label="Amount of Mix Used (L)"
-        value={currentTankMix?.amount_of_mix}
-        variant="outlined"
-        key={amountOfMixUsedKey}
-        onChange={(event) => {
-          const input = event.target.value;
-          if (input === '') {
-            setCurrentTankMix((prevFields) => ({
-              ...prevFields,
-              amount_of_mix: undefined
-            }));
-          }
-          if (!isNumber(input)) {
-            setAmountOfMixUsedKey(Math.random().toString());
-            return;
-          }
-          setCurrentTankMix((prevFields) => ({
-            ...prevFields,
-            amount_of_mix: Number(input)
-          }));
-        }}
-        defaultValue={undefined}
-      />
-      </div>
+      <div id="tank_mix_delivery_and_amount">
+        <div id="amount_of_mix_tank_mix">
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title="Volume in litres (ie 5.1 L) of herbicide and water mix"
+          >
+            <HelpOutlineIcon />
+          </Tooltip>
+          <TextField
+            disabled={formDetails.disabled}
+            ///  className={classes.inputField}
+            type="text"
+            label="Amount of Mix Used (L)"
+            value={currentTankMix?.amount_of_mix}
+            variant="outlined"
+            key={amountOfMixUsedKey}
+            onChange={(event) => {
+              const input = event.target.value;
+              if (input === '') {
+                setCurrentTankMix((prevFields) => ({
+                  ...prevFields,
+                  amount_of_mix: undefined
+                }));
+              }
+              if (!isNumber(input)) {
+                setAmountOfMixUsedKey(Math.random().toString());
+                return;
+              }
+              setCurrentTankMix((prevFields) => ({
+                ...prevFields,
+                amount_of_mix: Number(input)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+        </div>
 
         <div id="delivery_rate_of_mix_tank_mix">
-      <Tooltip
-        style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
-        placement="left"
-        title="Calibrated delivery rate of the device used to apply herbicide in L/ha">
-        <HelpOutlineIcon />
-      </Tooltip>
-      <TextField
-        disabled={formDetails.disabled}
-//        className={classes.inputField}
-        type="text"
-        label="Delivery Rate of Mix (L/ha)"
-        value={currentTankMix?.delivery_rate_of_mix || ''}
-        variant="outlined"
-        key={deliveryRateOfMixKey}
-        onChange={(event) => {
-          const input = event.target.value;
-          if (input === '') {
-            setCurrentTankMix((prevFields) => ({
-              ...prevFields,
-              delivery_rate_of_mix: Number(input)
-            }));
-          }
-          if (!isNumber(input)) {
-            setDeliveryRateOfMixKey(Math.random().toString());
-            return;
-          }
-          setCurrentTankMix((prevFields) => ({
-            ...prevFields,
-            delivery_rate_of_mix: Number(input)
-          }));
-        }}
-        defaultValue={undefined}
-      />
-    </div>
-    </div>
+          <Tooltip
+            style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
+            placement="left"
+            title="Calibrated delivery rate of the device used to apply herbicide in L/ha"
+          >
+            <HelpOutlineIcon />
+          </Tooltip>
+          <TextField
+            disabled={formDetails.disabled}
+            //        className={classes.inputField}
+            type="text"
+            label="Delivery Rate of Mix (L/ha)"
+            value={currentTankMix?.delivery_rate_of_mix || ''}
+            variant="outlined"
+            key={deliveryRateOfMixKey}
+            onChange={(event) => {
+              const input = event.target.value;
+              if (input === '') {
+                setCurrentTankMix((prevFields) => ({
+                  ...prevFields,
+                  delivery_rate_of_mix: Number(input)
+                }));
+              }
+              if (!isNumber(input)) {
+                setDeliveryRateOfMixKey(Math.random().toString());
+                return;
+              }
+              setCurrentTankMix((prevFields) => ({
+                ...prevFields,
+                delivery_rate_of_mix: Number(input)
+              }));
+            }}
+            defaultValue={undefined}
+          />
+        </div>
+      </div>
     </>
   );
 };

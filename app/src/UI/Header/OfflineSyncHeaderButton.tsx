@@ -58,7 +58,8 @@ export const OfflineSyncHeaderButton = () => {
       <Button
         onClick={() => {
           dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: true } });
-        }}>
+        }}
+      >
         {iconComponent}
       </Button>
     </>

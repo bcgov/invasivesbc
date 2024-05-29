@@ -1,4 +1,4 @@
-import {TRAINING_VIDEOS_LIST_REQUEST, TRAINING_VIDEOS_LIST_REQUEST_COMPLETE} from '../actions';
+import { TRAINING_VIDEOS_LIST_REQUEST, TRAINING_VIDEOS_LIST_REQUEST_COMPLETE } from '../actions';
 
 interface TrainingVideoMetadata {
   id: number;

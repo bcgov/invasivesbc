@@ -1,8 +1,6 @@
 interface Boundary {
-    id: number,
-    name: string,
-    geos: [],
-    server_id: number
+  id: number;
+  name: string;
+  geos: [];
+  server_id: number;
 }
-
-

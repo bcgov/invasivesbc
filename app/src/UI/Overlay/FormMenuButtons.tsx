@@ -50,7 +50,8 @@ export const FormMenuButtons = (props) => {
           dispatch({ type: OVERLAY_MENU_TOGGLE });
         }}
         disabled={saveDisabled || draftDisabled}
-        variant="contained">
+        variant="contained"
+      >
         SAVE TO DRAFT {connected || '(LOCAL OFFLINE)'}
       </Button>
       <Button
@@ -59,7 +60,8 @@ export const FormMenuButtons = (props) => {
           dispatch({ type: OVERLAY_MENU_TOGGLE });
         }}
         disabled={saveDisabled || !connected || activityErrors?.length > 0 ? true : false}
-        variant="contained">
+        variant="contained"
+      >
         SAVE & PUBLISH TO SUBMITTED
       </Button>
       <Button
@@ -67,7 +69,8 @@ export const FormMenuButtons = (props) => {
           dispatch({ type: ACTIVITY_COPY_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });
         }}
-        variant="contained">
+        variant="contained"
+      >
         COPY FORM
       </Button>
       <Button
@@ -76,7 +79,8 @@ export const FormMenuButtons = (props) => {
           dispatch({ type: ACTIVITY_PASTE_REQUEST });
           dispatch({ type: OVERLAY_MENU_TOGGLE });
         }}
-        variant="contained">
+        variant="contained"
+      >
         PASTE FORM
       </Button>
       <Button
@@ -86,7 +90,8 @@ export const FormMenuButtons = (props) => {
           dispatch({ type: OVERLAY_MENU_TOGGLE });
           setTimeout(() => history.back(), 5000);
         }}
-        variant="contained">
+        variant="contained"
+      >
         DELETE
       </Button>
     </>

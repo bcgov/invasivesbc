@@ -105,7 +105,8 @@ const BatchMetadata = ({ batch }) => {
                     onChange={(e) => {
                       console.log('changed');
                       setExecFinalState(e.target.value);
-                    }}>
+                    }}
+                  >
                     <option value="" disabled>
                       Select
                     </option>
@@ -120,7 +121,8 @@ const BatchMetadata = ({ batch }) => {
                   <Button
                     variant={'contained'}
                     onClick={() => doBatchExec()}
-                    disabled={!execFinalState || !batch?.canProceed}>
+                    disabled={!execFinalState || !batch?.canProceed}
+                  >
                     Execute
                   </Button>
                 </td>
@@ -141,11 +143,7 @@ const BatchGlobalValidationErrors = ({ batch }) => {
   return (
     <div className={'batch-errors'}>
       <h3>Batch Validation Errors</h3>
-      <ul>
-        {batch?.globalValidationMessages?.map((m) => (
-          <li key={m}>{m}</li>
-        ))}
-      </ul>
+      <ul>{batch?.globalValidationMessages?.map((m) => <li key={m}>{m}</li>)}</ul>
     </div>
   );
 };

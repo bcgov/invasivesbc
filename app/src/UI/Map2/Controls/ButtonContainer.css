@@ -20,23 +20,23 @@
 }
 
 .map-btn {
-  padding: .5rem;
+  padding: 0.5rem;
   flex: 0 0 auto;
 }
 
 .map-btn button {
   background-color: white;
-  color: #003366
+  color: #003366;
 }
 
 .map-btn-selected {
-  padding: .5rem;
+  padding: 0.5rem;
   flex: 0 0 auto;
 }
 
 .map-btn-selected button {
   background-color: #003366;
-  color: #FCBA19;
+  color: #fcba19;
 }
 
 .map-btn-container .map-btn:first-child {

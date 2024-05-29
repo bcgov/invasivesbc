@@ -107,7 +107,8 @@ const Tab: React.FC<TabProps> = ({ predicate, children, path, label, panelOpen, 
               type: TOGGLE_PANEL,
               payload: { panelOpen: panelOpen, fullScreen: panelFullScreen }
             });
-          }}>
+          }}
+        >
           <div className="Tab__Content">{children}</div>
           <div className="Tab__Label">{label}</div>
         </div>
@@ -138,7 +139,8 @@ const LoginButton = ({ labelText = 'Login' }) => {
     <MenuItem
       onClick={() => {
         dispatch({ type: AUTH_SIGNIN_REQUEST });
-      }}>
+      }}
+    >
       <ListItemIcon>
         <VpnKeyIcon />
       </ListItemIcon>
@@ -153,7 +155,8 @@ const LogoutButton = () => {
     <MenuItem
       onClick={() => {
         dispatch({ type: AUTH_SIGNOUT_REQUEST });
-      }}>
+      }}
+    >
       <ListItemIcon>
         <LogoutIcon />
       </ListItemIcon>
@@ -191,7 +194,8 @@ const ActivityTabMemo = (props) => {
       label="Current Activity"
       predicate={'authenticated_online'}
       panelOpen={true}
-      panelFullScreen={false}>
+      panelFullScreen={false}
+    >
       <AssignmentIcon />
     </Tab>
   );
@@ -206,7 +210,8 @@ const IAPPTabMemo = (props) => {
       label="Current IAPP"
       predicate={'authenticated_online'}
       panelOpen={true}
-      panelFullScreen={false}>
+      panelFullScreen={false}
+    >
       <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
     </Tab>
   );
@@ -223,7 +228,8 @@ const AdminPanelMemo = (props) => {
           label="Admin"
           panelOpen={true}
           predicate={'authenticated_online'}
-          panelFullScreen={true}>
+          panelFullScreen={true}
+        >
           <AdminPanelSettings />
         </Tab>
       ) : (
@@ -305,7 +311,8 @@ const LoginOrOutMemo = React.memo((props) => {
         PaperProps={{
           elevation: 3
         }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}>
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+      >
         {activated && (
           <MenuItem onClick={navToUpdateRequest}>
             <ListItemIcon>
@@ -331,7 +338,8 @@ const LoginOrOutMemo = React.memo((props) => {
                 type: AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
                 payload: { state: true }
               });
-            }}>
+            }}
+          >
             <ListItemIcon>
               <AssignmentIcon />
             </ListItemIcon>
@@ -386,7 +394,8 @@ export const Header: React.FC = () => {
           predicate={'always'}
           label="Home"
           panelOpen={true}
-          panelFullScreen={true}>
+          panelFullScreen={true}
+        >
           <Home />
         </Tab>
 
@@ -396,7 +405,8 @@ export const Header: React.FC = () => {
           label="Records"
           predicate={'authenticated_any'}
           panelOpen={true}
-          panelFullScreen={false}>
+          panelFullScreen={false}
+        >
           <ManageSearchIcon />
         </Tab>
 
@@ -410,7 +420,8 @@ export const Header: React.FC = () => {
           label="Batch"
           predicate={'authenticated_online'}
           panelOpen={true}
-          panelFullScreen={true}>
+          panelFullScreen={true}
+        >
           <FileUpload />
         </Tab>
 
@@ -420,7 +431,8 @@ export const Header: React.FC = () => {
           label="Reports"
           predicate={'authenticated_online'}
           panelOpen={true}
-          panelFullScreen={true}>
+          panelFullScreen={true}
+        >
           <Assessment />
         </Tab>
 
@@ -430,7 +442,8 @@ export const Header: React.FC = () => {
           label="News"
           predicate={'authenticated_online'}
           panelOpen={true}
-          panelFullScreen={true}>
+          panelFullScreen={true}
+        >
           <Newspaper />
         </Tab>
 
@@ -440,7 +453,8 @@ export const Header: React.FC = () => {
           label="Training"
           predicate={'always'}
           panelOpen={true}
-          panelFullScreen={true}>
+          panelFullScreen={true}
+        >
           <School />
         </Tab>
 
@@ -452,7 +466,8 @@ export const Header: React.FC = () => {
           label="Map"
           predicate={'unauthenticated'}
           panelFullScreen={false}
-          panelOpen={false}>
+          panelOpen={false}
+        >
           <Map />
         </Tab>
 

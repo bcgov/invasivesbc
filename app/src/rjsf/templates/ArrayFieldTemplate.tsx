@@ -1,10 +1,9 @@
 import React from 'react';
 import AddButton from 'rjsf/components/AddButton';
 import IconButton from 'rjsf/components/IconButton';
-import {Box, Grid, Paper} from "@mui/material";
-import {ArrayFieldTemplateProps, getTemplate, IdSchema, isMultiSelect} from "@rjsf/utils";
-import {getDefaultRegistry} from "@rjsf/core";
-
+import { Box, Grid, Paper } from '@mui/material';
+import { ArrayFieldTemplateProps, getTemplate, IdSchema, isMultiSelect } from '@rjsf/utils';
+import { getDefaultRegistry } from '@rjsf/core';
 
 const ArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
   const { schema, registry = getDefaultRegistry() } = props;
@@ -106,7 +105,7 @@ const DefaultArrayItem = (props: any) => {
 };
 
 const DefaultFixedArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
-  const TitleField = getTemplate("TitleFieldTemplate", props.registry, props.uiSchema);
+  const TitleField = getTemplate('TitleFieldTemplate', props.registry, props.uiSchema);
 
   return (
     <fieldset className={props.className}>
@@ -136,8 +135,8 @@ const DefaultFixedArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
 };
 
 const DefaultNormalArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
-  const TitleField = getTemplate("TitleFieldTemplate", props.registry, props.uiSchema);
-  const DescriptionField = getTemplate("DescriptionFieldTemplate", props.registry, props.uiSchema);
+  const TitleField = getTemplate('TitleFieldTemplate', props.registry, props.uiSchema);
+  const DescriptionField = getTemplate('DescriptionFieldTemplate', props.registry, props.uiSchema);
 
   return (
     <Box>

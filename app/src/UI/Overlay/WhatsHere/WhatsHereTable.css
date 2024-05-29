@@ -4,14 +4,14 @@
   color: white !important;
 
   button {
-    background-color: #003366 ;
-    color: white ;
+    background-color: #003366;
+    color: white;
   }
 
-  [class*="Mui-selected"] {
-    background-color: #003366  !important;
+  [class*='Mui-selected'] {
+    background-color: #003366 !important;
     color: white !important;
-    border-bottom-color: #FCBA19 !important;
+    border-bottom-color: #fcba19 !important;
     border-bottom-style: solid !important;
     border-bottom-width: 6px;
   }
@@ -23,7 +23,7 @@
 }
 
 .whatshere-position {
-  height: 450px
+  height: 450px;
 }
 
 .whatshere-table-container {
@@ -32,16 +32,14 @@
   background-color: white;
 }
 .whatshere_back_button {
- margin-right: 0;
- position: absolute;
-
+  margin-right: 0;
+  position: absolute;
 }
 
 .whatshere-header {
-  background-color:#003366;
+  background-color: #003366;
   color: white;
 
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
-

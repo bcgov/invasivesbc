@@ -1,3 +1,4 @@
+import { createNextState } from '@reduxjs/toolkit';
 import {
   ACTIVITY_ADD_PHOTO_SUCCESS,
   ACTIVITY_COPY_SUCCESS,
@@ -23,9 +24,8 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS
 } from '../actions';
 
-import { createNextState } from '@reduxjs/toolkit';
-import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import { AppConfig } from '../config';
+import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 
 interface ActivityState {
   activity: any;

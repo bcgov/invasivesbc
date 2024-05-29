@@ -25,13 +25,15 @@ export const FindMeToggle = (props) => {
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
         title="Find Me"
-        placement="top-end">
+        placement="top-end"
+      >
         <span>
           <IconButton
             onClick={() => {
               setShow(false);
               dispatch({ type: MAP_TOGGLE_TRACKING });
-            }}>
+            }}
+          >
             <MyLocationIcon />
           </IconButton>
         </span>

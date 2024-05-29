@@ -1,8 +1,8 @@
-.table-striped>tbody>tr:nth-of-type(odd) {
+.table-striped > tbody > tr:nth-of-type(odd) {
   background-color: #d7e2f5;
- }
+}
 
-.table-striped>tbody>tr:nth-of-type(even) {
+.table-striped > tbody > tr:nth-of-type(even) {
   background-color: #ffffff;
 }
 

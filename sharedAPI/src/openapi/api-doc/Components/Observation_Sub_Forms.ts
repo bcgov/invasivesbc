@@ -8,7 +8,7 @@ import {
   Passport_SimpleBasicInformation,
   Passport_HighRiskAssessment,
   Passport_InspectionDetails,
-  Passport_BasicInformation,
+  Passport_BasicInformation
 } from '../Components/Mussels_Sub_Form';
 
 export const Observation_PlantTerrestrial_Information = {
@@ -150,11 +150,7 @@ export const Observation_Mussels_Information = {
             },
             passport: Passport_SimpleBasicInformation
           },
-          required: [
-            'isPassportHolder',
-            'isNewPassportIssued',
-            'passport'
-          ],
+          required: ['isPassportHolder', 'isNewPassportIssued', 'passport'],
           dependencies: {
             isNewPassportIssued: {
               oneOf: [
@@ -176,7 +172,7 @@ export const Observation_Mussels_Information = {
                     'journeyDetails',
                     'inspectionDetails',
                     'highRiskAssessment',
-                    'inspectionComments',
+                    'inspectionComments'
                   ]
                 },
                 {
@@ -184,8 +180,8 @@ export const Observation_Mussels_Information = {
                     isNewPassportIssued: {
                       enum: [false]
                     },
-                    inspectionComments: InspectionComments,
-                  },
+                    inspectionComments: InspectionComments
+                  }
                 }
               ]
             }
@@ -209,7 +205,7 @@ export const Observation_Mussels_Information = {
             'journeyDetails',
             'inspectionDetails',
             'highRiskAssessment',
-            'inspectionComments',
+            'inspectionComments'
           ]
         }
       ]

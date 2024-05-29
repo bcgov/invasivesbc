@@ -84,8 +84,8 @@ import {
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
-import { selectActivity } from 'state/reducers/activity';
 import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
+import { selectActivity } from 'state/reducers/activity';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {

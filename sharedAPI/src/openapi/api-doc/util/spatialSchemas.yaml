@@ -3,14 +3,10 @@ info:
   version: 1.0.1
   title: GeoJSON format
   description: >
-    This document defines the GeoJSON format as an OpenAPI.
-    It contains the definitions for 'Feature' object and 'FeatureCollection'
-    objects, as well as the definitions for all 'Geometry' objects.
-    It conforms with the 'RFC-7946' standard from IETF (August 2016 version)
-
-    Kudos to @bubbobne and @idkw whose code helped me not start from scratch
-    https://gist.github.com/bubbobne/fe5f2db65acf039be6a9fd92fc9c7233
-
+    This document defines the GeoJSON format as an OpenAPI. It contains the definitions for 'Feature' object and 'FeatureCollection' objects, as well as the definitions for all 'Geometry' objects. It conforms with the 'RFC-7946' standard from IETF (August 2016 version)
+    
+    Kudos to @bubbobne and @idkw whose code helped me not start from scratch https://gist.github.com/bubbobne/fe5f2db65acf039be6a9fd92fc9c7233
+    
     MW: Thankful to find this: https://gist.githubusercontent.com/zit0un/3ac0575eb0f3aabdc645c3faad47ab4a/raw/8db5e3ab89418def3a15474979e494c92b69592e/GeoJSON-OAS3.yaml
 
 
@@ -78,25 +74,15 @@ paths:
 
 #•••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 components:
-
   #=============================================================================
   schemas:
-
     #---------------------------------------------------------------------------
     'GeoJsonObject':
       description: >
         GeoJSon object
+        
+        The coordinate reference system for all GeoJSON coordinates is a geographic coordinate reference system, using the World Geodetic System 1984 (WGS 84) datum, with longitude and latitude units of decimal degrees. This is equivalent to the coordinate reference system identified by the Open Geospatial Consortium (OGC) URN An OPTIONAL third-position element SHALL be the height in meters above or below the WGS 84 reference ellipsoid. In the absence of elevation values, applications sensitive to height or depth SHOULD interpret positions as being at local ground or sea level.
 
-        The coordinate reference system for all GeoJSON coordinates is a
-        geographic coordinate reference system, using the World Geodetic System
-        1984 (WGS 84) datum, with longitude and latitude units of decimal
-        degrees.
-        This is equivalent to the coordinate reference system identified by the
-        Open Geospatial Consortium (OGC) URN
-        An OPTIONAL third-position element SHALL be the height in meters above
-        or below the WGS 84 reference ellipsoid.
-        In the absence of elevation values, applications sensitive to height or
-        depth SHOULD interpret positions as being at local ground or sea level.
       externalDocs:
         url: 'https://tools.ietf.org/html/rfc7946#section-3'
       type: object
@@ -104,46 +90,8 @@ components:
         'type':
           type: string
           enum:
-          - Feature
-          - FeatureCollection
-          - Point
-          - MultiPoint
-          - LineString
-          - MultiLineString
-          - Polygon
-          - MultiPolygon
-          - GeometryCollection
-        'bbox':
-          description: >
-            A GeoJSON object MAY have a member named "bbox" to include
-            information on the coordinate range for its Geometries, Features, or
-            FeatureCollections. The value of the bbox member MUST be an array of
-            length 2*n where n is the number of dimensions represented in the
-            contained geometries, with all axes of the most southwesterly point
-            followed by all axes of the more northeasterly point. The axes order
-            of a bbox follows the axes order of geometries.
-          type: array
-          items:
-            type: number
-      required:
-      - type
-      discriminator:  
-        propertyName: type
-
-    #---------------------------------------------------------------------------
-    'Geometry':
-      description: >
-        Abstract type for all GeoJSon object except Feature and
-        FeatureCollection
-      externalDocs:
-        url: 'https://tools.ietf.org/html/rfc7946#section-3'
-      allOf:
-      - $ref: '#/components/schemas/GeoJsonObject'
-      - type: object
-        properties:
-          'type':
-            type: string
-            enum:
+            - Feature
+            - FeatureCollection
             - Point
             - MultiPoint
             - LineString
@@ -151,35 +99,68 @@ components:
             - Polygon
             - MultiPolygon
             - GeometryCollection
-        required:
+        'bbox':
+          description: >
+            A GeoJSON object MAY have a member named "bbox" to include information on the coordinate range for its Geometries, Features, or FeatureCollections. The value of the bbox member MUST be an array of length 2*n where n is the number of dimensions represented in the contained geometries, with all axes of the most southwesterly point followed by all axes of the more northeasterly point. The axes order of a bbox follows the axes order of geometries.
+
+          type: array
+          items:
+            type: number
+      required:
         - type
-        discriminator:
-          propertyName: type
+      discriminator:
+        propertyName: type
+
+    #---------------------------------------------------------------------------
+    'Geometry':
+      description: >
+        Abstract type for all GeoJSon object except Feature and FeatureCollection
+
+      externalDocs:
+        url: 'https://tools.ietf.org/html/rfc7946#section-3'
+      allOf:
+        - $ref: '#/components/schemas/GeoJsonObject'
+        - type: object
+          properties:
+            'type':
+              type: string
+              enum:
+                - Point
+                - MultiPoint
+                - LineString
+                - MultiLineString
+                - Polygon
+                - MultiPolygon
+                - GeometryCollection
+          required:
+            - type
+          discriminator:
+            propertyName: type
 
     #---------------------------------------------------------------------------
     'GeometryElement':
       description: >
-        Abstract type for all GeoJSon 'Geometry' object the type of which is not
-        'GeometryCollection'
+        Abstract type for all GeoJSon 'Geometry' object the type of which is not 'GeometryCollection'
+
       externalDocs:
         url: 'https://tools.ietf.org/html/rfc7946#section-3'
       allOf:
-      - $ref: '#/components/schemas/Geometry'
-      - type: object
-        properties:
-          'type':
-            type: string
-            enum:
-            - Point
-            - MultiPoint
-            - LineString
-            - MultiLineString
-            - Polygon
-            - MultiPolygon
-        required:
-        - type
-        discriminator:
-          propertyName: type
+        - $ref: '#/components/schemas/Geometry'
+        - type: object
+          properties:
+            'type':
+              type: string
+              enum:
+                - Point
+                - MultiPoint
+                - LineString
+                - MultiLineString
+                - Polygon
+                - MultiPolygon
+          required:
+            - type
+          discriminator:
+            propertyName: type
 
     #---------------------------------------------------------------------------
     'Feature':
@@ -187,23 +168,23 @@ components:
       externalDocs:
         url: 'https://tools.ietf.org/html/rfc7946#section-3.2'
       allOf:
-      - $ref: '#/components/schemas/GeoJsonObject'
-      - type: object
-        required:
-        - geometry
-        - properties
-        properties:
-          'geometry':
-            allOf:
-            - nullable: true
-            - $ref: '#/components/schemas/Geometry'
-          'properties':
-            type: object
-            nullable: true
-          'id':
-            oneOf:
-            - type: number
-            - type: string
+        - $ref: '#/components/schemas/GeoJsonObject'
+        - type: object
+          required:
+            - geometry
+            - properties
+          properties:
+            'geometry':
+              allOf:
+                - nullable: true
+                - $ref: '#/components/schemas/Geometry'
+            'properties':
+              type: object
+              nullable: true
+            'id':
+              oneOf:
+                - type: number
+                - type: string
 
     #---------------------------------------------------------------------------
     'FeatureCollection':
@@ -211,34 +192,25 @@ components:
       externalDocs:
         url: 'https://tools.ietf.org/html/rfc7946#section-3.3'
       allOf:
-      - $ref: '#/components/schemas/GeoJsonObject'
-      - type: object
-        required:
-        - features
-        properties:
-          'features':
-            type: array
-            items:
-              $ref: '#/components/schemas/Feature'
+        - $ref: '#/components/schemas/GeoJsonObject'
+        - type: object
+          required:
+            - features
+          properties:
+            'features':
+              type: array
+              items:
+                $ref: '#/components/schemas/Feature'
 
     #---------------------------------------------------------------------------
     'Position':
       description: >
         GeoJSon fundamental geometry construct.
+        
+        A position is an array of numbers. There MUST be two or more elements. The first two elements are longitude and latitude, or easting and northing, precisely in that order and using decimal numbers. Altitude or elevation MAY be included as an optional third element.
+        
+        Implementations SHOULD NOT extend positions beyond three elements because the semantics of extra elements are unspecified and ambiguous. Historically, some implementations have used a fourth element to carry a linear referencing measure (sometimes denoted as "M") or a numerical timestamp, but in most situations a parser will not be able to properly interpret these values. The interpretation and meaning of additional elements is beyond the scope of this specification, and additional elements MAY be ignored by parsers.
 
-        A position is an array of numbers. There MUST be two or more elements.
-        The first two elements are longitude and latitude, or easting and
-        northing, precisely in that order and using decimal numbers.
-        Altitude or elevation MAY be included as an optional third element.
-
-        Implementations SHOULD NOT extend positions beyond three elements
-        because the semantics of extra elements are unspecified and ambiguous.
-        Historically, some implementations have used a fourth element to carry
-        a linear referencing measure (sometimes denoted as "M") or a numerical
-        timestamp, but in most situations a parser will not be able to properly
-        interpret these values. The interpretation and meaning of additional
-        elements is beyond the scope of this specification, and additional
-        elements MAY be ignored by parsers.
       externalDocs:
         url: 'https://tools.ietf.org/html/rfc7946#section-3.1.1'
       type: array
@@ -251,6 +223,7 @@ components:
     'LineStringCoordinates':
       description: >
         GeoJSon fundamental geometry construct, array of two or more positions.
+
       externalDocs:
         url: 'https://tools.ietf.org/html/rfc7946#section-3.1.4'
       type: array
@@ -262,16 +235,13 @@ components:
     'LinearRing':
       description: >
         A linear ring is a closed LineString with four or more positions.
+        
+        The first and last positions are equivalent, and they MUST contain identical values; their representation SHOULD also be identical.
+        
+        A linear ring is the boundary of a surface or the boundary of a hole in a surface.
+        
+        A linear ring MUST follow the right-hand rule with respect to the area it bounds, i.e., exterior rings are counterclockwise, and holes are clockwise.
 
-        The first and last positions are equivalent, and they MUST contain
-        identical values; their representation SHOULD also be identical.
-
-        A linear ring is the boundary of a surface or the boundary of a hole in
-        a surface.
-
-        A linear ring MUST follow the right-hand rule with respect to the area
-        it bounds, i.e., exterior rings are counterclockwise, and holes are
-        clockwise.
       externalDocs:
         url: 'https://tools.ietf.org/html/rfc7946#section-3.1.6'
       type: array
@@ -288,8 +258,8 @@ components:
         - $ref: '#/components/schemas/GeometryElement'
         - type: object
           required:
-          - type
-          - coordinates
+            - type
+            - coordinates
           properties:
             'type':
               type: 'string'
@@ -306,7 +276,7 @@ components:
         - $ref: '#/components/schemas/GeometryElement'
         - type: object
           required:
-          - coordinates
+            - coordinates
           properties:
             'coordinates':
               type: array
@@ -322,7 +292,7 @@ components:
         - $ref: '#/components/schemas/GeometryElement'
         - type: object
           required:
-          - coordinates
+            - coordinates
           properties:
             'coordinates':
               $ref: '#/components/schemas/LineStringCoordinates'
@@ -336,7 +306,7 @@ components:
         - $ref: '#/components/schemas/GeometryElement'
         - type: object
           required:
-          - coordinates
+            - coordinates
           properties:
             'coordinates':
               type: array
@@ -352,7 +322,7 @@ components:
         - $ref: '#/components/schemas/GeometryElement'
         - type: object
           required:
-          - coordinates
+            - coordinates
           properties:
             'coordinates':
               type: array
@@ -368,7 +338,7 @@ components:
         - $ref: '#/components/schemas/GeometryElement'
         - type: object
           required:
-          - coordinates
+            - coordinates
           properties:
             'coordinates':
               type: array
@@ -382,18 +352,16 @@ components:
       type: object
       description: >
         GeoJSon geometry collection
+        
+        GeometryCollections composed of a single part or a number of parts of a single type SHOULD be avoided when that single part or a single object of multipart type (MultiPoint, MultiLineString, or MultiPolygon) could be used instead.
 
-        GeometryCollections composed of a single part or a number of parts of a
-        single type SHOULD be avoided when that single part or a single object
-        of multipart type (MultiPoint, MultiLineString, or MultiPolygon) could
-        be used instead.
       externalDocs:
         url: 'https://tools.ietf.org/html/rfc7946#section-3.1.8'
       allOf:
         - $ref: '#/components/schemas/Geometry'
         - type: object
           required:
-          - geometries
+            - geometries
           properties:
             'geometries':
               type: array
@@ -403,7 +371,6 @@ components:
 
   #=============================================================================
   responses:
-
     #---------------------------------------------------------------------------
     'Error400BadRequest':
       description: The JSON is not valid.
@@ -415,7 +382,7 @@ components:
               'status_code':
                 type: integer
                 enum: [400]
-              'message': 
+              'message':
                 type: string
                 enum: ['The JSON is not valid.']
     #---------------------------------------------------------------------------
@@ -429,7 +396,7 @@ components:
               'status_code':
                 type: integer
                 enum: [401]
-              'message': 
+              'message':
                 type: string
                 enum: ['The request requires an user authentication.']
     #---------------------------------------------------------------------------
@@ -443,7 +410,7 @@ components:
               'status_code':
                 type: integer
                 enum: [403]
-              'message': 
+              'message':
                 type: string
                 enum: ['The access is not allowed.']
     #---------------------------------------------------------------------------
@@ -457,13 +424,12 @@ components:
               'status_code':
                 type: integer
                 enum: [404]
-              'message': 
+              'message':
                 type: string
                 enum: ['The resource was not found.']
     #---------------------------------------------------------------------------
     'Error405MethodNotAllowed':
-      description:
-        Request method is not supported for the requested resource.
+      description: Request method is not supported for the requested resource.
       content:
         application/json:
           schema:
@@ -472,13 +438,12 @@ components:
               'status_code':
                 type: integer
                 enum: [405]
-              'message': 
+              'message':
                 type: string
                 enum: ['Request method is not supported for the requested resource.']
     #---------------------------------------------------------------------------
     'Error406NotAcceptable':
-      description:
-        Headers sent in the request are not compatible with the service.
+      description: Headers sent in the request are not compatible with the service.
       content:
         application/json:
           schema:
@@ -487,15 +452,14 @@ components:
               'status_code':
                 type: integer
                 enum: [406]
-              'message': 
+              'message':
                 type: string
                 enum: ['Headers sent in the request are not compatible with the service.']
     #---------------------------------------------------------------------------
     'Error408RequestTimeout':
       description: >
-        The client did not produce a request within the time that the server was
-        prepared to wait. The client may repeat the request without
-        modifications at any later time.
+        The client did not produce a request within the time that the server was prepared to wait. The client may repeat the request without modifications at any later time.
+
       content:
         application/json:
           schema:
@@ -504,14 +468,17 @@ components:
               'status_code':
                 type: integer
                 enum: [408]
-              'message': 
+              'message':
                 type: string
-                enum: ['The client did not produce a request within the time that the server was prepared to wait. The client may repeat the request without modifications at any later time.']
+                enum:
+                  [
+                    'The client did not produce a request within the time that the server was prepared to wait. The client may repeat the request without modifications at any later time.'
+                  ]
     #---------------------------------------------------------------------------
     'Error410Gone':
       description: >
-        The requested resource is no longer available and will not be available
-        again. The resource should be purged from the client system.
+        The requested resource is no longer available and will not be available again. The resource should be purged from the client system.
+
       content:
         application/json:
           schema:
@@ -520,9 +487,12 @@ components:
               'status_code':
                 type: integer
                 enum: [410]
-              'message': 
+              'message':
                 type: string
-                enum: ['The requested resource is no longer available and will not be available again. The resource should be purged from the client system.']
+                enum:
+                  [
+                    'The requested resource is no longer available and will not be available again. The resource should be purged from the client system.'
+                  ]
     #---------------------------------------------------------------------------
     'Error423Locked':
       description: The resource that is being accessed is locked.
@@ -534,7 +504,7 @@ components:
               'status_code':
                 type: integer
                 enum: [423]
-              'message': 
+              'message':
                 type: string
                 enum: ['The resource that is being accessed is locked.']
     #---------------------------------------------------------------------------
@@ -548,7 +518,7 @@ components:
               'status_code':
                 type: integer
                 enum: [429]
-              'message': 
+              'message':
                 type: string
                 enum: ['The user has sent too many requests in a short period.']
     #---------------------------------------------------------------------------
@@ -562,7 +532,7 @@ components:
               'status_code':
                 type: integer
                 enum: [500]
-              'message': 
+              'message':
                 type: string
                 enum: ['An unexpected error occured.']
     #---------------------------------------------------------------------------
@@ -576,13 +546,12 @@ components:
               'status_code':
                 type: integer
                 enum: [503]
-              'message': 
+              'message':
                 type: string
-                enum: ['The server is currently unable to handle the request.']    
+                enum: ['The server is currently unable to handle the request.']
   #=============================================================================
   securitySchemes:
     'UserSecurity':
       type: http
       scheme: basic
-      
 #•••••••••••••••••••••••••••••••••••[ EOF ]••••••••••••••••••••••••••••••••••••#

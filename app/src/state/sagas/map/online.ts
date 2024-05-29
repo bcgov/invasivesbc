@@ -1,6 +1,8 @@
 import { Http } from '@capacitor-community/http';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { call, put, select } from 'redux-saga/effects';
+import moment from 'moment';
+import { AnyAction } from 'redux-saga';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
@@ -15,10 +17,7 @@ import {
   IAPP_TABLE_ROWS_GET_FAILURE,
   IAPP_TABLE_ROWS_GET_SUCCESS
 } from 'state/actions';
-import { selectConfiguration } from 'state/reducers/configuration';
-import { selectRootConfiguration } from '../../reducers/configuration';
-import moment from 'moment';
-import { AnyAction } from 'redux-saga';
+import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
 
 function* refreshExportConfigIfRequired(action?: AnyAction) {
   const config = yield select(selectRootConfiguration);
@@ -46,7 +45,7 @@ function* fetchS3GeoJSON() {
   let activitiesExportURL;
 
   if (config.exportConfig && config.exportConfig.length > 0) {
-    let matchingExportConfig = config.exportConfig.find((e) => e.type === 'activities');
+    const matchingExportConfig = config.exportConfig.find((e) => e.type === 'activities');
     activitiesExportURL = matchingExportConfig.url;
   }
 
@@ -126,7 +125,7 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   });
 
   const rows = networkReturn?.data?.result || [];
-  let featureCollection = {
+  const featureCollection = {
     type: 'FeatureCollection',
     features: rows?.filter((row) => {
       if (row !== undefined && row?.geometry?.coordinates) {

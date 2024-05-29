@@ -7,6 +7,6 @@
   display: block;
 }
 
-div[class*="indicatorContainer"] {
+div[class*='indicatorContainer'] {
   color: black;
 }

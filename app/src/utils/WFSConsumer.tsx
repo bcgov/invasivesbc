@@ -1,11 +1,11 @@
 import '@capacitor-community/http';
-import {Http} from '@capacitor-community/http';
+import { Http } from '@capacitor-community/http';
 import SLDParser from 'geostyler-sld-parser';
 import proj4 from 'proj4';
 import reproject from 'reproject';
 import encode from 'urlencode';
-import {getSimplifiedGeoJSON} from 'hooks/useInvasivesApi';
-import {stringify} from 'wkt';
+import { getSimplifiedGeoJSON } from 'hooks/useInvasivesApi';
+import { stringify } from 'wkt';
 
 const getHTTP = async (url) => {
   // Example of a GET request
@@ -42,7 +42,7 @@ export const buildURLForDataBC = (
   pageSize?: number,
   startIndex?: number
 ) => {
-  let baseURL =
+  const baseURL =
     'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=1.1.0&REQUEST=GetFeature&outputFormat=json&typeName=pub:';
   const paging = '&startindex=' + startIndex + '&count=' + pageSize;
   const projection = '&SRSNAME=EPSG:3005';
@@ -54,7 +54,7 @@ export const buildURLForDataBC = (
 };
 
 const buildStylesURLForDataBC = (layerName: string) => {
-  let baseURL = 'https://openmaps.gov.bc.ca/geo/pub/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&layers=';
+  const baseURL = 'https://openmaps.gov.bc.ca/geo/pub/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&layers=';
   return baseURL + layerName;
 };
 
@@ -73,11 +73,11 @@ export const getStylesDataFromBC: any = async (layerName: string) => {
   /*if (Object.values(IndependentLayers).includes(layerName as any)) {
     return {};
   }*/
-  let stylesURL = buildStylesURLForDataBC(layerName);
-  let resp = await getHTTP(stylesURL);
+  const stylesURL = buildStylesURLForDataBC(layerName);
+  const resp = await getHTTP(stylesURL);
   const sldParser = new SLDParser();
-  let sldString = resp.data;
-  let styles = await sldParser.readStyle(sldString);
+  const sldString = resp.data;
+  const styles = await sldParser.readStyle(sldString);
   return styles;
 };
 
@@ -89,7 +89,7 @@ export const getDataFromDataBC: any = async (
   pageSize?: number,
   startIndex?: number
 ) => {
-  let totalInBox = 0;
+  const totalInBox = 0;
 
   /*if (Object.values(IndependentLayers).includes(layerName as any)) {
     return [];
@@ -99,7 +99,7 @@ export const getDataFromDataBC: any = async (
 
   let resp = await getSimplifiedJSON(encode(URL), '0.02');
 
-  let returnVal = resp;
+  const returnVal = resp;
   // console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {
     return returnVal;
@@ -198,7 +198,7 @@ export function* getDataFromDataBCv2(
   pageSize?: number,
   startIndex?: number
 ) {
-  let totalInBox = 0;
+  const totalInBox = 0;
 
   /*if (Object.values(IndependentLayers).includes(layerName as any)) {
     return [];
@@ -208,7 +208,7 @@ export function* getDataFromDataBCv2(
 
   let resp = yield getSimplifiedGeoJSON(encode(URL), '0.02');
 
-  let returnVal = resp;
+  const returnVal = resp;
   // console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {
     return returnVal;

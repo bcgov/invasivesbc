@@ -1,5 +1,5 @@
-import { OVERLAY_MENU_TOGGLE, SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
 import { createNextState } from '@reduxjs/toolkit';
+import { OVERLAY_MENU_TOGGLE, SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
 
 export enum appModeEnum {
   'Records',
@@ -25,16 +25,16 @@ export default function appMode(state = initialState, action: any) {
         mode: action.payload.mode
       };
     case TOGGLE_PANEL:
-      const panelStateInPayload = action?.payload?.panelOpen !== undefined ? true: false;
+      const panelStateInPayload = action?.payload?.panelOpen !== undefined ? true : false;
       return {
         ...state,
-        panelOpen: panelStateInPayload? action.payload.panelOpen : !state.panelOpen,
+        panelOpen: panelStateInPayload ? action.payload.panelOpen : !state.panelOpen,
         panelFullScreen: action?.payload?.fullScreen ? action.payload.fullScreen : false
       };
     case OVERLAY_MENU_TOGGLE: {
       return {
         ...state,
-        overlay_menu_toggle : !state.overlay_menu_toggle
+        overlay_menu_toggle: !state.overlay_menu_toggle
       };
     }
     case URL_CHANGE:
@@ -42,19 +42,15 @@ export default function appMode(state = initialState, action: any) {
         draftState.url = action?.payload?.url;
         if (['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News'].includes(action.payload.url.split('/')[1])) {
           draftState.panelFullScreen = true;
-        }
-        else
-        {
+        } else {
           draftState.panelFullScreen = false;
         }
-        if(action.payload.url === '/'){
+        if (action.payload.url === '/') {
           draftState.panelOpen = false;
-        }
-        else
-        {
+        } else {
           draftState.panelOpen = true;
         }
-        draftState.overlay_menu_toggle = false
+        draftState.overlay_menu_toggle = false;
       });
       return nextState;
     default:

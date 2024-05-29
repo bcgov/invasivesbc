@@ -24,12 +24,14 @@ export const MapModeToggle = (props) => {
             ? 'Use server to render tiles.  Faster initial page load, slower to update layers.  Slower layer load on zoom and pan.  Better for older machines or devices with less memory.  '
             : 'Download shapes & render tiles in browser.  Slower initial page load, but faster to update layers and see shapes when panning and zooming.  Better for newer machines or devices with more memory.'
         }
-        placement="top-end">
+        placement="top-end"
+      >
         <span>
           <IconButton
             onClick={() => {
               dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
-            }}>
+            }}
+          >
             <SpeedIcon />
           </IconButton>
         </span>

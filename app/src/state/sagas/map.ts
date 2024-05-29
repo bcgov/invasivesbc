@@ -1,11 +1,7 @@
 import { Geolocation } from '@capacitor/geolocation';
 import * as turf from '@turf/turf';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { channel } from 'redux-saga';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
-import { selectAuth } from 'state/reducers/auth';
-import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
-import { selectUserSettings } from 'state/reducers/userSettings';
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
@@ -95,6 +91,10 @@ import {
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_IAPP_TABLE_ROWS_GET_ONLINE
 } from './map/online';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
+import { selectAuth } from 'state/reducers/auth';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -225,32 +225,32 @@ function* handle_MAP_TOGGLE_TRACKING(action) {
 }
 
 function* handle_WHATS_HERE_FEATURE(action) {
-  var mapState = yield select(selectMap);
+  let mapState = yield select(selectMap);
 
-  var layersLoading = true;
+  let layersLoading = true;
   while (layersLoading) {
     mapState = yield select(selectMap);
 
-    var toggledOnActivityLayers = mapState.layers.filter((layer) => {
+    const toggledOnActivityLayers = mapState.layers.filter((layer) => {
       return layer.layerState.mapToggle && layer.type === 'Activity';
     });
 
-    var activityLayersLoading = toggledOnActivityLayers.filter((layer) => {
+    const activityLayersLoading = toggledOnActivityLayers.filter((layer) => {
       return layer.loading;
     });
 
-    var toggledOnIAPPLayers = mapState.layers.filter((layer) => {
+    const toggledOnIAPPLayers = mapState.layers.filter((layer) => {
       return layer.layerState.mapToggle && layer.type === 'IAPP';
     });
 
-    var IAPPLayersLoading = toggledOnIAPPLayers.filter((layer) => {
+    const IAPPLayersLoading = toggledOnIAPPLayers.filter((layer) => {
       return layer.loading;
     });
 
     if (activityLayersLoading.length === 0 && IAPPLayersLoading.length === 0) {
       layersLoading = false;
     } else {
-      var actionsToTake = [];
+      const actionsToTake = [];
       if (activityLayersLoading.length > 0) {
         actionsToTake.push(
           activityLayersLoading.map((layer) => {
@@ -607,13 +607,13 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   const set = userSettings?.recordSets?.[action.payload.id];
   const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
   try {
-    let rows = [];
+    const rows = [];
     let networkReturn;
     let conditionallyUnnestedURL;
     if (set.recordSetType === 'IAPP') {
       const currentState = yield select((state) => state.UserSettings);
 
-      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
+      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
@@ -627,7 +627,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     } else {
       const currentState = yield select((state) => state.UserSettings);
 
-      let filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
+      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
       //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
@@ -890,7 +890,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   // combined:
   const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
 
-  let actionsToPut = [];
+  const actionsToPut = [];
   allUninitializedLayers.map((layer) => {
     if (mapMode === 'VECTOR_ENDPOINT') {
       actionsToPut.push({

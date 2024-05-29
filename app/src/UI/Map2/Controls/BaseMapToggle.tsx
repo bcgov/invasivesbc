@@ -21,12 +21,14 @@ export const BaseMapToggle = (props) => {
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
         title={baseMapToggle ? 'Imagery Map' : 'Topographical Map'}
-        placement="top-end">
+        placement="top-end"
+      >
         <span>
           <IconButton
             onClick={() => {
               dispatch({ type: MAP_TOGGLE_BASEMAP });
-            }}>
+            }}
+          >
             {baseMapToggle ? 'SAT' : 'TOPO'}
           </IconButton>
         </span>

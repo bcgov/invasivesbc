@@ -121,7 +121,8 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             value={newRecordDialogState.recordCategory}
             IconComponent={KeyboardArrowDownIcon}
             onChange={handleRecordCategoryChange}
-            label="Select Form Type">
+            label="Select Form Type"
+          >
             {activityCategorySelectOptions.map((option) => (
               <MenuItem key={Math.random()} value={option}>
                 {option}
@@ -137,7 +138,8 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             value={newRecordDialogState.recordType}
             onChange={handleRecordTypeChange}
             IconComponent={KeyboardArrowDownIcon}
-            label="Select Form Type">
+            label="Select Form Type"
+          >
             {activityTypeSelectOptions.map((option) => (
               <MenuItem key={Math.random()} value={option}>
                 {option}
@@ -152,7 +154,8 @@ const NewRecordDialog = (props: INewRecordDialog) => {
             value={newRecordDialogState.recordSubtype}
             onChange={handleRecordSubtypeChange}
             IconComponent={KeyboardArrowDownIcon}
-            label="Select Form Type">
+            label="Select Form Type"
+          >
             {activitySubTypeSelectOptions.map((option) => (
               <MenuItem key={Math.random()} value={option}>
                 {ActivitySubtypeShortLabels[option]}
@@ -166,14 +169,16 @@ const NewRecordDialog = (props: INewRecordDialog) => {
         <Button
           onClick={() => {
             dispatch({ type: CLOSE_NEW_RECORD_MENU });
-          }}>
+          }}
+        >
           Cancel
         </Button>
         <Button
           variant="contained"
           aria-label="Create Record"
           disabled={newRecordDialogState.recordSubtype === ''}
-          onClick={insert_record}>
+          onClick={insert_record}
+        >
           New Record
         </Button>
       </DialogActions>

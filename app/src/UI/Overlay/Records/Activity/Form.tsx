@@ -73,7 +73,7 @@ export const ActivityForm = (props) => {
       return; // allow for cancel
     }
 
-    let result = JSON.parse(JSON.stringify(calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing))));
+    const result = JSON.parse(JSON.stringify(calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing))));
     const geo: any = {
       type: 'Feature',
       geometry: {
@@ -161,7 +161,8 @@ export const ActivityForm = (props) => {
       <Button
         onClick={manualUTMEntry}
         variant="outlined"
-        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>
+        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}
+      >
         Click to enter UTM manually
       </Button>
       <FormContainer />

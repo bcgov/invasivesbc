@@ -34,14 +34,14 @@ const Activity_Observation_Mussels = {
     Observation_Mussels_Information: {
       ...BaseUISchemaComponents.activity_subtype_data_information_objects.Observation_Mussels_Information
     }
-  },
+  }
 };
 
 const Activity_Officer_Shift = {
   activity_subtype_data: {
-    ...BaseUISchemaComponents.activity_subtype_data_information_objects.Mussels_Officer_Shift,
+    ...BaseUISchemaComponents.activity_subtype_data_information_objects.Mussels_Officer_Shift
   }
-}
+};
 
 const Activity_Observation_PlantAquatic = {
   activity_data: {

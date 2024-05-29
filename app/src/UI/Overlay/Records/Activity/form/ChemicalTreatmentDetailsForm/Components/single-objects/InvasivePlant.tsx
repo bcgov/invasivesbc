@@ -30,7 +30,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
   );
 
   //creating valueLabels to to get the lable for heading
-  let optionValueLabels = {};
+  const optionValueLabels = {};
   if (formDetails.activitySubType.toLowerCase().includes('aquatic')) {
     Object.values(businessCodes['invasive_plant_aquatic_code'] as any[]).forEach((option) => {
       optionValueLabels[option.value] = option.label || option.title || option.value;
@@ -60,18 +60,17 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
 
   return (
     <div className={'invasive_plant'}>
-
-      <Tooltip classes={{ tooltip: 'toolTip' }}
-      
-      
+      <Tooltip
+        classes={{ tooltip: 'toolTip' }}
         style={{
           float: 'right',
           marginBottom: 5,
           color: 'rgb(170, 170, 170)',
           display: invasivePlantsArr.length < 2 ? 'none' : 'block'
         }}
-      
-      placement="left" title="Target invasive plant species at this location">
+        placement="left"
+        title="Target invasive plant species at this location"
+      >
         <HelpOutlineIcon />
       </Tooltip>
       <CustomAutoComplete
@@ -82,7 +81,7 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         }
         disabled={formDetails.disabled}
         className={'inputField'}
-       // classes={classes}
+        // classes={classes}
         actualValue={species.invasive_plant_code}
         id={'invasive_plant_code'}
         label={'Invasive Plant'}
@@ -97,23 +96,24 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         parentState={{ species, setCurrentInvasivePlant }}
       />
 
-        <div className={'invasive_plant_tooltip'}>
-      <Tooltip
-        style={{
-          float: 'right',
-          marginBottom: 5,
-          color: 'rgb(170, 170, 170)',
-          display: invasivePlantsArr.length < 2 ? 'none' : 'block'
-        }}
-        placement="left"
-        title="Percent of area covered by this species">
-        <HelpOutlineIcon />
-      </Tooltip>
+      <div className={'invasive_plant_tooltip'}>
+        <Tooltip
+          style={{
+            float: 'right',
+            marginBottom: 5,
+            color: 'rgb(170, 170, 170)',
+            display: invasivePlantsArr.length < 2 ? 'none' : 'block'
+          }}
+          placement="left"
+          title="Percent of area covered by this species"
+        >
+          <HelpOutlineIcon />
+        </Tooltip>
       </div>
       <TextField
         fullWidth
         disabled={formDetails.disabled}
-      //  className={classes.inputField}
+        //  className={classes.inputField}
         style={{ display: invasivePlantsArr.length < 2 ? 'none' : 'flex' }}
         type="number"
         value={species.percent_area_covered}
@@ -130,40 +130,40 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         defaultValue={undefined}
       />
 
-<div 
-        className={'removeInvasivePlantButton'}>
-      <Button
-        disabled={formDetails.disabled}
-        onClick={() => {
-          setFormDetails((prevDetails) => {
-            let newSpeciesArr = JSON.parse(JSON.stringify([...prevDetails.form_data.invasive_plants]))
-            console.dir(newSpeciesArr)
-            newSpeciesArr.splice(index, 1);
-            console.dir(newSpeciesArr)
+      <div className={'removeInvasivePlantButton'}>
+        <Button
+          disabled={formDetails.disabled}
+          onClick={() => {
+            setFormDetails((prevDetails) => {
+              const newSpeciesArr = JSON.parse(JSON.stringify([...prevDetails.form_data.invasive_plants]));
+              console.dir(newSpeciesArr);
+              newSpeciesArr.splice(index, 1);
+              console.dir(newSpeciesArr);
 
-            newSpeciesArr.forEach((item, i) => {
-              item.index = i;
-            });
+              newSpeciesArr.forEach((item, i) => {
+                item.index = i;
+              });
 
-            if (newSpeciesArr.length === 1) {
-              newSpeciesArr[0].percent_area_covered = 100;
-            }
-
-            return {
-              ...prevDetails,
-              form_data: {
-                ...prevDetails.form_data,
-                invasive_plants: newSpeciesArr
+              if (newSpeciesArr.length === 1) {
+                newSpeciesArr[0].percent_area_covered = 100;
               }
-            };
-          });
-        }}
-        variant="contained"
-       // className={classes.speciesRemoveButton}
-        startIcon={<DeleteIcon />}
-        color="secondary">
-        Remove Invasive Plant
-      </Button>
+
+              return {
+                ...prevDetails,
+                form_data: {
+                  ...prevDetails.form_data,
+                  invasive_plants: newSpeciesArr
+                }
+              };
+            });
+          }}
+          variant="contained"
+          // className={classes.speciesRemoveButton}
+          startIcon={<DeleteIcon />}
+          color="secondary"
+        >
+          Remove Invasive Plant
+        </Button>
       </div>
     </div>
   );

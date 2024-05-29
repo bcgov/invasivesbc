@@ -1,16 +1,21 @@
-import { EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS, EMAIL_SETTINGS_RETRIEVE_REQUEST, EMAIL_SETTINGS_UPDATE_FAILURE, EMAIL_SETTINGS_UPDATE_SUCCESS } from "state/actions";
+import {
+  EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
+  EMAIL_SETTINGS_RETRIEVE_REQUEST,
+  EMAIL_SETTINGS_UPDATE_FAILURE,
+  EMAIL_SETTINGS_UPDATE_SUCCESS
+} from 'state/actions';
 
 interface EmailSettings {
-  message: string,
+  message: string;
   emailSettings: {
-    enabled: boolean,
-    id: number,
-    authenticationURL: string,
-    emailServiceURL: string,
-    clientId: string,
-    clientSecret: string,
-  }
-};
+    enabled: boolean;
+    id: number;
+    authenticationURL: string;
+    emailServiceURL: string;
+    clientId: string;
+    clientSecret: string;
+  };
+}
 
 function createEmailSettingsReducer() {
   const initialState: EmailSettings = {
@@ -21,7 +26,7 @@ function createEmailSettingsReducer() {
       authenticationURL: null,
       emailServiceURL: null,
       clientId: null,
-      clientSecret: null,
+      clientSecret: null
     }
   };
 
@@ -33,7 +38,7 @@ function createEmailSettingsReducer() {
           working: true,
           error: false,
           message: null,
-          emailSettings: null,
+          emailSettings: null
         };
       case EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS:
       case EMAIL_SETTINGS_UPDATE_SUCCESS:
@@ -41,14 +46,14 @@ function createEmailSettingsReducer() {
           ...state,
           working: false,
           error: false,
-          ...action.payload,
+          ...action.payload
         };
       case EMAIL_SETTINGS_UPDATE_FAILURE:
         return {
           ...state,
           working: false,
           error: true,
-          ...action.payload,
+          ...action.payload
         };
       default:
         return state;

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { exportStore as store } from '../../../main';
 import { waitFor } from '@testing-library/react';
+import { IAPPS3Repsonse_Mock } from 'sharedAPI/src/openapi/api-doc/util/mocks/mock_handlers';
+import { exportStore as store } from '../../../main';
 import {
   AUTH_INITIALIZE_COMPLETE,
   IAPP_GEOJSON_GET_SUCCESS,
@@ -11,7 +12,6 @@ import {
   RECORDSET_UPDATE_FILTER
 } from 'state/actions';
 import { server, runServer, overRideRunningServer, customServer } from 'mocks/server';
-import { IAPPS3Repsonse_Mock } from 'sharedAPI/src/openapi/api-doc/util/mocks/mock_handlers';
 
 describe('Can load IAPP layer regardless of ID call or GeoJSON call happening first', function () {
   runServer(server);

@@ -1,13 +1,19 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../main';
 import { waitFor } from '@testing-library/react';
-import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, MAP_TOGGLE_GEOJSON_CACHE, RECORDSET_UPDATE_FILTER, URL_CHANGE } from 'state/actions';
+import {
+  AUTH_INITIALIZE_COMPLETE,
+  MAP_TOGGLE_BASEMAP,
+  MAP_TOGGLE_GEOJSON_CACHE,
+  RECORDSET_UPDATE_FILTER,
+  URL_CHANGE
+} from 'state/actions';
 import { server } from 'mocks/server';
 
 describe('Can trigger refetch for both table and data on filter change', function () {
-  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }))
-  afterAll(() => server.close())
-  afterEach(() => server.resetHandlers())
+  beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+  afterAll(() => server.close());
+  afterEach(() => server.resetHandlers());
 
   beforeAll(async () => {
     localStorage.clear();
@@ -65,5 +71,5 @@ describe('Can trigger refetch for both table and data on filter change', functio
       expect(store.getState()?.Map?.layers[layerIndex].geoJSON).toBeDefined();
       expect(store.getState()?.Map?.layers[layerIndex].IDList).toBeDefined();
     });
-  })
+  });
 });

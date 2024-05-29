@@ -22,12 +22,14 @@ export const NewRecord = (props) => {
           onMouseEnter={() => setShow(true)}
           onMouseLeave={() => setShow(false)}
           title={`New Record`}
-          placement="top-end">
+          placement="top-end"
+        >
           <span>
             <IconButton
               onClick={() => {
                 dispatch({ type: OPEN_NEW_RECORD_MENU });
-              }}>
+              }}
+            >
               <FiberNewIcon />
             </IconButton>
           </span>

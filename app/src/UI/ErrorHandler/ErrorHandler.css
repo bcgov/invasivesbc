@@ -1,5 +1,4 @@
 div.connectivityError {
-
   font-size: 1.5rem;
 
   margin: 4rem 2em;
@@ -25,5 +24,4 @@ div.errorHandler .detail {
   overflow-y: scroll;
 
   white-space: pre-wrap;
-
 }
