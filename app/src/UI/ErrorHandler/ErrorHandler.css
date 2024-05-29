@@ -1,20 +1,17 @@
 div.connectivityError {
   font-size: 1.5rem;
-
   margin: 4rem 2em;
 }
 
 div.errorHandler {
-  background-color: white;
+  background-color: #fff;
   font-size: 1.5rem;
-
   margin: 4rem 2em;
 }
 
 div.errorHandler .detail {
   text-align: left;
   font-family: 'Courier New', monospace;
-
   border: 1px solid #bbb;
   background: #ddd;
   border-radius: 8px;
@@ -22,6 +19,5 @@ div.errorHandler .detail {
   box-shadow: #444 6px 6px;
   max-height: 70vh;
   overflow-y: scroll;
-
   white-space: pre-wrap;
 }

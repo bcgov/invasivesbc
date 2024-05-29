@@ -9,6 +9,7 @@
     "url": "https://github.com/bcgov/invasivesbc.git"
   },
   "scripts": {
+    "pre-commit": "lint-staged",
     "dev": "nodemon --exec 'tsx' src/server --watch ../sharedAPI --watch .",
     "start": "tsx src/server",
     "export-map": "ts-node src/map-exporter",
@@ -107,6 +108,7 @@
     "eslint-plugin-prettier": "~5.1.3",
     "factory-girl": "~5.0.4",
     "geojson-random": "^0.5.0",
+    "lint-staged": "^15.2.5",
     "mocha": "~10.4.0",
     "nock": "~13.5.4",
     "nodemon": "~3.0.3",
