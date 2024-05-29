@@ -3,14 +3,14 @@
   padding: 0;
   margin: 0;
   padding-bottom: 1px;
+
   a {
     color: white !important;
     text-decoration: none;
   }
+
   .current_batch_link {
-    border-bottom-color: #fcba19;
-    border-bottom-width: 4px;
-    border-bottom-style: solid;
+    border-bottom: 4px solid #fcba19;
   }
 }
 
@@ -39,7 +39,7 @@ table.template-preview {
 
   tbody {
     tr:nth-child(2n) {
-      background: #eeeeee;
+      background: #eee;
     }
 
     tr:hover {
@@ -82,7 +82,6 @@ code {
 table.code-reference {
   width: 100%;
   border-collapse: collapse;
-
   font-size: 70%;
   max-height: 10rem;
   overflow-y: scroll;
@@ -143,7 +142,7 @@ table.batchAlternateLayout {
         span.value {
           font-weight: bold;
 
-          &.empty:after {
+          &.empty::after {
             font-weight: normal;
             font-style: italic;
             content: '~';
@@ -156,12 +155,12 @@ table.batchAlternateLayout {
           justify-content: space-between;
 
           span.dataType {
-            color: #555555;
+            color: #555;
             font-size: 80%;
           }
 
           span.spreadsheetColumn {
-            color: #333333;
+            color: #333;
             font-size: 80%;
           }
         }
@@ -184,6 +183,7 @@ table.batchAlternateLayout {
       }
     }
   }
+
   tr > th:first-child,
   tr > td:first-child {
     position: sticky;
@@ -202,6 +202,7 @@ table.batchDarkLayout {
       }
     }
   }
+
   tbody {
     tr {
       &:nth-child(even) {
@@ -209,6 +210,7 @@ table.batchDarkLayout {
       }
     }
   }
+
   tr > th:first-child,
   tr > td:first-child {
     background: #1b1b1b;
@@ -235,7 +237,7 @@ table.batchValidation {
       border-top: 1px solid darkblue;
 
       &:hover {
-        background-color: #ccccff;
+        background-color: #ccf;
       }
 
       td {
@@ -249,6 +251,7 @@ table.batchValidation {
 
 table.batchList {
   width: 80%;
+
   thead {
     tr {
       th {
@@ -260,9 +263,6 @@ table.batchList {
 
   tbody {
     tr {
-      // &:nth-child(odd) {
-      //   background-color: #dddddd;
-      // }
       td {
         padding: 8px;
       }
@@ -290,6 +290,7 @@ table.batchDarkList {
 
 table.batch-details {
   width: 70%;
+
   tr {
     td:first-child {
       width: 40%;

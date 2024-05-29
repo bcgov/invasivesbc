@@ -22,22 +22,22 @@
 
 .records_set_left_hand_items {
   height: 100%;
-
   width: 25%;
   display: flex;
   flex-direction: row;
   justify-content: left;
 }
+
 .records_set_name {
   height: 100%;
   font-size: small;
   overflow-y: hidden;
-  /*  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;*/
+
+  /*  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000; */
 }
 
 .records_set_name_edit {
   padding-left: 5px;
-
   height: 50px;
 }
 
@@ -47,9 +47,9 @@
   width: 75%;
   flex-direction: row;
   justify-content: right;
-  overflow-x: hidden;
-  overflow-y: hidden;
+  overflow: hidden hidden;
 }
+
 .records_set_layer_colour {
 }
 
