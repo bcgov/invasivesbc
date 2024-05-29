@@ -21,6 +21,7 @@ import {
 import {
   ACTIVITY_ADD_PHOTO_FAILURE,
   ACTIVITY_ADD_PHOTO_SUCCESS,
+  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_COPY_FAILURE,
   ACTIVITY_COPY_SUCCESS,
   ACTIVITY_CREATE_FAILURE,
@@ -678,6 +679,34 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
         }
       });
     }
+
+    const authState = yield select(selectAuth);
+    const userName = authState.username; 
+    const created_by = action.payload.activity.created_by;
+    const notMine = userName !== created_by;
+    const accessRoles = authState.accessRoles;
+
+
+    let isViewing = false;
+    const notAdmin =
+      accessRoles?.filter((role) => {
+        return [1, 18].includes(role.role_id);
+      }).length === 0;
+    if (notAdmin && notMine) {
+      isViewing = true;
+    } else if (!notAdmin && notMine) {
+      isViewing = true;
+    } else {
+      isViewing = false;
+    }
+
+    yield put({
+      type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
+      payload: {
+        isViewing: isViewing
+      }
+    });
+
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });

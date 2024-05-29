@@ -1,6 +1,8 @@
 import { all, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   ACTIVITY_ADD_PHOTO_REQUEST,
+  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
+  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
   ACTIVITY_COPY_REQUEST,
   ACTIVITY_CREATE_NETWORK,
@@ -86,6 +88,8 @@ import {
 } from './activity/online';
 import { selectActivity } from 'state/reducers/activity';
 import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -227,9 +231,32 @@ function* handle_ACTIVITY_DELETE_FAILURE(action) {
   });
 }
 
+
+function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
+  const isViewing = action.payload.isViewing;
+  const activityState = yield select(selectActivity);
+  const  activity_subtype = activityState.ActivityPage.activity.activity_subtype; 
+  const uiSchema = RootUISchemas[activity_subtype];
+
+  let apiSpec;
+  const userSettings = yield select(selectUserSettings);
+  if(isViewing) {
+     apiSpec = userSettings.apiDocsWithViewOptions
+  }
+  else
+  {
+    apiSpec = userSettings.apiDocsWithEditOptions
+  }
+  const components = apiSpec.components;
+  const subtypeSchema = components?.schemas?.[activity_subtype];
+
+  yield put({ type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS, payload: { schema: subtypeSchema, uiSchema: uiSchema } });
+}
+
 function* activityPageSaga() {
   yield all([
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
+    takeEvery(ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(ACTIVITY_GET_REQUEST, handle_ACTIVITY_GET_REQUEST),
     takeEvery(ACTIVITY_COPY_REQUEST, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(ACTIVITY_PASTE_REQUEST, handle_ACTIVITY_PASTE_REQUEST),
