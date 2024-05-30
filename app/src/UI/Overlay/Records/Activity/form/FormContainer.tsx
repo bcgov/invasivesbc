@@ -64,6 +64,9 @@ const FormContainer: React.FC<any> = (props) => {
 
   const dispatch = useDispatch();
 
+  const activitySchema = useSelector((state: any) => state.ActivityPage.schema);
+  const activityUISchema = useSelector((state:any) => state.ActivityPage.uiSchema);
+
   const debouncedFormChange = useCallback(
     debounce((event, ref, lastField, callbackFun) => {
       dispatch({
@@ -165,6 +168,7 @@ const FormContainer: React.FC<any> = (props) => {
     );
   };
 
+  /*
   useEffect(() => {
     const getApiSpec = async () => {
       const subtype = activity_subtype;
@@ -252,6 +256,7 @@ const FormContainer: React.FC<any> = (props) => {
     JSON.stringify(MOBILE),
     JSON.stringify(suggestedTreatmentIDS)
   ]);
+  */
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
@@ -276,7 +281,8 @@ const FormContainer: React.FC<any> = (props) => {
   //   };
   // }
   //
-  if (!schemas.schema || !schemas.uiSchema) {
+  //if (!schemas.schema || !schemas.uiSchema) {
+  if (!activitySchema|| !activityUISchema) {
     return <CircularProgress />;
   } else {
     return (
@@ -300,8 +306,10 @@ const FormContainer: React.FC<any> = (props) => {
                 key={activity_ID + pasteCount}
                 disabled={isDisabled}
                 formData={formDataState || null}
-                schema={schemas.schema}
-                uiSchema={schemas.uiSchema}
+                //schema={schemas.schema}
+                //uiSchema={schemas.uiSchema}
+                schema={activitySchema}
+                uiSchema={activityUISchema}
                 liveValidate={true}
                 customValidate={customValidators()}
                 validator={validator}
@@ -344,7 +352,8 @@ const FormContainer: React.FC<any> = (props) => {
                     }
                   }}
                   form_data={formDataState}
-                  schema={schemas.schema}
+                  //schema={schemas.schema}
+                  schema={activitySchema}
                 />
               )}
             </>

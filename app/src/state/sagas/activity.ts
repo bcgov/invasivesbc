@@ -235,17 +235,18 @@ function* handle_ACTIVITY_DELETE_FAILURE(action) {
 function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   const isViewing = action.payload.isViewing;
   const activityState = yield select(selectActivity);
-  const  activity_subtype = activityState.ActivityPage.activity.activity_subtype; 
+  const  activity_subtype = activityState?.activity?.activity_subtype; 
   const uiSchema = RootUISchemas[activity_subtype];
 
   let apiSpec;
   const userSettings = yield select(selectUserSettings);
+  console.dir(userSettings)
   if(isViewing) {
      apiSpec = userSettings.apiDocsWithViewOptions
   }
   else
   {
-    apiSpec = userSettings.apiDocsWithEditOptions
+    apiSpec = userSettings.apiDocsWithSelectOptions
   }
   const components = apiSpec.components;
   const subtypeSchema = components?.schemas?.[activity_subtype];
