@@ -4,7 +4,8 @@ import {
   WATER_LEVEL_MANAGEMENT_CODES,
   WIND_DIRECTION_CODES,
   WATERBODY_TYPE_CODES,
-  SUBSTRATE_TYPE_CODES
+  SUBSTRATE_TYPE_CODES,
+  YES_NO_CODES
 } from './hard-coded-codes';
 
 export const BasicInformation = [
@@ -278,7 +279,7 @@ export const WeatherInformation = [
     .build(),
   new TemplateColumnBuilder(
     'Weather - Wind Direction',
-    'numeric',
+    'codeReference',
     'form_data.activity_subtype_data.Weather_Conditions.wind_direction_code'
   )
     .hardcodedCodes(WIND_DIRECTION_CODES)
@@ -488,9 +489,12 @@ export const WaterQualityInformation = [
 export const PhenologyInformation = [
   new TemplateColumnBuilder(
     'Phenology - Details Recorded?',
-    'boolean',
+    'codeReference',
     'form_data.activity_subtype_data.Target_Plant_Phenology.phenology_details_recorded'
-  ).build(),
+  )
+    .isRequired()
+    .hardcodedCodes(YES_NO_CODES)
+    .build(),
   new TemplateColumnBuilder(
     'Phenology - Target Height',
     'numeric',
@@ -549,22 +553,66 @@ export const PhenologyInformation = [
     .build()
 ];
 
-export const PhenologySumValidator = (row) => {
+export const PhenologySumValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = [
+    'Phenology - Bolts',
+    'Phenology - Rosettes',
+    'Phenology - Flowering',
+    'Phenology - Seedlings',
+    'Phenology - Senescent',
+    'Phenology - Seeds Forming',
+    'Phenology - Winter Dormant'
+  ];
   const rowData = row.data;
-  if (rowData?.['Phenology - Details Recorded?']?.parsedValue) {
-    return SummingValidator(
-      [
-        'Phenology - Rosettes',
-        'Phenology - Flowering',
-        'Phenology - Seedlings',
-        'Phenology - Senescent',
-        'Phenology - Seeds Forming',
-        'Phenology - Winter Dormant'
-      ],
-      100,
-      'When phenology details are recorded, % values must sum to 100'
-    )(row);
+  const detailsRecorded = rowData?.['Phenology - Details Recorded?']?.parsedValue;
+  let sum = 0;
+  const validationMessages = [];
+
+  if (detailsRecorded === 'Yes') {
+    for (const f of fields) {
+      if (rowData?.[f]?.parsedValue !== null && !isNaN(rowData?.[f]?.parsedValue)) {
+        sum += rowData?.[f]?.parsedValue;
+      }
+    }
+    if (sum !== 100) {
+      valid = false;
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Sum must equal 100',
+        messageDetail: `'Actual sum: ${sum} != 100`
+      });
+    } else {
+      valid = true;
+    }
   }
+  if (detailsRecorded === 'No') {
+    const targetHeight = rowData?.['Phenology - Target Height']?.parsedValue;
+    let allFieldsNull = true;
+
+    for (const f of [...fields, targetHeight]) {
+      if (rowData?.[f]?.parsedValue) {
+        valid = false;
+        validationMessages.push({
+          severity: 'error',
+          messageTitle: 'Not required',
+          messageDetail: `Phenology details must be blank when Phenology - Details Recorded? is 'No'`
+        });
+        allFieldsNull = false;
+        break;
+      }
+    }
+
+    if (allFieldsNull) {
+      valid = true;
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: detailsRecorded === 'No' ? [...fields, 'Phenology - Target Height'] : fields
+  };
 };
 
 export const PositiveObservationPlantValidator = (row): RowValidationResult => {
@@ -803,6 +851,177 @@ export const ApplicationMethodType = (row): RowValidationResult => {
     valid,
     validationMessages,
     appliesToFields: fields
+  };
+};
+
+export const BioAgentValidator = (row): RowValidationResult => {
+  let valid = true;
+  const rowData = row.data;
+  const biocontrolPresent = rowData['Monitoring - Biocontrol Present']?.parsedValue;
+  const validationMessages = [];
+  let appliesToFields = [];
+  let actualFields = [];
+  let estimatedFields = [];
+
+  if (rowData['Monitoring - Actual - Agent Stage']) {
+    actualFields = [
+      'Monitoring - Actual - Agent Stage',
+      'Monitoring - Actual - Quantity',
+      'Monitoring - Actual - Plant Position',
+      'Monitoring - Actual - Agent Location'
+    ];
+
+    estimatedFields = [
+      'Monitoring - Estimated - Agent Stage',
+      'Monitoring - Estimated - Quantity',
+      'Monitoring - Estimated - Plant Position',
+      'Monitoring - Estimated - Agent Location'
+    ];
+  }
+
+  if (rowData['Release - Actual - Agent Stage']) {
+    actualFields = ['Release - Actual - Agent Stage', 'Release - Actual - Quantity'];
+    estimatedFields = ['Release - Estimated - Agent Stage', 'Release - Estimated - Quantity'];
+  }
+
+  if (rowData['Collection - Actual - Agent Stage']) {
+    actualFields = ['Collection - Actual - Agent Stage', 'Collection - Actual - Quantity'];
+    estimatedFields = ['Collection - Estimated - Agent Stage', 'Collection - Estimated - Quantity'];
+  }
+
+  const allFieldsHaveData = (fields) => fields.every((field) => rowData[field]?.parsedValue);
+
+  const anyFieldHasData = (fields) => fields.some((field) => rowData[field]?.parsedValue);
+
+  const missingFields = (fields) => fields.filter((field) => !rowData[field]?.parsedValue);
+
+  const filledFields = (fields) => fields.filter((field) => rowData[field]?.parsedValue);
+
+  if (anyFieldHasData(actualFields) && (biocontrolPresent === true || !rowData['Monitoring - Biocontrol Present'])) {
+    if (!allFieldsHaveData(actualFields)) {
+      valid = false;
+      const missingActualFields = missingFields(actualFields);
+      appliesToFields.push(...missingActualFields);
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Field missing data',
+        messageDetail: `If any Actual bioagent field has data then all Actual bioagent fields must have data.`
+      });
+    }
+  }
+
+  if (anyFieldHasData(estimatedFields) && (biocontrolPresent === true || !rowData['Monitoring - Biocontrol Present'])) {
+    if (!allFieldsHaveData(estimatedFields)) {
+      valid = false;
+      const missingEstimatedFields = missingFields(estimatedFields);
+      appliesToFields.push(...missingEstimatedFields);
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Field missing data',
+        messageDetail: `If any Estimated bioagent field has data then all Estimated bioagent fields must have data.`
+      });
+    }
+  }
+
+  if (
+    !anyFieldHasData(actualFields) &&
+    !anyFieldHasData(estimatedFields) &&
+    (!rowData['Monitoring - Biocontrol Present'] || biocontrolPresent === true)
+  ) {
+    valid = false;
+    appliesToFields.push(...actualFields, ...estimatedFields);
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Fields missing data',
+      messageDetail: `Either Actual or Estimated bioagent info must be entered.`
+    });
+  }
+
+  if (
+    allFieldsHaveData(actualFields) &&
+    allFieldsHaveData(estimatedFields) &&
+    (!rowData['Monitoring - Biocontrol Present'] || biocontrolPresent === true)
+  ) {
+    valid = false;
+    const filledActualFields = filledFields(actualFields);
+    const filledEstimatedFields = filledFields(estimatedFields);
+    appliesToFields.push(...filledActualFields, ...filledEstimatedFields);
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Conflicting data',
+      messageDetail: `Only 1 of Actual or Estimated bioagent info must be entered.`
+    });
+  }
+
+  if (
+    (anyFieldHasData(actualFields) && biocontrolPresent === false) ||
+    (anyFieldHasData(estimatedFields) && biocontrolPresent === false)
+  ) {
+    valid = false;
+    const filledActualFields = filledFields(actualFields);
+    const filledEstimatedFields = filledFields(estimatedFields);
+    appliesToFields.push(...filledActualFields, ...filledEstimatedFields);
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Conflicting data',
+      messageDetail: `If Biocontrol Present is false Actual and Estimated bioagent info fields must be blank.`
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields
+  };
+};
+
+export const SpreadResultsValidator = (row): RowValidationResult => {
+  let valid = true;
+  const rowData = row.data;
+  const fields = [
+    'Monitoring - Results - Spread - Plant Attack',
+    'Monitoring - Results - Spread - Agent Density',
+    'Monitoring - Results - Spread - Max Spread Aspect',
+    'Monitoring - Results - Spread - Max Spread Distance'
+  ];
+  const spreadDetailsRecorded = rowData['Monitoring - Results - Spread - Recorded?']?.parsedValue;
+  const validationMessages = [];
+  let appliesToFields = [];
+
+  const allFieldsHaveData = (fields) => fields.every((field) => rowData[field]?.parsedValue);
+
+  const anyFieldHasData = (fields) => fields.some((field) => rowData[field]?.parsedValue);
+
+  const missingFields = (fields) => fields.filter((field) => !rowData[field]?.parsedValue);
+
+  const filledFields = (fields) => fields.filter((field) => rowData[field]?.parsedValue);
+
+  if (anyFieldHasData(fields) && spreadDetailsRecorded === 'No') {
+    valid = false;
+    const fieldsWithData = filledFields(fields);
+    appliesToFields.push(...fieldsWithData);
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Conflicting data',
+      messageDetail: `If Monitoring - Results - Spread - Recorded? is 'No' Spread details must be blank.`
+    });
+  }
+
+  if (!allFieldsHaveData(fields) && spreadDetailsRecorded === 'Yes') {
+    valid = false;
+    const fieldsWithoutData = missingFields(fields);
+    appliesToFields.push(...fieldsWithoutData);
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Conflicting data',
+      messageDetail: `If Monitoring - Results - Spread - Recorded? is 'Yes' Spread details must be entered.`
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields
   };
 };
 

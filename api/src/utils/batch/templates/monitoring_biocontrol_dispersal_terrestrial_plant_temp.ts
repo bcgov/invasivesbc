@@ -13,16 +13,16 @@ import {
   WindDirectionValidator
 } from 'utils/batch/shared-columns';
 
-const MonitoringBiocontrolDispersalTerrestrialPlant = new Template(
-  'monitoring_biocontrol_dispersal_terrestrial_plant',
-  'Monitoring - Biocontrol Dispersal - Terrestrial Plant',
+const MonitoringBiocontrolDispersalTerrestrialPlantTemp = new Template(
+  'monitoring_biocontrol_dispersal_terrestrial_plant_temp',
+  'Monitoring - Biocontrol Dispersal - Terrestrial Plant TEMP POINT',
   null
 );
 
-MonitoringBiocontrolDispersalTerrestrialPlant.type = 'Biocontrol';
-MonitoringBiocontrolDispersalTerrestrialPlant.subtype = 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant';
+MonitoringBiocontrolDispersalTerrestrialPlantTemp.type = 'Biocontrol';
+MonitoringBiocontrolDispersalTerrestrialPlantTemp.subtype = 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant';
 
-MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
+MonitoringBiocontrolDispersalTerrestrialPlantTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
@@ -191,11 +191,11 @@ MonitoringBiocontrolDispersalTerrestrialPlant.columns = [
   ...PhenologyInformation
 ];
 
-MonitoringBiocontrolDispersalTerrestrialPlant.rowValidators = [
+MonitoringBiocontrolDispersalTerrestrialPlantTemp.rowValidators = [
   ...BasicInformationRowValidators,
   PhenologySumValidator,
   WindDirectionValidator,
   BioAgentValidator
 ];
 
-export { MonitoringBiocontrolDispersalTerrestrialPlant };
+export { MonitoringBiocontrolDispersalTerrestrialPlantTemp };
