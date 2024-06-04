@@ -236,7 +236,13 @@ function createBatchReducer() {
               'treatment_chemical_terrestrial_plant',
               'treatment_chemical_terrestrial_plant_temp',
               'treatment_chemical_aquatic_plant',
-              'treatment_chemical_aquatic_plant_temp'
+              'treatment_chemical_aquatic_plant_temp',
+              'biocontrol_release',
+              'biocontrol_release_temp',
+              'biocontrol_collection',
+              'biocontrol_collection_temp',
+              'monitoring_biocontrol_dispersal_terrestrial_plant',
+              'monitoring_biocontrol_dispersal_terrestrial_plant_temp'
             ].includes(template.key)
           )
         };

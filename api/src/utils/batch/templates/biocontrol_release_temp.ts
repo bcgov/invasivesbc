@@ -1,4 +1,4 @@
-import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
+import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersons,
   BasicInformation,
@@ -10,20 +10,20 @@ import {
   ProjectInformation,
   WeatherInformation,
   WindDirectionValidator
-} from 'utils/batch/shared-columns';
+} from '../shared-columns';
 
-const BiocontrolRelease = new Template('biocontrol_release', 'Biocontrol Release', null);
+const BiocontrolReleaseTemp = new Template('biocontrol_release_temp', 'Biocontrol Release TEMP POINT', null);
 
-BiocontrolRelease.type = 'Treatment';
-BiocontrolRelease.subtype = 'Activity_Biocontrol_Release';
+BiocontrolReleaseTemp.type = 'Treatment';
+BiocontrolReleaseTemp.subtype = 'Activity_Biocontrol_Release';
 
-BiocontrolRelease.columns = [
+BiocontrolReleaseTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
   ...WeatherInformation,
   ...MicrositeConditions,
-
+  new TemplateColumnBuilder('Area', 'numeric').isRequired().build(),
   new TemplateColumnBuilder(
     'Release - Invasive Plant',
     'codeReference',
@@ -114,11 +114,11 @@ BiocontrolRelease.columns = [
   ...PhenologyInformation
 ];
 
-BiocontrolRelease.rowValidators = [
+BiocontrolReleaseTemp.rowValidators = [
   ...BasicInformationRowValidators,
   PhenologySumValidator,
   WindDirectionValidator,
   BioAgentValidator
 ];
 
-export { BiocontrolRelease };
+export { BiocontrolReleaseTemp };

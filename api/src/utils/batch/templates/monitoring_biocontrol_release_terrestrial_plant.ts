@@ -4,11 +4,14 @@ import {
   ActivityPersons,
   BasicInformation,
   BasicInformationRowValidators,
+  BioAgentValidator,
   MicrositeConditions,
   PhenologyInformation,
   PhenologySumValidator,
   ProjectInformation,
-  WeatherInformation
+  SpreadResultsValidator,
+  WeatherInformation,
+  WindDirectionValidator
 } from 'utils/batch/shared-columns';
 
 const MonitoringBiocontrolReleaseTerrestrialPlant = new Template(
@@ -17,18 +20,20 @@ const MonitoringBiocontrolReleaseTerrestrialPlant = new Template(
   null
 );
 
+MonitoringBiocontrolReleaseTerrestrialPlant.type = 'Monitoring';
+MonitoringBiocontrolReleaseTerrestrialPlant.subtype = 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant';
+
 MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
   ...WeatherInformation,
   ...MicrositeConditions,
-  ...PhenologyInformation,
 
   new TemplateColumnBuilder(
     'Monitoring - Start',
     'datetime',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.start_time'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].start_time'
   )
     .mustNotBeFuture()
     .isRequired()
@@ -36,7 +41,7 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - End',
     'datetime',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.stop_time'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].stop_time'
   )
     .mustNotBeFuture()
     .isRequired()
@@ -44,14 +49,14 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Plant Count',
     'numeric',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.plant_count'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].plant_count'
   )
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Sweep Count',
     'numeric',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.num_of_sweeps'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].num_of_sweeps'
   )
     .isRequired()
     .build(),
@@ -59,7 +64,7 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Invasive Plant',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.invasive_plant_code'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].invasive_plant_code'
   )
     .referencesCode('invasive_plant_code')
     .isRequired()
@@ -70,14 +75,14 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Legacy IAPP ID',
-    'text',
+    'numeric',
     'form_data.activity_type_data.legacy_iapp_id'
   ).build(),
 
   new TemplateColumnBuilder(
     'Monitoring - Agent Code',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biological_agent_code'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].biological_agent_code'
   )
     .referencesCode('biological_agent_code')
     .isRequired()
@@ -85,14 +90,14 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Biocontrol Present',
     'boolean',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biocontrol_present'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].biocontrol_present'
   )
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Signs of Presence',
     'codeReferenceMulti',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biological_agent_presence_code'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].biological_agent_presence_code'
   )
     .referencesCode('biological_agent_presence_code')
     .build(),
@@ -100,26 +105,26 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Actual - Agent Stage',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.actual_biological_agents[0].biological_agent_stage_code'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].actual_biological_agents[0].biological_agent_stage_code'
   )
     .referencesCode('biological_agent_stage_code')
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Actual - Quantity',
     'numeric',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.actual_biological_agents[0].release_quantity'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].actual_biological_agents[0].release_quantity'
   ).build(),
   new TemplateColumnBuilder(
     'Monitoring - Actual - Plant Position',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.actual_biological_agents[0].plant_position'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].actual_biological_agents[0].plant_position'
   )
     .referencesCode('plant_position_code')
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Actual - Agent Location',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.actual_biological_agents[0].agent_location'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].actual_biological_agents[0].agent_location'
   )
     .referencesCode('agent_location_code')
     .build(),
@@ -127,26 +132,26 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Estimated - Agent Stage',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.estimated_biological_agents[0].biological_agent_stage_code'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].estimated_biological_agents[0].biological_agent_stage_code'
   )
     .referencesCode('biological_agent_stage_code')
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Estimated - Quantity',
     'numeric',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.estimated_biological_agents[0].release_quantity'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].estimated_biological_agents[0].release_quantity'
   ).build(),
   new TemplateColumnBuilder(
     'Monitoring - Estimated - Plant Position',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.estimated_biological_agents[0].plant_position'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].estimated_biological_agents[0].plant_position'
   )
     .referencesCode('plant_position_code')
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Estimated - Agent Location',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.estimated_biological_agents[0].agent_location'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].estimated_biological_agents[0].agent_location'
   )
     .referencesCode('agent_location_code')
     .build(),
@@ -154,7 +159,7 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Monitoring Method',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.biocontrol_monitoring_methods_code'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].biocontrol_monitoring_methods_code'
   )
     .referencesCode('biocontrol_monitoring_methods_code')
     .isRequired()
@@ -162,21 +167,25 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Monitoring Type',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.monitoring_type'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].monitoring_type'
   )
     .hardcodedCodes(BIOCONTROL_MONITORING_TYPE_CODES)
     .isRequired()
     .build(),
 
-  new TemplateColumnBuilder('Monitoring - Location Agents Found', 'codeReferenceMulti')
+  new TemplateColumnBuilder(
+    'Monitoring - Location Agents Found',
+    'codeReferenceMulti',
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].bio_agent_location_code'
+  )
     .referencesCode('agent_location_code')
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Suitable For Collection',
     'tristate',
-    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information.suitable_collection_site'
+    'form_data.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information[0].suitable_collection_site'
   ).build(),
-
+  ...PhenologyInformation,
   new TemplateColumnBuilder(
     'Monitoring - Results - Spread - Recorded?',
     'codeReference',
@@ -207,6 +216,12 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
   ).build()
 ];
 
-MonitoringBiocontrolReleaseTerrestrialPlant.rowValidators = [...BasicInformationRowValidators, PhenologySumValidator];
+MonitoringBiocontrolReleaseTerrestrialPlant.rowValidators = [
+  ...BasicInformationRowValidators,
+  PhenologySumValidator,
+  WindDirectionValidator,
+  BioAgentValidator,
+  SpreadResultsValidator
+];
 
 export { MonitoringBiocontrolReleaseTerrestrialPlant };

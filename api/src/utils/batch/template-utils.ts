@@ -5,7 +5,6 @@ import { ObservationAquaticPlant } from './templates/observation_aquatic_plant';
 import { BiocontrolRelease } from './templates/biocontrol_release';
 import { BiocontrolCollection } from './templates/biocontrol_collection';
 import { MonitoringBiocontrolDispersalTerrestrialPlant } from './templates/monitoring_biocontrol_dispersal_terrestrial_plant';
-import { MonitoringBiocontrolReleaseTerrestrialPlant } from './templates/monitoring_biocontrol_release_terrestrial_plant';
 import { MonitoringMechanical } from './templates/monitoring_mechanical_treatment';
 import { MonitoringChemical } from './templates/monitoring_chemical_treatment';
 import { TreatmentChemicalTerrestrialPlant } from './templates/treatment_chemical_terrestrial_plant';
@@ -19,16 +18,15 @@ import { ObservationAquaticPlantTemp } from './templates/observation_aquatic_pla
 import { TreatmentChemicalAquaticPlantTemp } from './templates/treatment_chemical_aquatic_plant_temp';
 import { TreatmentMechanicalAquaticPlantTemp } from './templates/treatment_mechanical_aquatic_plant_temp';
 import { getDBConnection } from 'database/db';
+import { BiocontrolReleaseTemp } from './templates/biocontrol_release_temp';
+import { BiocontrolCollectionTemp } from './templates/biocontrol_collection_temp';
+import { MonitoringBiocontrolDispersalTerrestrialPlantTemp } from './templates/monitoring_biocontrol_dispersal_terrestrial_plant_temp';
 
 const templateList: Template[] = [
   ObservationTerrestrialPlant,
   ObservationTerrestrialPlantTemp,
   ObservationAquaticPlant,
   ObservationAquaticPlantTemp,
-  BiocontrolCollection,
-  BiocontrolRelease,
-  MonitoringBiocontrolDispersalTerrestrialPlant,
-  MonitoringBiocontrolReleaseTerrestrialPlant,
   MonitoringChemical,
   MonitoringMechanical,
   TreatmentChemicalTerrestrialPlant,
@@ -38,7 +36,13 @@ const templateList: Template[] = [
   TreatmentMechanicalTerrestrialPlant,
   TreatmentMechanicalTerrestrialPlantTemp,
   TreatmentMechanicalAquaticPlant,
-  TreatmentMechanicalAquaticPlantTemp
+  TreatmentMechanicalAquaticPlantTemp,
+  BiocontrolRelease,
+  BiocontrolReleaseTemp,
+  BiocontrolCollection,
+  BiocontrolCollectionTemp,
+  MonitoringBiocontrolDispersalTerrestrialPlant,
+  MonitoringBiocontrolDispersalTerrestrialPlantTemp
 ];
 
 export const TemplateService = {

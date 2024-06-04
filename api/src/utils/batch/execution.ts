@@ -60,6 +60,46 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
     mapped = autofillChemFields(mapped, chemicalMethodSprayCodes, chemicalMethodCodes);
   }
 
+  const blobPathMapping = {
+    Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant: 'Monitoring_BiocontrolDispersal_Information',
+    Activity_Biocontrol_Release: 'Biocontrol_Release_Information',
+    Activity_Biocontrol_Collection: 'Biocontrol_Collection_Information',
+    Activity_Monitoring_BiocontrolRelease_TerrestrialPlant: 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'
+  };
+
+  function updateTotalBioAgentQuantity(record) {
+    const subtypeData = record?.form_data?.activity_subtype_data;
+    const path = blobPathMapping[record.activity_subtype];
+
+    if (!subtypeData || !path || !Array.isArray(subtypeData[path])) {
+      return record;
+    }
+
+    subtypeData[path].forEach((item) => {
+      if (!item.actual_biological_agents && !item.estimated_biological_agents) {
+        return;
+      }
+
+      if (item.actual_biological_agents) {
+        const actualTotal = item.actual_biological_agents.reduce((sum, agent) => sum + agent.release_quantity, 0);
+        item.total_bio_agent_quantity_actual = actualTotal;
+        item.total_bio_agent_quantity_estimated = 0;
+        delete item.estimated_biological_agents;
+      }
+
+      if (item.estimated_biological_agents) {
+        const estimatedTotal = item.estimated_biological_agents.reduce((sum, agent) => sum + agent.release_quantity, 0);
+        item.total_bio_agent_quantity_estimated = estimatedTotal;
+        item.total_bio_agent_quantity_actual = 0;
+        delete item.actual_biological_agents;
+      }
+    });
+
+    return record;
+  }
+
+  mapped = updateTotalBioAgentQuantity(mapped);
+
   mapped = populateSpeciesArrays(mapped);
 
   mapped['form_data']['form_status'] = status;

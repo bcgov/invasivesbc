@@ -1,4 +1,4 @@
-import { Template, TemplateColumnBuilder } from 'utils/batch/definitions';
+import { Template, TemplateColumnBuilder } from '../definitions';
 import {
   ActivityPersons,
   BasicInformation,
@@ -10,14 +10,14 @@ import {
   ProjectInformation,
   WeatherInformation,
   WindDirectionValidator
-} from 'utils/batch/shared-columns';
+} from '../shared-columns';
 
-const BiocontrolCollection = new Template('biocontrol_collection', 'Biocontrol Collection', null);
+const BiocontrolCollectionTemp = new Template('biocontrol_collection_temp', 'Biocontrol Collection TEMP POINT', null);
 
-BiocontrolCollection.type = 'Biocontrol';
-BiocontrolCollection.subtype = 'Activity_Biocontrol_Collection';
+BiocontrolCollectionTemp.type = 'Biocontrol';
+BiocontrolCollectionTemp.subtype = 'Activity_Biocontrol_Collection';
 
-BiocontrolCollection.columns = [
+BiocontrolCollectionTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
@@ -133,11 +133,11 @@ BiocontrolCollection.columns = [
   ...PhenologyInformation
 ];
 
-BiocontrolCollection.rowValidators = [
+BiocontrolCollectionTemp.rowValidators = [
   ...BasicInformationRowValidators,
   PhenologySumValidator,
   WindDirectionValidator,
   BioAgentValidator
 ];
 
-export { BiocontrolCollection };
+export { BiocontrolCollectionTemp };
