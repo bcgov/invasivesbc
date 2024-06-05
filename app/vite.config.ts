@@ -30,9 +30,6 @@ function buildSpecificDefines() {
 
     defines['INJECTED_COMMIT_HASH'] = JSON.stringify(commitHash);
 
-    if (process.env['REDIRECT_URI'] === undefined) {
-      throw new Error('Heads up -- at least one required env var is not defined. Did you setup your environment?');
-    }
     if (process.env['IAPP_GEOJSON_URL'] === undefined) {
       throw new Error('Heads up -- at least one required env var is not defined. Did you setup your environment?');
     }
