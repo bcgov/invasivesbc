@@ -1,6 +1,6 @@
 name: app IOS
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: { }
   push:
     branches:
       - dev
@@ -31,45 +31,17 @@ jobs:
         run: |
           sudo xcode-select -s /Applications/Xcode_15.3.app/Contents/Developer
 
-      - name: Restore derived data
-        id: cache-dd-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: app/ios/App/xcbuild/Build
-          key: ${{ runner.os }}-153-dd
-
-      - name: Cache app deps
-        uses: actions/cache@v4
-        id: cache-app-deps
-        with:
-          path: app/node_modules
-          key: ${{ runner.os }}-arm64-app-deps-${{ hashFiles('app/package-lock.json') }}
-
-      - name: Cache shared deps
-        uses: actions/cache@v4
-        id: cache-shared-deps
-        with:
-          path: sharedAPI/node_modules
-          key: ${{ runner.os }}-arm64-shared-deps-${{ hashFiles('sharedAPI/package-lock.json') }}
-
-      - name: Cache Pods
-        uses: actions/cache@v4
-        id: cache-pods
-        with:
-          path: app/ios/App/Pods
-          key: ${{ runner.os }}-153-arm64-pods-${{ hashFiles('**/Podfile.lock') }}
-
       - name: Install sharedAPI dependencies
         if: steps.cache-shared-deps.outputs.cache-hit != 'true'
         working-directory: ./sharedAPI
         run: |
-          npm install
+          npm ci
 
       - name: Install app dependencies
         if: steps.cache-app-deps.outputs.cache-hit != 'true'
         working-directory: ./app
         run: |
-          npm install --legacy-peer-deps
+          npm ci
 
       - name: Run build
         working-directory: ./app
@@ -90,7 +62,6 @@ jobs:
         working-directory: ./app
 
       - name: CocoaPod Install
-        if: steps.cache-pods.outputs.cache-hit != 'true'
         working-directory: ./app/ios/App
         run: pod install
 
@@ -152,13 +123,6 @@ jobs:
           -exportPath $EXPORT_DIR/${IPA_NAME} \
           -exportOptionsPlist ExportOptions.plist \
           -verbose
-
-      - name: Save derived data
-        id: cache-dd-save
-        uses: actions/cache/save@v4
-        with:
-          path: app/ios/App/xcbuild/Build
-          key: ${{ steps.cache-dd-restore.outputs.cache-primary-key }}
 
       - uses: actions/upload-artifact@v4
         with:
