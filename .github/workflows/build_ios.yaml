@@ -27,16 +27,16 @@ jobs:
         run: |
           sudo ls -la /Applications | grep "Xcode"
 
-      - name: XCode select 15.2
+      - name: XCode select 15.3
         run: |
-          sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+          sudo xcode-select -s /Applications/Xcode_15.3.app/Contents/Developer
 
       - name: Restore derived data
         id: cache-dd-restore
         uses: actions/cache/restore@v4
         with:
           path: app/ios/App/xcbuild/Build
-          key: ${{ runner.os }}-dd
+          key: ${{ runner.os }}-153-dd
 
       - name: Cache app deps
         uses: actions/cache@v4
@@ -57,7 +57,7 @@ jobs:
         id: cache-pods
         with:
           path: app/ios/App/Pods
-          key: ${{ runner.os }}-arm64-pods-${{ hashFiles('**/Podfile.lock') }}
+          key: ${{ runner.os }}-153-arm64-pods-${{ hashFiles('**/Podfile.lock') }}
 
       - name: Install sharedAPI dependencies
         if: steps.cache-shared-deps.outputs.cache-hit != 'true'
