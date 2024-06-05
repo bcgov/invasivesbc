@@ -87,7 +87,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                                               redirectURL: redirectURI,
                                               responseType: OIDResponseTypeCode,
                                               additionalParameters: nil)
-        
+                
         DispatchQueue.main.sync {
             
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
