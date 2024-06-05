@@ -7,7 +7,5 @@
 		<string>webcredentials:invasivesbc.gov.bc.ca</string>
 		<string>applinks:invasivesbc.gov.bc.ca</string>
 	</array>
-	<key>com.apple.developer.kernel.increased-memory-limit</key>
-	<true/>
 </dict>
 </plist>
