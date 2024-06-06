@@ -83,6 +83,7 @@ body {
   --header-bar-height: 60px;
   --footer-bar-height: 32px;
   --map-button-bar-height: 45px;
+  --overlay-height: 200px;
 }
 
 @media only screen and (width <= 800px) {

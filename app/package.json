@@ -61,6 +61,7 @@
     "keycloak-js": "^22.0.3",
     "localforage": "^1.10.0",
     "lodash.debounce": "^4.0.8",
+    "lodash.throttle": "^4.1.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "maplibre-gl": "^4.0.0",
     "moment": "^2.29.2",

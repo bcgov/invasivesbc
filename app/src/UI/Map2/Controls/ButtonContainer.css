@@ -1,3 +1,19 @@
+:root:has(#map-btn-container, #overlaydiv.map__overlay--show) {
+  #map-btn-container {
+    bottom: clamp(
+      calc(20px + var(--footer-bar-height)),
+      var(--overlay-height) - 20px,
+      calc(100vh - (var(--map-button-bar-height) + var(--header-bar-height)))
+    );
+  }
+}
+
+:root:has(#map-btn-container):not(:has(#overlaydiv.map__overlay--show)) {
+  #map-btn-container {
+    bottom: 16px;
+  }
+}
+
 #map-btn-container {
   display: flex;
   flex-flow: row nowrap;
@@ -7,10 +23,10 @@
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
   position: absolute;
-  bottom: 0;
   left: 0;
   right: 0;
   height: var(--map-button-bar-height);
+  transition: bottom 0.2s ease;
 
   .button {
     height: 100%;
