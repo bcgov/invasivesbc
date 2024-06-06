@@ -29,6 +29,7 @@ export const CenterCurrentRecord = (props) => {
         >
           <span>
             <IconButton
+              className={'button'}
               onClick={() => {
                 setShow(false);
                 {

@@ -26,6 +26,7 @@ export const NewRecord = (props) => {
         >
           <span>
             <IconButton
+              className={'button'}
               onClick={() => {
                 dispatch({ type: OPEN_NEW_RECORD_MENU });
               }}

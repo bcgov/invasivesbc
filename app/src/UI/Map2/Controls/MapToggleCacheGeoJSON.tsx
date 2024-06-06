@@ -28,6 +28,7 @@ export const MapModeToggle = (props) => {
       >
         <span>
           <IconButton
+            className={'button'}
             onClick={() => {
               dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
             }}

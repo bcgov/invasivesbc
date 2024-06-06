@@ -39,6 +39,7 @@ export const LegendsButton = (props) => {
       >
         <span>
           <IconButton
+            className={'button'}
             onClick={() => {
               toggleLegend();
             }}

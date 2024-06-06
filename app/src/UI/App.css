@@ -26,8 +26,7 @@
 body {
   background-color: #036;
   margin: 0;
-  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0)
-    env(safe-area-inset-left, 0);
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
 }
 
 .App {
@@ -82,6 +81,7 @@ body {
 :root {
   --header-bar-height: 60px;
   --footer-bar-height: 32px;
+  --map-button-bar-height: 45px;
 }
 
 @media only screen and (width <= 800px) {

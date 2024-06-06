@@ -30,6 +30,7 @@ export const WhatsHereButton = (props) => {
         >
           <span>
             <IconButton
+              className={'button'}
               onClick={() => {
                 if ((whatsHere as any)?.toggle == false) {
                   dispatch({ type: MAP_TOGGLE_WHATS_HERE });
