@@ -30,7 +30,7 @@ const Overlay = (props) => {
         panelOpen && fullScreen ? 'map__overlay--show-fullscreen' : ''
       }`}
     >
-      <div className={`mapOverlayContents `}> {props.children}</div>
+      <div className={`mapOverlayContents `}>{props.children}</div>
     </div>
   );
 };

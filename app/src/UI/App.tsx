@@ -75,7 +75,6 @@ const BatchRoutes: React.FC = () => {
           </Suspense>
         )}
       />
-      ;
       <Route
         path="/Batch/templates"
         render={() => (
@@ -100,20 +99,18 @@ const OverlayContentMemo = (props) => {
   const userRecordOnClickMenuOpen = useSelector((state: any) => state.Map.userRecordOnClickMenuOpen);
   const userRecordOnClickRecordType = useSelector((state: any) => state.Map.userRecordOnClickRecordType);
   const userRecordOnClickRecordID = useSelector((state: any) => state.Map.userRecordOnClickRecordID);
-  const userRecordOnClickRecordRow = useSelector((state: any) => state.Map.userRecordOnClickRecordRow);
 
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
       <Route exact path="/">
-        <Redirect to="/Landing" /> :
+        <Redirect to="/Landing" />
       </Route>
-
-      <Route path="/Map" render={(props) => <></>} />
-      <Route path="/Landing" render={(props) => <LandingComponent />} />
-      <Route exact={true} path="/Records" render={(props) => <Records />} />
+      <Route path="/Map" render={() => <></>} />
+      <Route path="/Landing" render={() => <LandingComponent />} />
+      <Route exact={true} path="/Records" render={() => <Records />} />
       <Route
         path="/Records/Activity:id"
-        render={(props) => (
+        render={() => (
           <>
             {!overlayMenuOpen ? (
               <Activity />
@@ -125,20 +122,18 @@ const OverlayContentMemo = (props) => {
           </>
         )}
       />
-
       <Route
         path="/Records/IAPP/:id"
-        render={(props) => (
+        render={() => (
           <>
             <IAPPRecord />
           </>
         )}
       />
-
       <Route
         exact={true}
         path="/Records/List/Local:id"
-        render={(props) => (
+        render={() => (
           <>
             {!userRecordOnClickMenuOpen ? (
               <RecordSet setID={props.match.params.id.split(':')[1]} />
@@ -161,12 +156,10 @@ const OverlayContentMemo = (props) => {
           </>
         )}
       />
-
       <BatchRoutes />
-
       <Route
         path="/Reports"
-        render={(props) => (
+        render={() => (
           <Suspense fallback={<Spinner />}>
             <EmbeddedReportsPage />
           </Suspense>
@@ -174,7 +167,7 @@ const OverlayContentMemo = (props) => {
       />
       <Route
         path="/News"
-        render={(props) => (
+        render={() => (
           <Suspense fallback={<Spinner />}>
             <NewsPage />
           </Suspense>
@@ -182,7 +175,7 @@ const OverlayContentMemo = (props) => {
       />
       <Route
         path="/Training"
-        render={(props) => (
+        render={() => (
           <Suspense fallback={<Spinner />}>
             <TrainingPage />
           </Suspense>
@@ -190,7 +183,7 @@ const OverlayContentMemo = (props) => {
       />
       <Route
         path="/Legend"
-        render={(props) => (
+        render={() => (
           <Suspense fallback={<Spinner />}>
             <LegendsPopup />
           </Suspense>
@@ -198,7 +191,7 @@ const OverlayContentMemo = (props) => {
       />
       <Route
         path="/AccessRequest"
-        render={(props) => (
+        render={() => (
           <Suspense fallback={<Spinner />}>
             <AccessRequestPage />
           </Suspense>
@@ -206,13 +199,13 @@ const OverlayContentMemo = (props) => {
       />
       <Route
         path="/Admin"
-        render={(props) => (
+        render={() => (
           <Suspense fallback={<Spinner />}>
             <UserAccessPage />
           </Suspense>
         )}
       />
-      <Route path="/WhatsHere" render={(props) => <WhatsHereTable />} />
+      <Route path="/WhatsHere" render={() => <WhatsHereTable />} />
     </div>
   );
 };
