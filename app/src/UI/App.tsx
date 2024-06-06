@@ -1,6 +1,5 @@
 import { Button } from '@mui/material';
 import React, { Suspense, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import { Redirect, Route, useHistory } from 'react-router-dom';
 import './App.css';
 import { Footer } from './Footer/Footer';
@@ -30,6 +29,7 @@ import { OfflineDataSyncDialog } from 'UI/OfflineDataSync/OfflineDataSyncDialog'
 import Spinner from 'UI/Spinner/Spinner';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import { selectConfiguration } from 'state/reducers/configuration';
+import { useSelector } from 'utils/use_selector';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -87,18 +87,18 @@ const BatchRoutes: React.FC = () => {
   );
 };
 
-const OverlayContentMemo = (props) => {
+const OverlayContentMemo = () => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cOverlay content render:' + ref.current.toString(), 'color: yellow');
 
-  const overlayMenuOpen = useSelector((state: any) => state.AppMode?.overlay_menu_toggle);
-  const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
+  const overlayMenuOpen = useSelector((state) => state.AppMode.overlay_menu_toggle);
+  const fullScreen = useSelector((state) => state.AppMode.panelFullScreen);
   const history = useHistory();
 
-  const userRecordOnClickMenuOpen = useSelector((state: any) => state.Map.userRecordOnClickMenuOpen);
-  const userRecordOnClickRecordType = useSelector((state: any) => state.Map.userRecordOnClickRecordType);
-  const userRecordOnClickRecordID = useSelector((state: any) => state.Map.userRecordOnClickRecordID);
+  const userRecordOnClickMenuOpen = useSelector((state) => state.Map.userRecordOnClickMenuOpen);
+  const userRecordOnClickRecordType = useSelector((state) => state.Map.userRecordOnClickRecordType);
+  const userRecordOnClickRecordID = useSelector((state) => state.Map.userRecordOnClickRecordID);
 
   return (
     <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
@@ -226,7 +226,7 @@ const App: React.FC = () => {
   }
 
   if (hasCrashed) {
-    return <ErrorHandler detail={errorDetail} actions={actions} />;
+    return <ErrorHandler detail={errorDetail} />;
   }
 
   return (
