@@ -21,7 +21,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { RENDER_DEBUG } from 'UI/App';
 import { Switch } from '@mui/base';
-import { useSelector } from '../../utils/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
@@ -34,26 +34,38 @@ type TabPredicate =
   | 'always'
   | 'never';
 
-interface TabProps extends PropsWithChildren<any> {
+type TabPlatformPredicate = 'web' | 'mobile' | 'both';
+
+interface TabProps extends PropsWithChildren {
   predicate: TabPredicate;
+  platform: TabPlatformPredicate;
   path: string;
   label: string;
   panelOpen: boolean;
   panelFullScreen: boolean;
 }
 
-const Tab: React.FC<TabProps> = ({ predicate, children, path, label, panelOpen, panelFullScreen }) => {
+const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, panelOpen, panelFullScreen }) => {
   const ref = useRef(0);
   ref.current += 1;
 
-  const urlFromAppModeState = useSelector((state: any) => state.AppMode.url);
+  const urlFromAppModeState = useSelector((state) => state.AppMode.url);
+  const { MOBILE } = useSelector(selectConfiguration);
+
   const history = useHistory();
 
   const dispatch = useDispatch();
-  const authenticated = useSelector((state: any) => state?.Auth.authenticated && state?.Auth.roles.length > 0);
-  const workingOffline = useSelector((state: any) => state?.Auth.workingOffline);
+  const authenticated = useSelector((state) => state.Auth.authenticated && state?.Auth.roles.length > 0);
+  const workingOffline = useSelector((state) => state.Auth.workingOffline);
 
   const canDisplayCallBack = useCallback(() => {
+    if (platform === 'mobile' && !MOBILE) {
+      return false;
+    }
+    if (platform === 'web' && MOBILE) {
+      return false;
+    }
+
     switch (predicate) {
       case 'always':
         return true;
@@ -68,32 +80,34 @@ const Tab: React.FC<TabProps> = ({ predicate, children, path, label, panelOpen, 
       case 'authenticated_any':
         return authenticated || workingOffline;
     }
-  }, [authenticated, workingOffline, predicate, JSON.stringify(path)]);
+  }, [authenticated, workingOffline, predicate, platform, MOBILE, JSON.stringify(path)]);
 
   useEffect(() => {
     const scrollContainer = document.getElementById('ButtonWrapper');
     const rightIconContainer = document.getElementById('right-icon-container');
     const leftIconContainer = document.getElementById('left-icon-container');
 
-    // workaround for scroll = client on load race
-    setTimeout(() => {
-      if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
-        rightIconContainer.style.visibility = 'visible';
-      }
-    }, 100);
+    if (scrollContainer !== null && rightIconContainer !== null && leftIconContainer !== null) {
+      // workaround for scroll = client on load race
+      setTimeout(() => {
+        if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
+          rightIconContainer.style.visibility = 'visible';
+        }
+      }, 100);
 
-    scrollContainer.addEventListener('scroll', () => {
-      if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5) {
-        rightIconContainer.style.visibility = 'hidden';
-        leftIconContainer.style.visibility = 'visible';
-      } else if (scrollContainer.scrollLeft <= 5) {
-        rightIconContainer.style.visibility = 'visible';
-        leftIconContainer.style.visibility = 'hidden';
-      } else {
-        rightIconContainer.style.visibility = 'visible';
-        leftIconContainer.style.visibility = 'visible';
-      }
-    });
+      scrollContainer.addEventListener('scroll', () => {
+        if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5) {
+          rightIconContainer.style.visibility = 'hidden';
+          leftIconContainer.style.visibility = 'visible';
+        } else if (scrollContainer.scrollLeft <= 5) {
+          rightIconContainer.style.visibility = 'visible';
+          leftIconContainer.style.visibility = 'hidden';
+        } else {
+          rightIconContainer.style.visibility = 'visible';
+          leftIconContainer.style.visibility = 'visible';
+        }
+      });
+    }
   }, []);
 
   return (
@@ -119,13 +133,13 @@ const Tab: React.FC<TabProps> = ({ predicate, children, path, label, panelOpen, 
   );
 };
 
-const ButtonWrapper = (props: any) => {
+const ButtonWrapper = ({ children }) => {
   return (
     <div className="ButtonWrapperContainer">
       <div id="left-icon-container">
         <ArrowLeftIcon className="direction-icon" />
       </div>
-      <div id="ButtonWrapper">{props.children}</div>
+      <div id="ButtonWrapper">{children}</div>
       <div id="right-icon-container">
         <ArrowRightIcon className="direction-icon" />
       </div>
@@ -185,14 +199,15 @@ const InvIcon = () => {
   );
 };
 
-const ActivityTabMemo = (props) => {
-  const activeActivity = useSelector((state: any) => state?.UserSettings?.activeActivity) || undefined;
+const ActivityTabMemo = () => {
+  const activeActivity = useSelector((state) => state.UserSettings.activeActivity) || undefined;
   return (
     <Tab
       key={'tab3'}
       path={'/Records/Activity:' + activeActivity + '/form'}
       label="Current Activity"
       predicate={'authenticated_online'}
+      platform={'both'}
       panelOpen={true}
       panelFullScreen={false}
     >
@@ -201,14 +216,15 @@ const ActivityTabMemo = (props) => {
   );
 };
 
-const IAPPTabMemo = (props) => {
-  const activeIAPP = useSelector((state: any) => state?.UserSettings?.activeIAPP) || undefined;
+const IAPPTabMemo = () => {
+  const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
   return (
     <Tab
       key={'tab4'}
       path={'/Records/IAPP/' + activeIAPP + '/summary'}
       label="Current IAPP"
       predicate={'authenticated_online'}
+      platform={'both'}
       panelOpen={true}
       panelFullScreen={false}
     >
@@ -217,8 +233,8 @@ const IAPPTabMemo = (props) => {
   );
 };
 
-const AdminPanelMemo = (props) => {
-  const roles = useSelector((state: any) => state?.Auth?.roles);
+const AdminPanelMemo = () => {
+  const roles = useSelector((state) => state.Auth.roles);
   return (
     <>
       {roles.find((role) => role.role_id === 18) ? (
@@ -228,6 +244,7 @@ const AdminPanelMemo = (props) => {
           label="Admin"
           panelOpen={true}
           predicate={'authenticated_online'}
+          platform={'web'}
           panelFullScreen={true}
         >
           <AdminPanelSettings />
@@ -239,12 +256,12 @@ const AdminPanelMemo = (props) => {
   );
 };
 
-const LoginOrOutMemo = React.memo((props) => {
+const LoginOrOutMemo = React.memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { MOBILE } = useSelector(selectConfiguration);
   const { authenticated, offlineUsers, workingOffline } = useSelector(selectAuth);
-  const activated = useSelector((state: any) => state?.UserInfo?.activated);
+  const activated = useSelector((state) => state.UserInfo.activated);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -363,7 +380,7 @@ const NetworkStateControl: React.FC = () => {
         control={
           <Switch
             checked={connected}
-            onChange={(e) => {
+            onChange={() => {
               dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
             }}
           />
@@ -378,7 +395,6 @@ export const Header: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
-  const history = useHistory();
 
   const { DEBUG, MOBILE } = useSelector((state) => state.Configuration.current);
 
@@ -389,9 +405,9 @@ export const Header: React.FC = () => {
       <ButtonWrapper>
         <Tab
           key={'tab1'}
-          currentPath={history.location.pathname}
           path={'/Landing'}
           predicate={'always'}
+          platform={'both'}
           label="Home"
           panelOpen={true}
           panelFullScreen={true}
@@ -404,6 +420,7 @@ export const Header: React.FC = () => {
           path="/Records"
           label="Records"
           predicate={'authenticated_any'}
+          platform={'both'}
           panelOpen={true}
           panelFullScreen={false}
         >
@@ -419,6 +436,7 @@ export const Header: React.FC = () => {
           path={'/Batch/list'}
           label="Batch"
           predicate={'authenticated_online'}
+          platform={'web'}
           panelOpen={true}
           panelFullScreen={true}
         >
@@ -430,6 +448,7 @@ export const Header: React.FC = () => {
           path={'/Reports'}
           label="Reports"
           predicate={'authenticated_online'}
+          platform={'web'}
           panelOpen={true}
           panelFullScreen={true}
         >
@@ -441,6 +460,7 @@ export const Header: React.FC = () => {
           path="/News"
           label="News"
           predicate={'authenticated_online'}
+          platform={'web'}
           panelOpen={true}
           panelFullScreen={true}
         >
@@ -452,6 +472,7 @@ export const Header: React.FC = () => {
           path={'/Training'}
           label="Training"
           predicate={'always'}
+          platform={'web'}
           panelOpen={true}
           panelFullScreen={true}
         >
@@ -465,6 +486,7 @@ export const Header: React.FC = () => {
           path={'/Map'}
           label="Map"
           predicate={'unauthenticated'}
+          platform={'both'}
           panelFullScreen={false}
           panelOpen={false}
         >
@@ -473,7 +495,7 @@ export const Header: React.FC = () => {
 
         {MOBILE && <OfflineSyncHeaderButton />}
 
-        {(DEBUG || MOBILE) && <NetworkStateControl />}
+        {DEBUG && MOBILE && <NetworkStateControl />}
       </ButtonWrapper>
 
       <LoginOrOutMemo />
