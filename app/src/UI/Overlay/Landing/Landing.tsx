@@ -8,6 +8,26 @@ import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import { AUTH_SIGNIN_REQUEST, TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router';
+import { INFORMATIONAL_LINKS } from 'constants/links';
+import { MobileOnly } from 'UI/Predicates/MobileOnly';
+
+const InformationalLinkBox = () => {
+  return (
+    <MobileOnly>
+      {/*web receives this in the footer, but the footer is hidden on mobile*/}
+      <Box mt={4} className={'links-box'}>
+        <u>Informational Links</u>
+        {INFORMATIONAL_LINKS.map((link) => {
+          return (
+            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer">
+              {link.label}
+            </a>
+          );
+        })}
+      </Box>
+    </MobileOnly>
+  );
+};
 
 export const LandingComponent = (props) => {
   const connected = useSelector(selectNetworkConnected);
@@ -32,7 +52,7 @@ export const LandingComponent = (props) => {
     <>
       <Container className="container">
         <Box display="flex" justifyContent="space-between">
-          <Typography variant="h4">Welcome to the InvasivesBC Application BETA!</Typography>
+          <Typography variant="h4">Welcome to the InvasivesBC Application!</Typography>
         </Box>
         {(userInfoLoaded || workingOffline) && (
           <>
@@ -149,6 +169,7 @@ export const LandingComponent = (props) => {
             <Box mt={4}>
               Or email us at <a href="mailto:InvasivesBC@gov.bc.ca">InvasivesBC@gov.bc.ca</a>
             </Box>
+            <InformationalLinkBox />
           </>
         )}
         {roles.length === 0 && (
@@ -217,6 +238,7 @@ export const LandingComponent = (props) => {
             <Box mt={4}>
               Or email us at <a href="mailto:InvasivesBC@gov.bc.ca">InvasivesBC@gov.bc.ca</a>
             </Box>
+            <InformationalLinkBox />
           </>
         )}
       </Container>

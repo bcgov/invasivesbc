@@ -1,16 +1,22 @@
 #overlaydiv {
   min-height: 5vh;
-  max-height: calc(100% - 8vh);
+  max-height: calc(100% - 4vh);
   height: 200px;
   cursor: pointer;
 }
+
 .overlayMenuResizeButtons {
   display: flex;
   flex-direction: row;
 }
 
 .map__overlay {
-  bottom: 3vh;
+  bottom: 0;
+
+  &.has-footer {
+    bottom: 3vh;
+  }
+
   height: 0;
   left: 0;
   position: absolute;
@@ -20,6 +26,7 @@
   transform: translateY(100%);
   z-index: 400;
 }
+
 .leaflet-control-container {
   z-index: 499 !important;
 }
@@ -28,22 +35,25 @@
   height: 100%;
   width: 100%;
   overflow-y: auto;
-  /*/scroll-behavior: ;*/
+
+  /* /scroll-behavior: ; */
 }
 
 .map__overlay--show {
-  transform: translateY(0vh);
+  transform: translateY(0);
   overflow-y: auto;
   display: flex;
+
   /*    overflow-y: visible;; */
 }
 
 .map__overlay--show-fullscreen {
   height: 100% !important;
-  transform: translateY(0vh);
+  transform: translateY(0);
   display: flex;
   overflow-y: visible;
-  /*z-index: 9999999999;*/
+
+  /* z-index: 9999999999; */
 }
 
 ::-webkit-resizer {
