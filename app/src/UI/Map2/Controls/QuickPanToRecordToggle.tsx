@@ -28,6 +28,7 @@ export const QuickPanToRecordToggle = (props) => {
         >
           <span>
             <IconButton
+              className={'button'}
               onClick={() => {
                 dispatch({ type: TOGGLE_QUICK_PAN_TO_RECORD });
               }}

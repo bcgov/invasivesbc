@@ -1,58 +1,47 @@
 #map-btn-container {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  flex-flow: row nowrap;
+  place-content: space-evenly center;
+  gap: 16px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-  justify-content: center;
-  position: absolute;
+  position: fixed;
   bottom: 0;
-  /* margin-bottom: 200px; */
-  width: 100vw;
-  left: 50%;
-  transform: translateX(-50%);
-  transition: all 0.2s ease;
-  /* in case we want a gradient background */
-  /* background: rgb(255,255,255);
-  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.500437675070028) 50%, rgba(255,255,255,0) 100%); */
+  left: 0;
+  right: 0;
+  height: var(--map-button-bar-height);
+
+  .button {
+    height: 100%;
+    aspect-ratio: 1;
+    font-weight: bold;
+    border-radius: 50%;
+    color: #036;
+
+    &:hover {
+      background-color: white;
+    }
+  }
+
+  .map-btn {
+    .button {
+      background-color: white;
+      color: #036;
+    }
+  }
+
+
+  .map-btn-selected {
+    .button {
+      background-color: #036;
+      color: #fcba19;
+    }
+  }
+
+
+  /* background: rgb(255 255 255); */
+
+  /* background: linear-gradient(90deg, rgb(255 255 255 / 0%) 0%, rgb(255 255 255 / 50%) 50%, rgb(255 255 255 / 0%) 100%); */
 }
 
-.map-btn {
-  padding: 0.5rem;
-  flex: 0 0 auto;
-}
-
-.map-btn button {
-  background-color: white;
-  color: #003366;
-}
-
-.map-btn-selected {
-  padding: 0.5rem;
-  flex: 0 0 auto;
-}
-
-.map-btn-selected button {
-  background-color: #003366;
-  color: #fcba19;
-}
-
-.map-btn-container .map-btn:first-child {
-  margin-left: auto;
-}
-
-.map-btn-container .map-btn:last-child {
-  margin-right: auto;
-}
-
-.selected {
-  background-color: #2196f3;
-  color: white;
-}
-
-.notSelected {
-  background-color: white;
-  color: black;
-}

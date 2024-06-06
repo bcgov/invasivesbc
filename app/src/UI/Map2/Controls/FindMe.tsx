@@ -29,6 +29,7 @@ export const FindMeToggle = (props) => {
       >
         <span>
           <IconButton
+            className={'button'}
             onClick={() => {
               setShow(false);
               dispatch({ type: MAP_TOGGLE_TRACKING });

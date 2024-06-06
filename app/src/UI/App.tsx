@@ -133,7 +133,7 @@ const OverlayContentMemo = (props) => {
       <Route
         exact={true}
         path="/Records/List/Local:id"
-        render={() => (
+        render={(props) => (
           <>
             {!userRecordOnClickMenuOpen ? (
               <RecordSet setID={props.match.params.id.split(':')[1]} />

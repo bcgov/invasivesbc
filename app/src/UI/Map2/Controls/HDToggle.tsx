@@ -30,6 +30,7 @@ export const HDToggle = (props) => {
       >
         <span>
           <IconButton
+            className={'button'}
             onClick={() => {
               dispatch({ type: MAP_TOGGLE_HD });
             }}
