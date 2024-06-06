@@ -1,7 +1,7 @@
 #overlaydiv {
   min-height: 5vh;
   max-height: calc(100% - 4vh);
-  height: 200px;
+  height: var(--overlay-height);
   cursor: pointer;
 }
 

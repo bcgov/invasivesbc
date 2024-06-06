@@ -1,9 +1,9 @@
 import { Button } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Route } from 'react-router';
 
-import debounce from 'lodash.debounce';
+import throttle from 'lodash.throttle';
 
 import { OVERLAY_MENU_TOGGLE } from 'state/actions';
 import './OverlayHeader.css';
@@ -13,32 +13,18 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 
-const maximize = (e) => {
-  const elementWeWant = document.getElementById('overlaydiv');
-  if (elementWeWant !== null) {
-    elementWeWant.style.height = 'calc(100% - 10vh)';
-  }
+const maximize = () => {
+  setOverlayHeight('90vh');
 };
 
-const minimize = (e) => {
-  const elementWeWant = document.getElementById('overlaydiv');
-  const buttonContainer = document.getElementById('map-btn-container');
-  if (elementWeWant !== null && buttonContainer !== null) {
-    elementWeWant.style.height = '0px';
-    buttonContainer.style.marginBottom = 5 + 'vh';
-  }
-};
-
-const setButtonContainerHeight = (height) => {
-  const buttonContainer = document.getElementById('map-btn-container');
-  if (!buttonContainer?.style) return;
-  buttonContainer.style.marginBottom = height + 10 + 'px';
+const minimize = () => {
+  setOverlayHeight('1vh');
 };
 
 const setOverlayHeight = (height) => {
-  const elementWeWant = document.getElementById('overlaydiv');
-  if (elementWeWant !== null) {
-    elementWeWant.style.height = height + 'px';
+  const sel = document.querySelector(':root');
+  if (sel instanceof HTMLElement) {
+    sel.style.setProperty('--overlay-height', `clamp(var(--footer-bar-height) + 20px, ${height}, 90vh)`);
   }
 };
 
@@ -56,17 +42,9 @@ const computeDesiredDragHandleHeightFromMousePosition = (mouseY) => {
   return appHeight - mouseY;
 };
 
-const getOverlayHeight = () => {
-  const elementWeWant = document.getElementById('overlaydiv');
-  if (elementWeWant !== null) {
-    const currentOverlayStyle = window.getComputedStyle(elementWeWant);
-    return parseInt(currentOverlayStyle.height.split('px')[0]);
-  }
-  return 0;
-};
-
-const debouncedDrag = debounce((e) => {
+const debouncedDrag = throttle((e) => {
   let newOverlayHeight;
+
   if (e.type.includes('touch')) {
     const pos = e.touches[0].clientY;
     newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(pos);
@@ -74,9 +52,8 @@ const debouncedDrag = debounce((e) => {
     const mousePos = e.y;
     newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(mousePos);
   }
-  setOverlayHeight(newOverlayHeight);
-  setButtonContainerHeight(newOverlayHeight);
-}, 5);
+  setOverlayHeight(`${newOverlayHeight}px`);
+}, 33);
 
 const drag = (e) => {
   debouncedDrag(e);
@@ -85,9 +62,7 @@ const drag = (e) => {
 const cleanup = () => {
   try {
     document.removeEventListener('mousemove', drag, false);
-    //document.removeEventListener('mouseup', cleanup, false);
     document.removeEventListener('touchmove', drag, false);
-    //document.removeEventListener('touchend', cleanup, false);
   } catch (e) {
     console.error(e);
   }
@@ -102,28 +77,10 @@ const onClickDragButton = (e) => {
     document.addEventListener('mousemove', drag, false);
     document.addEventListener('mouseup', cleanup, true);
   }
-
-  setTimeout(() => {
-    if (e) cleanup(e);
-  }, 5000);
 };
 
 export const OverlayHeader = () => {
   const dispatch = useDispatch();
-
-  const initDragHandlePosition = () => {
-    const overlayHeight = getOverlayHeight();
-    setButtonContainerHeight(overlayHeight);
-  };
-
-  useEffect(() => {
-    setTimeout(initDragHandlePosition, 350);
-    window.addEventListener('resize', initDragHandlePosition);
-
-    return () => {
-      window.removeEventListener('resize', initDragHandlePosition);
-    };
-  });
 
   return (
     <div className="overlay-header">
