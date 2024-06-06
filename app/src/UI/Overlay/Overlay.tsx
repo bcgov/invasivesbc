@@ -1,27 +1,15 @@
-import React, { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useRef } from 'react';
 import './Overlay.css';
 import { RENDER_DEBUG } from 'UI/App';
+import { useSelector } from 'utils/use_selector';
 
 const Overlay = (props) => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cOverlay render:' + ref.current.toString(), 'color: yellow');
 
-  const panelOpen = useSelector((state: any) => state.AppMode.panelOpen);
-  const fullScreen = useSelector((state: any) => state.AppMode?.panelFullScreen);
-
-  useEffect(() => {
-    if (!fullScreen) {
-      const buttonContainer = document.getElementById('map-btn-container');
-      if (!panelOpen) {
-        if (buttonContainer) buttonContainer.style.marginBottom = 0 + 'vh';
-      } else {
-        const overlayDiv = document.getElementById('overlaydiv');
-        if (overlayDiv && buttonContainer) buttonContainer.style.marginBottom = `${overlayDiv.clientHeight}px`;
-      }
-    }
-  }, [panelOpen, fullScreen]);
+  const panelOpen = useSelector((state) => state.AppMode.panelOpen);
+  const fullScreen = useSelector((state) => state.AppMode.panelFullScreen);
 
   return (
     <div

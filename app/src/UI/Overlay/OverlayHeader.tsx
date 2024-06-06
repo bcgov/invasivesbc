@@ -15,14 +15,18 @@ import SaveAsIcon from '@mui/icons-material/SaveAs';
 
 const maximize = (e) => {
   const elementWeWant = document.getElementById('overlaydiv');
-  elementWeWant.style.height = 'calc(100% - 10vh)';
+  if (elementWeWant !== null) {
+    elementWeWant.style.height = 'calc(100% - 10vh)';
+  }
 };
 
 const minimize = (e) => {
   const elementWeWant = document.getElementById('overlaydiv');
   const buttonContainer = document.getElementById('map-btn-container');
-  elementWeWant.style.height = '0px';
-  buttonContainer.style.marginBottom = 5 + 'vh';
+  if (elementWeWant !== null && buttonContainer !== null) {
+    elementWeWant.style.height = '0px';
+    buttonContainer.style.marginBottom = 5 + 'vh';
+  }
 };
 
 const setButtonContainerHeight = (height) => {
@@ -33,27 +37,32 @@ const setButtonContainerHeight = (height) => {
 
 const setOverlayHeight = (height) => {
   const elementWeWant = document.getElementById('overlaydiv');
-  elementWeWant.style.height = height + 'px';
+  if (elementWeWant !== null) {
+    elementWeWant.style.height = height + 'px';
+  }
 };
 
 const getAppHeight = () => {
   const appElement = document.getElementById('app');
-  const currentAppStyle = window.getComputedStyle(appElement);
-  const currentAppHeight = parseInt(currentAppStyle.height.split('px')[0]);
-  return currentAppHeight;
+  if (appElement !== null) {
+    const currentAppStyle = window.getComputedStyle(appElement);
+    return parseInt(currentAppStyle.height.split('px')[0]);
+  }
+  return 0;
 };
 
 const computeDesiredDragHandleHeightFromMousePosition = (mouseY) => {
   const appHeight = getAppHeight();
-  const newHeight = appHeight - mouseY;
-  return newHeight;
+  return appHeight - mouseY;
 };
 
 const getOverlayHeight = () => {
   const elementWeWant = document.getElementById('overlaydiv');
-  const currentOverlayStyle = window.getComputedStyle(elementWeWant);
-  const currentAppHeight = parseInt(currentOverlayStyle.height.split('px')[0]);
-  return currentAppHeight;
+  if (elementWeWant !== null) {
+    const currentOverlayStyle = window.getComputedStyle(elementWeWant);
+    return parseInt(currentOverlayStyle.height.split('px')[0]);
+  }
+  return 0;
 };
 
 const debouncedDrag = debounce((e) => {
@@ -73,7 +82,7 @@ const drag = (e) => {
   debouncedDrag(e);
 };
 
-const cleanup = (e) => {
+const cleanup = () => {
   try {
     document.removeEventListener('mousemove', drag, false);
     //document.removeEventListener('mouseup', cleanup, false);
@@ -84,7 +93,7 @@ const cleanup = (e) => {
   }
 };
 
-const onClickDragButton = (e?) => {
+const onClickDragButton = (e) => {
   if (e.type.includes('touch')) {
     document.addEventListener('touchmove', drag, false);
     document.addEventListener('touchend', cleanup, true);
@@ -99,7 +108,7 @@ const onClickDragButton = (e?) => {
   }, 5000);
 };
 
-export const OverlayHeader = (props) => {
+export const OverlayHeader = () => {
   const dispatch = useDispatch();
 
   const initDragHandlePosition = () => {
@@ -141,7 +150,7 @@ export const OverlayHeader = (props) => {
         <Route
           path="/Records/Activity:*"
           exact={false}
-          render={(props) => {
+          render={() => {
             return (
               <Button
                 className={'overlay-header-menu-button'}

@@ -10,34 +10,44 @@ export enum appModeEnum {
   'IAPP'
 }
 
-const initialState: { mode?: appModeEnum; panelOpen: boolean; url: string | null; overlay_menu_toggle?: boolean } = {
+interface AppModeState {
+  mode: appModeEnum;
+  panelOpen: boolean;
+  panelFullScreen: boolean;
+  overlay_menu_toggle: boolean;
+  url: string | null;
+}
+
+const initialState: AppModeState = {
   mode: appModeEnum.Landing,
   panelOpen: false,
+  panelFullScreen: false,
   overlay_menu_toggle: false,
   url: null
 };
 
-export default function appMode(state = initialState, action: any) {
+export default function appMode(state = initialState, action: any): AppModeState {
   switch (action.type) {
     case SET_APP_MODE:
       return {
         ...state,
         mode: action.payload.mode
       };
-    case TOGGLE_PANEL:
+    case TOGGLE_PANEL: {
       const panelStateInPayload = action?.payload?.panelOpen !== undefined ? true : false;
       return {
         ...state,
         panelOpen: panelStateInPayload ? action.payload.panelOpen : !state.panelOpen,
         panelFullScreen: action?.payload?.fullScreen ? action.payload.fullScreen : false
       };
+    }
     case OVERLAY_MENU_TOGGLE: {
       return {
         ...state,
         overlay_menu_toggle: !state.overlay_menu_toggle
       };
     }
-    case URL_CHANGE:
+    case URL_CHANGE: {
       const nextState = createNextState(state, (draftState: any) => {
         draftState.url = action?.payload?.url;
         if (['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News'].includes(action.payload.url.split('/')[1])) {
@@ -53,6 +63,7 @@ export default function appMode(state = initialState, action: any) {
         draftState.overlay_menu_toggle = false;
       });
       return nextState;
+    }
     default:
       return state;
   }

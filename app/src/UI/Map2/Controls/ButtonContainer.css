@@ -6,7 +6,7 @@
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-  position: fixed;
+  position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
