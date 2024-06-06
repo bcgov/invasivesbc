@@ -2,8 +2,8 @@
   #map-btn-container {
     bottom: clamp(
       calc(20px + var(--footer-bar-height)),
-      var(--overlay-height) - 20px,
-      calc(100vh - (var(--map-button-bar-height) + var(--header-bar-height)))
+      var(--overlay-height) - var(--footer-bar-height) + 16px,
+      calc(100svh - (var(--map-button-bar-height) + var(--header-bar-height)))
     );
   }
 }

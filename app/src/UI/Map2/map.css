@@ -5,6 +5,7 @@
   cursor: pointer;
   padding: 0;
 }
+
 .whatsHereMarkerEl {
   display: block;
   border: none;
@@ -12,6 +13,7 @@
   cursor: pointer;
   padding: 0;
 }
+
 .IAPPMarkerEl {
   display: block;
   border: none;
@@ -19,6 +21,7 @@
   cursor: pointer;
   padding: 0;
 }
+
 .activityMarkerEl {
   display: block;
   border: none;
@@ -53,6 +56,7 @@
   border-style: solid;
   border-width: medium;
 }
+
 .layerPickerClosed {
   width: 50px;
   height: 50px;
@@ -76,6 +80,7 @@
 .layerPickerCategoryHeader {
   font-weight: 900;
 }
+
 .layerpickercustomizeMenu {
   height: 50px;
   width: auto;
@@ -95,9 +100,10 @@
   left: 50%;
   width: 100px;
   height: 100px;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgb(255 255 255 / 50%);
   z-index: 999;
 }
+
 .loadedMap {
   display: none;
 }
@@ -105,4 +111,12 @@
 .maplibregl-canvas-container.maplibregl-interactive,
 .maplibregl-canvas-container.maplibregl-interactive:active {
   cursor: crosshair;
+}
+
+.maplibregl-ctrl-bottom-right {
+  bottom: 4px;
+}
+
+.maplibregl-ctrl-bottom-left {
+  bottom: 4px;
 }
