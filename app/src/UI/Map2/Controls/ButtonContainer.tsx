@@ -11,32 +11,29 @@ import { QuickPanToRecordToggle } from './QuickPanToRecordToggle';
 import { WhatsHereButton } from './WhatsHereButton';
 import { MapModeToggle } from './MapToggleCacheGeoJSON';
 import { HDToggle } from 'UI/Map2/Controls/HDToggle';
+import { WebOnly } from 'UI/Predicates/WebOnly';
 
-export const ButtonContainer = (props) => {
-  const isAuth = useSelector((state: any) => state.Auth?.authenticated);
+export const ButtonContainer = () => {
+  const isAuth = useSelector((state) => state.Auth?.authenticated);
 
   return (
     <div id="map-btn-container">
       <HDToggle />
       <BaseMapToggle />
       {isAuth && <FindMeToggle />}
-      <LegendsButton />
+      <WebOnly>
+        <LegendsButton />
+      </WebOnly>
       <AccuracyToggle />
       {isAuth && <WhatsHereButton />}
 
       {isAuth && <NewRecord />}
-      {isAuth && <CenterCurrentRecord type="Activity" />}
-      {isAuth && <CenterCurrentRecord type="IAPP" />}
-      <QuickPanToRecordToggle />
-      {isAuth && <MapModeToggle />}
-      {/*
-
-      {isAuth && <WhatsHereCurrentRecordHighlighted />}
-      {isAuth && <WhatsHereDrawComponent />}
-      <SelectedRecordIndicator/>
-      <AccuracyMarker />
-      <LocationMarker />
-  */}
+      <WebOnly>
+        {isAuth && <CenterCurrentRecord type="Activity" />}
+        {isAuth && <CenterCurrentRecord type="IAPP" />}
+        <QuickPanToRecordToggle />
+        {isAuth && <MapModeToggle />}
+      </WebOnly>
     </div>
   );
 };

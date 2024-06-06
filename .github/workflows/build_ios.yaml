@@ -32,13 +32,11 @@ jobs:
           sudo xcode-select -s /Applications/Xcode_15.3.app/Contents/Developer
 
       - name: Install sharedAPI dependencies
-        if: steps.cache-shared-deps.outputs.cache-hit != 'true'
         working-directory: ./sharedAPI
         run: |
           npm ci
 
       - name: Install app dependencies
-        if: steps.cache-app-deps.outputs.cache-hit != 'true'
         working-directory: ./app
         run: |
           npm ci
