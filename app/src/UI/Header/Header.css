@@ -1,36 +1,38 @@
-@media only screen and (max-width: 800px) {
+@media only screen and (width <= 800px) {
+  #appTitle {
+    display: none;
+  }
+}
+
+@media only screen and (width >= 801px) {
   #appTitle {
     font-weight: bold;
     padding-left: 5px;
-    overflow: hidden;
-    width: 0px;
   }
 }
-@media only screen and (min-width: 801px) {
-  #appTitle {
-    font-weight: bold;
-    padding-left: 5px;
-  }
-}
+
 #menu-appbar {
   z-index: 9999999999;
 }
+
 .HeaderBar {
-  height: 5vh;
+  height: var(--header-bar-height);
   cursor: pointer;
   width: 100vw;
-  background-color: #003366;
-  /*position: fixed;*/
+  background-color: #036;
+
+  /* position: fixed; */
   z-index: 2147483646;
-  /*top: 0;
-    left: 0;*/
+
+  /* top: 0;
+    left: 0; */
   color: white;
   align-items: center;
 }
 
 .ButtonWrapperContainer {
   width: 55%;
-  height: 5vh;
+  height: var(--header-bar-height);
   position: absolute;
   transform: translateX(-50%);
   left: 50%;
@@ -38,18 +40,15 @@
 
 #ButtonWrapper {
   width: 100%;
-  height: 5vh;
+  height: var(--header-bar-height);
   position: absolute;
   display: flex;
   justify-content: space-between;
-  flex-direction: row;
-  flex-wrap: nowrap;
+  flex-flow: row nowrap;
   white-space: nowrap;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
-  /* justify-content: center; */
-  /* width: 80vw; */
 }
 
 #right-icon-container {
@@ -57,7 +56,7 @@
   right: 0;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgb(255 255 255 / 50%);
   border-radius: 5px;
   pointer-events: none;
   visibility: hidden;
@@ -68,7 +67,7 @@
   left: 0;
   top: 50%;
   transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgb(255 255 255 / 50%);
   border-radius: 5px;
   pointer-events: none;
   visibility: hidden;
@@ -80,6 +79,7 @@
 
 .Tab {
   display: flex;
+
   /* flex-direction: row;
     flex-flow: row wrap; */
   align-items: center;
@@ -87,7 +87,8 @@
 }
 
 .Tab__Label {
-  /*    padding-top: 5px;*/
+  /*    padding-top: 5px; */
+
   /* align-self: flex-start; */
   font-size: small;
 }
@@ -95,26 +96,36 @@
 .Tab__Content {
   /* align-self: flex-start */
 }
+
 .Tab__Indicator {
   border-bottom-style: solid;
-  /*border-radius: 2vh;*/
   border-width: 0.5vh;
   border-color: #fcba19;
 }
-.LoginButton,
-.LogoutButton {
+
+.network-state-control {
   display: flex;
-  position: fixed;
   align-items: center;
-  height: 5vh;
-  right: 0;
-  margin-right: 10px;
+  height: 100%;
 }
 
 .inv-icon {
   display: flex;
   position: fixed;
+  left: 10px;
   align-items: center;
-  height: 5vh;
-  margin: 0 10px;
+  height: var(--header-bar-height);
+
+  img {
+    box-sizing: border-box;
+    height: calc(var(--header-bar-height) - 20px);
+  }
+}
+
+.avatar-menu {
+  display: flex;
+  position: fixed;
+  right: 10px;
+  align-items: center;
+  height: var(--header-bar-height);
 }

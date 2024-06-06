@@ -24,8 +24,28 @@ body {
   padding: 4rem;
 }
 
-@media (min-device-width: 600px) {
+@media (device-width >= 600px) {
   .cardWidth {
     width: 600;
+  }
+}
+
+.links-box {
+  display: flex;
+  flex-direction: column;
+
+  u {
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  a {
+    display: block;
+    margin: 0.85rem 0;
+    color: -webkit-link;
+
+    &:active {
+      color: -webkit-activelink;
+    }
   }
 }

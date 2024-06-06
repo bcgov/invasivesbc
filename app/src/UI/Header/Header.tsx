@@ -2,7 +2,7 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import './Header.css';
-import { Avatar, Box, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
+import { Avatar, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import {
   AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
@@ -190,8 +190,6 @@ const InvIcon = () => {
           borderRadius: 4,
           padding: 5
         }}
-        height="20"
-        width="20"
         alt="B.C. Government Logo"
       />
       <div id="appTitle">InvasivesBC</div>
@@ -286,8 +284,6 @@ const LoginOrOutMemo = React.memo(() => {
 
   const handleClose = () => {
     setAnchorEl(null);
-    // setOpen(false);
-    console.log('closing');
   };
 
   const navToUpdateRequest = () => {
@@ -316,8 +312,8 @@ const LoginOrOutMemo = React.memo(() => {
   };
 
   return (
-    <Box sx={{ flexGrow: 0, float: 'right', marginRight: '1rem' }}>
-      <IconButton onClick={handleClick} size="small">
+    <div className={'avatar-menu'}>
+      <IconButton onClick={handleClick}>
         <Avatar></Avatar>
       </IconButton>
       <Menu
@@ -325,8 +321,10 @@ const LoginOrOutMemo = React.memo(() => {
         anchorEl={anchorEl}
         open={openMenu}
         onClose={handleClose}
-        PaperProps={{
-          elevation: 3
+        slotProps={{
+          paper: {
+            elevation: 3
+          }
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
       >
@@ -367,7 +365,7 @@ const LoginOrOutMemo = React.memo(() => {
         {workingOffline && <LoginButton labelText={'Go Online'} />}
         {(authenticated || workingOffline) && <LogoutButton />}
       </Menu>
-    </Box>
+    </div>
   );
 });
 
@@ -375,6 +373,7 @@ const NetworkStateControl: React.FC = () => {
   const { connected } = useSelector((state) => state.Network);
   const dispatch = useDispatch();
   return (
+<<<<<<< Updated upstream
     <FormGroup>
       <FormControlLabel
         control={
@@ -388,6 +387,23 @@ const NetworkStateControl: React.FC = () => {
         label="Online"
       />
     </FormGroup>
+=======
+    <div className={'network-state-control'}>
+      <FormGroup>
+        <FormControlLabel
+          control={
+            <Switch
+              checked={connected}
+              onChange={() => {
+                dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+              }}
+            />
+          }
+          label="Online"
+        />
+      </FormGroup>
+    </div>
+>>>>>>> Stashed changes
   );
 };
 

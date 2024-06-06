@@ -28,6 +28,8 @@ import { MobileOnly } from 'UI/Predicates/MobileOnly';
 import { OfflineDataSyncDialog } from 'UI/OfflineDataSync/OfflineDataSyncDialog';
 
 import Spinner from 'UI/Spinner/Spinner';
+import { WebOnly } from 'UI/Predicates/WebOnly';
+import { selectConfiguration } from 'state/reducers/configuration';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -219,6 +221,7 @@ const App: React.FC = () => {
   const authInitiated = useSelector((state: any) => state.Auth.initialized);
   const { detail: errorDetail, actions, hasCrashed } = useSelector(selectGlobalErrorState);
   const { disrupted } = useSelector(selectAuth);
+  const { MOBILE } = useSelector(selectConfiguration);
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
@@ -234,7 +237,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <div id="app" className="App">
+    <div id="app" className={`${MOBILE ? 'is-mobile' : ''} App`}>
       <Header />
       <Map>
         <ButtonContainer />
@@ -243,7 +246,9 @@ const App: React.FC = () => {
       <Overlay>
         <OverlayContentMemo />
       </Overlay>
-      <Footer />
+      <WebOnly>
+        <Footer />
+      </WebOnly>
       <NewRecordDialog />
       <MobileOnly>
         <OfflineDataSyncDialog />

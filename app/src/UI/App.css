@@ -1,61 +1,57 @@
 @font-face {
-  font-family: 'BCSans';
+  font-family: BCSans;
   font-style: normal;
   src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Regular.woff') format('woff');
 }
 
 @font-face {
-  font-family: 'BCSans-Italic';
+  font-family: BCSans-Italic;
   font-style: italic;
   src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Italic.woff') format('woff');
 }
 
 @font-face {
-  font-family: 'BCSans-Bold';
+  font-family: BCSans-Bold;
   font-weight: 700;
   src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-Bold.woff') format('woff');
 }
 
 @font-face {
-  font-family: 'BCSans-BoldItalic';
+  font-family: BCSans-BoldItalic;
   font-style: italic;
   font-weight: 700;
   src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff') format('woff');
 }
 
 body {
-  background-color: #003366;
+  background-color: #036;
   margin: 0;
-  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px)
-    env(safe-area-inset-left, 0px);
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
 }
 
 .App {
   height: 100%;
   width: 100%;
   text-align: center;
-  margin: 0px;
-  /* flex-direction: column;*/
+  margin: 0;
   display: flex;
   flex: 1;
-  flex-direction: column;
-  flex-wrap: wrap;
+  flex-flow: column wrap;
   max-height: 100svh;
   max-width: 100%;
   overflow: hidden;
-}
 
-/* old one */
-/*
-.Map {
-  flex: 1;
+  /* set by compilation flag */
+
+  &.is-mobile {
+    --footer-bar-height: 0px;
+  }
 }
-*/
 
 .MapWrapper {
   position: relative;
   width: 100%;
-  height: calc(100svh - 77px); /* calculate height of the screen minus the heading */
+  height: calc(100svh - (var(--header-bar-height) + var(--footer-bar-height))); /* calculate height of the screen minus the heading */
 }
 
 .Map {
@@ -69,7 +65,7 @@ body {
 }
 
 .overlay-content-fullscreen {
-  /*padding-top: 6rem;*/
+  /* padding-top: 6rem; */
 }
 
 #app-pre-auth-init {
@@ -77,5 +73,34 @@ body {
   height: 100%;
   min-height: 100vh;
   min-width: 100vw;
-  background-color: #003366;
+  background-color: #036;
+}
+
+:root {
+  --header-bar-height: 60px;
+  --footer-bar-height: 32px;
+}
+
+@media only screen and (width <= 800px) {
+  :root {
+    --header-bar-height: 40px;
+
+    /* --footer-bar-height: 32px; */
+  }
+}
+
+@media only screen and (width >= 801px) and (width <= 1280px) {
+  :root {
+    --header-bar-height: 60px;
+
+    /* --footer-bar-height: 32px; */
+  }
+}
+
+@media only screen and (width >= 1281px) {
+  :root {
+    --header-bar-height: 60px;
+
+    /* --footer-bar-height: 32px; */
+  }
 }
