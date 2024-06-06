@@ -373,21 +373,6 @@ const NetworkStateControl: React.FC = () => {
   const { connected } = useSelector((state) => state.Network);
   const dispatch = useDispatch();
   return (
-<<<<<<< Updated upstream
-    <FormGroup>
-      <FormControlLabel
-        control={
-          <Switch
-            checked={connected}
-            onChange={() => {
-              dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
-            }}
-          />
-        }
-        label="Online"
-      />
-    </FormGroup>
-=======
     <div className={'network-state-control'}>
       <FormGroup>
         <FormControlLabel
@@ -403,7 +388,6 @@ const NetworkStateControl: React.FC = () => {
         />
       </FormGroup>
     </div>
->>>>>>> Stashed changes
   );
 };
 

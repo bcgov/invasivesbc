@@ -26,7 +26,8 @@
 body {
   background-color: #036;
   margin: 0;
-  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0);
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0)
+    env(safe-area-inset-left, 0);
 }
 
 .App {
@@ -51,7 +52,9 @@ body {
 .MapWrapper {
   position: relative;
   width: 100%;
-  height: calc(100svh - (var(--header-bar-height) + var(--footer-bar-height))); /* calculate height of the screen minus the heading */
+  height: calc(
+    100svh - (var(--header-bar-height) + var(--footer-bar-height))
+  ); /* calculate height of the screen minus the heading */
 }
 
 .Map {
