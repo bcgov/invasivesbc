@@ -1,6 +1,4 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
-
-import { Http } from '@capacitor-community/http';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
@@ -24,8 +22,12 @@ async function withCurrentJWT(callback: withCurrentJWTCallback) {
     const header = `Bearer ${idToken}`;
     return await callback(header);
   } else {
-    const header = `Bearer ${keycloakInstance.idToken}`;
-    return await callback(header);
+    if (keycloakInstance !== null) {
+      const header = `Bearer ${keycloakInstance.idToken}`;
+      return await callback(header);
+    } else {
+      console.error('Keycloak instance was null. this is unexpected');
+    }
   }
 }
 
@@ -40,24 +42,23 @@ function* refreshRoles() {
 
   try {
     const { userData, rolesData } = yield withCurrentJWT(async (header) => {
-      const { data: userData } = await Http.request({
-        method: 'GET',
-        url: configuration.API_BASE + `/api/user-access`,
+      const userAccessResponse = await fetch(configuration.API_BASE + `/api/user-access`, {
         headers: {
           authorization: header,
           accept: 'application/json'
         }
       });
-
-      const { data: rolesData } = await Http.request({
-        method: 'GET',
-        url: configuration.API_BASE + `/api/roles`,
+      const rolesResponse = await fetch(configuration.API_BASE + `/api/roles`, {
         headers: {
           authorization: header,
           accept: 'application/json'
         }
       });
-      return { userData, rolesData };
+      if (userAccessResponse == null || rolesResponse == null) {
+        console.error('null response received');
+        return null;
+      }
+      return { userData: await userAccessResponse.json(), rolesData: await rolesResponse.json() };
     });
 
     yield put({

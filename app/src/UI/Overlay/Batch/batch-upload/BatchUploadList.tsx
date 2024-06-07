@@ -1,4 +1,3 @@
-import 'UI/Styles/batch.scss';
 import { Box, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';

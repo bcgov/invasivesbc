@@ -1,6 +1,5 @@
-import qs from 'qs';
 import { put, select, take } from 'redux-saga/effects';
-import { ActivityStatus, getShortActivityID } from 'sharedAPI';
+import { ActivityStatus } from 'sharedAPI';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 import {
@@ -20,14 +19,9 @@ import {
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 
-const checkForErrors = (response: any, status?: any, url?: any) => {
-  if (response.code > 201) {
-  }
-};
-
 //
 export function* handle_ACTIVITY_CREATE_NETWORK(action) {
-  const networkReturn = yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
+  yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
 
   yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.activity.activity_id } });
 }
@@ -36,10 +30,9 @@ export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST(action) {
   try {
     const activityState = yield select(selectActivity);
     console.dir(activityState);
-    const networkReturn = yield InvasivesAPI_Call(
-      'DELETE',
-      `/api/activities?` + qs.stringify({ id: [activityState.activity.activity_id] })
-    );
+    const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/activities`, {
+      ids: [activityState.activity.activity_id]
+    });
     if (networkReturn?.status == 200) {
       yield put({ type: ACTIVITY_DELETE_SUCCESS });
     } else {

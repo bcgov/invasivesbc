@@ -14,17 +14,19 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 
 const maximize = () => {
-  setOverlayHeight('90vh');
+  setOverlayHeight('90%');
 };
 
 const minimize = () => {
-  setOverlayHeight('1vh');
+  setOverlayHeight('0px');
 };
 
 const setOverlayHeight = (height) => {
   const sel = document.querySelector(':root');
   if (sel instanceof HTMLElement) {
-    sel.style.setProperty('--overlay-height', `clamp(var(--footer-bar-height) + 20px, ${height}, 90vh)`);
+    const MIN = `var(--overlay-grip-height)`;
+    const MAX = `90%`;
+    sel.style.setProperty('--overlay-height', `clamp(${MIN}, ${height}, ${MAX})`);
   }
 };
 
@@ -39,7 +41,10 @@ const getAppHeight = () => {
 
 const computeDesiredDragHandleHeightFromMousePosition = (mouseY) => {
   const appHeight = getAppHeight();
-  return appHeight - mouseY;
+
+  const SNAP_TO_NEAREST = 25; // set to 1 for no snap
+
+  return Math.floor((appHeight - mouseY) / SNAP_TO_NEAREST) * SNAP_TO_NEAREST;
 };
 
 const debouncedDrag = throttle((e) => {
@@ -52,6 +57,7 @@ const debouncedDrag = throttle((e) => {
     const mousePos = e.y;
     newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(mousePos);
   }
+
   setOverlayHeight(`${newOverlayHeight}px`);
 }, 33);
 
@@ -73,7 +79,6 @@ const onClickDragButton = (e) => {
     document.addEventListener('touchmove', drag, false);
     document.addEventListener('touchend', cleanup, true);
   } else {
-    console.log('** click drag mouse');
     document.addEventListener('mousemove', drag, false);
     document.addEventListener('mouseup', cleanup, true);
   }
@@ -87,18 +92,18 @@ export const OverlayHeader = () => {
       <div></div>
       <div className="overlayMenuResizeButtons">
         <div className="fullScreenOverlayButton">
-          <Button className="leftOverlayResizeButton" sx={{ height: '20px' }} onClick={maximize} variant="contained">
+          <Button className="leftOverlayResizeButton" onClick={maximize} variant="contained">
             <ArrowDropUpIcon />
           </Button>
         </div>
 
         <div onMouseDown={onClickDragButton} onTouchStart={onClickDragButton} className="dragMeToResize">
-          <Button className="centerOverlayResizeButton" sx={{ height: '20px' }} variant="contained">
+          <Button className="centerOverlayResizeButton" variant="contained">
             <DragHandleIcon />
           </Button>
         </div>
         <div className="minimizeOverlayButton">
-          <Button className="rightOverlayResizeButton" sx={{ height: '20px' }} onClick={minimize} variant="contained">
+          <Button className="rightOverlayResizeButton" onClick={minimize} variant="contained">
             <ArrowDropDownIcon />
           </Button>
         </div>

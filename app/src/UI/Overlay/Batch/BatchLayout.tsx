@@ -3,6 +3,7 @@ import { Box, Container, Stack } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import './Batch.css';
 
 const BatchLayout = ({ children }) => {
   const { darkTheme } = useSelector(selectUserSettings);

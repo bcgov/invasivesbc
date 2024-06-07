@@ -1,9 +1,7 @@
 .FooterBar {
   height: var(--footer-bar-height);
-  width: 100vw;
   display: flex;
-  bottom: 0;
-  position: fixed;
+  position: relative;
   background-color: #036;
   z-index: 2147483646;
   overflow: hidden;

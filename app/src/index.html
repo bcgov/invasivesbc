@@ -1,26 +1,30 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0" />
+<html lang='en'>
+<head>
+  <meta charset='UTF-8' />
+  <meta
+    name='viewport'
+    content='width=device-width, initial-scale=1.0, interactive-widget=overlays-content' />
 
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet' />
 
-    <title>Invasive Species BC</title>
-  </head>
+  <title>Invasive Species BC</title>
+</head>
 
-  <div id="root"></div>
+<div id='root'></div>
 
-  <script type="module" src="./main.tsx"></script>
-  <script type="module">
-    import RefreshRuntime from '/@react-refresh';
-    const mobileMode = '%VITE_MOBILE%'.toLowerCase() === 'true';
+<script type='module' src='./main.tsx'></script>
+<script type='module'>
+  import RefreshRuntime from '/@react-refresh';
 
-    if (mobileMode) {
-      RefreshRuntime.injectIntoGlobalHook(window);
-      window.$RefreshReg$ = () => {};
-      window.$RefreshSig$ = () => (type) => type;
-      window.__vite_plugin_react_preamble_installed__ = true;
-    }
-  </script>
+  const mobileMode = '%VITE_MOBILE%'.toLowerCase() === 'true';
+
+  if (mobileMode) {
+    RefreshRuntime.injectIntoGlobalHook(window);
+    window.$RefreshReg$ = () => {
+    };
+    window.$RefreshSig$ = () => (type) => type;
+    window.__vite_plugin_react_preamble_installed__ = true;
+  }
+</script>
 </html>

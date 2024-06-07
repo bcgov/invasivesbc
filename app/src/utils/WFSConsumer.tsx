@@ -1,5 +1,3 @@
-import '@capacitor-community/http';
-import { Http } from '@capacitor-community/http';
 import SLDParser from 'geostyler-sld-parser';
 import proj4 from 'proj4';
 import reproject from 'reproject';
@@ -8,22 +6,13 @@ import { getSimplifiedGeoJSON } from 'hooks/useInvasivesApi';
 import { stringify } from 'wkt';
 
 const getHTTP = async (url) => {
-  // Example of a GET request
-  // Destructure as close to usage as possible for web plugin to work correctly
-  // when running in the browser
-  let ret;
   try {
-    ret = await Http.request({
-      method: 'GET',
-      url: url,
-      headers: {}
-    });
+    return await fetch(url);
   } catch (e) {
     console.log('failed http:');
     console.log(JSON.stringify(e));
+    return null;
   }
-
-  return ret;
 };
 
 proj4.defs(
@@ -75,10 +64,12 @@ export const getStylesDataFromBC: any = async (layerName: string) => {
   }*/
   const stylesURL = buildStylesURLForDataBC(layerName);
   const resp = await getHTTP(stylesURL);
-  const sldParser = new SLDParser();
-  const sldString = resp.data;
-  const styles = await sldParser.readStyle(sldString);
-  return styles;
+  if (resp !== null) {
+    const sldString = await resp.text();
+    const sldParser = new SLDParser();
+    return await sldParser.readStyle(sldString);
+  }
+  return null;
 };
 
 export const getDataFromDataBC: any = async (
@@ -123,72 +114,6 @@ export const getDataFromDataBC: any = async (
     }
     return [];
   }
-  /*
-  export const onlineConsumer: any = async (layerName, geoJsonFeature) => {
-    //this is copied from useInvaisivesApi:
-    const pageSize = 500;
-    let totalInBox = 0;
-    let startIndex = 0;
-    let returnVal = [];
-
-    const getURL = (layerName, startIndex, pageSize) => {
-      return (
-        'https://openmaps.gov.bc.ca/geo/ows?service=WFS&version=2.0&request=GetFeature&typeName=pub:' +
-        layerName +
-        '&startindex=' +
-        startIndex +
-        '&count=' +
-        pageSize +
-        //'&bbox=' + boundingBox[0].toString() + ',' + boundingBox[1].toString() + ',' + boundingBox[2].toString() + ',' + boundingBox[3].toString() +
-        //'&sortBy=SEQUENCE_ID&outputFormat=application/json&srsname=EPSG:4326'
-        '&outputFormat=application/json&srsname=EPSG:4326'
-      );
-    }*/
-
-  /*
-  //original layer name WHSE_BASEMAPPING.BC_MAJOR_CITIES_POINTS_500M
-  //original polygon: 'GEOMETRY%2C%20POLYGON%20%28%28830772.7%20367537.4%2C%201202463%20367537.4%2C%201202463%20651616.7%2C%20830772.7%20651616.7%2C%20830772.7%20367537.4%29%29'
-  const getURL2 = (layerName, startIndex, pageSize, geojson) => {
-    try {
-    console.log((geojson.gemoetry != null))
-    console.log('common from geo')
-    let geo = stringify(geojson)
-    console.log('encoded from common')
-    let encodedGeoFilter = encodeURI('&CQL_FILTER=WITHIN(GEOMETRY,' + geo + ')')
-    let url = 'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&outputFormat=json&typeName=' + layerName +
-      '&startindex=' +
-      startIndex +
-      '&count=' +
-      pageSize + '&SRSNAME=EPSG%3A3857' + ((geojson)? encodedGeoFilter : '')
-      //'&sortBy=SEQUENCE_ID&outputFormat=application/json&srsname=EPSG:4326'
-      console.log('url: ' + url)
-      return url;
-
-    }
-    catch(e)
-    {
-      console.log('failed to make url')
-      console.log(e)
-      console.log(JSON.stringify(e))
-    }
-    return ''
-
-  };
-  let URL = getURL2(layerName, startIndex, pageSize, geoJsonFeature);
-  console.log('URL:')
-  console.log(URL)
-  let resp;
-  try {
-    resp = await doGet(URL);
-
-    totalInBox = resp.data.numberMatched;
-    returnVal.push(...resp.data.features);
-    startIndex = 500;
-  } catch (e) {
-    console.log(e);
-    return 0;
-  }
-  */
 };
 
 export function* getDataFromDataBCv2(
@@ -199,10 +124,6 @@ export function* getDataFromDataBCv2(
   startIndex?: number
 ) {
   const totalInBox = 0;
-
-  /*if (Object.values(IndependentLayers).includes(layerName as any)) {
-    return [];
-  }*/
 
   let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
 
@@ -232,70 +153,4 @@ export function* getDataFromDataBCv2(
     }
     return [];
   }
-  /*
-  export const onlineConsumer: any = async (layerName, geoJsonFeature) => {
-    //this is copied from useInvaisivesApi:
-    const pageSize = 500;
-    let totalInBox = 0;
-    let startIndex = 0;
-    let returnVal = [];
-
-    const getURL = (layerName, startIndex, pageSize) => {
-      return (
-        'https://openmaps.gov.bc.ca/geo/ows?service=WFS&version=2.0&request=GetFeature&typeName=pub:' +
-        layerName +
-        '&startindex=' +
-        startIndex +
-        '&count=' +
-        pageSize +
-        //'&bbox=' + boundingBox[0].toString() + ',' + boundingBox[1].toString() + ',' + boundingBox[2].toString() + ',' + boundingBox[3].toString() +
-        //'&sortBy=SEQUENCE_ID&outputFormat=application/json&srsname=EPSG:4326'
-        '&outputFormat=application/json&srsname=EPSG:4326'
-      );
-    }*/
-
-  /*
-  //original layer name WHSE_BASEMAPPING.BC_MAJOR_CITIES_POINTS_500M
-  //original polygon: 'GEOMETRY%2C%20POLYGON%20%28%28830772.7%20367537.4%2C%201202463%20367537.4%2C%201202463%20651616.7%2C%20830772.7%20651616.7%2C%20830772.7%20367537.4%29%29'
-  const getURL2 = (layerName, startIndex, pageSize, geojson) => {
-    try {
-    console.log((geojson.gemoetry != null))
-    console.log('common from geo')
-    let geo = stringify(geojson)
-    console.log('encoded from common')
-    let encodedGeoFilter = encodeURI('&CQL_FILTER=WITHIN(GEOMETRY,' + geo + ')')
-    let url = 'https://openmaps.gov.bc.ca/geo/pub/wfs?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature&outputFormat=json&typeName=' + layerName +
-      '&startindex=' +
-      startIndex +
-      '&count=' +
-      pageSize + '&SRSNAME=EPSG%3A3857' + ((geojson)? encodedGeoFilter : '')
-      //'&sortBy=SEQUENCE_ID&outputFormat=application/json&srsname=EPSG:4326'
-      console.log('url: ' + url)
-      return url;
-
-    }
-    catch(e)
-    {
-      console.log('failed to make url')
-      console.log(e)
-      console.log(JSON.stringify(e))
-    }
-    return ''
-
-  };
-  let URL = getURL2(layerName, startIndex, pageSize, geoJsonFeature);
-  console.log('URL:')
-  console.log(URL)
-  let resp;
-  try {
-    resp = await doGet(URL);
-
-    totalInBox = resp.data.numberMatched;
-    returnVal.push(...resp.data.features);
-    startIndex = 500;
-  } catch (e) {
-    console.log(e);
-    return 0;
-  }
-  */
 }

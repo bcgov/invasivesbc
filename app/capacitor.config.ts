@@ -19,12 +19,10 @@ const config: CapacitorConfig = {
       launchShowDuration: 0
     },
     CapacitorCookies: {
-      // native apis
-      enabled: true
+      enabled: false
     },
     CapacitorHttp: {
-      // disable CORS, use native APIs
-      enabled: true
+      enabled: false
     }
   }
 };

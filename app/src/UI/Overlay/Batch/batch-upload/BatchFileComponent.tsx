@@ -13,7 +13,7 @@ const dropzoneStyle = {
 
 const BatchFileComponent = ({ setData, ready, disabled }) => {
   const [filename, setFilename] = useState(null);
-  const [statusMessage, setStatusMessage] = useState(null);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const onDrop = useCallback((acceptedFiles) => {
     acceptedFiles.forEach((file) => {

@@ -26,36 +26,46 @@
 body {
   background-color: #036;
   margin: 0;
-  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0)
-    env(safe-area-inset-left, 0);
+  padding: 0;
 }
 
 .App {
-  height: 100svh;
-  width: 100svw;
+  height: 100dvh;
+  width: 100%;
   text-align: center;
   margin: 0;
   display: flex;
-  flex: 1;
   flex-flow: column wrap;
   position: relative;
-  max-height: 100svh;
-  max-width: 100svw;
+  box-sizing: border-box;
+  padding: calc(var(--extra-top-padding) + env(safe-area-inset-top, 0)) env(safe-area-inset-right, 0) calc(var(--extra-bottom-padding) + env(safe-area-inset-bottom, 0)) env(safe-area-inset-left, 0);
   overflow: hidden;
 
   /* set by compilation flag */
 
   &.is-mobile {
     --footer-bar-height: 0px;
+    --extra-top-padding: 20px;
+    --extra-bottom-padding: 20px;
   }
 }
 
-.MapWrapper {
+.map-containing-block {
   position: relative;
+  flex-grow: 1;
   width: 100%;
-  height: calc(
-    100svh - (var(--header-bar-height) + var(--footer-bar-height))
-  ); /* calculate height of the screen minus the heading */
+  height: 100px;
+}
+
+.MapWrapper {
+  position: absolute;
+  inset: 0;
+
+  /* height: calc( */
+
+  /*  100svh - (var(--header-bar-height) + var(--footer-bar-height)) */
+
+  /* ); !* calculate height of the screen minus the heading *! */
 }
 
 .Map {
@@ -68,7 +78,6 @@ body {
 }
 
 .overlay-content-fullscreen {
-  /* padding-top: 6rem; */
 }
 
 #app-pre-auth-init {
@@ -84,6 +93,9 @@ body {
   --footer-bar-height: 32px;
   --map-button-bar-height: 45px;
   --overlay-height: 200px;
+  --overlay-grip-height: 20px; /* grab handle */
+  --extra-top-padding: 0px;
+  --extra-bottom-padding: 0px;
 }
 
 @media only screen and (width <= 800px) {

@@ -21,11 +21,16 @@ GET.apiDoc = {
 
 function getMedia(): RequestHandler {
   return async (req, res, next) => {
-    const keys = req.query.key as string[];
+    const param = req.query.key;
 
-    if (!keys || !keys.length) {
-      // No media keys found, skipping get media step
+    if (!param) {
       return next();
+    }
+    const keys: string[] = [];
+    if (Array.isArray(param)) {
+      keys.push(...(param as string[]));
+    } else {
+      keys.push(param as string);
     }
 
     const s3GetPromises: Promise<GetObjectOutput>[] = [];

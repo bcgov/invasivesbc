@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { CopyToClipboardButton } from './ClipboardHelper';
 import { Button } from '@mui/material';
 import { UnfoldLess, UnfoldMore } from '@mui/icons-material';
-import { USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST } from 'state/actions';
 import { useHistory } from 'react-router-dom';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
-import 'UI/Styles/batch.scss';
 
 export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?: string; length?: number }) => {
   const [truncate, setTruncate] = useState(true);
@@ -22,20 +19,16 @@ export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?
     }
   }, [truncate, props.displayVal]);
 
-  //{truncate && <UnfoldMore /> || <UnfoldLess/>}
-  if (typeof props.displayVal == 'string') {
-    return (
-      <>
-        <Button onClick={() => setTruncate(!truncate)}>
-          <>{(truncate && <UnfoldMore />) || <UnfoldLess />}</>
-        </Button>
-        <CopyToClipboardButton content={props.content ? props.content : props.displayVal} />
-        {renderedValue}
-        {truncate ? '…' : ''}
-      </>
-    );
-  }
-  return null;
+  return (
+    <>
+      <Button onClick={() => setTruncate(!truncate)}>
+        <>{(truncate && <UnfoldMore />) || <UnfoldLess />}</>
+      </Button>
+      <CopyToClipboardButton content={props.content ? props.content : props.displayVal} />
+      {renderedValue}
+      {truncate ? '…' : ''}
+    </>
+  );
 };
 
 const BatchTableCell = ({ field, row }) => {
@@ -73,7 +66,7 @@ const BatchTableCell = ({ field, row }) => {
   }, [row]);
 
   useEffect(() => {
-    let highestSeveritySeen = null;
+    let highestSeveritySeen: number | null = null;
     if (!row.data[field]?.validationMessages) {
       return;
     }
@@ -85,10 +78,16 @@ const BatchTableCell = ({ field, row }) => {
       if (level === -1) {
         level = LEVELS.length - 1;
       }
-      highestSeveritySeen = Math.max(highestSeveritySeen, level);
+      if (highestSeveritySeen !== null) {
+        highestSeveritySeen = Math.max(highestSeveritySeen, level);
+      } else {
+        highestSeveritySeen = level;
+      }
     }
 
-    setDisplaySeverity(LEVELS[highestSeveritySeen]);
+    if (highestSeveritySeen !== null) {
+      setDisplaySeverity(LEVELS[highestSeveritySeen]);
+    }
   }, [row.data[field].validationMessages]);
 
   const DataTypeDisplay = (templateColumn) => {
@@ -160,8 +159,6 @@ const BatchTableCell = ({ field, row }) => {
 };
 
 const BatchTable = ({ jsonRepresentation, created_activities }) => {
-  const dispatch = useDispatch();
-  // const tabsConfigState = useSelector(selectTabs);
   const { darkTheme } = useSelector(selectUserSettings);
   const history = useHistory();
   return (

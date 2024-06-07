@@ -1,7 +1,6 @@
-import { Http } from '@capacitor-community/http';
 import { Store } from 'redux';
-import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
-import { RootState } from '../reducers/rootReducer';
+import { CRASH_HANDLE_GLOBAL_ERROR } from 'state/actions';
+import { RootState } from 'state/reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) {
@@ -49,19 +48,18 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) 
         })
       );
 
-      await Http.request({
+      await fetch(state.Configuration.current.API_BASE + `/api/error/`, {
         method: 'POST',
         headers: {
           Authorization: await getCurrentJWT(),
           'Content-Type': 'application/json'
         },
-        url: state.Configuration.current.API_BASE + `/api/error/`,
-        data: JSON.stringify({
+        body: JSON.stringify({
           error: { message: error.message + '\n' + error.stack + '\n' + errorInfo.sagaStack },
           clientState: loggingState,
           commitHash: state.Configuration.current.COMMIT_HASH
         })
-      }).then(() => {});
+      });
     }
   };
 }

@@ -1,6 +1,5 @@
 import { FeatureCollection } from '@turf/turf';
 import { Feature } from 'geojson';
-import { PointOfInterestSubtype, PointOfInterestType } from 'constants/pointsOfInterest';
 
 /**
  * Activity search filter criteria.
@@ -250,7 +249,7 @@ export interface IPointOfInterestSearchCriteria {
    */
   page?: number;
   /**
-  /**
+   /**
    * The number of results to return.
    *@
    * @type {number}
@@ -355,65 +354,4 @@ export interface IPointOfInterestSearchCriteria {
    * @memberof IPointOfInterestSearchCriteria
    */
   species_negative?: string[];
-}
-
-/**
- * MetabaseQuery search filter criteria.
- *
- * @export
- * @interface IMetabaseQuerySearchCriteria
- */
-export interface IMetabaseQuerySearchCriteria {
-  /**
-   * The id of a corresponding Metabase Query to search for.
-   *
-   * @type {number}
-   * @memberof IMetabaseQuerySearchCriteria
-   */
-  metabaseQueryId?: number;
-  /**
-   * GeoJSON feature (of type polygon) to search in.
-   *
-   * @type {Feature}
-   * @memberof IMetabaseQuerySearchCriteria
-   */
-  search_feature?: Feature;
-}
-
-/**
- * Create Metabase Query post body
- *
- * @export
- * @interface ICreateMetabaseQuery
- */
-export interface ICreateMetabaseQuery {
-  name?: string;
-  description?: string;
-  activity_ids?: string[];
-  point_of_interest_ids?: string[];
-}
-
-/**
- * Create point_of_interest endpoint post body.
- *
- * @export
- * @interface ICreatePointOfInterest
- */
-export interface ICreatePointOfInterest {
-  point_of_interest_type: PointOfInterestType;
-  point_of_interest_subtype: PointOfInterestSubtype;
-  geometry: Feature[];
-  media: IMedia[];
-  form_data: any;
-}
-
-/**
- * Supported search sort directions.
- *
- * @export
- * @enum {number}
- */
-export enum SORT_DIRECTION {
-  ASC = 'ASC',
-  DESC = 'DESC'
 }

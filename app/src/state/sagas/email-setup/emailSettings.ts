@@ -1,28 +1,26 @@
-import { all, takeEvery, select, put } from 'redux-saga/effects';
-import { Http } from '@capacitor-community/http';
+import { all, put, select, takeEvery } from 'redux-saga/effects';
 import {
   EMAIL_SETTINGS_RETRIEVE_REQUEST,
   EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
   EMAIL_SETTINGS_UPDATE,
-  EMAIL_SETTINGS_UPDATE_SUCCESS,
-  EMAIL_SETTINGS_UPDATE_FAILURE
+  EMAIL_SETTINGS_UPDATE_FAILURE,
+  EMAIL_SETTINGS_UPDATE_SUCCESS
 } from 'state/actions';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { selectAuth } from 'state/reducers/auth';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 function* fetchEmailSettings() {
   console.log('Fetch called...');
   const configuration = yield select(selectConfiguration);
 
-  const { data } = yield Http.request({
-    method: 'GET',
-    url: configuration.API_BASE + `/api/email-settings`,
+  const res = yield fetch(configuration.API_BASE + `/api/email-settings`, {
     headers: {
-      Authorization: yield getCurrentJWT(),
-      'Content-Type': 'application/json'
+      Authorization: yield getCurrentJWT()
     }
   });
+
+  const data = yield res.json();
+
   yield put({
     type: EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
     payload: {
@@ -40,16 +38,17 @@ function* fetchEmailSettings() {
 
 function* updateEmailSettings(action) {
   const configuration = yield select(selectConfiguration);
-  const { data } = yield Http.request({
+  const res = yield fetch(configuration.API_BASE + `/api/email-settings`, {
     method: 'PUT',
-    url: configuration.API_BASE + `/api/email-settings`,
     headers: {
       Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
-    data: action.payload
+    body: JSON.stringify(action.payload)
   });
-  if (data.code >= 200 && data.code <= 300)
+  const data = yield res.json();
+  
+  if (res.ok) {
     yield put({
       type: EMAIL_SETTINGS_UPDATE_SUCCESS,
       payload: {
@@ -57,7 +56,7 @@ function* updateEmailSettings(action) {
         emailSettings: data.request
       }
     });
-  else
+  } else {
     yield put({
       type: EMAIL_SETTINGS_UPDATE_FAILURE,
       payload: {
@@ -65,6 +64,7 @@ function* updateEmailSettings(action) {
         emailSettings: data.request
       }
     });
+  }
 }
 
 function* emailSettingsSaga() {

@@ -83,19 +83,21 @@ DELETE.apiDoc = {
         }
       ]
     : [],
-  parameters: [
-    {
-      in: 'query',
-      name: 'id',
-      required: true
-    }
-  ],
   requestBody: {
-    description: 'Activities search filter criteria object.',
+    description: 'Delete activities',
     content: {
       'application/json': {
         schema: {
-          properties: {}
+          description: 'Delete activities',
+          type: 'object',
+          properties: {
+            ids: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          }
         }
       }
     }
@@ -313,7 +315,9 @@ function deleteActivitiesByIds(): RequestHandler {
       message: 'is admin delete',
       body: { typeof: typeof isAdmin, value: JSON.stringify(isAdmin) }
     });
-    const ids = Object.values(req.query.id) as string[];
+
+    const { ids } = req.body;
+
     sanitizedSearchCriteria.activity_ids = ids;
 
     const connection = await getDBConnection();

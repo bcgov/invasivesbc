@@ -1,4 +1,3 @@
-import { Http } from '@capacitor-community/http';
 import { all, put, select, takeEvery } from 'redux-saga/effects';
 import {
   EMAIL_TEMPLATES_RETRIEVE_REQUEST,
@@ -7,7 +6,6 @@ import {
   EMAIL_TEMPLATES_UPDATE_FAILURE,
   EMAIL_TEMPLATES_UPDATE_SUCCESS
 } from 'state/actions';
-import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectEmailTemplates } from 'state/reducers/emailTemplates';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
@@ -15,37 +13,37 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 function* fetchEmailTemplates() {
   const configuration = yield select(selectConfiguration);
 
-  const { data } = yield Http.request({
-    method: 'GET',
-    url: configuration.API_BASE + `/api/email-templates`,
+  const res = yield fetch(configuration.API_BASE + `/api/email-templates`, {
     headers: {
-      Authorization: yield getCurrentJWT(),
-      'Content-Type': 'application/json'
+      Authorization: yield getCurrentJWT()
     }
   });
   yield put({
     type: EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS,
     payload: {
-      emailTemplates: data.result
+      emailTemplates: (yield res.json())?.result
     }
   });
 }
 
 function* updateEmailTemplates(action) {
   const configuration = yield select(selectConfiguration);
-  const { data } = yield Http.request({
+  const res = yield fetch(configuration.API_BASE + `/api/email-templates`, {
     method: 'PUT',
-    url: configuration.API_BASE + `/api/email-templates`,
     headers: {
       Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
-    data: action.payload
+    body: JSON.stringify(action.payload)
   });
+
+  const data = yield res.json();
+
   const emailTemplatesState = yield select(selectEmailTemplates);
   emailTemplatesState.emailTemplates[
     emailTemplatesState.emailTemplates.findIndex((template) => template.templatename === data.request.templatename)
   ] = data.request;
+
   if (data.code >= 200 && data.code <= 300) {
     yield put({
       type: EMAIL_TEMPLATES_UPDATE_SUCCESS,

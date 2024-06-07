@@ -1,7 +1,4 @@
 #overlaydiv {
-  min-height: 5vh;
-  max-height: calc(100% - 4vh);
-  height: var(--overlay-height);
   cursor: pointer;
 }
 
@@ -11,25 +8,28 @@
 }
 
 .map__overlay {
-  bottom: 0;
-
-  &.has-footer {
-    bottom: 3vh;
-  }
-
-  height: 0;
-  left: 0;
   position: absolute;
+  box-sizing: border-box;
+  bottom: 0;
+  left: 0;
   right: 0;
   background-color: #fff;
-  transition: all 0.2s ease;
-  transform: translateY(100%);
   z-index: 400;
+  transition: all 0.1s linear;
+  height: 0;
+
+  &.map__overlay--show {
+    height: calc(var(--overlay-height));
+    overflow-y: auto;
+  }
+
+  &.map__overlay--show-fullscreen {
+    top: 0;
+    height: auto;
+    overflow-y: visible;
+  }
 }
 
-.leaflet-control-container {
-  z-index: 499 !important;
-}
 
 .mapOverlayContents {
   height: 100%;
@@ -39,28 +39,3 @@
   /* /scroll-behavior: ; */
 }
 
-.map__overlay--show {
-  transform: translateY(0);
-  overflow-y: auto;
-  display: flex;
-
-  /*    overflow-y: visible;; */
-}
-
-.map__overlay--show-fullscreen {
-  height: 100% !important;
-  transform: translateY(0);
-  display: flex;
-  overflow-y: visible;
-
-  /* z-index: 9999999999; */
-}
-
-::-webkit-resizer {
-  top: 0;
-  left: 500;
-  border-width: 80px;
-  height: 200px;
-  border-style: solid;
-  border-color: transparent orangered orangered transparent;
-}

@@ -22,13 +22,16 @@ import {
 } from 'state/actions';
 import { selectAuth } from 'state/reducers/auth';
 
-let keycloakInstance = null;
+let keycloakInstance: Keycloak | null = null;
 
 const MIN_TOKEN_FRESHNESS = 20; //want our token to be good for at least this long at all times
 const TOKEN_REFRESH_INTERVAL = 5 * 1000;
 
-function* handleSigninRequest(action) {
+function* handleSigninRequest() {
   const config: AppConfig = yield select(selectConfiguration);
+  if (!keycloakInstance) {
+    return;
+  }
 
   try {
     yield call(keycloakInstance.login, {
@@ -47,7 +50,11 @@ function* handleSigninRequest(action) {
   }
 }
 
-function* handleSignoutRequest(action) {
+function* handleSignoutRequest() {
+  if (!keycloakInstance) {
+    return;
+  }
+
   try {
     yield keycloakInstance.logout();
     yield put({ type: AUTH_SIGNOUT_COMPLETE });
@@ -113,6 +120,9 @@ function* keepTokenFresh() {
 
 function* reinitAuth() {
   const config: AppConfig = yield select(selectConfiguration);
+  if (!keycloakInstance) {
+    return;
+  }
 
   const authTargetJSON = sessionStorage.getItem('_invasivesbc_auth_target');
   let postAuthNavigate = null;

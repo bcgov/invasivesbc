@@ -1,8 +1,8 @@
 :root:has(#map-btn-container, #overlaydiv.map__overlay--show) {
   #map-btn-container {
     bottom: clamp(
-      calc(20px + var(--footer-bar-height)),
-      var(--overlay-height) - var(--footer-bar-height) + 16px,
+      calc(var(--overlay-grip-height)),
+      calc(var(--overlay-grip-height) + var(--overlay-height) + 4px),
       calc(100svh - (var(--map-button-bar-height) + var(--header-bar-height)))
     );
   }
@@ -10,7 +10,7 @@
 
 :root:has(#map-btn-container):not(:has(#overlaydiv.map__overlay--show)) {
   #map-btn-container {
-    bottom: 16px;
+    bottom: 4px;
   }
 }
 
@@ -26,7 +26,7 @@
   left: 0;
   right: 0;
   height: var(--map-button-bar-height);
-  transition: bottom 0.2s ease;
+  transition: bottom 0.1s ease;
 
   .button {
     height: 100%;

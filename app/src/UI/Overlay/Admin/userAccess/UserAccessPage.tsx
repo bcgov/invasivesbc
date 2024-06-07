@@ -41,39 +41,6 @@ interface IAccessRequestPage {
   classes?: any;
 }
 
-/*const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    width: '320px'
-  },
-  error: {
-    backgroundColor: theme.palette.error.main
-  },
-  warning: {
-    backgroundColor: theme.palette.warning.main
-  },
-  info: {
-    backgroundColor: theme.palette.info.main
-  },
-  success: {
-    backgroundColor: theme.palette.success.main
-  },
-  gray: {
-    backgroundColor: theme.palette.grey[100]
-  },
-  paddingTop: {
-    paddingTop: '1rem'
-  },
-  container: {
-    paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
-  }
-}));
-*/
-
-function escapeRegExp(value: string): string {
-  return value.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, '\\$&');
-}
-
 interface QuickSearchToolbarProps {
   clearSearch: () => void;
   onChange: () => void;

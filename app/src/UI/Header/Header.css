@@ -18,14 +18,9 @@
 .HeaderBar {
   height: var(--header-bar-height);
   cursor: pointer;
-  width: 100vw;
   background-color: #036;
-
-  /* position: fixed; */
+  position: relative;
   z-index: 2147483646;
-
-  /* top: 0;
-    left: 0; */
   color: white;
   align-items: center;
 }
@@ -111,7 +106,7 @@
 
 .inv-icon {
   display: flex;
-  position: fixed;
+  position: absolute;
   left: 10px;
   align-items: center;
   height: var(--header-bar-height);
@@ -124,7 +119,7 @@
 
 .avatar-menu {
   display: flex;
-  position: fixed;
+  position: absolute;
   right: 10px;
   align-items: center;
   height: var(--header-bar-height);

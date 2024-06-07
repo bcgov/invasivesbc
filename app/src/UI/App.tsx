@@ -233,12 +233,12 @@ const App: React.FC = () => {
     <div id="app" className={`${MOBILE ? 'is-mobile' : ''} App`}>
       <Header />
       <Map>
+        <Overlay>
+          <OverlayContentMemo />
+        </Overlay>
         <ButtonContainer />
         <LayerPicker />
       </Map>
-      <Overlay>
-        <OverlayContentMemo />
-      </Overlay>
       <WebOnly>
         <Footer />
       </WebOnly>

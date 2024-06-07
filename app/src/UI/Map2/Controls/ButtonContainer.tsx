@@ -20,14 +20,19 @@ export const ButtonContainer = () => {
     <div id="map-btn-container">
       <HDToggle />
       <BaseMapToggle />
+
       {isAuth && <FindMeToggle />}
+
       <WebOnly>
         <LegendsButton />
       </WebOnly>
+
       <AccuracyToggle />
+
       {isAuth && <WhatsHereButton />}
 
       {isAuth && <NewRecord />}
+
       <WebOnly>
         {isAuth && <CenterCurrentRecord type="Activity" />}
         {isAuth && <CenterCurrentRecord type="IAPP" />}

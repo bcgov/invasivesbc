@@ -298,12 +298,14 @@ export const Map = (props: any) => {
   }, [userCoords?.heading, mapReady]);
 
   return (
-    <div className="MapWrapper">
-      <div ref={mapContainer} className="Map" />
-      <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
-        Loading tiles...
+    <div className="map-containing-block">
+      <div className="MapWrapper">
+        <div ref={mapContainer} className="Map" />
+        <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
+          Loading tiles...
+        </div>
+        {props.children}
       </div>
-      {props.children}
     </div>
   );
 };

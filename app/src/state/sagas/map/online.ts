@@ -1,4 +1,3 @@
-import { Http } from '@capacitor-community/http';
 import { call, put, select } from 'redux-saga/effects';
 import moment from 'moment';
 import { AnyAction } from 'redux-saga';
@@ -49,22 +48,13 @@ function* fetchS3GeoJSON() {
     activitiesExportURL = matchingExportConfig.url;
   }
 
-  const networkReturnS3 = yield Http.request({
-    method: 'GET',
+  const networkReturnS3 = yield fetch(activitiesExportURL, {
     headers: {
-      'Content-Type': 'application/json',
       'Accept-Encoding': 'gzip'
-    },
-    url: activitiesExportURL
+    }
   });
-  // map the id from the dict into the feature properties to keep the map happy
-  // const s3_geojson = Object.entries(networkReturnS3.data).map((entry) => {
-  //   const [key, value] = entry;
-  //   value.properties.id = key;
-  //   return value;
-  // });
 
-  return networkReturnS3.data;
+  return yield networkReturnS3.json();
 }
 
 function* fetchSupplementalGeoJSON(activitiesFilterCriteria) {
@@ -119,12 +109,11 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
 export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   const configuration = yield select(selectConfiguration);
 
-  const networkReturn = yield Http.request({
-    method: 'GET',
-    url: configuration.IAPP_GEOJSON_URL
-  });
+  const networkReturn = yield fetch(configuration.IAPP_GEOJSON_URL);
 
-  const rows = networkReturn?.data?.result || [];
+  const data = yield networkReturn.json();
+
+  const rows = data?.result || [];
   const featureCollection = {
     type: 'FeatureCollection',
     features: rows?.filter((row) => {

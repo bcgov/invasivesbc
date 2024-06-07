@@ -9,11 +9,7 @@ PODS:
     - CapacitorCordova
   - CapacitorApp (6.0.0):
     - Capacitor
-  - CapacitorBrowser (6.0.0):
-    - Capacitor
   - CapacitorCamera (6.0.0):
-    - Capacitor
-  - CapacitorCommunityHttp (1.4.1):
     - Capacitor
   - CapacitorCordova (6.0.0)
   - CapacitorGeolocation (6.0.0):
@@ -25,9 +21,7 @@ DEPENDENCIES:
   - AppAuth
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
-  - "CapacitorBrowser (from `../../node_modules/@capacitor/browser`)"
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
-  - "CapacitorCommunityHttp (from `../../node_modules/@capacitor-community/http`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
@@ -41,12 +35,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorApp:
     :path: "../../node_modules/@capacitor/app"
-  CapacitorBrowser:
-    :path: "../../node_modules/@capacitor/browser"
   CapacitorCamera:
     :path: "../../node_modules/@capacitor/camera"
-  CapacitorCommunityHttp:
-    :path: "../../node_modules/@capacitor-community/http"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorGeolocation:
@@ -58,13 +48,11 @@ SPEC CHECKSUMS:
   AppAuth: 501c04eda8a8d11f179dbe8637b7a91bb7e5d2fa
   Capacitor: 559d073c4ca6c27f8e7002c807eea94c3ba435a9
   CapacitorApp: 9d53aec7101f7b030a950c5bdc4df8612576b279
-  CapacitorBrowser: 7e1e2cdbb3e372f09f0bad0c4c21a6d187b679ad
   CapacitorCamera: b61f125d92a0ef75d7becb7956fed7dd13187ee0
-  CapacitorCommunityHttp: 7be90668527ef14ee10d08135b0e00fac9cf8247
   CapacitorCordova: 8c4bfdf69368512e85b1d8b724dd7546abeb30af
   CapacitorGeolocation: 1f12bbe372b65116e851bd8e3a94cf0ef9bacebb
   CordovaPlugins: 3575b94ab79514bf97bec2bd7c5f840afe388850
 
-PODFILE CHECKSUM: b752acbd4855c7ca1b6b3e934d512613ff53b454
+PODFILE CHECKSUM: e4b37976b9602a5ea305838a955fc031475c98f8
 
 COCOAPODS: 1.15.2
