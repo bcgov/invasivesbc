@@ -39,7 +39,6 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
  */
 export const Map = (props: any) => {
   const { API_BASE } = useSelector((state) => state.Configuration.current);
-  const store = useStore(); // to escape useselector memoization
 
   const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
@@ -119,6 +118,32 @@ export const Map = (props: any) => {
     }
   }, [map?.current?.isStyleLoaded()]);
 
+  const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
+  const authHeaderRef = useRef<string>();
+  authHeaderRef.current = currentAuthHeader;
+
+  useEffect(() => {
+    if (!loggedIn) {
+      return;
+    }
+
+    // get it once with no delay
+    getCurrentJWT().then((header) => {
+      setCurrentAuthHeader(header);
+    });
+
+    // and then regularly thereafter
+    const id = setInterval(() => {
+      getCurrentJWT().then((header) => {
+        setCurrentAuthHeader(header);
+      });
+    }, 10000);
+
+    return () => {
+      clearInterval(id);
+    };
+  }, [loggedIn]);
+
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated || !map_center) return;
@@ -132,8 +157,12 @@ export const Map = (props: any) => {
       activityGeo,
       null,
       API_BASE,
-      async () => {
-        return await getCurrentJWT();
+      () => {
+        if (authHeaderRef.current === undefined) {
+          console.error('requested access before header received');
+          return '';
+        }
+        return authHeaderRef.current;
       },
       PUBLIC_MAP_URL,
       map_center

@@ -47,7 +47,7 @@ function* updateEmailSettings(action) {
     body: JSON.stringify(action.payload)
   });
   const data = yield res.json();
-  
+
   if (res.ok) {
     yield put({
       type: EMAIL_SETTINGS_UPDATE_SUCCESS,

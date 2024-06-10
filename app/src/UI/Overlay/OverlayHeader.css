@@ -4,66 +4,54 @@
   top: -1px;
   position: sticky;
   background-color: #036;
-  align-items: center;
   z-index: 99999;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-}
 
-.overlayResizeButton {
-  background-color: white !important;
-  color: black !important;
+  .overlay-menu {
+    color: black;
+    background-color: white;
+    border-radius: 2px;
+    border: 1px solid darkgrey;
+    height: 100%;
+    vertical-align: baseline;
+  }
 
-  --webkit-border-radius: 0px !important;
-}
+  .left {
+    height: var(--overlay-grip-height);
+    width: 30%;
+  }
 
-.leftOverlayResizeButton {
-  background-color: white !important;
-  color: black !important;
-  border-radius: 5px 0 0 5px !important;
-  height: var(--overlay-grip-height);
-}
+  .center {
+    height: var(--overlay-grip-height);
 
-.rightOverlayResizeButton {
-  background-color: white !important;
-  color: black !important;
-  border-radius: 0 5px 5px 0 !important;
-  margin-left: 14.25px !important;
-  height: var(--overlay-grip-height);
-}
+    /* flex-grow: 1; */
+    place-items: center center;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
 
-.centerOverlayResizeButton {
-  padding-left: 6vw;
-  padding-right: 6vw;
-  background-color: white !important;
-  color: black !important;
-  border-radius: 0 !important;
-  height: var(--overlay-grip-height);
-  z-index: 999;
-}
+    .overlay-control {
+      color: black;
+      background-color: white;
+      border-radius: 2px;
+      border: 1px solid darkgrey;
+      height: 100%;
+      vertical-align: baseline;
+    }
 
-.overlay-header-close-button {
-  /* /  margin-right: auto; */
-  width: 100px;
-  height: var(--overlay-grip-height);
-  justify-content: flex-start;
-  display: flex;
-}
+    .dragMeToResize {
+      height: 100%;
+      width: 50px;
+    }
+  }
 
-.overlay-header-menu-button_container {
-  width: 100px;
-  height: var(--overlay-grip-height);
-  display: flex;
-  justify-content: flex-end;
-}
-
-.overlay-header-menu-button {
-  background-color: white !important;
-  color: black !important;
-}
-
-.dragMeToResize {
-  height: var(--overlay-grip-height);
-  width: 50px;
+  .right {
+    width: 30%;
+    justify-content: right;
+    display: flex;
+    flex-direction: row;
+    height: var(--overlay-grip-height);
+  }
 }

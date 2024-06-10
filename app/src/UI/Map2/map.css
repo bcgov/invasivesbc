@@ -113,30 +113,26 @@
   cursor: crosshair;
 }
 
-
 :root:has(#map-btn-container, #overlaydiv.map__overlay--show) {
   .maplibregl-ctrl-bottom-right {
     bottom: calc(var(--overlay-height) + var(--overlay-grip-height));
-    transition: bottom 0.1s ease;
+    transition: bottom 0.1s ease 0.3s;
   }
 
   .maplibregl-ctrl-bottom-left {
     bottom: calc(var(--overlay-height) + var(--overlay-grip-height));
-    transition: bottom 0.1s ease;
-
+    transition: bottom 0.1s ease 0.3s;
   }
 }
 
 :root:has(#map-btn-container):not(:has(#overlaydiv.map__overlay--show)) {
   .maplibregl-ctrl-bottom-right {
     bottom: 4px;
-    transition: bottom 0.1s ease;
-
+    transition: bottom 0.1s ease 0.3s;
   }
 
   .maplibregl-ctrl-bottom-left {
     bottom: 4px;
-    transition: bottom 0.1s ease;
-
+    transition: bottom 0.1s ease 0.3s;
   }
 }

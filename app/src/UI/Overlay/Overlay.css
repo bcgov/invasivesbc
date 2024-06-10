@@ -15,7 +15,7 @@
   right: 0;
   background-color: #fff;
   z-index: 400;
-  transition: all 0.1s linear;
+  transition: all 0.002s ease-in-out 0.002s;
   height: 0;
 
   &.map__overlay--show {
@@ -30,7 +30,6 @@
   }
 }
 
-
 .mapOverlayContents {
   height: 100%;
   width: 100%;
@@ -38,4 +37,3 @@
 
   /* /scroll-behavior: ; */
 }
-

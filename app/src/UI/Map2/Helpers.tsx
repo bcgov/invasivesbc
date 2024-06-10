@@ -29,7 +29,7 @@ export const mapInit = (
   activityGeo,
   whats_here_toggle,
   api_base,
-  getAuthHeaderCallback: () => Promise<string>,
+  getAuthHeaderCallback: () => string,
   PUBLIC_MAP_URL,
   map_center
 ) => {
@@ -95,216 +95,192 @@ export const mapInit = (
   // this is so we share one instance across the JS code and the map renderer
   protocol.add(p);
 
-  // we first fetch the header so we can get the center lon, lat of the map.
-  p.getHeader().then((h) => {
-    //now get the most current auth token from auth provider
-    getAuthHeaderCallback().then((authHeader) => {
-      map.current = new maplibregl.Map({
-        container: mapContainer.current,
-        maxZoom: 24,
-        zoom: 3,
-        minZoom: 0,
-        transformRequest: (url, resourceType) => {
-          if (url.includes(api_base)) {
-            return {
-              url,
-              headers: {
-                Authorization: authHeader
-              }
-            };
+  //now get the most current auth token from auth provider
+  map.current = new maplibregl.Map({
+    container: mapContainer.current,
+    maxZoom: 24,
+    zoom: 3,
+    minZoom: 0,
+    transformRequest: (url, resourceType) => {
+      if (url.includes(api_base)) {
+        return {
+          url,
+          headers: {
+            Authorization: getAuthHeaderCallback()
           }
-          return {
-            url
-          };
+        };
+      }
+      return {
+        url
+      };
+    },
+    center: [map_center[1], map_center[0]],
+    style: {
+      glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+      version: 8,
+      sources: {
+        'wms-test-source': {
+          type: 'raster',
+          tiles: [
+            'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
+          ],
+          tileSize: 256,
+          maxzoom: 24
         },
-        center: [map_center[1], map_center[0]],
-        style: {
-          glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
-          version: 8,
-          sources: {
-            'wms-test-source': {
-              type: 'raster',
-              tiles: [
-                'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
-              ],
-              tileSize: 256,
-              maxzoom: 24
-            },
-            'Esri-Sat-LayerHD': {
-              type: 'raster',
-              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-              tileSize: 256,
-              maxzoom: 24
-            },
-            'Esri-Sat-LayerSD': {
-              type: 'raster',
-              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-              tileSize: 256,
-              maxzoom: 18
-            },
-            'Esri-Sat-Label': {
-              type: 'raster',
-              tiles: [
-                'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
-              ],
-              tileSize: 256,
-              maxzoom: 18
-            },
-            'Esri-Topo': {
-              type: 'raster',
-              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
-              tileSize: 256,
-              maxzoom: 18
-            },
-            public_layer: {
-              type: 'vector',
-              url: `pmtiles://${PMTILES_URL}`,
-              //              url: `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`,
-              // url: `pmtiles://${ CONFIG.PUBLIC_MAP_URL}`,
-              attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
-            }
-          },
-          layers: [
-            {
-              id: 'Esri-Sat-LayerHD',
-              type: 'raster',
-              source: 'Esri-Sat-LayerHD',
-              minzoom: 0
-            },
-            {
-              id: 'Esri-Sat-LayerSD',
-              type: 'raster',
-              source: 'Esri-Sat-LayerSD',
-              minzoom: 0
-            },
-            {
-              id: 'Esri-Sat-Label',
-              type: 'raster',
-              source: 'Esri-Sat-Label',
-              minzoom: 0
-            },
-            {
-              id: 'Esri-Topo',
-              type: 'raster',
-              source: 'Esri-Topo',
-              minzoom: 0,
-              layout: {
-                visibility: 'none'
-              }
-            },
-            // {
-            //   id: 'wms-test-layer2',
-            //   type: 'raster',
-            //   source: 'wms-test-source',
-            //   minzoom: 0
-            // }
-            {
-              id: 'invasivesbc-pmtile-vector',
-              source: 'public_layer',
-              'source-layer': 'invasives',
-              type: 'fill',
-              paint: {
-                'fill-color': 'lightskyblue'
-              },
-              minzoom: 0,
-              maxzoom: 24
-            },
-            {
-              id: 'iapp-pmtile-vector',
-              source: 'public_layer',
-              'source-layer': 'iapp',
-              type: 'circle',
-              paint: {
-                'circle-color': 'limegreen'
-              },
-              minzoom: 0,
-              maxzoom: 24
-            },
-            {
-              id: 'invasivesbc-pmtile-vector-label',
-              source: 'public_layer',
-              'source-layer': 'invasives',
-              type: 'symbol',
-              layout: {
-                //                'icon-image': 'dog-park-11',
-                'text-field': [
-                  'format',
-                  ['upcase', ['get', 'id']],
-                  { 'font-scale': 0.9 },
-                  '\n',
-                  {},
-                  ['get', 'map_symbol'],
-                  { 'font-scale': 0.9 }
-                ],
-                // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-                'text-font': ['literal', ['Open Sans Bold']],
-                // 'text-font': ['literal', ['Open Sans Semibold']],
-                'text-offset': [0, 0.6],
-                'text-anchor': 'top'
-              },
-              paint: {
-                'text-color': 'black',
-                'text-halo-color': 'white',
-                'text-halo-width': 1,
-                'text-halo-blur': 1
-              },
-              minzoom: 0,
-              maxzoom: 24
-            },
-            {
-              id: 'iapp-pmtile-vector-label',
-              source: 'public_layer',
-              'source-layer': 'iapp',
-              type: 'symbol',
-              layout: {
-                'text-field': [
-                  'format',
-                  ['concat', 'IAPP Site: ', ['get', 'site_id']],
-                  { 'font-scale': 0.9 },
-                  '\n',
-                  {},
-                  ['get', 'map_symbol'],
-                  { 'font-scale': 0.9 }
-                ],
-                // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-                'text-font': ['literal', ['Open Sans Bold']],
-                // 'text-font': ['literal', ['Open Sans Semibold']],
-                'text-offset': [0, 0.6],
-                'text-anchor': 'top'
-              },
-              paint: {
-                'text-color': 'black',
-                'text-halo-color': 'white',
-                'text-halo-width': 1,
-                'text-halo-blur': 1
-              },
-              minzoom: 0,
-              maxzoom: 24
-            }
-          ]
+        'Esri-Sat-LayerHD': {
+          type: 'raster',
+          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+          tileSize: 256,
+          maxzoom: 24
+        },
+        'Esri-Sat-LayerSD': {
+          type: 'raster',
+          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+          tileSize: 256,
+          maxzoom: 18
+        },
+        'Esri-Sat-Label': {
+          type: 'raster',
+          tiles: [
+            'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+          ],
+          tileSize: 256,
+          maxzoom: 18
+        },
+        'Esri-Topo': {
+          type: 'raster',
+          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
+          tileSize: 256,
+          maxzoom: 18
+        },
+        public_layer: {
+          type: 'vector',
+          url: `pmtiles://${PMTILES_URL}`,
+          attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
         }
-      });
-
-      const scale = new ScaleControl({
-        maxWidth: 80,
-        unit: 'metric'
-      });
-      const nav = new NavigationControl();
-      map.current.addControl(scale, 'top-left');
-      map.current.addControl(nav, 'top-left');
-      /*refreshDrawControls(
-        map.current,
-        null,
-        drawSetter,
-        dispatch,
-        uHistory,
-        whats_here_toggle,
-        appModeUrl,
-        activityGeo,
-        null
-      );*/
-    });
+      },
+      layers: [
+        {
+          id: 'Esri-Sat-LayerHD',
+          type: 'raster',
+          source: 'Esri-Sat-LayerHD',
+          minzoom: 0
+        },
+        {
+          id: 'Esri-Sat-LayerSD',
+          type: 'raster',
+          source: 'Esri-Sat-LayerSD',
+          minzoom: 0
+        },
+        {
+          id: 'Esri-Sat-Label',
+          type: 'raster',
+          source: 'Esri-Sat-Label',
+          minzoom: 0
+        },
+        {
+          id: 'Esri-Topo',
+          type: 'raster',
+          source: 'Esri-Topo',
+          minzoom: 0,
+          layout: {
+            visibility: 'none'
+          }
+        },
+        {
+          id: 'invasivesbc-pmtile-vector',
+          source: 'public_layer',
+          'source-layer': 'invasives',
+          type: 'fill',
+          paint: {
+            'fill-color': 'lightskyblue'
+          },
+          minzoom: 0,
+          maxzoom: 24
+        },
+        {
+          id: 'iapp-pmtile-vector',
+          source: 'public_layer',
+          'source-layer': 'iapp',
+          type: 'circle',
+          paint: {
+            'circle-color': 'limegreen'
+          },
+          minzoom: 0,
+          maxzoom: 24
+        },
+        {
+          id: 'invasivesbc-pmtile-vector-label',
+          source: 'public_layer',
+          'source-layer': 'invasives',
+          type: 'symbol',
+          layout: {
+            //                'icon-image': 'dog-park-11',
+            'text-field': [
+              'format',
+              ['upcase', ['get', 'id']],
+              { 'font-scale': 0.9 },
+              '\n',
+              {},
+              ['get', 'map_symbol'],
+              { 'font-scale': 0.9 }
+            ],
+            // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+            'text-font': ['literal', ['Open Sans Bold']],
+            // 'text-font': ['literal', ['Open Sans Semibold']],
+            'text-offset': [0, 0.6],
+            'text-anchor': 'top'
+          },
+          paint: {
+            'text-color': 'black',
+            'text-halo-color': 'white',
+            'text-halo-width': 1,
+            'text-halo-blur': 1
+          },
+          minzoom: 0,
+          maxzoom: 24
+        },
+        {
+          id: 'iapp-pmtile-vector-label',
+          source: 'public_layer',
+          'source-layer': 'iapp',
+          type: 'symbol',
+          layout: {
+            'text-field': [
+              'format',
+              ['concat', 'IAPP Site: ', ['get', 'site_id']],
+              { 'font-scale': 0.9 },
+              '\n',
+              {},
+              ['get', 'map_symbol'],
+              { 'font-scale': 0.9 }
+            ],
+            // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+            'text-font': ['literal', ['Open Sans Bold']],
+            // 'text-font': ['literal', ['Open Sans Semibold']],
+            'text-offset': [0, 0.6],
+            'text-anchor': 'top'
+          },
+          paint: {
+            'text-color': 'black',
+            'text-halo-color': 'white',
+            'text-halo-width': 1,
+            'text-halo-blur': 1
+          },
+          minzoom: 0,
+          maxzoom: 24
+        }
+      ]
+    }
   });
+
+  const scale = new ScaleControl({
+    maxWidth: 80,
+    unit: 'metric'
+  });
+  const nav = new NavigationControl();
+  map.current.addControl(scale, 'top-left');
+  map.current.addControl(nav, 'top-left');
 };
 
 export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {

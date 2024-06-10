@@ -1,17 +1,16 @@
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { Route } from 'react-router';
 
-import throttle from 'lodash.throttle';
+import debounce from 'lodash.debounce';
 
 import { OVERLAY_MENU_TOGGLE } from 'state/actions';
 import './OverlayHeader.css';
-
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import SaveAsIcon from '@mui/icons-material/SaveAs';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
-import SaveAsIcon from '@mui/icons-material/SaveAs';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const maximize = () => {
   setOverlayHeight('90%');
@@ -41,13 +40,21 @@ const getAppHeight = () => {
 
 const computeDesiredDragHandleHeightFromMousePosition = (mouseY) => {
   const appHeight = getAppHeight();
-
-  const SNAP_TO_NEAREST = 25; // set to 1 for no snap
-
+  const SNAP_TO_NEAREST = 10; // set to 1 for no snap
   return Math.floor((appHeight - mouseY) / SNAP_TO_NEAREST) * SNAP_TO_NEAREST;
 };
 
-const debouncedDrag = throttle((e) => {
+const throttledResize = debounce(
+  (height) => {
+    setOverlayHeight(`${height}px`);
+  },
+  3,
+  { leading: true }
+);
+
+const drag = (e) => {
+  e.preventDefault();
+
   let newOverlayHeight;
 
   if (e.type.includes('touch')) {
@@ -58,11 +65,7 @@ const debouncedDrag = throttle((e) => {
     newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(mousePos);
   }
 
-  setOverlayHeight(`${newOverlayHeight}px`);
-}, 33);
-
-const drag = (e) => {
-  debouncedDrag(e);
+  throttledResize(newOverlayHeight);
 };
 
 const cleanup = () => {
@@ -75,6 +78,8 @@ const cleanup = () => {
 };
 
 const onClickDragButton = (e) => {
+  e.preventDefault();
+
   if (e.type.includes('touch')) {
     document.addEventListener('touchmove', drag, false);
     document.addEventListener('touchend', cleanup, true);
@@ -89,35 +94,29 @@ export const OverlayHeader = () => {
 
   return (
     <div className="overlay-header">
-      <div></div>
-      <div className="overlayMenuResizeButtons">
-        <div className="fullScreenOverlayButton">
-          <Button className="leftOverlayResizeButton" onClick={maximize} variant="contained">
-            <ArrowDropUpIcon />
-          </Button>
-        </div>
-
+      <div className={'left'}></div>
+      <div className={'center'}>
+        <IconButton className="overlay-control" onClick={maximize}>
+          <ArrowDropUpIcon />
+        </IconButton>
         <div onMouseDown={onClickDragButton} onTouchStart={onClickDragButton} className="dragMeToResize">
-          <Button className="centerOverlayResizeButton" variant="contained">
+          <IconButton className="overlay-control">
             <DragHandleIcon />
-          </Button>
+          </IconButton>
         </div>
-        <div className="minimizeOverlayButton">
-          <Button className="rightOverlayResizeButton" onClick={minimize} variant="contained">
-            <ArrowDropDownIcon />
-          </Button>
-        </div>
+        <IconButton className="overlay-control" onClick={minimize}>
+          <ArrowDropDownIcon />
+        </IconButton>
       </div>
-      <div className="overlay-header-menu-button-container">
+      <div className={'right'}>
         <Route
           path="/Records/Activity:*"
           exact={false}
           render={() => {
             return (
               <Button
-                className={'overlay-header-menu-button'}
-                sx={{ height: '20px' }}
                 variant="contained"
+                className={'overlay-menu'}
                 onClick={() => {
                   dispatch({ type: OVERLAY_MENU_TOGGLE });
                 }}
