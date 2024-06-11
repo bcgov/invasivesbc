@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../../main';
 import { waitFor } from '@testing-library/react';
-import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
+import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
 import { server } from 'mocks/server';
 
 describe('Can load initial record set layer state on return visit', function () {
@@ -86,14 +86,14 @@ describe('Can load initial record set layer state on return visit', function () 
       expect(store).toBeDefined();
       const MapMode = store.getState().Map.MapMode;
       if (MapMode === 'VECTOR_ENDPOINT') {
-        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        store.dispatch(MAP_TOGGLE_GEOJSON_CACHE());
       }
       expect(store.getState().Map.MapMode).toEqual('GEOJSON');
     });
   });
 
   it('Can load default and previous custom record set layers on return visit', async function () {
-    store.dispatch({ type: AUTH_INITIALIZE_COMPLETE, payload: { authenticated: true } });
+    store.dispatch(AUTH_INITIALIZE_COMPLETE({ authenticated: true }));
     await waitFor(() => {
       expect(store.getState()?.Map?.layers).toBeDefined();
       expect(store.getState()?.Map?.layers.length).toEqual(5);

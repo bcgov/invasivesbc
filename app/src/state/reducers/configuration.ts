@@ -18,32 +18,31 @@ function createConfigurationReducerWithDefaultState(configuration: AppConfig) {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case EXPORT_CONFIG_LOAD_REQUEST: {
-        return {
-          ...state,
-          exportConfigFreshUntil: null,
-          exportConfigLoading: true,
-          exportConfig: null
-        };
-      }
-      case EXPORT_CONFIG_LOAD_ERROR: {
-        return {
-          ...state,
-          exportConfigFreshUntil: null,
-          exportConfigLoading: false,
-          exportConfig: null
-        };
-      }
-      case EXPORT_CONFIG_LOAD_SUCCESS: {
-        return {
-          ...state,
-          exportConfigFreshUntil: moment().add('15', 'minutes').valueOf(),
-          exportConfigLoading: true,
-          exportConfig: action.payload
-        };
-      }
+    if (EXPORT_CONFIG_LOAD_REQUEST.match(action)) {
+      return {
+        ...state,
+        exportConfigFreshUntil: null,
+        exportConfigLoading: true,
+        exportConfig: null
+      };
     }
+    if (EXPORT_CONFIG_LOAD_ERROR.match(action)) {
+      return {
+        ...state,
+        exportConfigFreshUntil: null,
+        exportConfigLoading: false,
+        exportConfig: null
+      };
+    }
+    if (EXPORT_CONFIG_LOAD_SUCCESS.match(action)) {
+      return {
+        ...state,
+        exportConfigFreshUntil: moment().add('15', 'minutes').valueOf(),
+        exportConfigLoading: true,
+        exportConfig: action.payload
+      };
+    }
+
     return state;
   };
 }

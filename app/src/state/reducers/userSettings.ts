@@ -113,289 +113,253 @@ const initialState: UserSettingsState = {
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
     return createNextState(state, (draftState) => {
-      switch (action.type) {
-        case ACTIVITY_GET_REQUEST: {
-          draftState.activeActivity = action.payload.activityID;
-          break;
+      if (ACTIVITY_GET_REQUEST.match(action)) {
+        draftState.activeActivity = action.payload.activityID;
+      }
+      if (ACTIVITY_DELETE_SUCCESS.match(action)) {
+        draftState.activeActivity = '';
+        draftState.activeActivityDescription = '';
+      }
+      if (GET_API_DOC_SUCCESS.match(action)) {
+        draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
+        draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
+      }
+      if (MAP_TOGGLE_WHATS_HERE.match(action)) {
+        draftState.recordsExpanded = action.payload?.toggle ? false : draftState.recordsExpanded;
+      }
+      if (OPEN_NEW_RECORD_MENU.match(action)) {
+        draftState.newRecordDialogueOpen = true;
+      }
+      if (CLOSE_NEW_RECORD_MENU.match(action)) {
+        draftState.newRecordDialogueOpen = false;
+      }
+      if (IAPP_GET_SUCCESS.match(action)) {
+        draftState.activeIAPP = action.payload.iapp?.site_id;
+      }
+      if (ACTIVITY_CREATE_SUCCESS.match(action)) {
+        draftState.newRecordDialogueOpen = false;
+      }
+      if (RECORDSET_ADD_FILTER.match(action)) {
+        switch (action.payload.filterType) {
+          case 'tableFilter':
+            if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
+              draftState.recordSets[action.payload.setID].tableFilters = [];
+            }
+            draftState.recordSets[action.payload.setID]?.tableFilters.push({
+              id: getUuid(),
+              field: action.payload.field,
+              filterType: action.payload.filterType,
+              operator: action.payload.operator ? action.payload.operator : 'CONTAINS',
+              operator2: action.payload.operator2 ? action.payload.operator2 : 'AND',
+              filter: action.payload.filter ? action.payload.filter : ''
+            });
+
+          default:
         }
-        case ACTIVITY_DELETE_SUCCESS: {
-          draftState.activeActivity = '';
-          draftState.activeActivityDescription = '';
-          break;
+      }
+      if (RECORDSET_SET_SORT.match(action)) {
+        //if the sort column is the same as the current sort column, toggle the sort order
+        // if its already desc, remove the sort column and order
+
+        // handle no sort order:
+        if (
+          !draftState.recordSets[action.payload.setID].sortOrder ||
+          draftState.recordSets[action.payload.setID].sortColumn !== action.payload.sortColumn
+        ) {
+          draftState.recordSets[action.payload.setID].sortOrder = 'ASC';
+          draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
         }
-        case GET_API_DOC_SUCCESS: {
-          draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
-          draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
-          break;
+
+        // handle toggle to desc:
+        else if (
+          draftState.recordSets[action.payload.setID].sortOrder === 'ASC' &&
+          draftState.recordSets[action.payload.setID].sortColumn === action.payload.sortColumn
+        ) {
+          draftState.recordSets[action.payload.setID].sortOrder = 'DESC';
         }
-        case MAP_TOGGLE_WHATS_HERE: {
-          draftState.recordsExpanded = action.payload?.toggle ? false : draftState.recordsExpanded;
-          break;
+
+        // handle toggle off:
+        else {
+          delete draftState.recordSets[action.payload.setID].sortOrder;
+          delete draftState.recordSets[action.payload.setID].sortColumn;
         }
-        case OPEN_NEW_RECORD_MENU: {
-          draftState.newRecordDialogueOpen = true;
-          break;
+      }
+      if (INIT_CACHE_RECORDSET.match(action)) {
+        draftState.recordSets[action.payload.setID].isCaching = true;
+      }
+      if (RECORDSET_REMOVE_FILTER.match(action)) {
+        const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+          (filter) => filter.id === action.payload.filterID
+        );
+        draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
+
+        draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
+          draftState.recordSets[action.payload.setID]?.tableFiltersHash;
+
+        const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+          (filter) => filter.filter !== ''
+        );
+
+        draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
+          JSON.stringify(tableFiltersNotBlank)
+        );
+      }
+      if (RECORDSET_UPDATE_FILTER.match(action)) {
+        if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
+          draftState.recordSets[action.payload.setID].tableFilters = [];
         }
-        case CLOSE_NEW_RECORD_MENU: {
-          draftState.newRecordDialogueOpen = false;
-          break;
-        }
-        case IAPP_GET_SUCCESS: {
-          draftState.activeIAPP = action.payload.iapp?.site_id;
-          break;
-        }
-        case ACTIVITY_CREATE_SUCCESS: {
-          draftState.newRecordDialogueOpen = false;
-          break;
-        }
-        case RECORDSET_ADD_FILTER: {
-          switch (action.payload.filterType) {
-            case 'tableFilter':
-              if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
-                draftState.recordSets[action.payload.setID].tableFilters = [];
-              }
-              draftState.recordSets[action.payload.setID]?.tableFilters.push({
-                id: getUuid(),
-                field: action.payload.field,
-                filterType: action.payload.filterType,
-                operator: action.payload.operator ? action.payload.operator : 'CONTAINS',
-                operator2: action.payload.operator2 ? action.payload.operator2 : 'AND',
-                filter: action.payload.filter ? action.payload.filter : ''
-              });
-              break;
-            default:
-              break;
+        draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+          (filter) => filter.id !== action.payload.filterID
+        );
+
+        const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+          (filter) => filter.id === action.payload.filterID
+        );
+        if (index !== -1)
+          if (action.payload.filterType) {
+            draftState.recordSets[action.payload.setID].tableFilters[index].filterType = action.payload.filterType;
           }
-          break;
-        }
-        case RECORDSET_SET_SORT: {
-          //if the sort column is the same as the current sort column, toggle the sort order
-          // if its already desc, remove the sort column and order
 
-          // handle no sort order:
-          if (
-            !draftState.recordSets[action.payload.setID].sortOrder ||
-            draftState.recordSets[action.payload.setID].sortColumn !== action.payload.sortColumn
-          ) {
-            draftState.recordSets[action.payload.setID].sortOrder = 'ASC';
-            draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
+        if (
+          action.payload.filterType === 'spatialFilterDrawn' ||
+          action.payload.filterType === 'spatialFilterUploaded'
+        ) {
+          delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
+          if (!action.payload.operator) {
+            draftState.recordSets[action.payload.setID].tableFilters[index].operator = 'CONTAINED IN';
           }
-
-          // handle toggle to desc:
-          else if (
-            draftState.recordSets[action.payload.setID].sortOrder === 'ASC' &&
-            draftState.recordSets[action.payload.setID].sortColumn === action.payload.sortColumn
-          ) {
-            draftState.recordSets[action.payload.setID].sortOrder = 'DESC';
+          if (!action.payload.filter) {
+            delete draftState.recordSets[action.payload.setID].tableFilters[index].filter;
           }
-
-          // handle toggle off:
-          else {
-            delete draftState.recordSets[action.payload.setID].sortOrder;
-            delete draftState.recordSets[action.payload.setID].sortColumn;
-          }
-
-          break;
         }
-        case INIT_CACHE_RECORDSET: {
-          draftState.recordSets[action.payload.setID].isCaching = true;
-          break;
-        }
-        case RECORDSET_REMOVE_FILTER: {
-          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-            (filter) => filter.id === action.payload.filterID
-          );
-          draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
 
-          draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
-            draftState.recordSets[action.payload.setID]?.tableFiltersHash;
-
-          const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-            (filter) => filter.filter !== ''
-          );
-
-          draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
-            JSON.stringify(tableFiltersNotBlank)
-          );
-          break;
-        }
-        case RECORDSET_UPDATE_FILTER: {
-          if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
-            draftState.recordSets[action.payload.setID].tableFilters = [];
-          }
-          draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-            (filter) => filter.id !== action.payload.filterID
-          );
-
+        if (action.payload.field) {
           const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
             (filter) => filter.id === action.payload.filterID
           );
           if (index !== -1)
-            if (action.payload.filterType) {
-              draftState.recordSets[action.payload.setID].tableFilters[index].filterType = action.payload.filterType;
-            }
+            draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
+        }
 
-          if (
-            action.payload.filterType === 'spatialFilterDrawn' ||
-            action.payload.filterType === 'spatialFilterUploaded'
-          ) {
-            delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
-            if (!action.payload.operator) {
-              draftState.recordSets[action.payload.setID].tableFilters[index].operator = 'CONTAINED IN';
-            }
-            if (!action.payload.filter) {
-              delete draftState.recordSets[action.payload.setID].tableFilters[index].filter;
-            }
-          }
-
-          if (action.payload.field) {
-            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-              (filter) => filter.id === action.payload.filterID
-            );
-            if (index !== -1)
-              draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
-          }
-
-          if (action.payload.operator) {
-            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-              (filter) => filter.id === action.payload.filterID
-            );
-            if (index !== -1)
-              draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
-          }
-          if (action.payload.operator2) {
-            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-              (filter) => filter.id === action.payload.filterID
-            );
-            if (index !== -1)
-              draftState.recordSets[action.payload.setID].tableFilters[index].operator2 = action.payload.operator2;
-          }
-
-          //re used for spatial filters
-          if (action.payload.filter !== undefined) {
-            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-              (filter) => filter.id === action.payload.filterID
-            );
-            if (index !== -1)
-              draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
-          }
-
-          const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-            (filter) => filter.filter !== ''
+        if (action.payload.operator) {
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
           );
-
-          draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
-            draftState.recordSets[action.payload.setID]?.tableFiltersHash;
-          draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
-            JSON.stringify(tableFiltersNotBlank)
+          if (index !== -1)
+            draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
+        }
+        if (action.payload.operator2) {
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
           );
-          break;
-        }
-        case RECORDSET_CLEAR_FILTERS: {
-          if (!(action.payload.setID === '1')) {
-            draftState.recordSets[action.payload.setID].tableFilters = [];
-          } else {
-            draftState.recordSets[action.payload.setID].tableFilters = [
-              {
-                id: '1',
-                field: 'form_status',
-                filterType: 'tableFilter',
-                filter: 'Draft',
-                operator1: 'CONTAINS',
-                operator2: 'AND'
-              }
-            ];
-          }
-          // clear sort:
-          delete draftState.recordSets[action.payload.setID].sortOrder;
-          delete draftState.recordSets[action.payload.setID].sortColumn;
-          break;
-        }
-        case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-          draftState.recordSets = { ...action.payload.recordSets };
-          draftState.recordsExpanded = action.payload.recordsExpanded;
-          break;
-        }
-        case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
-          draftState.activeActivity = action.payload.id;
-          draftState.activeActivityDescription = action.payload.description;
-          break;
-        }
-        case USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS: {
-          draftState.activeIAPP = action.payload.activeIAPP;
-          break;
-        }
-        case USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS: {
-          draftState.newRecordDialogState = action.payload;
-          break;
-        }
-        case USER_SETTINGS_ADD_RECORD_SET: {
-          draftState.recordSets[Object.keys(draftState.recordSets).length + 1] = {
-            tableFilters: [],
-            color: 'blue',
-            drawOrder: 0,
-            mapToggle: false,
-            recordSetName: 'New Recordset - ' + action.payload.recordSetType,
-            recordSetType: action.payload.recordSetType
-          };
-          break;
-        }
-        case USER_SETTINGS_REMOVE_RECORD_SET: {
-          delete draftState.recordSets[action.payload.setID];
-          break;
-        }
-        case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
-          draftState.recordSets = { ...action.payload.recordSets };
-          break;
+          if (index !== -1)
+            draftState.recordSets[action.payload.setID].tableFilters[index].operator2 = action.payload.operator2;
         }
 
-        //MW: these are all wrong we shouldn't clobber all sets from the dispatching components copy of state
-        case USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS: {
-          draftState.recordSets = { ...action.payload.recordSets };
-          break;
-        }
-        case USER_SETTINGS_SET_BOUNDARIES_SUCCESS: {
-          draftState.boundaries = action.payload.boundaries;
-          break;
-        }
-        case USER_SETTINGS_DELETE_BOUNDARY_SUCCESS: {
-          draftState.boundaries = draftState.boundaries.filter((boundary) => boundary.id !== action.payload.id);
-          break;
-        }
-        case USER_SETTINGS_DELETE_KML_SUCCESS: {
-          draftState.boundaries = draftState.boundaries?.filter(
-            (boundary) => boundary.server_id !== action.payload.server_id
+        //re used for spatial filters
+        if (action.payload.filter !== undefined) {
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
           );
-          break;
+          if (index !== -1)
+            draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
         }
-        case USER_SETTINGS_SET_RECORDSET: {
-          Object.keys(action.payload.updatedSet).forEach((key) => {
-            draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
-          });
-          draftState.recordSets[action.payload.setName].labelToggle =
-            (draftState.recordSets[action.payload.setName].labelToggle &&
-              draftState.recordSets[action.payload.setName].mapToggle) ||
-            false;
-          break;
+
+        const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+          (filter) => filter.filter !== ''
+        );
+
+        draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
+          draftState.recordSets[action.payload.setID]?.tableFiltersHash;
+        draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
+          JSON.stringify(tableFiltersNotBlank)
+        );
+      }
+      if (RECORDSET_CLEAR_FILTERS.match(action)) {
+        if (!(action.payload.setID === '1')) {
+          draftState.recordSets[action.payload.setID].tableFilters = [];
+        } else {
+          draftState.recordSets[action.payload.setID].tableFilters = [
+            {
+              id: '1',
+              field: 'form_status',
+              filterType: 'tableFilter',
+              filter: 'Draft',
+              operator1: 'CONTAINS',
+              operator2: 'AND'
+            }
+          ];
         }
-        case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
-          draftState.recordsExpanded = !draftState.recordsExpanded;
-          break;
-        }
-        case USER_SETTINGS_SET_DARK_THEME: {
-          draftState.darkTheme = action.payload.enabled;
-          break;
-        }
-        case USER_SETTINGS_SET_MAP_CENTER_SUCCESS: {
-          draftState.mapCenter = action.payload.center;
-          break;
-        }
-        case USER_SETTINGS_SET_API_ERROR_DIALOG: {
-          draftState.APIErrorDialog = action.payload.APIErrorDialog;
-          break;
-        }
-        default:
-          break;
+        // clear sort:
+        delete draftState.recordSets[action.payload.setID].sortOrder;
+        delete draftState.recordSets[action.payload.setID].sortColumn;
+      }
+      if (USER_SETTINGS_GET_INITIAL_STATE_SUCCESS.match(action)) {
+        draftState.recordSets = { ...action.payload.recordSets };
+        draftState.recordsExpanded = action.payload.recordsExpanded;
+      }
+      if (USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS.match(action)) {
+        draftState.activeActivity = action.payload.id;
+        draftState.activeActivityDescription = action.payload.description;
+      }
+      if (USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS.match(action)) {
+        draftState.activeIAPP = action.payload.activeIAPP;
+      }
+      if (USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS.match(action)) {
+        draftState.newRecordDialogState = action.payload;
+      }
+      if (USER_SETTINGS_ADD_RECORD_SET.match(action)) {
+        draftState.recordSets[Object.keys(draftState.recordSets).length + 1] = {
+          tableFilters: [],
+          color: 'blue',
+          drawOrder: 0,
+          mapToggle: false,
+          recordSetName: 'New Recordset - ' + action.payload.recordSetType,
+          recordSetType: action.payload.recordSetType
+        };
+      }
+      if (USER_SETTINGS_REMOVE_RECORD_SET.match(action)) {
+        delete draftState.recordSets[action.payload.setID];
+      }
+      if (USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS.match(action)) {
+        draftState.recordSets = { ...action.payload.recordSets };
+      }
+
+      //MW: these are all wrong we shouldn't clobber all sets from the dispatching components copy of state
+      if (USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS.match(action)) {
+        draftState.recordSets = { ...action.payload.recordSets };
+      }
+      if (USER_SETTINGS_SET_BOUNDARIES_SUCCESS.match(action)) {
+        draftState.boundaries = action.payload.boundaries;
+      }
+      if (USER_SETTINGS_DELETE_BOUNDARY_SUCCESS.match(action)) {
+        draftState.boundaries = draftState.boundaries.filter((boundary) => boundary.id !== action.payload.id);
+      }
+      if (USER_SETTINGS_DELETE_KML_SUCCESS.match(action)) {
+        draftState.boundaries = draftState.boundaries?.filter(
+          (boundary) => boundary.server_id !== action.payload.server_id
+        );
+      }
+      if (USER_SETTINGS_SET_RECORDSET.match(action)) {
+        Object.keys(action.payload.updatedSet).forEach((key) => {
+          draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
+        });
+        draftState.recordSets[action.payload.setName].labelToggle =
+          (draftState.recordSets[action.payload.setName].labelToggle &&
+            draftState.recordSets[action.payload.setName].mapToggle) ||
+          false;
+      }
+      if (USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS.match(action)) {
+        draftState.recordsExpanded = !draftState.recordsExpanded;
+      }
+      if (USER_SETTINGS_SET_DARK_THEME.match(action)) {
+        draftState.darkTheme = action.payload.enabled;
+      }
+      if (USER_SETTINGS_SET_MAP_CENTER_SUCCESS.match(action)) {
+        draftState.mapCenter = action.payload.center;
+      }
+      if (USER_SETTINGS_SET_API_ERROR_DIALOG.match(action)) {
+        draftState.APIErrorDialog = action.payload.APIErrorDialog;
       }
     }) as unknown as UserSettingsState;
   };

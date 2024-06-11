@@ -12,7 +12,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 import {
-  PAGE_OR_LIMIT_UPDATE,
+  PAGE_OR_LIMIT_CHANGE,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
@@ -64,12 +64,11 @@ export const RecordSet = (props) => {
                 <Button
                   size={'small'}
                   onClick={() => {
-                    dispatch({
-                      type: RECORDSET_CLEAR_FILTERS,
-                      payload: {
+                    dispatch(
+                      RECORDSET_CLEAR_FILTERS({
                         setID: props.setID
-                      }
-                    });
+                      })
+                    );
                   }}
                   variant="contained"
                 >
@@ -83,9 +82,7 @@ export const RecordSet = (props) => {
                 <Button
                   size={'small'}
                   onClick={() => {
-                    dispatch({
-                      type: RECORDSETS_TOGGLE_VIEW_FILTER
-                    });
+                    dispatch(RECORDSETS_TOGGLE_VIEW_FILTER());
                   }}
                   variant="contained"
                 >
@@ -116,9 +113,8 @@ export const RecordSet = (props) => {
                 <Button
                   size={'small'}
                   onClick={() => {
-                    dispatch({
-                      type: RECORDSET_ADD_FILTER,
-                      payload: {
+                    dispatch(
+                      RECORDSET_ADD_FILTER({
                         filterType: 'tableFilter',
                         // short id if activity record set otherwise site_ID
                         field: tableType === 'Activity' ? 'short_id' : 'site_id',
@@ -126,8 +122,8 @@ export const RecordSet = (props) => {
                         operator: 'CONTAINS',
                         operator2: 'AND',
                         blockFetchForNow: true
-                      }
-                    });
+                      })
+                    );
                   }}
                   variant="contained"
                 >
@@ -194,24 +190,22 @@ const RecordSetFooter = (props) => {
   const dispatch = useDispatch();
 
   const onClickPrevious = () => {
-    dispatch({
-      type: PAGE_OR_LIMIT_UPDATE,
-      payload: {
+    dispatch(
+      PAGE_OR_LIMIT_CHANGE({
         setID: props.setID,
         page: recordTable?.page - 1,
         limit: recordTable?.limit
-      }
-    });
+      })
+    );
   };
   const onClickNext = () => {
-    dispatch({
-      type: PAGE_OR_LIMIT_UPDATE,
-      payload: {
+    dispatch(
+      PAGE_OR_LIMIT_CHANGE({
         setID: props.setID,
         page: recordTable?.page + 1,
         limit: recordTable?.limit
-      }
-    });
+      })
+    );
   };
 
   return (
@@ -269,15 +263,14 @@ const Filter = (props) => {
 
   //const debouncedUpdate = debounce((value) => {
   const debouncedUpdate = (value) => {
-    dispatch({
-      type: RECORDSET_UPDATE_FILTER,
-      payload: {
+    dispatch(
+      RECORDSET_UPDATE_FILTER({
         filterType: 'tableFilter',
         setID: props.setID,
         filterID: props.id,
         filter: value
-      }
-    });
+      })
+    );
   };
 
   let input = null;
@@ -305,16 +298,13 @@ const Filter = (props) => {
           key={'filterType' + props.name}
           value={valueInState}
           onChange={(e) => {
-            console.dir(e.target);
-
-            dispatch({
-              type: RECORDSET_UPDATE_FILTER,
-              payload: {
+            dispatch(
+              RECORDSET_UPDATE_FILTER({
                 setID: props.setID,
                 filterID: props.id,
                 filter: e.target.value
-              }
-            });
+              })
+            );
           }}
         >
           {serverBoundariesToDisplay?.map((option) => {
@@ -337,14 +327,13 @@ const Filter = (props) => {
           onChange={(e) => {
             console.dir(e.target);
 
-            dispatch({
-              type: RECORDSET_UPDATE_FILTER,
-              payload: {
+            dispatch(
+              RECORDSET_UPDATE_FILTER({
                 setID: props.setID,
                 filterID: props.id,
                 filter: e.target.value
-              }
-            });
+              })
+            );
           }}
         >
           {clientBoundariesToDisplay?.map((option) => {
@@ -372,15 +361,14 @@ const Filter = (props) => {
           onChange={(e) => {
             console.dir(e.target.value);
 
-            dispatch({
-              type: RECORDSET_UPDATE_FILTER,
-              payload: {
+            dispatch(
+              RECORDSET_UPDATE_FILTER({
                 //filterType: 'tableFilter',
                 setID: props.setID,
                 filterID: props.id,
                 operator2: e.target.value
-              }
-            });
+              })
+            );
           }}
         >
           {
@@ -427,15 +415,14 @@ const Filter = (props) => {
           onChange={(e) => {
             console.dir(e.target.value);
 
-            dispatch({
-              type: RECORDSET_UPDATE_FILTER,
-              payload: {
+            dispatch(
+              RECORDSET_UPDATE_FILTER({
                 //filterType: 'tableFilter',
                 setID: props.setID,
                 filterID: props.id,
                 operator: e.target.value
-              }
-            });
+              })
+            );
           }}
         >
           {
@@ -493,12 +480,7 @@ const Filter = (props) => {
               payload.filter = clientBoundariesToDisplay[0].value;
             }
 
-            dispatch({
-              type: RECORDSET_UPDATE_FILTER,
-              payload: {
-                ...payload
-              }
-            });
+            dispatch(RECORDSET_UPDATE_FILTER({ ...payload }));
           }}
         >
           <option key={Math.random()} value={'tableFilter'} label={'Field/Column'}>
@@ -530,15 +512,14 @@ const Filter = (props) => {
           onChange={(e) => {
             console.dir(e.target);
 
-            dispatch({
-              type: RECORDSET_UPDATE_FILTER,
-              payload: {
+            dispatch(
+              RECORDSET_UPDATE_FILTER({
                 filterType: 'tableFilter',
                 setID: props.setID,
                 filterID: props.id,
                 field: e.target.value
-              }
-            });
+              })
+            );
           }}
         >
           {filterTypeInState === 'tableFilter' ? (
@@ -563,10 +544,7 @@ const Filter = (props) => {
             className={'deleteButton'}
             variant="contained"
             onClick={() => {
-              dispatch({
-                type: RECORDSET_REMOVE_FILTER,
-                payload: { filterType: 'tableFilter', setID: props.setID, filterID: props.id }
-              });
+              dispatch(RECORDSET_REMOVE_FILTER({ filterType: 'tableFilter', setID: props.setID, filterID: props.id }));
             }}
           >
             Delete

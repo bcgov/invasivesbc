@@ -21,9 +21,8 @@ function* fetchEmailSettings() {
 
   const data = yield res.json();
 
-  yield put({
-    type: EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
-    payload: {
+  yield put(
+    EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS({
       emailSettings: {
         enabled: data.result[0].enabled,
         authenticationURL: data.result[0].authenticationurl,
@@ -32,8 +31,8 @@ function* fetchEmailSettings() {
         clientSecret: data.result[0].clientsecret,
         id: data.result[0].id
       }
-    }
-  });
+    })
+  );
 }
 
 function* updateEmailSettings(action) {
@@ -49,28 +48,26 @@ function* updateEmailSettings(action) {
   const data = yield res.json();
 
   if (res.ok) {
-    yield put({
-      type: EMAIL_SETTINGS_UPDATE_SUCCESS,
-      payload: {
+    yield put(
+      EMAIL_SETTINGS_UPDATE_SUCCESS({
         message: 'Email settings updated successfully',
         emailSettings: data.request
-      }
-    });
+      })
+    );
   } else {
-    yield put({
-      type: EMAIL_SETTINGS_UPDATE_FAILURE,
-      payload: {
+    yield put(
+      EMAIL_SETTINGS_UPDATE_FAILURE({
         message: data.message,
         emailSettings: data.request
-      }
-    });
+      })
+    );
   }
 }
 
 function* emailSettingsSaga() {
   yield all([
-    takeEvery(EMAIL_SETTINGS_UPDATE, updateEmailSettings),
-    takeEvery(EMAIL_SETTINGS_RETRIEVE_REQUEST, fetchEmailSettings)
+    takeEvery(EMAIL_SETTINGS_UPDATE.type, updateEmailSettings),
+    takeEvery(EMAIL_SETTINGS_RETRIEVE_REQUEST.type, fetchEmailSettings)
   ]);
 }
 

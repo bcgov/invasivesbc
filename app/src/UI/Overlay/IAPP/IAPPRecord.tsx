@@ -18,8 +18,9 @@ export const IAPPRecord = (props) => {
   const IAPPState = useSelector((state: any) => state?.IAPPSitePage);
 
   useEffect(() => {
-    if (id !== null && id !== undefined && id !== '' && id !== 'undefined')
-      dispatch({ type: IAPP_GET_REQUEST, payload: { iappID: id } });
+    if (id !== null && id !== undefined && id !== '' && id !== 'undefined') {
+      dispatch(IAPP_GET_REQUEST({ iappID: id }));
+    }
   }, [id]);
 
   return (
@@ -45,7 +46,7 @@ export const IAPPRecord = (props) => {
             variant="contained"
             className="records__activity__map_button"
             onClick={() => {
-              dispatch({ type: IAPP_PAN_AND_ZOOM });
+              dispatch(IAPP_PAN_AND_ZOOM());
               history.push(`/Records/IAPP/${id}/summary`);
             }}
           >

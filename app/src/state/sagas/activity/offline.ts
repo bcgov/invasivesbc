@@ -4,7 +4,7 @@ import {
   ACTIVITY_CREATE_LOCAL,
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_GET_FAILURE,
-  ACTIVITY_GET_LOCAL_REQUEST,
+  ACTIVITY_GET_LOCALDB_REQUEST,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
@@ -12,7 +12,7 @@ import {
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_SYNC_STATE,
   NETWORK_GO_ONLINE
-} from '../../actions';
+} from 'state/actions';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -21,32 +21,30 @@ export function* trigger_NETWORK_ONLINE() {
   const connected = yield select(selectNetworkConnected);
   if (connected) {
     yield delay(100);
-    yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC });
+    yield put(ACTIVITY_RUN_OFFLINE_SYNC());
   }
 }
 
-export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
+export function* handle_ACTIVITY_SAVE_OFFLINE() {
   // all logic handled in the reducer
-  yield put({
-    type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-    payload: {
+  yield put(
+    ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
       notification: {
         visible: true,
         message: 'Saved locally',
         severity: 'info'
       }
-    }
-  });
-
+    })
+  );
   const connected = yield select(selectNetworkConnected);
   if (connected) {
     yield delay(100);
-    yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC });
+    yield put(ACTIVITY_RUN_OFFLINE_SYNC());
   }
 }
 
 export function* handle_ACTIVITY_CREATE_LOCAL(action) {
-  yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.data.activity_id } });
+  yield put(ACTIVITY_CREATE_SUCCESS({ activity_id: action.payload.data.activity_id }));
 }
 
 export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
@@ -57,7 +55,7 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
   const found = serializedActivities[activityID];
 
   if (found) {
-    yield put({ type: ACTIVITY_GET_SUCCESS, payload: { activity: JSON.parse(found.data) } });
+    yield put(ACTIVITY_GET_SUCCESS({ activity: JSON.parse(found.data) }));
     return;
   } else {
     // not locally, maybe we can get it from the server if we're online
@@ -67,7 +65,7 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
         const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
 
         if (!(networkReturn.status === 200)) {
-          yield put({ type: ACTIVITY_GET_FAILURE, payload: { failNetworkObj: networkReturn } });
+          yield put(ACTIVITY_GET_FAILURE({ failNetworkObj: networkReturn }));
           return;
         }
 
@@ -80,20 +78,20 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
           media_delete_keys: networkReturn.data.media_delete_keys || []
         };
 
-        yield put({ type: ACTIVITY_GET_SUCCESS, payload: { activity: datav2 } });
+        yield put(ACTIVITY_GET_SUCCESS({ activity: datav2 }));
         return;
       } catch (e) {
-        yield put({ type: ACTIVITY_GET_FAILURE });
+        yield put(ACTIVITY_GET_FAILURE());
         return;
       }
     } else {
-      yield put({ type: ACTIVITY_GET_FAILURE });
+      yield put(ACTIVITY_GET_FAILURE());
       return;
     }
   }
 }
 
-export function* handle_ACTIVITY_RUN_OFFLINE_SYNC(action) {
+export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) => s.hasOwnProperty('sync_state') && (s as OfflineActivityRecord).sync_state !== 'SYNCHRONIZED'
@@ -108,42 +106,39 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC(action) {
         form_status: ActivityStatus.DRAFT
       });
       if (networkReturn.status >= 200 && networkReturn.status < 300) {
-        yield put({
-          type: ACTIVITY_UPDATE_SYNC_STATE,
-          payload: {
+        yield put(
+          ACTIVITY_UPDATE_SYNC_STATE({
             id: hydrated.activity_id,
             sync_state: 'SYNCHRONIZED'
-          }
-        });
+          })
+        );
       } else {
-        yield put({
-          type: ACTIVITY_UPDATE_SYNC_STATE,
-          payload: {
+        yield put(
+          ACTIVITY_UPDATE_SYNC_STATE({
             id: hydrated.activity_id,
             sync_state: 'ERROR'
-          }
-        });
+          })
+        );
       }
     } catch (e) {
-      yield put({
-        type: ACTIVITY_UPDATE_SYNC_STATE,
-        payload: {
+      yield put(
+        ACTIVITY_UPDATE_SYNC_STATE({
           id: hydrated.activity_id,
           sync_state: 'ERROR'
-        }
-      });
+        })
+      );
     }
   }
 
-  yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE });
+  yield put(ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE());
 }
 
-export function* handle_ACTIVITY_RESTORE_OFFLINE(action) {}
+export function* handle_ACTIVITY_RESTORE_OFFLINE() {}
 
 export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
-  takeEvery(ACTIVITY_GET_LOCAL_REQUEST, handle_ACTIVITY_GET_LOCAL_REQUEST),
-  takeEvery(ACTIVITY_SAVE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE),
-  takeEvery(ACTIVITY_CREATE_LOCAL, handle_ACTIVITY_CREATE_LOCAL),
+  takeEvery(ACTIVITY_GET_LOCALDB_REQUEST.type, handle_ACTIVITY_GET_LOCAL_REQUEST),
+  takeEvery(ACTIVITY_SAVE_OFFLINE.type, handle_ACTIVITY_SAVE_OFFLINE),
+  takeEvery(ACTIVITY_CREATE_LOCAL.type, handle_ACTIVITY_CREATE_LOCAL),
   takeLeading(ACTIVITY_RUN_OFFLINE_SYNC, handle_ACTIVITY_RUN_OFFLINE_SYNC),
   takeLeading(NETWORK_GO_ONLINE, trigger_NETWORK_ONLINE)
 ];

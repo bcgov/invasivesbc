@@ -1,13 +1,9 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 
 import './Records.css';
 import { Route, useHistory } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  ACTIVITY_SET_UNSAVED_NOTIFICATION,
-  ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
-  PAN_AND_ZOOM_TO_ACTIVITY
-} from 'state/actions';
+import { ACTIVITY_SET_UNSAVED_NOTIFICATION, ACTIVITY_TOGGLE_NOTIFICATION_REQUEST } from 'state/actions';
 import { ActivityForm } from './Activity/Form';
 import { ActivityPhotos } from './Activity/Photos';
 import { OverlayHeader } from '../OverlayHeader';
@@ -36,32 +32,30 @@ export const Activity = (props) => {
     if (reason === 'clickaway') {
       return;
     }
-    dispatch({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
-      payload: {
+    dispatch(
+      ACTIVITY_TOGGLE_NOTIFICATION_REQUEST({
         notification: {
           visible: false,
           message: '',
           severity: 'success'
         }
-      }
-    });
+      })
+    );
   };
 
   const handleUnsavedClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }
-    dispatch({
-      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
-      payload: {
+    dispatch(
+      ACTIVITY_SET_UNSAVED_NOTIFICATION({
         notification: {
           visible: false,
           message: '',
           severity: 'error'
         }
-      }
-    });
+      })
+    );
   };
 
   return (

@@ -82,15 +82,14 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   }, [newRecordDialogState.recordType]);
 
   const insert_record = async () => {
-    dispatch({
-      type: ACTIVITY_CREATE_REQUEST,
-      payload: { type: newRecordDialogState.recordType, subType: newRecordDialogState.recordSubtype }
-    });
+    dispatch(
+      ACTIVITY_CREATE_REQUEST({ type: newRecordDialogState.recordType, subType: newRecordDialogState.recordSubtype })
+    );
     history.push('/Records/Activity:/form');
   };
 
   const setNewRecordDialogState = (value: INewRecordDialogState) => {
-    dispatch({ type: USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST, payload: value });
+    dispatch(USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST(value));
   };
 
   const handleRecordCategoryChange = (event: any) => {
@@ -168,7 +167,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
       <DialogActions>
         <Button
           onClick={() => {
-            dispatch({ type: CLOSE_NEW_RECORD_MENU });
+            dispatch(CLOSE_NEW_RECORD_MENU());
           }}
         >
           Cancel
@@ -185,5 +184,4 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     </Dialog>
   );
 };
-
 export default NewRecordDialog;

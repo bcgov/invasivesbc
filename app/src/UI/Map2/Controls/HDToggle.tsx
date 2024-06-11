@@ -32,7 +32,7 @@ export const HDToggle = (props) => {
           <IconButton
             className={'button'}
             onClick={() => {
-              dispatch({ type: MAP_TOGGLE_HD });
+              dispatch(MAP_TOGGLE_HD());
             }}
             sx={{ color: '#000' }}
           >

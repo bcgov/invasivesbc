@@ -1,6 +1,6 @@
 import {
-  EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
   EMAIL_SETTINGS_RETRIEVE_REQUEST,
+  EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
   EMAIL_SETTINGS_UPDATE_FAILURE,
   EMAIL_SETTINGS_UPDATE_SUCCESS
 } from 'state/actions';
@@ -31,33 +31,40 @@ function createEmailSettingsReducer() {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case EMAIL_SETTINGS_RETRIEVE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          message: null,
-          emailSettings: null
-        };
-      case EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS:
-      case EMAIL_SETTINGS_UPDATE_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          ...action.payload
-        };
-      case EMAIL_SETTINGS_UPDATE_FAILURE:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          ...action.payload
-        };
-      default:
-        return state;
+    if (EMAIL_SETTINGS_RETRIEVE_REQUEST.match(action)) {
+      return {
+        ...state,
+        working: true,
+        error: false,
+        message: null,
+        emailSettings: null
+      };
     }
+    if (EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS.match(action)) {
+      return {
+        ...state,
+        working: false,
+        error: false,
+        ...action.payload
+      };
+    }
+    if (EMAIL_SETTINGS_UPDATE_SUCCESS.match(action)) {
+      return {
+        ...state,
+        working: false,
+        error: false,
+        ...action.payload
+      };
+    }
+    if (EMAIL_SETTINGS_UPDATE_FAILURE.match(action)) {
+      return {
+        ...state,
+        working: false,
+        error: true,
+        ...action.payload
+      };
+    }
+    return state;
   };
 }
 

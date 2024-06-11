@@ -33,9 +33,7 @@ export const CenterCurrentRecord = (props) => {
               onClick={() => {
                 setShow(false);
                 {
-                  props.type === 'Activity'
-                    ? dispatch({ type: PAN_AND_ZOOM_TO_ACTIVITY })
-                    : dispatch({ type: IAPP_PAN_AND_ZOOM });
+                  props.type === 'Activity' ? dispatch(PAN_AND_ZOOM_TO_ACTIVITY()) : dispatch(IAPP_PAN_AND_ZOOM());
                 }
               }}
             >

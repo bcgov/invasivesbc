@@ -38,15 +38,14 @@ function* handleSigninRequest() {
       redirectUri: config.REDIRECT_URI
     });
 
-    yield put({
-      type: AUTH_REQUEST_COMPLETE,
-      payload: {
+    yield put(
+      AUTH_REQUEST_COMPLETE({
         idToken: keycloakInstance.idToken
-      }
-    });
+      })
+    );
   } catch (e) {
     console.error(e);
-    yield put({ type: AUTH_REQUEST_ERROR });
+    yield put(AUTH_REQUEST_ERROR());
   }
 }
 
@@ -57,11 +56,11 @@ function* handleSignoutRequest() {
 
   try {
     yield keycloakInstance.logout();
-    yield put({ type: AUTH_SIGNOUT_COMPLETE });
-    yield put({ type: USERINFO_CLEAR_REQUEST });
+    yield put(AUTH_SIGNOUT_COMPLETE());
+    yield put(USERINFO_CLEAR_REQUEST());
   } catch (e) {
     console.error(e);
-    yield put({ type: AUTH_REQUEST_ERROR });
+    yield put(AUTH_REQUEST_ERROR());
   }
 }
 
@@ -89,10 +88,10 @@ function* keepTokenFresh() {
         if (keycloakInstance.isTokenExpired(MIN_TOKEN_FRESHNESS)) {
           const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
           if (refreshed) {
-            yield put({ type: AUTH_UPDATE_TOKEN_STATE, payload: { idToken: keycloakInstance.idToken } });
+            yield put(AUTH_UPDATE_TOKEN_STATE({ idToken: keycloakInstance.idToken }));
           }
           if (disrupted) {
-            yield put({ type: AUTH_SET_RECOVERED_FROM_DISRUPTION });
+            yield put(AUTH_SET_RECOVERED_FROM_DISRUPTION());
             refreshRetryCount = 0;
           }
         }
@@ -100,12 +99,12 @@ function* keepTokenFresh() {
         console.log('auth refresh failure');
         console.dir(e);
         if (!disrupted) {
-          yield put({ type: AUTH_SET_DISRUPTED });
+          yield put(AUTH_SET_DISRUPTED());
         }
 
         refreshRetryCount++;
         if (refreshRetryCount >= RETRY_LIMIT) {
-          put({ type: AUTH_SIGNOUT_REQUEST });
+          put(AUTH_SIGNOUT_REQUEST());
         }
       } finally {
         yield delay(TOKEN_REFRESH_INTERVAL);
@@ -162,40 +161,38 @@ function* reinitAuth() {
     } catch (e) {
       console.dir(e);
       if (failCount >= FAIL_LIMIT) {
-        yield put({ type: AUTH_SIGNOUT_REQUEST });
+        yield put(AUTH_SIGNOUT_REQUEST());
       }
       failCount++;
       yield delay(1000);
     }
   }
 
-  yield put({
-    type: AUTH_INITIALIZE_COMPLETE,
-    payload: {
+  yield put(
+    AUTH_INITIALIZE_COMPLETE({
       authenticated: keycloakInstance.authenticated,
       idToken: keycloakInstance.idToken
-    }
-  });
+    })
+  );
 
   if (keycloakInstance.authenticated) {
     // we are already logged in
     // schedule our refresh
     // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
-    yield put({ type: AUTH_REFRESH_TOKEN });
-    yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
+    yield put(AUTH_REFRESH_TOKEN());
+    yield put(AUTH_REFRESH_ROLES_REQUEST());
     if (postAuthNavigate) {
       sessionStorage.removeItem('_invasivesbc_auth_target');
       historySingleton.push(postAuthNavigate);
     }
   } else {
     // we are not logged in
-    yield put({
-      type: TABS_GET_INITIAL_STATE_REQUEST,
-      payload: {
+    yield put(
+      TABS_GET_INITIAL_STATE_REQUEST({
         authenticated: false,
         activated: false
-      }
-    });
+      })
+    );
   }
 }
 
@@ -208,9 +205,7 @@ function* initializeAuthentication() {
     url: config.KEYCLOAK_URL
   });
 
-  yield put({
-    type: AUTH_REINIT
-  });
+  yield put(AUTH_REINIT());
 }
 
 const keycloakAuthEffects = [

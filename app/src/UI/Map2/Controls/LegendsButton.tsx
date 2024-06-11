@@ -21,7 +21,7 @@ export const LegendsButton = (props) => {
     } else {
       history.push('/Legend');
     }
-    dispatch({ type: MAP_TOGGLE_LEGENDS });
+    dispatch(MAP_TOGGLE_LEGENDS());
   };
 
   return (

@@ -17,65 +17,60 @@ function* handleSigninRequest() {
   const authResult = yield AuthBridge.authStart({});
 
   if (authResult.error) {
-    yield put({ type: AUTH_REQUEST_ERROR });
+    yield put(AUTH_REQUEST_ERROR());
     return;
   }
 
   if (authResult.authorized) {
-    yield put({
-      type: AUTH_REQUEST_COMPLETE,
-      payload: {
+    yield put(
+      AUTH_REQUEST_COMPLETE({
         idToken: authResult.idToken
-      }
-    });
+      })
+    );
 
-    yield put({
-      type: AUTH_INITIALIZE_COMPLETE,
-      payload: {
+    yield put(
+      AUTH_INITIALIZE_COMPLETE({
         authenticated: authResult.authorized,
         idToken: authResult.idToken
-      }
-    });
-    yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
+      })
+    );
+    yield put(AUTH_REFRESH_ROLES_REQUEST());
   } else {
     //not logged in
 
-    yield put({
-      type: TABS_GET_INITIAL_STATE_REQUEST,
-      payload: {
+    yield put(
+      TABS_GET_INITIAL_STATE_REQUEST({
         authenticated: false,
         activated: false
-      }
-    });
+      })
+    );
   }
 }
 
-function* handleSignoutRequest(action) {
+function* handleSignoutRequest() {
   const { error } = yield AuthBridge.logout({});
   if (error) {
-    yield put({ type: AUTH_REQUEST_ERROR });
+    yield put(AUTH_REQUEST_ERROR());
     return;
   }
 
-  yield put({ type: AUTH_SIGNOUT_COMPLETE });
-  yield put({ type: USERINFO_CLEAR_REQUEST });
+  yield put(AUTH_SIGNOUT_COMPLETE());
+  yield put(USERINFO_CLEAR_REQUEST());
 }
 
 function* initializeAuthentication() {
-  yield put({
-    type: TABS_GET_INITIAL_STATE_REQUEST,
-    payload: {
+  yield put(
+    TABS_GET_INITIAL_STATE_REQUEST({
       authenticated: false,
       activated: false
-    }
-  });
+    })
+  );
 
-  yield put({
-    type: AUTH_INITIALIZE_COMPLETE,
-    payload: {
+  yield put(
+    AUTH_INITIALIZE_COMPLETE({
       idToken: null
-    }
-  });
+    })
+  );
 }
 
 const nativeAuthEffects = [

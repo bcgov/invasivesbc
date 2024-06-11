@@ -18,9 +18,8 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) 
 
     const state: RootState = storeRefHolder.store.getState();
 
-    storeRefHolder.store.dispatch({
-      type: CRASH_HANDLE_GLOBAL_ERROR,
-      payload: {
+    storeRefHolder.store.dispatch(
+      CRASH_HANDLE_GLOBAL_ERROR({
         detail: {
           error: JSON.parse(
             JSON.stringify({
@@ -32,8 +31,8 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) 
           ),
           errorInfo: errorInfo
         }
-      }
-    });
+      })
+    );
 
     if (state.Auth.authenticated) {
       const loggingState = JSON.parse(

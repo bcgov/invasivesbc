@@ -1,13 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../main';
 import { waitFor } from '@testing-library/react';
-import {
-  AUTH_INITIALIZE_COMPLETE,
-  MAP_TOGGLE_BASEMAP,
-  MAP_TOGGLE_GEOJSON_CACHE,
-  RECORDSET_UPDATE_FILTER,
-  URL_CHANGE
-} from 'state/actions';
+import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_GEOJSON_CACHE, URL_CHANGE } from 'state/actions';
 import { server } from 'mocks/server';
 
 describe('Can trigger refetch for both table and data on filter change', function () {
@@ -22,14 +16,15 @@ describe('Can trigger refetch for both table and data on filter change', functio
       expect(store).toBeDefined();
       const MapMode = store.getState().Map.MapMode;
       if (MapMode === 'VECTOR_ENDPOINT') {
-        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        store.dispatch(MAP_TOGGLE_GEOJSON_CACHE());
       }
       expect(store.getState().Map.MapMode).toEqual('GEOJSON');
     });
   });
 
   it('Can loads recordset on open / url visit', async function () {
-    store.dispatch({ type: AUTH_INITIALIZE_COMPLETE, payload: { authenticated: true } });
+    store.dispatch(AUTH_INITIALIZE_COMPLETE({ authenticated: true }));
+
     store.dispatch({
       type: URL_CHANGE,
       payload: {

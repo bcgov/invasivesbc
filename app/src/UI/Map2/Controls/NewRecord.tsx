@@ -28,7 +28,7 @@ export const NewRecord = (props) => {
             <IconButton
               className={'button'}
               onClick={() => {
-                dispatch({ type: OPEN_NEW_RECORD_MENU });
+                dispatch(OPEN_NEW_RECORD_MENU());
               }}
             >
               <FiberNewIcon />

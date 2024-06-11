@@ -1,4 +1,4 @@
-import { IAPP_GET_SUCCESS, IAPP_GET_FAILURE, IAPP_GET_REQUEST } from '../actions';
+import { IAPP_GET_FAILURE, IAPP_GET_REQUEST, IAPP_GET_SUCCESS } from '../actions';
 
 import { AppConfig } from '../config';
 
@@ -18,31 +18,29 @@ const initialState: IAPPSiteState = {
 
 function createIAPPSiteReducer(configuration: AppConfig): (IAPPSiteState, AnyAction) => IAPPSiteState {
   return (state = initialState, action) => {
-    switch (action.type) {
-      case IAPP_GET_REQUEST: {
-        return {
-          ...state,
-          failCode: null,
-          loading: true
-        };
-      }
-      case IAPP_GET_FAILURE: {
-        return {
-          ...state,
-          loading: false,
-          failCode: action.payload?.failNetworkObj?.status
-        };
-      }
-      case IAPP_GET_SUCCESS: {
-        return {
-          ...state,
-          site: { ...action.payload.iapp },
-          loading: false
-        };
-      }
-      default:
-        return state;
+    if (IAPP_GET_REQUEST.match(action)) {
+      return {
+        ...state,
+        failCode: null,
+        loading: true
+      };
     }
+    if (IAPP_GET_FAILURE.match(action)) {
+      return {
+        ...state,
+        loading: false,
+        failCode: action.payload?.failNetworkObj?.status
+      };
+    }
+    if (IAPP_GET_SUCCESS.match(action)) {
+      return {
+        ...state,
+        site: { ...action.payload.iapp },
+        loading: false
+      };
+    }
+
+    return state;
   };
 }
 

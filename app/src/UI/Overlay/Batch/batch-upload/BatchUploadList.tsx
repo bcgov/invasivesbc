@@ -22,11 +22,11 @@ const BatchUploadList = () => {
       return;
     }
 
-    dispatch({ type: BATCH_LIST_REQUEST });
+    dispatch(BATCH_LIST_REQUEST());
   }, [serial, authState?.authenticated]);
 
   function deleteBatch(batchId) {
-    dispatch({ type: BATCH_DELETE_REQUEST, payload: { id: batchId } });
+    dispatch(BATCH_DELETE_REQUEST({ id: batchId }));
   }
 
   function renderError() {

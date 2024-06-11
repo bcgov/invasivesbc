@@ -11,7 +11,6 @@ import {
   populateSpeciesArrays
 } from 'sharedAPI';
 import { kinks } from '@turf/turf';
-import { selectMap } from 'state/reducers/map';
 
 import {
   autoFillNameByPAC,
@@ -34,7 +33,7 @@ import {
   ACTIVITY_EDIT_PHOTO_FAILURE,
   ACTIVITY_EDIT_PHOTO_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
-  ACTIVITY_GET_LOCAL_REQUEST,
+  ACTIVITY_GET_LOCALDB_REQUEST,
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
@@ -76,17 +75,17 @@ export function* handle_ACTIVITY_GET_REQUEST(action) {
 
   try {
     if (MOBILE) {
-      yield put({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: action.payload.activityID } });
+      yield put(ACTIVITY_GET_LOCALDB_REQUEST({ activityID: action.payload.activityID }));
     } else {
-      yield put({ type: ACTIVITY_GET_NETWORK_REQUEST, payload: { activityID: action.payload.activityID } });
+      yield put(ACTIVITY_GET_NETWORK_REQUEST({ activityID: action.payload.activityID }));
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
-export function* handle_ACTIVITY_COPY_REQUEST(action) {
+export function* handle_ACTIVITY_COPY_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
     const activityData = { ...activityState.activity.form_data.activity_data };
@@ -99,22 +98,17 @@ export function* handle_ACTIVITY_COPY_REQUEST(action) {
       ...activityState.activity.form_data,
       activity_data: activityDataToCopy
     };
-    yield put({
-      type: ACTIVITY_COPY_SUCCESS,
-      payload: {
-        form_data: formDataToCopy
-      }
-    });
+    yield put(ACTIVITY_COPY_SUCCESS({ form_data: formDataToCopy }));
   } catch (e) {
-    yield put({ type: ACTIVITY_COPY_FAILURE, payload: {} });
+    yield put(ACTIVITY_COPY_FAILURE());
   }
 }
 
-export function* handle_ACTIVITY_PASTE_REQUEST(action) {
+export function* handle_ACTIVITY_PASTE_REQUEST() {
   try {
-    yield put({ type: ACTIVITY_PASTE_SUCCESS, payload: {} });
+    yield put(ACTIVITY_PASTE_SUCCESS());
   } catch (e) {
-    yield put({ type: ACTIVITY_PASTE_FAILURE, payload: {} });
+    yield put(ACTIVITY_PASTE_FAILURE());
   }
 }
 
@@ -162,12 +156,12 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       if (action.payload.geometry[0].geometry.type === 'Point') {
         // if not radius in properties:
         if (!action.payload.geometry[0].properties.radius) {
-          let userEnteredArea = undefined;
-          while (
+          let userEnteredArea: number;
+          do {
+            userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):') || '');
+          } while (
             !(isNumber(userEnteredArea) && userEnteredArea !== null && [1, 5, 10].includes(Number(userEnteredArea)))
-          ) {
-            userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):'));
-          }
+          );
           const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
           modifiedPayload[0].properties.radius = radiusBasedOnArea;
         }
@@ -177,17 +171,16 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     let reported_area = calculateGeometryArea(modifiedPayload.geometry);
 
     if (modifiedPayload.length < 1) {
-      yield put({
-        type: ACTIVITY_UPDATE_GEO_SUCCESS,
-        payload: {
+      yield put(
+        ACTIVITY_UPDATE_GEO_SUCCESS({
           geometry: modifiedPayload.geometry,
           utm: utm,
           lat: latitude,
           long: longitude,
           reported_area: reported_area,
           Well_Information: []
-        }
-      });
+        })
+      );
       return;
     }
     const sanitizedGeo = fixMisLabledMultiPolygon(modifiedPayload[0]);
@@ -197,16 +190,15 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       if (hasSelfIntersections) {
-        yield put({
-          type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-          payload: {
+        yield put(
+          ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
             notification: {
               visible: true,
               message: 'Activity geometry intersects itself',
               severity: 'error'
             }
-          }
-        });
+          })
+        );
 
         return;
       }
@@ -265,66 +257,62 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     }
 
     if (activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' && areWellsInside) {
-      yield put({
-        type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-        payload: {
+      yield put(
+        ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
           notification: {
             visible: true,
             message: 'Warning!  Wells inside treatment area',
             severity: 'warning'
           }
-        }
-      });
+        })
+      );
     }
 
     if (!isWithinBC && !isWIPLinestring) {
-      yield put({
-        type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-        payload: {
+      yield put(
+        ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
           notification: {
             visible: true,
             message: 'Activity is not within BC',
             severity: 'error'
           }
-        }
-      });
+        })
+      );
 
       return;
     }
 
-    yield put({
-      type: ACTIVITY_UPDATE_GEO_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_UPDATE_GEO_SUCCESS({
         geometry: [sanitizedGeo],
         utm: utm,
         lat: latitude,
         long: longitude,
         reported_area: reported_area,
         Well_Information: wellInformationArr
-      }
-    });
+      })
+    );
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
-export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
+export function* handle_ACTIVITY_SAVE_SUCCESS() {
   const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
   try {
-    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: activity_id } });
-    yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-      payload: {
+    yield put(ACTIVITY_GET_REQUEST({ activityID: activity_id }));
+    yield put(
+      ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
         notification: {
           visible: true,
           message: 'Activity saved successfully',
           severity: 'success'
         }
-      }
-    });
+      })
+    );
 
-    yield put({ type: MAP_INIT_REQUEST });
+    yield put(MAP_INIT_REQUEST());
   } catch (e) {
     console.error(e);
   }
@@ -335,33 +323,31 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
 
   if (MOBILE) {
-    yield put({
-      type: ACTIVITY_SAVE_OFFLINE,
-      payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }
-    });
+    yield put(ACTIVITY_SAVE_OFFLINE({ id: activityState?.activity?.activity_id, data: activityState?.activity }));
   } else {
     try {
-      yield put({
-        type: ACTIVITY_SAVE_NETWORK_REQUEST,
-        payload: { activity_id: activityState.activity_id, updatedFormData: action.payload?.updatedFormData }
-      });
+      yield put(
+        ACTIVITY_SAVE_NETWORK_REQUEST({
+          activity_id: activityState.activity_id,
+          updatedFormData: action.payload?.updatedFormData
+        })
+      );
     } catch (e) {
       console.error(e);
-      yield put({ type: ACTIVITY_SAVE_NETWORK_FAILURE });
+      yield put(ACTIVITY_SAVE_NETWORK_FAILURE());
     }
   }
 }
 
 export function* handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST(action) {
   try {
-    yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
         notification: {
           ...action.payload.notification
         }
-      }
-    });
+      })
+    );
   } catch (e) {
     console.error(e);
   }
@@ -384,31 +370,36 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action) {
     );
 
     if (MOBILE) {
-      yield put({ type: ACTIVITY_CREATE_LOCAL, payload: { id: newActivity.activity_id, data: newActivity } });
+      yield put(ACTIVITY_CREATE_LOCAL({ id: newActivity.activity_id, data: newActivity }));
     } else {
-      yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: newActivity } });
+      yield put(
+        ACTIVITY_CREATE_NETWORK({
+          activity: newActivity
+        })
+      );
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_CREATE_FAILURE });
+    yield put(ACTIVITY_CREATE_FAILURE());
   }
 }
 
 export function* handle_ACTIVITY_CREATE_SUCCESS(action) {
   try {
-    yield put({
-      type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-      payload: { activeActivity: action.payload.activity_id, id: action.payload.activity_id }
-    });
-    yield put({
-      type: ACTIVITY_GET_REQUEST,
-      payload: {
+    yield put(
+      USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST({
+        activeActivity: action.payload.activity_id,
+        id: action.payload.activity_id
+      })
+    );
+    yield put(
+      ACTIVITY_GET_REQUEST({
         activityID: action.payload.activity_id
-      }
-    });
+      })
+    );
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_CREATE_FAILURE });
+    yield put(ACTIVITY_CREATE_FAILURE());
   }
 }
 
@@ -417,7 +408,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
     const lastField = action.payload.lastField;
-    const mapState = yield select(selectMap);
 
     let updatedFormData = action.payload.eventFormData;
 
@@ -445,14 +435,13 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 
     //handleRecordLinking(updatedFormData);
 
-    yield put({
-      type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_ON_FORM_CHANGE_SUCCESS({
         activity: updatedActivity,
         lastField: action.payload.lastField,
         unsavedDelay: action.payload.unsavedDelay
-      }
-    });
+      })
+    );
 
     // try to reduce calls to copy geometry
     const linked_id = updatedFormData.activity_type_data?.linked_id;
@@ -466,74 +455,68 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     ) {
       const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
       const linked_geo = networkReturn.data.geometry[0];
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [linked_geo] } });
-      yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
+      yield put(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [linked_geo] }));
+      yield take(ACTIVITY_UPDATE_GEO_SUCCESS.type);
     } else if (
       beforeActivity.form_data.activity_type_data?.copy_geometry === 'Yes' &&
       updatedFormData.activity_type_data.copy_geometry === 'No'
     ) {
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
-      yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
+      yield put(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [] }));
+      yield take(ACTIVITY_UPDATE_GEO_SUCCESS.type);
     }
 
     //call autofill events
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_CREATE_FAILURE });
+    yield put(ACTIVITY_CREATE_FAILURE());
   }
 }
 
-export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
+export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
   try {
-    yield put({
-      type: ACTIVITY_SAVE_NETWORK_REQUEST,
-      payload: { activity_id: activityState.activity_id, form_status: ActivityStatus.SUBMITTED }
-    });
+    yield put(
+      ACTIVITY_SAVE_NETWORK_REQUEST({
+        activity_id: activityState.activity_id,
+        form_status: ActivityStatus.SUBMITTED
+      })
+    );
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
-export function* handle_ACTIVITY_DELETE_REQUEST(action) {
+export function* handle_ACTIVITY_DELETE_REQUEST() {
   const activityState = yield select(selectActivity);
   try {
-    yield put({
-      type: ACTIVITY_DELETE_NETWORK_REQUEST,
-      payload: { activity_id: activityState.activity_id }
-    });
+    yield put(ACTIVITY_DELETE_NETWORK_REQUEST({ activity_id: activityState.activity_id }));
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_DELETE_FAILURE });
+    yield put(ACTIVITY_DELETE_FAILURE());
   }
 }
 
-export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
+export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
   try {
     const currentState = yield select(selectActivity);
     const currentActivity = currentState.activity;
-
     const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === 'LineString';
 
-    if (currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA && !wipLinestring) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-        payload: { search_feature: currentActivity.geometry }
-      });
+    if (currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA  && !wipLinestring) {
+      yield put(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST({ search_feature: currentActivity.geometry }));
 
       if (isLinkedTreatmentSubtype(currentActivity.activity_subtype)) {
-        yield put({
-          type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
-          payload: {
+        yield put(
+          ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST({
             activity: currentActivity
-          }
-        });
+          })
+        );
       }
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
@@ -542,30 +525,24 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
 
   try {
     if (connected) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-        payload: { search_feature: action.payload.search_feature }
-      });
+      yield put(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE({ search_feature: action.payload.search_feature }));
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
-export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
+export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST() {
   const connected = yield select(selectNetworkConnected);
 
   try {
     if (connected) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-        payload: {}
-      });
+      yield put(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE());
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
@@ -574,7 +551,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
   const AuthState = yield select(selectAuth);
   try {
     // filter Treatments and/or Biocontrol
-    let linkedActivitySubtypes = [];
+    let linkedActivitySubtypes: ActivitySubtype[] = [];
 
     switch (payloadActivity.activity_subtype) {
       case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
@@ -604,22 +581,21 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
       : false;
 
     if (linkedActivitySubtypes.length > 0) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
-        payload: {
+      yield put(
+        ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE({
           activity_subtype: linkedActivitySubtypes,
           user_roles: AuthState.accessRoles,
           search_feature
-        }
-      });
+        })
+      );
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
-export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
+export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
   const activityState = yield select(selectActivity);
 
   const geometry = activityState?.activity?.geometry?.[0];
@@ -635,10 +611,7 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
     }
 
     console.dir(target);
-    yield put({
-      type: MAIN_MAP_MOVE,
-      payload: { center: { lat: target.coordinates[1], lng: target.coordinates[0] }, zoom: 16 }
-    });
+    yield put(MAIN_MAP_MOVE({ center: { lat: target.coordinates[1], lng: target.coordinates[0] }, zoom: 16 }));
   }
 }
 
@@ -648,14 +621,8 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     const activityState = yield select(selectActivity);
     const type = activityState?.activity?.activity_subtype;
 
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-      payload: {}
-    });
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-      payload: { search_feature: activityState.activity.geometry }
-    });
+    yield put(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST());
+    yield put(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST({ search_feature: activityState.activity.geometry }));
 
     // needs to be latlng expression
     const isGeo = action.payload.activity?.geometry?.[0]?.geometry?.coordinates ? true : false;
@@ -666,47 +633,42 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
       centerPoint = center(action.payload.activity?.geometry[0]?.geometry);
     }
     if (centerPoint && isGeo) {
-      yield put({
-        type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-        payload: {
+      yield put(
+        USER_SETTINGS_SET_MAP_CENTER_REQUEST({
           center: centerPoint.geometry.coordinates
-        }
-      });
+        })
+      );
     }
     if (isLinkedTreatmentSubtype(type)) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
-        payload: {
+      yield put(
+        ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST({
           ...action.payload
-        }
-      });
+        })
+      );
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
 export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(action) {
   try {
-    yield put({
-      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-      payload: { eventFormData: action.payload.eventFormData }
-    });
+    yield put(ACTIVITY_ON_FORM_CHANGE_REQUEST({ eventFormData: action.payload.eventFormData }));
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    yield put(ACTIVITY_GET_INITIAL_STATE_FAILURE());
   }
 }
 
 export function* handle_ACTIVITY_ADD_PHOTO_REQUEST(action) {
   try {
     if (action.payload.photo) {
-      yield put({ type: ACTIVITY_ADD_PHOTO_SUCCESS, payload: { ...action.payload } });
+      yield put(ACTIVITY_ADD_PHOTO_SUCCESS({ ...action.payload }));
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_ADD_PHOTO_FAILURE });
+    yield put(ACTIVITY_ADD_PHOTO_FAILURE());
   }
 }
 
@@ -741,21 +703,20 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
         delete_keys.push(action.payload.photo.media_key);
       }
 
-      yield put({
-        type: ACTIVITY_DELETE_PHOTO_SUCCESS,
-        payload: {
+      yield put(
+        ACTIVITY_DELETE_PHOTO_SUCCESS({
           activity: {
             ...beforeActivity,
             media: media.length ? media : [],
             media_keys: media_keys.length ? media_keys : [],
             media_delete_keys: delete_keys
           }
-        }
-      });
+        })
+      );
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_DELETE_PHOTO_FAILURE });
+    yield put(ACTIVITY_DELETE_PHOTO_FAILURE());
   }
 }
 
@@ -769,14 +730,13 @@ export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
       beforeActivityMedia[photoIndex] = action.payload.photo;
     }
 
-    yield put({
-      type: ACTIVITY_EDIT_PHOTO_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_EDIT_PHOTO_SUCCESS({
         media: beforeActivityMedia
-      }
-    });
+      })
+    );
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_EDIT_PHOTO_FAILURE });
+    yield put(ACTIVITY_EDIT_PHOTO_FAILURE());
   }
 }

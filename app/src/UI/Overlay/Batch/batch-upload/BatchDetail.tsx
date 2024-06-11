@@ -24,24 +24,22 @@ const BatchMetadata = ({ batch }) => {
   }
 
   function uploadRevisedData() {
-    dispatch({
-      type: BATCH_UPDATE_REQUEST,
-      payload: {
+    dispatch(
+      BATCH_UPDATE_REQUEST({
         id: batch.id,
         csvData: fileData
-      }
-    });
+      })
+    );
   }
 
   function doBatchExec() {
-    dispatch({
-      type: BATCH_EXECUTE_REQUEST,
-      payload: {
+    dispatch(
+      BATCH_EXECUTE_REQUEST({
         id: batch.id,
         desiredActivityState: execFinalState,
         treatmentOfErrorRows: execErrorRowsTreatment
-      }
-    });
+      })
+    );
   }
 
   const [fileData, setFileData] = useState(null);
@@ -153,7 +151,7 @@ const BatchDetail = ({ id }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+    dispatch(BATCH_RETRIEVE_REQUEST({ id }));
   }, [id]);
 
   function renderContent() {

@@ -41,54 +41,47 @@ function createOfflineActivityReducer(
 ): (OfflineActivityState, AnyAction) => OfflineActivityState {
   return (state: OfflineActivityState = initialState, action) => {
     return createNextState(state, (draftState) => {
-      const { type, payload } = action;
-      switch (type) {
-        case ACTIVITY_CREATE_LOCAL:
-          draftState.serializedActivities[payload.id] = {
-            data: JSON.stringify(payload.data, null, 2),
-            saved_at: moment.now(),
-            sync_state: 'LOCALLY_MODIFIED'
+      if (ACTIVITY_CREATE_LOCAL.match(action)) {
+        draftState.serializedActivities[action.payload.id] = {
+          data: JSON.stringify(action.payload.data, null, 2),
+          saved_at: moment.now(),
+          sync_state: 'LOCALLY_MODIFIED'
+        };
+        draftState.serial = moment.now();
+      }
+      if (ACTIVITY_SAVE_OFFLINE.match(action)) {
+        draftState.serializedActivities[action.payload.id] = {
+          data: JSON.stringify(action.payload.data, null, 2),
+          saved_at: moment.now(),
+          sync_state: 'LOCALLY_MODIFIED'
+        };
+      }
+      draftState.serial = moment.now();
+
+      if (ACTIVITY_RUN_OFFLINE_SYNC.match(action)) {
+        draftState.working = true;
+      }
+      if (ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE.match(action)) {
+        draftState.working = false;
+      }
+      if (ACTIVITY_UPDATE_SYNC_STATE.match(action)) {
+        const found = draftState.serializedActivities[action.payload.id];
+        if (found)
+          draftState.serializedActivities[action.payload.id] = {
+            ...found,
+            sync_state: action.payload.sync_state
           };
-          draftState.serial = moment.now();
-          break;
-        case ACTIVITY_SAVE_OFFLINE:
-          draftState.serializedActivities[payload.id] = {
-            data: JSON.stringify(payload.data, null, 2),
-            saved_at: moment.now(),
-            sync_state: 'LOCALLY_MODIFIED'
-          };
-          draftState.serial = moment.now();
-          break;
-        case ACTIVITY_RUN_OFFLINE_SYNC: {
-          draftState.working = true;
-          break;
+        draftState.serial = moment.now();
+      }
+      if (ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE.match(action)) {
+        draftState.statusDialogOpen = action.payload.open;
+      }
+      if (ACTIVITY_OFFLINE_DELETE_ITEM.match(action)) {
+        const found = draftState.serializedActivities[action.payload.id];
+        if (found) {
+          delete draftState.serializedActivities[action.payload.id];
         }
-        case ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE: {
-          draftState.working = false;
-          break;
-        }
-        case ACTIVITY_UPDATE_SYNC_STATE: {
-          const found = draftState.serializedActivities[payload.id];
-          if (found)
-            draftState.serializedActivities[payload.id] = {
-              ...found,
-              sync_state: payload.sync_state
-            };
-          draftState.serial = moment.now();
-          break;
-        }
-        case ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE: {
-          draftState.statusDialogOpen = action.payload.open;
-          break;
-        }
-        case ACTIVITY_OFFLINE_DELETE_ITEM: {
-          const found = draftState.serializedActivities[payload.id];
-          if (found) {
-            delete draftState.serializedActivities[payload.id];
-          }
-          draftState.serial = moment.now();
-          break;
-        }
+        draftState.serial = moment.now();
       }
     });
   };

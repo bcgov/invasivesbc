@@ -42,7 +42,7 @@ import {
   MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
   OVERLAY_MENU_TOGGLE,
-  PAGE_OR_LIMIT_UPDATE,
+  PAGE_OR_LIMIT_CHANGE,
   PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
@@ -473,682 +473,599 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
        in) and builder.addCase instead of switches, although I assume you lose fallthrough cases then.
       */
     return createNextState(state, (draftState: Draft<MapState>) => {
-      switch (action.type) {
-        case WHATS_HERE_SERVER_FILTERED_IDS_FETCHED: {
-          draftState.whatsHere.serverActivityIDs = action.payload.activities;
-          draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
+      if (WHATS_HERE_SERVER_FILTERED_IDS_FETCHED.match(action)) {
+        draftState.whatsHere.serverActivityIDs = action.payload.activities;
+        draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
 
-          const toggledOnActivityLayers = draftState.layers.filter(
-            (layer) => layer.type === 'Activity' && layer.layerState.mapToggle
+        const toggledOnActivityLayers = draftState.layers.filter(
+          (layer) => layer.type === 'Activity' && layer.layerState.mapToggle
+        );
+
+        const toggledOnIAPPLayers = draftState.layers.filter(
+          (layer) => layer.type === 'IAPP' && layer.layerState.mapToggle
+        );
+
+        let localActivityIDs = [];
+
+        toggledOnActivityLayers.map((layer) => {
+          localActivityIDs = localActivityIDs.concat(layer.IDList);
+        });
+
+        let localIAPPIDs = [];
+
+        toggledOnIAPPLayers.map((layer) => {
+          localIAPPIDs = localIAPPIDs.concat(layer.IDList);
+        });
+
+        const iappIDs = [];
+        const activityIDs = [];
+        localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
+        localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
+
+        draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
+        draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
+      }
+      if (TOGGLE_LAYER_PICKER_OPEN.match(action)) {
+        draftState.layerPickerOpen = !draftState.layerPickerOpen;
+      }
+
+      if (TOGGLE_WMS_LAYER.match(action)) {
+        const index = draftState.simplePickerLayers2.findIndex((layer) => layer.url === action.payload.layer.url);
+        draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle;
+      }
+      if (TOGGLE_DRAWN_LAYER.match(action)) {
+        const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
+        draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
+      }
+      if (MAP_TOGGLE_GEOJSON_CACHE.match(action)) {
+        draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
+      }
+      if (WHATS_HERE_ID_CLICKED.match(action))
+        if (action.payload.type === 'Activity') {
+          draftState.whatsHere.clickedActivity = action.payload.id;
+          draftState.whatsHere.clickedActivityDescription = action.payload.description;
+        } else if (action.payload.type === 'IAPP') {
+          draftState.whatsHere.clickedIAPP = action.payload.id;
+          draftState.whatsHere.clickedIAPPDescription = action.payload.description;
+        }
+      if (ACTIVITIES_TABLE_ROWS_GET_REQUEST.match(action) || IAPP_TABLE_ROWS_GET_REQUEST.match(action)) {
+        if (!draftState.recordTables?.[action.payload.recordSetID]) {
+          draftState.recordTables[action.payload.recordSetID] = {};
+        }
+        draftState.recordTables[action.payload.recordSetID].loading = true;
+        draftState.recordTables[action.payload.recordSetID].page = action.payload.page;
+        draftState.recordTables[action.payload.recordSetID].limit = action.payload.limit;
+        draftState.recordTables[action.payload.recordSetID].tableFiltersHash = action.payload.tableFiltersHash;
+      }
+      if (ACTIVITIES_GEOJSON_GET_SUCCESS.match(action)) {
+        //Everything should point to this now instead:
+        draftState.activitiesGeoJSONDict = {
+          ...draftState.activitiesGeoJSONDict,
+          ...action.payload.activitiesGeoJSONDict
+        };
+
+        if (
+          draftState.layers?.filter((layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined).length >
+          0
+        ) {
+          const activityLayersToRegen = draftState.layers?.filter(
+            (layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined
           );
+          activityLayersToRegen.map((layer) => {
+            GeoJSONFilterSetForLayer(draftState, state, 'Activity', layer.recordSetID, layer.IDList);
+          });
+        }
+      }
+      if (ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        }
+        draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
+        draftState.layers[index].loading = true;
+        if (!draftState.layers[index].layerState) {
+          draftState.layers[index].layerState = {
+            color: 'blue',
+            drawOrder: 0,
+            mapToggle: false
+          };
+        }
+      }
+      if (IAPP_GET_IDS_FOR_RECORDSET_REQUEST.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'IAPP' });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        }
+        draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
+        draftState.layers[index].loading = true;
+        if (!draftState.layers[index].layerState) {
+          draftState.layers[index].layerState = {
+            color: 'blue',
+            drawOrder: 0,
+            mapToggle: false
+          };
+        }
+        /*draftState.layers[index].layerState = {
+          color: '#000000',
+          mapToggle: false,
+          drawOrder: 0
+        };
+        */
+      }
+      if (ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index])
+          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
+        index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
-          const toggledOnIAPPLayers = draftState.layers.filter(
-            (layer) => layer.type === 'IAPP' && layer.layerState.mapToggle
+        if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
+        }
+        draftState.layers[index].IDList = action.payload.IDList;
+        if (draftState.MapMode === 'VECTOR_ENDPOINT') {
+          draftState.layers[index].loading = false;
+        }
+
+        //if (draftState.activitiesGeoJSON?.features?.length > 0) {
+        if (draftState.MapMode !== 'VECTOR_ENDPOINT' && draftState.activitiesGeoJSONDict !== undefined) {
+          GeoJSONFilterSetForLayer(draftState, state, 'Activity', action.payload.recordSetID, action.payload.IDList);
+        }
+      }
+      if (MAP_MODE_SET.match(action)) draftState.MapMode = action.payload;
+      switch (action.payload) {
+        case 'VECTOR_ENDPOINT':
+          draftState.activitiesGeoJSONDict = {};
+          draftState.IAPPGeoJSONDict = {};
+          draftState.layers = draftState.layers.map((layer) => {
+            delete layer.geoJSON;
+            return layer;
+          });
+      }
+      if (FILTERS_PREPPED_FOR_VECTOR_ENDPOINT.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType });
+        }
+        index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+
+        draftState.layers[index].filterObject = action.payload.filterObject;
+        draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
+      }
+
+      if (ACTIVITIES_TABLE_ROWS_GET_SUCCESS.match(action) || IAPP_TABLE_ROWS_GET_SUCCESS.match(action)) {
+        // the hash, page, and limit all need to line up
+        if (
+          draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash
+        ) {
+          console.log(
+            'hash mismatch',
+            draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash,
+            action.payload.tableFiltersHash
           );
-
-          let localActivityIDs = [];
-
-          toggledOnActivityLayers.map((layer) => {
-            localActivityIDs = localActivityIDs.concat(layer.IDList);
-          });
-
-          let localIAPPIDs = [];
-
-          toggledOnIAPPLayers.map((layer) => {
-            localIAPPIDs = localIAPPIDs.concat(layer.IDList);
-          });
-
-          const iappIDs = [];
-          const activityIDs = [];
-          localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
-          localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
-
-          draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
-          draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
-
-          break;
         }
-        case TOGGLE_LAYER_PICKER_OPEN:
-          draftState.layerPickerOpen = !draftState.layerPickerOpen;
-          break;
-        case TOGGLE_WMS_LAYER:
-          const index = draftState.simplePickerLayers2.findIndex((layer) => layer.url === action.payload.layer.url);
-          draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle;
-          break;
-        case TOGGLE_DRAWN_LAYER: {
-          const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
-          draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
-          break;
+        if (Number(draftState.recordTables?.[action.payload.recordSetID]?.limit) !== Number(action.payload.limit)) {
+          console.log(
+            'limit mismatch',
+            draftState.recordTables?.[action.payload.recordSetID]?.limit,
+            action.payload.limit
+          );
+          console.log(
+            'typeof',
+            typeof draftState.recordTables?.[action.payload.recordSetID]?.limit,
+            typeof action.payload.limit
+          );
         }
-        case MAP_TOGGLE_GEOJSON_CACHE: {
-          draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
-          break;
+        if (Number(draftState.recordTables?.[action.payload.recordSetID]?.page) !== Number(action.payload.page)) {
+          console.log(
+            'page mismatch',
+            draftState.recordTables?.[action.payload.recordSetID]?.page,
+            action.payload.page
+          );
         }
-        case WHATS_HERE_ID_CLICKED:
-          if (action.payload.type === 'Activity') {
-            draftState.whatsHere.clickedActivity = action.payload.id;
-            draftState.whatsHere.clickedActivityDescription = action.payload.description;
-          } else if (action.payload.type === 'IAPP') {
-            draftState.whatsHere.clickedIAPP = action.payload.id;
-            draftState.whatsHere.clickedIAPPDescription = action.payload.description;
-          }
-          break;
-
-        case IAPP_TABLE_ROWS_GET_REQUEST:
-        case ACTIVITIES_TABLE_ROWS_GET_REQUEST: {
-          if (!draftState.recordTables?.[action.payload.recordSetID]) {
-            draftState.recordTables[action.payload.recordSetID] = {};
-          }
-          draftState.recordTables[action.payload.recordSetID].loading = true;
-          draftState.recordTables[action.payload.recordSetID].page = action.payload.page;
-          draftState.recordTables[action.payload.recordSetID].limit = action.payload.limit;
-          draftState.recordTables[action.payload.recordSetID].tableFiltersHash = action.payload.tableFiltersHash;
-          break;
-        }
-        case ACTIVITIES_GEOJSON_GET_SUCCESS: {
-          //Everything should point to this now instead:
-          draftState.activitiesGeoJSONDict = {
-            ...draftState.activitiesGeoJSONDict,
-            ...action.payload.activitiesGeoJSONDict
-          };
-
-          if (
-            draftState.layers?.filter((layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined)
-              .length > 0
-          ) {
-            const activityLayersToRegen = draftState.layers?.filter(
-              (layer) => layer.type === 'Activity' && layer.IDList?.length !== undefined
-            );
-            activityLayersToRegen.map((layer) => {
-              GeoJSONFilterSetForLayer(draftState, state, 'Activity', layer.recordSetID, layer.IDList);
-            });
-          }
-          break;
-        }
-        case ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST: {
-          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index]) {
-            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
-            index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          }
-          draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-          draftState.layers[index].loading = true;
-          if (!draftState.layers[index].layerState) {
-            draftState.layers[index].layerState = {
-              color: 'blue',
-              drawOrder: 0,
-              mapToggle: false
-            };
-          }
-          break;
-        }
-        case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
-          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index]) {
-            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'IAPP' });
-            index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          }
-          draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-          draftState.layers[index].loading = true;
-          if (!draftState.layers[index].layerState) {
-            draftState.layers[index].layerState = {
-              color: 'blue',
-              drawOrder: 0,
-              mapToggle: false
-            };
-          }
-          /*draftState.layers[index].layerState = {
-            color: '#000000',
-            mapToggle: false,
-            drawOrder: 0
-          };
-          */
-          break;
-        }
-        case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
-          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index])
-            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: 'Activity' });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-
-          if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
-            break;
-          }
-          draftState.layers[index].IDList = action.payload.IDList;
-          if (draftState.MapMode === 'VECTOR_ENDPOINT') {
-            draftState.layers[index].loading = false;
-          }
-
-          //if (draftState.activitiesGeoJSON?.features?.length > 0) {
-          if (draftState.MapMode !== 'VECTOR_ENDPOINT' && draftState.activitiesGeoJSONDict !== undefined) {
-            GeoJSONFilterSetForLayer(draftState, state, 'Activity', action.payload.recordSetID, action.payload.IDList);
-          }
-          break;
-        }
-        case MAP_MODE_SET:
-          draftState.MapMode = action.payload;
-          switch (action.payload) {
-            case 'VECTOR_ENDPOINT':
-              draftState.activitiesGeoJSONDict = {};
-              draftState.IAPPGeoJSONDict = {};
-              draftState.layers = draftState.layers.map((layer) => {
-                delete layer.geoJSON;
-                return layer;
-              });
-              break;
-          }
-          break;
-        case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
-          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index]) {
-            draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType });
-          }
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-
-          draftState.layers[index].filterObject = action.payload.filterObject;
-          draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-          break;
-        }
-        case IAPP_TABLE_ROWS_GET_SUCCESS:
-        case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
-          // the hash, page, and limit all need to line up
-          if (
-            draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash
-          ) {
-            console.log(
-              'hash mismatch',
-              draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash,
-              action.payload.tableFiltersHash
-            );
-            break;
-          }
-          if (Number(draftState.recordTables?.[action.payload.recordSetID]?.limit) !== Number(action.payload.limit)) {
-            console.log(
-              'limit mismatch',
-              draftState.recordTables?.[action.payload.recordSetID]?.limit,
-              action.payload.limit
-            );
-            console.log(
-              'typeof',
-              typeof draftState.recordTables?.[action.payload.recordSetID]?.limit,
-              typeof action.payload.limit
-            );
-            break;
-          }
-          if (Number(draftState.recordTables?.[action.payload.recordSetID]?.page) !== Number(action.payload.page)) {
-            console.log(
-              'page mismatch',
-              draftState.recordTables?.[action.payload.recordSetID]?.page,
-              action.payload.page
-            );
-            break;
-          }
-          if (draftState.recordTables?.[action.payload.recordSetID]) {
-            draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
-          } else {
-            draftState.recordTables[action.payload.recordSetID] = {};
-            draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
-          } // set defaults
-          draftState.recordTables[action.payload.recordSetID].loading = false;
-          break;
-        }
-        case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
-          draftState.activityPageMapExtentToggle = !state.activityPageMapExtentToggle;
-          break;
-        }
-        case CSV_LINK_CLICKED: {
-          draftState.linkToCSV = null;
-          draftState.recordSetForCSV = null;
-          break;
-        }
-        case CUSTOM_LAYER_DRAWN: {
+        if (draftState.recordTables?.[action.payload.recordSetID]) {
+          draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
+        } else {
+          draftState.recordTables[action.payload.recordSetID] = {};
+          draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
+        } // set defaults
+        draftState.recordTables[action.payload.recordSetID].loading = false;
+      }
+      if (ACTIVITY_PAGE_MAP_EXTENT_TOGGLE.match(action)) {
+        draftState.activityPageMapExtentToggle = !state.activityPageMapExtentToggle;
+      }
+      if (CSV_LINK_CLICKED.match(action)) {
+        draftState.linkToCSV = null;
+        draftState.recordSetForCSV = null;
+      }
+      if (CUSTOM_LAYER_DRAWN.match(action)) {
+        draftState.drawingCustomLayer = false;
+        draftState.clientBoundaries.push({
+          id: getUuid(),
+          title: draftState?.workingLayerName,
+          geojson: action.payload.feature,
+          toggle: true
+        });
+        draftState.workingLayerName = null;
+      }
+      if (DRAW_CUSTOM_LAYER.match(action)) {
+        draftState.drawingCustomLayer = true;
+        draftState.workingLayerName = action.payload.name;
+      }
+      if (MAP_ON_SHAPE_UPDATE.match(action)) {
+        if (draftState.drawingCustomLayer) {
           draftState.drawingCustomLayer = false;
           draftState.clientBoundaries.push({
             id: getUuid(),
             title: draftState?.workingLayerName,
-            geojson: action.payload.feature,
+            geojson: action.payload,
             toggle: true
           });
           draftState.workingLayerName = null;
-          break;
         }
-        case DRAW_CUSTOM_LAYER: {
-          draftState.drawingCustomLayer = true;
-          draftState.workingLayerName = action.payload.name;
-          break;
-        }
-        case MAP_ON_SHAPE_UPDATE: {
-          if (draftState.drawingCustomLayer) {
-            draftState.drawingCustomLayer = false;
-            draftState.clientBoundaries.push({
-              id: getUuid(),
-              title: draftState?.workingLayerName,
-              geojson: action.payload,
-              toggle: true
-            });
-            draftState.workingLayerName = null;
-          }
-          break;
-        }
-        case IAPP_EXTENT_FILTER_SUCCESS: {
-          draftState.IAPPBoundsPolygon = action.payload.bounds;
-          break;
-        }
-        case IAPP_GEOJSON_GET_SUCCESS: {
-          //TODO:  Delete this when other refs to it are gone:
-          draftState.IAPPGeoJSON = { type: 'FeatureCollection', features: [] }; //action.payload.IAPPGeoJSON;
+      }
+      if (IAPP_EXTENT_FILTER_SUCCESS.match(action)) {
+        draftState.IAPPBoundsPolygon = action.payload.bounds;
+      }
+      if (IAPP_GEOJSON_GET_SUCCESS.match(action)) {
+        //TODO:  Delete this when other refs to it are gone:
+        draftState.IAPPGeoJSON = { type: 'FeatureCollection', features: [] }; //action.payload.IAPPGeoJSON;
 
-          //Everything should point to this now instead:
-          draftState.IAPPGeoJSONDict = {};
-          action.payload.IAPPGeoJSON.features.map((feature) => {
-            if (!feature.properties.site_id) console.log('no site_id', feature);
-            if (feature?.properties?.site_id) {
-              draftState.IAPPGeoJSONDict[feature.properties.site_id] = feature;
-            }
-          });
+        //Everything should point to this now instead:
+        draftState.IAPPGeoJSONDict = {};
+        action.payload.IAPPGeoJSON.features.map((feature) => {
+          if (!feature.properties.site_id) console.log('no site_id', feature);
+          if (feature?.properties?.site_id) {
+            draftState.IAPPGeoJSONDict[feature.properties.site_id] = feature;
+          }
+        });
 
-          if (
-            draftState.layers?.filter((layer) => layer.type === 'IAPP' && layer.IDList?.length !== undefined).length > 0
-          ) {
-            const IAPPLayersToRegen = draftState.layers?.filter(
-              (layer) => layer.type === 'IAPP' && layer.IDList?.length !== undefined
-            );
-            IAPPLayersToRegen.map((layer) => {
-              GeoJSONFilterSetForLayer(draftState, state, 'IAPP', layer.recordSetID, layer.IDList);
-            });
-          }
-          break;
-        }
-        case IAPP_GET_IDS_FOR_RECORDSET_SUCCESS: {
-          let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
-            break;
-          }
-          draftState.layers[index].IDList = action.payload.IDList;
-          if (draftState.MapMode === 'VECTOR_ENDPOINT') {
-            draftState.layers[index].loading = false;
-          }
-
-          if (
-            draftState.MapMode != 'VECTOR_ENDPOINT' &&
-            draftState.IAPPGeoJSONDict !== undefined &&
-            Object.keys(draftState.IAPPGeoJSONDict).length > 0
-          ) {
-            GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
-          }
-          break;
-        }
-        case INIT_SERVER_BOUNDARIES_GET: {
-          const withLocalToggles = action.payload.data?.map((incomingItem) => {
-            const returnVal = { ...incomingItem };
-            const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
-              oldItem.id === incomingItem;
-            })?.toggle;
-            returnVal.toggle =
-              existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
-            return returnVal;
+        if (
+          draftState.layers?.filter((layer) => layer.type === 'IAPP' && layer.IDList?.length !== undefined).length > 0
+        ) {
+          const IAPPLayersToRegen = draftState.layers?.filter(
+            (layer) => layer.type === 'IAPP' && layer.IDList?.length !== undefined
+          );
+          IAPPLayersToRegen.map((layer) => {
+            GeoJSONFilterSetForLayer(draftState, state, 'IAPP', layer.recordSetID, layer.IDList);
           });
-          draftState.serverBoundaries = withLocalToggles;
-          const strippedOfShapes = draftState.serverBoundaries.map((item) => {
-            const returnVal = { ...item };
-            delete returnVal.geojson;
-            return returnVal;
-          });
-          break;
         }
-        case TOGGLE_KML_LAYER: {
-          const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
-          console.log(index);
-          draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
-          const strippedOfShapes = draftState.serverBoundaries.map((item) => {
-            const returnVal = { ...item };
-            delete returnVal.geojson;
-            return returnVal;
-          });
-          break;
+      }
+      if (IAPP_GET_IDS_FOR_RECORDSET_SUCCESS.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
+        index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
         }
-        case USER_SETTINGS_SET_RECORDSET: {
-          const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
-          if (!draftState.layers[layerIndex]?.layerState)
-            draftState.layers[layerIndex].layerState = {
-              color: '#000000',
-              mapToggle: false,
-              drawOrder: 0
-            };
-          Object.keys(action.payload.updatedSet).map((key) => {
-            if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
-              draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
-            }
-          });
-          if (draftState.layers[layerIndex].layerState.mapToggle === false) {
-            draftState.layers[layerIndex].layerState.labelToggle = false;
-          }
-          break;
-        }
-        case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-          Object.keys(action.payload.recordSets).map((setID) => {
-            let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-            if (!draftState.layers[layerIndex]) {
-              draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
-              layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-            }
-            draftState.layers[layerIndex].layerState = {};
-            if (action.payload.recordSets[setID].colorScheme)
-              draftState.layers[layerIndex].layerState.colorScheme = action.payload.recordSets[setID].colorScheme;
-            if (action.payload.recordSets[setID].color)
-              draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
-            if (action.payload.recordSets[setID].mapToggle)
-              draftState.layers[layerIndex].layerState.mapToggle = action.payload.recordSets[setID].mapToggle;
-            if (action.payload.recordSets[setID].labelToggle)
-              draftState.layers[layerIndex].layerState.labelToggle = action.payload.recordSets[setID].labelToggle;
-            if (action.payload.recordSets[setID].drawOrder)
-              draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
-          });
-          break;
+        draftState.layers[index].IDList = action.payload.IDList;
+        if (draftState.MapMode === 'VECTOR_ENDPOINT') {
+          draftState.layers[index].loading = false;
         }
 
-        case MAIN_MAP_MOVE: {
-          draftState.map_zoom = action.payload.zoom;
-          draftState.map_center = action.payload.center;
-          draftState.panned = false;
-          break;
+        if (
+          draftState.MapMode != 'VECTOR_ENDPOINT' &&
+          draftState.IAPPGeoJSONDict !== undefined &&
+          Object.keys(draftState.IAPPGeoJSONDict).length > 0
+        ) {
+          GeoJSONFilterSetForLayer(draftState, state, 'IAPP', action.payload.recordSetID, action.payload.IDList);
         }
-        case MAP_DELETE_LAYER_AND_TABLE: {
-          const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          delete draftState.layers[index];
-          delete draftState.recordTables[action.payload.recordSetID];
-          break;
-        }
-        case MAP_LABEL_EXTENT_FILTER_SUCCESS: {
-          draftState.labelBoundsPolygon = action.payload.bounds;
-          break;
-        }
-        case MAP_SET_COORDS: {
-          const userCoords = { ...action?.payload?.position?.coords };
-          draftState.userCoords = {
-            lat: userCoords.latitude,
-            long: userCoords.longitude,
-            accuracy: userCoords.accuracy,
-            heading: userCoords.heading
+      }
+      if (INIT_SERVER_BOUNDARIES_GET.match(action)) {
+        const withLocalToggles = action.payload.data?.map((incomingItem) => {
+          const returnVal = { ...incomingItem };
+          const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
+            oldItem.id === incomingItem;
+          })?.toggle;
+          returnVal.toggle = existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
+          return returnVal;
+        });
+        draftState.serverBoundaries = withLocalToggles;
+        const strippedOfShapes = draftState.serverBoundaries.map((item) => {
+          const returnVal = { ...item };
+          delete returnVal.geojson;
+          return returnVal;
+        });
+      }
+      if (TOGGLE_KML_LAYER.match(action)) {
+        const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
+        console.log(index);
+        draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
+        const strippedOfShapes = draftState.serverBoundaries.map((item) => {
+          const returnVal = { ...item };
+          delete returnVal.geojson;
+          return returnVal;
+        });
+      }
+      if (USER_SETTINGS_SET_RECORDSET.match(action)) {
+        const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
+        if (!draftState.layers[layerIndex]?.layerState)
+          draftState.layers[layerIndex].layerState = {
+            color: '#000000',
+            mapToggle: false,
+            drawOrder: 0
           };
-          draftState.userHeading = userCoords.heading;
-          break;
+        Object.keys(action.payload.updatedSet).map((key) => {
+          if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
+            draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
+          }
+        });
+        if (draftState.layers[layerIndex].layerState.mapToggle === false) {
+          draftState.layers[layerIndex].layerState.labelToggle = false;
         }
-        case MAP_SET_WHATS_HERE_PAGE_LIMIT: {
-          draftState.whatsHere.page = action.payload.page;
-          draftState.whatsHere.limit = action.payload.limit;
-          break;
-        }
-        case MAP_SET_WHATS_HERE_SECTION: {
-          draftState.whatsHere.section = action.payload.section;
-          draftState.whatsHere.page = 0;
-          draftState.whatsHere.limit = 5;
-          break;
-        }
-        case MAP_TOGGLE_ACCURACY: {
-          draftState.accuracyToggle = !state.accuracyToggle;
-          break;
-        }
-        case MAP_TOGGLE_BASEMAP: {
-          draftState.baseMapToggle = !state.baseMapToggle;
-          break;
-        }
-        case MAP_TOGGLE_HD: {
-          draftState.HDToggle = !state.HDToggle;
-          break;
-        }
-        case MAP_TOGGLE_LEGENDS: {
-          draftState.legendsPopup = !state.legendsPopup;
-          break;
-        }
-        case MAP_TOGGLE_PANNED: {
-          draftState.panned = !state.panned;
-          break;
-        }
-        case IAPP_PAN_AND_ZOOM:
-        case PAN_AND_ZOOM_TO_ACTIVITY: {
+      }
+      if (USER_SETTINGS_GET_INITIAL_STATE_SUCCESS.match(action)) {
+        Object.keys(action.payload.recordSets).map((setID) => {
+          let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+          if (!draftState.layers[layerIndex]) {
+            draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
+            layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+          }
+          draftState.layers[layerIndex].layerState = {};
+          if (action.payload.recordSets[setID].colorScheme)
+            draftState.layers[layerIndex].layerState.colorScheme = action.payload.recordSets[setID].colorScheme;
+          if (action.payload.recordSets[setID].color)
+            draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
+          if (action.payload.recordSets[setID].mapToggle)
+            draftState.layers[layerIndex].layerState.mapToggle = action.payload.recordSets[setID].mapToggle;
+          if (action.payload.recordSets[setID].labelToggle)
+            draftState.layers[layerIndex].layerState.labelToggle = action.payload.recordSets[setID].labelToggle;
+          if (action.payload.recordSets[setID].drawOrder)
+            draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
+        });
+      }
+
+      if (MAIN_MAP_MOVE.match(action)) {
+        draftState.map_zoom = action.payload.zoom;
+        draftState.map_center = action.payload.center;
+        draftState.panned = false;
+      }
+      if (MAP_DELETE_LAYER_AND_TABLE.match(action)) {
+        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        delete draftState.layers[index];
+        delete draftState.recordTables[action.payload.recordSetID];
+      }
+      if (MAP_LABEL_EXTENT_FILTER_SUCCESS.match(action)) {
+        draftState.labelBoundsPolygon = action.payload.bounds;
+      }
+      if (MAP_SET_COORDS.match(action)) {
+        const userCoords = { ...action?.payload?.position?.coords };
+        draftState.userCoords = {
+          lat: userCoords.latitude,
+          long: userCoords.longitude,
+          accuracy: userCoords.accuracy,
+          heading: userCoords.heading
+        };
+        draftState.userHeading = userCoords.heading;
+      }
+      if (MAP_SET_WHATS_HERE_PAGE_LIMIT.match(action)) {
+        draftState.whatsHere.page = action.payload.page;
+        draftState.whatsHere.limit = action.payload.limit;
+      }
+      if (MAP_SET_WHATS_HERE_SECTION.match(action)) {
+        draftState.whatsHere.section = action.payload.section;
+        draftState.whatsHere.page = 0;
+        draftState.whatsHere.limit = 5;
+      }
+      if (MAP_TOGGLE_ACCURACY.match(action)) {
+        draftState.accuracyToggle = !state.accuracyToggle;
+      }
+      if (MAP_TOGGLE_BASEMAP.match(action)) {
+        draftState.baseMapToggle = !state.baseMapToggle;
+      }
+      if (MAP_TOGGLE_HD.match(action)) {
+        draftState.HDToggle = !state.HDToggle;
+      }
+      if (MAP_TOGGLE_LEGENDS.match(action)) {
+        draftState.legendsPopup = !state.legendsPopup;
+      }
+      if (MAP_TOGGLE_PANNED.match(action)) {
+        draftState.panned = !state.panned;
+      }
+      if (IAPP_PAN_AND_ZOOM.match(action))
+        if (PAN_AND_ZOOM_TO_ACTIVITY.match(action)) {
           draftState.positionTracking = false;
-          break;
         }
-        case MAP_TOGGLE_TRACKING: {
-          draftState.positionTracking = !state.positionTracking;
-          break;
-        }
-        case MAP_TOGGLE_TRACK_ME_DRAW_GEO: {
-          draftState.track_me_draw_geo = !state.track_me_draw_geo;
-          break;
-        }
-        case MAP_TOGGLE_WHATS_HERE: {
-          if (draftState.whatsHere.toggle) {
-            draftState.whatsHere.loadingActivities = false;
-            draftState.whatsHere.loadingIAPP = false;
-          } else {
-            draftState.whatsHere.toggle = !state.whatsHere.toggle;
-            draftState.whatsHere.feature = null;
-            draftState.whatsHere.iappRows = [];
-            draftState.whatsHere.activityRows = [];
-            draftState.whatsHere.limit = 5;
-            draftState.whatsHere.page = 0;
-          }
-          break;
-        }
-        case MAP_WHATS_HERE_FEATURE: {
-          draftState.whatsHere.clickedActivity = null;
-          draftState.whatsHere.clickedActivityDescription = null;
-          draftState.whatsHere.clickedIAPP = null;
-          draftState.whatsHere.clickedIAPPDescription = null;
-          draftState.whatsHere.loadingActivities = true;
-          draftState.whatsHere.loadingIAPP = true;
-          draftState.whatsHere.feature = action.payload.feature;
-          draftState.whatsHere.toggle = state.whatsHere.toggle;
+      if (MAP_TOGGLE_TRACKING.match(action)) {
+        draftState.positionTracking = !state.positionTracking;
+      }
+      if (MAP_TOGGLE_TRACK_ME_DRAW_GEO.match(action)) {
+        draftState.track_me_draw_geo = !state.track_me_draw_geo;
+      }
+      if (MAP_TOGGLE_WHATS_HERE.match(action)) {
+        if (draftState.whatsHere.toggle) {
+          draftState.whatsHere.loadingActivities = false;
+          draftState.whatsHere.loadingIAPP = false;
+        } else {
+          draftState.whatsHere.toggle = !state.whatsHere.toggle;
+          draftState.whatsHere.feature = null;
+          draftState.whatsHere.iappRows = [];
+          draftState.whatsHere.activityRows = [];
           draftState.whatsHere.limit = 5;
           draftState.whatsHere.page = 0;
-          break;
         }
-        case MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED: {
-          draftState.whatsHere.ActivityIDs = [...action.payload.IDs];
-          draftState.whatsHere.activityRows = [];
-          draftState.whatsHere.ActivityPage = 0;
-          draftState.whatsHere.ActivityLimit = 15;
-          break;
-        }
-        case MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED: {
-          draftState.whatsHere.IAPPIDs = [...action.payload.IDs];
-          draftState.whatsHere.iappRows = [];
-          draftState.whatsHere.IAPPPage = 0;
-          draftState.whatsHere.IAPPLimit = 15;
-          break;
-        }
-        case MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY: {
-          // moving to one place for this stuff:
-          draftState.userRecordOnHoverRecordRow = {
-            id: action.payload.id,
-            short_id: action.payload.short_id,
-            geometry: [
-              state?.whatsHere?.activityRows.filter((row) => {
-                return row.short_id === action.payload.short_id;
-              })[0].geometry
-            ]
-          };
-          draftState.userRecordOnHoverRecordType = 'Activity';
-
-          // to delete:
-          draftState.whatsHere.highlightedType = 'Activity';
-          draftState.whatsHere.highlightedURLID = action.payload.id;
-          draftState.whatsHere.highlightedIAPP = null;
-          draftState.whatsHere.highlightedACTIVITY = action.payload.short_id;
-          draftState.whatsHere.highlightedGeo = state?.whatsHere?.activityRows.filter((row) => {
-            return row.short_id === action.payload.short_id;
-          })[0];
-          break;
-        }
-        case MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP: {
-          // moving to one place for this stuff:
-          draftState.userRecordOnHoverRecordRow = {
-            id: action.payload.id,
-            geometry: state?.whatsHere?.iappRows.filter((row) => {
-              return row.site_id === action.payload.id;
+      }
+      if (MAP_WHATS_HERE_FEATURE.match(action)) {
+        draftState.whatsHere.clickedActivity = null;
+        draftState.whatsHere.clickedActivityDescription = null;
+        draftState.whatsHere.clickedIAPP = null;
+        draftState.whatsHere.clickedIAPPDescription = null;
+        draftState.whatsHere.loadingActivities = true;
+        draftState.whatsHere.loadingIAPP = true;
+        draftState.whatsHere.feature = action.payload.feature;
+        draftState.whatsHere.toggle = state.whatsHere.toggle;
+        draftState.whatsHere.limit = 5;
+        draftState.whatsHere.page = 0;
+      }
+      if (MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED.match(action)) {
+        draftState.whatsHere.ActivityIDs = [...action.payload.IDs];
+        draftState.whatsHere.activityRows = [];
+        draftState.whatsHere.ActivityPage = 0;
+        draftState.whatsHere.ActivityLimit = 15;
+      }
+      if (MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED.match(action)) {
+        draftState.whatsHere.IAPPIDs = [...action.payload.IDs];
+        draftState.whatsHere.iappRows = [];
+        draftState.whatsHere.IAPPPage = 0;
+        draftState.whatsHere.IAPPLimit = 15;
+      }
+      if (MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY.match(action)) {
+        // moving to one place for this stuff:
+        draftState.userRecordOnHoverRecordRow = {
+          id: action.payload.id,
+          short_id: action.payload.short_id,
+          geometry: [
+            state?.whatsHere?.activityRows.filter((row) => {
+              return row.short_id === action.payload.short_id;
             })[0].geometry
-          };
-          draftState.userRecordOnHoverRecordType = 'IAPP';
+          ]
+        };
+        draftState.userRecordOnHoverRecordType = 'Activity';
 
-          // to delete:
-          draftState.whatsHere.highlightedType = 'IAPP';
-          draftState.whatsHere.highlightedURLID = action.payload.id;
-          draftState.whatsHere.highlightedIAPP = action.payload.id;
-          draftState.whatsHere.highlightedACTIVITY = null;
-          draftState.whatsHere.highlightedGeo = state?.whatsHere?.iappRows.filter((row) => {
+        // to delete:
+        draftState.whatsHere.highlightedType = 'Activity';
+        draftState.whatsHere.highlightedURLID = action.payload.id;
+        draftState.whatsHere.highlightedIAPP = null;
+        draftState.whatsHere.highlightedACTIVITY = action.payload.short_id;
+        draftState.whatsHere.highlightedGeo = state?.whatsHere?.activityRows.filter((row) => {
+          return row.short_id === action.payload.short_id;
+        })[0];
+      }
+      if (MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP.match(action)) {
+        // moving to one place for this stuff:
+        draftState.userRecordOnHoverRecordRow = {
+          id: action.payload.id,
+          geometry: state?.whatsHere?.iappRows.filter((row) => {
             return row.site_id === action.payload.id;
-          })[0];
-          break;
-        }
-        case OVERLAY_MENU_TOGGLE: {
-          draftState.userRecordOnClickMenuOpen = false;
-          break;
-        }
-        case PAGE_OR_LIMIT_UPDATE: {
-          draftState.recordTables[action.payload.setID].page = action.payload.page;
-          draftState.recordTables[action.payload.setID].limit = action.payload.limit;
-          break;
-        }
-        case RECORDSETS_TOGGLE_VIEW_FILTER: {
-          draftState.viewFilters = !draftState.viewFilters;
-          break;
-        }
-        case RECORDSET_REMOVE_FILTER: {
-          draftState.recordTables[action.payload.setID].page = 0;
-          break;
-        }
-        case RECORDSET_UPDATE_FILTER: {
-          draftState.recordTables[action.payload.setID].page = 0;
-          break;
-        }
-        case RECORD_SET_TO_EXCEL_FAILURE: {
-          draftState.CanTriggerCSV = true;
-          break;
-        }
-        case RECORD_SET_TO_EXCEL_REQUEST: {
-          draftState.CanTriggerCSV = false;
-          break;
-        }
-        case RECORD_SET_TO_EXCEL_SUCCESS: {
-          draftState.CanTriggerCSV = true;
-          draftState.linkToCSV = action.payload.link;
-          draftState.recordSetForCSV = action.payload.id;
-          break;
-        }
-        case REMOVE_CLIENT_BOUNDARY: {
-          const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload.id);
-          draftState.clientBoundaries.splice(index, 1);
-          break;
-        }
-        case SET_CURRENT_OPEN_SET: {
-          draftState.currentOpenSet = action.payload.set;
-          break;
-        }
-        case SET_TOO_MANY_LABELS_DIALOG: {
-          draftState.tooManyLabelsDialog = action.payload.dialog;
-          break;
-        }
-        case TOGGLE_BASIC_PICKER_LAYER: {
-          for (const layerNameProperty in action.payload) {
-            //if exists, toggle
-            if (state.simplePickerLayers[layerNameProperty]) {
-              draftState.simplePickerLayers[layerNameProperty] = !state.simplePickerLayers[layerNameProperty];
-            } else {
-              // doesn't exist, getting turned on
-              draftState.simplePickerLayers[layerNameProperty] = true;
-            }
-          }
-          break;
-        }
-        case TOGGLE_CUSTOMIZE_LAYERS: {
-          draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
-          break;
-        }
-        case TOGGLE_QUICK_PAN_TO_RECORD: {
-          draftState.quickPanToRecord = !state.quickPanToRecord;
-          break;
-        }
-        case URL_CHANGE: {
-          draftState.userRecordOnClickMenuOpen = false;
-          if (action.payload?.pathname === '/') {
-            // draftState.panelOpen = false;
-          }
-          if (!action?.payload?.url?.includes('WhatsHere')) {
-            draftState.whatsHere.toggle = false;
-            draftState.whatsHere.feature = null;
-          }
-          break;
-        }
-        case USER_SETTINGS_REMOVE_RECORD_SET: {
-          const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-          draftState.layers.splice(index, 1);
-          break;
-        }
-        case USER_CLICKED_RECORD: {
-          draftState.userRecordOnClickMenuOpen = true;
-          draftState.userRecordOnClickRecordType = action.payload.recordType;
-          draftState.userRecordOnClickRecordID = action.payload.id;
-          draftState.userRecordOnClickRecordRow = action.payload.row;
-          break;
-        }
-        case USER_HOVERED_RECORD: {
-          draftState.userRecordOnHoverMenuOpen = true;
-          draftState.userRecordOnHoverRecordType = action.payload.recordType;
-          draftState.userRecordOnHoverRecordID = action.payload.id;
-          draftState.userRecordOnHoverRecordRow = action.payload.row;
-          break;
-        }
-        case USER_SETTINGS_DELETE_KML_SUCCESS: {
-          const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload.server_id);
-          draftState.serverBoundaries.splice(index, 1);
-          break;
-        }
-        case USER_TOUCHED_RECORD: {
-          draftState.userRecordOnHoverMenuOpen = true;
-          draftState.userRecordOnHoverRecordType = action.payload.recordType;
-          draftState.userRecordOnHoverRecordID = action.payload.id;
-          draftState.userRecordOnHoverRecordRow = action.payload.row;
-          // draftState.touchTime = Date.now();
-          break;
-        }
-        case WHATS_HERE_ACTIVITY_ROWS_SUCCESS: {
-          draftState.whatsHere.loadingActivities = false;
-          draftState.whatsHere.activityRows = [...action.payload.data];
-          break;
-        }
-        case WHATS_HERE_IAPP_ROWS_SUCCESS: {
-          draftState.whatsHere.loadingIAPP = false;
-          draftState.whatsHere.iappRows = [...action.payload.data];
-          break;
-        }
-        case WHATS_HERE_PAGE_ACTIVITY: {
-          draftState.whatsHere.ActivityPage = action.payload.page;
-          draftState.whatsHere.ActivityLimit = action.payload.limit;
-          break;
-        }
-        case WHATS_HERE_PAGE_POI: {
-          draftState.whatsHere.IAPPPage = action.payload.page;
-          draftState.whatsHere.IAPPLimit = action.payload.limit;
-          break;
-        }
-        case WHATS_HERE_SORT_FILTER_UPDATE: {
-          if (action.payload.recordType === 'IAPP') {
-            draftState.whatsHere.IAPPPage = 0;
-            draftState.whatsHere.IAPPSortField = action.payload.field;
-            draftState.whatsHere.IAPPSortDirection = action.payload.direction;
+          })[0].geometry
+        };
+        draftState.userRecordOnHoverRecordType = 'IAPP';
+
+        // to delete:
+        draftState.whatsHere.highlightedType = 'IAPP';
+        draftState.whatsHere.highlightedURLID = action.payload.id;
+        draftState.whatsHere.highlightedIAPP = action.payload.id;
+        draftState.whatsHere.highlightedACTIVITY = null;
+        draftState.whatsHere.highlightedGeo = state?.whatsHere?.iappRows.filter((row) => {
+          return row.site_id === action.payload.id;
+        })[0];
+      }
+      if (OVERLAY_MENU_TOGGLE.match(action)) {
+        draftState.userRecordOnClickMenuOpen = false;
+      }
+      if (PAGE_OR_LIMIT_CHANGE.match(action)) {
+        draftState.recordTables[action.payload.setID].page = action.payload.page;
+        draftState.recordTables[action.payload.setID].limit = action.payload.limit;
+      }
+      if (RECORDSETS_TOGGLE_VIEW_FILTER.match(action)) {
+        draftState.viewFilters = !draftState.viewFilters;
+      }
+      if (RECORDSET_REMOVE_FILTER.match(action)) {
+        draftState.recordTables[action.payload.setID].page = 0;
+      }
+      if (RECORDSET_UPDATE_FILTER.match(action)) {
+        draftState.recordTables[action.payload.setID].page = 0;
+      }
+      if (RECORD_SET_TO_EXCEL_FAILURE.match(action)) {
+        draftState.CanTriggerCSV = true;
+      }
+      if (RECORD_SET_TO_EXCEL_REQUEST.match(action)) {
+        draftState.CanTriggerCSV = false;
+      }
+      if (RECORD_SET_TO_EXCEL_SUCCESS.match(action)) {
+        draftState.CanTriggerCSV = true;
+        draftState.linkToCSV = action.payload.link;
+        draftState.recordSetForCSV = action.payload.id;
+      }
+      if (REMOVE_CLIENT_BOUNDARY.match(action)) {
+        const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload.id);
+        draftState.clientBoundaries.splice(index, 1);
+      }
+      if (SET_CURRENT_OPEN_SET.match(action)) {
+        draftState.currentOpenSet = action.payload.set;
+      }
+      if (SET_TOO_MANY_LABELS_DIALOG.match(action)) {
+        draftState.tooManyLabelsDialog = action.payload.dialog;
+      }
+      if (TOGGLE_BASIC_PICKER_LAYER.match(action)) {
+        for (const layerNameProperty in action.payload) {
+          //if exists, toggle
+          if (state.simplePickerLayers[layerNameProperty]) {
+            draftState.simplePickerLayers[layerNameProperty] = !state.simplePickerLayers[layerNameProperty];
           } else {
-            draftState.whatsHere.ActivityPage = 0;
-            draftState.whatsHere.ActivitySortField = action.payload.field;
-            draftState.whatsHere.ActivitySortDirection = action.payload.direction;
+            // doesn't exist, getting turned on
+            draftState.simplePickerLayers[layerNameProperty] = true;
           }
-          break;
         }
-        default:
-          break;
+      }
+      if (TOGGLE_CUSTOMIZE_LAYERS.match(action)) {
+        draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
+      }
+      if (TOGGLE_QUICK_PAN_TO_RECORD.match(action)) {
+        draftState.quickPanToRecord = !state.quickPanToRecord;
+      }
+      if (URL_CHANGE.match(action)) {
+        draftState.userRecordOnClickMenuOpen = false;
+        if (action.payload?.pathname === '/') {
+          // draftState.panelOpen = false;
+        }
+        if (!action?.payload?.url?.includes('WhatsHere')) {
+          draftState.whatsHere.toggle = false;
+          draftState.whatsHere.feature = null;
+        }
+      }
+      if (USER_SETTINGS_REMOVE_RECORD_SET.match(action)) {
+        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        draftState.layers.splice(index, 1);
+      }
+      if (USER_CLICKED_RECORD.match(action)) {
+        draftState.userRecordOnClickMenuOpen = true;
+        draftState.userRecordOnClickRecordType = action.payload.recordType;
+        draftState.userRecordOnClickRecordID = action.payload.id;
+        draftState.userRecordOnClickRecordRow = action.payload.row;
+      }
+      if (USER_HOVERED_RECORD.match(action)) {
+        draftState.userRecordOnHoverMenuOpen = true;
+        draftState.userRecordOnHoverRecordType = action.payload.recordType;
+        draftState.userRecordOnHoverRecordID = action.payload.id;
+        draftState.userRecordOnHoverRecordRow = action.payload.row;
+      }
+      if (USER_SETTINGS_DELETE_KML_SUCCESS.match(action)) {
+        const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload.server_id);
+        draftState.serverBoundaries.splice(index, 1);
+      }
+      if (USER_TOUCHED_RECORD.match(action)) {
+        draftState.userRecordOnHoverMenuOpen = true;
+        draftState.userRecordOnHoverRecordType = action.payload.recordType;
+        draftState.userRecordOnHoverRecordID = action.payload.id;
+        draftState.userRecordOnHoverRecordRow = action.payload.row;
+        // draftState.touchTime = Date.now();
+      }
+      if (WHATS_HERE_ACTIVITY_ROWS_SUCCESS.match(action)) {
+        draftState.whatsHere.loadingActivities = false;
+        draftState.whatsHere.activityRows = [...action.payload.data];
+      }
+      if (WHATS_HERE_IAPP_ROWS_SUCCESS.match(action)) {
+        draftState.whatsHere.loadingIAPP = false;
+        draftState.whatsHere.iappRows = [...action.payload.data];
+      }
+      if (WHATS_HERE_PAGE_ACTIVITY.match(action)) {
+        draftState.whatsHere.ActivityPage = action.payload.page;
+        draftState.whatsHere.ActivityLimit = action.payload.limit;
+      }
+      if (WHATS_HERE_PAGE_POI.match(action)) {
+        draftState.whatsHere.IAPPPage = action.payload.page;
+        draftState.whatsHere.IAPPLimit = action.payload.limit;
+      }
+      if (WHATS_HERE_SORT_FILTER_UPDATE.match(action)) {
+        if (action.payload.recordType === 'IAPP') {
+          draftState.whatsHere.IAPPPage = 0;
+          draftState.whatsHere.IAPPSortField = action.payload.field;
+          draftState.whatsHere.IAPPSortDirection = action.payload.direction;
+        } else {
+          draftState.whatsHere.ActivityPage = 0;
+          draftState.whatsHere.ActivitySortField = action.payload.field;
+          draftState.whatsHere.ActivitySortDirection = action.payload.direction;
+        }
       }
     }) as unknown as MapState;
   };

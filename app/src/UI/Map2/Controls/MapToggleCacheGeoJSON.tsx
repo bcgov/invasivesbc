@@ -30,7 +30,7 @@ export const MapModeToggle = (props) => {
           <IconButton
             className={'button'}
             onClick={() => {
-              dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+              dispatch(MAP_TOGGLE_GEOJSON_CACHE());
             }}
           >
             <SpeedIcon />

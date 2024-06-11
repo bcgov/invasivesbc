@@ -23,10 +23,10 @@ import { selectAuth } from 'state/reducers/auth';
 export function* handle_ACTIVITY_CREATE_NETWORK(action) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
 
-  yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.activity.activity_id } });
+  yield put(ACTIVITY_CREATE_SUCCESS({ activity_id: action.payload.activity.activity_id }));
 }
 
-export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST(action) {
+export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
     console.dir(activityState);
@@ -34,24 +34,24 @@ export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST(action) {
       ids: [activityState.activity.activity_id]
     });
     if (networkReturn?.status == 200) {
-      yield put({ type: ACTIVITY_DELETE_SUCCESS });
+      yield put(ACTIVITY_DELETE_SUCCESS());
     } else {
-      yield put({ type: ACTIVITY_DELETE_FAILURE });
+      yield put(ACTIVITY_DELETE_FAILURE());
     }
   } catch (e) {
-    yield put({ type: ACTIVITY_DELETE_FAILURE });
+    yield put(ACTIVITY_DELETE_FAILURE());
   }
 }
 
 export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
   const authState = yield select(selectAuth);
   if (!authState.authenticated) {
-    yield take(AUTH_INITIALIZE_COMPLETE);
+    yield take(AUTH_INITIALIZE_COMPLETE.type);
   }
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
 
   if (!(networkReturn.status === 200)) {
-    yield put({ type: ACTIVITY_GET_FAILURE, payload: { failNetworkObj: networkReturn } });
+    yield put(ACTIVITY_GET_FAILURE({ failNetworkObj: networkReturn }));
     return;
   }
 
@@ -68,7 +68,7 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
 
   // const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
-  yield put({ type: ACTIVITY_GET_SUCCESS, payload: { activity: datav2 } });
+  yield put(ACTIVITY_GET_SUCCESS({ activity: datav2 }));
 }
 
 export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
@@ -111,34 +111,31 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
   if (networkReturn.status < 200 || networkReturn.status > 299) {
-    yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
         notification: {
           visible: true,
           message: networkReturn.data.message,
           severity: 'error'
         }
-      }
-    });
+      })
+    );
   } else {
-    yield put({
-      type: ACTIVITY_SAVE_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_SAVE_SUCCESS({
         activity: {
           ...newActivity,
           media_delete_keys: filtered_media_delete_keys
         }
-      }
-    });
+      })
+    );
   }
-  yield put({
-    type: ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-    payload: {
+  yield put(
+    ACTIVITIES_GEOJSON_REFETCH_ONLINE({
       page: 0,
       limit: 100000
-    }
-  });
+    })
+  );
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {
@@ -147,21 +144,15 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
       search_feature: { ...action.payload.search_feature[0], properties: {} }
     });
 
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
-      payload: { jurisdictions: networkReturn.data.result }
-    });
+    yield put(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS({ jurisdictions: networkReturn.data.result }));
   }
 }
 
-export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {
+export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE() {
   try {
     const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
 
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-      payload: { suggestedPersons: networkReturn.data.result }
-    });
+    yield put(ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS({ suggestedPersons: networkReturn.data.result }));
   } catch (e) {
     console.error(e);
   }
@@ -224,10 +215,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
       });
     }
 
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
-      payload: { suggestedTreatmentIDs: treatments }
-    });
+    yield put(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS({ suggestedTreatmentIDs: treatments }));
   } catch (e) {
     console.error(e);
   }

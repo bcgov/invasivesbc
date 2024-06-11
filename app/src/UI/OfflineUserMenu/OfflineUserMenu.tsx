@@ -21,7 +21,7 @@ const UserSelection = ({ user, handleClose }) => {
         variant={'outlined'}
         className={'userButton'}
         onClick={() => {
-          dispatch({ type: AUTH_MAKE_OFFLINE_USER_CURRENT, payload: { displayName: user.displayName } });
+          dispatch(AUTH_MAKE_OFFLINE_USER_CURRENT({ displayName: user.displayName }));
           handleClose();
         }}
       >
@@ -30,7 +30,7 @@ const UserSelection = ({ user, handleClose }) => {
       <Button
         variant={'text'}
         onClick={() => {
-          dispatch({ type: AUTH_FORGET_OFFLINE_USER, payload: { displayName: user.displayName } });
+          dispatch(AUTH_FORGET_OFFLINE_USER({ displayName: user.displayName }));
           handleClose();
         }}
       >
@@ -45,7 +45,7 @@ export const OfflineUserMenu: React.FC = () => {
   const dispatch = useDispatch();
 
   const closeHandler = () => {
-    dispatch({ type: AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG, payload: { state: false } });
+    dispatch(AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG({ state: false }));
   };
 
   return (

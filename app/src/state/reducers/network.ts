@@ -10,22 +10,19 @@ function createNetworkReducer(initialStatus: Network) {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case NETWORK_GO_ONLINE: {
-        return {
-          ...state,
-          connected: true
-        };
-      }
-      case NETWORK_GO_OFFLINE: {
-        return {
-          ...state,
-          connected: false
-        };
-      }
-      default:
-        return state;
+    if (NETWORK_GO_ONLINE.match(action)) {
+      return {
+        ...state,
+        connected: true
+      };
     }
+    if (NETWORK_GO_OFFLINE.match(action)) {
+      return {
+        ...state,
+        connected: false
+      };
+    }
+    return state;
   };
 }
 

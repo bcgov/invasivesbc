@@ -33,7 +33,7 @@ export const WhatsHereButton = (props) => {
               className={'button'}
               onClick={() => {
                 if ((whatsHere as any)?.toggle == false) {
-                  dispatch({ type: MAP_TOGGLE_WHATS_HERE });
+                  dispatch(MAP_TOGGLE_WHATS_HERE());
                 } else {
                   history.goBack();
                 }
@@ -75,7 +75,7 @@ export const WhatsHereDrawComponent = (props) => {
   useMapEvent('draw:created' as any, (e) => {
     if ((whatsHere as any).toggle && (whatsHere as any)?.feature === null) {
       history.push('/WhatsHere');
-      dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: e.layer.toGeoJSON() } });
+      dispatch(MAP_WHATS_HERE_FEATURE( { feature: e.layer.toGeoJSON() } }));
     }
   });
   */

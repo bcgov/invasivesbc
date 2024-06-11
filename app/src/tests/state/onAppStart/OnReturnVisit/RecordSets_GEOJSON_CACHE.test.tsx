@@ -1,12 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../../main';
 import { waitFor } from '@testing-library/react';
-import {
-  AUTH_INITIALIZE_COMPLETE,
-  MAP_TOGGLE_BASEMAP,
-  MAP_TOGGLE_GEOJSON_CACHE,
-  RECORDSET_UPDATE_FILTER
-} from 'state/actions';
+import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
 import { server } from 'mocks/server';
 
 describe('Can load initial record set state on startup (return visit)', function () {
@@ -91,28 +86,28 @@ describe('Can load initial record set state on startup (return visit)', function
       expect(store).toBeDefined();
       const MapMode = store.getState().Map.MapMode;
       if (MapMode === 'VECTOR_ENDPOINT') {
-        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        store.dispatch(MAP_TOGGLE_GEOJSON_CACHE());
       }
       expect(store.getState().Map.MapMode).toEqual('GEOJSON');
     });
   });
 
   it('Can load default and previously saved custom recordsets', async function () {
-    store.dispatch({ type: AUTH_INITIALIZE_COMPLETE, payload: { authenticated: true } });
-
-    await waitFor(() => {
-      expect(store.getState()?.UserSettings?.recordSets).toBeDefined();
-    });
-    await waitFor(() => {
-      expect(Object.keys(store.getState()?.UserSettings?.recordSets).length).toEqual(5);
-    });
+    store.dispatch(AUTH_INITIALIZE_COMPLETE({ authenticated: true }));
   });
 
-  it('Restored filters are correct', async function () {
-    await waitFor(() => {
-      expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters).toBeDefined();
-      expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters.length).toEqual(1);
-      expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters[0].filter).toEqual('23');
-    });
+  await waitFor(() => {
+    expect(store.getState()?.UserSettings?.recordSets).toBeDefined();
+  });
+  await waitFor(() => {
+    expect(Object.keys(store.getState()?.UserSettings?.recordSets).length).toEqual(5);
+  });
+});
+
+it('Restored filters are correct', async function () {
+  await waitFor(() => {
+    expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters).toBeDefined();
+    expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters.length).toEqual(1);
+    expect(store.getState()?.UserSettings?.recordSets['2'].tableFilters[0].filter).toEqual('23');
   });
 });

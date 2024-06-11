@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
+import { useDispatch } from 'react-redux';
 import './RecordTable.css';
 import {
   activityColumnsToDisplay,
@@ -11,16 +11,15 @@ import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUC
 import { validActivitySortColumns, validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { detectTouchDevice } from 'utils/detectTouch';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { useSelector } from 'utils/use_selector';
 
 export const RecordTableHeader = (props) => {};
 
 export const RecordTable = (props) => {
-  const unmappedRows = useSelector((state: any) => state.Map?.recordTables?.[props.setID]?.rows);
+  const unmappedRows = useSelector((state) => state.Map.recordTables[props.setID]?.rows);
 
-  const tableType = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]?.recordSetType);
-  //  const tableType = userSettingsState?.recordSets?.[props.setID]?.recordSetType;
+  const tableType = useSelector((state) => state.UserSettings.recordSets[props.setID]?.recordSetType);
   const dispatch = useDispatch();
-  const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
   const isTouch = detectTouchDevice();
 
   // maybe useful for when there's no headers during dev for adding new types:
@@ -39,8 +38,8 @@ export const RecordTable = (props) => {
     return mappedRow;
   });
 
-  const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]?.sortColumn);
-  const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]?.sortOrder);
+  const sortColumn = useSelector((state) => state.UserSettings.recordSets?.[props.setID]?.sortColumn);
+  const sortOrder = useSelector((state) => state.UserSettings.recordSets?.[props.setID]?.sortOrder);
 
   return (
     <div className="record_table_container">
@@ -60,7 +59,7 @@ export const RecordTable = (props) => {
                       key={i}
                       onClick={() => {
                         if (validActivitySortColumns.includes(col.key))
-                          dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
+                          dispatch(RECORDSET_SET_SORT({ setID: props.setID, sortColumn: col.key }));
                       }}
                     >
                       {col.name}{' '}
@@ -79,7 +78,7 @@ export const RecordTable = (props) => {
                       key={i}
                       onClick={() => {
                         if (validIAPPSortColumns.includes(col.key))
-                          dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
+                          dispatch(RECORDSET_SET_SORT({ setID: props.setID, sortColumn: col.key }));
                       }}
                     >
                       {col.name}{' '}
@@ -103,36 +102,32 @@ export const RecordTable = (props) => {
                 }}
                 onClick={() => {
                   if (!isTouch) {
-                    dispatch({
-                      type: USER_CLICKED_RECORD,
-                      payload: {
+                    dispatch(
+                      USER_CLICKED_RECORD({
                         recordType: tableType,
                         id: tableType === 'Activity' ? row.activity_id : row.site_id,
                         row: row
-                      }
-                    });
+                      })
+                    );
                   }
                 }}
                 onMouseOver={() => {
-                  dispatch({
-                    type: USER_HOVERED_RECORD,
-                    payload: {
+                  dispatch(
+                    USER_HOVERED_RECORD({
                       recordType: tableType,
                       id: tableType === 'Activity' ? row.activity_id : row.site_id,
                       row: row
-                    }
-                  });
+                    })
+                  );
                 }}
                 onTouchStart={(e) => {
-                  console.log('e');
-                  dispatch({
-                    type: USER_TOUCHED_RECORD,
-                    payload: {
+                  dispatch(
+                    USER_TOUCHED_RECORD({
                       recordType: tableType,
                       id: tableType === 'Activity' ? row.activity_id : row.site_id,
                       row: row
-                    }
-                  });
+                    })
+                  );
                 }}
                 className="record_table_row"
                 key={i}
@@ -140,14 +135,13 @@ export const RecordTable = (props) => {
                 {isTouch && (
                   <td
                     onTouchStart={(e) => {
-                      dispatch({
-                        type: USER_CLICKED_RECORD,
-                        payload: {
+                      dispatch(
+                        USER_CLICKED_RECORD({
                           recordType: tableType,
                           id: tableType === 'Activity' ? row.activity_id : row.site_id,
                           row: row
-                        }
-                      });
+                        })
+                      );
                     }}
                     className="record_table_row_column"
                     style={{ width: '50px' }}

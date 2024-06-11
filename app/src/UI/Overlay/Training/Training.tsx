@@ -12,7 +12,7 @@ const TrainingPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({ type: TRAINING_VIDEOS_LIST_REQUEST });
+    dispatch(TRAINING_VIDEOS_LIST_REQUEST());
   }, []);
 
   if (working) {

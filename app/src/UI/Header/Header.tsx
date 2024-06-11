@@ -117,10 +117,7 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
           className={'Tab' + (urlFromAppModeState === path ? ' Tab__Indicator' : '')}
           onClick={() => {
             history.push(path);
-            dispatch({
-              type: TOGGLE_PANEL,
-              payload: { panelOpen: panelOpen, fullScreen: panelFullScreen }
-            });
+            dispatch(TOGGLE_PANEL({ panelOpen: panelOpen, fullScreen: panelFullScreen }));
           }}
         >
           <div className="Tab__Content">{children}</div>
@@ -152,7 +149,7 @@ const LoginButton = ({ labelText = 'Login' }) => {
   return (
     <MenuItem
       onClick={() => {
-        dispatch({ type: AUTH_SIGNIN_REQUEST });
+        dispatch(AUTH_SIGNIN_REQUEST());
       }}
     >
       <ListItemIcon>
@@ -168,7 +165,7 @@ const LogoutButton = () => {
   return (
     <MenuItem
       onClick={() => {
-        dispatch({ type: AUTH_SIGNOUT_REQUEST });
+        dispatch(AUTH_SIGNOUT_REQUEST());
       }}
     >
       <ListItemIcon>
@@ -293,21 +290,15 @@ const LoginOrOutMemo = React.memo(() => {
         updateInfo: true
       }
     });
-    dispatch({
-      type: TOGGLE_PANEL,
-      payload: { panelOpen: true, fullScreen: true }
-    });
+    dispatch(TOGGLE_PANEL({ panelOpen: true, fullScreen: true }));
   };
 
   const requestAccess = async () => {
     if (!authenticated) {
-      dispatch({ type: AUTH_SIGNIN_REQUEST });
+      dispatch(AUTH_SIGNIN_REQUEST());
     } else {
       history.push('/AccessRequest');
-      dispatch({
-        type: TOGGLE_PANEL,
-        payload: { panelOpen: true, fullScreen: true }
-      });
+      dispatch(TOGGLE_PANEL({ panelOpen: true, fullScreen: true }));
     }
   };
 
@@ -349,10 +340,7 @@ const LoginOrOutMemo = React.memo(() => {
             onClick={() => {
               setAnchorEl(null);
 
-              dispatch({
-                type: AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
-                payload: { state: true }
-              });
+              dispatch(AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG({ state: true }));
             }}
           >
             <ListItemIcon>
@@ -380,7 +368,7 @@ const NetworkStateControl: React.FC = () => {
             <Switch
               checked={connected}
               onChange={() => {
-                dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+                dispatch(connected ? NETWORK_GO_OFFLINE() : NETWORK_GO_ONLINE());
               }}
             />
           }

@@ -83,7 +83,7 @@ export const ActivityForm = (props) => {
       properties: {}
     };
 
-    dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [geo] } });
+    dispatch(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [geo] }));
   };
   return (
     <>

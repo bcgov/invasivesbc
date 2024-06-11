@@ -68,41 +68,38 @@ export const Records = () => {
   const dispatch = useDispatch();
 
   const onClickCreateRecordSet = (isPOI: boolean, e) => {
-    dispatch({
-      type: USER_SETTINGS_ADD_RECORD_SET_REQUEST,
-      payload: {
+    dispatch(
+      USER_SETTINGS_ADD_RECORD_SET_REQUEST({
         recordSetType: isPOI ? 'IAPP' : 'Activity'
-      }
-    });
+      })
+    );
   };
 
   //Record set on click handlers:
   const onClickToggleLabel = (set: any, e) => {
     console.dir(e);
     e.stopPropagation();
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
+    dispatch(
+      USER_SETTINGS_SET_RECORDSET({
         updatedSet: {
           labelToggle: !recordSets?.[set]?.labelToggle
         },
         setName: set
-      }
-    });
+      })
+    );
   };
 
   const onClickToggleLayer = (set: any, e) => {
     console.log('clicked');
     e.stopPropagation();
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
+    dispatch(
+      USER_SETTINGS_SET_RECORDSET({
         updatedSet: {
           mapToggle: !recordSets?.[set]?.mapToggle
         },
         setName: set
-      }
-    });
+      })
+    );
   };
 
   const onClickCycleColour = (set: any, e) => {
@@ -110,15 +107,14 @@ export const Records = () => {
     const currentIndex = colours.indexOf(recordSets?.[set]?.color);
     const nextIndex = (currentIndex + 1) % colours.length;
 
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
+    dispatch(
+      USER_SETTINGS_SET_RECORDSET({
         updatedSet: {
           color: colours[nextIndex]
         },
         setName: set
-      }
-    });
+      })
+    );
   };
 
   const onClickDeleteRecordSet = (set: any, e) => {
@@ -129,68 +125,62 @@ export const Records = () => {
         'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
       )
     ) {
-      dispatch({
-        type: USER_SETTINGS_REMOVE_RECORD_SET,
-        payload: {
+      dispatch(
+        USER_SETTINGS_REMOVE_RECORD_SET({
           setID: set
-        }
-      });
+        })
+      );
     }
   };
 
   const onClickInitCache = (set: any, e) => {
     e.stopPropagation();
-    dispatch({
-      type: INIT_CACHE_RECORDSET,
-      payload: {
+    dispatch(
+      INIT_CACHE_RECORDSET({
         setID: set
-      }
-    });
+      })
+    );
 
     setTimeout(() => {
-      dispatch({
-        type: USER_SETTINGS_SET_RECORDSET,
-        payload: {
+      dispatch(
+        USER_SETTINGS_SET_RECORDSET({
           updatedSet: {
             cached: true,
             cachedTime: new Date().toLocaleDateString(),
             offlineMode: true
           },
           setName: set
-        }
-      });
+        })
+      );
     }, 3000);
   };
 
   const onClickToggleViewCache = (set: any, e) => {
     e.stopPropagation();
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
+    dispatch(
+      USER_SETTINGS_SET_RECORDSET({
         updatedSet: {
           offlineMode: !recordSets?.[set]?.offlineMode
         },
         setName: set
-      }
-    });
+      })
+    );
   };
 
   const onClickInitClearCache = (set: any, e) => {
     e.stopPropagation();
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
+    dispatch(
+      USER_SETTINGS_SET_RECORDSET({
         updatedSet: {
           isDeletingCache: true
         },
         setName: set
-      }
-    });
+      })
+    );
 
     setTimeout(() => {
-      dispatch({
-        type: USER_SETTINGS_SET_RECORDSET,
-        payload: {
+      dispatch(
+        USER_SETTINGS_SET_RECORDSET({
           updatedSet: {
             cached: false,
             cachedTime: '',
@@ -199,8 +189,8 @@ export const Records = () => {
             isCaching: false
           },
           setName: set
-        }
-      });
+        })
+      );
     }, 3000);
   };
 
@@ -416,13 +406,13 @@ export const Records = () => {
                 );
               })}
               <Button
-                onClick={() => dispatch({ type: USER_SETTINGS_ADD_RECORD_SET, payload: { recordSetType: 'Activity' } })}
+                onClick={() => dispatch(USER_SETTINGS_ADD_RECORD_SET({ recordSetType: 'Activity' }))}
                 className={'addRecordSet'}
               >
                 Add Layer of Records
               </Button>
               <Button
-                onClick={() => dispatch({ type: USER_SETTINGS_ADD_RECORD_SET, payload: { recordSetType: 'IAPP' } })}
+                onClick={() => dispatch(USER_SETTINGS_ADD_RECORD_SET({ recordSetType: 'IAPP' }))}
                 className={'addRecordSet'}
               >
                 Add IAPP Layer of Records

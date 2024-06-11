@@ -54,27 +54,21 @@ const EmailTemplates = (props) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({
-      type: EMAIL_TEMPLATES_RETRIEVE_REQUEST
-    });
+    dispatch(EMAIL_TEMPLATES_RETRIEVE_REQUEST());
   }, []);
 
   const onSubmitEmailTemplates = ({ formData }) => {
-    dispatch({
-      type: EMAIL_TEMPLATES_UPDATE,
-      payload: formData
-    });
+    dispatch(EMAIL_TEMPLATES_UPDATE(formData));
   };
 
   const onFormChange = (event) => {
     if (emailTemplatesState.activetemplate != event.formData.templatename)
-      dispatch({
-        type: EMAIL_TEMPLATES_SET_ACTIVE,
-        payload: {
+      dispatch(
+        EMAIL_TEMPLATES_SET_ACTIVE({
           ...emailTemplatesState,
           activetemplate: event.formData.templatename
-        }
-      });
+        })
+      );
   };
   const getActiveTemplate = () => {
     if (emailTemplatesState.emailTemplates)

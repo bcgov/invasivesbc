@@ -1,5 +1,5 @@
 //import { CameraResultType, CameraSource } from '@capacitor/core';
-import { CameraResultType, CameraSource, Camera } from '@capacitor/camera';
+import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 import {
   Box,
   Button,
@@ -18,7 +18,6 @@ import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ACTIVITY_ADD_PHOTO_REQUEST, ACTIVITY_DELETE_PHOTO_REQUEST, ACTIVITY_EDIT_PHOTO_REQUEST } from 'state/actions';
-import { selectActivity } from 'state/reducers/activity';
 
 export interface IPhoto {
   file_name: string;
@@ -56,12 +55,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
         editing: false
       };
 
-      dispatch({
-        type: ACTIVITY_ADD_PHOTO_REQUEST,
-        payload: {
-          photo: photo
-        }
-      });
+      dispatch(ACTIVITY_ADD_PHOTO_REQUEST({ photo }));
 
       // props.photoState.setPhotos([...props.photoState.photos, photo]);
     } catch (e) {
@@ -82,12 +76,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   // };
 
   const deletePhoto = async (photo: any) => {
-    dispatch({
-      type: ACTIVITY_DELETE_PHOTO_REQUEST,
-      payload: {
-        photo: photo
-      }
-    });
+    dispatch(ACTIVITY_DELETE_PHOTO_REQUEST({ photo }));
   };
 
   // const [editing, setEditing] = useState(false);
@@ -122,15 +111,14 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                       <IconButton
                         disabled={photo.editing}
                         onClick={() => {
-                          dispatch({
-                            type: ACTIVITY_EDIT_PHOTO_REQUEST,
-                            payload: {
+                          dispatch(
+                            ACTIVITY_EDIT_PHOTO_REQUEST({
                               photo: {
                                 ...photo,
                                 editing: true
                               }
-                            }
-                          });
+                            })
+                          );
                         }}
                       >
                         <EditIcon />
@@ -151,16 +139,15 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                         <Button
                           onClick={() => {
                             // changePhotoDescription(photo.filepath, { description: newPhotoDesc });
-                            dispatch({
-                              type: ACTIVITY_EDIT_PHOTO_REQUEST,
-                              payload: {
+                            dispatch(
+                              ACTIVITY_EDIT_PHOTO_REQUEST({
                                 photo: {
                                   ...photo,
                                   description: newPhotoDesc,
                                   editing: false
                                 }
-                              }
-                            });
+                              })
+                            );
                             // setEditing(false);
                             setNewPhotoDesc('untitled');
                           }}

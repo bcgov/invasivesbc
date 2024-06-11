@@ -61,36 +61,31 @@ function* refreshRoles() {
       return { userData: await userAccessResponse.json(), rolesData: await rolesResponse.json() };
     });
 
-    yield put({
-      type: AUTH_REFRESH_ROLES_COMPLETE,
-      payload: {
+    yield put(
+      AUTH_REFRESH_ROLES_COMPLETE({
         all_roles: rolesData.result,
         roles: userData.result.roles,
         extendedInfo: userData.result.extendedInfo,
         v2BetaAccess: userData.result.v2BetaAccess
-      }
-    });
+      })
+    );
 
-    yield put({
-      type: USERINFO_LOAD_COMPLETE,
-      payload: {
+    yield put(
+      USERINFO_LOAD_COMPLETE({
         userInfo: userData.result.extendedInfo
-      }
-    });
+      })
+    );
 
-    yield put({
-      type: AUTH_SAVE_CURRENT_TO_OFFLINE
-    });
+    yield put(AUTH_SAVE_CURRENT_TO_OFFLINE());
 
-    yield put({
-      type: TABS_GET_INITIAL_STATE_REQUEST,
-      payload: {
+    yield put(
+      TABS_GET_INITIAL_STATE_REQUEST({
         authenticated: true,
         activated: userData.result.extendedInfo.activation_status === 1
-      }
-    });
+      })
+    );
   } catch (e) {
-    yield put({ type: AUTH_REFRESH_ROLES_ERROR });
+    yield put(AUTH_REFRESH_ROLES_ERROR());
   }
 }
 

@@ -5,7 +5,6 @@ import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/off
 import { Badge, Button, CircularProgress } from '@mui/material';
 import { ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE } from 'state/actions';
 import Sync from '@mui/icons-material/Sync';
-import SyncDisabled from '@mui/icons-material/SyncDisabled';
 import SyncProblem from '@mui/icons-material/SyncProblem';
 
 export const OfflineSyncHeaderButton = () => {
@@ -57,7 +56,7 @@ export const OfflineSyncHeaderButton = () => {
     <>
       <Button
         onClick={() => {
-          dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: true } });
+          dispatch(ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE({ open: true }));
         }}
       >
         {iconComponent}

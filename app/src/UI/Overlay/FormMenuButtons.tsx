@@ -46,8 +46,8 @@ export const FormMenuButtons = (props) => {
     <>
       <Button
         onClick={() => {
-          dispatch({ type: ACTIVITY_SAVE_REQUEST });
-          dispatch({ type: OVERLAY_MENU_TOGGLE });
+          dispatch(ACTIVITY_SAVE_REQUEST());
+          dispatch(OVERLAY_MENU_TOGGLE());
         }}
         disabled={saveDisabled || draftDisabled}
         variant="contained"
@@ -56,8 +56,8 @@ export const FormMenuButtons = (props) => {
       </Button>
       <Button
         onClick={() => {
-          dispatch({ type: ACTIVITY_SUBMIT_REQUEST });
-          dispatch({ type: OVERLAY_MENU_TOGGLE });
+          dispatch(ACTIVITY_SUBMIT_REQUEST());
+          dispatch(OVERLAY_MENU_TOGGLE());
         }}
         disabled={saveDisabled || !connected || activityErrors?.length > 0 ? true : false}
         variant="contained"
@@ -66,8 +66,8 @@ export const FormMenuButtons = (props) => {
       </Button>
       <Button
         onClick={() => {
-          dispatch({ type: ACTIVITY_COPY_REQUEST });
-          dispatch({ type: OVERLAY_MENU_TOGGLE });
+          dispatch(ACTIVITY_COPY_REQUEST());
+          dispatch(OVERLAY_MENU_TOGGLE());
         }}
         variant="contained"
       >
@@ -76,8 +76,8 @@ export const FormMenuButtons = (props) => {
       <Button
         disabled={saveDisabled}
         onClick={() => {
-          dispatch({ type: ACTIVITY_PASTE_REQUEST });
-          dispatch({ type: OVERLAY_MENU_TOGGLE });
+          dispatch(ACTIVITY_PASTE_REQUEST());
+          dispatch(OVERLAY_MENU_TOGGLE());
         }}
         variant="contained"
       >
@@ -86,8 +86,8 @@ export const FormMenuButtons = (props) => {
       <Button
         disabled={saveDisabled || !connected}
         onClick={() => {
-          dispatch({ type: ACTIVITY_DELETE_REQUEST });
-          dispatch({ type: OVERLAY_MENU_TOGGLE });
+          dispatch(ACTIVITY_DELETE_REQUEST());
+          dispatch(OVERLAY_MENU_TOGGLE());
           setTimeout(() => history.back(), 5000);
         }}
         variant="contained"

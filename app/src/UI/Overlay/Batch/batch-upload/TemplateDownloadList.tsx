@@ -18,7 +18,7 @@ const TemplateDownloadList = () => {
       return;
     }
 
-    dispatch({ type: BATCH_TEMPLATE_LIST_REQUEST });
+    dispatch(BATCH_TEMPLATE_LIST_REQUEST());
   }, [authState?.authenticated]);
 
   if (working) {

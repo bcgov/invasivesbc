@@ -5,14 +5,13 @@ import center from '@turf/center';
 import { useSelector } from 'utils/use_selector';
 import { calc_utm } from 'utils/utm';
 import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
-import { RenderTableActivity, RenderTablePOI, RenderTablePosition } from 'utils/WhatsHereTableHelpers';
+import { RenderTableActivity, RenderTablePOI } from 'utils/WhatsHereTableHelpers';
 import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE, TOGGLE_PANEL } from 'state/actions';
 
 import './WhatsHereTable.css';
 
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useHistory } from 'react-router';
 import { OverlayHeader } from '../OverlayHeader';
 
@@ -35,17 +34,16 @@ export const WhatsHereTable = (props) => {
 
   const popupOnClose = () => {
     history.goBack();
-    dispatch({ type: MAP_TOGGLE_WHATS_HERE });
-    dispatch({ type: TOGGLE_PANEL });
+    dispatch(MAP_TOGGLE_WHATS_HERE());
+    dispatch(TOGGLE_PANEL());
   };
 
   const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
-    dispatch({
-      type: MAP_SET_WHATS_HERE_SECTION,
-      payload: {
+    dispatch(
+      MAP_SET_WHATS_HERE_SECTION({
         section: newSection
-      }
-    });
+      })
+    );
   };
 
   const goToRecord = () => {

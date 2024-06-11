@@ -18,22 +18,21 @@ function createTrainingVideosReducer() {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case TRAINING_VIDEOS_LIST_REQUEST:
-        return {
-          ...state,
-          working: true,
-          list: []
-        };
-      case TRAINING_VIDEOS_LIST_REQUEST_COMPLETE:
-        return {
-          ...state,
-          working: false,
-          list: action.payload
-        };
-      default:
-        return state;
+    if (TRAINING_VIDEOS_LIST_REQUEST.match(action)) {
+      return {
+        ...state,
+        working: true,
+        list: []
+      };
     }
+    if (TRAINING_VIDEOS_LIST_REQUEST_COMPLETE.match(action)) {
+      return {
+        ...state,
+        working: false,
+        list: action.payload
+      };
+    }
+    return state;
   };
 }
 

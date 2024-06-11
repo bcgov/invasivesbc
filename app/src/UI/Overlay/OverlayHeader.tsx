@@ -118,7 +118,7 @@ export const OverlayHeader = () => {
                 variant="contained"
                 className={'overlay-menu'}
                 onClick={() => {
-                  dispatch({ type: OVERLAY_MENU_TOGGLE });
+                  dispatch(OVERLAY_MENU_TOGGLE());
                 }}
               >
                 Save Menu

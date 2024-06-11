@@ -36,13 +36,10 @@ export const LandingComponent = (props) => {
 
   const requestAccess = async () => {
     if (connected && !authenticated) {
-      dispatch({ type: AUTH_SIGNIN_REQUEST });
+      dispatch(AUTH_SIGNIN_REQUEST());
     } else {
       history.push('/AccessRequest');
-      dispatch({
-        type: TOGGLE_PANEL,
-        payload: { panelOpen: true, fullScreen: true }
-      });
+      dispatch(TOGGLE_PANEL({ panelOpen: true, fullScreen: true }));
     }
   };
 

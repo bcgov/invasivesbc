@@ -1,4 +1,4 @@
-import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
+import { CRASH_HANDLE_GLOBAL_ERROR } from 'state/actions';
 
 interface ErrorHandlerState {
   detail: {
@@ -16,14 +16,13 @@ const initialState: ErrorHandlerState = {
 };
 
 function errorHandlerReducer(state = initialState, action) {
-  switch (action.type) {
-    case CRASH_HANDLE_GLOBAL_ERROR: {
-      return {
-        detail: action.payload.detail,
-        hasCrashed: true
-      };
-    }
+  if (CRASH_HANDLE_GLOBAL_ERROR.match(action)) {
+    return {
+      detail: action.payload.detail,
+      hasCrashed: true
+    };
   }
+
   return state;
 }
 

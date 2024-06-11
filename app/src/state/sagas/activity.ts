@@ -1,5 +1,39 @@
 import { all, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
+  handle_ACTIVITY_ADD_PHOTO_REQUEST,
+  handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
+  handle_ACTIVITY_COPY_REQUEST,
+  handle_ACTIVITY_CREATE_REQUEST,
+  handle_ACTIVITY_CREATE_SUCCESS,
+  handle_ACTIVITY_DELETE_PHOTO_REQUEST,
+  handle_ACTIVITY_DELETE_REQUEST,
+  handle_ACTIVITY_EDIT_PHOTO_REQUEST,
+  handle_ACTIVITY_GET_REQUEST,
+  handle_ACTIVITY_GET_SUCCESS,
+  handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
+  handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
+  handle_ACTIVITY_ON_FORM_CHANGE_REQUEST,
+  handle_ACTIVITY_PASTE_REQUEST,
+  handle_ACTIVITY_SAVE_REQUEST,
+  handle_ACTIVITY_SAVE_SUCCESS,
+  handle_ACTIVITY_SUBMIT_REQUEST,
+  handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
+  handle_ACTIVITY_UPDATE_GEO_REQUEST,
+  handle_ACTIVITY_UPDATE_GEO_SUCCESS,
+  handle_GET_SUGGESTED_JURISDICTIONS_REQUEST,
+  handle_PAN_AND_ZOOM_TO_ACTIVITY
+} from './activity/dataAccess';
+import {
+  handle_ACTIVITY_CREATE_NETWORK,
+  handle_ACTIVITY_DELETE_NETWORK_REQUEST,
+  handle_ACTIVITY_GET_NETWORK_REQUEST,
+  handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
+  handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
+  handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
+  handle_ACTIVITY_SAVE_NETWORK_REQUEST
+} from './activity/online';
+import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
+import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
   ACTIVITY_COPY_REQUEST,
@@ -45,108 +79,64 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS,
   ACTIVITY_UPDATE_PHOTO_REQUEST,
   MAP_INIT_REQUEST,
-  MAP_SET_COORDS,
-  MAP_SET_WHATS_HERE_SECTION,
-  MAP_TOGGLE_TRACKING,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO,
+  MAP_SET_COORDS, MAP_TOGGLE_TRACK_ME_DRAW_GEO,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST
-} from '../actions';
-import {
-  handle_ACTIVITY_ADD_PHOTO_REQUEST,
-  handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
-  handle_ACTIVITY_COPY_REQUEST,
-  handle_ACTIVITY_CREATE_REQUEST,
-  handle_ACTIVITY_CREATE_SUCCESS,
-  handle_ACTIVITY_DELETE_PHOTO_REQUEST,
-  handle_ACTIVITY_DELETE_REQUEST,
-  handle_ACTIVITY_EDIT_PHOTO_REQUEST,
-  handle_ACTIVITY_GET_REQUEST,
-  handle_ACTIVITY_GET_SUCCESS,
-  handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-  handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
-  handle_ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  handle_ACTIVITY_PASTE_REQUEST,
-  handle_ACTIVITY_SAVE_REQUEST,
-  handle_ACTIVITY_SAVE_SUCCESS,
-  handle_ACTIVITY_SUBMIT_REQUEST,
-  handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
-  handle_ACTIVITY_UPDATE_GEO_REQUEST,
-  handle_ACTIVITY_UPDATE_GEO_SUCCESS,
-  handle_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-  handle_PAN_AND_ZOOM_TO_ACTIVITY
-} from './activity/dataAccess';
-import {
-  handle_ACTIVITY_CREATE_NETWORK,
-  handle_ACTIVITY_DELETE_NETWORK_REQUEST,
-  handle_ACTIVITY_GET_NETWORK_REQUEST,
-  handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-  handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-  handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
-  handle_ACTIVITY_SAVE_NETWORK_REQUEST
-} from './activity/online';
-import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
+} from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
-import { selectMap } from 'state/reducers/map';
 
-function* handle_USER_SETTINGS_READY(action) {
+function* handle_USER_SETTINGS_READY() {
   // if (action.payload.activeActivity) {
-  //    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity } });
+  //    yield put(ACTIVITY_GET_REQUEST( { activityID: action.payload.activeActivity } ));
   // }
 }
 
-function* handle_ACTIVITY_DEBUG(action) {
+function* handle_ACTIVITY_DEBUG() {
   console.log('halp');
 }
 
-function* handle_ACTIVITY_DELETE_SUCESS(action) {
-  yield put({
-    type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
-    payload: {
+function* handle_ACTIVITY_DELETE_SUCESS() {
+  yield put(
+    USER_SETTINGS_SET_SELECTED_RECORD_REQUEST({
       activeActivity: null
-    }
-  });
-  yield put({
-    type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-    payload: {
+    })
+  );
+  yield put(
+    ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
       notification: {
         visible: true,
         message: 'Activity deleted successfully',
         severity: 'success'
       }
-    }
-  });
-  yield put({ type: MAP_INIT_REQUEST });
+    })
+  );
+  yield put(MAP_INIT_REQUEST());
 }
 
-function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {
+function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
-    yield put({
-      type: ACTIVITY_SET_SAVED_HASH_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_SET_SAVED_HASH_SUCCESS({
         saved: activityState?.current_activity_hash
-      }
-    });
+      })
+    );
 
-    yield put({
-      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
-      payload: {
+    yield put(
+      ACTIVITY_SET_UNSAVED_NOTIFICATION({
         unsaved_notification: {
           visible: false,
           message: '',
           severity: 'warning'
         }
-      }
-    });
+      })
+    );
   } catch (e) {
     console.error(e);
-    yield put({
-      type: ACTIVITY_SET_SAVED_HASH_FAILURE
-    });
+    yield put(ACTIVITY_SET_SAVED_HASH_FAILURE());
   }
 }
 
@@ -164,38 +154,14 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
       currentHash = (currentHash * 33) ^ activitySerialized.charCodeAt(i);
     }
 
-    // check if different than saved
-    let visible = false;
-    if (currentHash !== activityState?.saved_activity_hash) {
-      visible = true;
-    }
-
-    yield put({
-      type: ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_SET_CURRENT_HASH_SUCCESS({
         current: currentHash
-      }
-    });
-
-    /*
-   Not useful yet as form state is updated before the user does anything, so the user would see this no matter what
-
-   yield put({
-      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
-      payload: {
-        unsaved_notification: {
-          visible: visible,
-          message: visible ? 'There are unsaved changes on this form' : '',
-          severity: 'warning'
-        }
-      }
-    });
-    */
+      })
+    );
   } catch (e) {
     console.error(e);
-    yield put({
-      type: ACTIVITY_SET_CURRENT_HASH_FAILURE
-    });
+    yield put(ACTIVITY_SET_CURRENT_HASH_FAILURE());
   }
 }
 
@@ -209,36 +175,33 @@ function* handle_URL_CHANGE(action) {
       id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
     }
     if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id)
-      yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
+      yield put(ACTIVITY_GET_REQUEST({ activityID: id }));
 
     /*    else if (userSettingsState.activeActivity) {
       id = userSettingsState.activeActivity;
-      yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
+      yield put(ACTIVITY_GET_REQUEST( { activityID: id } ));
     }
     */
   }
 }
 
-function* handle_ACTIVITY_DELETE_FAILURE(action) {
-  yield put({
-    type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-    payload: {
+function* handle_ACTIVITY_DELETE_FAILURE() {
+  yield put(
+    ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
       notification: {
         visible: true,
         message: 'Activity delete failed',
         severity: 'error'
       }
-    }
-  });
+    })
+  );
 }
 
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
   const activityState = yield select(selectActivity);
   if (activityState.track_me_draw_geo) {
     // wipe the existing geometry
-    yield put ({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: []}})
-
-
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
 
     // let user know
     yield put({
@@ -251,11 +214,10 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
         }
       }
     });
-  }
-  else {
+  } else {
     // let user know
     //convert the geom
-    const currentGeo = activityState.activity.geometry[0]
+    const currentGeo = activityState.activity.geometry[0];
 
     const newGeo = {
       type: 'Feature',
@@ -264,10 +226,9 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
         type: 'Polygon',
         coordinates: [[...currentGeo.geometry.coordinates, currentGeo.geometry.coordinates[0]]]
       }
-    }
+    };
 
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo]}})
-
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
 
     yield put({
       type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
@@ -279,17 +240,14 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
         }
       }
     });
-
-
   }
 }
-
 
 function* handle_MAP_SET_COORDS(action) {
   const activityState = yield select(selectActivity);
   if (activityState.track_me_draw_geo) {
-    let currentGeo = activityState?.activity?.geometry?.[0]
-    if(!currentGeo) {
+    let currentGeo = activityState?.activity?.geometry?.[0];
+    if (!currentGeo) {
       currentGeo = {
         type: 'Feature',
         properties: {},
@@ -297,79 +255,82 @@ function* handle_MAP_SET_COORDS(action) {
           type: 'LineString',
           coordinates: []
         }
-      }
+      };
     }
     const newGeo = {
       type: 'Feature',
       properties: {},
       geometry: {
         type: 'LineString',
-        coordinates: [...currentGeo.geometry.coordinates, [action.payload.position.coords.longitude, action.payload.position.coords.latitude]]
+        coordinates: [
+          ...currentGeo.geometry.coordinates,
+          [action.payload.position.coords.longitude, action.payload.position.coords.latitude]
+        ]
       }
-    }
+    };
     //append to linestring
-    yield put ({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo]}})
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
   }
 }
 
 function* activityPageSaga() {
   yield all([
-    takeEvery(URL_CHANGE, handle_URL_CHANGE),
-    takeEvery(ACTIVITY_GET_REQUEST, handle_ACTIVITY_GET_REQUEST),
-    takeEvery(ACTIVITY_COPY_REQUEST, handle_ACTIVITY_COPY_REQUEST),
-    takeEvery(ACTIVITY_PASTE_REQUEST, handle_ACTIVITY_PASTE_REQUEST),
-    takeEvery(ACTIVITY_GET_NETWORK_REQUEST, handle_ACTIVITY_GET_NETWORK_REQUEST),
-    takeEvery(MAP_SET_COORDS, handle_MAP_SET_COORDS),
-    takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_READY),
-    takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, handle_USER_SETTINGS_READY),
-    takeEvery(ACTIVITY_UPDATE_GEO_REQUEST, handle_ACTIVITY_UPDATE_GEO_REQUEST),
-    takeEvery(ACTIVITY_UPDATE_GEO_SUCCESS, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
-    takeEvery(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),
+    takeEvery(URL_CHANGE.type, handle_URL_CHANGE),
+    takeEvery(ACTIVITY_GET_REQUEST.type, handle_ACTIVITY_GET_REQUEST),
+    takeEvery(ACTIVITY_COPY_REQUEST.type, handle_ACTIVITY_COPY_REQUEST),
+    takeEvery(ACTIVITY_PASTE_REQUEST.type, handle_ACTIVITY_PASTE_REQUEST),
+    takeEvery(ACTIVITY_GET_NETWORK_REQUEST.type, handle_ACTIVITY_GET_NETWORK_REQUEST),
+    takeEvery(MAP_SET_COORDS.type, handle_MAP_SET_COORDS),
+    takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS.type, handle_USER_SETTINGS_READY),
+    takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS.type, handle_USER_SETTINGS_READY),
+    takeEvery(ACTIVITY_UPDATE_GEO_REQUEST.type, handle_ACTIVITY_UPDATE_GEO_REQUEST),
+    takeEvery(ACTIVITY_UPDATE_GEO_SUCCESS.type, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
+    takeEvery(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST.type, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),
     takeEvery(
       ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
       handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE
     ),
     takeLatest(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
     takeLatest(ACTIVITY_ON_FORM_CHANGE_SUCCESS, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
-    takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SET_SAVED_HASH_REQUEST),
-    takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
-    takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
-    takeEvery(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
+    takeEvery(ACTIVITY_SAVE_SUCCESS.type, handle_ACTIVITY_SET_SAVED_HASH_REQUEST),
+    takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST.type, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
+    takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE.type, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
+    takeEvery(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST.type, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
     takeEvery(
       ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
       handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE
     ),
-    takeEvery(ACTIVITY_SAVE_REQUEST, handle_ACTIVITY_SAVE_REQUEST),
-    takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SAVE_SUCCESS),
-    takeEvery(ACTIVITY_TOGGLE_NOTIFICATION_REQUEST, handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST),
-    takeEvery(ACTIVITY_SAVE_NETWORK_REQUEST, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
-    takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
-    takeEvery(ACTIVITY_CREATE_REQUEST, handle_ACTIVITY_CREATE_REQUEST),
-    takeEvery(ACTIVITY_CREATE_NETWORK, handle_ACTIVITY_CREATE_NETWORK),
-    takeEvery(ACTIVITY_CREATE_SUCCESS, handle_ACTIVITY_CREATE_SUCCESS),
-    takeEvery(ACTIVITY_SUBMIT_REQUEST, handle_ACTIVITY_SUBMIT_REQUEST),
-    takeEvery(ACTIVITY_DEBUG, handle_ACTIVITY_DEBUG),
-    takeEvery(ACTIVITY_GET_SUCCESS, handle_ACTIVITY_GET_SUCCESS),
-    takeEvery(ACTIVITY_DELETE_PHOTO_REQUEST, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
-    takeEvery(ACTIVITY_ADD_PHOTO_REQUEST, handle_ACTIVITY_ADD_PHOTO_REQUEST),
-    takeEvery(ACTIVITY_EDIT_PHOTO_REQUEST, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
-    takeEvery(ACTIVITY_DELETE_SUCCESS, handle_ACTIVITY_DELETE_SUCESS),
-    takeEvery(ACTIVITY_DELETE_FAILURE, handle_ACTIVITY_DELETE_FAILURE),
-    takeEvery(ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
+    takeEvery(ACTIVITY_SAVE_REQUEST.type, handle_ACTIVITY_SAVE_REQUEST),
+    takeEvery(ACTIVITY_SAVE_SUCCESS.type, handle_ACTIVITY_SAVE_SUCCESS),
+    takeEvery(ACTIVITY_TOGGLE_NOTIFICATION_REQUEST.type, handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST),
+    takeEvery(ACTIVITY_SAVE_NETWORK_REQUEST.type, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
+    takeEvery(ACTIVITY_RESTORE_OFFLINE.type, handle_ACTIVITY_RESTORE_OFFLINE),
+    takeEvery(ACTIVITY_CREATE_REQUEST.type, handle_ACTIVITY_CREATE_REQUEST),
+    takeEvery(ACTIVITY_CREATE_NETWORK.type, handle_ACTIVITY_CREATE_NETWORK),
+    takeEvery(ACTIVITY_CREATE_SUCCESS.type, handle_ACTIVITY_CREATE_SUCCESS),
+    takeEvery(ACTIVITY_SUBMIT_REQUEST.type, handle_ACTIVITY_SUBMIT_REQUEST),
+    takeEvery(ACTIVITY_DEBUG.type, handle_ACTIVITY_DEBUG),
+    takeEvery(ACTIVITY_GET_SUCCESS.type, handle_ACTIVITY_GET_SUCCESS),
+    takeEvery(ACTIVITY_DELETE_PHOTO_REQUEST.type, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
+    takeEvery(ACTIVITY_ADD_PHOTO_REQUEST.type, handle_ACTIVITY_ADD_PHOTO_REQUEST),
+    takeEvery(ACTIVITY_EDIT_PHOTO_REQUEST.type, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
+    takeEvery(ACTIVITY_DELETE_SUCCESS.type, handle_ACTIVITY_DELETE_SUCESS),
+    takeEvery(ACTIVITY_DELETE_FAILURE.type, handle_ACTIVITY_DELETE_FAILURE),
+    takeEvery(ACTIVITY_ON_FORM_CHANGE_REQUEST.type, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
     takeEvery(
       ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
       handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST
     ),
-    takeEvery(ACTIVITY_UPDATE_AUTOFILL_REQUEST, () => console.log('ACTIVITY_UPDATE_AUTOFILL_REQUEST')),
-    takeEvery(ACTIVITY_UPDATE_PHOTO_REQUEST, () => console.log('ACTIVITY_UPDATE_PHOTO_REQUEST')),
-    takeEvery(ACTIVITY_LINK_RECORD_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST')),
-    takeEvery(ACTIVITY_PERSIST_REQUEST, () => console.log('ACTIVITY_PERSIST_REQUEST')),
-    takeEvery(ACTIVITY_SAVE_REQUEST, () => console.log('ACTIVITY_SAVE_REQUEST')),
-    takeEvery(ACTIVITY_SUBMIT_REQUEST, () => console.log('ACTIVITY_SUBMIT_REQUEST')),
-    takeEvery(ACTIVITY_DELETE_REQUEST, handle_ACTIVITY_DELETE_REQUEST),
-    takeEvery(ACTIVITY_DELETE_NETWORK_REQUEST, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
-    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
-    takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO),
+    takeEvery(ACTIVITY_UPDATE_AUTOFILL_REQUEST.type, () => console.log('ACTIVITY_UPDATE_AUTOFILL_REQUEST')),
+    takeEvery(ACTIVITY_UPDATE_PHOTO_REQUEST.type, () => console.log('ACTIVITY_UPDATE_PHOTO_REQUEST')),
+    takeEvery(ACTIVITY_LINK_RECORD_REQUEST.type, () => console.log('ACTIVITY_LINK_RECORD_REQUEST')),
+    takeEvery(ACTIVITY_PERSIST_REQUEST.type, () => console.log('ACTIVITY_PERSIST_REQUEST')),
+    takeEvery(ACTIVITY_SAVE_REQUEST.type, () => console.log('ACTIVITY_SAVE_REQUEST')),
+    takeEvery(ACTIVITY_SUBMIT_REQUEST.type, () => console.log('ACTIVITY_SUBMIT_REQUEST')),
+    takeEvery(ACTIVITY_DELETE_REQUEST.type, handle_ACTIVITY_DELETE_REQUEST),
+    takeEvery(ACTIVITY_DELETE_NETWORK_REQUEST.type, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
+    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY.type, handle_PAN_AND_ZOOM_TO_ACTIVITY),
+    takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO.type, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO),
     ...OFFLINE_ACTIVITY_SAGA_HANDLERS
   ]);
 }

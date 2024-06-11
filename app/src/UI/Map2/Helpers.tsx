@@ -715,16 +715,12 @@ const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_t
 
   // For whats here
   if (whats_here_toggle) {
-    dispatch({
-      type: MAP_WHATS_HERE_FEATURE,
-      payload: { feature: { type: 'Feature', geometry: feature.geometry } }
-    });
+    dispatch(MAP_WHATS_HERE_FEATURE({ feature: { type: 'Feature', geometry: feature.geometry } }));
     uHistory.push('/WhatsHere');
   } else {
-    dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
+    dispatch(MAP_ON_SHAPE_CREATE(feature));
   }
 };
-
 const customDrawListenerUpdate = (drawInstance: MapboxDraw) => (e) => {
   const feature = e.features[0];
   console.dir(feature);
@@ -738,7 +734,7 @@ const customDrawListenerSelectionChange = (drawInstance: MapboxDraw, dispatch) =
   console.dir(e);
   console.dir(editedGeo);
   if (editedGeo?.id !== e?.features?.[0]?.id) {
-    dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
+    dispatch(MAP_ON_SHAPE_UPDATE(editedGeo));
   }
 };
 

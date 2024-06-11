@@ -25,7 +25,7 @@ export const BaseMapToggle = () => {
           <Button
             className={'button'}
             onClick={() => {
-              dispatch({ type: MAP_TOGGLE_BASEMAP });
+              dispatch(MAP_TOGGLE_BASEMAP());
             }}
           >
             {baseMapToggle ? 'SAT' : 'TOPO'}

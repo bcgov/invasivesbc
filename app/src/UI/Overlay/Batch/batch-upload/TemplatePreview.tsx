@@ -23,12 +23,11 @@ const TemplatePreview = ({ name, id }) => {
 
   useEffect(() => {
     if (expanded && !detail) {
-      dispatch({
-        type: BATCH_TEMPLATE_DOWNLOAD_REQUEST,
-        payload: {
+      dispatch(
+        BATCH_TEMPLATE_DOWNLOAD_REQUEST({
           key: id
-        }
-      });
+        })
+      );
     }
   }, [id, expanded]);
 
@@ -44,13 +43,12 @@ const TemplatePreview = ({ name, id }) => {
 
   const downloadTemplate = (key: string) => {
     new Promise((resolve, reject) => {
-      dispatch({
-        type: BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
-        payload: {
+      dispatch(
+        BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST({
           key: id,
           resolve
-        }
-      });
+        })
+      );
     }).then((data) => {
       const dataUrl = `data:text/csv;base64,${btoa(data as string)}`;
       const downloadLink = document.createElement('a');

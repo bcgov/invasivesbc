@@ -35,13 +35,14 @@ export function setupStore(configuration: AppConfig) {
     duration: true,
     timestamp: true,
     logErrors: true,
-    diff: true,
-    diffPredicate: (getState, action) => {
-      if (action.type.includes('RECORDSET_SET_SORT')) {
-        return true;
-      }
-      return false;
-    }
+    diff: false
+    // diff: true,
+    // diffPredicate: (getState, action) => {
+    //   if (RECORDSET_SET_SORT.type.match(action)) {
+    //     return true;
+    //   }
+    //   return false;
+    // }
   });
 
   if (!configuration.TEST && configuration.DEBUG) {
@@ -80,15 +81,14 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(emailSettingsSaga);
   sagaMiddleware.run(emailTemplatesSaga);
 
-  globalStore.dispatch({ type: AUTH_INITIALIZE_REQUEST });
+  globalStore.dispatch(AUTH_INITIALIZE_REQUEST());
 
   historySingleton.listen((location) => {
-    globalStore.dispatch({
-      type: URL_CHANGE,
-      payload: {
+    globalStore.dispatch(
+      URL_CHANGE({
         url: location.pathname
-      }
-    });
+      })
+    );
   });
 
   storeRef.store = globalStore;

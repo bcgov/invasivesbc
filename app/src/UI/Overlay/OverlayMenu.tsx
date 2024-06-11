@@ -11,7 +11,7 @@ export const OverlayMenu = (props) => {
       {props.children}
       <Button
         onClick={() => {
-          dispatch({ type: OVERLAY_MENU_TOGGLE });
+          dispatch(OVERLAY_MENU_TOGGLE());
         }}
         variant="contained"
       >

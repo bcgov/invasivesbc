@@ -24,7 +24,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
     if (uploadRequests.length > 0)
       doUpload().then(() => {
         props.whenDone();
-        dispatch({ type: REFETCH_SERVER_BOUNDARIES });
+        dispatch(REFETCH_SERVER_BOUNDARIES());
       });
   }, [uploadRequests]);
 

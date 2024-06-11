@@ -1,12 +1,10 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, Button, Table, TableBody, TableCell, TableRow, Theme } from '@mui/material';
+import { Box, Button, Table, TableBody, TableCell, TableRow } from '@mui/material';
 import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
 import {
   MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
   WHATS_HERE_ID_CLICKED,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
@@ -25,7 +23,7 @@ function WhatsHerePagination(props) {
   let pageNumber = 0;
   let pageLimit = 5;
   let setLength = 1;
-  let actionType = '';
+  let actionType: typeof WHATS_HERE_PAGE_ACTIVITY | typeof WHATS_HERE_PAGE_POI;
   if (whatsHere) {
     if (props.type === 'activity' && whatsHere?.activityRows && whatsHere?.activityRows.length > 0) {
       setLength = whatsHere?.ActivityIDs.length;
@@ -53,13 +51,12 @@ function WhatsHerePagination(props) {
             size={'small'}
             onClick={(e) => {
               e.stopPropagation();
-              dispatch({
-                type: actionType,
-                payload: {
+              dispatch(
+                actionType({
                   page: 0,
                   limit: pageLimit
-                }
-              });
+                })
+              );
             }}
           >
             <DoubleArrowLeftIcon></DoubleArrowLeftIcon>
@@ -75,13 +72,12 @@ function WhatsHerePagination(props) {
             size={'small'}
             onClick={(e) => {
               e.stopPropagation();
-              dispatch({
-                type: actionType,
-                payload: {
+              dispatch(
+                actionType({
                   page: pageNumber - 1,
                   limit: pageLimit
-                }
-              });
+                })
+              );
             }}
           >
             <ArrowLeftIcon></ArrowLeftIcon>
@@ -100,13 +96,12 @@ function WhatsHerePagination(props) {
             size={'small'}
             onClick={(e) => {
               e.stopPropagation();
-              dispatch({
-                type: actionType,
-                payload: {
+              dispatch(
+                actionType({
                   page: pageNumber + 1,
                   limit: pageLimit
-                }
-              });
+                })
+              );
             }}
           >
             <ArrowRightIcon></ArrowRightIcon>
@@ -155,13 +150,12 @@ export const RenderTableActivity = (props: any) => {
   // const errorContext = useContext(ErrorContext);
 
   const dispatchUpdatedID = (params) => {
-    dispatch({
-      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
-      payload: {
+    dispatch(
+      MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY({
         id: params.row.id,
         short_id: params.row.short_id
-      }
-    });
+      })
+    );
   };
 
   const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
@@ -284,21 +278,19 @@ export const RenderTableActivity = (props: any) => {
   const highlightActivity = async (params) => {
     const id = params.row.id;
     const short_id = params.row.short_id;
-    dispatch({
-      type: WHATS_HERE_ID_CLICKED,
-      payload: {
+    dispatch(
+      WHATS_HERE_ID_CLICKED({
         type: 'Activity',
         description: 'Activity-' + short_id,
         id: id
-      }
-    });
-    dispatch({
-      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
-      payload: {
+      })
+    );
+    dispatch(
+      MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY({
         id: params?.row?.id,
         short_id: params?.row?.short_id
-      }
-    });
+      })
+    );
     // activityPage(params);
   };
 
@@ -314,7 +306,7 @@ export const RenderTableActivity = (props: any) => {
             disableColumnMenu
             disableColumnFilter
             onColumnHeaderClick={(c) => {
-              dispatch({ type: WHATS_HERE_SORT_FILTER_UPDATE, payload: { recordType: 'Activity', field: c.field } });
+              dispatch(WHATS_HERE_SORT_FILTER_UPDATE({ recordType: 'Activity', field: c.field }));
             }}
             getRowHeight={() => 'auto'}
             headerHeight={30}
@@ -347,12 +339,11 @@ export const RenderTablePOI = (props: any) => {
   // const errorContext = useContext(ErrorContext);
 
   const dispatchUpdatedID = (params) => {
-    dispatch({
-      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-      payload: {
+    dispatch(
+      MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP({
         id: params.row.site_id
-      }
-    });
+      })
+    );
   };
 
   // don't use the tables sort or paging - there can be too many records for table to handle, control state externally via store
@@ -462,20 +453,18 @@ export const RenderTablePOI = (props: any) => {
   ];
 
   const highlightPOI = async (params) => {
-    dispatch({
-      type: WHATS_HERE_ID_CLICKED,
-      payload: {
+    dispatch(
+      WHATS_HERE_ID_CLICKED({
         type: 'IAPP',
         description: 'IAPP-' + params.id,
         id: params.row.id
-      }
-    });
-    dispatch({
-      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-      payload: {
+      })
+    );
+    dispatch(
+      MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP({
         id: params?.id
-      }
-    });
+      })
+    );
   };
 
   return (
@@ -491,7 +480,7 @@ export const RenderTablePOI = (props: any) => {
             getRowHeight={() => 'auto'}
             headerHeight={30}
             onColumnHeaderClick={(c) => {
-              dispatch({ type: WHATS_HERE_SORT_FILTER_UPDATE, payload: { recordType: 'IAPP', field: c.field } });
+              dispatch(WHATS_HERE_SORT_FILTER_UPDATE({ recordType: 'IAPP', field: c.field }));
             }}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
               if (authenticated && roles.length > 0) {

@@ -66,10 +66,13 @@ const FormContainer: React.FC<any> = (props) => {
 
   const debouncedFormChange = useCallback(
     debounce((event, ref, lastField, callbackFun) => {
-      dispatch({
-        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null }
-      });
+      dispatch(
+        ACTIVITY_ON_FORM_CHANGE_REQUEST({
+          eventFormData: event.formData,
+          lastField: lastField,
+          unsavedDelay: null
+        })
+      );
     }, 1000),
     []
   );
@@ -107,8 +110,7 @@ const FormContainer: React.FC<any> = (props) => {
 
   useEffect(() => {
     const currentState = formRef.current?.state;
-    dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
-    //}, [formDataState]);
+    dispatch(ACTIVITY_ERRORS({ errors: currentState?.errors }));
   }, [formRef]);
 
   //Dialog Proceed OnClick func
@@ -332,13 +334,11 @@ const FormContainer: React.FC<any> = (props) => {
                   activitySubType={activity_subtype || null}
                   onChange={(form_data, callback) => {
                     //todo redux chem treatment form on change
-                    dispatch({
-                      type: ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
-                      payload: {
+                    dispatch(
+                      ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST({
                         eventFormData: form_data
-                      }
-                    });
-                    //setformData(formData);
+                      })
+                    );
                     if (callback !== null) {
                       callback();
                     }

@@ -1,5 +1,5 @@
 import { Accordion, Button, MenuItem, Select, Tooltip } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CSV_LINK_CLICKED, RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -59,11 +59,7 @@ const ExcelExporter = (props) => {
             {linkToCSV && props.setName === recordSetForCSV ? (
               <a href={linkToCSV} download>
                 <Button
-                  onClick={() =>
-                    dispatch({
-                      type: CSV_LINK_CLICKED
-                    })
-                  }
+                  onClick={() => dispatch(CSV_LINK_CLICKED())}
                   disabled={linkToCSV.length < 1}
                   sx={{ mr: 1, ml: 'auto' }}
                   size={'small'}
@@ -78,15 +74,14 @@ const ExcelExporter = (props) => {
                 {CanTriggerCSV ? (
                   <Button
                     disabled={!CanTriggerCSV}
-                    onClick={() =>
-                      dispatch({
-                        type: RECORD_SET_TO_EXCEL_REQUEST,
-                        payload: {
+                    onClick={() => {
+                      dispatch(
+                        RECORD_SET_TO_EXCEL_REQUEST({
                           id: props.setName,
                           CSVType: selection
-                        }
-                      })
-                    }
+                        })
+                      );
+                    }}
                     sx={{ mr: 1, ml: 'auto' }}
                     size={'small'}
                     variant="contained"

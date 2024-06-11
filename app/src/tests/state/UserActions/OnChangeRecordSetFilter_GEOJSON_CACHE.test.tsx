@@ -1,9 +1,8 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../main';
 import { waitFor } from '@testing-library/react';
 import {
   AUTH_INITIALIZE_COMPLETE,
-  MAP_TOGGLE_BASEMAP,
   MAP_TOGGLE_GEOJSON_CACHE,
   RECORDSET_REMOVE_FILTER,
   RECORDSET_UPDATE_FILTER,
@@ -23,14 +22,14 @@ describe('Can trigger refetch for both table and data on filter change', functio
       expect(store).toBeDefined();
       const MapMode = store.getState().Map.MapMode;
       if (MapMode === 'VECTOR_ENDPOINT') {
-        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        store.dispatch(MAP_TOGGLE_GEOJSON_CACHE());
       }
       expect(store.getState().Map.MapMode).toEqual('GEOJSON');
     });
   });
 
   it('is is ready for user to enter filter', async function () {
-    store.dispatch({ type: AUTH_INITIALIZE_COMPLETE, payload: { authenticated: true } });
+    store.dispatch(AUTH_INITIALIZE_COMPLETE({ authenticated: true }));
 
     // open / view set:
     store.dispatch({

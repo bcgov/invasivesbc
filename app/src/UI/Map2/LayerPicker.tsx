@@ -21,7 +21,7 @@ export const LayerPicker = (props: any) => {
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   return (
     <div id="layerPickerElement" className={layerPickerOpen ? 'layerPickerOpen' : 'layerPickerClosed'}>
-      <div id="layerPickerToggleOpen" onClick={() => dispatch({ type: TOGGLE_LAYER_PICKER_OPEN })}>
+      <div id="layerPickerToggleOpen" onClick={() => dispatch(TOGGLE_LAYER_PICKER_OPEN())}>
         <>
           {layerPickerOpen ? (
             <CloseIcon className={'MuiLayerPickerIconButton'} />
@@ -42,7 +42,7 @@ export const LayerPicker = (props: any) => {
                 <input
                   type="checkbox"
                   id={layer.title}
-                  onChange={() => dispatch({ type: TOGGLE_WMS_LAYER, payload: { layer } })}
+                  onChange={() => dispatch(TOGGLE_WMS_LAYER({ layer }))}
                   name={layer?.title || 'Layer name is null'}
                   value={layer?.toggle}
                   checked={layer?.toggle}
@@ -67,7 +67,7 @@ export const LayerPicker = (props: any) => {
                 <input
                   type="checkbox"
                   id={layer.title}
-                  onChange={() => dispatch({ type: TOGGLE_KML_LAYER, payload: { layer } })}
+                  onChange={() => dispatch(TOGGLE_KML_LAYER({ layer }))}
                   name={layer?.title || 'Layer name is null'}
                   value={layer?.toggle}
                   checked={layer?.toggle}
@@ -92,7 +92,7 @@ export const LayerPicker = (props: any) => {
                 <input
                   type="checkbox"
                   id={layer.title}
-                  onChange={() => dispatch({ type: TOGGLE_DRAWN_LAYER, payload: { layer } })}
+                  onChange={() => dispatch(TOGGLE_DRAWN_LAYER({ layer }))}
                   name={layer?.title || 'Layer name is null'}
                   value={layer?.toggle}
                   checked={layer?.toggle}
@@ -110,7 +110,7 @@ export const LayerPicker = (props: any) => {
           className={'layerpickercustomizeMenu'}
           variant="outlined"
           onClick={() => {
-            dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+            dispatch(TOGGLE_CUSTOMIZE_LAYERS());
           }}
         >
           Add custom

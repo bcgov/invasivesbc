@@ -53,21 +53,16 @@ const uiSchemaEmailSettings: UiSchema = {
   }
 };
 
-const EmailSettings = (props) => {
+const EmailSettings = () => {
   const emailSettingsState = useSelector(selectEmailSettings);
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch({
-      type: EMAIL_SETTINGS_RETRIEVE_REQUEST
-    });
+    dispatch(EMAIL_SETTINGS_RETRIEVE_REQUEST());
   }, []);
 
   const onSubmitEmailSettings = ({ formData }) => {
     console.log('Update Called ****');
-    dispatch({
-      type: EMAIL_SETTINGS_UPDATE,
-      payload: formData
-    });
+    dispatch(EMAIL_SETTINGS_UPDATE(formData));
   };
 
   return (

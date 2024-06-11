@@ -5,7 +5,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_DELETE_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
+import { USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
 
 export interface IFormControlsComponentProps {
   classes?: any;
@@ -37,110 +37,108 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
     //TODO refactor this all to happen in a side effect triggered by a request action
     // On record deletion, clear selected record
     if (activeActivity === activity_id) {
-      dispatch({
-        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
-        payload: {
-          activeActivity: null
-        }
-      });
+      dispatch(USER_SETTINGS_SET_SELECTED_RECORD_REQUEST({
+        activeActivity: null
+      }));
     }
-    const activityIds = [activity_id];
-    dataAccess.deleteActivities(activityIds).then(() => {
-      console.log('***DELETED');
-      history.push('/home/activities');
-      //* dispatch({ type: ACTIVITY_DELETE_SUCCESS });
-    });
   };
+  const activityIds = [activity_id];
+  dataAccess.deleteActivities(activityIds).then(() => {
+    console.log('***DELETED');
+    history.push('/home/activities');
+    //* dispatch(ACTIVITY_DELETE_SUCCESS());
+  });
+};
 
-  const checkIfNotAuthorized = () => {
-    for (const role of accessRoles) {
-      if (role.role_id === 18) {
-        return false;
-      }
+const checkIfNotAuthorized = () => {
+  for (const role of accessRoles) {
+    if (role.role_id === 18) {
+      return false;
     }
+  }
 
-    if (username !== props.activity.created_by) {
-      return true;
-    }
-    return false;
-  };
+  if (username !== props.activity.created_by) {
+    return true;
+  }
+  return false;
+};
 
-  const deleteTooltipString = () => {
-    if (!props.isAlreadySubmitted()) {
-      return 'Able to delete the draft record.  Make sure this is what you want if the record is linked to another record!';
-    }
-    if (checkIfNotAuthorized()) {
-      return 'Unauthorized to delete submitted record';
-    }
-    return 'Able to delete the submitted record.  Be sure this is what you want to do if it is linked to another record!';
-  };
+const deleteTooltipString = () => {
+  if (!props.isAlreadySubmitted()) {
+    return 'Able to delete the draft record.  Make sure this is what you want if the record is linked to another record!';
+  }
+  if (checkIfNotAuthorized()) {
+    return 'Unauthorized to delete submitted record';
+  }
+  return 'Able to delete the submitted record.  Be sure this is what you want to do if it is linked to another record!';
+};
 
-  const submitTooltipString = () => {
-    if (props.isAlreadySubmitted()) {
-      return 'With edit permissions, you can still save edits with the Save button, but this record is already submitted.';
-    }
-    if (!props.canBeSubmittedWithoutErrors()) {
-      return 'Save form without errors first, to be able to submit.';
-    }
-    return 'Ready to submit, form is validated and has no issues.';
-  };
+const submitTooltipString = () => {
+  if (props.isAlreadySubmitted()) {
+    return 'With edit permissions, you can still save edits with the Save button, but this record is already submitted.';
+  }
+  if (!props.canBeSubmittedWithoutErrors()) {
+    return 'Save form without errors first, to be able to submit.';
+  }
+  return 'Ready to submit, form is validated and has no issues.';
+};
 
-  const DeleteDialog = () => {
-    return (
-      <Dialog open={open}>
-        <DialogTitle>
-          Are you sure you want to delete this {props.activity.formStatus} Record? If it is linked to another record
-          that link will be lost.
-        </DialogTitle>
-        <DialogActions>
-          <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button variant="contained" aria-label="Delete Record" onClick={() => deleteRecord()}>
-            Yes
-          </Button>
-        </DialogActions>
-      </Dialog>
-    );
-  };
-
+const DeleteDialog = () => {
   return (
-    <>
-      <Grid container spacing={3}>
-        <Grid container item spacing={3}>
-          <Grid item>
-            {!props.hideCheckFormForErrors && (
-              <Button
-                disabled={isDisabled}
-                variant="contained"
-                color="primary"
-                onClick={() => {
-                  if (!props.onSubmit) {
-                    return;
-                  }
+    <Dialog open={open}>
+      <DialogTitle>
+        Are you sure you want to delete this {props.activity.formStatus} Record? If it is linked to another record
+        that link will be lost.
+      </DialogTitle>
+      <DialogActions>
+        <Button onClick={() => setOpen(false)}>Cancel</Button>
+        <Button variant='contained' aria-label='Delete Record' onClick={() => deleteRecord()}>
+          Yes
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
 
-                  props.onSubmit();
-                }}
-              >
-                Save Record
-              </Button>
-            )}
-          </Grid>
-          <Grid item>
-            <Tooltip classes={{ tooltip: 'toolTip' }} placement="top" title={deleteTooltipString()}>
+return (
+  <>
+    <Grid container spacing={3}>
+      <Grid container item spacing={3}>
+        <Grid item>
+          {!props.hideCheckFormForErrors && (
+            <Button
+              disabled={isDisabled}
+              variant='contained'
+              color='primary'
+              onClick={() => {
+                if (!props.onSubmit) {
+                  return;
+                }
+
+                props.onSubmit();
+              }}
+            >
+              Save Record
+            </Button>
+          )}
+        </Grid>
+        <Grid item>
+          <Tooltip classes={{ tooltip: 'toolTip' }} placement='top' title={deleteTooltipString()}>
               <span>
-                <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => setOpen(true)}>
+                <Button disabled={isDisabled} variant='contained' color='primary' onClick={() => setOpen(true)}>
                   Delete Record
                 </Button>
               </span>
-            </Tooltip>
-          </Grid>
-          <Grid item>
-            {!props.hideCheckFormForErrors && (
-              <Tooltip classes={{ tooltip: 'toolTip' }} placement="top" title={submitTooltipString()}>
+          </Tooltip>
+        </Grid>
+        <Grid item>
+          {!props.hideCheckFormForErrors && (
+            <Tooltip classes={{ tooltip: 'toolTip' }} placement='top' title={submitTooltipString()}>
                 <span>
                   <Button
                     disabled={props.isAlreadySubmitted() || !props.canBeSubmittedWithoutErrors()}
-                    variant="contained"
-                    color="primary"
+                    variant='contained'
+                    color='primary'
                     onClick={() => {
                       if (!props.onSubmitAsOfficial) {
                         return;
@@ -152,48 +150,48 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
                     {props.isAlreadySubmitted() ? 'Record Already Submitted' : 'Submit to Database'}
                   </Button>
                 </span>
-              </Tooltip>
-            )}
-          </Grid>
+            </Tooltip>
+          )}
+        </Grid>
+        <Grid item>
+          {props.onNavBack && (
+            <Button disabled={isDisabled} variant='contained' color='primary' onClick={() => props.onNavBack()}>
+              Go Back to My Records
+            </Button>
+          )}
+        </Grid>
+        {props.onCopy && (
           <Grid item>
-            {props.onNavBack && (
-              <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onNavBack()}>
-                Go Back to My Records
-              </Button>
-            )}
-          </Grid>
-          {props.onCopy && (
-            <Grid item>
-              <Tooltip
-                classes={{ tooltip: 'toolTip' }}
-                TransitionComponent={Zoom}
-                title="Copy the data from the fields, so that you can paste it when you create a new record."
-              >
+            <Tooltip
+              classes={{ tooltip: 'toolTip' }}
+              TransitionComponent={Zoom}
+              title='Copy the data from the fields, so that you can paste it when you create a new record.'
+            >
                 <span>
-                  <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onCopy()}>
+                  <Button disabled={isDisabled} variant='contained' color='primary' onClick={() => props.onCopy()}>
                     Copy Form Data
                   </Button>
                 </span>
-              </Tooltip>
-            </Grid>
-          )}
-          {props.onPaste && (
-            <Grid item>
-              <Tooltip
-                classes={{ tooltip: 'toolTip' }}
-                TransitionComponent={Zoom}
-                title="Paste the data to the new record from the previously copied fields."
-              >
+            </Tooltip>
+          </Grid>
+        )}
+        {props.onPaste && (
+          <Grid item>
+            <Tooltip
+              classes={{ tooltip: 'toolTip' }}
+              TransitionComponent={Zoom}
+              title='Paste the data to the new record from the previously copied fields.'
+            >
                 <span>
-                  <Button disabled={isDisabled} variant="contained" color="primary" onClick={() => props.onPaste()}>
+                  <Button disabled={isDisabled} variant='contained' color='primary' onClick={() => props.onPaste()}>
                     Paste Form Data
                   </Button>
                 </span>
-              </Tooltip>
-            </Grid>
-          )}
+            </Tooltip>
+          </Grid>
+        )}
 
-          {/*
+        {/*
           {props.onSave && (
             <Grid item>
               <Tooltip
@@ -256,11 +254,12 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
               )}
             </Grid>
               */}
-        </Grid>
       </Grid>
-      <DeleteDialog />
-    </>
-  );
-};
+    </Grid>
+    <DeleteDialog />
+  </>
+);
+}
+;
 
 export default FormControlsComponent;

@@ -12,20 +12,20 @@ function createUserInfoReducer(userInfo: UserInfo) {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case USERINFO_CLEAR_REQUEST:
-        return {
-          ...state,
-          loaded: false,
-          activated: false,
-          accessRequested: false
-        };
-      case USERINFO_LOAD_COMPLETE:
-        return {
-          ...state,
-          loaded: true,
-          activated: action.payload.userInfo.activation_status === 1
-        };
+    if (USERINFO_CLEAR_REQUEST.match(action)) {
+      return {
+        ...state,
+        loaded: false,
+        activated: false,
+        accessRequested: false
+      };
+    }
+    if (USERINFO_LOAD_COMPLETE.match(action)) {
+      return {
+        ...state,
+        loaded: true,
+        activated: action.payload.userInfo.activation_status === 1
+      };
     }
     return state;
   };

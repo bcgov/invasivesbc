@@ -1,12 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../../main';
 import { waitFor } from '@testing-library/react';
-import {
-  AUTH_INITIALIZE_COMPLETE,
-  MAP_TOGGLE_BASEMAP,
-  MAP_TOGGLE_GEOJSON_CACHE,
-  RECORDSET_UPDATE_FILTER
-} from 'state/actions';
+import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
 import { server } from 'mocks/server';
 
 describe('Can load initial record set state on startup (first visit)', function () {
@@ -21,14 +16,14 @@ describe('Can load initial record set state on startup (first visit)', function 
       expect(store).toBeDefined();
       const MapMode = store.getState().Map.MapMode;
       if (MapMode !== 'VECTOR_ENDPOINT') {
-        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        store.dispatch(MAP_TOGGLE_GEOJSON_CACHE());
       }
       expect(store.getState().Map.MapMode).toEqual('VECTOR_ENDPOINT');
     });
   });
 
   it('Can load initial 3 record sets on first visit', async function () {
-    store.dispatch({ type: AUTH_INITIALIZE_COMPLETE, payload: { authenticated: true } });
+    store.dispatch(AUTH_INITIALIZE_COMPLETE({ authenticated: true }));
 
     await waitFor(() => {
       expect(store.getState()?.UserSettings?.recordSets).toBeDefined();

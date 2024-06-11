@@ -1,17 +1,9 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { waitFor } from '@testing-library/react';
 import { IAPPS3Repsonse_Mock } from 'sharedAPI/src/openapi/api-doc/util/mocks/mock_handlers';
 import { exportStore as store } from '../../../main';
-import {
-  AUTH_INITIALIZE_COMPLETE,
-  IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_RECORDSET_ID_LIST_GET_SUCCESS,
-  MAP_TOGGLE_BASEMAP,
-  MAP_TOGGLE_GEOJSON_CACHE,
-  RECORDSET_ADD_FILTER,
-  RECORDSET_UPDATE_FILTER
-} from 'state/actions';
-import { server, runServer, overRideRunningServer, customServer } from 'mocks/server';
+import { AUTH_INITIALIZE_COMPLETE, IAPP_GEOJSON_GET_SUCCESS, MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
+import { customServer, overRideRunningServer, runServer, server } from 'mocks/server';
 
 describe('Can load IAPP layer regardless of ID call or GeoJSON call happening first', function () {
   runServer(server);
@@ -36,7 +28,7 @@ describe('Can load IAPP layer regardless of ID call or GeoJSON call happening fi
 
       const MapMode = store.getState().Map.MapMode;
       if (MapMode === 'VECTOR_ENDPOINT') {
-        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        store.dispatch(MAP_TOGGLE_GEOJSON_CACHE());
       }
       expect(store.getState().Map.MapMode).toEqual('GEOJSON');
     });
@@ -46,7 +38,7 @@ describe('Can load IAPP layer regardless of ID call or GeoJSON call happening fi
     console.log('IAPP_GEOJSON_URL');
     console.log(store.getState().Configuration?.current?.IAPP_GEOJSON_URL);
     //fake login
-    store.dispatch({ type: AUTH_INITIALIZE_COMPLETE, payload: { authenticated: true } });
+    store.dispatch(AUTH_INITIALIZE_COMPLETE({ authenticated: true }));
 
     await waitFor(() => {
       //make sure the recordsets are loaded:

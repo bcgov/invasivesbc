@@ -33,7 +33,7 @@ export const AccuracyToggle = (props) => {
             <IconButton
               className={'button'}
               onClick={() => {
-                dispatch({ type: MAP_TOGGLE_ACCURACY });
+                dispatch(MAP_TOGGLE_ACCURACY());
               }}
             >
               <AttributionIcon />

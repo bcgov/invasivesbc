@@ -35,7 +35,7 @@ export const FindMeToggle = (props) => {
             className={'button'}
             onClick={() => {
               setShow(false);
-              dispatch({ type: MAP_TOGGLE_TRACKING });
+              dispatch(MAP_TOGGLE_TRACKING());
             }}
           >
             <MyLocationIcon />

@@ -28,34 +28,48 @@ function createEmailTemplatesReducer() {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case EMAIL_TEMPLATES_RETRIEVE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          message: null,
-          emailTemplates: null
-        };
-      case EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS:
-      case EMAIL_TEMPLATES_UPDATE_SUCCESS:
-      case EMAIL_TEMPLATES_SET_ACTIVE:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          ...action.payload
-        };
-      case EMAIL_TEMPLATES_UPDATE_FAILURE:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          ...action.payload
-        };
-      default:
-        return state;
+    if (EMAIL_TEMPLATES_RETRIEVE_REQUEST.match(action)) {
+      return {
+        ...state,
+        working: true,
+        error: false,
+        message: null,
+        emailTemplates: null
+      };
     }
+    if (EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS.match(action)) {
+      return {
+        ...state,
+        working: false,
+        error: false,
+        ...action.payload
+      };
+    }
+    if (EMAIL_TEMPLATES_UPDATE_SUCCESS.match(action)) {
+      return {
+        ...state,
+        working: false,
+        error: false,
+        ...action.payload
+      };
+    }
+    if (EMAIL_TEMPLATES_SET_ACTIVE.match(action)) {
+      return {
+        ...state,
+        working: false,
+        error: false,
+        ...action.payload
+      };
+    }
+
+    if (EMAIL_TEMPLATES_UPDATE_FAILURE.match(action))
+      return {
+        ...state,
+        working: false,
+        error: true,
+        ...action.payload
+      };
+    return state;
   };
 }
 

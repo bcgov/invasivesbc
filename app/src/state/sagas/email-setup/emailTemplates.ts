@@ -18,12 +18,11 @@ function* fetchEmailTemplates() {
       Authorization: yield getCurrentJWT()
     }
   });
-  yield put({
-    type: EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS,
-    payload: {
+  yield put(
+    EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS({
       emailTemplates: (yield res.json())?.result
-    }
-  });
+    })
+  );
 }
 
 function* updateEmailTemplates(action) {
@@ -45,27 +44,25 @@ function* updateEmailTemplates(action) {
   ] = data.request;
 
   if (data.code >= 200 && data.code <= 300) {
-    yield put({
-      type: EMAIL_TEMPLATES_UPDATE_SUCCESS,
-      payload: {
+    yield put(
+      EMAIL_TEMPLATES_UPDATE_SUCCESS({
         message: 'Email template updated successfully',
         emailTemplates: emailTemplatesState.emailTemplates
-      }
-    });
+      })
+    );
   } else
-    yield put({
-      type: EMAIL_TEMPLATES_UPDATE_FAILURE,
-      payload: {
+    yield put(
+      EMAIL_TEMPLATES_UPDATE_FAILURE({
         message: data.message,
         emailTemplates: emailTemplatesState.emailTemplates
-      }
-    });
+      })
+    );
 }
 
 function* emailTemplatesSaga() {
   yield all([
-    takeEvery(EMAIL_TEMPLATES_UPDATE, updateEmailTemplates),
-    takeEvery(EMAIL_TEMPLATES_RETRIEVE_REQUEST, fetchEmailTemplates)
+    takeEvery(EMAIL_TEMPLATES_UPDATE.type, updateEmailTemplates),
+    takeEvery(EMAIL_TEMPLATES_RETRIEVE_REQUEST.type, fetchEmailTemplates)
   ]);
 }
 

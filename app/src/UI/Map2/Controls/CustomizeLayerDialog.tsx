@@ -55,7 +55,7 @@ const CustomizeLayerMenu = (props) => {
 
   const onKMLDone = () => {
     cleanup();
-    dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+    dispatch(TOGGLE_CUSTOMIZE_LAYERS());
   };
 
   return (
@@ -134,8 +134,8 @@ const CustomizeLayerMenu = (props) => {
                         setSubMenuType('Upload');
                         break;
                       case 'Draw':
-                        dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
-                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+                        dispatch(DRAW_CUSTOM_LAYER({ name: newLayerName }));
+                        dispatch(TOGGLE_CUSTOMIZE_LAYERS());
                         cleanup();
                         break;
                       default:
@@ -163,13 +163,13 @@ const CustomizeLayerMenu = (props) => {
 
                     switch (type) {
                       case 'Client':
-                        dispatch({ type: REMOVE_CLIENT_BOUNDARY, payload: { id: layerToDelete } });
-                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+                        dispatch(REMOVE_CLIENT_BOUNDARY({ id: layerToDelete }));
+                        dispatch(TOGGLE_CUSTOMIZE_LAYERS());
                         cleanup();
                         break;
                       case 'Server':
-                        dispatch({ type: REMOVE_SERVER_BOUNDARY, payload: { id: layerToDelete } });
-                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+                        dispatch(REMOVE_SERVER_BOUNDARY({ id: layerToDelete }));
+                        dispatch(TOGGLE_CUSTOMIZE_LAYERS());
                         cleanup();
                         break;
                     }
@@ -191,7 +191,7 @@ const CustomizeLayerMenu = (props) => {
         }
         <Button
           onClick={() => {
-            dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+            dispatch(TOGGLE_CUSTOMIZE_LAYERS());
             cleanup();
           }}
         >

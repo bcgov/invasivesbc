@@ -30,7 +30,7 @@ export const QuickPanToRecordToggle = (props) => {
             <IconButton
               className={'button'}
               onClick={() => {
-                dispatch({ type: TOGGLE_QUICK_PAN_TO_RECORD });
+                dispatch(TOGGLE_QUICK_PAN_TO_RECORD());
               }}
             >
               <PlaylistPlayIcon />

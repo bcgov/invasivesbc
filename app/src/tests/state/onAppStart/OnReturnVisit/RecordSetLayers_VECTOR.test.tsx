@@ -1,7 +1,7 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { exportStore as store } from '../../../../main';
 import { waitFor } from '@testing-library/react';
-import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_BASEMAP, MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
+import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
 import { server } from 'mocks/server';
 
 describe('Can load initial record set layer state on return visit', function () {
@@ -86,51 +86,52 @@ describe('Can load initial record set layer state on return visit', function () 
       expect(store).toBeDefined();
       const MapMode = store.getState().Map.MapMode;
       if (MapMode !== 'VECTOR_ENDPOINT') {
-        store.dispatch({ type: MAP_TOGGLE_GEOJSON_CACHE });
+        store.dispatch(MAP_TOGGLE_GEOJSON_CACHE());
       }
       expect(store.getState().Map.MapMode).toEqual('VECTOR_ENDPOINT');
     });
   });
 
   it('Can load default and previous custom record set layers on return visit', async function () {
-    store.dispatch({ type: AUTH_INITIALIZE_COMPLETE, payload: { authenticated: true } });
-    await waitFor(() => {
-      expect(store.getState()?.Map?.layers).toBeDefined();
-      expect(store.getState()?.Map?.layers.length).toEqual(5);
-      expect(store.getState()?.Map?.layers[0]).toBeDefined();
-      expect(store.getState()?.Map?.layers[3]).toBeDefined();
-      expect(store.getState()?.Map?.layers[4]).toBeDefined();
-    });
+    store.dispatch(AUTH_INITIALIZE_COMPLETE({ authenticated: true }));
   });
 
-  it('custom IAPP layer has right color', async function () {
-    await waitFor(() => {
-      expect(store.getState()?.Map?.layers[4].layerState.color).toEqual('#CB2B3E'); //green
-    });
+  await waitFor(() => {
+    expect(store.getState()?.Map?.layers).toBeDefined();
+    expect(store.getState()?.Map?.layers.length).toEqual(5);
+    expect(store.getState()?.Map?.layers[0]).toBeDefined();
+    expect(store.getState()?.Map?.layers[3]).toBeDefined();
+    expect(store.getState()?.Map?.layers[4]).toBeDefined();
   });
+});
 
-  it('custom activity layer has right color', async function () {
-    await waitFor(() => {
-      expect(store.getState()?.Map?.layers[3].layerState.color).toEqual('#FFD326'); //green
-    });
+it('custom IAPP layer has right color', async function () {
+  await waitFor(() => {
+    expect(store.getState()?.Map?.layers[4].layerState.color).toEqual('#CB2B3E'); //green
   });
+});
 
-  it('Draft & Activity default layers still have color scheme loaded', async function () {
-    await waitFor(() => {
-      expect(store.getState()?.Map?.layers[0].layerState.colorScheme).toEqual({
-        Biocontrol: '#845ec2',
-        FREP: '#de852c',
-        Monitoring: '#2138e0',
-        Observation: '#399c3e',
-        Treatment: '#c6c617'
-      });
-      expect(store.getState()?.Map?.layers[1].layerState.colorScheme).toEqual({
-        Biocontrol: '#845ec2',
-        FREP: '#de852c',
-        Monitoring: '#2138e0',
-        Observation: '#399c3e',
-        Treatment: '#c6c617'
-      });
+it('custom activity layer has right color', async function () {
+  await waitFor(() => {
+    expect(store.getState()?.Map?.layers[3].layerState.color).toEqual('#FFD326'); //green
+  });
+});
+
+it('Draft & Activity default layers still have color scheme loaded', async function () {
+  await waitFor(() => {
+    expect(store.getState()?.Map?.layers[0].layerState.colorScheme).toEqual({
+      Biocontrol: '#845ec2',
+      FREP: '#de852c',
+      Monitoring: '#2138e0',
+      Observation: '#399c3e',
+      Treatment: '#c6c617'
+    });
+    expect(store.getState()?.Map?.layers[1].layerState.colorScheme).toEqual({
+      Biocontrol: '#845ec2',
+      FREP: '#de852c',
+      Monitoring: '#2138e0',
+      Observation: '#399c3e',
+      Treatment: '#c6c617'
     });
   });
 });

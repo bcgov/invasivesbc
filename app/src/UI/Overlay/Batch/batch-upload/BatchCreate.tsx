@@ -31,7 +31,7 @@ const BatchCreate = () => {
       return;
     }
 
-    dispatch({ type: BATCH_TEMPLATE_LIST_REQUEST });
+    dispatch(BATCH_TEMPLATE_LIST_REQUEST());
   }, [authState?.authenticated]);
 
   const acceptData = (d) => {
@@ -40,15 +40,14 @@ const BatchCreate = () => {
 
   const doUpload = () => {
     new Promise((resolve, reject) => {
-      dispatch({
-        type: BATCH_CREATE_REQUEST_WITH_CALLBACK,
-        payload: {
+      dispatch(
+        BATCH_CREATE_REQUEST_WITH_CALLBACK({
           csvData: data,
           template: selectedTemplate,
           resolve,
           reject
-        }
-      });
+        })
+      );
     }).then((batchId) => {
       history.push(`/Batch/list/${batchId}`);
     });

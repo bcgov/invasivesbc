@@ -3,7 +3,7 @@ import { Button, LinearProgress } from '@mui/material';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_GET_LOCAL_REQUEST, ACTIVITY_OFFLINE_DELETE_ITEM, ACTIVITY_RUN_OFFLINE_SYNC } from 'state/actions';
+import { ACTIVITY_GET_LOCALDB_REQUEST, ACTIVITY_OFFLINE_DELETE_ITEM, ACTIVITY_RUN_OFFLINE_SYNC } from 'state/actions';
 import Delete from '@mui/icons-material/Delete';
 import './OfflineDataSync.css';
 import moment from 'moment';
@@ -36,7 +36,7 @@ export const OfflineDataSyncTable = () => {
                 <td>
                   <Button
                     onClick={() => {
-                      dispatch({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: key } });
+                      dispatch(ACTIVITY_GET_LOCALDB_REQUEST({ activityID: key }));
                     }}
                   >
                     <FileOpen></FileOpen>
@@ -49,7 +49,7 @@ export const OfflineDataSyncTable = () => {
                   <Button>
                     <Delete
                       onClick={() => {
-                        dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: key } });
+                        dispatch(ACTIVITY_OFFLINE_DELETE_ITEM({ id: key }));
                       }}
                     />
                   </Button>
@@ -63,7 +63,7 @@ export const OfflineDataSyncTable = () => {
         disabled={working}
         variant={'contained'}
         onClick={() => {
-          dispatch({ type: ACTIVITY_RUN_OFFLINE_SYNC });
+          dispatch(ACTIVITY_RUN_OFFLINE_SYNC());
         }}
       >
         Run Sync
