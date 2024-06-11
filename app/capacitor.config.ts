@@ -8,11 +8,6 @@ const config: CapacitorConfig = {
     hostname: 'localhost',
     iosScheme: 'invasivesbc'
   },
-  cordova: {
-    accessOrigins: [
-      'https://loginproxy.gov.bc.ca/*',
-    ]
-  },
   loggingBehavior: 'debug',
   plugins: {
     SplashScreen: {
