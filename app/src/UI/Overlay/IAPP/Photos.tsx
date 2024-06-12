@@ -1,11 +1,11 @@
 import { Accordion, AccordionSummary, Paper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import Spinner from '../../Spinner/Spinner';
 
 export const Photos = ({ media }) => {
   const [expanded, setExpanded] = React.useState(true);
-  const [mediaURLs, setMediaURLs] = useState([]);
+  const [mediaURLs, setMediaURLs] = useState<{ media_key: string; encoded_file: string }[]>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const api = useInvasivesApi();
@@ -23,7 +23,7 @@ export const Photos = ({ media }) => {
           setMediaURLs(result);
           setLoading(false);
         })
-        .catch((e) => {
+        .catch(() => {
           setLoading(false);
           setError(true);
           setMediaURLs([]);

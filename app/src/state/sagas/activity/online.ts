@@ -8,6 +8,7 @@ import {
   ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_FAILURE,
+  ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
@@ -44,14 +45,18 @@ export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
 }
 
 export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
+  if (!ACTIVITY_GET_NETWORK_REQUEST.match(action)) {
+    return;
+  }
+
   const authState = yield select(selectAuth);
   if (!authState.authenticated) {
     yield take(AUTH_INITIALIZE_COMPLETE.type);
   }
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
 
   if (!(networkReturn.status === 200)) {
-    yield put(ACTIVITY_GET_FAILURE({ failNetworkObj: networkReturn }));
+    yield put(ACTIVITY_GET_FAILURE({ reason: JSON.stringify(networkReturn) }));
     return;
   }
 
@@ -90,7 +95,7 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   };
 
   // handle delete photos if needed
-  const keys_to_delete = [];
+  const keys_to_delete: string[] = [];
   if (newActivity.media_delete_keys?.length) {
     const keys = newActivity.media_delete_keys;
     for (const key of keys) {

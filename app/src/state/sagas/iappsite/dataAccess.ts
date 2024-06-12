@@ -25,7 +25,7 @@ export function* handle_IAPP_GET_REQUEST(action) {
     }
   } catch (e) {
     console.error(e);
-    yield put(IAPP_GET_FAILURE());
+    yield put(IAPP_GET_FAILURE({ reason: 'unknown' }));
   }
 }
 
@@ -38,7 +38,7 @@ export function* handle_IAPP_GET_SUCCESS(action) {
     );
   } catch (e) {
     console.error(e);
-    yield put(IAPP_GET_FAILURE());
+    yield put(IAPP_GET_FAILURE({ reason: 'unknown' }));
   }
 }
 

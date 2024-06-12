@@ -7,24 +7,22 @@ import {
 } from 'state/actions';
 
 interface EmailTemplates {
-  message: string;
-  activetemplate: string;
-  emailTemplates: [
-    {
-      id: number;
-      fromemail: string;
-      emailsubject: string;
-      emailbody: string;
-      templatename: string;
-    }
-  ];
+  message: string | null;
+  activetemplate: string | null;
+  emailTemplates: {
+    id: number;
+    fromemail: string;
+    emailsubject: string;
+    emailbody: string;
+    templatename: string;
+  }[];
 }
 
 function createEmailTemplatesReducer() {
   const initialState: EmailTemplates = {
     message: null,
     activetemplate: null,
-    emailTemplates: null
+    emailTemplates: []
   };
 
   return (state = initialState, action) => {
@@ -34,7 +32,7 @@ function createEmailTemplatesReducer() {
         working: true,
         error: false,
         message: null,
-        emailTemplates: null
+        emailTemplates: []
       };
     }
     if (EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS.match(action)) {

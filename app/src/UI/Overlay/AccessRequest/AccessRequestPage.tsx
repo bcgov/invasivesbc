@@ -1,6 +1,7 @@
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+//import { makeStyles } from '@mui/styles';
 import {
   Box,
   Button,
@@ -10,23 +11,21 @@ import {
   Chip,
   Container,
   Divider,
+  FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
   InputLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-  FormControl,
   MenuItem,
   OutlinedInput,
+  Radio,
+  RadioGroup,
   Select,
-  Typography,
+  SelectChangeEvent,
+  TextField,
   Tooltip,
-  Theme
+  Typography
 } from '@mui/material';
-//import { makeStyles } from '@mui/styles';
-import { SelectChangeEvent } from '@mui/material';
 import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 
@@ -54,26 +53,38 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [idir, setIdir] = useState(authState.username ? authState.username : '');
   const [bceid, setBceid] = useState(authState.username ? authState.username : '');
   const [firstName, setFirstName] = React.useState(
-    authState.displayName.split(' ')[1] ? authState.displayName.split(' ')[1] : ''
+    (() => {
+      if (authState.displayName) {
+        return authState.displayName.split(' ')[1] ? authState.displayName.split(' ')[1] : '';
+      }
+      return '';
+    })()
   );
   const [lastName, setLastName] = React.useState(
-    authState.displayName.split(' ')[0].replace(',', '') ? authState.displayName.split(',')[0].replace(',', '') : ''
+    (() => {
+      if (authState.displayName) {
+        return authState.displayName.split(' ')[0].replace(',', '')
+          ? authState.displayName.split(',')[0].replace(',', '')
+          : '';
+      }
+      return '';
+    })()
   );
   const [email, setEmail] = React.useState(authState.email ? authState.email : '');
   const idir_userid = authState?.idir_user_guid ? authState?.idir_user_guid : '';
   const bceid_userid = authState?.bceid_user_guid ? authState?.bceid_user_guid : '';
   const [phone, setPhone] = React.useState('');
-  const [pacNumber, setPacNumber] = React.useState<number>(null);
+  const [pacNumber, setPacNumber] = React.useState<number | null>(null);
   const [psn1, setPsn1] = React.useState('');
   const [psn2, setPsn2] = React.useState('');
-  const [employer, setEmployer] = React.useState([]);
+  const [employer, setEmployer] = React.useState<number | null>(null);
   const [fundingAgencies, setFundingAgencies] = React.useState<string[]>([]);
   const [requestedRoles, setRequestedRoles] = React.useState<string[]>([]);
-  const [fundingAgenciesList, setFundingAgenciesList] = React.useState<any[]>([]);
-  const [employersList, setEmployersList] = React.useState<any[]>([]);
+  const [fundingAgenciesList, setFundingAgenciesList] = React.useState<[]>([]);
+  const [employersList, setEmployersList] = React.useState<string[]>([]);
   const [submitted, setSubmitted] = React.useState(false);
   const [comments, setComments] = React.useState('');
-  const [roles, setRoles] = React.useState<any[]>([]);
+  const [roles, setRoles] = React.useState<string[]>([]);
 
   // Validation Error Messages
   const [idirErrorText, setIdirErrorText] = React.useState('');
@@ -209,32 +220,46 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     isUpdating = false;
   }
 
-  const [userInfo, setUserInfo] = useState(undefined);
+  type UserInfoType = {
+    idir_account_name: string | null;
+    bceid_business_name: string | null;
+    first_name: string | null;
+    last_name: string | null;
+    primary_email: string | null;
+    work_phone_number: string | null;
+    pac_number: number | null;
+    pac_service_number_1: string | null;
+    pac_service_number_2: string | null;
+    employer: string | null;
+    funding_agencies: string | null;
+    requested_roles: string | null;
+  };
+  const [userInfo, setUserInfo] = useState<UserInfoType | null>(null);
 
   useEffect(() => {
-    if (userInfo !== undefined) {
-      if (userInfo?.idir_account_name) {
+    if (userInfo) {
+      if (userInfo.idir_account_name) {
         setAccountType('IDIR');
-        setIdir(userInfo?.idir_account_name);
-      } else if (userInfo?.bceid_business_name) {
+        setIdir(userInfo.idir_account_name);
+      } else if (userInfo.bceid_business_name) {
         setAccountType('BCeID');
-        setBceid(userInfo?.bceid_business_name);
+        setBceid(userInfo.bceid_business_name);
       }
 
-      if (userInfo?.bceid_business_name) {
-        setFirstName(userInfo?.bceid_business_name);
+      if (userInfo.bceid_business_name) {
+        setFirstName(userInfo.bceid_business_name);
       } else {
-        userInfo?.first_name && setFirstName(userInfo?.first_name);
+        userInfo.first_name && setFirstName(userInfo.first_name);
       }
-      userInfo?.last_name && setLastName(userInfo?.last_name);
-      userInfo?.primary_email && setEmail(userInfo?.primary_email);
-      userInfo?.work_phone_number && setPhone(userInfo?.work_phone_number);
-      userInfo?.pac_number && setPacNumber(userInfo?.pac_number);
-      userInfo?.pac_service_number_1 && setPsn1(userInfo?.pac_service_number_1);
-      userInfo?.pac_service_number_2 && setPsn2(userInfo?.pac_service_number_2);
-      userInfo?.employer && setEmployer(userInfo?.employer.split(','));
-      userInfo?.funding_agencies && setFundingAgencies(userInfo?.funding_agencies.split(','));
-      userInfo?.requested_roles && setRequestedRoles(userInfo?.requested_roles.split(','));
+      userInfo.last_name && setLastName(userInfo.last_name);
+      userInfo.primary_email && setEmail(userInfo.primary_email);
+      userInfo.work_phone_number && setPhone(userInfo.work_phone_number);
+      userInfo.pac_number && setPacNumber(userInfo.pac_number);
+      userInfo.pac_service_number_1 && setPsn1(userInfo.pac_service_number_1);
+      userInfo.pac_service_number_2 && setPsn2(userInfo.pac_service_number_2);
+      userInfo.employer && setEmployer(userInfo.employer.split(','));
+      userInfo.funding_agencies && setFundingAgencies(userInfo.funding_agencies.split(','));
+      userInfo.requested_roles && setRequestedRoles(userInfo.requested_roles.split(','));
     }
   }, [userInfo]);
 
@@ -256,7 +281,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     fetchFundingAgencies();
     fetchEmployers();
     api.getRoles().then((response) => {
-      if (userInfo?.requested_roles.indexOf('administrator') == -1)
+      if (userInfo?.requested_roles && userInfo.requested_roles.indexOf('administrator') == -1)
         setRoles(response.filter((res) => res.role_name.indexOf('administrator') == -1));
       else setRoles(response);
     });
@@ -267,7 +292,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const handleEmployerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmployer(event.target.value);
+    setEmployer(new Number(event.target.value));
   };
 
   const ITEM_HEIGHT = 48;

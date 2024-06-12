@@ -13,7 +13,7 @@ import { detectTouchDevice } from 'utils/detectTouch';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { useSelector } from 'utils/use_selector';
 
-export const RecordTableHeader = (props) => {};
+export const RecordTableHeader = () => {};
 
 export const RecordTable = (props) => {
   const unmappedRows = useSelector((state) => state.Map.recordTables[props.setID]?.rows);
@@ -59,7 +59,7 @@ export const RecordTable = (props) => {
                       key={i}
                       onClick={() => {
                         if (validActivitySortColumns.includes(col.key))
-                          dispatch(RECORDSET_SET_SORT({ setID: props.setID, sortColumn: col.key }));
+                          dispatch(RECORDSET_SET_SORT({ setID: props.setID, sortColumn: col.key, sortOrder: 'ASC' }));
                       }}
                     >
                       {col.name}{' '}
@@ -78,7 +78,7 @@ export const RecordTable = (props) => {
                       key={i}
                       onClick={() => {
                         if (validIAPPSortColumns.includes(col.key))
-                          dispatch(RECORDSET_SET_SORT({ setID: props.setID, sortColumn: col.key }));
+                          dispatch(RECORDSET_SET_SORT({ setID: props.setID, sortColumn: col.key, sortOrder: 'ASC' }));
                       }}
                     >
                       {col.name}{' '}
@@ -120,7 +120,7 @@ export const RecordTable = (props) => {
                     })
                   );
                 }}
-                onTouchStart={(e) => {
+                onTouchStart={() => {
                   dispatch(
                     USER_TOUCHED_RECORD({
                       recordType: tableType,
@@ -134,7 +134,7 @@ export const RecordTable = (props) => {
               >
                 {isTouch && (
                   <td
-                    onTouchStart={(e) => {
+                    onTouchStart={() => {
                       dispatch(
                         USER_CLICKED_RECORD({
                           recordType: tableType,

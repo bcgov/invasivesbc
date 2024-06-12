@@ -14,7 +14,6 @@ const BatchUploadList = () => {
   const { working, error, list, templates, errorMessage } = useSelector(selectBatch);
   const dispatch = useDispatch();
   const { darkTheme } = useSelector(selectUserSettings);
-  const [serial, setSerial] = useState(1);
   const authState = useSelector(selectAuth);
 
   useEffect(() => {
@@ -23,7 +22,7 @@ const BatchUploadList = () => {
     }
 
     dispatch(BATCH_LIST_REQUEST());
-  }, [serial, authState?.authenticated]);
+  }, [authState.authenticated]);
 
   function deleteBatch(batchId) {
     dispatch(BATCH_DELETE_REQUEST({ id: batchId }));

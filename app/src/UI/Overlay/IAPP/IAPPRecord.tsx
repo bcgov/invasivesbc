@@ -1,21 +1,20 @@
 import React, { useEffect } from 'react';
 
 import './IAPPRecords.css';
-import { Route, useHistory, useParams, useRouteMatch } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
+import { Route, useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { OverlayHeader } from '../OverlayHeader';
 import { Button } from '@mui/material';
 import { Summary } from './Summary';
 import { Photos } from './Photos';
-import { IAPP_GET_REQUEST, IAPP_PAN_AND_ZOOM } from '../../../state/actions';
+import { IAPP_GET_REQUEST, IAPP_PAN_AND_ZOOM } from 'state/actions';
+import { useSelector } from 'utils/use_selector';
 
-export const IAPPRecord = (props) => {
+export const IAPPRecord = ({ id }) => {
   const history = useHistory();
   const dispatch = useDispatch();
 
-  const { id } = useParams();
-
-  const IAPPState = useSelector((state: any) => state?.IAPPSitePage);
+  const IAPPState = useSelector((state) => state.IAPPSitePage);
 
   useEffect(() => {
     if (id !== null && id !== undefined && id !== '' && id !== 'undefined') {
@@ -63,8 +62,7 @@ export const IAPPRecord = (props) => {
             }, 3000);
             return <div>Activity does not exists, redirecting...</div>;
           }
-          if ((IAPPState?.site as any)?.site_id && IAPPState?.loading === false)
-            return <Summary record={IAPPState?.site} />;
+          if (IAPPState.site?.site_id && IAPPState?.loading === false) return <Summary record={IAPPState?.site} />;
           else return <div>loading</div>;
         }}
       />

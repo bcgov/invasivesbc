@@ -94,7 +94,7 @@ function* handle_USER_SETTINGS_READY() {
   // }
 }
 
-function* handle_ACTIVITY_DEBUG() {
+function handle_ACTIVITY_DEBUG() {
   console.log('halp');
 }
 
@@ -119,11 +119,9 @@ function* handle_ACTIVITY_DELETE_SUCESS() {
 function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
-    yield put(
-      ACTIVITY_SET_SAVED_HASH_SUCCESS({
-        saved: activityState?.current_activity_hash
-      })
-    );
+    if (activityState?.current_activity_hash) {
+      yield put(ACTIVITY_SET_SAVED_HASH_SUCCESS(activityState.current_activity_hash));
+    }
 
     yield put(
       ACTIVITY_SET_UNSAVED_NOTIFICATION({
@@ -154,11 +152,7 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
       currentHash = (currentHash * 33) ^ activitySerialized.charCodeAt(i);
     }
 
-    yield put(
-      ACTIVITY_SET_CURRENT_HASH_SUCCESS({
-        current: currentHash
-      })
-    );
+    yield put(ACTIVITY_SET_CURRENT_HASH_SUCCESS(currentHash));
   } catch (e) {
     console.error(e);
     yield put(ACTIVITY_SET_CURRENT_HASH_FAILURE());
@@ -174,8 +168,7 @@ function* handle_URL_CHANGE(action) {
     if (afterColon) {
       id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
     }
-    if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id)
-      yield put(ACTIVITY_GET_REQUEST({ activityID: id }));
+    if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(ACTIVITY_GET_REQUEST(id));
 
     /*    else if (userSettingsState.activeActivity) {
       id = userSettingsState.activeActivity;

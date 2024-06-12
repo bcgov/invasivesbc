@@ -1,18 +1,7 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  createTheme,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  ThemeOptions,
-  ThemeProvider,
-  Typography
-} from '@mui/material';
+import { Box, CircularProgress, createTheme, ThemeOptions, ThemeProvider, Typography } from '@mui/material';
 import { Form } from '@rjsf/mui';
+import FormType from '@rjsf/core';
+
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 import { SelectAutoCompleteContextProvider } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
@@ -37,7 +26,7 @@ import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransf
 import debounce from 'lodash.debounce';
 import { RENDER_DEBUG } from 'UI/App';
 
-const FormContainer: React.FC<any> = (props) => {
+const FormContainer: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
@@ -65,7 +54,7 @@ const FormContainer: React.FC<any> = (props) => {
   const dispatch = useDispatch();
 
   const debouncedFormChange = useCallback(
-    debounce((event, ref, lastField, callbackFun) => {
+    debounce((event, ref, lastField) => {
       dispatch(
         ACTIVITY_ON_FORM_CHANGE_REQUEST({
           eventFormData: event.formData,
@@ -77,20 +66,12 @@ const FormContainer: React.FC<any> = (props) => {
     []
   );
 
-  const errorTransformers = useCallback(() => {
-    return getCustomErrorTransformer;
-  }, []);
-
   const customValidators = useCallback(() => {
     return validatorForActivity(activity_subtype, null);
   }, [JSON.stringify(activity_subtype)]);
 
   const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
-  const formRef = React.createRef();
-  const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
-  const [open, setOpen] = React.useState(false);
-  const [alertMsg, setAlertMsg] = React.useState(null);
-  const [field, setField] = React.useState('');
+  const formRef = useRef<FormType>(null);
 
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
@@ -98,47 +79,10 @@ const FormContainer: React.FC<any> = (props) => {
   } as ThemeOptions);
   const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 
-  //open dialog window (visual)
-  const openDialog = () => {
-    setOpen(true);
-  };
-
-  //close the dialog windo (visual)
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   useEffect(() => {
-    const currentState = formRef.current?.state;
-    dispatch(ACTIVITY_ERRORS({ errors: currentState?.errors }));
+    if (formRef.current && formRef.current.state && formRef.current.state.errors)
+      dispatch(ACTIVITY_ERRORS(formRef.current.state.errors));
   }, [formRef]);
-
-  //Dialog Proceed OnClick func
-  const proceedClick = () => {
-    //setTimeout is called so that the setState works as expected
-    setTimeout(() => {
-      const $this = formRef.current;
-      //declare and initialize no validation fields array from formData if any
-      let noValidationFields: string[] = [];
-      if ($this.state.formData.forceNoValidationFields) {
-        noValidationFields = [...$this.state.formData.forceNoValidationFields];
-      }
-      //add field to no validation if not there already
-      if (!noValidationFields.includes(field)) {
-        noValidationFields.push(field);
-      }
-      //set new state with updated array of noValidate fields
-      const newFormData = $this.state.formData;
-      newFormData.forceNoValidationFields = noValidationFields;
-      $this.setState({ formData: newFormData }, () => {
-        //revalidate formData after the setState is run
-        $this.validate($this.state.formData);
-        //update formData of the activity via onFormChange
-        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {});
-      });
-    }, 100);
-    handleClose();
-  };
 
   const isActivityChemTreatment = () => {
     if (
@@ -310,9 +254,7 @@ const FormContainer: React.FC<any> = (props) => {
                 transformErrors={getCustomErrorTransformer()}
                 autoComplete="off"
                 onChange={(event) => {
-                  debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
-                    //setformData(updatedFormData);
-                  });
+                  debouncedFormChange(event, formRef, null);
                 }}
                 /*onSubmit={(event) => {
                   if (!props.onFormSubmitSuccess) {
@@ -330,7 +272,7 @@ const FormContainer: React.FC<any> = (props) => {
               </Form>
               {isActivityChemTreatment() && (
                 <ChemicalTreatmentDetailsForm
-                  disabled={props.isDisabled}
+                  disabled={isDisabled}
                   activitySubType={activity_subtype || null}
                   onChange={(form_data, callback) => {
                     //todo redux chem treatment form on change
@@ -350,32 +292,6 @@ const FormContainer: React.FC<any> = (props) => {
             </>
           </SelectAutoCompleteContextProvider>
         </ThemeProvider>
-
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-        >
-          <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                proceedClick();
-              }}
-              color="primary"
-              autoFocus
-            >
-              Proceed
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Box>
     );
   }

@@ -1,7 +1,7 @@
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Box, Button, Table, TableBody, TableCell, TableRow } from '@mui/material';
-import { DataGrid, GridCellParams, GridRenderCellParams, MuiEvent } from '@mui/x-data-grid';
+import { useDispatch } from 'react-redux';
+import { Button, Table, TableBody, TableCell, TableRow } from '@mui/material';
+import { DataGrid, GridCellParams } from '@mui/x-data-grid';
 import {
   MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
@@ -15,6 +15,7 @@ import './WhatsHerePagination.css';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
+import { useSelector } from 'utils/use_selector';
 
 function WhatsHerePagination(props) {
   const dispatch = useDispatch();
@@ -119,7 +120,7 @@ function WhatsHerePagination(props) {
 }
 
 export const RenderTablePosition = ({ rows }) => {
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
+  const whatsHere = useSelector((state) => state.Map.whatsHere);
   return (
     <>
       {whatsHere?.section === 'position' ? (
@@ -143,11 +144,10 @@ export const RenderTablePosition = ({ rows }) => {
   );
 };
 
-export const RenderTableActivity = (props: any) => {
+export const RenderTableActivity = () => {
   const dispatch = useDispatch();
-  const { authenticated, roles } = useSelector((state: any) => state.Auth);
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
-  // const errorContext = useContext(ErrorContext);
+  const { authenticated, roles } = useSelector((state) => state.Auth);
+  const whatsHere = useSelector((state) => state.Map.whatsHere);
 
   const dispatchUpdatedID = (params) => {
     dispatch(
@@ -155,18 +155,6 @@ export const RenderTableActivity = (props: any) => {
         id: params.row.id,
         short_id: params.row.short_id
       })
-    );
-  };
-
-  const MetresSquaredCell = ({ value }: GridRenderCellParams) => {
-    return (
-      <Box
-        onMouseEnter={() => {
-          dispatchUpdatedID(props.params);
-        }}
-      >
-        {value} m&#178;
-      </Box>
     );
   };
 
@@ -309,17 +297,10 @@ export const RenderTableActivity = (props: any) => {
               dispatch(WHATS_HERE_SORT_FILTER_UPDATE({ recordType: 'Activity', field: c.field }));
             }}
             getRowHeight={() => 'auto'}
-            headerHeight={30}
-            onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
+            columnHeaderHeight={30}
+            onCellClick={(params: GridCellParams) => {
               if (authenticated && roles.length > 0) {
                 highlightActivity(params);
-              } else {
-                // errorContext.pushError({
-                //   message:
-                //     'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
-                //   code: 401,
-                //   namespace: ''
-                // });
               }
             }}
           />
@@ -332,11 +313,10 @@ export const RenderTableActivity = (props: any) => {
   );
 };
 
-export const RenderTablePOI = (props: any) => {
+export const RenderTablePOI = () => {
   const dispatch = useDispatch();
-  const { authenticated, roles } = useSelector((state: any) => state.Auth);
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
-  // const errorContext = useContext(ErrorContext);
+  const { authenticated, roles } = useSelector((state) => state.Auth);
+  const whatsHere = useSelector((state) => state.Map.whatsHere);
 
   const dispatchUpdatedID = (params) => {
     dispatch(
@@ -478,20 +458,13 @@ export const RenderTablePOI = (props: any) => {
             hideFooter
             disableColumnMenu
             getRowHeight={() => 'auto'}
-            headerHeight={30}
+            columnHeaderHeight={30}
             onColumnHeaderClick={(c) => {
               dispatch(WHATS_HERE_SORT_FILTER_UPDATE({ recordType: 'IAPP', field: c.field }));
             }}
-            onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
+            onCellClick={(params: GridCellParams) => {
               if (authenticated && roles.length > 0) {
                 highlightPOI(params);
-              } else {
-                // errorContext.pushError({
-                //   message:
-                //     'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
-                //   code: 401,
-                //   namespace: ''
-                // });
               }
             }}
           />

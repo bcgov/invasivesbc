@@ -14,7 +14,7 @@ import { RecordSet } from './Overlay/Records/RecordSet';
 import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
 import { IAPPRecord } from './Overlay/IAPP/IAPPRecord';
 import { FormMenuButtons } from './Overlay/FormMenuButtons';
-import { selectGlobalErrorState } from '../state/reducers/error_handler';
+import { selectGlobalErrorState } from 'state/reducers/error_handler';
 import { ErrorHandler } from './ErrorHandler/ErrorHandler';
 import { LayerPicker } from './Map2/LayerPicker';
 import NewRecordDialog from './Overlay/Records/NewRecordDialog';
@@ -124,11 +124,9 @@ const OverlayContentMemo = () => {
       />
       <Route
         path="/Records/IAPP/:id"
-        render={() => (
-          <>
-            <IAPPRecord />
-          </>
-        )}
+        render={(props) => {
+          return <IAPPRecord id={props.match.params.id} />;
+        }}
       />
       <Route
         exact={true}
@@ -211,8 +209,8 @@ const OverlayContentMemo = () => {
 };
 
 const App: React.FC = () => {
-  const authInitiated = useSelector((state: any) => state.Auth.initialized);
-  const { detail: errorDetail, actions, hasCrashed } = useSelector(selectGlobalErrorState);
+  const authInitiated = useSelector((state) => state.Auth.initialized);
+  const { detail: errorDetail, hasCrashed } = useSelector(selectGlobalErrorState);
   const { disrupted } = useSelector(selectAuth);
   const { MOBILE } = useSelector(selectConfiguration);
   const ref = useRef(0);

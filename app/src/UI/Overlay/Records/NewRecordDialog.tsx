@@ -12,7 +12,7 @@ import {
 import { useHistory } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   ACTIVITY_CREATE_REQUEST,
   CLOSE_NEW_RECORD_MENU,
@@ -21,6 +21,7 @@ import {
 import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 import './NewRecordDialog.css';
+import { useSelector } from 'utils/use_selector';
 
 export interface INewRecordDialog {}
 
@@ -39,12 +40,12 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
   const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
 
-  const accessRoles = useSelector((state: any) => state.Auth.accessRoles);
-  const { newRecordDialogState } = useSelector((state: any) => state.UserSettings);
-  const dialogueOpen = useSelector((state: any) => state.UserSettings.newRecordDialogueOpen);
+  const accessRoles = useSelector((state) => state.Auth.accessRoles);
+  const { newRecordDialogState } = useSelector((state) => state.UserSettings);
+  const dialogueOpen = useSelector((state) => state.UserSettings.newRecordDialogueOpen);
 
   useEffect(() => {
-    const categories = [];
+    const categories: string[] = [];
     categories.push('Plant');
     if (accessRoles.some((role: Record<string, any>) => role.role_name === 'frep')) {
       categories.push('FREP');

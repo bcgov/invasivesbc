@@ -1,4 +1,4 @@
-import { NETWORK_GO_OFFLINE, NETWORK_GO_ONLINE } from '../actions';
+import { NETWORK_GO_OFFLINE, NETWORK_GO_ONLINE } from 'state/actions';
 
 interface Network {
   connected: boolean;

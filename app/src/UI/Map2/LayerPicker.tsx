@@ -36,7 +36,7 @@ export const LayerPicker = (props: any) => {
           <div id="WMSLayersHeader" className="layerPickerCategoryHeader">
             DataBC Layers:
           </div>
-          {WMSLayers?.map((layer: any) => {
+          {WMSLayers?.map((layer) => {
             return (
               <div key={layer.title} className="layerPickerLayer">
                 <input

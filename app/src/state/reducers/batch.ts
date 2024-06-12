@@ -167,7 +167,7 @@ function createBatchReducer() {
         ...state,
         working: false,
         error: true,
-        errorMessage: `Could not execute batch ${JSON.stringify(action.payload?.message, null, 2)}`,
+        errorMessage: `Could not execute batch ${JSON.stringify(action.payload.message, null, 2)}`,
         item: null
       };
     }

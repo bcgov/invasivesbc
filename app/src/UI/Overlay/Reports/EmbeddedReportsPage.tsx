@@ -3,13 +3,13 @@ import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
 import { Autocomplete, Box, Container, TextField, Typography } from '@mui/material';
 import { Report } from './Report';
 import Spinner from 'UI/Spinner/Spinner';
-import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import './Report.css';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'utils/use_selector';
 
 const EmbeddedReportsPage: React.FC = () => {
-  const authenticated = useSelector((state: any) => state?.Auth.authenticated && state?.Auth.roles.length > 0);
+  const authenticated = useSelector((state) => state.Auth.authenticated && state.Auth.roles.length > 0);
   const history = useHistory();
 
   if (!authenticated) {
@@ -19,7 +19,7 @@ const EmbeddedReportsPage: React.FC = () => {
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
   const [reports, setReports] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [activeReport, setActiveReport] = useState<number>(null);
+  const [activeReport, setActiveReport] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const authState = useSelector(selectAuth);
 

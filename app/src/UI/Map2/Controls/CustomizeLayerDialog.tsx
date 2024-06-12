@@ -11,8 +11,7 @@ import {
   TextField
 } from '@mui/material';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import {
   DRAW_CUSTOM_LAYER,
   REMOVE_CLIENT_BOUNDARY,
@@ -21,26 +20,24 @@ import {
 } from 'state/actions';
 
 import KMLShapesUpload from './KMLShapesUpload';
+import { useSelector } from 'utils/use_selector';
 
-const CustomizeLayerMenu = (props) => {
+const CustomizeLayerMenu = () => {
   const dispatch = useDispatch();
 
-  //  const classes = useStyles();
-  const history = useHistory();
-
-  const dialogueOpen = useSelector((state: any) => state.Map.customizeLayersToggle);
+  const dialogueOpen = useSelector((state) => state.Map.customizeLayersToggle);
 
   //menu options
   const newLayerTypeOptions = ['Draw', 'Upload KML/KMZ', 'WMS Link', 'WFS Link'];
   const [optionVal, setOptionVal] = useState('Draw');
   const [subMenuType, setSubMenuType] = useState('Init');
   const [newLayerName, setNewLayerName] = useState('');
-  const [layerToDelete, setLayerToDelete] = useState(null);
+  const [layerToDelete, setLayerToDelete] = useState<string | null>(null);
 
-  const clientBoundaries = useSelector((state: any) => state.Map.clientBoundaries).map((boundary) => {
+  const clientBoundaries = useSelector((state) => state.Map.clientBoundaries).map((boundary) => {
     return { ...boundary, type: 'Client' };
   });
-  const serverBoundaries = useSelector((state: any) => state.Map.serverBoundaries).map((boundary) => {
+  const serverBoundaries = useSelector((state) => state.Map.serverBoundaries).map((boundary) => {
     return { ...boundary, type: 'Server' };
   });
 
@@ -159,16 +156,19 @@ const CustomizeLayerMenu = (props) => {
                 <Button
                   disabled={layerToDelete === null}
                   onClick={() => {
+                    if (layerToDelete == null) {
+                      return;
+                    }
                     const type = customLayers.filter((layer) => layer.id === layerToDelete)?.[0]?.type;
 
                     switch (type) {
                       case 'Client':
-                        dispatch(REMOVE_CLIENT_BOUNDARY({ id: layerToDelete }));
+                        dispatch(REMOVE_CLIENT_BOUNDARY(layerToDelete));
                         dispatch(TOGGLE_CUSTOMIZE_LAYERS());
                         cleanup();
                         break;
                       case 'Server':
-                        dispatch(REMOVE_SERVER_BOUNDARY({ id: layerToDelete }));
+                        dispatch(REMOVE_SERVER_BOUNDARY(layerToDelete));
                         dispatch(TOGGLE_CUSTOMIZE_LAYERS());
                         cleanup();
                         break;

@@ -1,8 +1,8 @@
 import { createFilterOptions } from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
-import { Typography, Box, TextField, Autocomplete } from '@mui/material';
+import { Autocomplete, Box, TextField, Typography } from '@mui/material';
 import { SelectAutoCompleteContext } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
 import { useSelector } from 'react-redux';
 // Custom type to support this widget
@@ -55,6 +55,13 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
  * @return {*}
  */
 
+type OptionType = {
+  value: string;
+  label: string;
+  title: string;
+  suggested?: any;
+};
+
 const SingleSelectAutoComplete = (props: WidgetProps) => {
   // console.dir(props)
   const suggestedJurisdictionsInState = useSelector((state: any) => state.ActivityPage.suggestedJurisdictions);
@@ -71,7 +78,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     const suggestedJurisdictions = suggestedJurisdictionsInState
       ? JSON.parse(JSON.stringify(suggestedJurisdictionsInState))
       : [];
-    const additionalEnumOptions = [];
+    const additionalEnumOptions: OptionType[] = [];
     suggestedJurisdictions.forEach((jurisdiction) => {
       if (jurisdiction.geojson) {
         additionalEnumOptions.push({
@@ -107,9 +114,12 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   const { setLastFieldChanged, lastFieldChanged } = selectAutoCompleteContext;
   const optionValueLabels = {};
   const optionValueSuggested = {};
-  const optionValues = Object.values(enumOptions).map((option) => {
+
+  const optionValues = Object.values(enumOptions).map((enumerated) => {
+    const option = enumerated as OptionType;
+
     optionValueLabels[option.value] = option.label || option.title || option.value;
-    optionValueSuggested[option.value] = (option as any).suggested || false;
+    optionValueSuggested[option.value] = option.suggested || false;
     return option.value;
   });
   const startingValue = props.value || '';

@@ -6,21 +6,20 @@ import { useSelector } from 'utils/use_selector';
 import { calc_utm } from 'utils/utm';
 import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
 import { RenderTableActivity, RenderTablePOI } from 'utils/WhatsHereTableHelpers';
-import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE, TOGGLE_PANEL } from 'state/actions';
+import { MAP_SET_WHATS_HERE_SECTION } from 'state/actions';
 
 import './WhatsHereTable.css';
 
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import { useHistory } from 'react-router';
-import { OverlayHeader } from '../OverlayHeader';
 
-export const createDataUTM = (name: string, value: any) => {
+export const createDataUTM = (name: string, value: string | number) => {
   return { name, value };
 };
 
-export const WhatsHereTable = (props) => {
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
+export const WhatsHereTable = () => {
+  const whatsHere = useSelector((state) => state.Map.whatsHere);
   const history = useHistory();
 
   const position = whatsHere?.feature?.geometry ? center(whatsHere?.feature?.geometry)?.geometry.coordinates : [0, 0];
@@ -32,13 +31,11 @@ export const WhatsHereTable = (props) => {
   ];
   const dispatch = useDispatch();
 
-  const popupOnClose = () => {
-    history.goBack();
-    dispatch(MAP_TOGGLE_WHATS_HERE());
-    dispatch(TOGGLE_PANEL());
-  };
-
-  const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
+  const handleChange = (_event, newSection) => {
+    // type guard
+    if (typeof newSection !== 'string') {
+      return;
+    }
     dispatch(
       MAP_SET_WHATS_HERE_SECTION({
         section: newSection
@@ -48,9 +45,7 @@ export const WhatsHereTable = (props) => {
 
   const goToRecord = () => {
     const id = whatsHere.section === 'invasivesbc' ? whatsHere?.clickedActivity : whatsHere?.clickedIAPP;
-    // if (authenticated && roles.length > 0) {
-    // }
-    // authentication is needed eventually
+
     if (whatsHere?.section === 'invasivesbc') {
       history.push(`/Records/Activity:${id}/form`);
     } else if (whatsHere?.highlightedType === 'IAPP') {
@@ -67,7 +62,6 @@ export const WhatsHereTable = (props) => {
 
   return (
     <div className="whatshere-container">
-      <OverlayHeader closeCallback={popupOnClose}></OverlayHeader>
       {whatsHere?.section ? (
         <div className="whatshere-table-container">
           <div className="whatshere_back_button">

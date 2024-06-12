@@ -6,11 +6,11 @@ import { useSelector } from 'utils/use_selector';
 import 'UI/Global.css';
 import SpeedIcon from '@mui/icons-material/Speed';
 
-export const MapModeToggle = (props) => {
+export const MapModeToggle = () => {
   const mapModeToggle = useSelector((state: any) => state.Map?.MapMode);
   const dispatch = useDispatch();
   const [show, setShow] = React.useState(false);
-  const divRef = useRef();
+  const divRef = useRef(null);
 
   return (
     <div ref={divRef} className={mapModeToggle !== 'VECTOR_ENDPOINT' ? 'map-btn-selected' : 'map-btn'}>

@@ -72,12 +72,15 @@ let BC_AREA: any = null;
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
+  if (!ACTIVITY_GET_REQUEST.match(action)) {
+    return;
+  }
 
   try {
     if (MOBILE) {
-      yield put(ACTIVITY_GET_LOCALDB_REQUEST({ activityID: action.payload.activityID }));
+      yield put(ACTIVITY_GET_LOCALDB_REQUEST(action.payload));
     } else {
-      yield put(ACTIVITY_GET_NETWORK_REQUEST({ activityID: action.payload.activityID }));
+      yield put(ACTIVITY_GET_NETWORK_REQUEST(action.payload));
     }
   } catch (e) {
     console.error(e);
@@ -301,7 +304,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
 export function* handle_ACTIVITY_SAVE_SUCCESS() {
   const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
   try {
-    yield put(ACTIVITY_GET_REQUEST({ activityID: activity_id }));
+    yield put(ACTIVITY_GET_REQUEST(activity_id));
     yield put(
       ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
         notification: {
@@ -392,11 +395,7 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action) {
         id: action.payload.activity_id
       })
     );
-    yield put(
-      ACTIVITY_GET_REQUEST({
-        activityID: action.payload.activity_id
-      })
-    );
+    yield put(ACTIVITY_GET_REQUEST(action.payload.activity_id));
   } catch (e) {
     console.error(e);
     yield put(ACTIVITY_CREATE_FAILURE());

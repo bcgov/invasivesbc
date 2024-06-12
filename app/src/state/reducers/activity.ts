@@ -1,4 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
+import { AppConfig } from '../config';
 import {
   ACTIVITY_ADD_PHOTO_SUCCESS,
   ACTIVITY_COPY_SUCCESS,
@@ -23,32 +24,33 @@ import {
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO
-} from '../actions';
+} from 'state/actions';
 
-import { AppConfig } from '../config';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 
 interface ActivityState {
   activity: any;
+  activityErrors: unknown[];
   current_activity_hash: string | null;
   error: boolean;
   pasteCount: number;
-  failCode: number | null;
+  failCode: string | null;
   initialized: boolean;
   loading: boolean;
   notification: any | null;
   saved_activity_hash: string | null;
-  suggestedJurisdictions: [];
-  suggestedPersons: [];
-  suggestedTreatmentIDs: [];
+  suggestedJurisdictions: unknown[];
+  suggestedPersons: unknown[];
+  suggestedTreatmentIDs: unknown[];
   track_me_draw_geo: boolean;
   unsaved_notification: any | null;
-  activity_copy_buffer: object | null;
+  activity_copy_buffer: { form_data: object } | null;
 }
 
 const initialState: ActivityState = {
   activity: null,
   current_activity_hash: null,
+  activityErrors: [],
   error: false,
   pasteCount: 0,
   failCode: null,
@@ -66,14 +68,14 @@ const initialState: ActivityState = {
 
 function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAction) => ActivityState {
   return (state = initialState, action) => {
-    return createNextState(state, (draftState) => {
+    return createNextState(state, (draftState: ActivityState) => {
       if (ACTIVITY_ERRORS.match(action)) {
-        if (action.payload.errors !== undefined)
-          draftState.activityErrors = getCustomErrorTransformer()(action.payload.errors);
+        draftState.activityErrors = getCustomErrorTransformer()(action.payload);
       }
       if (ACTIVITY_DELETE_SUCCESS.match(action)) {
         draftState = {
           activity: null,
+          activityErrors: [],
           current_activity_hash: null,
           error: false,
           pasteCount: 0,
@@ -85,13 +87,15 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           suggestedJurisdictions: [],
           suggestedPersons: [],
           suggestedTreatmentIDs: [],
-          unsaved_notification: null
+          unsaved_notification: null,
+          activity_copy_buffer: null
         };
       }
       if (ACTIVITY_CREATE_REQUEST.match(action)) {
         const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
         draftState = {
           activity: null,
+          activityErrors: [],
           current_activity_hash: null,
           error: false,
           pasteCount: 0,
@@ -109,7 +113,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
       }
       if (ACTIVITY_GET_FAILURE.match(action)) {
         draftState.loading = false;
-        draftState.failCode = action.payload?.failNetworkObj?.status;
+        draftState.failCode = action.payload.reason;
       }
       if (ACTIVITY_GET_REQUEST.match(action)) {
         draftState.failCode = null;
@@ -153,7 +157,6 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         draftState.suggestedTreatmentIDs = [...action.payload.suggestedTreatmentIDs];
       }
       if (ACTIVITY_CREATE_SUCCESS.match(action)) {
-        draftState.activeActivity = action.payload.activity_id;
         draftState.current_activity_hash = null;
         draftState.saved_activity_hash = null;
       }
@@ -170,8 +173,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         };
       }
       if (ACTIVITY_PASTE_SUCCESS.match(action)) {
-        draftState.pasteCount = draftState.pasteCount + 1;
-        draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer.form_data));
+        if (draftState.activity_copy_buffer !== null) {
+          draftState.pasteCount = draftState.pasteCount + 1;
+          draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer.form_data));
+        }
       }
       if (ACTIVITY_ADD_PHOTO_SUCCESS.match(action)) {
         draftState.activity.media.push(action.payload.photo);
@@ -183,10 +188,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         draftState.activity.media = action.payload.media;
       }
       if (ACTIVITY_SET_CURRENT_HASH_SUCCESS.match(action)) {
-        draftState.current_activity_hash = action.payload.current;
+        draftState.current_activity_hash = action.payload;
       }
       if (ACTIVITY_SET_SAVED_HASH_SUCCESS.match(action)) {
-        draftState.saved_activity_hash = action.payload.saved;
+        draftState.saved_activity_hash = action.payload;
       }
       if (ACTIVITY_SET_UNSAVED_NOTIFICATION.match(action)) {
         draftState.unsaved_notification = action.payload.unsaved_notification;

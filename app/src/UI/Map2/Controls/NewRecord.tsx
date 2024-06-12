@@ -6,10 +6,10 @@ import FiberNewIcon from '@mui/icons-material/FiberNew';
 import { OPEN_NEW_RECORD_MENU } from 'state/actions';
 import 'UI/Global.css';
 
-export const NewRecord = (props) => {
+export const NewRecord = () => {
   const dispatch = useDispatch();
-  const divRef = useRef();
-  const isAuth = useSelector((state: any) => state.Auth?.authenticated);
+  const divRef = useRef(null);
+  const isAuth = useSelector((state) => state.Auth.authenticated);
 
   const [show, setShow] = React.useState(false);
 

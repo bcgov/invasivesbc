@@ -29,7 +29,7 @@ function createIAPPSiteReducer(configuration: AppConfig): (IAPPSiteState, AnyAct
       return {
         ...state,
         loading: false,
-        failCode: action.payload?.failNetworkObj?.status
+        failCode: action.payload.reason
       };
     }
     if (IAPP_GET_SUCCESS.match(action)) {

@@ -1,6 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import moment from 'moment';
-import { AppConfig } from '../config';
+import { AppConfig } from 'state/config';
 import {
   ACTIVITY_CREATE_LOCAL,
   ACTIVITY_OFFLINE_DELETE_ITEM,
@@ -9,13 +9,15 @@ import {
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_SYNC_STATE
-} from '../actions';
+} from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
+
+export type OfflineSyncStateType = 'LOCALLY_MODIFIED' | 'SYNCHRONIZED' | 'ERROR' | 'OPTIMISTIC_LOCKING_FAILURE';
 
 export interface OfflineActivityRecord {
   data: string;
   saved_at: number;
-  sync_state: 'LOCALLY_MODIFIED' | 'SYNCHRONIZED' | 'ERROR' | 'OPTIMISTIC_LOCKING_FAILURE';
+  sync_state: OfflineSyncStateType;
 }
 
 export interface OfflineActivityState {
@@ -74,12 +76,12 @@ function createOfflineActivityReducer(
         draftState.serial = moment.now();
       }
       if (ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE.match(action)) {
-        draftState.statusDialogOpen = action.payload.open;
+        draftState.statusDialogOpen = action.payload;
       }
       if (ACTIVITY_OFFLINE_DELETE_ITEM.match(action)) {
-        const found = draftState.serializedActivities[action.payload.id];
+        const found = draftState.serializedActivities[action.payload];
         if (found) {
-          delete draftState.serializedActivities[action.payload.id];
+          delete draftState.serializedActivities[action.payload];
         }
         draftState.serial = moment.now();
       }

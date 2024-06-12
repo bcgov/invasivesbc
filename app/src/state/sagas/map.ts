@@ -2,6 +2,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import * as turf from '@turf/turf';
 import { AnyAction, channel } from 'redux-saga';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { Feature } from 'geojson';
 import {
   getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_GEOJSON_GET_REQUEST,
@@ -73,7 +74,8 @@ import {
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
   SET_CURRENT_OPEN_SET,
-  TOGGLE_PANEL,
+  TOGGLE_PANEL_OFF,
+  TOGGLE_PANEL_ON,
   URL_CHANGE,
   USER_SETTINGS_ADD_RECORD_SET,
   USER_SETTINGS_DELETE_KML_REQUEST,
@@ -169,9 +171,8 @@ function* handle_MAP_TOGGLE_TRACKING() {
       if (!position) {
         return;
       } else {
-        coordChannel.put({
-          type: MAP_SET_COORDS,
-          payload: {
+        coordChannel.put(
+          MAP_SET_COORDS({
             position: {
               coords: {
                 latitude: position.coords.latitude,
@@ -180,8 +181,8 @@ function* handle_MAP_TOGGLE_TRACKING() {
                 heading: position.coords.heading
               }
             }
-          }
-        });
+          })
+        );
       }
     } catch (e) {
       console.log(JSON.stringify(e));
@@ -198,7 +199,7 @@ function* handle_MAP_TOGGLE_TRACKING() {
   let counter = 0;
   while (state.positionTracking) {
     if (counter === 0) {
-      yield put(MAP_TOGGLE_PANNED({ target: 'me' }));
+      yield put(MAP_TOGGLE_PANNED());
     }
     const currentMapState = yield select(selectMap);
     if (!currentMapState.positionTracking) {
@@ -237,22 +238,22 @@ function* handle_WHATS_HERE_FEATURE(action) {
     if (activityLayersLoading.length === 0 && IAPPLayersLoading.length === 0) {
       layersLoading = false;
     } else {
-      const actionsToTake: AnyAction[] = [];
+      const actionsToTake: string[] = [];
       if (activityLayersLoading.length > 0) {
         actionsToTake.push(
           activityLayersLoading.map(() => {
-            return ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS();
+            return ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS.type;
           })
         );
       }
       if (IAPPLayersLoading.length > 0) {
         actionsToTake.push(
           IAPPLayersLoading.map(() => {
-            return IAPP_GET_IDS_FOR_RECORDSET_SUCCESS();
+            return IAPP_GET_IDS_FOR_RECORDSET_SUCCESS.type;
           })
         );
       }
-      yield all(actionsToTake.map((action) => take(action.type)));
+      yield all(actionsToTake.map((action) => take(action)));
     }
   }
   if (mapState.MapMode === 'VECTOR_ENDPOINT') {
@@ -276,7 +277,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
       filterObjects: [activitiesfilterObj]
     });
 
-    let activitiesServerIDList = [];
+    let activitiesServerIDList: string[] = [];
     if (activitiesNetworkReturn.data.result || activitiesNetworkReturn.data?.data?.result) {
       const list = activitiesNetworkReturn.data?.data?.result
         ? activitiesNetworkReturn.data?.data?.result
@@ -304,7 +305,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
       filterObjects: [iappfilterObj]
     });
 
-    let iappServerIDList = [];
+    let iappServerIDList: string[] = [];
 
     if (iappNetworkReturn.data.result || iappNetworkReturn.data?.data?.result) {
       const list = iappNetworkReturn.data?.data?.result
@@ -498,12 +499,12 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
        */
       const sliceWithData = sorted.slice(startRecord, endRecord);
       const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
-        const jurisdiction_code = [];
+        const jurisdiction_code: string[] = [];
         activityRecord?.properties?.jurisdiction?.forEach((item) => {
           jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
 
-        const species_code = [];
+        const species_code: string[] = [];
         switch (activityRecord?.properties?.type) {
           case 'Observation':
             activityRecord?.properties?.species_positive?.forEach((s) => {
@@ -838,7 +839,8 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   // combined:
   const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
 
-  const actionsToPut = [];
+  const actionsToPut: AnyAction[] = [];
+
   allUninitializedLayers.map((layer) => {
     if (mapMode === 'VECTOR_ENDPOINT') {
       actionsToPut.push(FILTER_PREP_FOR_VECTOR_ENDPOINT({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
@@ -864,6 +866,10 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
 
 function* handle_REMOVE_CLIENT_BOUNDARY(action) {
   // remove from record sets applied
+  if (!REMOVE_CLIENT_BOUNDARY.match(action)) {
+    return;
+  }
+
   const state = yield select(selectUserSettings);
   const recordSets = state?.recordSets;
   const recordSetIDs = Object.keys(recordSets);
@@ -873,17 +879,16 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
 
   const filteredSets = recordSetsWithIDs.filter((set) => {
     return set?.tableFilters?.filter((filter) => {
-      return filter?.filter === action?.payload?.id;
+      return filter?.filter === action.payload;
     });
   });
 
   const actions = filteredSets.map((filteredSet) => {
     const filter = filteredSet?.tableFilters.filter((filter) => {
-      return filter.filter === action.payload.id;
+      return filter.filter === action.payload;
     })?.[0];
     const actionObject = RECORDSET_REMOVE_FILTER({
       filterID: filter?.id,
-      filterType: 'tableFilter',
       setID: filteredSet.recordSetID
     });
     return actionObject;
@@ -900,27 +905,24 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
 }
 
 function* handle_REMOVE_SERVER_BOUNDARY(action) {
-  yield put(USER_SETTINGS_DELETE_KML_REQUEST({ server_id: action.payload.id }));
+  if (!REMOVE_SERVER_BOUNDARY.match(action)) {
+    return;
+  }
+  yield put(USER_SETTINGS_DELETE_KML_REQUEST({ server_id: action.payload }));
 }
 
 function* handle_DRAW_CUSTOM_LAYER() {
-  const panelState = yield select((state) => state.AppMode.panelOpen);
-  if (panelState) {
-    yield put(TOGGLE_PANEL());
-  }
+  yield put(TOGGLE_PANEL_ON());
 }
 
 function* handle_CUSTOM_LAYER_DRAWN() {
-  const panelState = yield select((state) => state.AppMode.panelOpen);
-  if (!panelState) {
-    yield put(TOGGLE_PANEL());
-  }
+  yield put(TOGGLE_PANEL_OFF());
 }
 
 function* handle_MAP_ON_SHAPE_CREATE(action) {
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
-  let newGeo = null;
+  let newGeo: Feature | null = null;
   if (action?.payload?.geometry?.type === 'LineString') {
     let width: null | number = null;
     while (typeof width !== 'number') {
@@ -938,7 +940,11 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
   }
 
   if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-    yield put(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [newGeo ? newGeo : action.payload] }));
+    if (newGeo) {
+      yield put(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [newGeo] }));
+    } else {
+      yield put(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [action.payload] }));
+    }
   }
 }
 

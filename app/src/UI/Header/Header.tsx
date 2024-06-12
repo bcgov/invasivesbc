@@ -340,7 +340,7 @@ const LoginOrOutMemo = React.memo(() => {
             onClick={() => {
               setAnchorEl(null);
 
-              dispatch(AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG({ state: true }));
+              dispatch(AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG(true));
             }}
           >
             <ListItemIcon>

@@ -45,7 +45,7 @@ export const OfflineUserMenu: React.FC = () => {
   const dispatch = useDispatch();
 
   const closeHandler = () => {
-    dispatch(AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG({ state: false }));
+    dispatch(AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG(false));
   };
 
   return (

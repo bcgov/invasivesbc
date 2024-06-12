@@ -17,7 +17,7 @@ export const OfflineDataSyncDialog = () => {
       open={statusDialogOpen}
       maxWidth={'xl'}
       onClose={() => {
-        dispatch(ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE({ open: false }));
+        dispatch(ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE(false));
       }}
     >
       <DialogTitle>Offline Sync Status</DialogTitle>

@@ -18,17 +18,16 @@ import {
   IconButton,
   MenuItem,
   TextField,
-  Theme,
   Tooltip,
   Typography
 } from '@mui/material';
 import {
   DataGrid,
   GridColDef,
+  GridRenderCellParams,
   GridToolbarColumnsButton,
   GridToolbarExport,
-  GridToolbarFilterButton,
-  GridValueGetterParams
+  GridToolbarFilterButton
 } from '@mui/x-data-grid';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
@@ -109,7 +108,7 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
   );
 }
 
-const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
+const UserAccessPage: React.FC<IAccessRequestPage> = () => {
   enum Mode {
     GRANT,
     REVOKE,
@@ -160,7 +159,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     ================================================================================================
   */
 
-  const renderDetailsButton = (params: GridValueGetterParams) => {
+  const renderDetailsButton = (params: GridRenderCellParams) => {
     return (
       <Tooltip title="View Details" classes={{ tooltip: 'toolTip' }}>
         <Button
@@ -176,7 +175,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     );
   };
 
-  const renderRequestDetailsButton = (params: GridValueGetterParams) => {
+  const renderRequestDetailsButton = (params: GridRenderCellParams) => {
     return (
       <Tooltip title="View Details" classes={{ tooltip: 'toolTip' }}>
         <Button
@@ -192,7 +191,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     );
   };
 
-  const renderStatus = (params: GridValueGetterParams) => {
+  const renderStatus = (params: GridRenderCellParams) => {
     let color = '#FF0000';
     if (params.row.status === 'APPROVED') {
       color = '#00FF00';
@@ -204,7 +203,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     return <Chip label={params.row.status} sx={{ bgcolor: 'green', color: color }} />;
   };
 
-  const renderType = (params: GridValueGetterParams) => {
+  const renderType = (params: GridRenderCellParams) => {
     let color = '#FF0000';
     if (params.row.requestType === 'ACCESS') {
       color = '#00FF00';
@@ -220,7 +219,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const handleRowSelection = (ids) => {
     setSelectedUserIds(ids);
-    const selectedUsers = [];
+    const selectedUsers: any[] = [];
     for (let i = 0; i < ids.length; i++) {
       const user = users.find((u) => u.user_id === ids[i]);
       if (user) {
@@ -232,7 +231,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const handleAccessRequestRowSelection = (ids) => {
     // Get user details from ids
-    const requests = [];
+    const requests: any[] = [];
     for (let i = 0; i < ids.length; i++) {
       const user = accessRequests.find((u) => u.access_request_id === ids[i]);
       if (user) {
@@ -327,20 +326,20 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       headerName: 'Role(s)',
       width: 358
     },
-    { field: 'accountStatus', headerName: 'Account Status', width: 200, hide: true },
-    { field: 'activationStatus', headerName: 'Activation Status', width: 200, hide: true },
-    { field: 'bceidUserId', headerName: 'BCEID User ID', width: 200, hide: true },
-    { field: 'idirUserId', headerName: 'IDIR User ID', width: 200, hide: true },
-    { field: 'preferredUsername', headerName: 'Preferred Username', width: 200, hide: true },
-    { field: 'createdAt', headerName: 'Created At', width: 200, hide: true },
-    { field: 'idirAccountName', headerName: 'IDIR Account Name', width: 200, hide: true },
-    { field: 'bceidAccountName', headerName: 'BCEID Account Name', width: 200, hide: true },
-    { field: 'workPhoneNumber', headerName: 'Work Phone Number', width: 200, hide: true },
-    { field: 'fundingAgencies', headerName: 'Funding Agencies', width: 200, hide: true },
-    { field: 'employer', headerName: 'Employer', width: 200, hide: true },
-    { field: 'pacNumber', headerName: 'PAC Number', width: 200, hide: true },
-    { field: 'pacServiceNumber1', headerName: 'PAC Service Number 1', width: 200, hide: true },
-    { field: 'pacServiceNumber2', headerName: 'PAC Service Number 2', width: 200, hide: true },
+    { field: 'accountStatus', headerName: 'Account Status', width: 200, hideable: true },
+    { field: 'activationStatus', headerName: 'Activation Status', width: 200, hideable: true },
+    { field: 'bceidUserId', headerName: 'BCEID User ID', width: 200, hideable: true },
+    { field: 'idirUserId', headerName: 'IDIR User ID', width: 200, hideable: true },
+    { field: 'preferredUsername', headerName: 'Preferred Username', width: 200, hideable: true },
+    { field: 'createdAt', headerName: 'Created At', width: 200, hideable: true },
+    { field: 'idirAccountName', headerName: 'IDIR Account Name', width: 200, hideable: true },
+    { field: 'bceidAccountName', headerName: 'BCEID Account Name', width: 200, hideable: true },
+    { field: 'workPhoneNumber', headerName: 'Work Phone Number', width: 200, hideable: true },
+    { field: 'fundingAgencies', headerName: 'Funding Agencies', width: 200, hideable: true },
+    { field: 'employer', headerName: 'Employer', width: 200, hideable: true },
+    { field: 'pacNumber', headerName: 'PAC Number', width: 200, hideable: true },
+    { field: 'pacServiceNumber1', headerName: 'PAC Service Number 1', width: 200, hideable: true },
+    { field: 'pacServiceNumber2', headerName: 'PAC Service Number 2', width: 200, hideable: true },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -413,13 +412,13 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setUsersTableLoading(true);
     setRequestTableLoading(true);
     api.getApplicationUsers().then(async (res) => {
-      await setUsers(res);
+      setUsers(res);
       await getRows(res);
       setUsersTableLoading(false);
     });
 
     api.getAccessRequests().then(async (res) => {
-      await setAccessRequests(res);
+      setAccessRequests(res);
       await getRequestRows(res);
       setRequestTableLoading(false);
     });
@@ -549,7 +548,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const revokeRole = () => {
-    api.revokeRoleFromUser(selectedUserIds[0], selectedRole).then((res) => {
+    api.revokeRoleFromUser(selectedUserIds[0], selectedRole).then(() => {
       setRoleDialogOpen(false);
       loadUsers();
       setSelectedRole('');
@@ -558,7 +557,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const approveUsers = () => {
     // TODO: Handle multiple types of requests
-    api.approveAccessRequests(selectedRequestUsers).then((response) => {
+    api.approveAccessRequests(selectedRequestUsers).then(() => {
       closeApproveDeclineDialog();
       loadUsers();
     });
@@ -617,8 +616,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 <div style={{ height: 440, width: '100%' }}>
                   <DataGrid
                     loading={usersTableLoading}
-                    components={{ Toolbar: QuickSearchToolbar, NoRowsOverlay: CustomNoRowsOverlay }}
-                    componentsProps={{
+                    slots={{ toolbar: QuickSearchToolbar, noRowsOverlay: CustomNoRowsOverlay }}
+                    slotProps={{
                       toolbar: {
                         value: searchText,
                         onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -683,15 +682,14 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                 <div style={{ height: 370, width: '100%' }}>
                   <DataGrid
                     loading={requestTableLoading}
-                    components={{
-                      NoRowsOverlay: CustomNoRowsOverlay
+                    slots={{
+                      noRowsOverlay: CustomNoRowsOverlay
                     }}
                     onRowSelectionModelChange={handleAccessRequestRowSelection}
                     rows={requestRows}
                     columns={requestColumns}
-                    pageSize={5}
+                    pageSizeOptions={[5]}
                     sortModel={[{ field: 'id', sort: 'desc' }]}
-                    rowsPerPageOptions={[5]}
                     checkboxSelection
                     onCellClick={handleRowClick}
                     onRowClick={handleRowClick}

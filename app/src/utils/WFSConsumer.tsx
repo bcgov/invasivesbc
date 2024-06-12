@@ -4,6 +4,7 @@ import reproject from 'reproject';
 import encode from 'urlencode';
 import { getSimplifiedGeoJSON } from 'hooks/useInvasivesApi';
 import { stringify } from 'wkt';
+import { GeoJSON } from 'geojson';
 
 const getHTTP = async (url) => {
   try {
@@ -92,7 +93,7 @@ export const getDataFromDataBC: any = async (
 
   const returnVal = resp;
   // console.log('***features converted: ' + returnVal.length);
-  if (!pageSize && !startIndex) {
+  if (!pageSize || !startIndex) {
     return returnVal;
   } else {
     const subsequentFetches = async (beginningIndex: number) => {
@@ -118,7 +119,7 @@ export const getDataFromDataBC: any = async (
 
 export function* getDataFromDataBCv2(
   layerName: string,
-  geoJSON: Object,
+  geoJSON: GeoJSON,
   dataBCAcceptsGeometry: boolean,
   pageSize?: number,
   startIndex?: number
@@ -131,7 +132,7 @@ export function* getDataFromDataBCv2(
 
   const returnVal = resp;
   // console.log('***features converted: ' + returnVal.length);
-  if (!pageSize && !startIndex) {
+  if (!pageSize || !startIndex) {
     return returnVal;
   } else {
     const subsequentFetches = async (beginningIndex: number) => {

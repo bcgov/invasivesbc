@@ -5,20 +5,26 @@ import {
   EMAIL_SETTINGS_UPDATE_SUCCESS
 } from 'state/actions';
 
-interface EmailSettings {
-  message: string;
-  emailSettings: {
-    enabled: boolean;
-    id: number;
-    authenticationURL: string;
-    emailServiceURL: string;
-    clientId: string;
-    clientSecret: string;
-  };
+export interface EmailSettingsType {
+  enabled: boolean;
+  id: number | null;
+  authenticationURL: string | null;
+  emailServiceURL: string | null;
+  clientId: string | null;
+  clientSecret: string | null;
+}
+
+interface EmailSettingsState {
+  message: string | null;
+  emailSettings: EmailSettingsType | null;
+  working: boolean;
+  error: boolean;
 }
 
 function createEmailSettingsReducer() {
-  const initialState: EmailSettings = {
+  const initialState: EmailSettingsState = {
+    working: false,
+    error: false,
     message: null,
     emailSettings: {
       enabled: false,
@@ -68,6 +74,6 @@ function createEmailSettingsReducer() {
   };
 }
 
-const selectEmailSettings: (state) => EmailSettings = (state) => state.EmailSettings;
+const selectEmailSettings: (state) => EmailSettingsState = (state) => state.EmailSettings;
 
 export { selectEmailSettings, createEmailSettingsReducer };

@@ -7,8 +7,8 @@ import { TRAINING_VIDEOS_LIST_REQUEST } from 'state/actions';
 import 'UI/Styles/training.scss';
 
 const TrainingPage = () => {
-  const working = useSelector((state: any) => state.TrainingVideos?.working);
-  const videos = useSelector((state: any) => state.TrainingVideos?.list);
+  const working = useSelector((state) => state.TrainingVideos.working);
+  const videos = useSelector((state) => state.TrainingVideos.list);
   const dispatch = useDispatch();
 
   useEffect(() => {

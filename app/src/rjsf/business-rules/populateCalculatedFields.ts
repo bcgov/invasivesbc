@@ -433,7 +433,7 @@ export const autofillBiocontrolCollectionTotalQuantity = (formData: any) => {
     if (!currentForm) {
       return formData;
     } else {
-      const newArray = [];
+      const newArray: any[] = [];
       currentForm.forEach((bioCollection) => {
         let totalActual = 0;
         let totalEstimated = 0;

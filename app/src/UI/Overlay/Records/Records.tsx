@@ -14,7 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import CheckIcon from '@mui/icons-material/Check';
 
 import { Button, Tooltip, Typography } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Route } from 'react-router';
 import {
   INIT_CACHE_RECORDSET,
@@ -27,25 +27,26 @@ import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
 import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
+import { useSelector } from 'utils/use_selector';
 
 export const Records = () => {
-  const MapMode = useSelector((state: any) => state.Map?.MapMode);
+  const MapMode = useSelector((state) => state.Map.MapMode);
   // this version of layer 'highlighting' uses a usestate variable, but should be turned into a redux state variable
   // before getting the map layers to interact with the list item on hover.
-  const recordSets = useSelector((state: any) => state.UserSettings?.recordSets);
-  const CONFIGURATION_IS_MOBILE = useSelector((state: any) => state.Configuration?.current?.MOBILE);
+  const recordSets = useSelector((state) => state.UserSettings.recordSets);
+  const CONFIGURATION_IS_MOBILE = useSelector((state) => state.Configuration.current.MOBILE);
 
-  const mapLayers = useSelector((state: any) => state.Map.layers);
+  const mapLayers = useSelector((state) => state.Map.layers);
 
   const [isActivitiesGeoJSONLoaded, setActivitiesGeoJSONLoaded] = useState(false);
 
-  const activitiesGeoJSONState = useSelector((state: any) => state.Map?.activitiesGeoJSONDict);
+  const activitiesGeoJSONState = useSelector((state) => state.Map.activitiesGeoJSONDict);
 
   useEffect(() => {
-    setActivitiesGeoJSONLoaded(activitiesGeoJSONState.hasOwnProperty('s3'));
+    setActivitiesGeoJSONLoaded(Object.hasOwn(activitiesGeoJSONState, 's3'));
   }, [activitiesGeoJSONState]);
 
-  const isIAPPGeoJSONLoaded = useSelector((state: any) => state.Map?.IAPPGeoJSONDict !== undefined);
+  const isIAPPGeoJSONLoaded = useSelector((state) => state.Map.IAPPGeoJSONDict !== null);
 
   const [loadMap, setLoadMap] = React.useState({});
 

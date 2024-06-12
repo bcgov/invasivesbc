@@ -16,7 +16,13 @@ const TemplatePreview = ({ name, id }) => {
   const { templateDetail } = useSelector(selectBatch);
   const { darkTheme } = useSelector(selectUserSettings);
 
-  const [detail, setDetail] = useState(null);
+  const [detail, setDetail] = useState<{
+    columns: {
+      name: string;
+      dataType: string;
+      required: boolean;
+    }[];
+  } | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [expanded, setExpanded] = useState(false);
@@ -42,7 +48,7 @@ const TemplatePreview = ({ name, id }) => {
   }, [templateDetail]);
 
   const downloadTemplate = (key: string) => {
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
       dispatch(
         BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST({
           key: id,
@@ -148,14 +154,15 @@ const TemplatePreview = ({ name, id }) => {
             </tr>
           </thead>
           <tbody>
-            {detail.columns.map((c) => (
-              <tr key={`template-${c.name}`}>
-                <td>{c.name}</td>
-                <td>{c.dataType}</td>
-                <td>{c.required ? 'Yes' : ''}</td>
-                <td>{renderAcceptableValues(c)}</td>
-              </tr>
-            ))}
+            {detail &&
+              detail.columns.map((c) => (
+                <tr key={`template-${c.name}`}>
+                  <td>{c.name}</td>
+                  <td>{c.dataType}</td>
+                  <td>{c.required ? 'Yes' : ''}</td>
+                  <td>{renderAcceptableValues(c)}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>

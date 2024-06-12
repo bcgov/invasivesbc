@@ -1,8 +1,15 @@
-import { cleanupOutdatedCaches, precacheAndRoute } from 'workbox-precaching';
+import { cleanupOutdatedCaches, precacheAndRoute, PrecacheEntry } from 'workbox-precaching';
 import { registerRoute, Route } from 'workbox-routing';
 import { NetworkFirst } from 'workbox-strategies';
 import { ExpirationPlugin } from 'workbox-expiration';
 import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+
+declare global {
+  interface Window {
+    __WB_DISABLE_DEV_LOGS: boolean;
+    __WB_MANIFEST: (PrecacheEntry | string)[];
+  }
+}
 
 self.__WB_DISABLE_DEV_LOGS = true;
 
@@ -12,7 +19,7 @@ cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
 const apiDocs = new Route(
-  ({ request, sameOrigin }) => {
+  ({ request }) => {
     return request.url.includes(`/api/api-docs`);
   },
   new NetworkFirst({

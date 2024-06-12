@@ -65,8 +65,7 @@ function* refreshRoles() {
       AUTH_REFRESH_ROLES_COMPLETE({
         all_roles: rolesData.result,
         roles: userData.result.roles,
-        extendedInfo: userData.result.extendedInfo,
-        v2BetaAccess: userData.result.v2BetaAccess
+        extendedInfo: userData.result.extendedInfo
       })
     );
 

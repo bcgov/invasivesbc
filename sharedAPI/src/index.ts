@@ -144,7 +144,7 @@ export function generateDBActivityPayload(
 ) {
   const id = uuidv4();
   const time = moment(new Date()).format();
-  const short_id: string | undefined = getShortActivityID({
+  const short_id: string | null = getShortActivityID({
     activity_subtype: activitySubtype,
     activity_id: id,
     date_created: time
@@ -229,7 +229,7 @@ export function generateDBActivityPayload(
 
 export const getShortActivityID = (activity) => {
   if (!activity?.activity_subtype || !activity?.activity_id || !(activity?.date_created || activity.created_timestamp))
-    return;
+    return null;
   const shortYear = moment(activity.date_created || activity.created_timestamp)
     .format()
     .substr(2, 2);

@@ -53,7 +53,6 @@ import {
   REMOVE_CLIENT_BOUNDARY,
   SET_CURRENT_OPEN_SET,
   SET_TOO_MANY_LABELS_DIALOG,
-  TOGGLE_BASIC_PICKER_LAYER,
   TOGGLE_CUSTOMIZE_LAYERS,
   TOGGLE_DRAWN_LAYER,
   TOGGLE_KML_LAYER,
@@ -222,7 +221,7 @@ export interface MapState {
   activity_zoom: number;
   baseMapToggle: boolean;
   clientBoundaries: any[];
-  currentOpenSet: string;
+  currentOpenSet: string | null;
   customizeLayersToggle: boolean;
   drawingCustomLayer: boolean;
   error: boolean;
@@ -230,18 +229,18 @@ export interface MapState {
   labelBoundsPolygon: any;
   layers: any[];
   legendsPopup: any;
-  linkToCSV: string;
+  linkToCSV: string | null;
   map_center: [number, number];
   map_zoom: number;
   panned: boolean;
   positionTracking: boolean;
   track_me_draw_geo: boolean;
   quickPanToRecord: boolean;
-  recordSetForCSV: number;
+  recordSetForCSV: number | null;
   recordTables: object;
   serverBoundaries: any[];
   simplePickerLayers2: any[];
-  simplePickerLayers: object;
+  simplePickerLayers: object | null;
   tooManyLabelsDialog: any;
   userCoords: any;
   userHeading: number;
@@ -293,7 +292,7 @@ export interface MapState {
     serverIAPPIDs: any[];
   };
 
-  workingLayerName: string;
+  workingLayerName: string | null;
   layerPickerOpen: boolean;
   //
   //   constructor()
@@ -409,7 +408,7 @@ const initialState: MapState = {
   recordTables: {},
 
   serverBoundaries: [],
-  simplePickerLayers: undefined,
+  simplePickerLayers: null,
   simplePickerLayers2: DEFAULT_LOCAL_LAYERS,
   tooManyLabelsDialog: null,
 
@@ -520,7 +519,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       if (MAP_TOGGLE_GEOJSON_CACHE.match(action)) {
         draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
       }
-      if (WHATS_HERE_ID_CLICKED.match(action))
+      if (WHATS_HERE_ID_CLICKED.match(action)) {
         if (action.payload.type === 'Activity') {
           draftState.whatsHere.clickedActivity = action.payload.id;
           draftState.whatsHere.clickedActivityDescription = action.payload.description;
@@ -528,6 +527,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.whatsHere.clickedIAPP = action.payload.id;
           draftState.whatsHere.clickedIAPPDescription = action.payload.description;
         }
+      }
       if (ACTIVITIES_TABLE_ROWS_GET_REQUEST.match(action) || IAPP_TABLE_ROWS_GET_REQUEST.match(action)) {
         if (!draftState.recordTables?.[action.payload.recordSetID]) {
           draftState.recordTables[action.payload.recordSetID] = {};
@@ -612,15 +612,18 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           GeoJSONFilterSetForLayer(draftState, state, 'Activity', action.payload.recordSetID, action.payload.IDList);
         }
       }
-      if (MAP_MODE_SET.match(action)) draftState.MapMode = action.payload;
-      switch (action.payload) {
-        case 'VECTOR_ENDPOINT':
-          draftState.activitiesGeoJSONDict = {};
-          draftState.IAPPGeoJSONDict = {};
-          draftState.layers = draftState.layers.map((layer) => {
-            delete layer.geoJSON;
-            return layer;
-          });
+      if (MAP_MODE_SET.match(action)) {
+        draftState.MapMode = action.payload;
+
+        switch (action.payload) {
+          case 'VECTOR_ENDPOINT':
+            draftState.activitiesGeoJSONDict = {};
+            draftState.IAPPGeoJSONDict = {};
+            draftState.layers = draftState.layers.map((layer) => {
+              delete layer.geoJSON;
+              return layer;
+            });
+        }
       }
       if (FILTERS_PREPPED_FOR_VECTOR_ENDPOINT.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
@@ -752,7 +755,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
       if (INIT_SERVER_BOUNDARIES_GET.match(action)) {
         const withLocalToggles = action.payload.data?.map((incomingItem) => {
-          const returnVal = { ...incomingItem };
+          const returnVal = { toggle: false, ...incomingItem };
           const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
             oldItem.id === incomingItem;
           })?.toggle;
@@ -828,7 +831,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.labelBoundsPolygon = action.payload.bounds;
       }
       if (MAP_SET_COORDS.match(action)) {
-        const userCoords = { ...action?.payload?.position?.coords };
+        const userCoords = { ...action.payload.position.coords };
         draftState.userCoords = {
           lat: userCoords.latitude,
           long: userCoords.longitude,
@@ -977,7 +980,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.recordSetForCSV = action.payload.id;
       }
       if (REMOVE_CLIENT_BOUNDARY.match(action)) {
-        const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload.id);
+        const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload);
         draftState.clientBoundaries.splice(index, 1);
       }
       if (SET_CURRENT_OPEN_SET.match(action)) {
@@ -985,17 +988,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       }
       if (SET_TOO_MANY_LABELS_DIALOG.match(action)) {
         draftState.tooManyLabelsDialog = action.payload.dialog;
-      }
-      if (TOGGLE_BASIC_PICKER_LAYER.match(action)) {
-        for (const layerNameProperty in action.payload) {
-          //if exists, toggle
-          if (state.simplePickerLayers[layerNameProperty]) {
-            draftState.simplePickerLayers[layerNameProperty] = !state.simplePickerLayers[layerNameProperty];
-          } else {
-            // doesn't exist, getting turned on
-            draftState.simplePickerLayers[layerNameProperty] = true;
-          }
-        }
       }
       if (TOGGLE_CUSTOMIZE_LAYERS.match(action)) {
         draftState.customizeLayersToggle = !draftState.customizeLayersToggle;

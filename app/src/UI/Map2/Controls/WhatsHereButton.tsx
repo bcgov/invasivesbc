@@ -15,7 +15,7 @@ export const WhatsHereButton = (props) => {
   const whatsHere = useSelector((state: any) => state.Map.whatsHere);
   const [show, setShow] = React.useState(false);
 
-  const divRef = useRef();
+  const divRef = useRef(null);
 
   if (whatsHere) {
     return (
@@ -33,7 +33,7 @@ export const WhatsHereButton = (props) => {
               className={'button'}
               onClick={() => {
                 if ((whatsHere as any)?.toggle == false) {
-                  dispatch(MAP_TOGGLE_WHATS_HERE());
+                  dispatch(MAP_TOGGLE_WHATS_HERE(true));
                 } else {
                   history.goBack();
                 }

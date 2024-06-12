@@ -36,7 +36,7 @@ export const OfflineDataSyncTable = () => {
                 <td>
                   <Button
                     onClick={() => {
-                      dispatch(ACTIVITY_GET_LOCALDB_REQUEST({ activityID: key }));
+                      dispatch(ACTIVITY_GET_LOCALDB_REQUEST(key));
                     }}
                   >
                     <FileOpen></FileOpen>
@@ -49,7 +49,7 @@ export const OfflineDataSyncTable = () => {
                   <Button>
                     <Delete
                       onClick={() => {
-                        dispatch(ACTIVITY_OFFLINE_DELETE_ITEM({ id: key }));
+                        dispatch(ACTIVITY_OFFLINE_DELETE_ITEM(key));
                       }}
                     />
                   </Button>

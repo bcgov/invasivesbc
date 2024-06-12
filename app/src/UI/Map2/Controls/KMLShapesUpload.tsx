@@ -13,11 +13,16 @@ export interface IShapeUploadRequest {
 }
 
 export const KMLShapesUpload: React.FC<any> = (props) => {
-  const [uploadRequests, setUploadRequests] = useState([]);
-  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [uploadRequests, setUploadRequests] = useState<
+    {
+      type: string;
+      data: string;
+      title: string;
+      status: string;
+    }[]
+  >([]);
   const api = useInvasivesApi();
   const [resultMessage, setResultMessage] = useState('');
-  const [uploadClicked, setUploadClicked] = useState(false);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -45,7 +50,6 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         });
       }
       setResultMessage('Files uploaded successfully');
-      setUploadClicked(false);
       setTimeout(() => {
         setResultMessage('');
         if (props?.callback) props.callback();
@@ -53,7 +57,6 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
     } catch (err) {
       setUploadRequests([]);
       setResultMessage('There was an error: ' + err);
-      setUploadClicked(false);
       setTimeout(() => {
         setResultMessage('');
       }, 2000);
@@ -71,8 +74,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
       let status: string;
       const defaultTitle = props.title.length > 0 ? props.title : file.name.split('.')[0];
 
-      let fileType: string;
-      fileType = file.name.split('.').pop();
+      const fileType: string = file.name.split('.').pop() || 'unknown';
 
       const reader = new FileReader();
 
@@ -105,7 +107,6 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
         filesLimit={1}
         cancelButtonText={'cancel'}
         onClose={() => {
-          setDialogOpen(false);
           props.whenDone();
         }}
         submitButtonText={'Upload to InvasivesBC'}

@@ -48,9 +48,13 @@ export function* handle_ACTIVITY_CREATE_LOCAL(action) {
 }
 
 export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
+  if (!ACTIVITY_GET_LOCALDB_REQUEST.match(action)) {
+    return;
+  }
+
   const connected = yield select(selectNetworkConnected);
   const { serializedActivities } = yield select(selectOfflineActivity);
-  const { activityID } = action.payload;
+  const activityID = action.payload;
 
   const found = serializedActivities[activityID];
 
@@ -62,10 +66,10 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
 
     if (connected) {
       try {
-        const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
+        const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
 
         if (!(networkReturn.status === 200)) {
-          yield put(ACTIVITY_GET_FAILURE({ failNetworkObj: networkReturn }));
+          yield put(ACTIVITY_GET_FAILURE({ reason: JSON.stringify(networkReturn) }));
           return;
         }
 
@@ -81,11 +85,11 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
         yield put(ACTIVITY_GET_SUCCESS({ activity: datav2 }));
         return;
       } catch (e) {
-        yield put(ACTIVITY_GET_FAILURE());
+        yield put(ACTIVITY_GET_FAILURE({ reason: 'unknown' }));
         return;
       }
     } else {
-      yield put(ACTIVITY_GET_FAILURE());
+      yield put(ACTIVITY_GET_FAILURE({ reason: 'unknown' }));
       return;
     }
   }
@@ -94,7 +98,7 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
-    (s) => s.hasOwnProperty('sync_state') && (s as OfflineActivityRecord).sync_state !== 'SYNCHRONIZED'
+    (s) => Object.hasOwn(s, 'sync_state') && (s as OfflineActivityRecord).sync_state !== 'SYNCHRONIZED'
   ) as OfflineActivityRecord[];
 
   for (const activity of toSync) {

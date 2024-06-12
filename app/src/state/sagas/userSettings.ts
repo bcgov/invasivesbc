@@ -61,10 +61,10 @@ function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST() {
 function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
   try {
     const userSettings = yield select(selectUserSettings);
-    const sets = userSettings?.recordSets;
+    const sets = userSettings.recordSets;
     const current = sets[action.payload.setName];
 
-    const boundary = JSON.parse(action.payload?.boundary);
+    const boundary = JSON.parse(action.payload.boundary);
     const patchedBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
     current.searchBoundary = patchedBoundary;
 
@@ -165,7 +165,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST() {
       recordSets: {
         ...defaultRecordSet,
         ...recordSets
-      }
+      },
+      recordsExpanded: false
     })
   );
 }

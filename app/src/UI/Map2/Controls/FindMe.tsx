@@ -17,7 +17,7 @@ export const FindMeToggle = (props) => {
    * @returns {void}
    */
   const [show, setShow] = React.useState(false);
-  const divRef = useRef();
+  const divRef = useRef(null);
 
   // this is to stop user from clicking it again while things are happening
   return (

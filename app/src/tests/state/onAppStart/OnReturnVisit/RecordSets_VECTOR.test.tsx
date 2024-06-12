@@ -4,7 +4,7 @@ import { waitFor } from '@testing-library/react';
 import { AUTH_INITIALIZE_COMPLETE, MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
 import { server } from 'mocks/server';
 
-describe('Can load initial record set state on startup (return visit)', function () {
+describe('Can load initial record set state on startup (return visit)', async function () {
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterAll(() => server.close());
   afterEach(() => server.resetHandlers());

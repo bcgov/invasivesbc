@@ -68,7 +68,7 @@ function* initializeAuthentication() {
 
   yield put(
     AUTH_INITIALIZE_COMPLETE({
-      idToken: null
+      authenticated: false
     })
   );
 }

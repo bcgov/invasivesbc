@@ -1,47 +1,66 @@
 import { createAction } from '@reduxjs/toolkit';
 import { appModeEnum } from 'state/reducers/appMode';
+import { Feature, GeoJSON } from 'geojson';
+import { RJSFValidationError } from '@rjsf/utils';
+import { RecordSetType } from 'state/reducers/userSettings';
+import { EmailSettingsType } from 'state/reducers/emailSettings';
+import { OfflineSyncStateType } from 'state/reducers/offlineActivity';
+import { TrainingVideoMetadata } from 'state/reducers/training_videos';
+import { AuthExtendedInfoType } from 'state/reducers/auth';
 
 export const SET_APP_MODE = createAction<{ mode: appModeEnum }>('SET_APP_MODE');
-//@todo needs a toggle and a set variant
-export const TOGGLE_PANEL = createAction<{ panelOpen?: boolean; fullScreen?: boolean }>('TOGGLE_PANEL');
+export const TOGGLE_PANEL = createAction<{ panelOpen: boolean; fullScreen: boolean }>('TOGGLE_PANEL');
+export const TOGGLE_PANEL_OFF = createAction('TOGGLE_PANEL_OFF');
+export const TOGGLE_PANEL_ON = createAction('TOGGLE_PANEL_ON');
 
 export const OVERLAY_MENU_TOGGLE = createAction('OVERLAY_MENU_TOGGLE');
 export const URL_CHANGE = createAction<{ url: string }>('URL_CHANGE');
 export const SET_CURRENT_OPEN_SET = createAction<{ set: string }>('SET_CURRENT_OPEN_SET');
 
 export const USER_CLICKED_RECORD = createAction<{ recordType: string; id: string; row: any }>('USER_CLICKED_RECORD');
-export const USER_HOVERED_RECORD = createAction('USER_HOVERED_RECORD');
-export const USER_TOUCHED_RECORD = createAction('USER_TOUCHED_RECORD');
+export const USER_HOVERED_RECORD = createAction<{ recordType: string; id: string; row: any }>('USER_HOVERED_RECORD');
+export const USER_TOUCHED_RECORD = createAction<{ recordType: string; id: string; row: any }>('USER_TOUCHED_RECORD');
 export const RECORDSETS_TOGGLE_VIEW_FILTER = createAction('RECORDSETS_TOGGLE_VIEW_FILTER');
 
-export const INIT_CACHE_RECORDSET = createAction('INIT_CACHE_RECORDSET');
+export const INIT_CACHE_RECORDSET = createAction<{ setID: string }>('INIT_CACHE_RECORDSET');
 
-export const AUTH_REQUEST_COMPLETE = createAction('AUTH_REQUEST_COMPLETE');
+export const AUTH_REQUEST_COMPLETE = createAction<{ idToken: string }>('AUTH_REQUEST_COMPLETE');
 export const AUTH_REQUEST_ERROR = createAction('AUTH_REQUEST_ERROR');
 export const AUTH_INITIALIZE_REQUEST = createAction('AUTH_INITIALIZE_REQUEST');
-export const AUTH_INITIALIZE_COMPLETE = createAction('AUTH_INITIALIZE_COMPLETE');
+export const AUTH_INITIALIZE_COMPLETE = createAction<{
+  authenticated: boolean;
+  idToken?: string | null;
+}>('AUTH_INITIALIZE_COMPLETE');
 export const AUTH_REINIT = createAction('AUTH_REINIT');
 export const AUTH_SIGNIN_REQUEST = createAction('AUTH_SIGNIN_REQUEST');
 export const AUTH_SIGNOUT_REQUEST = createAction('AUTH_SIGNOUT_REQUEST');
 export const AUTH_SIGNOUT_COMPLETE = createAction('AUTH_SIGNOUT_COMPLETE');
 export const AUTH_REFRESH_TOKEN = createAction('AUTH_REFRESH_TOKEN');
-export const AUTH_UPDATE_TOKEN_STATE = createAction('AUTH_UPDATE_TOKEN_STATE');
+export const AUTH_UPDATE_TOKEN_STATE = createAction<{ idToken: string }>('AUTH_UPDATE_TOKEN_STATE');
 export const AUTH_REFRESH_ROLES_REQUEST = createAction('AUTH_REFRESH_ROLES_REQUEST');
 export const AUTH_SET_DISRUPTED = createAction('AUTH_SET_DISRUPTED');
 export const AUTH_SET_RECOVERED_FROM_DISRUPTION = createAction('AUTH_SET_RECOVERED_FROM_DISRUPTION');
 export const AUTH_CLEAR_ROLES = createAction('AUTH_CLEAR_ROLES');
 export const AUTH_REFRESH_ROLES_ERROR = createAction('AUTH_REFRESH_ROLES_ERROR');
-export const AUTH_REFRESH_ROLES_COMPLETE = createAction('AUTH_REFRESH_ROLES_COMPLETE');
+export const AUTH_REFRESH_ROLES_COMPLETE = createAction<{
+  all_roles;
+  roles;
+  extendedInfo: AuthExtendedInfoType;
+}>('AUTH_REFRESH_ROLES_COMPLETE');
 export const AUTH_SAVE_CURRENT_TO_OFFLINE = createAction('AUTH_SAVE_CURRENT_TO_OFFLINE');
-export const AUTH_MAKE_OFFLINE_USER_CURRENT = createAction('AUTH_MAKE_OFFLINE_USER_CURRENT');
-export const AUTH_FORGET_OFFLINE_USER = createAction('AUTH_FORGET_OFFLINE_USER');
-export const AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG = createAction('AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG');
+export const AUTH_MAKE_OFFLINE_USER_CURRENT = createAction<{ displayName: string }>('AUTH_MAKE_OFFLINE_USER_CURRENT');
+export const AUTH_FORGET_OFFLINE_USER = createAction<{ displayName: string }>('AUTH_FORGET_OFFLINE_USER');
+export const AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG = createAction<boolean>('AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG');
 
 export const REFETCH_SERVER_BOUNDARIES = createAction('REFETCH_SERVER_BOUNDARIES');
 
 export const OPEN_NEW_RECORD_MENU = createAction('OPEN_NEW_RECORD_MENU');
 export const CLOSE_NEW_RECORD_MENU = createAction('CLOSE_NEW_RECORD_MENU');
-export const USERINFO_LOAD_COMPLETE = createAction('USERINFO_LOAD_COMPLETE');
+export const USERINFO_LOAD_COMPLETE = createAction<{
+  userInfo: {
+    activation_status: number;
+  };
+}>('USERINFO_LOAD_COMPLETE');
 export const USERINFO_CLEAR_REQUEST = createAction('USERINFO_CLEAR_REQUEST');
 export const TOGGLE_QUICK_PAN_TO_RECORD = createAction('TOGGLE_QUICK_PAN_TO_RECORD');
 
@@ -52,15 +71,22 @@ export const ACTIVITY_GET_INITIAL_STATE_REQUEST = createAction('ACTIVITY_GET_INI
 export const ACTIVITY_GET_INITIAL_STATE_SUCCESS = createAction('ACTIVITY_GET_INITIAL_STATE_SUCCESS');
 export const ACTIVITY_GET_INITIAL_STATE_FAILURE = createAction('ACTIVITY_GET_INITIAL_STATE_FAILURE');
 
-export const ACTIVITY_GET_REQUEST = createAction('ACTIVITY_GET_REQUEST');
-export const ACTIVITY_GET_NETWORK_REQUEST = createAction('ACTIVITY_GET_NETWORK_REQUEST');
-export const ACTIVITY_GET_LOCALDB_REQUEST = createAction('ACTIVITY_GET_LOCALDB_REQUEST');
-export const ACTIVITY_GET_SUCCESS = createAction('ACTIVITY_GET_SUCCESS');
-export const ACTIVITY_GET_FAILURE = createAction('ACTIVITY_GET_FAILURE');
+export const ACTIVITY_GET_REQUEST = createAction<string>('ACTIVITY_GET_REQUEST');
+export const ACTIVITY_GET_NETWORK_REQUEST = createAction<string>('ACTIVITY_GET_NETWORK_REQUEST');
+export const ACTIVITY_GET_LOCALDB_REQUEST = createAction<string>('ACTIVITY_GET_LOCALDB_REQUEST');
+export const ACTIVITY_GET_SUCCESS = createAction<{ activity: any }>('ACTIVITY_GET_SUCCESS');
+export const ACTIVITY_GET_FAILURE = createAction<{ reason: string }>('ACTIVITY_GET_FAILURE');
 export const MAP_TOGGLE_TRACK_ME_DRAW_GEO = createAction('MAP_TOGGLE_TRACK_ME_DRAW_GEO');
 
-export const ACTIVITY_UPDATE_GEO_REQUEST = createAction('ACTIVITY_UPDATE_GEO_REQUEST');
-export const ACTIVITY_UPDATE_GEO_SUCCESS = createAction('ACTIVITY_UPDATE_GEO_SUCCESS');
+export const ACTIVITY_UPDATE_GEO_REQUEST = createAction<{ geometry: GeoJSON[] }>('ACTIVITY_UPDATE_GEO_REQUEST');
+export const ACTIVITY_UPDATE_GEO_SUCCESS = createAction<{
+  lat: number;
+  long: number;
+  utm: number[];
+  geometry: GeoJSON;
+  reported_area: number | null;
+  Well_Information: any | null;
+}>('ACTIVITY_UPDATE_GEO_SUCCESS');
 export const ACTIVITY_UPDATE_GEO_FAILURE = createAction('ACTIVITY_UPDATE_GEO_FAILURE');
 
 export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST = createAction(
@@ -72,7 +98,7 @@ export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE = createAction(
 export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_OFFLINE = createAction(
   'ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_OFFLINE'
 );
-export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS = createAction(
+export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS = createAction<{ jurisdictions: unknown[] }>(
   'ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS'
 );
 
@@ -83,7 +109,9 @@ export const ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE = createAction(
 export const ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_OFFLINE = createAction(
   'ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_OFFLINE'
 );
-export const ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS = createAction('ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS');
+export const ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS = createAction<{
+  suggestedPersons: unknown[];
+}>('ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS');
 
 export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST = createAction(
   'ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST'
@@ -94,19 +122,30 @@ export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE = createAction(
 export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_OFFLINE = createAction(
   'ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_OFFLINE'
 );
-export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS = createAction(
+export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS = createAction<{ suggestedTreatmentIDs: unknown[] }>(
   'ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS'
 );
 
 export const ACTIVITY_ON_FORM_CHANGE_REQUEST = createAction('ACTIVITY_ON_FORM_CHANGE_REQUEST');
-export const ACTIVITY_ON_FORM_CHANGE_SUCCESS = createAction('ACTIVITY_ON_FORM_CHANGE_SUCCESS');
 
-export const ACTIVITY_SET_UNSAVED_NOTIFICATION = createAction('ACTIVITY_SET_UNSAVED_NOTIFICATION');
+export const ACTIVITY_ON_FORM_CHANGE_SUCCESS = createAction<{
+  activity: {
+    form_data: object;
+    species_positive: object;
+    species_negative: object;
+    species_treated: object;
+    jurisdiction: object;
+  };
+}>('ACTIVITY_ON_FORM_CHANGE_SUCCESS');
+
+export const ACTIVITY_SET_UNSAVED_NOTIFICATION = createAction<{
+  unsaved_notification: any;
+}>('ACTIVITY_SET_UNSAVED_NOTIFICATION');
 export const ACTIVITY_SET_CURRENT_HASH_REQUEST = createAction('ACTIVITY_SET_CURRENT_HASH_REQUEST');
-export const ACTIVITY_SET_CURRENT_HASH_SUCCESS = createAction('ACTIVITY_SET_CURRENT_HASH_SUCCESS');
+export const ACTIVITY_SET_CURRENT_HASH_SUCCESS = createAction<string>('ACTIVITY_SET_CURRENT_HASH_SUCCESS');
 export const ACTIVITY_SET_CURRENT_HASH_FAILURE = createAction('ACTIVITY_SET_CURRENT_HASH_FAILURE');
 export const ACTIVITY_SET_SAVED_HASH_REQUEST = createAction('ACTIVITY_SET_SAVED_HASH_REQUEST');
-export const ACTIVITY_SET_SAVED_HASH_SUCCESS = createAction('ACTIVITY_SET_SAVED_HASH_SUCCESS');
+export const ACTIVITY_SET_SAVED_HASH_SUCCESS = createAction<string>('ACTIVITY_SET_SAVED_HASH_SUCCESS');
 export const ACTIVITY_SET_SAVED_HASH_FAILURE = createAction('ACTIVITY_SET_SAVED_HASH_FAILURE');
 
 export const ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST = createAction(
@@ -118,7 +157,10 @@ export const ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_SUCCESS = createActi
 
 export const GET_API_DOC_REQUEST = createAction('GET_API_DOC_REQUEST');
 export const GET_API_DOC_ONLINE = createAction('GET_API_DOC_ONLINE');
-export const GET_API_DOC_SUCCESS = createAction('GET_API_DOC_SUCCESS');
+export const GET_API_DOC_SUCCESS = createAction<{
+  apiDocsWithViewOptions: object;
+  apiDocsWithSelectOptions: object;
+}>('GET_API_DOC_SUCCESS');
 export const GET_API_DOC_FAILURE = createAction('GET_API_DOC_FAILURE');
 
 export const ACTIVITY_UPDATE_AUTOFILL_REQUEST = createAction('ACTIVITY_UPDATE_AUTOFILL_REQUEST');
@@ -135,9 +177,11 @@ export const ACTIVITY_PERSIST_SUCCESS = createAction('ACTIVITY_PERSIST_SUCCESS')
 export const ACTIVITY_PERSIST_FAILURE = createAction('ACTIVITY_PERSIST_FAILURE');
 
 export const ACTIVITY_SAVE_REQUEST = createAction('ACTIVITY_SAVE_REQUEST');
-export const ACTIVITY_SAVE_SUCCESS = createAction('ACTIVITY_SAVE_SUCCESS');
+export const ACTIVITY_SAVE_SUCCESS = createAction<{ activity: any }>('ACTIVITY_SAVE_SUCCESS');
 export const ACTIVITY_TOGGLE_NOTIFICATION_REQUEST = createAction('ACTIVITY_TOGGLE_NOTIFICATION_REQUEST');
-export const ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS = createAction('ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS');
+export const ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS = createAction<{
+  notification: { visible: boolean; message: string; severity: string };
+}>('ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS');
 
 export const TOGGLE_CUSTOMIZE_LAYERS = createAction('TOGGLE_CUSTOMIZE_LAYERS');
 export const ACTIVITY_PASTE_REQUEST = createAction('ACTIVITY_PASTE_REQUEST');
@@ -145,14 +189,17 @@ export const ACTIVITY_PASTE_SUCCESS = createAction('ACTIVITY_PASTE_SUCCESS');
 export const ACTIVITY_PASTE_FAILURE = createAction('ACTIVITY_PASTE_FAILURE');
 
 export const ACTIVITY_COPY_REQUEST = createAction('ACTIVITY_COPY_REQUEST');
-export const ACTIVITY_COPY_SUCCESS = createAction('ACTIVITY_COPY_SUCCESS');
+export const ACTIVITY_COPY_SUCCESS = createAction<{ form_data: object }>('ACTIVITY_COPY_SUCCESS');
 export const ACTIVITY_COPY_FAILURE = createAction('ACTIVITY_COPY_FAILURE');
 
-export const ACTIVITY_SAVE_OFFLINE = createAction('ACTIVITY_SAVE_OFFLINE');
+export const ACTIVITY_SAVE_OFFLINE = createAction<{ id: string; data: any }>('ACTIVITY_SAVE_OFFLINE');
 export const ACTIVITY_RESTORE_OFFLINE = createAction('ACTIVITY_RESTORE_OFFLINE');
-export const ACTIVITY_OFFLINE_DELETE_ITEM = createAction('ACTIVITY_OFFLINE_DELETE_ITEM');
-export const ACTIVITY_UPDATE_SYNC_STATE = createAction('ACTIVITY_UPDATE_SYNC_STATE');
-export const ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE = createAction('ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE');
+export const ACTIVITY_OFFLINE_DELETE_ITEM = createAction<string>('ACTIVITY_OFFLINE_DELETE_ITEM');
+export const ACTIVITY_UPDATE_SYNC_STATE = createAction<{
+  id: string;
+  sync_state: OfflineSyncStateType;
+}>('ACTIVITY_UPDATE_SYNC_STATE');
+export const ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE = createAction<boolean>('ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE');
 
 export const ACTIVITY_RUN_OFFLINE_SYNC = createAction('ACTIVITY_RUN_OFFLINE_SYNC');
 export const ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE = createAction('ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE');
@@ -163,15 +210,17 @@ export const ACTIVITY_SAVE_NETWORK_FAILURE = createAction('ACTIVITY_SAVE_NETWORK
 
 export const ACTIVITY_CREATE_REQUEST = createAction('ACTIVITY_CREATE_REQUEST');
 export const ACTIVITY_CREATE_NETWORK = createAction('ACTIVITY_CREATE_NETWORK');
-export const ACTIVITY_CREATE_LOCAL = createAction('ACTIVITY_CREATE_LOCAL');
-export const ACTIVITY_CREATE_SUCCESS = createAction('ACTIVITY_CREATE_SUCCESS');
+export const ACTIVITY_CREATE_LOCAL = createAction<{ id: string; data: any }>('ACTIVITY_CREATE_LOCAL');
+export const ACTIVITY_CREATE_SUCCESS = createAction<{ activity_id: string }>('ACTIVITY_CREATE_SUCCESS');
 export const ACTIVITY_CREATE_FAILURE = createAction('ACTIVITY_CREATE_FAILURE');
 
 export const ACTIVITY_SUBMIT_REQUEST = createAction('ACTIVITY_SUBMIT_REQUEST');
 export const ACTIVITY_SUBMIT_SUCCESS = createAction('ACTIVITY_SUBMIT_SUCCESS');
 export const ACTIVITY_SUBMIT_FAILURE = createAction('ACTIVITY_SUBMIT_FAILURE');
 export const ACTIVITY_DELETE_REQUEST = createAction('ACTIVITY_DELETE_REQUEST');
-export const ACTIVITY_DELETE_NETWORK_REQUEST = createAction<{ activity_id: string }>('ACTIVITY_DELETE_NETWORK_REQUEST');
+export const ACTIVITY_DELETE_NETWORK_REQUEST = createAction<{
+  activity_id: string;
+}>('ACTIVITY_DELETE_NETWORK_REQUEST');
 
 export const PAN_AND_ZOOM_TO_ACTIVITY = createAction('PAN_AND_ZOOM_TO_ACTIVITY');
 export const ACTIVITY_DELETE_SUCCESS = createAction('ACTIVITY_DELETE_SUCCESS');
@@ -181,13 +230,13 @@ export const ACTIVITY_SET_ACTIVE_SUCCESS = createAction('ACTIVITY_SET_ACTIVE_SUC
 export const ACTIVITY_SET_ACTIVE_FAILURE = createAction('ACTIVITY_SET_ACTIVE_FAILURE');
 
 export const ACTIVITY_ADD_PHOTO_REQUEST = createAction('ACTIVITY_ADD_PHOTO_REQUEST');
-export const ACTIVITY_ADD_PHOTO_SUCCESS = createAction('ACTIVITY_ADD_PHOTO_SUCCESS');
+export const ACTIVITY_ADD_PHOTO_SUCCESS = createAction<{ photo: any }>('ACTIVITY_ADD_PHOTO_SUCCESS');
 export const ACTIVITY_ADD_PHOTO_FAILURE = createAction('ACTIVITY_ADD_PHOTO_FAILURE');
 export const ACTIVITY_DELETE_PHOTO_REQUEST = createAction('ACTIVITY_DELETE_PHOTO_REQUEST');
-export const ACTIVITY_DELETE_PHOTO_SUCCESS = createAction('ACTIVITY_DELETE_PHOTO_SUCCESS');
+export const ACTIVITY_DELETE_PHOTO_SUCCESS = createAction<{ activity: any }>('ACTIVITY_DELETE_PHOTO_SUCCESS');
 export const ACTIVITY_DELETE_PHOTO_FAILURE = createAction('ACTIVITY_DELETE_PHOTO_FAILURE');
-export const ACTIVITY_EDIT_PHOTO_REQUEST = createAction('ACTIVITY_EDIT_PHOTO_REQUEST');
-export const ACTIVITY_EDIT_PHOTO_SUCCESS = createAction('ACTIVITY_EDIT_PHOTO_SUCCESS');
+export const ACTIVITY_EDIT_PHOTO_REQUEST = createAction<{ photo: any }>('ACTIVITY_EDIT_PHOTO_REQUEST');
+export const ACTIVITY_EDIT_PHOTO_SUCCESS = createAction<{ media: any }>('ACTIVITY_EDIT_PHOTO_SUCCESS');
 export const ACTIVITY_EDIT_PHOTO_FAILURE = createAction('ACTIVITY_EDIT_PHOTO_FAILURE');
 
 // NewRecordDialog.tsx selectors
@@ -202,54 +251,104 @@ export const USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_FAILURE = createAction(
 );
 
 export const USER_SETTINGS_GET_INITIAL_STATE_REQUEST = createAction('USER_SETTINGS_GET_INITIAL_STATE_REQUEST');
-export const USER_SETTINGS_GET_INITIAL_STATE_SUCCESS = createAction('USER_SETTINGS_GET_INITIAL_STATE_SUCCESS');
+export const USER_SETTINGS_GET_INITIAL_STATE_SUCCESS = createAction<{
+  recordSets: RecordSetType;
+  recordsExpanded: boolean;
+}>('USER_SETTINGS_GET_INITIAL_STATE_SUCCESS');
 export const USER_SETTINGS_GET_INITIAL_STATE_FAILURE = createAction('USER_SETTINGS_GET_INITIAL_STATE_FAILURE');
 export const USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST = createAction('USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST');
-export const USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS = createAction('USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS');
+export const USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS = createAction<{
+  id: string;
+  description: string;
+}>('USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS');
 export const USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE = createAction('USER_SETTINGS_SET_ACTIVE_ACTIVITY_FAILURE');
 export const USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST = createAction('USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST');
-export const USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS = createAction('USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS');
+export const USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS = createAction<{
+  activeIAPP: string;
+}>('USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS');
 export const USER_SETTINGS_SET_ACTIVE_IAPP_FAILURE = createAction('USER_SETTINGS_SET_ACTIVE_IAPP_FAILURE');
 
-export const WHATS_HERE_ID_CLICKED = createAction('WHATS_HERE_ID_CLICKED');
+export const WHATS_HERE_ID_CLICKED = createAction<{
+  type: string;
+  description: string;
+  id: string;
+}>('WHATS_HERE_ID_CLICKED');
 
 export const ACTIVITY_DEBUG = createAction('ACTIVITY_DEBUG');
 
-export const RECORDSET_ADD_FILTER = createAction('RECORDSET_ADD_FILTER');
-export const RECORDSET_REMOVE_FILTER = createAction('RECORDSET_REMOVE_FILTER');
-export const RECORDSET_SET_SORT = createAction('RECORDSET_SET_SORT');
-export const RECORDSET_UPDATE_FILTER = createAction('RECORDSET_UPDATE_FILTER');
-export const RECORDSET_CLEAR_FILTERS = createAction('RECORDSET_CLEAR_FILTERS');
-export const INIT_SERVER_BOUNDARIES_GET = createAction('INIT_SERVER_BOUNDARIES_GET');
+export const RECORDSET_ADD_FILTER = createAction<{
+  filterType: string;
+  setID: string;
+  field?: string;
+  operator?: string;
+  operator2?: string;
+  filter?: string;
+}>('RECORDSET_ADD_FILTER');
+export const RECORDSET_REMOVE_FILTER = createAction<{ setID: string; filterID: string }>('RECORDSET_REMOVE_FILTER');
+export const RECORDSET_SET_SORT = createAction<{
+  setID: string;
+  sortOrder: string;
+  sortColumn: string;
+}>('RECORDSET_SET_SORT');
 
-export const USER_SETTINGS_ADD_RECORD_SET_REQUEST = createAction('USER_SETTINGS_ADD_RECORD_SET_REQUEST');
+export const RECORDSET_UPDATE_FILTER = createAction<{
+  setID: string;
+  filterID: string;
+  operator?: string;
+  operator2?: string;
+  filter?: string;
+  filterType?: string;
+  field?: string;
+}>('RECORDSET_UPDATE_FILTER');
+export const RECORDSET_CLEAR_FILTERS = createAction<{ setID: string }>('RECORDSET_CLEAR_FILTERS');
+export const INIT_SERVER_BOUNDARIES_GET = createAction<{ data: object[] }>('INIT_SERVER_BOUNDARIES_GET');
+
+export const USER_SETTINGS_ADD_RECORD_SET_REQUEST = createAction<{
+  recordSetType: 'IAPP' | 'Activity';
+}>('USER_SETTINGS_ADD_RECORD_SET_REQUEST');
 export const USER_SETTINGS_ADD_RECORD_SET_SUCCESS = createAction('USER_SETTINGS_ADD_RECORD_SET_SUCCESS');
 export const USER_SETTINGS_ADD_RECORD_SET_FAILURE = createAction('USER_SETTINGS_ADD_RECORD_SET_FAILURE');
 
 // wip simplification:
-export const USER_SETTINGS_SET_RECORDSET = createAction('USER_SETTINGS_SET_RECORDSET');
-export const USER_SETTINGS_ADD_RECORD_SET = createAction('USER_SETTINGS_ADD_RECORD_SET');
-export const USER_SETTINGS_REMOVE_RECORD_SET = createAction('USER_SETTINGS_REMOVE_RECORD_SET');
+export const USER_SETTINGS_SET_RECORDSET = createAction<{
+  setName: string;
+  updatedSet: {
+    [key: string]: unknown;
+  };
+}>('USER_SETTINGS_SET_RECORDSET');
+export const USER_SETTINGS_ADD_RECORD_SET = createAction<{ recordSetType: string }>('USER_SETTINGS_ADD_RECORD_SET');
+export const USER_SETTINGS_REMOVE_RECORD_SET = createAction<{ setID: string }>('USER_SETTINGS_REMOVE_RECORD_SET');
 
 export const USER_SETTINGS_SET_SELECTED_RECORD_REQUEST = createAction('USER_SETTINGS_SET_SELECTED_RECORD_REQUEST');
 export const USER_SETTINGS_SET_SELECTED_RECORD_SUCCESS = createAction('USER_SETTINGS_SET_SELECTED_RECORD_SUCCESS');
 export const USER_SETTINGS_SET_SELECTED_RECORD_FAILURE = createAction('USER_SETTINGS_SET_SELECTED_RECORD_FAILURE');
 export const USER_SETTINGS_SET_BOUNDARIES_REQUEST = createAction('USER_SETTINGS_SET_BOUNDARIES_REQUEST');
-export const USER_SETTINGS_SET_BOUNDARIES_SUCCESS = createAction('USER_SETTINGS_SET_BOUNDARIES_SUCCESS');
+export const USER_SETTINGS_SET_BOUNDARIES_SUCCESS = createAction<{
+  boundaries: any;
+}>('USER_SETTINGS_SET_BOUNDARIES_SUCCESS');
 export const USER_SETTINGS_SET_BOUNDARIES_FAILURE = createAction('USER_SETTINGS_SET_BOUNDARIES_FAILURE');
 export const USER_SETTINGS_DELETE_BOUNDARY_REQUEST = createAction('USER_SETTINGS_DELETE_BOUNDARY_REQUEST');
-export const USER_SETTINGS_DELETE_BOUNDARY_SUCCESS = createAction('USER_SETTINGS_DELETE_BOUNDARY_SUCCESS');
+export const USER_SETTINGS_DELETE_BOUNDARY_SUCCESS = createAction<{
+  id: number;
+}>('USER_SETTINGS_DELETE_BOUNDARY_SUCCESS');
 export const USER_SETTINGS_DELETE_BOUNDARY_FAILURE = createAction('USER_SETTINGS_DELETE_BOUNDARY_FAILURE');
-export const USER_SETTINGS_DELETE_KML_REQUEST = createAction('USER_SETTINGS_DELETE_KML_REQUEST');
-export const USER_SETTINGS_DELETE_KML_SUCCESS = createAction('USER_SETTINGS_DELETE_KML_SUCCESS');
+export const USER_SETTINGS_DELETE_KML_REQUEST = createAction<{
+  server_id: string;
+}>('USER_SETTINGS_DELETE_KML_REQUEST');
+export const USER_SETTINGS_DELETE_KML_SUCCESS = createAction<{ server_id: string }>('USER_SETTINGS_DELETE_KML_SUCCESS');
 export const USER_SETTINGS_DELETE_KML_FAILURE = createAction('USER_SETTINGS_DELETE_KML_FAILURE');
-export const USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST = createAction('USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST');
-export const USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS = createAction('USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS');
+export const USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST = createAction<{
+  setName: string;
+  boundary: string;
+}>('USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST');
+export const USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS = createAction<{
+  recordSets: any;
+}>('USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS');
 export const USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE = createAction('USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE');
 export const USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST = createAction(
   'USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST'
 );
-export const USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS = createAction(
+export const USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS = createAction<{ recordSets: any }>(
   'USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS'
 );
 export const USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_FAILURE = createAction(
@@ -265,15 +364,18 @@ export const USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS = createAction(
 export const USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE = createAction(
   'USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE'
 );
-export const USER_SETTINGS_SET_DARK_THEME = createAction('USER_SETTINGS_SET_DARK_THEME');
+export const USER_SETTINGS_SET_DARK_THEME = createAction<boolean>('USER_SETTINGS_SET_DARK_THEME');
 export const USER_SETTINGS_SET_MAP_CENTER_REQUEST = createAction('USER_SETTINGS_SET_MAP_CENTER_REQUEST');
-export const USER_SETTINGS_SET_MAP_CENTER_SUCCESS = createAction('USER_SETTINGS_SET_MAP_CENTER_SUCCESS');
+export const USER_SETTINGS_SET_MAP_CENTER_SUCCESS = createAction<{
+  center: [number, number];
+}>('USER_SETTINGS_SET_MAP_CENTER_SUCCESS');
 export const USER_SETTINGS_SET_MAP_CENTER_FAILURE = createAction('USER_SETTINGS_SET_MAP_CENTER_FAILURE');
 
-export const USER_SETTINGS_SET_API_ERROR_DIALOG = createAction('USER_SETTINGS_SET_API_ERROR_DIALOG');
-
 // Tabs
-export const TABS_GET_INITIAL_STATE_REQUEST = createAction('TABS_GET_INITIAL_STATE_REQUEST');
+export const TABS_GET_INITIAL_STATE_REQUEST = createAction<{
+  authenticated: boolean;
+  activated: boolean;
+}>('TABS_GET_INITIAL_STATE_REQUEST');
 export const TABS_GET_INITIAL_STATE_SUCCESS = createAction('TABS_GET_INITIAL_STATE_SUCCESS');
 export const TABS_GET_INITIAL_STATE_FAILURE = createAction('TABS_GET_INITIAL_STATE_FAILURE');
 export const TABS_SET_ACTIVE_TAB_REQUEST = createAction('TABS_SET_ACTIVE_TAB_REQUEST');
@@ -285,15 +387,18 @@ export const ACTIVITIES_GEOJSON_GET_ONLINE = createAction('ACTIVITIES_GEOJSON_GE
 export const ACTIVITIES_GEOJSON_GET_OFFLINE = createAction('ACTIVITIES_GEOJSON_GET_OFFLINE');
 export const ACTIVITIES_GEOJSON_GET_SUCCESS = createAction('ACTIVITIES_GEOJSON_GET_SUCCESS');
 
-export const ACTIVITIES_GEOJSON_REFETCH_ONLINE = createAction('ACTIVITIES_GEOJSON_REFETCH_ONLINE');
+export const ACTIVITIES_GEOJSON_REFETCH_ONLINE = createAction<{
+  page: number;
+  limit: number;
+}>('ACTIVITIES_GEOJSON_REFETCH_ONLINE');
 
-export const ACTIVITY_ERRORS = createAction('ACTIVITY_ERRORS');
+export const ACTIVITY_ERRORS = createAction<RJSFValidationError[]>('ACTIVITY_ERRORS');
 
-export const IAPP_GET_REQUEST = createAction('IAPP_GET_REQUEST');
+export const IAPP_GET_REQUEST = createAction<{ iappID: string }>('IAPP_GET_REQUEST');
 export const IAPP_GET_LOCALDB = createAction('IAPP_GET_LOCALDB');
 export const IAPP_GET_ONLINE = createAction('IAPP_GET_ONLINE');
-export const IAPP_GET_SUCCESS = createAction('IAPP_GET_SUCCESS');
-export const IAPP_GET_FAILURE = createAction('IAPP_GET_FAILURE');
+export const IAPP_GET_SUCCESS = createAction<{ iapp: { site_id?: string } }>('IAPP_GET_SUCCESS');
+export const IAPP_GET_FAILURE = createAction<{ reason: string }>('IAPP_GET_FAILURE');
 
 export const IAPP_PAN_AND_ZOOM = createAction('IAPP_PAN_AND_ZOOM');
 
@@ -305,18 +410,40 @@ export const IAPP_GEOJSON_GET_SUCCESS = createAction('IAPP_GEOJSON_GET_SUCCESS')
 export const IAPP_INIT_LAYER_STATE_REQUEST = createAction('IAPP_INIT_LAYER_STATE_REQUEST');
 export const IAPP_INIT_LAYER_STATE_SUCCESS = createAction('IAPP_INIT_LAYER_STATE_SUCCESS');
 
-export const IAPP_TABLE_ROWS_GET_REQUEST = createAction('IAPP_TABLE_ROWS_GET_REQUEST');
+export const IAPP_TABLE_ROWS_GET_REQUEST = createAction<{
+  recordSetID: string;
+  tableFiltersHash: string;
+  page: number;
+  limit: number;
+}>('IAPP_TABLE_ROWS_GET_REQUEST');
 export const IAPP_TABLE_ROWS_GET_ONLINE = createAction('IAPP_TABLE_ROWS_GET_ONLINE');
 export const IAPP_TABLE_ROWS_GET_OFFLINE = createAction('IAPP_TABLE_ROWS_GET_OFFLINE');
-export const IAPP_TABLE_ROWS_GET_SUCCESS = createAction('IAPP_TABLE_ROWS_GET_SUCCESS');
+export const IAPP_TABLE_ROWS_GET_SUCCESS = createAction<{
+  recordSetID: string;
+  tableFiltersHash: any;
+  page: number;
+  limit: number;
+  rows: any[];
+}>('IAPP_TABLE_ROWS_GET_SUCCESS');
 export const IAPP_TABLE_ROWS_GET_FAILURE = createAction('IAPP_TABLE_ROWS_GET_FAILURE');
 
 export const IAPP_RECORDSET_ID_LIST_GET_SUCCESS = createAction('IAPP_RECORDSET_ID_LIST_GET_SUCCESS');
 
-export const ACTIVITIES_TABLE_ROWS_GET_REQUEST = createAction('ACTIVITIES_TABLE_ROWS_GET_REQUEST');
+export const ACTIVITIES_TABLE_ROWS_GET_REQUEST = createAction<{
+  recordSetID: string;
+  tableFiltersHash: string;
+  page: number;
+  limit: number;
+}>('ACTIVITIES_TABLE_ROWS_GET_REQUEST');
 export const ACTIVITIES_TABLE_ROWS_GET_ONLINE = createAction('ACTIVITIES_TABLE_ROWS_GET_ONLINE');
 export const ACTIVITIES_TABLE_ROWS_GET_OFFLINE = createAction('ACTIVITIES_TABLE_ROWS_GET_OFFLINE');
-export const ACTIVITIES_TABLE_ROWS_GET_SUCCESS = createAction('ACTIVITIES_TABLE_ROWS_GET_SUCCESS');
+export const ACTIVITIES_TABLE_ROWS_GET_SUCCESS = createAction<{
+  recordSetID: string;
+  tableFiltersHash: any;
+  page: number;
+  limit: number;
+  rows: any[];
+}>('ACTIVITIES_TABLE_ROWS_GET_SUCCESS');
 export const ACTIVITIES_TABLE_ROWS_GET_FAILURE = createAction('ACTIVITIES_TABLE_ROWS_GET_FAILURE');
 
 export const MAP_INIT_REQUEST = createAction('MAP_INIT_REQUEST');
@@ -329,87 +456,148 @@ export const MAP_TOGGLE_ACCURACY = createAction('MAP_TOGGLE_ACCURACY');
 export const MAP_TOGGLE_TRACKING = createAction('MAP_TOGGLE_TRACKING');
 export const MAP_TOGGLE_PANNED = createAction('MAP_TOGGLE_PANNED');
 export const MAP_TOGGLE_LEGENDS = createAction('MAP_TOGGLE_LEGENDS');
-export const MAP_SET_COORDS = createAction('MAP_SET_COORDS');
+export const MAP_SET_COORDS = createAction<{
+  position: {
+    coords: {
+      latitude: number;
+      longitude: number;
+      accuracy: number;
+      heading: number;
+    };
+  };
+}>('MAP_SET_COORDS');
 export const LEAFLET_SET_WHOS_EDITING = createAction('LEAFLET_SET_WHOS_EDITING');
-export const TOGGLE_BASIC_PICKER_LAYER = createAction('TOGGLE_BASIC_PICKER_LAYER');
 export const RECORD_SET_TO_EXCEL_REQUEST = createAction('RECORD_SET_TO_EXCEL_REQUEST');
-export const RECORD_SET_TO_EXCEL_SUCCESS = createAction('RECORD_SET_TO_EXCEL_SUCCESS');
+export const RECORD_SET_TO_EXCEL_SUCCESS = createAction<{ link: string; id: string }>('RECORD_SET_TO_EXCEL_SUCCESS');
 export const RECORD_SET_TO_EXCEL_FAILURE = createAction('RECORD_SET_TO_EXCEL_FAILURE');
 export const MAP_LABEL_EXTENT_FILTER_REQUEST = createAction('MAP_LABEL_EXTENT_FILTER_REQUEST');
-export const MAP_LABEL_EXTENT_FILTER_SUCCESS = createAction('MAP_LABEL_EXTENT_FILTER_SUCCESS');
+export const MAP_LABEL_EXTENT_FILTER_SUCCESS = createAction<{ bounds: any }>('MAP_LABEL_EXTENT_FILTER_SUCCESS');
 export const MAP_LABEL_EXTENT_FILTER_FAILURE = createAction('MAP_LABEL_EXTENT_FILTER_FAILURE');
 export const IAPP_EXTENT_FILTER_REQUEST = createAction('IAPP_EXTENT_FILTER_REQUEST');
-export const IAPP_EXTENT_FILTER_SUCCESS = createAction('IAPP_EXTENT_FILTER_SUCCESS');
+export const IAPP_EXTENT_FILTER_SUCCESS = createAction<{
+  bounds: any;
+}>('IAPP_EXTENT_FILTER_SUCCESS');
 export const IAPP_EXTENT_FILTER_FAILURE = createAction('IAPP_EXTENT_FILTER_FAILURE');
 export const SET_TOO_MANY_LABELS_DIALOG = createAction('SET_TOO_MANY_LABELS_DIALOG');
 
 //whats here tool
-export const MAP_TOGGLE_WHATS_HERE = createAction('MAP_TOGGLE_WHATS_HERE');
-export const MAP_WHATS_HERE_FEATURE = createAction('MAP_WHATS_HERE_FEATURE');
+export const MAP_TOGGLE_WHATS_HERE = createAction<boolean>('MAP_TOGGLE_WHATS_HERE');
+export const MAP_WHATS_HERE_FEATURE = createAction<{ feature: any }>('MAP_WHATS_HERE_FEATURE');
 export const MAP_WHATS_HERE_INIT_GET_POI = createAction('MAP_WHATS_HERE_INIT_GET_POI');
-export const MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED = createAction('MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED');
+export const MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED = createAction<{
+  IDs: string[];
+}>('MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED');
 export const MAP_WHATS_HERE_INIT_GET_ACTIVITY = createAction('MAP_WHATS_HERE_INIT_GET_ACTIVITY');
-export const MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED = createAction(
+export const MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED = createAction<{ IDs: string[] }>(
   'MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED'
 );
-export const WHATS_HERE_PAGE_POI = createAction('WHATS_HERE_PAGE_POI');
-export const WHATS_HERE_SORT_FILTER_UPDATE = createAction('WHATS_HERE_SORT_FILTER_UPDATE');
-export const MAP_SET_WHATS_HERE_PAGE_LIMIT = createAction('MAP_SET_WHATS_HERE_PAGE_LIMIT');
-export const MAP_SET_WHATS_HERE_SECTION = createAction('MAP_SET_WHATS_HERE_SECTION');
-export const MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP = createAction<{ id: string }>('MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP');
-export const MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY = createAction('MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY');
-export const TOGGLE_WMS_LAYER = createAction<{ layer: unknown }>('TOGGLE_WMS_LAYER');
+export const WHATS_HERE_PAGE_POI = createAction<{ page: number; limit: number }>('WHATS_HERE_PAGE_POI');
+export const WHATS_HERE_SORT_FILTER_UPDATE = createAction<{
+  recordType: string;
+  field: string;
+}>('WHATS_HERE_SORT_FILTER_UPDATE');
+export const MAP_SET_WHATS_HERE_PAGE_LIMIT = createAction<{
+  page: number;
+  limit: number;
+}>('MAP_SET_WHATS_HERE_PAGE_LIMIT');
+export const MAP_SET_WHATS_HERE_SECTION = createAction<{ section: string }>('MAP_SET_WHATS_HERE_SECTION');
+export const MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP = createAction<{
+  id: string;
+}>('MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP');
+export const MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY = createAction<{
+  id: string;
+  short_id: string;
+}>('MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY');
+export const TOGGLE_WMS_LAYER = createAction<{ layer: { url: string } }>('TOGGLE_WMS_LAYER');
 export const TOGGLE_LAYER_PICKER_OPEN = createAction('TOGGLE_LAYER_PICKER_OPEN');
 export const TOGGLE_KML_LAYER = createAction('TOGGLE_KML_LAYER');
-export const TOGGLE_DRAWN_LAYER = createAction('TOGGLE_DRAWN_LAYER');
+export const TOGGLE_DRAWN_LAYER = createAction<{
+  layer: {
+    id: string;
+  };
+}>('TOGGLE_DRAWN_LAYER');
 
-export const MAP_ON_SHAPE_CREATE = createAction('MAP_ON_SHAPE_CREATE');
+export const MAP_ON_SHAPE_CREATE = createAction<Feature>('MAP_ON_SHAPE_CREATE');
 export const MAP_ON_SHAPE_UPDATE = createAction('MAP_ON_SHAPE_UPDATE');
-export const MAIN_MAP_MOVE = createAction('MAIN_MAP_MOVE');
+export const MAIN_MAP_MOVE = createAction<{
+  zoom: number;
+  center: [number, number];
+}>('MAIN_MAP_MOVE');
 export const ACTIVITY_PAGE_MAP_EXTENT_TOGGLE = createAction('ACTIVITY_PAGE_MAP_EXTENT_TOGGLE');
 
 export const WHATS_HERE_IAPP_ROWS_REQUEST = createAction('WHATS_HERE_IAPP_ROWS_REQUEST');
 export const WHATS_HERE_IAPP_ROWS_ONLINE = createAction('WHATS_HERE_IAPP_ROWS_ONLINE');
 export const WHATS_HERE_IAPP_ROWS_OFFLINE = createAction('WHATS_HERE_IAPP_ROWS_OFFLINE');
-export const WHATS_HERE_IAPP_ROWS_SUCCESS = createAction('WHATS_HERE_IAPP_ROWS_SUCCESS');
+export const WHATS_HERE_IAPP_ROWS_SUCCESS = createAction<{ data: any }>('WHATS_HERE_IAPP_ROWS_SUCCESS');
 
-export const WHATS_HERE_PAGE_ACTIVITY = createAction('WHATS_HERE_PAGE_ACTIVITY');
+export const WHATS_HERE_PAGE_ACTIVITY = createAction<{ page: number; limit: number }>('WHATS_HERE_PAGE_ACTIVITY');
 export const MAP_WHATS_HERE_INIT_GET_ACTIVITIES = createAction('MAP_WHATS_HERE_INIT_GET_ACTIVITIES');
 export const WHATS_HERE_ACTIVITY_ROWS_REQUEST = createAction('WHATS_HERE_ACTIVITY_ROWS_REQUEST');
 export const WHATS_HERE_ACTIVITY_ROWS_ONLINE = createAction('WHATS_HERE_ACTIVITY_ROWS_ONLINE');
 export const WHATS_HERE_ACTIVITY_ROWS_OFFLINE = createAction('WHATS_HERE_ACTIVITY_ROWS_OFFLINE');
-export const WHATS_HERE_ACTIVITY_ROWS_SUCCESS = createAction('WHATS_HERE_ACTIVITY_ROWS_SUCCESS');
+export const WHATS_HERE_ACTIVITY_ROWS_SUCCESS = createAction<{ data: any }>('WHATS_HERE_ACTIVITY_ROWS_SUCCESS');
 
-export const MAP_DELETE_LAYER_AND_TABLE = createAction('MAP_DELETE_LAYER_AND_TABLE');
+export const MAP_DELETE_LAYER_AND_TABLE = createAction<{ recordSetID: string }>('MAP_DELETE_LAYER_AND_TABLE');
 
 export const LAYER_STATE_UPDATE = createAction('LAYER_STATE_UPDATE');
 export const FILTER_STATE_UPDATE = createAction('FILTER_STATE_UPDATE');
-export const PAGE_OR_LIMIT_CHANGE = createAction('PAGE_OR_LIMIT_CHANGE');
+export const PAGE_OR_LIMIT_CHANGE = createAction<{
+  setID: string;
+  page: number;
+  limit: number;
+}>('PAGE_OR_LIMIT_CHANGE');
+
 export const SORT_COLUMN_STATE_UPDATE = createAction('SORT_COLUMN_STATE_UPDATE');
 
-export const IAPP_GET_IDS_FOR_RECORDSET_REQUEST = createAction('IAPP_GET_IDS_FOR_RECORDSET_REQUEST');
+export const IAPP_GET_IDS_FOR_RECORDSET_REQUEST = createAction<{
+  recordSetID: string;
+  tableFiltersHash: any;
+}>('IAPP_GET_IDS_FOR_RECORDSET_REQUEST');
 export const IAPP_GET_IDS_FOR_RECORDSET_ONLINE = createAction('IAPP_GET_IDS_FOR_RECORDSET_ONLINE');
 export const IAPP_GET_IDS_FOR_RECORDSET_OFFLINE = createAction('IAPP_GET_IDS_FOR_RECORDSET_OFFLINE');
-export const IAPP_GET_IDS_FOR_RECORDSET_SUCCESS = createAction('IAPP_GET_IDS_FOR_RECORDSET_SUCCESS');
+export const IAPP_GET_IDS_FOR_RECORDSET_SUCCESS = createAction<{
+  recordSetID: string;
+  recordSetType: string;
+  tableFiltersHash: any;
+  filterObject: any;
+  IDList: any;
+}>('IAPP_GET_IDS_FOR_RECORDSET_SUCCESS');
 
-export const WHATS_HERE_SERVER_FILTERED_IDS_FETCHED = createAction('WHATS_HERE_SERVER_FILTERED_IDS_FETCHED');
+export const WHATS_HERE_SERVER_FILTERED_IDS_FETCHED = createAction<{
+  activities: string[];
+  iapp: string[];
+}>('WHATS_HERE_SERVER_FILTERED_IDS_FETCHED');
 
-export const ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST = createAction('ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST');
+export const ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST = createAction<{
+  recordSetID: string;
+  tableFiltersHash: any;
+}>('ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST');
 export const ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE = createAction('ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE');
 export const ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE = createAction('ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE');
-export const ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS = createAction('ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS');
-export const FILTERS_PREPPED_FOR_VECTOR_ENDPOINT = createAction('FILTERS_PREPPED_FOR_VECTOR_ENDPOINT');
-export const FILTER_PREP_FOR_VECTOR_ENDPOINT = createAction('FILTER_PREP_FOR_VECTOR_ENDPOINT');
+export const ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS = createAction<{
+  recordSetID: string;
+  tableFiltersHash: any;
+  IDList: any;
+}>('ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS');
+export const FILTERS_PREPPED_FOR_VECTOR_ENDPOINT = createAction<{
+  recordSetID: string;
+  recordSetType: string;
+  tableFiltersHash: any;
+  filterObject: any;
+}>('FILTERS_PREPPED_FOR_VECTOR_ENDPOINT');
+export const FILTER_PREP_FOR_VECTOR_ENDPOINT = createAction<{ recordSetID: string; tableFiltersHash: any }>(
+  'FILTER_PREP_FOR_VECTOR_ENDPOINT'
+);
 
 export const MAP_TOGGLE_GEOJSON_CACHE = createAction('MAP_TOGGLE_GEOJSON_CACHE');
 
 export const FILTER_FEATURE_SET_WITH_IDS = createAction('FILTER_FEATURE_SET_WITH_IDS');
-export const MAP_MODE_SET = createAction('MAP_MODE_SET');
+export const MAP_MODE_SET = createAction<string>('MAP_MODE_SET');
 
-export const DRAW_CUSTOM_LAYER = createAction('DRAW_CUSTOM_LAYER');
-export const CUSTOM_LAYER_DRAWN = createAction('CUSTOM_LAYER_DRAWN');
-export const REMOVE_CLIENT_BOUNDARY = createAction('REMOVE_CLIENT_BOUNDARY');
-export const REMOVE_SERVER_BOUNDARY = createAction('REMOVE_SERVER_BOUNDARY');
+export const DRAW_CUSTOM_LAYER = createAction<{ name: string }>('DRAW_CUSTOM_LAYER');
+export const CUSTOM_LAYER_DRAWN = createAction<{ feature: GeoJSON }>('CUSTOM_LAYER_DRAWN');
+export const REMOVE_CLIENT_BOUNDARY = createAction<string>('REMOVE_CLIENT_BOUNDARY');
+export const REMOVE_SERVER_BOUNDARY = createAction<string>('REMOVE_SERVER_BOUNDARY');
 
 export const BATCH_LIST_REQUEST = createAction('BATCH_LIST_REQUEST');
 export const BATCH_LIST_SUCCESS = createAction('BATCH_LIST_SUCCESS');
@@ -419,24 +607,30 @@ export const BATCH_RETRIEVE_SUCCESS = createAction('BATCH_RETRIEVE_SUCCESS');
 export const BATCH_RETRIEVE_ERROR = createAction('BATCH_RETRIEVE_ERROR');
 export const BATCH_CREATE_REQUEST = createAction('BATCH_CREATE_REQUEST');
 export const BATCH_CREATE_REQUEST_WITH_CALLBACK = createAction('BATCH_CREATE_REQUEST_WITH_CALLBACK');
-export const BATCH_CREATE_SUCCESS = createAction('BATCH_CREATE_SUCCESS');
+export const BATCH_CREATE_SUCCESS = createAction<{ batchId: string }>('BATCH_CREATE_SUCCESS');
 export const BATCH_CREATE_ERROR = createAction('BATCH_CREATE_ERROR');
 export const BATCH_UPDATE_REQUEST = createAction('BATCH_UPDATE_REQUEST');
 export const BATCH_UPDATE_SUCCESS = createAction('BATCH_UPDATE_SUCCESS');
 export const BATCH_UPDATE_ERROR = createAction('BATCH_UPDATE_ERROR');
-export const BATCH_DELETE_REQUEST = createAction('BATCH_DELETE_REQUEST');
+export const BATCH_DELETE_REQUEST = createAction<{ id: string }>('BATCH_DELETE_REQUEST');
 export const BATCH_DELETE_SUCCESS = createAction('BATCH_DELETE_SUCCESS');
 export const BATCH_DELETE_ERROR = createAction('BATCH_DELETE_ERROR');
 export const BATCH_EXECUTE_REQUEST = createAction('BATCH_EXECUTE_REQUEST');
-export const BATCH_EXECUTE_SUCCESS = createAction('BATCH_EXECUTE_SUCCESS');
-export const BATCH_EXECUTE_ERROR = createAction('BATCH_EXECUTE_ERROR');
+export const BATCH_EXECUTE_SUCCESS = createAction<{ result }>('BATCH_EXECUTE_SUCCESS');
+export const BATCH_EXECUTE_ERROR = createAction<{ message?: object }>('BATCH_EXECUTE_ERROR');
 export const BATCH_TEMPLATE_LIST_REQUEST = createAction('BATCH_TEMPLATE_LIST_REQUEST');
-export const BATCH_TEMPLATE_LIST_SUCCESS = createAction('BATCH_TEMPLATE_LIST_SUCCESS');
+export const BATCH_TEMPLATE_LIST_SUCCESS = createAction<any[]>('BATCH_TEMPLATE_LIST_SUCCESS');
 export const BATCH_TEMPLATE_LIST_ERROR = createAction('BATCH_TEMPLATE_LIST_ERROR');
-export const BATCH_TEMPLATE_DOWNLOAD_REQUEST = createAction('BATCH_TEMPLATE_DOWNLOAD_REQUEST');
-export const BATCH_TEMPLATE_DOWNLOAD_SUCCESS = createAction('BATCH_TEMPLATE_DOWNLOAD_SUCCESS');
-export const BATCH_TEMPLATE_DOWNLOAD_ERROR = createAction('BATCH_TEMPLATE_DOWNLOAD_ERROR');
-export const BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST = createAction('BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST');
+export const BATCH_TEMPLATE_DOWNLOAD_REQUEST = createAction<{ key: string }>('BATCH_TEMPLATE_DOWNLOAD_REQUEST');
+export const BATCH_TEMPLATE_DOWNLOAD_SUCCESS = createAction<{
+  key: string;
+  data: any;
+}>('BATCH_TEMPLATE_DOWNLOAD_SUCCESS');
+export const BATCH_TEMPLATE_DOWNLOAD_ERROR = createAction<{ key: string }>('BATCH_TEMPLATE_DOWNLOAD_ERROR');
+export const BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST = createAction<{
+  key: string;
+  resolve: (value: unknown) => void;
+}>('BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST');
 export const CSV_LINK_CLICKED = createAction('CSV_LINK_CLICKED');
 
 export const EXPORT_CONFIG_LOAD_REQUEST = createAction('EXPORT_CONFIG_LOAD_REQUEST');
@@ -444,15 +638,25 @@ export const EXPORT_CONFIG_LOAD_ERROR = createAction('EXPORT_CONFIG_LOAD_ERROR')
 export const EXPORT_CONFIG_LOAD_SUCCESS = createAction('EXPORT_CONFIG_LOAD_SUCCESS');
 
 export const TRAINING_VIDEOS_LIST_REQUEST = createAction('TRAINING_VIDEOS_LIST_REQUEST');
-export const TRAINING_VIDEOS_LIST_REQUEST_COMPLETE = createAction('TRAINING_VIDEOS_LIST_REQUEST_COMPLETE');
+export const TRAINING_VIDEOS_LIST_REQUEST_COMPLETE = createAction<TrainingVideoMetadata[]>(
+  'TRAINING_VIDEOS_LIST_REQUEST_COMPLETE'
+);
 
 export const EMAIL_SETTINGS_UPDATE = createAction('EMAIL_SETTINGS_UPDATE');
 export const EMAIL_SETTINGS_REQUEST = createAction('EMAIL_SETTINGS_REQUEST');
-export const EMAIL_SETTINGS_UPDATE_SUCCESS = createAction('EMAIL_SETTINGS_UPDATE_SUCCESS');
-export const EMAIL_SETTINGS_UPDATE_FAILURE = createAction('EMAIL_SETTINGS_UPDATE_FAILURE');
+export const EMAIL_SETTINGS_UPDATE_SUCCESS = createAction<{
+  message: string;
+  emailSettings: EmailSettingsType;
+}>('EMAIL_SETTINGS_UPDATE_SUCCESS');
+export const EMAIL_SETTINGS_UPDATE_FAILURE = createAction<{
+  message: string;
+  emailSettings: EmailSettingsType;
+}>('EMAIL_SETTINGS_UPDATE_FAILURE');
 
 export const EMAIL_SETTINGS_RETRIEVE_REQUEST = createAction('EMAIL_SETTINGS_RETRIEVE_REQUEST');
-export const EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS = createAction('EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS');
+export const EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS = createAction<{
+  emailSettings: EmailSettingsType;
+}>('EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS');
 export const EMAIL_SETTINGS_RETRIEVE_REQUEST_FAILURE = createAction('EMAIL_SETTINGS_RETRIEVE_REQUEST_FAILURE');
 
 export const EMAIL_TEMPLATES_REQUEST = createAction('EMAIL_TEMPLATES_REQUEST');
@@ -466,5 +670,8 @@ export const EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS = createAction('EMAIL_TEMP
 export const EMAIL_TEMPLATES_RETRIEVE_REQUEST_FAILURE = createAction('EMAIL_TEMPLATES_RETRIEVE_REQUEST_FAILURE');
 
 export const CRASH_HANDLE_GLOBAL_ERROR = createAction<{
-  detail: { error: { name: string; message: string; cause: string; stack: string }; errorInfo: { sagaStack: string } };
+  detail: {
+    error: { name: string; message: string; cause: string; stack: string };
+    errorInfo: { sagaStack: string };
+  };
 }>('CRASH_HANDLE_GLOBAL_ERROR');

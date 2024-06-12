@@ -9,21 +9,21 @@ import {
   getShortActivityID,
   ReviewStatus
 } from 'sharedAPI';
-import { getFieldsToCopy } from '../rjsf/business-rules/formDataCopyFields';
-import { IActivity } from '../interfaces/activity-interfaces';
-import { DocType } from '../constants/database';
+import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
+import { IActivity } from 'interfaces/activity-interfaces';
+import { DocType } from 'constants/database';
 
 export const activityDefaults = {
   doc_type: DocType.ACTIVITY,
   date_created: new Date(),
-  media: undefined,
-  created_by: undefined,
-  user_role: undefined,
+  media: null,
+  created_by: null,
+  user_role: null,
   sync_status: ActivitySyncStatus.NOT_SAVED,
   form_status: ActivityStatus.DRAFT,
   review_status: ReviewStatus.NOT_REVIEWED,
-  reviewed_by: undefined,
-  reviewed_at: undefined
+  reviewed_by: null,
+  reviewed_at: null
 };
 
 /*
@@ -175,6 +175,7 @@ export function isLinkedTreatmentSubtype(subType: ActivitySubtype): boolean {
     ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
   ].includes(subType);
 }
+
 // extract and set the species codes (both positive and negative) of a given activity (or POI, once they're editable)
 
 export function populateJurisdictionArray(record) {

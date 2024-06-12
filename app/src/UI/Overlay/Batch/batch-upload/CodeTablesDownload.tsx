@@ -5,7 +5,13 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 const CodeTablesDownload: React.FC = () => {
   const api = useInvasivesApi();
 
-  const [codeTablesList, setCodeTablesList] = useState([]);
+  const [codeTablesList, setCodeTablesList] = useState<
+    {
+      code_table: string;
+      title: string;
+      description: string;
+    }[]
+  >([]);
 
   useEffect(() => {
     api.listCodeTables().then((response) => {

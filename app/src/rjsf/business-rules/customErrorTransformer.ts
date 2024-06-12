@@ -1,7 +1,3 @@
-//import { AjvError } from '@rjsf/core';
-import { ACTIVITY_ERRORS } from 'state/actions';
-import { globalStore } from 'state/store';
-
 /**
  * Returns a custom error transformer.
  *

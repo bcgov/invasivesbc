@@ -56,7 +56,7 @@ export const OfflineSyncHeaderButton = () => {
     <>
       <Button
         onClick={() => {
-          dispatch(ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE({ open: true }));
+          dispatch(ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE(true));
         }}
       >
         {iconComponent}

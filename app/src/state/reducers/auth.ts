@@ -19,20 +19,22 @@ import {
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
+export interface AuthExtendedInfoType {
+  user_id: number | null;
+  account_status: number | null;
+  activation_status: number | null;
+  work_phone_number: string | null;
+  funding_agencies: any[];
+  employer: string | null;
+  pac_number: string | null;
+  pac_service_number_1: string | null;
+  pac_service_number_2: string | null;
+}
+
 interface OfflineUserState {
   roles: { role_id: number; role_name: string }[];
 
-  extendedInfo: {
-    user_id: number | null;
-    account_status: number | null;
-    activation_status: number | null;
-    work_phone_number: string | null;
-    funding_agencies: any[];
-    employer: string | null;
-    pac_number: string | null;
-    pac_service_number_1: string | null;
-    pac_service_number_2: string | null;
-  };
+  extendedInfo: AuthExtendedInfoType;
 
   email: string | null;
   displayName: string | null;
@@ -64,8 +66,6 @@ export interface AuthState {
   bceid_userid: string | null;
   bceid_user_guid: string | null;
 
-  v2BetaAccess: boolean;
-
   offlineUserDialogOpen: boolean;
   offlineUsers: OfflineUserState[];
   workingOffline: boolean;
@@ -74,17 +74,7 @@ export interface AuthState {
   accessRoles: { role_id: number; role_name: string }[];
   rolesInitialized: boolean;
 
-  extendedInfo: {
-    user_id: number | null;
-    account_status: number | null;
-    activation_status: number | null;
-    work_phone_number: string | null;
-    funding_agencies: any[];
-    employer: string | null;
-    pac_number: string | null;
-    pac_service_number_1: string | null;
-    pac_service_number_2: string | null;
-  };
+  extendedInfo: AuthExtendedInfoType;
 }
 
 function computeAccessRoles(
@@ -146,8 +136,7 @@ const initialState: AuthState = {
   initialized: false,
   roles: [],
   rolesInitialized: false,
-  username: null,
-  v2BetaAccess: false
+  username: null
 };
 
 function loadCurrentStateFromIdToken(idToken): object {
@@ -217,7 +206,17 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         draftState.roles = [];
         draftState.accessRoles = [];
         draftState.rolesInitialized = false;
-        draftState.extendedInfo = null;
+        draftState.extendedInfo = {
+          account_status: 0,
+          activation_status: 0,
+          employer: null,
+          funding_agencies: [],
+          pac_number: null,
+          pac_service_number_1: null,
+          pac_service_number_2: null,
+          user_id: null,
+          work_phone_number: null
+        };
         draftState.displayName = null;
         draftState.email = null;
         draftState.username = 'loggedOut';
@@ -250,8 +249,9 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           }
         }
       }
-      if (AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG.match(action))
-        draftState.offlineUserDialogOpen = action.payload.state;
+      if (AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG.match(action)) {
+        draftState.offlineUserDialogOpen = action.payload;
+      }
 
       if (AUTH_FORGET_OFFLINE_USER.match(action)) {
         const foundIndex = draftState.offlineUsers.findIndex((o) => o.displayName === action.payload.displayName);
@@ -277,10 +277,12 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
       if (AUTH_INITIALIZE_COMPLETE.match(action)) {
         draftState.initialized = true;
         draftState.disrupted = false;
-        const currentIdToken = action.payload.idToken;
-        Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
-          draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
-        });
+        if (action.payload.idToken) {
+          const currentIdToken = action.payload.idToken;
+          Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
+            draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
+          });
+        }
       }
       if (AUTH_REQUEST_COMPLETE.match(action)) {
         const currentIdToken = action.payload.idToken;
@@ -305,27 +307,56 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
         draftState.rolesInitialized = false;
         draftState.roles = [];
         draftState.accessRoles = [];
-        draftState.extendedInfo = null;
+        draftState.extendedInfo = {
+          account_status: 0,
+          activation_status: 0,
+          employer: null,
+          funding_agencies: [],
+          pac_number: null,
+          pac_service_number_1: null,
+          pac_service_number_2: null,
+          user_id: null,
+          work_phone_number: null
+        };
       }
       if (AUTH_CLEAR_ROLES.match(action)) {
         draftState.rolesInitialized = false;
         draftState.roles = [];
         draftState.accessRoles = [];
-        draftState.extendedInfo = null;
+        draftState.extendedInfo = {
+          account_status: 0,
+          activation_status: 0,
+          employer: null,
+          funding_agencies: [],
+          pac_number: null,
+          pac_service_number_1: null,
+          pac_service_number_2: null,
+          user_id: null,
+          work_phone_number: null
+        };
       }
       if (AUTH_REFRESH_ROLES_COMPLETE.match(action)) {
-        const { all_roles, roles, extendedInfo, v2BetaAccess } = action.payload;
+        const { all_roles, roles, extendedInfo } = action.payload;
         draftState.roles = roles;
         draftState.accessRoles = computeAccessRoles(all_roles, roles);
         draftState.extendedInfo = extendedInfo;
         draftState.rolesInitialized = true;
-        draftState.v2BetaAccess = v2BetaAccess;
       }
       if (AUTH_REFRESH_ROLES_ERROR.match(action)) {
         draftState.rolesInitialized = false;
         draftState.roles = [];
         draftState.accessRoles = [];
-        draftState.extendedInfo = null;
+        draftState.extendedInfo = {
+          account_status: 0,
+          activation_status: 0,
+          employer: null,
+          funding_agencies: [],
+          pac_number: null,
+          pac_service_number_1: null,
+          pac_service_number_2: null,
+          user_id: null,
+          work_phone_number: null
+        };
       }
     });
   };

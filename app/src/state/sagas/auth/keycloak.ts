@@ -170,8 +170,8 @@ function* reinitAuth() {
 
   yield put(
     AUTH_INITIALIZE_COMPLETE({
-      authenticated: keycloakInstance.authenticated,
-      idToken: keycloakInstance.idToken
+      authenticated: keycloakInstance.authenticated || false,
+      idToken: keycloakInstance.idToken || null
     })
   );
 

@@ -42,9 +42,9 @@ export const getSearchCriteriaFromFilters = (
 
   if (recordSets[setName]?.advancedFilters) {
     const currentAdvFilters = recordSets[setName]?.advancedFilters;
-    const jurisdictions = [];
-    const speciesPositive = [];
-    const speciesNegative = [];
+    const jurisdictions: string[] = [];
+    const speciesPositive: string[] = [];
+    const speciesNegative: string[] = [];
     currentAdvFilters.forEach((filter) => {
       switch (filter.filterField) {
         case 'Jurisdiction': {

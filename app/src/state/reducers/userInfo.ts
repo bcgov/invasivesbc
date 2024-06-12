@@ -1,4 +1,4 @@
-import { USERINFO_CLEAR_REQUEST, USERINFO_LOAD_COMPLETE } from '../actions';
+import { USERINFO_CLEAR_REQUEST, USERINFO_LOAD_COMPLETE } from 'state/actions';
 
 interface UserInfo {
   loaded: boolean;

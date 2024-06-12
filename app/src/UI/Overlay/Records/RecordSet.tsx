@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { ReactElement, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
@@ -259,7 +259,7 @@ const Filter = (props) => {
     (filter) => filter.id === props.id
   )?.operator2;
 
-  const value = useRef();
+  const value = useRef(null);
 
   //const debouncedUpdate = debounce((value) => {
   const debouncedUpdate = (value) => {
@@ -273,7 +273,7 @@ const Filter = (props) => {
     );
   };
 
-  let input = null;
+  let input: ReactElement | null = null;
   switch (filterTypeInState) {
     case 'tableFilter':
       input = (

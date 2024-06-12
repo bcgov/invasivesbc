@@ -1,6 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 
+import { AppConfig } from '../config';
 import {
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_DELETE_SUCCESS,
@@ -25,20 +26,38 @@ import {
   USER_SETTINGS_REMOVE_RECORD_SET,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
-  USER_SETTINGS_SET_API_ERROR_DIALOG,
   USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
   USER_SETTINGS_SET_DARK_THEME,
   USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
   USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
   USER_SETTINGS_SET_RECORDSET,
   USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
-} from '../actions';
+} from 'state/actions';
 
-import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
+}
+
+export interface RecordSetType {
+  labelToggle: boolean;
+  tableFilters?: any;
+  color: string;
+  drawOrder: number;
+  expanded: boolean;
+  isSelected: boolean;
+  mapToggle: boolean;
+  recordSetName: string;
+  recordSetType: string;
+  searchBoundary: {
+    geos: [];
+    id: number;
+    name: string;
+    server_id: any;
+  } | null;
+  sortColumn: string | null;
+  sortOrder: string;
 }
 
 export interface UserSettingsState {
@@ -55,24 +74,10 @@ export interface UserSettingsState {
 
   mapCenter: [number, number];
   newRecordDialogState: any;
+  newRecordDialogueOpen: boolean;
 
   recordSets: {
-    [key: number]: {
-      tableFilters?: any;
-      color: string;
-      drawOrder: number;
-      expanded: boolean;
-      isSelected: boolean;
-      mapToggle: boolean;
-      recordSetName: string;
-      recordSetType: string;
-      searchBoundary: {
-        geos: [];
-        id: number;
-        name: string;
-        server_id: any;
-      };
-    };
+    [key: number]: RecordSetType;
   };
   recordsExpanded: boolean;
 
@@ -103,6 +108,7 @@ const initialState: UserSettingsState = {
   initialized: false,
   darkTheme: false,
   mapCenter: [55, -128],
+  newRecordDialogueOpen: false,
   newRecordDialogState: {
     recordCategory: '',
     recordType: '',
@@ -112,9 +118,9 @@ const initialState: UserSettingsState = {
 
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
-    return createNextState(state, (draftState) => {
+    return createNextState(state, (draftState: UserSettingsState) => {
       if (ACTIVITY_GET_REQUEST.match(action)) {
-        draftState.activeActivity = action.payload.activityID;
+        draftState.activeActivity = action.payload;
       }
       if (ACTIVITY_DELETE_SUCCESS.match(action)) {
         draftState.activeActivity = '';
@@ -125,7 +131,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
       }
       if (MAP_TOGGLE_WHATS_HERE.match(action)) {
-        draftState.recordsExpanded = action.payload?.toggle ? false : draftState.recordsExpanded;
+        draftState.recordsExpanded = action.payload;
       }
       if (OPEN_NEW_RECORD_MENU.match(action)) {
         draftState.newRecordDialogueOpen = true;
@@ -134,7 +140,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.newRecordDialogueOpen = false;
       }
       if (IAPP_GET_SUCCESS.match(action)) {
-        draftState.activeIAPP = action.payload.iapp?.site_id;
+        draftState.activeIAPP = action.payload.iapp?.site_id || null;
       }
       if (ACTIVITY_CREATE_SUCCESS.match(action)) {
         draftState.newRecordDialogueOpen = false;
@@ -153,8 +159,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               operator2: action.payload.operator2 ? action.payload.operator2 : 'AND',
               filter: action.payload.filter ? action.payload.filter : ''
             });
-
-          default:
+            break;
         }
       }
       if (RECORDSET_SET_SORT.match(action)) {
@@ -315,7 +320,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           drawOrder: 0,
           mapToggle: false,
           recordSetName: 'New Recordset - ' + action.payload.recordSetType,
-          recordSetType: action.payload.recordSetType
+          recordSetType: action.payload.recordSetType,
+          expanded: false,
+          isSelected: false,
+          labelToggle: false,
+          sortColumn: null,
+          sortOrder: 'ASC',
+          searchBoundary: null
         };
       }
       if (USER_SETTINGS_REMOVE_RECORD_SET.match(action)) {
@@ -353,13 +364,10 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordsExpanded = !draftState.recordsExpanded;
       }
       if (USER_SETTINGS_SET_DARK_THEME.match(action)) {
-        draftState.darkTheme = action.payload.enabled;
+        draftState.darkTheme = action.payload;
       }
       if (USER_SETTINGS_SET_MAP_CENTER_SUCCESS.match(action)) {
         draftState.mapCenter = action.payload.center;
-      }
-      if (USER_SETTINGS_SET_API_ERROR_DIALOG.match(action)) {
-        draftState.APIErrorDialog = action.payload.APIErrorDialog;
       }
     }) as unknown as UserSettingsState;
   };

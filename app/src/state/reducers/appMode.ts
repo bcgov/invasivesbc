@@ -1,5 +1,12 @@
 import { createNextState } from '@reduxjs/toolkit';
-import { OVERLAY_MENU_TOGGLE, SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
+import {
+  OVERLAY_MENU_TOGGLE,
+  SET_APP_MODE,
+  TOGGLE_PANEL,
+  TOGGLE_PANEL_OFF,
+  TOGGLE_PANEL_ON,
+  URL_CHANGE
+} from '../actions';
 
 export enum appModeEnum {
   'Records',
@@ -34,11 +41,24 @@ export default function appMode(state = initialState, action: any): AppModeState
     };
   }
   if (TOGGLE_PANEL.match(action)) {
-    const panelStateInPayload = action?.payload?.panelOpen !== undefined ? true : false;
     return {
       ...state,
-      panelOpen: panelStateInPayload ? action.payload.panelOpen : !state.panelOpen,
-      panelFullScreen: action?.payload?.fullScreen ? action.payload.fullScreen : false
+      panelOpen: action.payload.panelOpen,
+      panelFullScreen: action.payload.fullScreen
+    };
+  }
+  if (TOGGLE_PANEL_OFF.match(action)) {
+    return {
+      ...state,
+      panelOpen: false,
+      panelFullScreen: false
+    };
+  }
+  if (TOGGLE_PANEL_ON.match(action)) {
+    return {
+      ...state,
+      panelOpen: true,
+      panelFullScreen: false
     };
   }
   if (OVERLAY_MENU_TOGGLE.match(action)) {
