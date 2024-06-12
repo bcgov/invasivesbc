@@ -46,7 +46,7 @@ function* getBatch(action) {
       Authorization: yield getCurrentJWT()
     }
   });
-  yield put({ type: BATCH_RETRIEVE_SUCCESS, payload: yield res.json() });
+  yield put({ type: BATCH_RETRIEVE_SUCCESS, payload: (yield res.json()).result });
 }
 
 function* createBatch(action) {
