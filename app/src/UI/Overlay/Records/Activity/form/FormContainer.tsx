@@ -284,7 +284,6 @@ const FormContainer: React.FC<any> = (props) => {
         <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
           <SelectAutoCompleteContextProvider>
             <>
-              form!
               <Form
                 templates={{
                   ObjectFieldTemplate: ObjectFieldTemplate,
