@@ -4,9 +4,18 @@ import './NewsPage.css';
 const NewsPage = (props: any) => {
   const newsItems = [
     {
+      title: 'June 13, 2024: Renaming custom layers/record sets, and boundary check for batch',
+      content: `
+• When you add a new list of records, you will now be able to rename them.  Click the pencil icon next to the layer name to do so.
+• A version update in the database at some point broke the BC boundary check, which has allowed some records to sneak through that are not in BC.  
+  This has been fixed, however, we ask people review what they have submitted and clean up anything that is erroneous.
+`
+    },
+    {
       title: 'May 21, 2024: Crash fix for some devices',
       content: `
 • Some users (particularly those on mobile) may have experienced a crash on startup.  This has been resolved.
+
 `
     },
     {
