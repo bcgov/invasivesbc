@@ -10,6 +10,8 @@ import LayersClearIcon from '@mui/icons-material/LayersClear';
 import WifiOffIcon from '@mui/icons-material/WifiOff';
 import WifiIcon from '@mui/icons-material/Wifi';
 import EjectIcon from '@mui/icons-material/Eject';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
 
 import { Button, Tooltip, Typography } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -203,6 +205,7 @@ export const Records = () => {
   };
 
   const [highlightedSet, setHighlightedSet] = React.useState(null);
+  const [isEditingName, setIsEditingName] = React.useState(false);
 
   return (
     <div className="records__container">
@@ -249,8 +252,46 @@ export const Records = () => {
                   >
                     <div key={set + 'spinner'}>{!loadMap?.[set] ? <Spinner /> : <></>}</div>
                     <div className="records_set_left_hand_items">
+                      <>
+                        {isEditingName && !['1', '2', '3'].includes(set) ? (
+                          <>
+                            <input
+                              onChange={(e) =>
+                                dispatch({
+                                  type: USER_SETTINGS_SET_RECORDSET,
+                                  payload: { updatedSet: { recordSetName: e.target.value }, setName: set }
+                                })
+                              }
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                              type="text"
+                              value={recordSets?.[set]?.recordSetName}
+                            />
+                            <Button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsEditingName(false);
+                              }}
+                            >
+                              <CheckIcon />
+                            </Button>
+                          </>
+                        ) : ['1', '2', '3'].includes(set) ? (
+                          <></>
+                        ) : (
+                          <Button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setIsEditingName(true);
+                            }}
+                          >
+                            <EditIcon />
+                          </Button>
+                        )}
+                      </>
                       <div className="records_set_name">
-                        <Typography>{recordSets?.[set]?.recordSetName}</Typography>
+                        {isEditingName && !['1', '2', '3'].includes(set) ? <></> : <Typography>{recordSets?.[set]?.recordSetName}</Typography>}
                       </div>
                     </div>
 
