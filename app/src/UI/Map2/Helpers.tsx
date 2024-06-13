@@ -137,6 +137,7 @@ export const mapInit = (
           type: 'raster',
           tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
           tileSize: 256,
+          attribution: 'Powered by ESRI',
           maxzoom: 18
         },
         'Esri-Sat-Label': {
@@ -145,18 +146,20 @@ export const mapInit = (
             'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
           ],
           tileSize: 256,
+          attribution: 'Powered by ESRI',
           maxzoom: 18
         },
         'Esri-Topo': {
           type: 'raster',
           tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
           tileSize: 256,
+          attribution: 'Powered by ESRI',
           maxzoom: 18
         },
         public_layer: {
           type: 'vector',
           url: `pmtiles://${PMTILES_URL}`,
-          attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>'
+          attribution: 'Powered by ESRI',
         }
       },
       layers: [
