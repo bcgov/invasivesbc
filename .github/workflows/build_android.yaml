@@ -18,6 +18,18 @@ jobs:
         with:
           node-version: 20.x
 
+      - uses: actions/setup-java@v4
+        name: Setup Java
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          #
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          accept-android-sdk-licenses: true
+          log-accepted-android-sdk-licenses: false
+
       - name: Install sharedAPI dependencies
         working-directory: ./sharedAPI
         run: |
@@ -39,7 +51,7 @@ jobs:
           npm run build:android
 
       - name: Capacitor update
-        run: npx cap update android
+        run: npx cap sync android
         working-directory: ./app
 
       - name: Capacitor copy
