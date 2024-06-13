@@ -46,7 +46,9 @@ function* getBatch(action) {
       Authorization: yield getCurrentJWT()
     }
   });
-  yield put({ type: BATCH_RETRIEVE_SUCCESS, payload: (yield res.json()).result });
+
+  const data = yield res.json();
+  yield put({ type: BATCH_RETRIEVE_SUCCESS, payload: data.result});
 }
 
 function* createBatch(action) {
@@ -185,7 +187,7 @@ function* executeBatch(action) {
 
   const data = yield res.json();
 
-  if (!res.ok) {
+  if ((data.code === 200)) {
     yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
     yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
   } else {
