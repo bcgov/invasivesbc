@@ -1,6 +1,6 @@
 name: app Android
 on:
-  workflow_dispatch: {}
+  workflow_dispatch: { }
   push:
     branches:
       - dev
@@ -16,42 +16,22 @@ jobs:
       - name: Setup NodeJS
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
-
-      - name: Cache app deps
-        uses: actions/cache@v3
-        id: cache-app-deps
-        with:
-          path: app/node_modules
-          key: ${{ runner.os }}-app-deps-${{ hashFiles('app/package-lock.json') }}
-
-      - name: Cache shared deps
-        uses: actions/cache@v3
-        id: cache-shared-deps
-        with:
-          path: sharedAPI/node_modules
-          key: ${{ runner.os }}-shared-deps-${{ hashFiles('sharedAPI/package-lock.json') }}
+          node-version: 20.x
 
       - name: Install sharedAPI dependencies
-        if: steps.cache-shared-deps.outputs.cache-hit != 'true'
         working-directory: ./sharedAPI
         run: |
-          npm install
+          npm ci
 
       - name: Install app dependencies
-        if: steps.cache-app-deps.outputs.cache-hit != 'true'
         working-directory: ./app
         run: |
-          npm install --legacy-peer-deps
+          npm ci
 
       - name: Run build
         working-directory: ./app
         env:
           NODE_OPTIONS: --max-old-space-size=6000
-          REDIRECT_URI: ${{ secrets.APPV2_REDIRECT_URI }}
-          SSO_URL: ${{ secrets.APPV2_SSO_URL }}
-          SSO_REALM: ${{ secrets.APPV2_SSO_REALM }}
-          SSO_CLIENT_ID: ${{ secrets.APPV2_SSO_CLIENT_ID }}
           REACT_APP_API_HOST: ${{ secrets.APPV2_REACT_APP_API_HOST }}
           PUBLIC_MAP_URL: ${{ secrets.APPV2_PUBLIC_MAP_URL }}
           IAPP_GEOJSON_URL: ${{ secrets.APPV2_IAPP_GEOJSON_URL }}
@@ -70,3 +50,11 @@ jobs:
         working-directory: ./app/android
         run: |
           ./gradlew bundleRelease
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Export App Bundle
+          path: app/android/app/build/outputs/bundle/release/app-release.aab
+          retention-days: 1
+          if-no-files-found: error
+
