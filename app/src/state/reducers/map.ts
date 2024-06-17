@@ -34,6 +34,7 @@ import {
   MAP_TOGGLE_LEGENDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO,
   MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
@@ -234,6 +235,7 @@ export interface MapState {
   map_zoom: number;
   panned: boolean;
   positionTracking: boolean;
+  track_me_draw_geo: boolean;
   quickPanToRecord: boolean;
   recordSetForCSV: number;
   recordTables: object;
@@ -400,6 +402,7 @@ const initialState: MapState = {
   MapMode: 'VECTOR_ENDPOINT',
   panned: false,
   positionTracking: false,
+  track_me_draw_geo: false,
   quickPanToRecord: false,
 
   recordSetForCSV: 0,
@@ -911,6 +914,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case MAP_TOGGLE_TRACKING: {
           draftState.positionTracking = !state.positionTracking;
+          break;
+        }
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO: {
+          draftState.track_me_draw_geo = !state.track_me_draw_geo;
           break;
         }
         case MAP_TOGGLE_WHATS_HERE: {
