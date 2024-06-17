@@ -131,7 +131,7 @@ td {
   justify-content: center;
   color: white;
   bottom: 0;
-  height: 3vh;
+  height: var(--footer-bar-height);
   width: 100%;
   background-color: #003366;
   align-items: center;
