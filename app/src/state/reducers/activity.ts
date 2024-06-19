@@ -21,8 +21,7 @@ import {
   ACTIVITY_SET_SAVED_HASH_SUCCESS,
   ACTIVITY_SET_UNSAVED_NOTIFICATION,
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO
+  ACTIVITY_UPDATE_GEO_SUCCESS
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -41,7 +40,6 @@ interface ActivityState {
   suggestedJurisdictions: [];
   suggestedPersons: [];
   suggestedTreatmentIDs: [];
-  track_me_draw_geo: boolean;
   unsaved_notification: any | null;
   activity_copy_buffer: object | null;
 }
@@ -54,7 +52,6 @@ const initialState: ActivityState = {
   failCode: null,
   initialized: false,
   loading: false,
-  track_me_draw_geo: false,
   notification: null,
   saved_activity_hash: null,
   suggestedJurisdictions: [],
@@ -129,12 +126,12 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         }
         case ACTIVITY_UPDATE_GEO_SUCCESS: {
           draftState.activity.geometry = action.payload.geometry;
-          draftState.activity.form_data.activity_data.latitude = action.payload.lat? action.payload.lat : null;
-          draftState.activity.form_data.activity_data.longitude = action.payload.long? action.payload.long : null;
+          draftState.activity.form_data.activity_data.latitude = action.payload.lat;
+          draftState.activity.form_data.activity_data.longitude = action.payload.long;
           draftState.activity.form_data.activity_data.utm_zone = action.payload.utm ? action.payload.utm[0] : null;
           draftState.activity.form_data.activity_data.utm_easting = action.payload.utm ? action.payload.utm[1] : null;
           draftState.activity.form_data.activity_data.utm_northing = action.payload.utm ? action.payload.utm[2] : null;
-          draftState.activity.form_data.activity_data.reported_area = action.payload.reported_area ? action.payload.reported_area : null;
+          draftState.activity.form_data.activity_data.reported_area = action.payload.reported_area;
           draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
           break;
         }
@@ -197,10 +194,6 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         }
         case ACTIVITY_DELETE_PHOTO_SUCCESS: {
           draftState.activity = action.payload.activity;
-          break;
-        }
-        case MAP_TOGGLE_TRACK_ME_DRAW_GEO: {
-          draftState.track_me_draw_geo = !draftState.track_me_draw_geo; 
           break;
         }
         case ACTIVITY_EDIT_PHOTO_SUCCESS: {
