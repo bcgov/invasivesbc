@@ -30,7 +30,6 @@ body {
 }
 
 .App {
-  height: 100dvh;
   width: 100%;
   text-align: center;
   margin: 0;
@@ -38,16 +37,31 @@ body {
   flex-flow: column wrap;
   position: relative;
   box-sizing: border-box;
-  padding: calc(var(--extra-top-padding) + env(safe-area-inset-top, 0)) env(safe-area-inset-right, 0)
-    calc(var(--extra-bottom-padding) + env(safe-area-inset-bottom, 0)) env(safe-area-inset-left, 0);
+  padding: calc(var(--extra-top-padding) + env(safe-area-inset-top, 0)) env(safe-area-inset-right, 0) calc(var(--extra-bottom-padding) + env(safe-area-inset-bottom, 0)) env(safe-area-inset-left, 0);
   overflow: hidden;
+  height: 100svh;
+
 
   /* set by compilation flag */
 
   &.is-mobile {
     --footer-bar-height: 0px;
+  }
+
+  &.web {
+    --footer-bar-height: 32px;
+  }
+
+  &.ios {
     --extra-top-padding: 20px;
     --extra-bottom-padding: 20px;
+  }
+
+  &.android {
+    height: 100dvh;
+
+    --extra-top-padding: 8px;
+    --extra-bottom-padding: 8px;
   }
 }
 
@@ -101,24 +115,33 @@ body {
 
 @media only screen and (width <= 800px) {
   :root {
-    --header-bar-height: 40px;
-
-    /* --footer-bar-height: 32px; */
+    .App {
+      &.web {
+        --header-bar-height: 40px;
+      }
+    }
   }
 }
 
 @media only screen and (width >= 801px) and (width <= 1280px) {
   :root {
-    --header-bar-height: 60px;
-
-    /* --footer-bar-height: 32px; */
+    .App {
+      &.web {
+        --header-bar-height: 60px;
+      }
+    }
   }
 }
 
 @media only screen and (width >= 1281px) {
   :root {
-    --header-bar-height: 60px;
 
-    /* --footer-bar-height: 32px; */
+  }
+
+  .App {
+    &.web {
+      --header-bar-height: 60px;
+      --footer-bar-height: 40px;
+    }
   }
 }
