@@ -1,5 +1,5 @@
 import { Button } from '@mui/material';
-import React, { Suspense, useRef } from 'react';
+import React, { Suspense, useEffect, useRef, useState } from 'react';
 import { Redirect, Route, useHistory } from 'react-router-dom';
 import './App.css';
 import { Footer } from './Footer/Footer';
@@ -229,8 +229,31 @@ const App: React.FC = () => {
     return <ErrorHandler detail={errorDetail} />;
   }
 
+  const [appClasses, setAppclasses] = useState('');
+
+  useEffect(() => {
+    const newAppClasses: string[] = ['App'];
+    if (MOBILE) {
+      newAppClasses.push('is-mobile');
+    }
+
+    switch (import.meta.env.VITE_TARGET_PLATFORM) {
+      case 'android':
+        newAppClasses.push('android');
+        break;
+      case 'ios':
+        newAppClasses.push('ios');
+        break;
+      case 'web':
+      default:
+        newAppClasses.push('web');
+        break;
+    }
+    setAppclasses(newAppClasses.join(' '));
+  }, [import.meta.env.VITE_TARGET_PLATFORM]);
+
   return (
-    <div id="app" className={`${MOBILE ? 'is-mobile' : ''} App`}>
+    <div id="app" className={appClasses}>
       <Header />
       <Map>
         <Overlay>

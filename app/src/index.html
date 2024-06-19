@@ -17,7 +17,7 @@
 
     const mobileMode = '%VITE_MOBILE%'.toLowerCase() === 'true';
 
-    if (mobileMode) {
+    if (!mobileMode) {
       RefreshRuntime.injectIntoGlobalHook(window);
       window.$RefreshReg$ = () => {};
       window.$RefreshSig$ = () => (type) => type;
