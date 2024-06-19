@@ -47,7 +47,6 @@ function* getBatch(action) {
     }
   });
 
-  const data = yield res.json();
   yield put(BATCH_RETRIEVE_SUCCESS((yield res.json()).result));
 }
 
