@@ -4,7 +4,7 @@ import { AccuracyToggle } from './AccuracyToggle';
 import { BaseMapToggle } from './BaseMapToggle';
 import './ButtonContainer.css';
 import { CenterCurrentRecord } from './CenterCurrentRecord';
-import { FindMeToggle, TrackMeToggle } from './FindMe';
+import { FindMeToggle } from './FindMe';
 import { LegendsButton } from './LegendsButton';
 import { NewRecord } from './NewRecord';
 import { QuickPanToRecordToggle } from './QuickPanToRecordToggle';
@@ -27,7 +27,6 @@ export const ButtonContainer = () => {
         <LegendsButton />
       </WebOnly>
 
-      {isAuth && <TrackMeToggle />}
       <AccuracyToggle />
 
       {isAuth && <WhatsHereButton />}
