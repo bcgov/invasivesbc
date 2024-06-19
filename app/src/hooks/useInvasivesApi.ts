@@ -357,11 +357,21 @@ export const useInvasivesApi = () => {
   };
 };
 
-export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHeaders?) {
+export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHeaders?, dataAs?: 'text' | 'json') {
   // get config and request setup from store
   const { API_BASE } = yield select(selectConfiguration);
 
   const url = new URL(API_BASE + endpoint);
+
+  async function response_data(res: Response) {
+    switch (dataAs) {
+      case 'text':
+        return await res.text();
+      case 'json':
+      default:
+        return await res.json();
+    }
+  }
 
   if (method === 'GET') {
     if (payloadData) {
@@ -372,7 +382,7 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
       method: method,
       headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }
     });
-    const data = yield res.json();
+    const data = yield response_data(res);
     const status = res.status;
     return { data, status, url };
   } else if (['PUT', 'POST'].includes(method)) {
@@ -381,7 +391,7 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
       headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
       body: JSON.stringify(payloadData)
     });
-    const data = yield res.json();
+    const data = yield response_data(res);
     const status = res.status;
     return { data, status, url };
   } else if (method === 'DELETE') {
@@ -394,7 +404,7 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
       headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
       ...payloadOptions
     });
-    const data = yield res.json();
+    const data = yield response_data(res);
     const status = res.status;
     return { data, status, url };
   } else {
@@ -402,7 +412,7 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
       method: method,
       headers: { Authorization: yield getCurrentJWT() }
     });
-    const data = yield res.json();
+    const data = yield response_data(res);
     const status = res.status;
     return { data, status, url };
   }

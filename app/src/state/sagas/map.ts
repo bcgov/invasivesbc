@@ -17,7 +17,6 @@ import {
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
   FILTER_PREP_FOR_VECTOR_ENDPOINT,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_GEOJSON_GET_ONLINE,
@@ -33,7 +32,6 @@ import {
   MAP_INIT_REQUEST,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
-  MAP_MODE_SET,
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
   MAP_SET_COORDS,
@@ -62,7 +60,6 @@ import {
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-  WHATS_HERE_IAPP_ROWS_ONLINE,
   WHATS_HERE_IAPP_ROWS_REQUEST,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
   WHATS_HERE_PAGE_ACTIVITY,
@@ -607,8 +604,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   const set = userSettings?.recordSets?.[action.payload.id];
   const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
   try {
-    const rows = [];
-    let networkReturn;
     let conditionallyUnnestedURL;
     if (set.recordSetType === 'IAPP') {
       const currentState = yield select((state) => state.UserSettings);
@@ -619,9 +614,15 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filterObject.isCSV = true;
       filterObject.CSVType = action.payload.CSVType;
 
-      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
-        filterObjects: [filterObject]
-      });
+      const networkReturn = yield InvasivesAPI_Call(
+        'POST',
+        `/api/v2/iapp/`,
+        {
+          filterObjects: [filterObject]
+        },
+        null,
+        'text'
+      );
 
       conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     } else {
@@ -633,9 +634,15 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       filterObject.isCSV = true;
       filterObject.CSVType = action.payload.CSVType;
 
-      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-        filterObjects: [filterObject]
-      });
+      const networkReturn = yield InvasivesAPI_Call(
+        'POST',
+        `/api/v2/activities/`,
+        {
+          filterObjects: [filterObject]
+        },
+        null,
+        'text'
+      );
 
       conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
     }
