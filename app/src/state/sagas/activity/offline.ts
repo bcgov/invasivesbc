@@ -97,9 +97,12 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
 
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
-  const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
-    (s) => Object.hasOwn(s, 'sync_state') && (s as OfflineActivityRecord).sync_state !== 'SYNCHRONIZED'
-  ) as OfflineActivityRecord[];
+  const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter((s) => {
+    if (typeof s === 'object' && s !== null) {
+      return Object.hasOwn(s, 'sync_state') && (s as OfflineActivityRecord).sync_state !== 'SYNCHRONIZED';
+    }
+    return false;
+  }) as OfflineActivityRecord[];
 
   for (const activity of toSync) {
     const hydrated = JSON.parse(activity.data);

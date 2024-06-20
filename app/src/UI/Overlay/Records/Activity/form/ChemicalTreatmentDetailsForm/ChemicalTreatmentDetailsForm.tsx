@@ -94,7 +94,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
     errors: []
   });
   //used to render the list of errors
-  const [localErrors, setLocalErrors] = useState([]);
+  const [localErrors, setLocalErrors] = useState<string[]>([]);
   const [reportedArea, setReportedArea] = useState(0);
 
   useEffect(() => {
@@ -126,7 +126,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
         //if no errors, perform calculations
         if (newErr.length < 1) {
-          const results = performCalculation(reportedArea, formDetails.form_data, businessCodes);
+          const results = performCalculation(reportedArea, formDetails.form_data);
           setCalculationResults(results as any);
           props.onChange(
             {

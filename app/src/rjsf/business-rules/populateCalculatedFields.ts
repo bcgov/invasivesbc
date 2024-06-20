@@ -39,7 +39,7 @@ export function populateTransectLineAndPointData(newSubtypeData: any): any {
     If yes, calculate the bearing and length of each transect line
   */
   const transectLinesList = [...newSubtypeData[transectLinesMatchingKeys[0]]];
-  const updatedTransectLinesList = [];
+  const updatedTransectLinesList: any[] = [];
 
   transectLinesList.forEach((transectLineObj: any) => {
     const transectLineObjToUpdate = { ...transectLineObj };

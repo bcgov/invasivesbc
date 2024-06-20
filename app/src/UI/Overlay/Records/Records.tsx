@@ -282,7 +282,11 @@ export const Records = () => {
                         )}
                       </>
                       <div className="records_set_name">
-                        {isEditingName && !['1', '2', '3'].includes(set) ? <></> : <Typography>{recordSets?.[set]?.recordSetName}</Typography>}
+                        {isEditingName && !['1', '2', '3'].includes(set) ? (
+                          <></>
+                        ) : (
+                          <Typography>{recordSets?.[set]?.recordSetName}</Typography>
+                        )}
                       </div>
                     </div>
 

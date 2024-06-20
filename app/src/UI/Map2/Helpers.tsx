@@ -159,7 +159,7 @@ export const mapInit = (
         public_layer: {
           type: 'vector',
           url: `pmtiles://${PMTILES_URL}`,
-          attribution: 'Powered by ESRI',
+          attribution: 'Powered by ESRI'
         }
       },
       layers: [

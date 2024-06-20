@@ -1079,7 +1079,7 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
   const type = draftState.layers[index].type;
 
   if (index !== undefined && type === typeToFilter && type === 'Activity') {
-    const filtered = [];
+    const filtered: string[] = [];
     IDList.map((id) => {
       for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
         if (draftState.activitiesGeoJSONDict.hasOwnProperty(source)) {

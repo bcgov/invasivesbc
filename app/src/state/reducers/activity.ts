@@ -88,7 +88,8 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           suggestedPersons: [],
           suggestedTreatmentIDs: [],
           unsaved_notification: null,
-          activity_copy_buffer: null
+          activity_copy_buffer: null,
+          track_me_draw_geo: false
         };
       }
       if (ACTIVITY_CREATE_REQUEST.match(action)) {
@@ -108,7 +109,8 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           suggestedPersons: [],
           suggestedTreatmentIDs: [],
           unsaved_notification: null,
-          activity_copy_buffer
+          activity_copy_buffer,
+          track_me_draw_geo: false
         };
       }
       if (ACTIVITY_GET_FAILURE.match(action)) {

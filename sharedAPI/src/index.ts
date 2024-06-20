@@ -99,7 +99,7 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
     }
 
     const formData = mapFormDataToLegacy(newActivity?.form_data ?? {});
-    const calculationResults = performCalculation(area, formData, businessCodes);
+    const calculationResults = performCalculation(area, formData);
     newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
 
     // TODO:  copy blob autofill stuff from tankmix accordion

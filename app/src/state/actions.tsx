@@ -7,6 +7,7 @@ import { EmailSettingsType } from 'state/reducers/emailSettings';
 import { OfflineSyncStateType } from 'state/reducers/offlineActivity';
 import { TrainingVideoMetadata } from 'state/reducers/training_videos';
 import { AuthExtendedInfoType } from 'state/reducers/auth';
+import { LngLatLike } from 'maplibre-gl';
 
 export const SET_APP_MODE = createAction<{ mode: appModeEnum }>('SET_APP_MODE');
 export const TOGGLE_PANEL = createAction<{ panelOpen: boolean; fullScreen: boolean }>('TOGGLE_PANEL');
@@ -89,10 +90,10 @@ export const ACTIVITY_UPDATE_GEO_SUCCESS = createAction<{
 }>('ACTIVITY_UPDATE_GEO_SUCCESS');
 export const ACTIVITY_UPDATE_GEO_FAILURE = createAction('ACTIVITY_UPDATE_GEO_FAILURE');
 
-export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST = createAction(
+export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST = createAction<{ search_feature: GeoJSON }>(
   'ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST'
 );
-export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE = createAction(
+export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE = createAction<{ search_feature: GeoJSON }>(
   'ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE'
 );
 export const ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_OFFLINE = createAction(
@@ -113,12 +114,14 @@ export const ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS = createAction<{
   suggestedPersons: unknown[];
 }>('ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS');
 
-export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST = createAction(
+export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST = createAction<{ activity: any }>(
   'ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST'
 );
-export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE = createAction(
-  'ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE'
-);
+export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE = createAction<{
+  activity_subtype: string[];
+  user_roles: string[];
+  search_feature: { type: string; features: any } | false;
+}>('ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE');
 export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_OFFLINE = createAction(
   'ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_OFFLINE'
 );
@@ -126,7 +129,7 @@ export const ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS = createAction<{ sugge
   'ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS'
 );
 
-export const ACTIVITY_ON_FORM_CHANGE_REQUEST = createAction('ACTIVITY_ON_FORM_CHANGE_REQUEST');
+export const ACTIVITY_ON_FORM_CHANGE_REQUEST = createAction<{ eventFormData: any }>('ACTIVITY_ON_FORM_CHANGE_REQUEST');
 
 export const ACTIVITY_ON_FORM_CHANGE_SUCCESS = createAction<{
   activity: {
@@ -204,12 +207,16 @@ export const ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE = createAction<boolean>('ACT
 export const ACTIVITY_RUN_OFFLINE_SYNC = createAction('ACTIVITY_RUN_OFFLINE_SYNC');
 export const ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE = createAction('ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE');
 
-export const ACTIVITY_SAVE_NETWORK_REQUEST = createAction('ACTIVITY_SAVE_NETWORK_REQUEST');
+export const ACTIVITY_SAVE_NETWORK_REQUEST = createAction<{
+  activity_id: string;
+  updatedFormData?: any;
+  form_status?: string;
+}>('ACTIVITY_SAVE_NETWORK_REQUEST');
 export const ACTIVITY_SAVE_NETWORK_SUCCESS = createAction('ACTIVITY_SAVE_NETWORK_SUCCESS');
 export const ACTIVITY_SAVE_NETWORK_FAILURE = createAction('ACTIVITY_SAVE_NETWORK_FAILURE');
 
 export const ACTIVITY_CREATE_REQUEST = createAction('ACTIVITY_CREATE_REQUEST');
-export const ACTIVITY_CREATE_NETWORK = createAction('ACTIVITY_CREATE_NETWORK');
+export const ACTIVITY_CREATE_NETWORK = createAction<{ activity: any }>('ACTIVITY_CREATE_NETWORK');
 export const ACTIVITY_CREATE_LOCAL = createAction<{ id: string; data: any }>('ACTIVITY_CREATE_LOCAL');
 export const ACTIVITY_CREATE_SUCCESS = createAction<{ activity_id: string }>('ACTIVITY_CREATE_SUCCESS');
 export const ACTIVITY_CREATE_FAILURE = createAction('ACTIVITY_CREATE_FAILURE');
@@ -256,7 +263,10 @@ export const USER_SETTINGS_GET_INITIAL_STATE_SUCCESS = createAction<{
   recordsExpanded: boolean;
 }>('USER_SETTINGS_GET_INITIAL_STATE_SUCCESS');
 export const USER_SETTINGS_GET_INITIAL_STATE_FAILURE = createAction('USER_SETTINGS_GET_INITIAL_STATE_FAILURE');
-export const USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST = createAction('USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST');
+export const USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST = createAction<{
+  id: string;
+  activeActivity: string;
+}>('USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST');
 export const USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS = createAction<{
   id: string;
   description: string;
@@ -319,7 +329,9 @@ export const USER_SETTINGS_SET_RECORDSET = createAction<{
 export const USER_SETTINGS_ADD_RECORD_SET = createAction<{ recordSetType: string }>('USER_SETTINGS_ADD_RECORD_SET');
 export const USER_SETTINGS_REMOVE_RECORD_SET = createAction<{ setID: string }>('USER_SETTINGS_REMOVE_RECORD_SET');
 
-export const USER_SETTINGS_SET_SELECTED_RECORD_REQUEST = createAction('USER_SETTINGS_SET_SELECTED_RECORD_REQUEST');
+export const USER_SETTINGS_SET_SELECTED_RECORD_REQUEST = createAction<{
+  activeActivity: string | null;
+}>('USER_SETTINGS_SET_SELECTED_RECORD_REQUEST');
 export const USER_SETTINGS_SET_SELECTED_RECORD_SUCCESS = createAction('USER_SETTINGS_SET_SELECTED_RECORD_SUCCESS');
 export const USER_SETTINGS_SET_SELECTED_RECORD_FAILURE = createAction('USER_SETTINGS_SET_SELECTED_RECORD_FAILURE');
 export const USER_SETTINGS_SET_BOUNDARIES_REQUEST = createAction('USER_SETTINGS_SET_BOUNDARIES_REQUEST');
@@ -365,7 +377,9 @@ export const USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE = createAction(
   'USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_FAILURE'
 );
 export const USER_SETTINGS_SET_DARK_THEME = createAction<boolean>('USER_SETTINGS_SET_DARK_THEME');
-export const USER_SETTINGS_SET_MAP_CENTER_REQUEST = createAction('USER_SETTINGS_SET_MAP_CENTER_REQUEST');
+export const USER_SETTINGS_SET_MAP_CENTER_REQUEST = createAction<{
+  center: LngLatLike;
+}>('USER_SETTINGS_SET_MAP_CENTER_REQUEST');
 export const USER_SETTINGS_SET_MAP_CENTER_SUCCESS = createAction<{
   center: [number, number];
 }>('USER_SETTINGS_SET_MAP_CENTER_SUCCESS');

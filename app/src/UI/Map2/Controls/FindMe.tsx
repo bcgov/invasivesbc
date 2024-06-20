@@ -65,14 +65,16 @@ export const TrackMeToggle = (props) => {
         <div
           ref={divRef}
           // id="trackMeToggle"
-          className={drawGeometryTracking ? 'map-btn-selected' : 'map-btn'}>
+          className={drawGeometryTracking ? 'map-btn-selected' : 'map-btn'}
+        >
           <Tooltip
             open={show}
             classes={{ tooltip: 'toolTip' }}
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
             title="Track My Path"
-            placement="top-end">
+            placement="top-end"
+          >
             <span>
               <IconButton
                 onClick={() => {
@@ -89,7 +91,8 @@ export const TrackMeToggle = (props) => {
                   } else {
                     return;
                   }
-                }}>
+                }}
+              >
                 <PolylineIcon /> <DirectionsWalkIcon />
               </IconButton>
             </span>

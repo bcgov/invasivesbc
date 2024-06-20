@@ -24,7 +24,7 @@ describe('Can load initial record set state on startup (first visit)', function 
 
   it('Can load initial 3 record sets on first visit', async function () {
     store.dispatch(AUTH_INITIALIZE_COMPLETE({ authenticated: true }));
-    
+
     await waitFor(() => {
       expect(store.getState()?.UserSettings?.recordSets).toBeDefined();
     });

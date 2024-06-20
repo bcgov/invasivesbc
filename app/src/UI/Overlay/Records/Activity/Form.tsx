@@ -166,9 +166,10 @@ export const ActivityForm = (props) => {
         Click to enter UTM manually
       </Button>
       <Button
-        onClick={()=> dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO })}
+        onClick={() => dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO })}
         variant="outlined"
-        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>
+        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}
+      >
         Click to draw a geometry by tracing your GPS movement
       </Button>
       <FormContainer />

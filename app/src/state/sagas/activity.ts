@@ -79,7 +79,8 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS,
   ACTIVITY_UPDATE_PHOTO_REQUEST,
   MAP_INIT_REQUEST,
-  MAP_SET_COORDS, MAP_TOGGLE_TRACK_ME_DRAW_GEO,
+  MAP_SET_COORDS,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
@@ -152,7 +153,7 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
       currentHash = (currentHash * 33) ^ activitySerialized.charCodeAt(i);
     }
 
-    yield put(ACTIVITY_SET_CURRENT_HASH_SUCCESS(currentHash));
+    yield put(ACTIVITY_SET_CURRENT_HASH_SUCCESS(`${currentHash}`));
   } catch (e) {
     console.error(e);
     yield put(ACTIVITY_SET_CURRENT_HASH_FAILURE());
@@ -190,23 +191,22 @@ function* handle_ACTIVITY_DELETE_FAILURE() {
   );
 }
 
-function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO() {
   const activityState = yield select(selectActivity);
   if (activityState.track_me_draw_geo) {
     // wipe the existing geometry
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+    yield put(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [] }));
 
     // let user know
-    yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
         notification: {
           visible: true,
           message: 'Start walking to draw a geometry.  Click the button again to stop.',
           severity: 'success'
         }
-      }
-    });
+      })
+    );
   } else {
     // let user know
     //convert the geom
@@ -221,18 +221,17 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
       }
     };
 
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+    yield put(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [newGeo] }));
 
-    yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-      payload: {
+    yield put(
+      ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS({
         notification: {
           visible: true,
           message: 'Geometry drawing stopped',
           severity: 'success'
         }
-      }
-    });
+      })
+    );
   }
 }
 
@@ -262,7 +261,7 @@ function* handle_MAP_SET_COORDS(action) {
       }
     };
     //append to linestring
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+    yield put(ACTIVITY_UPDATE_GEO_REQUEST({ geometry: [newGeo] }));
   }
 }
 

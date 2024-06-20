@@ -10,8 +10,10 @@ import {
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
-import { kinks } from '@turf/turf';
+import { kinks, Point, Properties } from '@turf/turf';
 
+import { Feature } from 'geojson';
+import { LngLatLike } from 'maplibre-gl';
 import {
   autoFillNameByPAC,
   autoFillSlopeAspect,
@@ -151,6 +153,9 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
   try {
     // get spatial fields based on geo
     const { latitude, longitude } = calculateLatLng(action.payload.geometry) || {};
+    if (!latitude || !longitude) {
+      console.warn('latitude or longitude undefined');
+    }
     let utm;
     if (latitude && longitude) utm = calc_utm(longitude, latitude);
     const modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry));
@@ -178,8 +183,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
         ACTIVITY_UPDATE_GEO_SUCCESS({
           geometry: modifiedPayload.geometry,
           utm: utm,
-          lat: latitude,
-          long: longitude,
+          lat: latitude !== undefined ? latitude : 0,
+          long: longitude !== undefined ? longitude : 0,
           reported_area: reported_area,
           Well_Information: []
         })
@@ -207,8 +212,20 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       }
     }
 
-    let wellInformationArr = [];
-    let nearestWells = null;
+    let wellInformationArr: {
+      well_id: string;
+      well_proximity: string;
+    }[] = [];
+
+    let nearestWells: {
+      well_objects: {
+        proximity: string;
+        properties: Record<string, any>;
+        inside: boolean;
+      }[];
+
+      areWellsInside: boolean;
+    } | null = null;
     let areWellsInside = false;
     if (reported_area < MAX_AREA && !isWIPLinestring) {
       if (latitude && longitude) {
@@ -289,8 +306,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       ACTIVITY_UPDATE_GEO_SUCCESS({
         geometry: [sanitizedGeo],
         utm: utm,
-        lat: latitude,
-        long: longitude,
+        lat: latitude !== undefined ? latitude : 0,
+        long: longitude !== undefined ? longitude : 0,
         reported_area: reported_area,
         Well_Information: wellInformationArr
       })
@@ -502,7 +519,11 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
     const currentActivity = currentState.activity;
     const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === 'LineString';
 
-    if (currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA  && !wipLinestring) {
+    if (
+      currentActivity?.geometry &&
+      currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA &&
+      !wipLinestring
+    ) {
       yield put(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST({ search_feature: currentActivity.geometry }));
 
       if (isLinkedTreatmentSubtype(currentActivity.activity_subtype)) {
@@ -599,7 +620,7 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 
   const geometry = activityState?.activity?.geometry?.[0];
   if (geometry) {
-    const isPoint = geometry.geometry?.type === 'Point' ? true : false;
+    const isPoint = geometry.geometry?.type === 'Point';
     let target;
     if (isPoint) {
       target = geometry.geometry;
@@ -624,17 +645,17 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     yield put(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST({ search_feature: activityState.activity.geometry }));
 
     // needs to be latlng expression
-    const isGeo = action.payload.activity?.geometry?.[0]?.geometry?.coordinates ? true : false;
+    const isGeo = !!action.payload.activity?.geometry?.[0]?.geometry?.coordinates;
     //const centerPoint = center(action.payload.activity?.geometry[0]?.geometry?.coordinates);
 
-    let centerPoint;
+    let centerPoint: Point | Feature<Point, Properties> | null = null;
     if (isGeo) {
       centerPoint = center(action.payload.activity?.geometry[0]?.geometry);
     }
     if (centerPoint && isGeo) {
       yield put(
         USER_SETTINGS_SET_MAP_CENTER_REQUEST({
-          center: centerPoint.geometry.coordinates
+          center: centerPoint.geometry.coordinates as LngLatLike
         })
       );
     }
@@ -694,7 +715,7 @@ export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
         });
       }
 
-      let delete_keys = [];
+      let delete_keys: string[] = [];
       if (beforeActivity.media_delete_keys?.length) {
         delete_keys = [...beforeActivity.media_delete_keys];
       }

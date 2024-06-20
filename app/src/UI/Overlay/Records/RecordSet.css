@@ -130,7 +130,7 @@ td {
   align-items: center;
   justify-content: center;
   color: white;
-  bottom:  var(--footer-bar-height);
+  bottom: var(--footer-bar-height);
   height: var(--footer-bar-height);
   width: 100%;
   background-color: #003366;

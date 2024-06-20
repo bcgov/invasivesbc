@@ -32,6 +32,7 @@ export function* getClosestWells(inputGeometry, online) {
   //if there is a geometry drawn, get closest wells and wells inside and label them
   // return getWellsArray(allFeatures, firstFeature);
 }
+
 // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
 export const getWellsArray = (arrayOfWells, inputGeometry) => {
   let geoJSONFeature = inputGeometry;
@@ -47,12 +48,12 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
     geoJSONFeature = buffer(geoJSONFeature, radius, { units: 'meters' });
   }
 
-  const outputWells = [];
+  const outputWells: object[] = [];
   let areWellsInside: boolean = false;
 
   const turfPolygon = polygon(geoJSONFeature.geometry.coordinates);
 
-  arrayOfWells.forEach((well, index) => {
+  arrayOfWells.forEach((well) => {
     if (inside(well, turfPolygon)) {
       areWellsInside = true;
       outputWells.push({ ...well, proximity: 0, inside: true });
@@ -68,8 +69,8 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
 
   outputWells[0] = { ...outputWells[0], closest: true };
 
-  const fiveClosest = [];
-  const insideGeoWells = [];
+  const fiveClosest: object[] = [];
+  const insideGeoWells: object[] = [];
 
   outputWells.forEach((well: any) => {
     if (well.inside) {

@@ -4,7 +4,7 @@ import React, { ReactNode } from 'react';
 export interface IGeneralDialog {
   children?: ReactNode;
   dialogTitle: string;
-  dialogContentText?: string;
+  dialogContentText?: string | null;
   dialogOpen: boolean;
   dialogActions: IDialogAction[];
 }

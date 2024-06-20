@@ -107,7 +107,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     // if not declining check more fields
     if (!decline) {
       requiredFields.push(
-        { value: employer, error: setEmployerErrorText, text: 'Please enter Employer ' },
+        { value: `${employer}`, error: setEmployerErrorText, text: 'Please enter Employer ' },
         {
           value: fundingAgencies?.join(),
           error: setFundingAgenciesErrorText,

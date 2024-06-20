@@ -84,7 +84,7 @@ export const validate_inv_plants_fields = (formData: IGeneralFields, errors: any
   let negativePercentage: boolean = false;
   let totalPercentage: number = 0;
 
-  const plantCodeList = [];
+  const plantCodeList: string[] = [];
 
   for (let invPlantIndex = 0; invPlantIndex < formData.invasive_plants.length; invPlantIndex++) {
     if (!formData.invasive_plants[invPlantIndex].invasive_plant_code) {
