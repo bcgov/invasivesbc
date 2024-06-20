@@ -23,7 +23,10 @@ BiocontrolReleaseTemp.columns = [
   ...ActivityPersons,
   ...WeatherInformation,
   ...MicrositeConditions,
-  new TemplateColumnBuilder('Area', 'numeric').isRequired().build(),
+  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
+    .isRequired()
+    .mapperOverwritesPrevious()
+    .build(),
   new TemplateColumnBuilder(
     'Release - Invasive Plant',
     'codeReference',

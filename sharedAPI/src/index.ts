@@ -70,7 +70,7 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
         newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object.herbicides[i].index = i;
       }
 
-      delete newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides;
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides = [];
     }
 
     if (!tank_mix && newActivity.form_data?.activity_subtype_data?.chemical_treatment_details?.herbicides?.length > 0) {
@@ -95,7 +95,10 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
       newActivity.form_data.activity_subtype_data.chemical_treatment_details.herbicides[0].calculation_type =
         newActivity.form_data.activity_subtype_data.chemical_treatment_details?.tank_mix_object?.calculation_type;
 
-      delete newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object;
+      newActivity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix_object = {
+        herbicides: [],
+        calculation_type: null
+      };
     }
 
     const formData = mapFormDataToLegacy(newActivity?.form_data ?? {});

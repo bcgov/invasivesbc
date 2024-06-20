@@ -27,7 +27,9 @@ ObservationAquaticPlant.columns = [
     'Observation - Pre-treatment observation?',
     'tristate',
     'form_data.activity_type_data.pre_treatment_observation'
-  ).build(),
+  )
+    .isRequired()
+    .build(),
 
   new TemplateColumnBuilder(
     'Observation - Sample Point ID',
@@ -78,7 +80,9 @@ ObservationAquaticPlant.columns = [
     'Observation - Suitable for Biocontrol Agent?',
     'tristate',
     'form_data.activity_subtype_data.Observation_PlantAquatic_Information.suitable_for_biocontrol_agent'
-  ).build(),
+  )
+    .isRequired()
+    .build(),
 
   new TemplateColumnBuilder(
     'Voucher - Sample Collected?',

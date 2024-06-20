@@ -19,7 +19,10 @@ TreatmentMechanicalTerrestrialPlantTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
-  new TemplateColumnBuilder('Area', 'numeric').isRequired().build(),
+  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
+    .isRequired()
+    .mapperOverwritesPrevious()
+    .build(),
   new TemplateColumnBuilder(
     'Treatment - Invasive Plant Code',
     'codeReference',

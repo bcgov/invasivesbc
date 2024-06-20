@@ -10,15 +10,20 @@ import {
 } from 'utils/batch/shared-columns';
 import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
-const MonitoringMechanical = new Template('monitoring_mechanical', 'Monitoring - Mechanical', null);
+const MonitoringMechanicalTemp = new Template('monitoring_mechanical_temp', 'Monitoring - Mechanical TEMP POINT', null);
 
-MonitoringMechanical.type = 'Monitoring';
-MonitoringMechanical.subtype = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant';
+MonitoringMechanicalTemp.type = 'Monitoring';
+MonitoringMechanicalTemp.subtype = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant';
 
-MonitoringMechanical.columns = [
+MonitoringMechanicalTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
+
+  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
+    .isRequired()
+    .mapperOverwritesPrevious()
+    .build(),
 
   new TemplateColumnBuilder(
     'Monitoring - Linked Treatment ID',
@@ -98,11 +103,11 @@ MonitoringMechanical.columns = [
     .build()
 ];
 
-MonitoringMechanical.rowValidators = [
+MonitoringMechanicalTemp.rowValidators = [
   ...BasicInformationRowValidators,
   TreatmentEfficacyValidator,
   TerrestrialAquaticPlantValidator,
   CopyGeometryValidator
 ];
 
-export { MonitoringMechanical };
+export { MonitoringMechanicalTemp };

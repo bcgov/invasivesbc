@@ -29,6 +29,11 @@ MonitoringBiocontrolDispersalTerrestrialPlantTemp.columns = [
   ...WeatherInformation,
   ...MicrositeConditions,
 
+  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
+    .isRequired()
+    .mapperOverwritesPrevious()
+    .build(),
+
   new TemplateColumnBuilder(
     'Monitoring - Start',
     'datetime',

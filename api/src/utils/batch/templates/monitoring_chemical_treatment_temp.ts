@@ -10,15 +10,20 @@ import {
 } from 'utils/batch/shared-columns';
 import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
-const MonitoringMechanical = new Template('monitoring_mechanical', 'Monitoring - Mechanical', null);
+const MonitoringChemicalTemp = new Template('monitoring_chemical_temp', 'Monitoring - Chemical TEMP POINT', null);
 
-MonitoringMechanical.type = 'Monitoring';
-MonitoringMechanical.subtype = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant';
+MonitoringChemicalTemp.type = 'Monitoring';
+MonitoringChemicalTemp.subtype = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant';
 
-MonitoringMechanical.columns = [
+MonitoringChemicalTemp.columns = [
   ...BasicInformation,
   ...ProjectInformation,
   ...ActivityPersons,
+
+  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
+    .isRequired()
+    .mapperOverwritesPrevious()
+    .build(),
 
   new TemplateColumnBuilder(
     'Monitoring - Linked Treatment ID',
@@ -27,21 +32,20 @@ MonitoringMechanical.columns = [
   ).build(),
 
   new TemplateColumnBuilder('Monitoring - Copy Geometry', 'codeReference', 'form_data.activity_type_data.copy_geometry')
-    .isRequired()
     .hardcodedCodes(YES_NO_CODES)
     .build(),
 
   new TemplateColumnBuilder(
     'Monitoring - Terrestrial Invasive Plant',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].invasive_plant_code'
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].invasive_plant_code'
   )
     .referencesCode('invasive_plant_code')
     .build(),
   new TemplateColumnBuilder(
     'Monitoring - Aquatic Invasive Plant',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].invasive_plant_aquatic_code'
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].invasive_plant_aquatic_code'
   )
     .referencesCode('invasive_plant_aquatic_code')
     .build(),
@@ -49,7 +53,7 @@ MonitoringMechanical.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Evidence of Treatment',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].evidence_of_treatment'
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].evidence_of_treatment'
   )
     .isRequired()
     .hardcodedCodes(YES_NO_CODES)
@@ -58,14 +62,15 @@ MonitoringMechanical.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Treatment Efficacy Rating',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].efficacy_code'
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].efficacy_code'
   )
     .referencesCode('efficacy_code')
     .build(),
+
   new TemplateColumnBuilder(
     'Monitoring - Management Efficacy Rating',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].management_efficacy_rating'
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].management_efficacy_rating'
   )
     .referencesCode('management_efficacy_code')
     .isRequired()
@@ -74,7 +79,7 @@ MonitoringMechanical.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Invasive Plants on Site',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].invasive_plants_on_site'
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].invasive_plants_on_site'
   )
     .isRequired()
     .referencesCode('monitoring_evidence_code')
@@ -83,7 +88,7 @@ MonitoringMechanical.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Treatment Pass',
     'codeReference',
-    'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].treatment_pass'
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].treatment_pass'
   )
     .isRequired()
     .hardcodedCodes(TREATMENT_PASS_CODES)
@@ -92,17 +97,17 @@ MonitoringMechanical.columns = [
   new TemplateColumnBuilder(
     'Monitoring - Comments',
     'text',
-    'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].comment'
+    'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].comment'
   )
     .isRequired()
     .build()
 ];
 
-MonitoringMechanical.rowValidators = [
+MonitoringChemicalTemp.rowValidators = [
   ...BasicInformationRowValidators,
   TreatmentEfficacyValidator,
   TerrestrialAquaticPlantValidator,
   CopyGeometryValidator
 ];
 
-export { MonitoringMechanical };
+export { MonitoringChemicalTemp };
