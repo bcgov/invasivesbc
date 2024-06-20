@@ -48,7 +48,7 @@ function buildSpecificDefines() {
       defines['CONFIGURATION_KEYCLOAK_ADAPTER'] = JSON.stringify(process.env['KEYCLOAK_ADAPTER']);
     }
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
-    defines['minify'] = true;
+    defines['minify'] = false;
 
     defines['CONFIGURATION_SOURCE'] = JSON.stringify('Caddy');
 
