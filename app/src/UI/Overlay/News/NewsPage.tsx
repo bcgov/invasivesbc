@@ -4,6 +4,12 @@ import './NewsPage.css';
 const NewsPage = (props: any) => {
   const newsItems = [
     {
+      title: 'June 20, 2024: TEMP Point batch uploaded shapes',
+      content: `
+• Shapes associated with Point batch uploads will now appear as octagons instead of circles. This was done to correct issues with the area of the shape not matching the area entered by the user.
+`
+    },
+    {
       title: 'June 13, 2024: Renaming custom layers/record sets, and boundary check for batch',
       content: `
 • When you add a new list of records, you will now be able to rename them.  Click the pencil icon next to the layer name to do so.

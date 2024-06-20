@@ -177,10 +177,62 @@ const LinkedRecordsValidator = (linkedRecords) => {
   };
 };
 
+export const AccessDescriptionLengthValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Basic - Access Description'];
+  const rowData = row.data;
+  const validationMessages = [];
+
+  if (rowData?.['Basic - Access Description']?.parsedValue) {
+    const accessDescription = rowData['Basic - Access Description'].parsedValue;
+
+    if (accessDescription.length < 5) {
+      valid = false;
+      validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Too few characters',
+        messageDetail: 'Minimum characters is 5.'
+      });
+    }
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
+export const JurisdictionValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Basic - Jurisdiction 2', 'Basic - Jurisdiction 3'];
+  const rowData = row.data;
+  const jurisdiction_two = rowData?.['Basic - Jurisdiction 2']?.parsedValue;
+  const jurisdiction_three = rowData?.['Basic - Jurisdiction 3']?.parsedValue;
+  const validationMessages = [];
+
+  if (jurisdiction_three && !jurisdiction_two) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'If Jurisdiction 2 is not entered, Jurisdiction 3 must be blank.'
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
 export const BasicInformationRowValidators = [
   _JurisdictionSumValidator,
   LinkedRecordsValidator(['Basic - Jurisdiction 2', 'Basic - Jurisdiction 2 % Covered']),
-  LinkedRecordsValidator(['Basic - Jurisdiction 3', 'Basic - Jurisdiction 3 % Covered'])
+  LinkedRecordsValidator(['Basic - Jurisdiction 3', 'Basic - Jurisdiction 3 % Covered']),
+  AccessDescriptionLengthValidator,
+  JurisdictionValidator
 ];
 
 export const ActivityPersons = [
@@ -419,6 +471,7 @@ export const WaterbodyInformation = [
     'codeReference',
     'form_data.activity_subtype_data.WaterbodyData.substrate_type'
   )
+    .isRequired()
     .hardcodedCodes(SUBSTRATE_TYPE_CODES)
     .build(),
 
@@ -471,7 +524,6 @@ export const WaterQualityInformation = [
     'form_data.activity_subtype_data.WaterQuality.water_sample_depth'
   )
     .valueRange(0, null)
-    .isRequired()
     .build(),
   new TemplateColumnBuilder(
     'Water - Secchi Depth',
@@ -479,11 +531,12 @@ export const WaterQualityInformation = [
     'form_data.activity_subtype_data.WaterQuality.secchi_depth'
   )
     .valueRange(0, null)
-    .isRequired()
     .build(),
-  new TemplateColumnBuilder('Water - Colour', 'text', 'form_data.activity_subtype_data.WaterQuality.water_colour')
-    .isRequired()
-    .build()
+  new TemplateColumnBuilder(
+    'Water - Colour',
+    'text',
+    'form_data.activity_subtype_data.WaterQuality.water_colour'
+  ).build()
 ];
 
 export const PhenologyInformation = [
@@ -1022,6 +1075,105 @@ export const SpreadResultsValidator = (row): RowValidationResult => {
     valid,
     validationMessages,
     appliesToFields
+  };
+};
+
+export const TreatmentEfficacyValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Monitoring - Evidence of Treatment', 'Monitoring - Treatment Efficacy Rating'];
+  const rowData = row.data;
+  const evidence_of_treatment = rowData?.['Monitoring - Evidence of Treatment']?.parsedValue;
+  const treatment_efficacy = rowData?.['Monitoring - Treatment Efficacy Rating']?.parsedValue;
+  const validationMessages = [];
+
+  if (evidence_of_treatment === 'Yes' && !treatment_efficacy) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Missing value',
+      messageDetail: 'If Evidence of Treatment is Yes, Treatment Efficacy Rating must not be blank.'
+    });
+  }
+
+  if (evidence_of_treatment === 'No' && treatment_efficacy) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'If Evidence of Treatment is No, Treatment Efficacy Rating must be blank.'
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
+export const TerrestrialAquaticPlantValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Monitoring - Terrestrial Invasive Plant', 'Monitoring - Aquatic Invasive Plant'];
+  const rowData = row.data;
+  const terrestrial_plant = rowData?.['Monitoring - Terrestrial Invasive Plant']?.parsedValue;
+  const aquatic_plant = rowData?.['Monitoring - Aquatic Invasive Plant']?.parsedValue;
+  const validationMessages = [];
+
+  if (terrestrial_plant && aquatic_plant) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'Only one of Terrestrial Invasive Plant and Aquatic Invasive Plant must be entered.'
+    });
+  }
+
+  if (!terrestrial_plant && !aquatic_plant) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'One of Terrestrial Invasive Plant and Aquatic Invasive Plant must be entered.'
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
+  };
+};
+
+export const CopyGeometryValidator = (row): RowValidationResult => {
+  let valid = true;
+  const fields = ['Monitoring - Linked Treatment ID', 'Monitoring - Copy Geometry'];
+  const rowData = row.data;
+  const linked_id = rowData?.['Monitoring - Linked Treatment ID']?.parsedValue;
+  const copy_geometry = rowData?.['Monitoring - Copy Geometry']?.parsedValue;
+  const validationMessages = [];
+
+  if (copy_geometry === 'Yes' && !linked_id) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Missing value',
+      messageDetail: 'If Copy Geometry is Yes, Linked Treatment ID must be entered.'
+    });
+  }
+
+  if (copy_geometry === 'No' && linked_id) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'If Copy Geometry is No, Linked Treatment ID must be blank.'
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields: fields
   };
 };
 

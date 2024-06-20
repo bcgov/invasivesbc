@@ -345,8 +345,11 @@ async function _validateCell(
             });
           }
           if (geojson !== null && parsedArea > 0) {
-            const radius = Math.sqrt(parsedArea / Math.PI);
-            const newPoly = circle(geojson, radius, { units: 'meters', steps: 46 });
+            const numSides = 8;
+
+            const radius = Math.sqrt((2 * parsedArea) / (numSides * Math.sin((2 * Math.PI) / numSides))) * 0.9984;
+
+            const newPoly = circle(geojson, radius, { units: 'meters', steps: numSides });
             const newWKT = parseGeoJSONasWKT(newPoly);
             data = newWKT;
           }

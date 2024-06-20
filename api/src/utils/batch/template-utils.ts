@@ -21,14 +21,14 @@ import { getDBConnection } from 'database/db';
 import { BiocontrolReleaseTemp } from './templates/biocontrol_release_temp';
 import { BiocontrolCollectionTemp } from './templates/biocontrol_collection_temp';
 import { MonitoringBiocontrolDispersalTerrestrialPlantTemp } from './templates/monitoring_biocontrol_dispersal_terrestrial_plant_temp';
+import { MonitoringChemicalTemp } from './templates/monitoring_chemical_treatment_temp';
+import { MonitoringMechanicalTemp } from './templates/monitoring_mechanical_treatment_temp';
 
 const templateList: Template[] = [
   ObservationTerrestrialPlant,
   ObservationTerrestrialPlantTemp,
   ObservationAquaticPlant,
   ObservationAquaticPlantTemp,
-  MonitoringChemical,
-  MonitoringMechanical,
   TreatmentChemicalTerrestrialPlant,
   TreatmentChemicalTerrestrialPlantTemp,
   TreatmentChemicalAquaticPlant,
@@ -37,6 +37,10 @@ const templateList: Template[] = [
   TreatmentMechanicalTerrestrialPlantTemp,
   TreatmentMechanicalAquaticPlant,
   TreatmentMechanicalAquaticPlantTemp,
+  MonitoringChemical,
+  MonitoringChemicalTemp,
+  MonitoringMechanical,
+  MonitoringMechanicalTemp,
   BiocontrolRelease,
   BiocontrolReleaseTemp,
   BiocontrolCollection,

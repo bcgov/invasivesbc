@@ -61,3 +61,10 @@ export const SUBSTRATE_TYPE_CODES: CodeEntry[] = [
   new CodeEntry('substrate_type_code', 'Sand', 'Sand'),
   new CodeEntry('substrate_type_code', 'Silt/Organic', 'Silt/Organic')
 ];
+
+export const TREATMENT_PASS_CODES: CodeEntry[] = [
+  new CodeEntry('treatment_pass_code', 'First', 'First'),
+  new CodeEntry('treatment_pass_code', 'Second', 'Second'),
+  new CodeEntry('treatment_pass_code', 'Third', 'Third'),
+  new CodeEntry('treatment_pass_code', 'Unknown', 'Unknown')
+];

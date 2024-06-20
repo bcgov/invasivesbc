@@ -28,7 +28,10 @@ TreatmentChemicalAquaticPlantTemp.columns = [
   ...ProjectInformation,
   ...ActivityPersonsWithApplicatorLicense,
   ...ChemicalPlantTreatmentInformation,
-  new TemplateColumnBuilder('Area', 'numeric').isRequired().build(),
+  new TemplateColumnBuilder('Area', 'numeric', 'form_data.activity_data.reported_area')
+    .isRequired()
+    .mapperOverwritesPrevious()
+    .build(),
   new TemplateColumnBuilder(
     'Chemical Treatment - Invasive Species 1',
     'codeReference',
