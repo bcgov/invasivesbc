@@ -218,17 +218,6 @@ const App: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
-
-  if (!authInitiated) return <div id="app-pre-auth-init" />;
-
-  if (disrupted) {
-    return <ConnectivityErrorHandler />;
-  }
-
-  if (hasCrashed) {
-    return <ErrorHandler detail={errorDetail} />;
-  }
-
   const [appClasses, setAppclasses] = useState('');
 
   useEffect(() => {
@@ -251,6 +240,17 @@ const App: React.FC = () => {
     }
     setAppclasses(newAppClasses.join(' '));
   }, [import.meta.env.VITE_TARGET_PLATFORM]);
+
+  if (!authInitiated) return <div id="app-pre-auth-init" />;
+
+  if (disrupted) {
+    return <ConnectivityErrorHandler />;
+  }
+
+  if (hasCrashed) {
+    return <ErrorHandler detail={errorDetail} />;
+  }
+
 
   return (
     <div id="app" className={appClasses}>
