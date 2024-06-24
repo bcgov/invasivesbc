@@ -1,7 +1,12 @@
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
 import {
   BATCH_CREATE_ERROR,
   BATCH_CREATE_REQUEST,
   BATCH_CREATE_SUCCESS,
+  BATCH_DELETE_ERROR,
+  BATCH_DELETE_REQUEST,
+  BATCH_DELETE_SUCCESS,
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
@@ -19,10 +24,7 @@ import {
   BATCH_TEMPLATE_LIST_SUCCESS,
   BATCH_UPDATE_ERROR,
   BATCH_UPDATE_REQUEST,
-  BATCH_UPDATE_SUCCESS,
-  BATCH_DELETE_REQUEST,
-  BATCH_DELETE_SUCCESS,
-  BATCH_DELETE_ERROR
+  BATCH_UPDATE_SUCCESS
 } from '../actions';
 
 interface DeepBatch {
@@ -53,7 +55,7 @@ interface Batch {
   error: boolean;
   errorMessage: string | null;
   list: ShallowBatch[];
-  item: DeepBatch;
+  item: DeepBatch | null;
   createdBatchId: string | null;
   templates: ShallowTemplate[];
   templateDetail: {
@@ -79,151 +81,112 @@ function createBatchReducer() {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case BATCH_LIST_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          list: action.payload
-        };
-      case BATCH_LIST_ERROR:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          list: []
-        };
-      case BATCH_LIST_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          list: null
-        };
-      case BATCH_RETRIEVE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          item: null
-        };
-      case BATCH_RETRIEVE_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          item: action.payload
-        };
-      case BATCH_RETRIEVE_ERROR:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          item: null
-        };
-      case BATCH_CREATE_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          item: action.payload,
-          createdBatchId: action.payload.batchId
-        };
-      case BATCH_CREATE_ERROR:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          item: null,
-          createdBatchId: null
-        };
-      case BATCH_CREATE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          item: null,
-          createdBatchId: null
-        };
-      case BATCH_EXECUTE_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          item: action.payload.result
-        };
-      case BATCH_EXECUTE_ERROR:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          errorMessage: `Could not execute batch ${JSON.stringify(action.payload?.message, null, 2)}`,
-          item: null
-        };
-      case BATCH_EXECUTE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          item: null
-        };
-      case BATCH_UPDATE_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          item: null
-        };
-      case BATCH_UPDATE_ERROR:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          item: null
-        };
-      case BATCH_UPDATE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          item: null
-        };
-      case BATCH_DELETE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          item: null
-        };
-      case BATCH_DELETE_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          item: null
-        };
-      case BATCH_DELETE_ERROR:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          errorMessage: 'Could not delete batch',
-          item: null
-        };
-      case BATCH_TEMPLATE_LIST_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          templates: []
-        };
-      case BATCH_TEMPLATE_LIST_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          templates: action.payload.filter((template) =>
+    return createNextState(state, (draftState: Draft<Batch>) => {
+      switch (action.type) {
+        case BATCH_LIST_SUCCESS:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.list = action.payload;
+          break;
+        case BATCH_LIST_ERROR:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.list = [];
+          break;
+        case BATCH_LIST_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.list = [];
+          break;
+        case BATCH_RETRIEVE_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.item = null;
+          break;
+        case BATCH_RETRIEVE_SUCCESS:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.item = action.payload;
+          break;
+        case BATCH_RETRIEVE_ERROR:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.item = null;
+          break;
+        case BATCH_CREATE_SUCCESS:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.item = action.payload;
+          draftState.createdBatchId = action.payload.batchId;
+          break;
+        case BATCH_CREATE_ERROR:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.item = null;
+          draftState.createdBatchId = null;
+          break;
+        case BATCH_CREATE_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.item = null;
+          draftState.createdBatchId = null;
+          break;
+        case BATCH_EXECUTE_SUCCESS:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.item = action.payload.result;
+          break;
+        case BATCH_EXECUTE_ERROR:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.errorMessage = `Could not execute batch ${JSON.stringify(action.payload?.message, null, 2)}`;
+          draftState.item = null;
+          break;
+        case BATCH_EXECUTE_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.item = null;
+          break;
+        case BATCH_UPDATE_SUCCESS:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.item = null;
+          break;
+        case BATCH_UPDATE_ERROR:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.item = null;
+          break;
+        case BATCH_UPDATE_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.item = null;
+          break;
+        case BATCH_DELETE_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.item = null;
+          break;
+        case BATCH_DELETE_SUCCESS:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.item = null;
+          break;
+        case BATCH_DELETE_ERROR:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.errorMessage = 'Could not delete batch';
+          draftState.item = null;
+          break;
+        case BATCH_TEMPLATE_LIST_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.templates = [];
+          break;
+        case BATCH_TEMPLATE_LIST_SUCCESS:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.templates = action.payload.filter((template) =>
             [
               'observation_aquatic_plant',
               'observation_aquatic_plant_temp',
@@ -244,55 +207,47 @@ function createBatchReducer() {
               'monitoring_biocontrol_dispersal_terrestrial_plant',
               'monitoring_biocontrol_dispersal_terrestrial_plant_temp'
             ].includes(template.key)
-          )
-        };
-      case BATCH_TEMPLATE_LIST_ERROR:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          templates: []
-        };
-      case BATCH_TEMPLATE_DOWNLOAD_REQUEST:
-        return {
-          ...state,
-          templateDetail: {
+          );
+          break;
+        case BATCH_TEMPLATE_LIST_ERROR:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.templates = [];
+          break;
+        case BATCH_TEMPLATE_DOWNLOAD_REQUEST:
+          draftState.templateDetail = {
             ...state.templateDetail,
             [action.payload.key]: {
               working: true,
               error: false,
               data: null
             }
-          }
-        };
-      case BATCH_TEMPLATE_DOWNLOAD_SUCCESS:
-        return {
-          ...state,
-          templateDetail: {
+          };
+          break;
+        case BATCH_TEMPLATE_DOWNLOAD_SUCCESS:
+          draftState.templateDetail = {
             ...state.templateDetail,
             [action.payload.key]: {
               working: false,
               error: false,
               data: action.payload.data
             }
-          }
-        };
-      case BATCH_TEMPLATE_DOWNLOAD_ERROR:
-        return {
-          ...state,
-          templateDetail: {
+          };
+          break;
+        case BATCH_TEMPLATE_DOWNLOAD_ERROR:
+          draftState.templateDetail = {
             ...state.templateDetail,
             [action.payload.key]: {
               working: false,
               error: true,
               data: null
             }
-          }
-        };
-
-      default:
-        return state;
-    }
+          };
+          break;
+        default:
+          break;
+      }
+    });
   };
 }
 

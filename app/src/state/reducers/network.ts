@@ -1,3 +1,5 @@
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
 import { NETWORK_GO_OFFLINE, NETWORK_GO_ONLINE } from '../actions';
 
 interface Network {
@@ -10,22 +12,20 @@ function createNetworkReducer(initialStatus: Network) {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case NETWORK_GO_ONLINE: {
-        return {
-          ...state,
-          connected: true
-        };
+    return createNextState(state, (draftState: Draft<Network>) => {
+      switch (action.type) {
+        case NETWORK_GO_ONLINE: {
+          draftState.connected = true;
+          break;
+        }
+        case NETWORK_GO_OFFLINE: {
+          draftState.connected = false;
+          break;
+        }
+        default:
+          break;
       }
-      case NETWORK_GO_OFFLINE: {
-        return {
-          ...state,
-          connected: false
-        };
-      }
-      default:
-        return state;
-    }
+    });
   };
 }
 

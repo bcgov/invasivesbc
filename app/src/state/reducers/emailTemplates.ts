@@ -1,3 +1,5 @@
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
 import {
   EMAIL_TEMPLATES_RETRIEVE_REQUEST,
   EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS,
@@ -7,55 +9,58 @@ import {
 } from 'state/actions';
 
 interface EmailTemplates {
-  message: string;
-  activetemplate: string;
-  emailTemplates: [
-    {
-      id: number;
-      fromemail: string;
-      emailsubject: string;
-      emailbody: string;
-      templatename: string;
-    }
-  ];
+  message: string | null;
+  activetemplate: string | null;
+  working: boolean;
+  error: boolean;
+  emailTemplates: {
+    id: number;
+    fromemail: string;
+    emailsubject: string;
+    emailbody: string;
+    templatename: string;
+  }[];
 }
 
 function createEmailTemplatesReducer() {
   const initialState: EmailTemplates = {
+    working: false,
+    error: false,
     message: null,
     activetemplate: null,
-    emailTemplates: null
+    emailTemplates: []
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case EMAIL_TEMPLATES_RETRIEVE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          message: null,
-          emailTemplates: null
-        };
-      case EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS:
-      case EMAIL_TEMPLATES_UPDATE_SUCCESS:
-      case EMAIL_TEMPLATES_SET_ACTIVE:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          ...action.payload
-        };
-      case EMAIL_TEMPLATES_UPDATE_FAILURE:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          ...action.payload
-        };
-      default:
-        return state;
-    }
+    return createNextState(state, (draftState: Draft<EmailTemplates>) => {
+      switch (action.type) {
+        case EMAIL_TEMPLATES_RETRIEVE_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.message = null;
+          draftState.emailTemplates = [];
+          break;
+        case EMAIL_TEMPLATES_RETRIEVE_REQUEST_SUCCESS:
+        case EMAIL_TEMPLATES_UPDATE_SUCCESS:
+        case EMAIL_TEMPLATES_SET_ACTIVE:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.message = action.payload.message || null;
+          draftState.emailTemplates = action.payload.emailTemplates || [];
+          if (Object.hasOwn(action.payload, 'activetemplate')) {
+            draftState.activetemplate = action.payload.activetemplate;
+          }
+          break;
+        case EMAIL_TEMPLATES_UPDATE_FAILURE:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.message = action.payload.message || null;
+          draftState.emailTemplates = action.payload.emailTemplates || [];
+          break;
+        default:
+          break;
+      }
+    });
   };
 }
 

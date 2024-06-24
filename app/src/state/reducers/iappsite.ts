@@ -1,4 +1,6 @@
-import { IAPP_GET_SUCCESS, IAPP_GET_FAILURE, IAPP_GET_REQUEST } from '../actions';
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
+import { IAPP_GET_FAILURE, IAPP_GET_REQUEST, IAPP_GET_SUCCESS } from '../actions';
 
 import { AppConfig } from '../config';
 
@@ -16,33 +18,29 @@ const initialState: IAPPSiteState = {
   site: null
 };
 
-function createIAPPSiteReducer(configuration: AppConfig): (IAPPSiteState, AnyAction) => IAPPSiteState {
+function createIAPPSiteReducer(configuration: AppConfig) {
   return (state = initialState, action) => {
-    switch (action.type) {
-      case IAPP_GET_REQUEST: {
-        return {
-          ...state,
-          failCode: null,
-          loading: true
-        };
+    return createNextState(state, (draftState: Draft<IAPPSiteState>) => {
+      switch (action.type) {
+        case IAPP_GET_REQUEST: {
+          draftState.failCode = null;
+          draftState.loading = true;
+          break;
+        }
+        case IAPP_GET_FAILURE: {
+          draftState.loading = false;
+          draftState.failCode = action.payload?.failNetworkObj?.status;
+          break;
+        }
+        case IAPP_GET_SUCCESS: {
+          draftState.site = { ...action.payload.iapp };
+          draftState.loading = false;
+          break;
+        }
+        default:
+          break;
       }
-      case IAPP_GET_FAILURE: {
-        return {
-          ...state,
-          loading: false,
-          failCode: action.payload?.failNetworkObj?.status
-        };
-      }
-      case IAPP_GET_SUCCESS: {
-        return {
-          ...state,
-          site: { ...action.payload.iapp },
-          loading: false
-        };
-      }
-      default:
-        return state;
-    }
+    });
   };
 }
 

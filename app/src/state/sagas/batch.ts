@@ -48,7 +48,7 @@ function* getBatch(action) {
   });
 
   const data = yield res.json();
-  yield put({ type: BATCH_RETRIEVE_SUCCESS, payload: data.result});
+  yield put({ type: BATCH_RETRIEVE_SUCCESS, payload: data.result });
 }
 
 function* createBatch(action) {
@@ -187,7 +187,7 @@ function* executeBatch(action) {
 
   const data = yield res.json();
 
-  if ((data.code === 200)) {
+  if (data.code === 200) {
     yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
     yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
   } else {
