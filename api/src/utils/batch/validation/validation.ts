@@ -4,6 +4,8 @@ import { lookupAreaLimit } from 'sharedAPI';
 import circle from '@turf/circle';
 import {
   autofillFromPostGIS,
+  getLongIDFromShort,
+  getRecordTypeFromShort,
   multipolygonIsConnected,
   parsedGeoType,
   parseGeoJSONasWKT,
@@ -13,6 +15,7 @@ import {
 import { _mapToDBObject } from 'utils/batch/execution';
 import { getLogger } from 'utils/logger';
 import { Template, TemplateColumn } from 'utils/batch/definitions';
+import booleanOverlap from '@turf/boolean-overlap';
 
 const defaultLog = getLogger('batch');
 
@@ -151,6 +154,50 @@ async function _validateCell(
   }
 
   switch (templateColumn?.dataType) {
+    case 'linked_id':
+      const thisRecordType = template.subtype;
+      switch(thisRecordType) {
+        // chem monitoring
+        case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
+          // check if the short id is a record that exists and is the right type:
+          const shortId = data;
+
+          const longID = await getLongIDFromShort(shortId);
+          const linkedRecordType = await getRecordTypeFromShort(shortId);
+          const isItTheRightType = linkedRecordType === 'Activity_Treatment_ChemicalTerrestrialAquaticPlant';
+          const thisGeoJSON: any = {} // @todo
+          const linkedGeoJSON:any = {} // @todo
+          
+
+          if( !isItTheRightType ) {
+            result.validationMessages.push({
+              severity: 'error',
+              messageTitle: 'Linked ID not of the right type',
+              messageDetail: `The linked record is not of the right type`
+            });
+          }
+
+          if ( !longID ) {
+            result.validationMessages.push({
+              severity: 'error',
+              messageTitle: 'Linked ID not found',
+              messageDetail: `No record with short ID ${shortId} found`
+            });
+          }
+
+          // use turf to check for overlap:
+          const doTheyOverlap = booleanOverlap(thisGeoJSON, linkedGeoJSON);
+
+          if(!doTheyOverlap) {
+            result.validationMessages.push({
+              severity: 'error',
+              messageTitle: 'Linked ID area does not overlap',
+              messageDetail: `The area of the linked record does not overlap with this record`
+            });
+          }
+          break;
+        default:
+          break;
     case 'boolean':
       switch (data.toLowerCase()) {
         case 'n':
