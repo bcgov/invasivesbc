@@ -40,16 +40,17 @@ function* updateEmailTemplates(action) {
   const data = yield res.json();
 
   const emailTemplatesState = yield select(selectEmailTemplates);
-  emailTemplatesState.emailTemplates[
-    emailTemplatesState.emailTemplates.findIndex((template) => template.templatename === data.request.templatename)
-  ] = data.request;
+  const updateTemplates = [...emailTemplatesState.emailTemplates];
+
+  updateTemplates[updateTemplates.findIndex((template) => template.templatename === data.request.templatename)] =
+    data.request;
 
   if (data.code >= 200 && data.code <= 300) {
     yield put({
       type: EMAIL_TEMPLATES_UPDATE_SUCCESS,
       payload: {
         message: 'Email template updated successfully',
-        emailTemplates: emailTemplatesState.emailTemplates
+        emailTemplates: updateTemplates
       }
     });
   } else

@@ -1,6 +1,8 @@
-import moment from 'moment';
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
+import moment from 'moment/moment';
 import { AppConfig } from '../config';
-import { EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS } from '../actions';
+import { EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS } from 'state/actions';
 
 interface ConfigurationState {
   current: AppConfig;
@@ -18,33 +20,28 @@ function createConfigurationReducerWithDefaultState(configuration: AppConfig) {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case EXPORT_CONFIG_LOAD_REQUEST: {
-        return {
-          ...state,
-          exportConfigFreshUntil: null,
-          exportConfigLoading: true,
-          exportConfig: null
-        };
+    return createNextState(state, (draftState: Draft<ConfigurationState>) => {
+      switch (action.type) {
+        case EXPORT_CONFIG_LOAD_REQUEST: {
+          draftState.exportConfigFreshUntil = null;
+          draftState.exportConfigLoading = true;
+          draftState.exportConfig = null;
+          break;
+        }
+        case EXPORT_CONFIG_LOAD_ERROR: {
+          draftState.exportConfigFreshUntil = null;
+          draftState.exportConfigLoading = false;
+          draftState.exportConfig = null;
+          break;
+        }
+        case EXPORT_CONFIG_LOAD_SUCCESS: {
+          draftState.exportConfigFreshUntil = moment().add('15', 'minutes').valueOf();
+          draftState.exportConfigLoading = true;
+          draftState.exportConfig = action.payload;
+          break;
+        }
       }
-      case EXPORT_CONFIG_LOAD_ERROR: {
-        return {
-          ...state,
-          exportConfigFreshUntil: null,
-          exportConfigLoading: false,
-          exportConfig: null
-        };
-      }
-      case EXPORT_CONFIG_LOAD_SUCCESS: {
-        return {
-          ...state,
-          exportConfigFreshUntil: moment().add('15', 'minutes').valueOf(),
-          exportConfigLoading: true,
-          exportConfig: action.payload
-        };
-      }
-    }
-    return state;
+    });
   };
 }
 

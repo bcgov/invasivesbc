@@ -1,3 +1,5 @@
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
 import { USERINFO_CLEAR_REQUEST, USERINFO_LOAD_COMPLETE } from '../actions';
 
 interface UserInfo {
@@ -12,22 +14,21 @@ function createUserInfoReducer(userInfo: UserInfo) {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case USERINFO_CLEAR_REQUEST:
-        return {
-          ...state,
-          loaded: false,
-          activated: false,
-          accessRequested: false
-        };
-      case USERINFO_LOAD_COMPLETE:
-        return {
-          ...state,
-          loaded: true,
-          activated: action.payload.userInfo.activation_status === 1
-        };
-    }
-    return state;
+    return createNextState(state, (draftState: Draft<UserInfo>) => {
+      switch (action.type) {
+        case USERINFO_CLEAR_REQUEST:
+          draftState.loaded = false;
+          draftState.activated = false;
+          draftState.accessRequested = false;
+          break;
+        case USERINFO_LOAD_COMPLETE:
+          draftState.loaded = true;
+          draftState.activated = action.payload.userInfo.activation_status === 1;
+          break;
+        default:
+          break;
+      }
+    });
   };
 }
 

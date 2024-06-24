@@ -1,25 +1,31 @@
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
 import {
-  EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
   EMAIL_SETTINGS_RETRIEVE_REQUEST,
+  EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
   EMAIL_SETTINGS_UPDATE_FAILURE,
   EMAIL_SETTINGS_UPDATE_SUCCESS
 } from 'state/actions';
 
 interface EmailSettings {
-  message: string;
+  message: string | null;
+  working: boolean;
+  error: boolean;
   emailSettings: {
     enabled: boolean;
-    id: number;
-    authenticationURL: string;
-    emailServiceURL: string;
-    clientId: string;
-    clientSecret: string;
-  };
+    id: number | null;
+    authenticationURL: string | null;
+    emailServiceURL: string | null;
+    clientId: string | null;
+    clientSecret: string | null;
+  } | null;
 }
 
 function createEmailSettingsReducer() {
   const initialState: EmailSettings = {
     message: null,
+    working: false,
+    error: false,
     emailSettings: {
       enabled: false,
       id: null,
@@ -31,33 +37,31 @@ function createEmailSettingsReducer() {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case EMAIL_SETTINGS_RETRIEVE_REQUEST:
-        return {
-          ...state,
-          working: true,
-          error: false,
-          message: null,
-          emailSettings: null
-        };
-      case EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS:
-      case EMAIL_SETTINGS_UPDATE_SUCCESS:
-        return {
-          ...state,
-          working: false,
-          error: false,
-          ...action.payload
-        };
-      case EMAIL_SETTINGS_UPDATE_FAILURE:
-        return {
-          ...state,
-          working: false,
-          error: true,
-          ...action.payload
-        };
-      default:
-        return state;
-    }
+    return createNextState(state, (draftState: Draft<EmailSettings>) => {
+      switch (action.type) {
+        case EMAIL_SETTINGS_RETRIEVE_REQUEST:
+          draftState.working = true;
+          draftState.error = false;
+          draftState.message = null;
+          draftState.emailSettings = null;
+          break;
+        case EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS:
+        case EMAIL_SETTINGS_UPDATE_SUCCESS:
+          draftState.working = false;
+          draftState.error = false;
+          draftState.message = action.payload.message || null;
+          draftState.emailSettings = action.payload.emailSettings || null;
+          break;
+        case EMAIL_SETTINGS_UPDATE_FAILURE:
+          draftState.working = false;
+          draftState.error = true;
+          draftState.message = action.payload.message || null;
+          draftState.emailSettings = action.payload.emailSettings || null;
+          break;
+        default:
+          break;
+      }
+    });
   };
 }
 

@@ -1,3 +1,5 @@
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
 import { TRAINING_VIDEOS_LIST_REQUEST, TRAINING_VIDEOS_LIST_REQUEST_COMPLETE } from '../actions';
 
 interface TrainingVideoMetadata {
@@ -18,22 +20,20 @@ function createTrainingVideosReducer() {
   };
 
   return (state = initialState, action) => {
-    switch (action.type) {
-      case TRAINING_VIDEOS_LIST_REQUEST:
-        return {
-          ...state,
-          working: true,
-          list: []
-        };
-      case TRAINING_VIDEOS_LIST_REQUEST_COMPLETE:
-        return {
-          ...state,
-          working: false,
-          list: action.payload
-        };
-      default:
-        return state;
-    }
+    return createNextState(state, (draftState: Draft<TrainingVideos>) => {
+      switch (action.type) {
+        case TRAINING_VIDEOS_LIST_REQUEST:
+          draftState.working = true;
+          draftState.list = [];
+          break;
+        case TRAINING_VIDEOS_LIST_REQUEST_COMPLETE:
+          draftState.working = false;
+          draftState.list = action.payload;
+          break;
+        default:
+          break;
+      }
+    });
   };
 }
 

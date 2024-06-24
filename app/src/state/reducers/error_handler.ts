@@ -1,3 +1,5 @@
+import { createNextState } from '@reduxjs/toolkit';
+import { Draft } from 'immer';
 import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
 
 interface ErrorHandlerState {
@@ -16,15 +18,14 @@ const initialState: ErrorHandlerState = {
 };
 
 function errorHandlerReducer(state = initialState, action) {
-  switch (action.type) {
-    case CRASH_HANDLE_GLOBAL_ERROR: {
-      return {
-        detail: action.payload.detail,
-        hasCrashed: true
-      };
+  return createNextState(state, (draftState: Draft<ErrorHandlerState>) => {
+    switch (action.type) {
+      case CRASH_HANDLE_GLOBAL_ERROR: {
+        draftState.detail = action.payload.detail;
+        draftState.hasCrashed = true;
+      }
     }
-  }
-  return state;
+  });
 }
 
 const selectGlobalErrorState: (state) => ErrorHandlerState = (state) => state.ErrorHandler;
