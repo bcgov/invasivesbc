@@ -7,6 +7,7 @@ type templateDataType =
   | 'numeric'
   | 'date'
   | 'datetime'
+  | 'linked_id'
   | 'codeReference'
   | 'codeReferenceMulti'
   | 'boolean'

@@ -51,6 +51,76 @@ export const parseGeoJSONasWKT = (input: any) => {
   return parsed;
 };
 
+
+export const getLongIDFromShort = async (input: string): Promise<string> => {
+  const connection = await getDBConnection();
+
+  if (!connection) {
+    throw new Error('Could not get a DB Connection');
+  }
+  try {
+    const res
+      = await connection.query({
+        text: `select activity_id
+               from activity_incoming_data
+               where short_id = $1 limit 1`,
+        values: [input]
+      });
+
+    return res.rows[0]['activity_id'];
+  } catch (e) {
+    console.log('error in getLongIDFromShort', e);
+    throw new Error('Error validating geometry in the database' + e.message);
+  }
+}
+
+
+export const getRecordTypeFromShort = async (input: string): Promise<string> => {
+  const connection = await getDBConnection();
+
+  if (!connection) {
+    throw new Error('Could not get a DB Connection');
+  }
+  try {
+    const res
+      = await connection.query({
+        text: `select activity_subtype
+               from activity_incoming_data
+               where short_id = $1 limit 1`,
+        values: [input]
+      });
+
+    return res.rows[0]['activity_subtype'];
+  } catch (e) {
+    console.log('error in getRecordTypeFromShort', e);
+    throw new Error('Error validating geometry in the database' + e.message);
+  }
+}
+
+export const getGeometryAsGeoJSONFromShort = async (input: string): Promise<string> => {
+
+  const connection = await getDBConnection();
+
+  if (!connection) {
+    throw new Error('Could not get a DB Connection');
+  }
+  try {
+    const res
+      = await connection.query({
+        text: `select geometry
+               from activity_incoming_data
+               where short_id = $1`,
+        values: [input]
+      });
+
+    return res.rows[0]['geometry'];
+  } catch (e) {
+    console.log('error in getGeometryAsGeoJSONFromShort', e);
+    throw new Error('Error validating geometry in the database' + e.message);
+  }
+}
+
+
 export const autofillFromPostGIS = async (input: string, inputArea?: number): Promise<parsedGeoType> => {
   const connection = await getDBConnection();
 
