@@ -124,3 +124,32 @@
   align-items: center;
   height: var(--header-bar-height);
 }
+
+div.network-status-display {
+  height: 100%;
+  padding: 0;
+  margin: 0 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  justify-content: end;
+
+  svg {
+    flex-grow: 1;
+    vertical-align: center;
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  span.network-status-label {
+    display: block;
+    margin: 0;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+  }
+
+}

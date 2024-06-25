@@ -8,6 +8,7 @@ import Delete from '@mui/icons-material/Delete';
 import './OfflineDataSync.css';
 import moment from 'moment';
 import { FileOpen } from '@mui/icons-material';
+import { ActivitySubtypeShortLabels } from 'sharedAPI';
 
 export const OfflineDataSyncTable = () => {
   const { working, serializedActivities } = useSelector(selectOfflineActivity);
@@ -24,6 +25,7 @@ export const OfflineDataSyncTable = () => {
           <tr>
             <th>Load</th>
             <th>Activity</th>
+            <th>Record Type</th>
             <th>Locally Modified</th>
             <th>Status</th>
             <th>Delete Local</th>
@@ -42,7 +44,8 @@ export const OfflineDataSyncTable = () => {
                     <FileOpen></FileOpen>
                   </Button>
                 </td>
-                <td>{`${key}`}</td>
+                <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
+                <td>{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
                 <td>{`${moment((value as OfflineActivityRecord).saved_at)}`}</td>
                 <td>{`${(value as OfflineActivityRecord).sync_state}`}</td>
                 <td>
