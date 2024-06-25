@@ -1,6 +1,12 @@
 .offlineDataSyncTable {
-  min-width: 40vw;
+  min-width: 70svw;
+
+  td {
+    width: auto;
+    min-width: 2em;
+  }
 }
+
 .progressBar {
   margin-top: 10px;
   margin-bottom: 10px;

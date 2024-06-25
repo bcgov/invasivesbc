@@ -12,10 +12,19 @@ import {
 } from '../actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
+export enum OfflineActivitySyncState {
+  LOCALLY_MODIFIED = 'Locally Modified',
+  SYNCHRONIZED = 'Synchronized',
+  ERROR = 'Error',
+  OPTIMISTIC_LOCKING_FAILURE = 'Optimistic Locking Failure'
+}
+
 export interface OfflineActivityRecord {
   data: string;
   saved_at: number;
-  sync_state: 'LOCALLY_MODIFIED' | 'SYNCHRONIZED' | 'ERROR' | 'OPTIMISTIC_LOCKING_FAILURE';
+  short_id: string;
+  record_type: string;
+  sync_state: OfflineActivitySyncState;
 }
 
 export interface OfflineActivityState {
@@ -47,7 +56,9 @@ function createOfflineActivityReducer(
           draftState.serializedActivities[payload.id] = {
             data: JSON.stringify(payload.data, null, 2),
             saved_at: moment.now(),
-            sync_state: 'LOCALLY_MODIFIED'
+            short_id: payload.data.short_id || payload.id,
+            record_type: payload.data.activity_subtype,
+            sync_state: OfflineActivitySyncState.LOCALLY_MODIFIED
           };
           draftState.serial = moment.now();
           break;
@@ -55,7 +66,9 @@ function createOfflineActivityReducer(
           draftState.serializedActivities[payload.id] = {
             data: JSON.stringify(payload.data, null, 2),
             saved_at: moment.now(),
-            sync_state: 'LOCALLY_MODIFIED'
+            short_id: payload.data.short_id || payload.id,
+            record_type: payload.data.activity_subtype,
+            sync_state: OfflineActivitySyncState.LOCALLY_MODIFIED
           };
           draftState.serial = moment.now();
           break;

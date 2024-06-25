@@ -2,7 +2,18 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
 import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
 import './Header.css';
-import { Avatar, FormControlLabel, FormGroup, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
+import {
+  Avatar,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  Grow,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Switch
+} from '@mui/material';
 import { useDispatch } from 'react-redux';
 import {
   AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
@@ -15,12 +26,21 @@ import {
 import { useHistory } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { AdminPanelSettings, Assessment, FileUpload, Home, Map, Newspaper, School } from '@mui/icons-material';
+import {
+  AdminPanelSettings,
+  Assessment,
+  FileUpload,
+  Home,
+  Map,
+  Newspaper,
+  School,
+  SignalWifi4Bar,
+  SignalWifiOff
+} from '@mui/icons-material';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { RENDER_DEBUG } from 'UI/App';
-import { Switch } from '@mui/base';
 import { useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
@@ -374,19 +394,43 @@ const NetworkStateControl: React.FC = () => {
   const dispatch = useDispatch();
   return (
     <div className={'network-state-control'}>
-      <FormGroup>
-        <FormControlLabel
-          control={
-            <Switch
-              checked={connected}
-              onChange={() => {
-                dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
-              }}
-            />
-          }
-          label="Online"
-        />
-      </FormGroup>
+      <FormControl>
+        <FormGroup>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={connected}
+                color={'primary'}
+                size={'medium'}
+                onChange={() => {
+                  dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
+                }}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+            }
+            label={'Network'}
+            labelPlacement="bottom"
+          />
+        </FormGroup>
+      </FormControl>
+      {connected && (
+        <>
+          <div className={'network-status-display'}>
+            <Grow in={true} appear={true}>
+              <SignalWifi4Bar fontSize={'medium'} aria-label={'Online'} />
+            </Grow>
+            <span className={'network-status-label'}>Online</span>
+          </div>
+        </>
+      )}
+      {connected || (
+        <div className={'network-status-display'}>
+          <Grow in={true} appear={true}>
+            <SignalWifiOff fontSize={'medium'} aria-label={'Offline'} />
+          </Grow>
+          <span className={'network-status-label'}>Offline</span>
+        </div>
+      )}
     </div>
   );
 };

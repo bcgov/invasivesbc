@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
-import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { Badge, Button, CircularProgress } from '@mui/material';
 import { ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE } from 'state/actions';
 import Sync from '@mui/icons-material/Sync';
-import SyncDisabled from '@mui/icons-material/SyncDisabled';
 import SyncProblem from '@mui/icons-material/SyncProblem';
 
 export const OfflineSyncHeaderButton = () => {
@@ -25,27 +24,31 @@ export const OfflineSyncHeaderButton = () => {
         }),
         {
           // they don't actually /need/ to be defined here, this is just for clarity of the logic below
-          LOCALLY_MODIFIED: 0,
-          SYNCHRONIZED: 0,
-          ERROR: 0,
-          OPTIMISTIC_LOCKING_FAILURE: 0
+          [OfflineActivitySyncState.LOCALLY_MODIFIED]: 0,
+          [OfflineActivitySyncState.SYNCHRONIZED]: 0,
+          [OfflineActivitySyncState.ERROR]: 0,
+          [OfflineActivitySyncState.OPTIMISTIC_LOCKING_FAILURE]: 0
         }
       );
 
-    if (buckets.ERROR > 0 || buckets.OPTIMISTIC_LOCKING_FAILURE > 0) {
+    if (
+      buckets[OfflineActivitySyncState.ERROR] > 0 ||
+      buckets[OfflineActivitySyncState.OPTIMISTIC_LOCKING_FAILURE] > 0
+    ) {
       // errors take precedence, show a warning
-      const errorCount = buckets.ERROR + buckets.OPTIMISTIC_LOCKING_FAILURE;
+      const errorCount =
+        buckets[OfflineActivitySyncState.ERROR] + buckets[OfflineActivitySyncState.OPTIMISTIC_LOCKING_FAILURE];
       return (
         <Badge badgeContent={`${errorCount}`} color={'error'}>
-          <SyncProblem />
+          <SyncProblem fontSize={'medium'} />
         </Badge>
       );
     }
 
-    if (buckets.LOCALLY_MODIFIED > 0) {
+    if (buckets[OfflineActivitySyncState.LOCALLY_MODIFIED] > 0) {
       return (
-        <Badge badgeContent={`${buckets.LOCALLY_MODIFIED}`} color={'primary'}>
-          <Sync />
+        <Badge badgeContent={`${buckets[OfflineActivitySyncState.LOCALLY_MODIFIED]}`} color={'primary'}>
+          <Sync fontSize={'medium'} />
         </Badge>
       );
     }
