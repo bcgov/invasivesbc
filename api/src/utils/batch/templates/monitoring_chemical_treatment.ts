@@ -10,7 +10,11 @@ import {
 } from 'utils/batch/shared-columns';
 import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
-const MonitoringChemical = new Template('monitoring_chemical', 'Monitoring - Chemical', null);
+const MonitoringChemical = new Template(
+  'monitoring_chemical_treatment',
+  'Monitoring - Chemical',
+  null
+);
 
 MonitoringChemical.type = 'Monitoring';
 MonitoringChemical.subtype = 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant';

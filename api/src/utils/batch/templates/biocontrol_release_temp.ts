@@ -12,7 +12,11 @@ import {
   WindDirectionValidator
 } from '../shared-columns';
 
-const BiocontrolReleaseTemp = new Template('biocontrol_release_temp', 'Biocontrol Release TEMP POINT', null);
+const BiocontrolReleaseTemp = new Template(
+  'biocontrol_release_temp',
+  'Biocontrol - Release TEMP POINT',
+  null
+);
 
 BiocontrolReleaseTemp.type = 'Treatment';
 BiocontrolReleaseTemp.subtype = 'Activity_Biocontrol_Release';

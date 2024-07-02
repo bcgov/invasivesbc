@@ -205,7 +205,12 @@ function createBatchReducer() {
               'biocontrol_collection',
               'biocontrol_collection_temp',
               'monitoring_biocontrol_dispersal_terrestrial_plant',
-              'monitoring_biocontrol_dispersal_terrestrial_plant_temp'
+              'monitoring_biocontrol_dispersal_terrestrial_plant_temp',
+              'monitoring_biocontrol_release_terrestrial_plant',
+              'monitoring_chemical_treatment',
+              'monitoring_chemical_treatment_temp',
+              'monitoring_mechanical_treatment',
+              'monitoring_mechanical_treatment_temp',
             ].includes(template.key)
           );
           break;

@@ -10,7 +10,11 @@ import {
 } from 'utils/batch/shared-columns';
 import { TREATMENT_PASS_CODES, YES_NO_CODES } from '../hard-coded-codes';
 
-const MonitoringMechanicalTemp = new Template('monitoring_mechanical_temp', 'Monitoring - Mechanical TEMP POINT', null);
+const MonitoringMechanicalTemp = new Template(
+  'monitoring_mechanical_treatment_temp',
+  'Monitoring - Mechanical TEMP POINT',
+  null
+);
 
 MonitoringMechanicalTemp.type = 'Monitoring';
 MonitoringMechanicalTemp.subtype = 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant';
