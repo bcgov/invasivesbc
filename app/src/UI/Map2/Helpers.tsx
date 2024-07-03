@@ -1061,9 +1061,9 @@ export const refreshWhatsHereFeature = (map, options: any) => {
         source: layerID,
         type: 'fill',
         paint: {
-          'fill-color': 'yellow',
-          'fill-outline-color': 'yellow',
-          'fill-opacity': 0.5
+          'fill-color': 'white',
+          'fill-outline-color': 'black',
+          'fill-opacity': 0.4
         },
         minzoom: 0,
         maxzoom: 24
@@ -1073,7 +1073,7 @@ export const refreshWhatsHereFeature = (map, options: any) => {
         source: layerID,
         type: 'line',
         paint: {
-          'line-color': 'yellow',
+          'line-color': 'black',
           'line-opacity': 1,
           'line-width': 3
         },
@@ -1142,9 +1142,9 @@ export const refreshHighlightedRecord = (map, options: any) => {
         source: layerID,
         type: 'fill',
         paint: {
-          'fill-color': 'yellow',
-          'fill-outline-color': 'yellow',
-          'fill-opacity': 0.5
+          'fill-color': 'white',
+          'fill-outline-color': 'black',
+          'fill-opacity': 0.7
         },
         minzoom: 0,
         maxzoom: 24
@@ -1154,7 +1154,7 @@ export const refreshHighlightedRecord = (map, options: any) => {
         source: layerID,
         type: 'line',
         paint: {
-          'line-color': 'yellow',
+          'line-color': 'black',
           'line-opacity': 1,
           'line-width': 3
         },
@@ -1166,7 +1166,7 @@ export const refreshHighlightedRecord = (map, options: any) => {
         source: layerID,
         type: 'circle',
         paint: {
-          'circle-color': 'yellow',
+          'circle-color': 'white',
           'circle-radius': 3
         },
         minzoom: 0,
