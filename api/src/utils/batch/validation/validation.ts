@@ -1,11 +1,10 @@
 import slugify from 'slugify';
 import moment from 'moment';
-import { lookupAreaLimit } from 'sharedAPI';
+import { ActivityLetter, lookupAreaLimit } from 'sharedAPI';
 import circle from '@turf/circle';
 import {
   autofillFromPostGIS,
-  getLongIDFromShort,
-  getRecordTypeFromShort,
+  getRecordFromShort,
   multipolygonIsConnected,
   parsedGeoType,
   parseGeoJSONasWKT,
@@ -63,6 +62,40 @@ interface ColumnPrescenceCheckResult {
 
 const DATE_ONLY_FORMAT = 'YYYY-MM-DD';
 const DATE_TIME_FORMAT = 'YYYY-MM-DDThh:mm';
+
+const invalidShortID: BatchCellValidationMessage = {
+  severity: 'error',
+  messageTitle: 'ShortID is not the correct format',
+  messageDetail: 'ShortID is not the correct format []'
+}
+
+const invalidRecordType: BatchCellValidationMessage = {
+  severity: 'error',
+  messageTitle: 'Linked ID not of the right type',
+  messageDetail: `The linked record is not of the right type`
+}
+const invalidLinkedGeoJSON: BatchCellValidationMessage = {
+  severity: 'error',
+  messageTitle: 'Linked Record doesn\'t contain valid GeoJSON',
+  messageDetail: 'The linked Record does not contain valid GeoJSON'
+}
+
+const invalidLongID = (shortId: string): BatchCellValidationMessage => ({
+  severity: 'error',
+  messageTitle: 'Linked ID not found',
+  messageDetail: `No record with short ID ${shortId} found`
+});
+
+const invalidOverlapping: BatchCellValidationMessage = {
+  severity: 'error',
+  messageTitle: 'Linked ID area does not overlap',
+  messageDetail: `The area of the linked record does not overlap with this record`
+}
+const invalidSpeciesMatch: BatchCellValidationMessage = {
+  severity: 'error',
+  messageTitle: 'Species in batch record doesn\'t match linked record',
+  messageDetail: 'The species in batch record doesn\t match linked record'
+}
 
 function _divmod(x: number, y: number) {
   return [Math.floor(x / y), x % y];
@@ -124,6 +157,76 @@ function _mapRowToDBObject(row, form_status, template: Template, userInfo: any):
   };
 }
 
+/**
+ * @desc Switch handler for boolean fields in batch uploads
+ * @param data Incoming data from cell
+ * @param result Result information for parsed cell
+ */
+const _handleBooleanCell = (data: string, result: CellValidationResult) => {
+  switch (data.toLowerCase()) {
+    case 'n':
+    case 'no':
+    case 'f':
+    case 'false':
+      result.parsedValue = false;
+      break;
+    case 'y':
+    case 'yes':
+    case 't':
+    case 'true':
+      result.parsedValue = true;
+      break;
+    default:
+      result.validationMessages.push({
+        severity: 'error',
+        messageTitle: 'Could not be interpreted as a boolean value'
+      });
+  }
+}
+/**
+ * @desc Validates the format of a ShortID for a given record type
+ * @param shortId Short ID of batch upload entry
+ * @param activityLetter The Letter corresponsing to the type of entry being uploaded
+ * @returns Regex Pattern matches ShortID
+ */
+const validateShortID = (shortId, activityLetter) => {
+  const shortIdPattern = RegExp(`^[0-9]{2}${activityLetter}[0-9A-Z]{8}$`)
+  return shortIdPattern.test(shortId);
+}
+
+/**
+ * @desc  Validation Handler for batch records with type Activity_Monitoring_ChemicalTerrestrialAquaticPlant
+ *        Validates fields in form to ensure data properly links with an existing record.
+ * @param data 
+ * @param result 
+ */
+const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (shortId: string, result: CellValidationResult, row) => {
+  const expectedRecordType = 'Activity_Treatment_ChemicalTerrestrialAquaticPlant'
+  const batchUploadInvasivePlantRow = 'Monitoring - Terrestrial Invasive Plant'
+  const isValidShortID = validateShortID(shortId, ActivityLetter.Activity_Monitoring_ChemicalTerrestrialAquaticPlant);
+  const linkedRecord = await getRecordFromShort(shortId);
+  const isItTheRightRecordType = linkedRecord['activity_subtype'] === expectedRecordType;
+  const doTheSpeciesMatch = linkedRecord['species_treated'].includes(row.data[batchUploadInvasivePlantRow])
+  const thisGeoJSON: any = row.data.WKT || false;
+  const linkedGeoJSON: any = linkedRecord['geog'] || false;
+  const doTheyOverlap = (
+    thisGeoJSON &&
+    linkedGeoJSON &&
+    booleanOverlap(thisGeoJSON, linkedGeoJSON)
+  );
+
+  // use turf to check for overlap:
+  if (!doTheSpeciesMatch) { result.validationMessages.push(invalidSpeciesMatch) }
+  if (!doTheyOverlap) { result.validationMessages.push(invalidOverlapping); }
+  if (!isItTheRightRecordType) { result.validationMessages.push(invalidRecordType); }
+  if (!isValidShortID) { result.validationMessages.push(invalidShortID); }
+  if (!linkedGeoJSON) { result.validationMessages.push(invalidLinkedGeoJSON); }
+  if (!linkedRecord) { result.validationMessages.push(invalidLongID(shortId)); }
+  if (!thisGeoJSON) { console.log("thisGeoJSON False"); }
+
+  console.log(result.validationMessages, doTheSpeciesMatch)
+}
+
 async function _validateCell(
   template: Template,
   templateColumn: TemplateColumn,
@@ -134,7 +237,6 @@ async function _validateCell(
     validationMessages: [],
     parsedValue: null
   };
-
   if (templateColumn === null) {
     result.validationMessages.push({
       severity: 'warning',
@@ -156,68 +258,17 @@ async function _validateCell(
   switch (templateColumn?.dataType) {
     case 'linked_id':
       const thisRecordType = template.subtype;
-      switch(thisRecordType) {
+      switch (thisRecordType) {
         // chem monitoring
         case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-          // check if the short id is a record that exists and is the right type:
-          const shortId = data;
-
-          const longID = await getLongIDFromShort(shortId);
-          const linkedRecordType = await getRecordTypeFromShort(shortId);
-          const isItTheRightType = linkedRecordType === 'Activity_Treatment_ChemicalTerrestrialAquaticPlant';
-          const thisGeoJSON: any = {} // @todo
-          const linkedGeoJSON:any = {} // @todo
-          
-
-          if( !isItTheRightType ) {
-            result.validationMessages.push({
-              severity: 'error',
-              messageTitle: 'Linked ID not of the right type',
-              messageDetail: `The linked record is not of the right type`
-            });
-          }
-
-          if ( !longID ) {
-            result.validationMessages.push({
-              severity: 'error',
-              messageTitle: 'Linked ID not found',
-              messageDetail: `No record with short ID ${shortId} found`
-            });
-          }
-
-          // use turf to check for overlap:
-          const doTheyOverlap = booleanOverlap(thisGeoJSON, linkedGeoJSON);
-
-          if(!doTheyOverlap) {
-            result.validationMessages.push({
-              severity: 'error',
-              messageTitle: 'Linked ID area does not overlap',
-              messageDetail: `The area of the linked record does not overlap with this record`
-            });
-          }
+          await _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant(data, result, row);
           break;
         default:
           break;
-    case 'boolean':
-      switch (data.toLowerCase()) {
-        case 'n':
-        case 'no':
-        case 'f':
-        case 'false':
-          result.parsedValue = false;
-          break;
-        case 'y':
-        case 'yes':
-        case 't':
-        case 'true':
-          result.parsedValue = true;
-          break;
-        default:
-          result.validationMessages.push({
-            severity: 'error',
-            messageTitle: 'Could not be interpreted as a boolean value'
-          });
       }
+      break;
+    case 'boolean':
+      _handleBooleanCell(data, result);
       break;
     case 'codeReference':
       {
@@ -474,6 +525,8 @@ async function _validateCell(
             messageTitle: 'Could not be interpreted as a tristate (Yes/No/Unknown) value'
           });
       }
+      break;
+    default:
       break;
   }
   return result;
