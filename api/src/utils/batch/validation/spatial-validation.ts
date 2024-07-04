@@ -51,21 +51,52 @@ export const parseGeoJSONasWKT = (input: any) => {
   return parsed;
 };
 
-
-export const getLongIDFromShort = async (input: string): Promise<string> => {
+/**
+ * @desc Returns record from 
+ * @param shortId short form ID for a given record
+ * @return Record with 'activity_payload' removed to reduce size
+ */
+export const getRecordFromShort = async (shortId: string): Promise<Record<string, any>> => {
   const connection = await getDBConnection();
+  if (!connection) { throw new Error('Could not get a DB Connection'); }
 
-  if (!connection) {
-    throw new Error('Could not get a DB Connection');
-  }
   try {
-    const res
-      = await connection.query({
-        text: `select activity_id
-               from activity_incoming_data
-               where short_id = $1 limit 1`,
-        values: [input]
-      });
+    const res = await connection.query({
+      text: `
+        SELECT *
+        FROM activity_incoming_data
+        WHERE short_id = $1 
+        AND iscurrent = True
+        LIMIT 1
+      `,
+      values: [shortId]
+    });
+    delete res.rows[0]['activity_payload']
+    return res.rows[0];
+  } catch (e) {
+    console.log('[getRecordFromShort]', e)
+  }
+}
+/**
+ * @desc Parses database for record matching shortID
+ * @param shortId shortForm of ID From batch upload record
+ * @returns UUID - Longform ID of record (activity_id)
+ */
+export const getLongIDFromShort = async (shortId: string): Promise<string> => {
+  const connection = await getDBConnection();
+  if (!connection) { throw new Error('Could not get a DB Connection'); }
+
+  try {
+    const res = await connection.query({
+      text: `
+        SELECT activity_id
+        FROM activity_incoming_data
+        WHERE short_id = $1 
+        AND iscurrent = True
+        LIMIT 1
+      `,
+      values: [shortId]
+    });
 
     return res.rows[0]['activity_id'];
   } catch (e) {
@@ -74,22 +105,26 @@ export const getLongIDFromShort = async (input: string): Promise<string> => {
   }
 }
 
-
-export const getRecordTypeFromShort = async (input: string): Promise<string> => {
+/**
+ * @desc Parses database for record matching shortID
+ * @param shortId shortForm of ID From batch upload record
+ * @returns UUID - Longform ID of record (activity_id)
+ */
+export const getRecordTypeFromShort = async (shortId: string): Promise<string> => {
   const connection = await getDBConnection();
+  if (!connection) { throw new Error('Could not get a DB Connection'); }
 
-  if (!connection) {
-    throw new Error('Could not get a DB Connection');
-  }
   try {
-    const res
-      = await connection.query({
-        text: `select activity_subtype
-               from activity_incoming_data
-               where short_id = $1 limit 1`,
-        values: [input]
-      });
-
+    const res = await connection.query({
+      text: `
+        SELECT activity_id
+        FROM activity_incoming_data
+        WHERE short_id = $1 
+        AND iscurrent = True
+        LIMIT 1
+      `,
+      values: [shortId]
+    });
     return res.rows[0]['activity_subtype'];
   } catch (e) {
     console.log('error in getRecordTypeFromShort', e);
@@ -97,23 +132,20 @@ export const getRecordTypeFromShort = async (input: string): Promise<string> => 
   }
 }
 
-export const getGeometryAsGeoJSONFromShort = async (input: string): Promise<string> => {
-
+export const getGeometryAsGeoJSONFromShort = async (shortId: string): Promise<string> => {
   const connection = await getDBConnection();
+  if (!connection) { throw new Error('Could not get a DB Connection'); }
 
-  if (!connection) {
-    throw new Error('Could not get a DB Connection');
-  }
   try {
     const res
       = await connection.query({
-        text: `select geometry
+        text: `select geog
                from activity_incoming_data
                where short_id = $1`,
-        values: [input]
+        values: [shortId]
       });
 
-    return res.rows[0]['geometry'];
+    return res.rows[0]['geog'];
   } catch (e) {
     console.log('error in getGeometryAsGeoJSONFromShort', e);
     throw new Error('Error validating geometry in the database' + e.message);
