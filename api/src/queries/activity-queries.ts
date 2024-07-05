@@ -765,12 +765,35 @@ LEFT JOIN
  */
 export const getActivitySQL = (activityId: string): SQLStatement => {
   return SQL`
+
+  with activity_version_history as (
+   select created_by,  ROW_NUMBER() OVER (ORDER BY PropertyID) AS RowNumber
+  
+  ),
     SELECT a.*
     FROM activity_incoming_data a
     WHERE a.activity_id = ${activityId}
       and a.iscurrent = true
   `;
 };
+
+
+export const getActivityHistorySQL = (activityId: string): SQLStatement => {
+  return SQL`
+  
+  
+  with activity_version_history as (
+   select updated_by, created_timestamp, *,  ROW_NUMBER() OVER (ORDER BY activity_incoming_data_id asc) AS Version
+   from activity_incoming_data
+	where activity_id = ${activityId}
+     
+  )
+    SELECT a.*
+    FROM activity_version_history a
+
+  `
+}
+
 
 /**
  * SQL query to fetch a grid cells that overlap with given geometry from either large grid or small grid;
