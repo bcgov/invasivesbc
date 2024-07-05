@@ -4,7 +4,7 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
-import { getActivitySQL } from 'queries/activity-queries';
+import { getActivityHistorySQL, getActivitySQL } from 'queries/activity-queries';
 import { getFileFromS3 } from 'utils/file-utils';
 import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from 'paths/media';
@@ -85,8 +85,9 @@ function getActivity(): RequestHandler {
 
     try {
       const sqlStatement: SQLStatement = getActivitySQL(activityId);
+      const sqlStatement2: SQLStatement = getActivityHistorySQL(activityId);
 
-      if (!sqlStatement) {
+      if (!sqlStatement || !sqlStatement2) {
         return res.status(500).json({
           message: 'Unable to generate SQL statement.',
           request: req.body,
@@ -95,13 +96,16 @@ function getActivity(): RequestHandler {
         });
       }
 
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      const response1 = await connection.query(sqlStatement.text, sqlStatement.values);
+      const response2 = await connection.query(sqlStatement2.text, sqlStatement2.values);
 
-      const result = (response && response.rows && response.rows[0]) || null;
+      const result1 = (response1 && response1.rows && response1.rows[0]) || null;
+      const result2 = (response2 && response2.rows && response2.rows[0]) || null;
 
-      defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result) });
+      defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result1) });
 
-      req['activity'] = result;
+      req['activity'] = result1;
+      req['activity_history'] = result2;
     } catch (error) {
       defaultLog.debug({ label: 'getActivity', message: 'error', error });
       return res.status(500).json({
