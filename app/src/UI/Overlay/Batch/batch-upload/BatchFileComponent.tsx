@@ -3,10 +3,11 @@ import { Button } from '@mui/material';
 import { useDropzone } from 'react-dropzone';
 
 const dropzoneStyle = {
-  backgroundColor: 'silver',
   color: '#464646',
-  border: '2px solid rgba(0,0,0,0.2)',
+  border: '2px solid rgba(0,0,0,0.4)',
+  paddingLeft: '1em',
   backgroundClip: 'padding-box',
+  margin: '0.25em 0',
   borderRadius: '4px',
   cursor: 'pointer'
 } as React.CSSProperties;
