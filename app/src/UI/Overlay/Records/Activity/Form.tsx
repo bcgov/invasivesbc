@@ -137,6 +137,8 @@ export const ActivityForm = (props) => {
               <td className={'rightValueCol'}>{new Date(date_created).toLocaleDateString()}</td>
               <br />
             </tr>
+              {activity_history?.length > 1 && (
+                <>
             <tr>
               <td className={'rightHeaderCol'}>Updated By:</td>
               <td className={'rightValueCol'}>{updated_by}</td>
@@ -164,6 +166,8 @@ export const ActivityForm = (props) => {
               </td>
               <br />
             </tr>
+            </>
+              )}
             <tr>
               <td className={'rightHeaderCol'}>Batch ID</td>
               <td className={'rightValueCol'}>{batch_id}</td>
