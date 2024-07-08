@@ -96,11 +96,12 @@ function getActivity(): RequestHandler {
         });
       }
 
+      defaultLog.debug({ label: '{activityId}', message: 'activity audit sql ', body: sqlStatement2 });
       const response1 = await connection.query(sqlStatement.text, sqlStatement.values);
       const response2 = await connection.query(sqlStatement2.text, sqlStatement2.values);
 
       const result1 = (response1 && response1.rows && response1.rows[0]) || null;
-      const result2 = (response2 && response2.rows && response2.rows[0]) || null;
+      const result2 = (response2 && response2.rows ) || null;
 
       defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result1) });
 
@@ -168,7 +169,7 @@ function returnActivity(): RequestHandler {
     const originalPayload = { ...req['activity'].activity_payload };
 
     // other columns in activity_incoming_data:
-    const supplementalFields = { ...req['activity'] };
+    const supplementalFields = { ...req['activity'], activity_history: [...req['activity_history']] };
     delete supplementalFields.activity_payload;
 
     // merge the two
