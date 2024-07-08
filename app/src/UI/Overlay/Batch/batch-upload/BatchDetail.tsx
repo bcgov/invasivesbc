@@ -9,6 +9,12 @@ import { selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Spinner/Spinner';
 import { BATCH_EXECUTE_REQUEST, BATCH_RETRIEVE_REQUEST, BATCH_UPDATE_REQUEST } from 'state/actions';
 
+const StyledSelect = {
+  width: '70pt',
+  height: '25pt',
+  paddingLeft: '0.5em'
+} as React.CSSProperties
+
 const BatchMetadata = ({ batch }) => {
   const dispatch = useDispatch();
 
@@ -88,7 +94,12 @@ const BatchMetadata = ({ batch }) => {
                 <td>Upload revised CSV Data</td>
                 <td>
                   <BatchFileComponent setData={acceptFileData} ready={uploadReady} disabled={false} />
-                  <Button disabled={!uploadReady} variant={'contained'} onClick={() => uploadRevisedData()}>
+                  <Button
+                    disabled={!uploadReady}
+                    variant={'contained'}
+                    onClick={uploadRevisedData}
+                    sx={{ 'mt': '0.25em' }}
+                  >
                     Upload
                   </Button>
                 </td>
@@ -102,6 +113,7 @@ const BatchMetadata = ({ batch }) => {
                 <td>
                   <select
                     value={execFinalState}
+                    style={StyledSelect}
                     onChange={(e) => {
                       console.log('changed');
                       setExecFinalState(e.target.value);
