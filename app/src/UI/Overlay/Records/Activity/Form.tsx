@@ -1,17 +1,22 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import FormContainer from './form/FormContainer';
 import { useDispatch, useSelector } from 'react-redux';
 import './Form.css';
+
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
 import { calc_lat_long_from_utm } from 'utils/utm';
 import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
+import { lengthToRadians } from '@turf/helpers';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
+
+
+  const [showAuditDialogue, setShowAuditDialogue] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -25,7 +30,8 @@ export const ActivityForm = (props) => {
     date_created,
     updated_by,
     received_timestamp,
-    batch_id
+    batch_id,
+    activity_history
   } = useSelector((state: any) => state.ActivityPage?.activity);
 
   const invasive_plant = useSelector((state: any) => state.ActivityPage?.activity?.invasive_plant);
@@ -144,6 +150,22 @@ export const ActivityForm = (props) => {
               <br />
             </tr>
             <tr>
+              <td className={'rightHeaderCol'}>Audit Info:</td>
+              <td className={'rightValueCol'}>
+                <Button
+                  onClick={() => {
+                    setShowAuditDialogue(true);
+                    alert('Audit Info')
+                  }}
+                  variant="outlined"
+                  sx={{ backgroundColor: 'white', color: '#003366', fontSize: 12, fontWeight: 'medium' }}
+                >
+                  Click to view
+                </Button>
+              </td>
+              <br />
+            </tr>
+            <tr>
               <td className={'rightHeaderCol'}>Batch ID</td>
               <td className={'rightValueCol'}>{batch_id}</td>
               <br />
@@ -165,6 +187,26 @@ export const ActivityForm = (props) => {
       >
         Click to enter UTM manually
       </Button>
+      <div id="auditInfoDialog" className={showAuditDialogue? 'showAuditInfoDialog': 'hideAuditInfoDialog'}>
+        <Button onClick={() => setShowAuditDialogue(false)}>Close</Button>
+        <ul>
+          {activity_history?.map((item, index) => {
+            return (
+
+              <li key={index}>
+                <div>
+                  <div>
+                    <span>Updated By: {item?.updated_by}</span>
+                  </div>
+                  <div>
+                    <span>Activity Status: {item?.form_status}</span>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+      </div>
       <FormContainer />
     </>
   );
