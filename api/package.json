@@ -25,6 +25,7 @@
   "dependencies": {
     "@faker-js/faker": "^8.4.1",
     "@mapbox/togeojson": "^0.16.2",
+    "@turf/boolean-intersects": "7.0.0",
     "@turf/boolean-overlap": "^6.5.0",
     "@turf/boolean-within": "^6.5.0",
     "@turf/circle": "^6.5.0",
