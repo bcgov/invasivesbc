@@ -564,6 +564,46 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
 };
 
 export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE) => {
+  /* 
+      First need to delete the layers who's record set was deleted altogether:
+
+  */
+  const storeLayersIds = storeLayers.map((layer) => {
+    return 'recordset-layer-' + layer.recordSetID + '-'
+  })
+
+  const allLayersOnMap = map.getLayersOrder();
+  const allSourcesOnMap = Object.keys(map.style.sourceCaches);
+  const allThatAreRecordSetLayers = allLayersOnMap.filter(layer => 
+    layer.includes('recordset-layer')
+  )
+  const allThatAreRecordSetSources = allSourcesOnMap.filter(source => 
+    source.includes('recordset-layer-')
+  )
+  const recordSetLayersThatAreNotInStore = allThatAreRecordSetLayers.filter(layer => 
+       storeLayersIds.filter(storeLayerId => layer.includes(storeLayerId)).length === 0
+  )
+  const recordSetSourcesThatAreNotInStore = allThatAreRecordSetSources.filter(source => 
+       storeLayersIds.filter(storeLayerId => source.includes(storeLayerId)).length === 0
+  )
+
+  recordSetLayersThatAreNotInStore.map(layer => {
+    try {
+      map.removeLayer(layer)
+    } catch(e) {
+      console.log('error removing layer', e)
+    }
+  })
+  recordSetSourcesThatAreNotInStore.map(source => {
+    try {
+      map.removeSource(source)
+    } catch(e) {
+      console.log('error removing source', e)
+    }
+  })
+
+
+  // now update the layers that are in the store
   storeLayers.map((layer: any) => {
     if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
       if (layer.type === 'Activity') {
