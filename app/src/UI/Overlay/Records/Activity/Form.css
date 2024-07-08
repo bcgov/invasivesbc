@@ -5,15 +5,24 @@
 #auditInfoDialog {
   position: fixed;
   background-color: white;
-  left: 0;
-  top: 0;
-  z-index: 9000;
-  width: 500px;
-  height: 500px;
+  left: 25%;
+  top: 25%;
+  z-index: 990000;
+  width: 50%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   display: none;
+}
+
+.inner_audit_list {
+  display: flex;
+  flex-direction: column;
+  justify-content: left !important;
+  text-align: left !important;
+  align-items: left !important;
+  width: 100%;
+
 }
 
 .showAuditInfoDialog {

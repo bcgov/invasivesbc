@@ -155,7 +155,6 @@ export const ActivityForm = (props) => {
                 <Button
                   onClick={() => {
                     setShowAuditDialogue(true);
-                    alert('Audit Info')
                   }}
                   variant="outlined"
                   sx={{ backgroundColor: 'white', color: '#003366', fontSize: 12, fontWeight: 'medium' }}
@@ -193,16 +192,18 @@ export const ActivityForm = (props) => {
           {activity_history?.map((item, index) => {
             return (
 
+              <>
               <li key={index}>
-                <div>
-                  <div>
-                    <span>Updated By: {item?.updated_by}</span>
-                  </div>
-                  <div>
-                    <span>Activity Status: {item?.form_status}</span>
-                  </div>
-                </div>
+                <ul className={'inner_audit_list'}>
+                    <li>Version : {item?.version + (item?.iscurrent? ' (Current) ' : '')}</li>
+                    <li>Updated By: {item?.updated_by}</li>
+                    <li>Activity Status: {item?.form_status}</li>
+                    <li>Created at: {item?.created_timestamp}</li>
+
+                </ul>
               </li>
+              <br/>
+              </>
             );
           })}
         </ul>
