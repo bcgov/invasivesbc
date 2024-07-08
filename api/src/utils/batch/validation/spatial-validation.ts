@@ -52,7 +52,7 @@ export const parseGeoJSONasWKT = (input: any) => {
 };
 
 /**
- * @desc Returns record from 
+ * @desc Returns record matching shortID from Database, converts 'geog' into geojson
  * @param shortId short form ID for a given record
  * @return Record with 'activity_payload' removed to reduce size
  */
@@ -63,7 +63,8 @@ export const getRecordFromShort = async (shortId: string): Promise<Record<string
   try {
     const res = await connection.query({
       text: `
-        SELECT *
+        SELECT *,
+        st_asgeojson(geog) AS sample
         FROM activity_incoming_data
         WHERE short_id = $1 
         AND iscurrent = True
@@ -74,7 +75,10 @@ export const getRecordFromShort = async (shortId: string): Promise<Record<string
     delete res.rows[0]['activity_payload']
     return res.rows[0];
   } catch (e) {
-    console.log('[getRecordFromShort]', e)
+    defaultLog.error({
+      message: '[getRecordFromShort]',
+      error: e,
+    });
   }
 }
 /**
@@ -100,7 +104,10 @@ export const getLongIDFromShort = async (shortId: string): Promise<string> => {
 
     return res.rows[0]['activity_id'];
   } catch (e) {
-    console.log('error in getLongIDFromShort', e);
+    defaultLog.error({
+      message: '[getLongIDFromShort]',
+      error: e,
+    });
     throw new Error('Error validating geometry in the database' + e.message);
   }
 }
@@ -127,7 +134,10 @@ export const getRecordTypeFromShort = async (shortId: string): Promise<string> =
     });
     return res.rows[0]['activity_subtype'];
   } catch (e) {
-    console.log('error in getRecordTypeFromShort', e);
+    defaultLog.error({
+      message: '[getRecordTypeFromShort]',
+      error: e,
+    });
     throw new Error('Error validating geometry in the database' + e.message);
   }
 }
