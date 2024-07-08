@@ -2,6 +2,7 @@ import slugify from 'slugify';
 import moment from 'moment';
 import { ActivityLetter, lookupAreaLimit } from 'sharedAPI';
 import circle from '@turf/circle';
+import booleanIntersects from '@turf/boolean-intersects';
 import {
   autofillFromPostGIS,
   getRecordFromShort,
@@ -14,7 +15,6 @@ import {
 import { _mapToDBObject } from 'utils/batch/execution';
 import { getLogger } from 'utils/logger';
 import { Template, TemplateColumn } from 'utils/batch/definitions';
-import booleanOverlap from '@turf/boolean-overlap';
 
 const defaultLog = getLogger('batch');
 
@@ -74,6 +74,7 @@ const invalidRecordType: BatchCellValidationMessage = {
   messageTitle: 'Linked ID not of the right type',
   messageDetail: `The linked record is not of the right type`
 }
+
 const invalidLinkedGeoJSON: BatchCellValidationMessage = {
   severity: 'error',
   messageTitle: 'Linked Record doesn\'t contain valid GeoJSON',
@@ -91,10 +92,17 @@ const invalidOverlapping: BatchCellValidationMessage = {
   messageTitle: 'Linked ID area does not overlap',
   messageDetail: `The area of the linked record does not overlap with this record`
 }
+
 const invalidSpeciesMatch: BatchCellValidationMessage = {
   severity: 'error',
   messageTitle: 'Species in batch record doesn\'t match linked record',
   messageDetail: 'The species in batch record doesn\t match linked record'
+}
+
+const invalidWKT: BatchCellValidationMessage = {
+  severity: 'error',
+  messageTitle: 'WKT is missing or malformed',
+  messageDetail: 'WKT is missing or malformed'
 }
 
 function _divmod(x: number, y: number) {
@@ -200,31 +208,39 @@ const validateShortID = (shortId, activityLetter) => {
  * @param data 
  * @param result 
  */
-const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (shortId: string, result: CellValidationResult, row) => {
-  const expectedRecordType = 'Activity_Treatment_ChemicalTerrestrialAquaticPlant'
-  const batchUploadInvasivePlantRow = 'Monitoring - Terrestrial Invasive Plant'
-  const isValidShortID = validateShortID(shortId, ActivityLetter.Activity_Monitoring_ChemicalTerrestrialAquaticPlant);
-  const linkedRecord = await getRecordFromShort(shortId);
-  const isItTheRightRecordType = linkedRecord['activity_subtype'] === expectedRecordType;
-  const doTheSpeciesMatch = linkedRecord['species_treated'].includes(row.data[batchUploadInvasivePlantRow])
-  const thisGeoJSON: any = row.data.WKT || false;
-  const linkedGeoJSON: any = linkedRecord['geog'] || false;
-  const doTheyOverlap = (
-    thisGeoJSON &&
-    linkedGeoJSON &&
-    booleanOverlap(thisGeoJSON, linkedGeoJSON)
-  );
-
-  // use turf to check for overlap:
-  if (!doTheSpeciesMatch) { result.validationMessages.push(invalidSpeciesMatch) }
-  if (!doTheyOverlap) { result.validationMessages.push(invalidOverlapping); }
-  if (!isItTheRightRecordType) { result.validationMessages.push(invalidRecordType); }
-  if (!isValidShortID) { result.validationMessages.push(invalidShortID); }
-  if (!linkedGeoJSON) { result.validationMessages.push(invalidLinkedGeoJSON); }
-  if (!linkedRecord) { result.validationMessages.push(invalidLongID(shortId)); }
-  if (!thisGeoJSON) { console.log("thisGeoJSON False"); }
-
-  console.log(result.validationMessages, doTheSpeciesMatch)
+const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (shortId: string, result: CellValidationResult, row: Record<string, any>) => {
+  try {
+    const expectedRecordTypes = ['Activity_Treatment_ChemicalPlantAquatic', 'Activity_Treatment_ChemicalPlantTerrestrial']
+    const batchUploadInvasivePlantRow = 'Monitoring - Terrestrial Invasive Plant'
+    const batchUploadTerrestrialPlantRow = 'Monitoring - Aquatic Invasive Plant'
+    const isValidShortID = validateShortID(shortId, ActivityLetter.Activity_Treatment_ChemicalPlantAquatic);
+    const linkedRecord = await getRecordFromShort(shortId);
+    const isItTheRightRecordType = expectedRecordTypes.includes(linkedRecord['activity_subtype']);
+    const doTheSpeciesMatch = (
+      linkedRecord['species_treated']?.includes(row.data[batchUploadInvasivePlantRow]) ||
+      linkedRecord['species_treated']?.includes(row.data[batchUploadTerrestrialPlantRow])
+    )
+    const thisGeoJSON: any = row.data['WKT'];
+    const isValidGeoJSON: boolean = thisGeoJSON || false;
+    const linkedGeoJSON: any = JSON.parse(linkedRecord['sample']) || false;
+    const doTheyOverlap = (
+      isValidGeoJSON &&
+      linkedGeoJSON &&
+      booleanIntersects(thisGeoJSON.parsedValue?.geojson, linkedGeoJSON)
+    );
+    if (!doTheSpeciesMatch) { result.validationMessages.push(invalidSpeciesMatch); }
+    if (!doTheyOverlap) { result.validationMessages.push(invalidOverlapping); }
+    if (!isItTheRightRecordType) { result.validationMessages.push(invalidRecordType); }
+    if (!isValidShortID) { result.validationMessages.push(invalidShortID); }
+    if (!linkedGeoJSON) { result.validationMessages.push(invalidLinkedGeoJSON); }
+    if (!linkedRecord) { result.validationMessages.push(invalidLongID(shortId)); }
+    if (!isValidGeoJSON) { result.validationMessages.push(invalidWKT); }
+  } catch (e) {
+    defaultLog.error({
+      message: '[handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant]',
+      error: e,
+    });
+  }
 }
 
 async function _validateCell(
@@ -499,7 +515,6 @@ async function _validateCell(
           messageDetail: e.message || e.messageDetail || e
         });
       }
-
       break;
     case 'tristate':
       switch (data?.toLowerCase()) {
