@@ -1,6 +1,4 @@
-import { Geolocation } from '@capacitor/geolocation';
 import * as turf from '@turf/turf';
-import { channel } from 'redux-saga';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
 import {
@@ -34,10 +32,7 @@ import {
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
-  MAP_SET_COORDS,
   MAP_TOGGLE_GEOJSON_CACHE,
-  MAP_TOGGLE_PANNED,
-  MAP_TOGGLE_TRACKING,
   MAP_WHATS_HERE_FEATURE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   MAP_WHATS_HERE_INIT_GET_POI,
@@ -92,6 +87,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -164,62 +160,6 @@ function* refetchServerBoundaries() {
 }
 
 function* getPOIIDsOnline(feature, filterCriteria) {}
-
-function* handle_MAP_TOGGLE_TRACKING(action) {
-  const state = yield select(selectMap);
-
-  if (!state.positionTracking) {
-    return;
-  }
-
-  const coordChannel = channel();
-
-  const callback = async (position) => {
-    try {
-      if (!position) {
-        return;
-      } else {
-        coordChannel.put({
-          type: MAP_SET_COORDS,
-          payload: {
-            position: {
-              coords: {
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-                accuracy: position.coords.accuracy,
-                heading: position.coords.heading
-              }
-            }
-          }
-        });
-      }
-    } catch (e) {
-      console.log(JSON.stringify(e));
-    }
-  };
-
-  const options = {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 500
-  };
-  const watchID = yield Geolocation.watchPosition(options, callback);
-
-  let counter = 0;
-  while (state.positionTracking) {
-    if (counter === 0) {
-      yield put({ type: MAP_TOGGLE_PANNED, payload: { target: 'me' } });
-    }
-    const currentMapState = yield select(selectMap);
-    if (!currentMapState.positionTracking) {
-      return;
-    }
-    const action = yield take(coordChannel);
-    yield put(action);
-    counter++;
-  }
-  Geolocation.clearWatch(watchID);
-}
 
 function* handle_WHATS_HERE_FEATURE(action) {
   let mapState = yield select(selectMap);
@@ -1070,7 +1010,6 @@ function* activitiesPageSaga() {
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
-    takeEvery(MAP_TOGGLE_TRACKING, handle_MAP_TOGGLE_TRACKING),
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
@@ -1096,7 +1035,8 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
-    takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE)
+    takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
+    ...TRACKING_SAGA_HANDLERS
   ]);
 }
 

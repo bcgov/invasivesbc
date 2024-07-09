@@ -63,6 +63,14 @@
 	<key>SSO_CLIENT_ID</key>
 	<string>${SSO_CLIENT_ID}</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
+  <false/>
+  <key>NSLocationWhenInUseUsageDescription</key>
+  <string>We need to track your location to show you location-specific data</string>
+  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  <string>We need to track your location while your device is locked to allow you to log site data when the device is locked.</string>
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>location</string>
+  </array>
 </dict>
 </plist>
