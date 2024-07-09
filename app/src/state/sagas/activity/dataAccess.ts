@@ -596,9 +596,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
 
     const search_feature = payloadActivity.geometry?.[0]
       ? {
-          type: 'FeatureCollection',
-          features: payloadActivity.geometry
-        }
+        type: 'FeatureCollection',
+        features: payloadActivity.geometry
+      }
       : false;
 
     if (linkedActivitySubtypes.length > 0) {
@@ -679,24 +679,17 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
         }
       });
     }
-
+    let isViewing = true;
     const authState = yield select(selectAuth);
-    const userName = authState.username; 
+    const userName = authState.username;
     const created_by = action.payload.activity.created_by;
-    const notMine = userName !== created_by;
     const accessRoles = authState.accessRoles;
+    const createdByUser = userName === created_by;
+    const userIsAdmin = accessRoles?.some((
+      (role: Record<string, any>) => [1, 18].includes(role.role_id)
+    ));
 
-
-    let isViewing = false;
-    const notAdmin =
-      accessRoles?.filter((role) => {
-        return [1, 18].includes(role.role_id);
-      }).length === 0;
-    if (notAdmin && notMine) {
-      isViewing = true;
-    } else if (!notAdmin && notMine) {
-      isViewing = true;
-    } else {
+    if (userIsAdmin || createdByUser) {
       isViewing = false;
     }
 
