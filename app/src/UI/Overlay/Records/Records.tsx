@@ -243,12 +243,13 @@ export const Records = () => {
                           ? recordSets?.[set]?.color
                           : 'black',
                       borderStyle: 'solid',
-                      borderWidth: typeof highlightedSet === 'string' && highlightedSet === set ? '5px' : '1px'
+                      borderWidth: typeof highlightedSet === 'string' && highlightedSet === set ? '5px' : '1px',
+                      padding: typeof highlightedSet === 'string' && highlightedSet === set ? '0px 5px' : '4px 9px',
                     }}>
                     <div key={set + 'spinner'}>{!loadMap?.[set] ? <Spinner /> : <></>}</div>
                     <div className="records_set_left_hand_items">
                       <div className="records_set_name">
-                        <Typography>{recordSets?.[set]?.recordSetName}</Typography>
+                        <Typography >{recordSets?.[set]?.recordSetName}</Typography>
                       </div>
                     </div>
 
@@ -328,8 +329,8 @@ export const Records = () => {
                       </Tooltip>
 
                       {recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
-                      recordSets?.[set]?.recordSetName === 'All IAPP Records' ||
-                      recordSets?.[set]?.recordSetName === 'My Drafts' ? (
+                        recordSets?.[set]?.recordSetName === 'All IAPP Records' ||
+                        recordSets?.[set]?.recordSetName === 'My Drafts' ? (
                         <></>
                       ) : (
                         <div className="records_set_layer_colour">
@@ -345,8 +346,8 @@ export const Records = () => {
                       )}
 
                       {recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
-                      recordSets?.[set]?.recordSetName === 'All IAPP Records' ||
-                      recordSets?.[set]?.recordSetName === 'My Drafts' ? (
+                        recordSets?.[set]?.recordSetName === 'All IAPP Records' ||
+                        recordSets?.[set]?.recordSetName === 'My Drafts' ? (
                         <></>
                       ) : (
                         <Tooltip
