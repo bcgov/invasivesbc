@@ -235,6 +235,7 @@ const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (shortI
     if (!linkedGeoJSON) { result.validationMessages.push(invalidLinkedGeoJSON); }
     if (!linkedRecord) { result.validationMessages.push(invalidLongID(shortId)); }
     if (!isValidGeoJSON) { result.validationMessages.push(invalidWKT); }
+    if (linkedRecord) { result.parsedValue = linkedRecord['activity_id'] || ''; }
   } catch (e) {
     defaultLog.error({
       message: '[handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant]',
