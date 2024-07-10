@@ -73,7 +73,6 @@ const BatchRoutes: React.FC = () => {
           </Suspense>
         )}
       />
-      ;
       <Route
         path="/Batch/templates"
         render={() => (
