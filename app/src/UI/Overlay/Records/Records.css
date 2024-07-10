@@ -36,6 +36,8 @@
 .records_set_name {
   height: 100%;
   font-size: small;
+  display: flex;
+  align-items: center;
   overflow-y: hidden;
   /*  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;*/
 }
