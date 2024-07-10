@@ -249,6 +249,8 @@ export const Records = () => {
                       borderStyle: 'solid',
                       borderWidth: typeof highlightedSet === 'string' && highlightedSet === set ? '5px' : '1px',
                       padding: typeof highlightedSet === 'string' && highlightedSet === set ? '0px 5px' : '4px 9px',
+                      boxSizing: 'border-box',
+                      height: '30pt',
                     }}>
                     <div key={set + 'spinner'}>{!loadMap?.[set] ? <Spinner /> : <></>}</div>
                     <div className="records_set_left_hand_items">
