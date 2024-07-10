@@ -36,6 +36,8 @@
 .records_set_name {
   height: 100%;
   font-size: small;
+  display: flex;
+  align-items: center;
   overflow-y: hidden;
   /*  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;*/
 }
@@ -92,8 +94,8 @@
 .selectedFormTab {
   border-bottom-style: solid !important;
   /*border-radius: 2vh;*/
-  border-width: .5vh !important;
-  border-color: #FCBA19 !important;
+  border-width: 0.5vh !important;
+  border-color: #fcba19 !important;
 }
 
 .records__activity__photos_button {
