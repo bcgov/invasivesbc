@@ -93,7 +93,9 @@ export function setupStore(configuration: AppConfig) {
 
   storeRef.store = globalStore;
 
-  return { store: globalStore, persistor: persistStore(globalStore) };
+  const persistor = persistStore(globalStore);
+
+  return { store: globalStore, persistor };
 }
 
 export { historySingleton };

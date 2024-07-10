@@ -37,10 +37,10 @@ body {
   flex-flow: column wrap;
   position: relative;
   box-sizing: border-box;
-  padding: calc(var(--extra-top-padding) + env(safe-area-inset-top, 0)) env(safe-area-inset-right, 0) calc(var(--extra-bottom-padding) + env(safe-area-inset-bottom, 0)) env(safe-area-inset-left, 0);
+  padding: calc(var(--extra-top-padding) + env(safe-area-inset-top, 0)) env(safe-area-inset-right, 0)
+    calc(var(--extra-bottom-padding) + env(safe-area-inset-bottom, 0)) env(safe-area-inset-left, 0);
   overflow: hidden;
   height: 100svh;
-
 
   /* set by compilation flag */
 
@@ -69,7 +69,7 @@ body {
   position: relative;
   flex-grow: 1;
   width: 100%;
-  height: 100px;
+  min-height: 100px;
 }
 
 .MapWrapper {
@@ -135,7 +135,6 @@ body {
 
 @media only screen and (width >= 1281px) {
   :root {
-
   }
 
   .App {

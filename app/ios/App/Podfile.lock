@@ -13,11 +13,21 @@ PODS:
     - Capacitor
   - CapacitorCommunityBackgroundGeolocation (0.0.1):
     - Capacitor
+  - CapacitorCommunitySqlite (6.0.1):
+    - Capacitor
+    - SQLCipher
+    - ZIPFoundation
   - CapacitorCordova (6.0.0)
   - CapacitorGeolocation (6.0.0):
     - Capacitor
   - CordovaPlugins (6.0.0):
     - CapacitorCordova
+  - SQLCipher (4.5.1):
+    - SQLCipher/standard (= 4.5.1)
+  - SQLCipher/common (4.5.1)
+  - SQLCipher/standard (4.5.1):
+    - SQLCipher/common
+  - ZIPFoundation (0.9.13)
 
 DEPENDENCIES:
   - AppAuth
@@ -25,6 +35,7 @@ DEPENDENCIES:
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
   - "CapacitorCommunityBackgroundGeolocation (from `../../node_modules/@capacitor-community/background-geolocation`)"
+  - "CapacitorCommunitySqlite (from `../../node_modules/@capacitor-community/sqlite`)"
   - "CapacitorCordova (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorGeolocation (from `../../node_modules/@capacitor/geolocation`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
@@ -32,6 +43,8 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AppAuth
+    - SQLCipher
+    - ZIPFoundation
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -42,6 +55,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/camera"
   CapacitorCommunityBackgroundGeolocation:
     :path: "../../node_modules/@capacitor-community/background-geolocation"
+  CapacitorCommunitySqlite:
+    :path: "../../node_modules/@capacitor-community/sqlite"
   CapacitorCordova:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorGeolocation:
@@ -55,10 +70,13 @@ SPEC CHECKSUMS:
   CapacitorApp: 9d53aec7101f7b030a950c5bdc4df8612576b279
   CapacitorCamera: b61f125d92a0ef75d7becb7956fed7dd13187ee0
   CapacitorCommunityBackgroundGeolocation: 6f26f4290377dbd1d6dec21e62cb66f008f61ec7
+  CapacitorCommunitySqlite: d0b543e12a06ee6fd0dc287c389e6b435ec4acdf
   CapacitorCordova: 8c4bfdf69368512e85b1d8b724dd7546abeb30af
   CapacitorGeolocation: 1f12bbe372b65116e851bd8e3a94cf0ef9bacebb
   CordovaPlugins: 3575b94ab79514bf97bec2bd7c5f840afe388850
+  SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
+  ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: 18ab341760a1286688bd51f018e0cdc7872d6209
+PODFILE CHECKSUM: 24cfa4c00e1514812706e584cf832fcd177c70a5
 
 COCOAPODS: 1.15.2

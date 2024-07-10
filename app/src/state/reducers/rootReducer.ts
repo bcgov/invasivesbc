@@ -1,5 +1,4 @@
 import { combineReducers } from 'redux';
-import localForage from 'localforage';
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import { persistReducer } from 'redux-persist';
@@ -20,17 +19,11 @@ import { errorHandlerReducer } from './error_handler';
 import { createOfflineActivityReducer, OfflineActivityState } from './offlineActivity';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
+import { createDriver } from 'utils/sqlite_redux_persist_driver';
 
 // it will try indexdb first, then fall back to localstorage if not available.
 
-const platformStorage = localForage;
-
-/* this should be replaced with an sqlite driver on mobile builds
- eg
- if (import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true') {
-   platformStorage = someSQLiteDriver
- }
-*/
+const platformStorage = createDriver();
 
 const purgeOldStateOnVersionUpgrade = async (state: any) => {
   // finer-grained or per-reducer controls are possible -- this is a big hammer to reset saved state when this version changes
