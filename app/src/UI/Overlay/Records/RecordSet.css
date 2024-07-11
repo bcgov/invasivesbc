@@ -15,17 +15,17 @@
   flex-direction: row;
   justify-content: flex-start;
 }
+
 .stickyHeader {
   position: sticky;
   top: 0;
 }
 
 .excelExporter {
-  /*justify-self: flex-end;*/
+  /* justify-self: flex-end; */
   display: flex;
   width: 100%;
   flex-direction: row;
-
   margin-right: 0;
 }
 
@@ -40,15 +40,17 @@
 
 .recordSet_back_button {
 }
+
 .recordSet_menu_button {
   width: auto;
 }
+
 .recordSet_new_filter_button {
   margin-left: auto;
 }
 
 .recordSet_filters_container {
-  /*padding-top: 10px;*/
+  /* padding-top: 10px; */
   display: flex;
   position: relative;
   justify-content: center;
@@ -88,10 +90,7 @@
   color: white;
   border: none;
   border-radius: 5px;
-  margin-left: 5px;
-  margin-right: 5px;
-  margin-top: 5px;
-  margin-bottom: 5px;
+  margin: 5px;
   cursor: pointer;
 }
 
@@ -100,7 +99,8 @@
 
 .recordSet_filter_type {
   padding-left: 2vw;
-  /*z-index: 2147483646;*/
+
+  /* z-index: 2147483646; */
 }
 
 .recordSet_filter_value {
@@ -120,20 +120,18 @@ td {
 }
 
 .filterSelect {
-  /*width: 100px;*/
+  /* width: 100px; */
   max-width: 150px;
 }
 
 .recordSet_footer {
-  display: flex;
   flex-direction: row;
-  align-items: center;
   justify-content: center;
   color: white;
-  bottom:  var(--footer-bar-height);
-  height: var(--footer-bar-height);
+  bottom: var(--footer-bar-height);
+  height: 2rem;
   width: 100%;
-  background-color: #003366;
+  background-color: #036;
   align-items: center;
   display: flex;
   position: fixed;

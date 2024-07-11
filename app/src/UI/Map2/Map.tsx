@@ -2,7 +2,7 @@ import circle from '@turf/circle';
 import maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useStore } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './map.css';
 import centroid from '@turf/centroid';
 
@@ -113,6 +113,15 @@ export const Map = (props: any) => {
 
   useEffect(() => {
     if (!map.current || mapReady) return;
+    
+    if (map.current !== null) {
+      map.current.once('idle', function () {
+        if (map.current !== null) {
+          map.current.resize();
+        }
+      });
+    }
+
     if (map.current.isStyleLoaded()) {
       setMapReady(true);
     }

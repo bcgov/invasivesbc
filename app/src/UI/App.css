@@ -45,7 +45,7 @@ body {
   /* set by compilation flag */
 
   &.is-mobile {
-    --footer-bar-height: 0px;
+    --footer-bar-height: 0px !important;
   }
 
   &.web {
