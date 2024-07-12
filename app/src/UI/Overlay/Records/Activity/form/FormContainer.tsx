@@ -157,15 +157,12 @@ const FormContainer: React.FC<any> = (props) => {
 
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
-    const notMine = username !== created_by;
-    const notAdmin =
-      accessRoles?.filter((role) => {
-        return role.role_id === 18;
-      }).length === 0;
-    if (notAdmin && notMine) {
-      setIsDisabled(true);
-    } else {
+    const createdByUser = username === created_by;
+    const userIsAdmin = accessRoles?.some(role => role.role_id === 18)
+    if (createdByUser || userIsAdmin) {
       setIsDisabled(false);
+    } else {
+      setIsDisabled(true);
     }
   }, [JSON.stringify(accessRoles), JSON.stringify(username)]);
 
