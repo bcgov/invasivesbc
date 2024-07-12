@@ -79,6 +79,7 @@ typings/
 .env
 .env.test
 .env.*
+extraenv.sh
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -121,4 +122,3 @@ app/ios/DerivedData
 invasivesbc.code-workspace
 
 Caddyfile-local
-
