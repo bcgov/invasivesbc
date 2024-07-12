@@ -86,8 +86,8 @@ import {
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
-import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import { selectActivity } from 'state/reducers/activity';
+import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 
@@ -240,11 +240,12 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
 
   let apiSpec;
   const userSettings = yield select(selectUserSettings);
+  console.dir(userSettings)
   if (isViewing) {
     apiSpec = userSettings.apiDocsWithViewOptions
   }
   else {
-    apiSpec = userSettings.apiDocsWithEditOptions
+    apiSpec = userSettings.apiDocsWithSelectOptions
   }
   const components = apiSpec.components;
   const subtypeSchema = components?.schemas?.[activity_subtype];
