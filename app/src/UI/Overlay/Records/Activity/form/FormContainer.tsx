@@ -65,7 +65,7 @@ const FormContainer: React.FC<any> = (props) => {
   const dispatch = useDispatch();
 
   const activitySchema = useSelector((state: any) => state.ActivityPage.schema);
-  const activityUISchema = useSelector((state:any) => state.ActivityPage.uiSchema);
+  const activityUISchema = useSelector((state: any) => state.ActivityPage.uiSchema);
 
   const debouncedFormChange = useCallback(
     debounce((event, ref, lastField, callbackFun) => {
@@ -84,13 +84,11 @@ const FormContainer: React.FC<any> = (props) => {
   const customValidators = useCallback(() => {
     return validatorForActivity(activity_subtype, null);
   }, [JSON.stringify(activity_subtype)]);
-
-  const [schemas, setSchemas] = useState<{ schema: any; uiSchema: any }>({ schema: null, uiSchema: null });
-  const formRef = React.createRef();
   const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
   const [open, setOpen] = React.useState(false);
   const [alertMsg, setAlertMsg] = React.useState(null);
   const [field, setField] = React.useState('');
+  const formRef = React.createRef();
 
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
@@ -99,22 +97,15 @@ const FormContainer: React.FC<any> = (props) => {
   const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 
   //open dialog window (visual)
-  const openDialog = () => {
-    setOpen(true);
-  };
-
-  //close the dialog windo (visual)
-  const handleClose = () => {
-    setOpen(false);
-  };
+  const openDialog = () => setOpen(true);
+  //close the dialog window (visual)
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     const currentState = formRef.current?.state;
     dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
-    //}, [formDataState]);
   }, [formRef]);
 
-  //Dialog Proceed OnClick func
   const proceedClick = () => {
     //setTimeout is called so that the setState works as expected
     setTimeout(() => {
@@ -135,20 +126,16 @@ const FormContainer: React.FC<any> = (props) => {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
         //update formData of the activity via onFormChange
-        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {});
+        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => { });
       });
     }, 100);
     handleClose();
   };
 
-  const isActivityChemTreatment = () => {
-    if (
-      activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-      activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic'
-    ) {
-      return true;
-    }
-  };
+  const isActivityChemTreatment = (): boolean => (
+    activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
+    activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic'
+  );
 
   const ErrorListTemplate = (err: any) => {
     return (
@@ -168,96 +155,6 @@ const FormContainer: React.FC<any> = (props) => {
     );
   };
 
-  /*
-  useEffect(() => {
-    const getApiSpec = async () => {
-      const subtype = activity_subtype;
-      if (!subtype) throw new Error('Activity has no Subtype specified');
-      let components;
-      const notMine = username !== created_by;
-      const notAdmin =
-        accessRoles?.filter((role) => {
-          return [1, 18].includes(role.role_id);
-        }).length === 0;
-      if (notAdmin && notMine) {
-        components = (apiDocsWithViewOptions as any).components;
-      } else if (!notAdmin && notMine) {
-        components = (apiDocsWithViewOptions as any).components;
-      } else {
-        components = (apiDocsWithSelectOptions as any).components;
-      }
-
-      let uiSchema = RootUISchemas[subtype];
-      const subtypeSchema = components?.schemas?.[subtype];
-      let modifiedSchema = subtypeSchema;
-      // Handle activity_id linking fetches
-      try {
-        //const suggestedTreatmentIDs = activityStateInStore?.suggestedTreatmentIDs ?? [];
-
-        if (activity_type === 'Monitoring') {
-          if (MOBILE) {
-            uiSchema = {
-              ...uiSchema,
-              activity_type_data: {
-                ...uiSchema?.activity_type_data,
-                linked_id: {
-                  ...uiSchema?.activity_type_data?.linked_id,
-                  'ui:widget': undefined
-                }
-              }
-            };
-          } else {
-            try {
-              // move this to action or reducer
-              if (suggestedTreatmentIDS?.length) {
-                modifiedSchema = {
-                  ...modifiedSchema,
-                  properties: {
-                    ...modifiedSchema?.properties,
-                    activity_type_data: {
-                      ...modifiedSchema?.properties.activity_type_data,
-                      properties: {
-                        ...modifiedSchema?.properties.activity_type_data.properties,
-                        linked_id: {
-                          ...modifiedSchema?.properties?.activity_type_data?.properties?.linked_id,
-                          options: suggestedTreatmentIDS
-                        }
-                      }
-                    }
-                  }
-                };
-                components = {
-                  ...components,
-                  schemas: {
-                    ...components.schemas,
-                    [activity_subtype]: modifiedSchema
-                  }
-                };
-              }
-            } catch (e) {
-              console.dir(e);
-            }
-          }
-        }
-      } catch (error) {
-        console.log('Could not load Activity IDs of linkable records');
-      }
-      setSchemas({
-        schema: { ...modifiedSchema, components: components },
-        uiSchema: uiSchema
-      });
-    };
-    if (authenticated) {
-      getApiSpec();
-    }
-  }, [
-    JSON.stringify(activity_subtype),
-    JSON.stringify(authenticated),
-    JSON.stringify(MOBILE),
-    JSON.stringify(suggestedTreatmentIDS)
-  ]);
-  */
-
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
     const notMine = username !== created_by;
@@ -272,120 +169,89 @@ const FormContainer: React.FC<any> = (props) => {
     }
   }, [JSON.stringify(accessRoles), JSON.stringify(username)]);
 
-  // useEffect() => {
-  //   () => {
-  //     props.pasteFormData();
-  //     setTimeout(() => {
-  //       setKeyInt(keyInt + Math.random());
-  //     }, 1500);
-  //   };
-  // }
-  //
-  //if (!schemas.schema || !schemas.uiSchema) {
-  if (!activitySchema|| !activityUISchema) {
+  if (!activitySchema || !activityUISchema) {
     return <CircularProgress />;
-  } else {
-    return (
-      <Box sx={{ pl: '15%', pr: '15%' }}>
-        <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
-          <SelectAutoCompleteContextProvider>
-            <>
-              form!
-              <Form
-                templates={{
-                  ObjectFieldTemplate: ObjectFieldTemplate,
-                  FieldTemplate: FieldTemplate,
-                  ArrayFieldTemplate: ArrayFieldTemplate,
-                  ErrorListTemplate: ErrorListTemplate
-                }}
-                widgets={{
-                  'multi-select-autocomplete': MultiSelectAutoComplete,
-                  'single-select-autocomplete': SingleSelectAutoComplete
-                }}
-                readonly={isDisabled}
-                key={activity_ID + pasteCount}
-                disabled={isDisabled}
-                formData={formDataState || null}
-                //schema={schemas.schema}
-                //uiSchema={schemas.uiSchema}
-                schema={activitySchema}
-                uiSchema={activityUISchema}
-                liveValidate={true}
-                customValidate={customValidators()}
-                validator={validator}
-                showErrorList={'top'}
-                transformErrors={getCustomErrorTransformer()}
-                autoComplete="off"
-                onChange={(event) => {
-                  debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
-                    //setformData(updatedFormData);
-                  });
-                }}
-                /*onSubmit={(event) => {
-                  if (!props.onFormSubmitSuccess) {
-                    return;
-                  }
-                  try {
-                    props.onFormSubmitSuccess(event, formRef);
-                  } catch (e) {
-                    console.log(e);
-                  }
-                }}*/
-                ref={formRef}>
-                <React.Fragment />
-              </Form>
-              {isActivityChemTreatment() && (
-                <ChemicalTreatmentDetailsForm
-                  disabled={props.isDisabled}
-                  activitySubType={activity_subtype || null}
-                  onChange={(form_data, callback) => {
-                    //todo redux chem treatment form on change
-                    dispatch({
-                      type: ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
-                      payload: {
-                        eventFormData: form_data
-                      }
-                    });
-                    //setformData(formData);
-                    if (callback !== null) {
-                      callback();
-                    }
-                  }}
-                  form_data={formDataState}
-                  //schema={schemas.schema}
-                  schema={activitySchema}
-                />
-              )}
-            </>
-          </SelectAutoCompleteContextProvider>
-        </ThemeProvider>
-
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description">
-          <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                proceedClick();
-              }}
-              color="primary"
-              autoFocus>
-              Proceed
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </Box>
-    );
   }
+  return (
+    <Box sx={{ pl: '15%', pr: '15%' }}>
+      <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
+        <SelectAutoCompleteContextProvider>
+          <Form
+            templates={{
+              ObjectFieldTemplate: ObjectFieldTemplate,
+              FieldTemplate: FieldTemplate,
+              ArrayFieldTemplate: ArrayFieldTemplate,
+              ErrorListTemplate: ErrorListTemplate
+            }}
+            widgets={{
+              'multi-select-autocomplete': MultiSelectAutoComplete,
+              'single-select-autocomplete': SingleSelectAutoComplete
+            }}
+            readonly={isDisabled}
+            key={activity_ID + pasteCount}
+            disabled={isDisabled}
+            formData={formDataState || null}
+            schema={activitySchema}
+            uiSchema={activityUISchema}
+            liveValidate={true}
+            customValidate={customValidators()}
+            validator={validator}
+            showErrorList={'top'}
+            transformErrors={getCustomErrorTransformer()}
+            autoComplete="off"
+            ref={formRef}
+            onChange={(event) => {
+              debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
+                //setformData(updatedFormData);
+              });
+            }}
+          >
+          </Form>
+          {isActivityChemTreatment() && (
+            <ChemicalTreatmentDetailsForm
+              disabled={isDisabled}
+              activitySubType={activity_subtype || null}
+              onChange={(form_data, callback) => {
+                //todo redux chem treatment form on change
+                dispatch({
+                  type: ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
+                  payload: {
+                    eventFormData: form_data
+                  }
+                });
+                if (callback) {
+                  callback();
+                }
+              }}
+              form_data={formDataState}
+            />
+          )}
+        </SelectAutoCompleteContextProvider>
+      </ThemeProvider>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description">
+        <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={proceedClick}
+            color="primary"
+            autoFocus>
+            Proceed
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box >
+  );
 };
 
 export default FormContainer;
