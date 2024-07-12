@@ -1,5 +1,6 @@
 import {
   Box,
+  CircularProgress,
   Divider,
   FormControl,
   FormControlLabel,
@@ -28,6 +29,8 @@ import { performCalculation } from 'sharedAPI';
 import { GeneralDialog, IGeneralDialog } from 'UI/Overlay/GeneralDialog';
 import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
 import { RENDER_DEBUG } from 'UI/App';
+import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
+import { useSelector } from 'react-redux';
 
 const ChemicalTreatmentDetailsForm = (props) => {
   //const classes = useFormStyles();
@@ -43,65 +46,83 @@ const ChemicalTreatmentDetailsForm = (props) => {
   });
 
   const [calculationResults, setCalculationResults] = useState(null);
-
-  //get business codes from schema
-  const getBusinessCodes = () => {
-    const newBusinessCodes = {};
-    for (let key of Object.keys(props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties)) {
-      if (props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[key].anyOf) {
-        newBusinessCodes[key] = props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[
-          key
-        ].anyOf.map((code) => {
-          return {
-            value: code.enum[0],
-            label: code.title
-          };
-        });
-      } else {
-        newBusinessCodes[key] = props.schema.components.schemas.ChemicalTreatment_Species_Codes.properties[
-          key
-        ].options.map((code) => {
-          return {
-            value: code.value,
-            label: code.label
-          };
-        });
-      }
-    }
-    return newBusinessCodes;
-  };
-
-  const businessCodes = getBusinessCodes();
-
-  //constructing herbicide dictionary to get the correct labels for herbicides when displaying errors
-  let herbicideDictionary = {};
-  let allHerbCodes = [
-    ...(businessCodes as any).liquid_herbicide_code,
-    ...(businessCodes as any).granular_herbicide_code
-  ];
-  allHerbCodes.forEach((row) => {
-    herbicideDictionary[row.value] = row.label;
-  });
-
-  //main usestate that holds all form data
-  const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
-    form_data: { ...props.form_data.activity_subtype_data.chemical_treatment_details },
-    businessCodes: businessCodes,
-    herbicideDictionary: herbicideDictionary,
-    activitySubType: props.activitySubType,
-    disabled: props.disabled,
-    //    classes: classes,
-    errors: []
-  });
-  //used to render the list of errors
   const [localErrors, setLocalErrors] = useState([]);
   const [reportedArea, setReportedArea] = useState(0);
+
+  /******************************************************************************
+   * MY SPOT
+   *******************************************************************************/
+
+
+  const apiDocsWithViewOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions);
+  const [codes, setCodes] = useState<Record<string, any>>();
+  const [codeDictionary, setCodeDictionary] = useState<Record<string, any>>();
+  const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
+    form_data: { ...props.form_data.activity_subtype_data.chemical_treatment_details },
+  });
+  const [tankMixOn, setTankMixOn] = useState(formDetails.form_data.tank_mix);
+  const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
+    formDetails.form_data.chemical_application_method
+  );
+  const getCodesFromAPISpec = () => {
+    const subtypeSchema = 'ChemicalTreatment_Species_Codes';
+    const codes = (apiDocsWithViewOptions as any).components?.schemas[subtypeSchema].properties;
+    const newBusinessCodes = {};
+    for (let key of Object.keys(codes)) {
+      newBusinessCodes[key] = codes[key].options
+        .map(({ value, label }) => ({
+          value,
+          label
+        }))
+    }
+    setCodes({ ...newBusinessCodes });
+  };
+
+  const createDictionary = () => {
+    const herbicideDictionary: Record<string, any> = {};
+    [
+      ...codes!.liquid_herbicide_code,
+      ...codes!.granular_herbicide_code
+    ].forEach((item) => herbicideDictionary[item.value] = item.label)
+
+    const chemicalMethodsDirect = codes!.chemical_method_direct
+    const chemicalApplicationMethodChoices: any[] = formDetails.form_data.tank_mix
+      ? [...codes!.chemical_method_spray]
+      : [...codes!.chemical_method_spray, ...chemicalMethodsDirect]
+
+    const chemical_method_direct_code_values: string[] = chemicalMethodsDirect.map(code => code.value)
+
+    setCodeDictionary({
+      herbicideDictionary,
+      chemicalApplicationMethodChoices,
+      chemical_method_direct_code_values,
+    })
+  }
+
+  useEffect(() => {
+    getCodesFromAPISpec()
+    createDictionary();
+    setFormDetails({
+      form_data: { ...props.form_data.activity_subtype_data.chemical_treatment_details },
+      businessCodes: codes,
+      herbicideDictionary: codes?.herbicideDictionary,
+      activitySubType: props.activitySubType,
+      disabled: props.disabled,
+      errors: []
+    })
+  }, []);
+
+  /******************************************************************************
+   * END OF MY SPOT
+   *******************************************************************************/
+
+
 
   useEffect(() => {
     setReportedArea(props.form_data.activity_data.reported_area);
   }, [props.form_data]);
 
-  //when formDetails change, run validation and if it passes, perform calculations
+
   useEffect(() => {
     props.onChange(
       {
@@ -118,8 +139,8 @@ const ChemicalTreatmentDetailsForm = (props) => {
           reportedArea,
           formDetails.form_data,
           lerrors,
-          businessCodes,
-          herbicideDictionary,
+          codes,
+          codeDictionary!?.herbicideDictionary,
           formDetails.form_data.skipAppRateValidation
         );
         setLocalErrors([...newErr]);
@@ -187,52 +208,33 @@ const ChemicalTreatmentDetailsForm = (props) => {
     });
   }, [localErrors]);
 
-  //use state hooks for general fields outside any objects
-  const [tankMixOn, setTankMixOn] = useState(formDetails.form_data.tank_mix);
-  const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
-    formDetails.form_data.chemical_application_method
-  );
 
-  //set chemical application method choices based on the value of tank mix
-  const chemicalApplicationMethodChoices = formDetails.form_data.tank_mix
-    ? [...businessCodes['chemical_method_spray']]
-    : [...businessCodes['chemical_method_spray'], ...businessCodes['chemical_method_direct']];
 
-  //get arrays for spray and direct chemical methods
-  const chemical_method_direct_code_values = businessCodes['chemical_method_direct'].map((code) => {
-    return code.value;
-  });
-
-  //update context form data when any fields change
   useEffect(() => {
+    if (!codeDictionary) { return; }
     setFormDetails((prevFormDetails) => ({
       ...prevFormDetails,
       form_data: {
         ...prevFormDetails.form_data,
         tank_mix: tankMixOn,
         chemical_application_method: chemicalApplicationMethod,
-        chemical_application_method_type: chemical_method_direct_code_values.includes(chemicalApplicationMethod)
+        chemical_application_method_type: codeDictionary.chemical_method_direct_code_values.includes(chemicalApplicationMethod)
           ? 'direct'
           : 'spray'
       }
     }));
+    console.log("Who shot first")
   }, [tankMixOn, chemicalApplicationMethod]);
 
+  if (!codeDictionary || !formDetails) { return <CircularProgress /> }
   return (
     <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
       <Typography variant="h5">Chemical Treatment Details</Typography>
       <Divider />
-      <FormControl
-      // className={classes.formControl}
-      >
+      <FormControl>
         <InvasivePlantsAccordion />
-
-        <Box
-        //className={classes.generalFieldsContainer}
-        >
-          <Box
-          //className={classes.generalFieldColumn}
-          >
+        <Box>
+          <Box>
             <Tooltip
               classes={{ tooltip: 'toolTip' }}
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
@@ -253,15 +255,12 @@ const ChemicalTreatmentDetailsForm = (props) => {
               }}
               value={tankMixOn}
               aria-label="tank_mix"
-              //className={classes.tankMixRadioGroup}
               name="tank_mix">
               <FormControlLabel value={true} control={<Radio disabled={props.disabled} />} label="On" />
               <FormControlLabel value={false} control={<Radio disabled={props.disabled} />} label="Off" />
             </RadioGroup>
           </Box>
-          <Box
-          //className={classes.generalFieldColumn}
-          >
+          <Box>
             <Tooltip
               classes={{ tooltip: 'toolTip' }}
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
@@ -269,8 +268,9 @@ const ChemicalTreatmentDetailsForm = (props) => {
               title="Choose treatment application method">
               <HelpOutlineIcon />
             </Tooltip>
+
             <CustomAutoComplete
-              choices={chemicalApplicationMethodChoices}
+              choices={codeDictionary.chemicalApplicationMethodChoices}
               className={null}
               disabled={props.disabled}
               actualValue={chemicalApplicationMethod}
@@ -289,9 +289,9 @@ const ChemicalTreatmentDetailsForm = (props) => {
           </Box>
         </Box>
 
-        { !tankMixOn? <HerbicidesAccordion insideTankMix={false} /> : <></>}
+        {/* {!tankMixOn && <HerbicidesAccordion insideTankMix={false} />} */}
 
-        <TankMixAccordion />
+        {/* {formDetails && <TankMixAccordion />} */}
 
         {calculationResults && (
           <>
