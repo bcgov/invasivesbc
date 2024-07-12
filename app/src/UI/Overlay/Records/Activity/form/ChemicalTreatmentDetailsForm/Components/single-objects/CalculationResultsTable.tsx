@@ -31,10 +31,6 @@ const CalculationResultsTable = ({ data }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {/* {rows.map((row) => (
-            <Row key={row.name} row={row} />
-          ))} */}
-
           {Object.keys(data).map((key) => {
             return <Row key={key} name={key} row={data[key]} />;
           })}
