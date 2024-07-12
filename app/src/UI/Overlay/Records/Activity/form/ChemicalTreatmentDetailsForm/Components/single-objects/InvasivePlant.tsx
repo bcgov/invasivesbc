@@ -17,7 +17,7 @@ export interface IInvasivePlantComponent {
 const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, classes }) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%cInvasivePlant:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) { console.log('%cInvasivePlant:' + ref.current.toString(), 'color: yellow'); }
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
@@ -41,6 +41,25 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
     });
   }
 
+  const handleRemoveInvasivePlant = () => (
+    setFormDetails((prevDetails) => {
+      let newSpeciesArr = JSON.parse(JSON.stringify([...prevDetails.form_data.invasive_plants]))
+      newSpeciesArr.splice(index, 1);
+      newSpeciesArr.forEach((item, i) => item.index = i);
+
+      if (newSpeciesArr.length === 1) {
+        newSpeciesArr[0].percent_area_covered = 100;
+      }
+
+      return {
+        ...prevDetails,
+        form_data: {
+          ...prevDetails.form_data,
+          invasive_plants: newSpeciesArr
+        }
+      };
+    })
+  )
   //update this invasive plant inside invasive plants arr
   useEffect(() => {
     if (currentInvasivePlant !== species) {
@@ -81,7 +100,6 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
         }
         disabled={formDetails.disabled}
         className={'inputField'}
-        // classes={classes}
         actualValue={species.invasive_plant_code}
         id={'invasive_plant_code'}
         label={'Invasive Plant'}
@@ -113,7 +131,6 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
       <TextField
         fullWidth
         disabled={formDetails.disabled}
-        //  className={classes.inputField}
         style={{ display: invasivePlantsArr.length < 2 ? 'none' : 'flex' }}
         type="number"
         value={species.percent_area_covered}
@@ -123,45 +140,22 @@ const InvasivePlant: React.FC<IInvasivePlantComponent> = ({ index, species, clas
           if (event.target.value === null) {
             return;
           }
-          setCurrentInvasivePlant((prevInvasivePlant) => {
-            return { ...prevInvasivePlant, percent_area_covered: Number(event.target.value) };
-          });
+          setCurrentInvasivePlant((prevInvasivePlant) => ({
+            ...prevInvasivePlant,
+            percent_area_covered: Number(event.target.value)
+          }));
         }}
         defaultValue={undefined}
       />
 
-      <div className={'removeInvasivePlantButton'}>
+      <div
+        className={'removeInvasivePlantButton'}>
         <Button
           disabled={formDetails.disabled}
-          onClick={() => {
-            setFormDetails((prevDetails) => {
-              const newSpeciesArr = JSON.parse(JSON.stringify([...prevDetails.form_data.invasive_plants]));
-              console.dir(newSpeciesArr);
-              newSpeciesArr.splice(index, 1);
-              console.dir(newSpeciesArr);
-
-              newSpeciesArr.forEach((item, i) => {
-                item.index = i;
-              });
-
-              if (newSpeciesArr.length === 1) {
-                newSpeciesArr[0].percent_area_covered = 100;
-              }
-
-              return {
-                ...prevDetails,
-                form_data: {
-                  ...prevDetails.form_data,
-                  invasive_plants: newSpeciesArr
-                }
-              };
-            });
-          }}
+          onClick={handleRemoveInvasivePlant}
           variant="contained"
-          // className={classes.speciesRemoveButton}
           startIcon={<DeleteIcon />}
-          color="secondary"
-        >
+          color="secondary">
           Remove Invasive Plant
         </Button>
       </div>
