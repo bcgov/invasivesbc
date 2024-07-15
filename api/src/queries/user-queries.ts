@@ -10,8 +10,13 @@ const defaultLog = getLogger('user-queries');
  */
 export const getUsersSQL = (): SQLStatement => {
   return SQL`
-    SELECT *
-    FROM application_user;
+    SELECT au.*, STRING_AGG(ur.role_description, ', ') as role
+    FROM application_user au
+    LEFT JOIN user_access rl
+    ON rl.user_id = au.user_id
+    LEFT JOIN user_role ur
+    ON rl.role_id = ur.role_id
+    GROUP BY au.user_id;
   `;
 };
 

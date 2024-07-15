@@ -252,31 +252,27 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     const rows = [];
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
-      await api.getRolesForUser(user.user_id).then((res) => {
-        const roles = res.map((role) => role.role_description);
-        const roleString = roles.join(', ');
-        rows.push({
-          id: user.user_id,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          email: user.email,
-          role: roleString,
-          accountStatus: user.account_status === 1 ? 'Active' : 'Inactive',
-          activationStatus: user.activation_status === 1 ? 'Complete' : 'Pending',
-          bceidUserId: user.bceid_userid,
-          expiryDate: new Date(user.expiry_date).toLocaleString(),
-          idirUserId: user.idir_userid,
-          preferredUsername: user.preferred_username,
-          createdAt: new Date(user.created_at).toLocaleString(),
-          idirAccountName: user.idir_account_name,
-          bceidAccountName: user.bceid_account_name,
-          workPhoneNumber: user.work_phone_number,
-          fundingAgencies: user.funding_agencies,
-          employer: user.employer,
-          pacNumber: user.pac_number,
-          pacServiceNumber1: user.pac_service_number_1,
-          pacServiceNumber2: user.pac_service_number_2
-        });
+      rows.push({
+        id: user.user_id,
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        role: user.role,
+        accountStatus: user.account_status === 1 ? 'Active' : 'Inactive',
+        activationStatus: user.activation_status === 1 ? 'Complete' : 'Pending',
+        bceidUserId: user.bceid_userid,
+        expiryDate: new Date(user.expiry_date).toLocaleString(),
+        idirUserId: user.idir_userid,
+        preferredUsername: user.preferred_username,
+        createdAt: new Date(user.created_at).toLocaleString(),
+        idirAccountName: user.idir_account_name,
+        bceidAccountName: user.bceid_account_name,
+        workPhoneNumber: user.work_phone_number,
+        fundingAgencies: user.funding_agencies,
+        employer: user.employer,
+        pacNumber: user.pac_number,
+        pacServiceNumber1: user.pac_service_number_1,
+        pacServiceNumber2: user.pac_service_number_2
       });
     }
     setRows(rows);
@@ -1108,15 +1104,15 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           >
             {mode === Mode.GRANT
               ? availableRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.description}
-                  </MenuItem>
-                ))
+                <MenuItem key={role.id} value={role.id}>
+                  {role.description}
+                </MenuItem>
+              ))
               : userRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.description}
-                  </MenuItem>
-                ))}
+                <MenuItem key={role.id} value={role.id}>
+                  {role.description}
+                </MenuItem>
+              ))}
           </TextField>
         </DialogContent>
         <DialogActions>
