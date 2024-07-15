@@ -37,10 +37,9 @@ body {
   flex-flow: column wrap;
   position: relative;
   box-sizing: border-box;
-  padding: calc(var(--extra-top-padding) + env(safe-area-inset-top, 0)) env(safe-area-inset-right, 0) calc(var(--extra-bottom-padding) + env(safe-area-inset-bottom, 0)) env(safe-area-inset-left, 0);
+  padding: calc(var(--extra-top-padding) + env(safe-area-inset-top, 0)) env(safe-area-inset-right, 0);
   overflow: hidden;
   height: 100svh;
-
 
   /* set by compilation flag */
 
@@ -90,9 +89,8 @@ body {
 
 .overlay-content {
   width: 100%;
-}
-
-.overlay-content-fullscreen {
+  height: 100%;
+  box-sizing: border-box;
 }
 
 #app-pre-auth-init {
@@ -108,7 +106,7 @@ body {
   --footer-bar-height: 32px;
   --map-button-bar-height: 45px;
   --overlay-height: 200px;
-  --overlay-grip-height: 20px; /* grab handle */
+  --overlay-grip-height: 25px; /* grab handle */
   --extra-top-padding: 0px;
   --extra-bottom-padding: 0px;
 }
@@ -134,10 +132,6 @@ body {
 }
 
 @media only screen and (width >= 1281px) {
-  :root {
-
-  }
-
   .App {
     &.web {
       --header-bar-height: 60px;
