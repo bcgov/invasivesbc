@@ -1,11 +1,31 @@
 .overlayMenu {
   display: flex;
-  background-color: #333;
   flex-direction: column;
   height: 100%;
   width: 100%;
+  box-sizing: border-box;
+  border-top: 1pt solid #16161d;
+  background-color: #036;
 }
-
 .overlayMenu > * {
   flex-grow: 1;
+}
+
+.overlayMenuSub {
+  display: flex;
+  flex-direction: column;
+  & > button {
+    border-radius: 0;
+    height: 45pt;
+  }
+  & > button:disabled {
+    background-color: #444;
+    color: #999;
+  }
+}
+@media (width <= 1024px) {
+  .overlayMenuSub > button {
+    border-bottom: 1pt solid #16161d;
+    padding: 15pt;
+  }
 }
