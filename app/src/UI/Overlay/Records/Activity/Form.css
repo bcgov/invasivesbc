@@ -22,7 +22,6 @@
   text-align: left !important;
   align-items: left !important;
   width: 100%;
-
 }
 
 .showAuditInfoDialog {
@@ -41,6 +40,7 @@
   overflow: scroll;
   display: flex;
   max-width: 80%;
+  margin-top: 1em;
   padding-left: 15%;
   padding-right: 15%;
 }
@@ -99,9 +99,6 @@ td {
 
 .removeInvasivePlantButton {
   padding-top: 10px;
-}
-
-.invasive_plant_tooltip {
 }
 
 #herbicides_section {
