@@ -55,8 +55,6 @@
   overflow-x: hidden;
   overflow-y: hidden;
 }
-.records_set_layer_colour {
-}
 
 .record {
   height: 100px;
@@ -69,20 +67,20 @@
 
 .records__activity__header {
   /* same height as the apps header and footer */
-  height: 5vh;
   width: 100%;
   border-color: black;
   display: flex;
   justify-content: center;
-  overflow: scroll;
 }
 
 .records__activity_buttons {
-  height: 5vh;
   width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  & > button {
+    height: 20pt;
+  }
 }
 
 .records__activity_buttons > * {
