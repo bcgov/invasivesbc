@@ -9,9 +9,7 @@ export const Footer: React.FC = () => {
       <img
         alt="bcLogo"
         src={sunriseLogo}
-        width="60px"
         style={{ objectFit: 'cover', cursor: 'pointer' }}
-        height="28px"
       />
       {INFORMATIONAL_LINKS.map((link) => {
         return (
