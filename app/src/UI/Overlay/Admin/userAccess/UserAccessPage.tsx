@@ -1,5 +1,6 @@
 import ClearIcon from '@mui/icons-material/Clear';
 import SearchIcon from '@mui/icons-material/Search';
+import { red, green, blue } from '@mui/material/colors';
 import {
   Box,
   Button,
@@ -36,6 +37,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
 import { CustomNoRowsOverlay } from '../CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
+import { bcBlue, bcYellow, black } from 'constants/colors';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -60,10 +62,18 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
       }}
     >
       <div>
-        <GridToolbarColumnsButton style={{ color: '#003366' }} onResize={undefined} onResizeCapture={undefined} />
-        <GridToolbarFilterButton style={{ color: '#003366' }} onResize={undefined} onResizeCapture={undefined} />
+        <GridToolbarColumnsButton
+          style={{ color: bcBlue }}
+          onResize={undefined}
+          onResizeCapture={undefined}
+        />
+        <GridToolbarFilterButton
+          style={{ color: bcBlue }}
+          onResize={undefined}
+          onResizeCapture={undefined}
+        />
         <GridToolbarExport
-          style={{ color: '#003366' }}
+          style={{ color: bcBlue }}
           csvOptions={{
             includeHeaders: true,
             allColumns: true,
@@ -193,25 +203,29 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const renderStatus = (params: GridValueGetterParams) => {
-    let color = '#FF0000';
+    let color = 'white';
+    let text = params.row.status;
+    let bgcolor = 'white';
     if (params.row.status === 'APPROVED') {
-      color = '#00FF00';
-    } else if (params.row.status === 'DECLINED') {
-      color = '#FFA500';
-    } else if (params.row.status === 'NOT_APPROVED') {
-      color = '#FF0000';
+      bgcolor = green[600];
+    } else if (text === 'DECLINED') {
+      bgcolor = red[700];
+    } else if (text === 'PENDING') {
+      bgcolor = blue[500];
     }
-    return <Chip label={params.row.status} sx={{ bgcolor: 'green', color: color }} />;
+    return <Chip label={text} sx={{ bgcolor, color }} />;
   };
 
   const renderType = (params: GridValueGetterParams) => {
-    let color = '#FF0000';
+    let color = 'white';
+    let bgcolor = 'white';
     if (params.row.requestType === 'ACCESS') {
-      color = '#00FF00';
+      bgcolor = green[600];
     } else if (params.row.requestType === 'UPDATE') {
-      color = '#FFA500';
+      bgcolor = bcYellow;
+      color = black;
     }
-    return <Chip label={params.row.requestType} sx={{ bgcolor: 'green', color: color }} />;
+    return <Chip label={params.row.requestType} sx={{ bgcolor, color }} />;
   };
 
   const handleRowClick = (param, event) => {
@@ -248,7 +262,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     ================================================================================================
   */
 
-  const getRows = async (users: any) => {
+  const getRows = (users: any) => {
     const rows = [];
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
@@ -278,7 +292,12 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setRows(rows);
   };
 
-  const getRequestRows = async (requests: any) => {
+  const getRequestRows = (requests: any) => {
+    const formatStatus = (arg): string => {
+      if (arg === 'NOT_APPROVED') return 'PENDING'
+      if (arg === 'REMOVED') return 'DECLINED'
+      return arg;
+    }
     const rows = [];
     for (let i = 0; i < requests.length; i++) {
       rows.push({
@@ -289,7 +308,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         email: requests[i].primary_email,
         employer: requests[i].employer,
         pacNumber: requests[i].pac_number,
-        status: requests[i].status,
+        status: formatStatus(requests[i].status),
         requestedRoles: requests[i].requested_roles,
         bceidAccountName: requests[i].bceid_account_name,
         bceidUserId: requests[i].bceid_userid,
@@ -409,14 +428,14 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setUsersTableLoading(true);
     setRequestTableLoading(true);
     api.getApplicationUsers().then(async (res) => {
-      await setUsers(res);
-      await getRows(res);
+      setUsers(res);
+      getRows(res);
       setUsersTableLoading(false);
     });
 
     api.getAccessRequests().then(async (res) => {
-      await setAccessRequests(res);
-      await getRequestRows(res);
+      setAccessRequests(res);
+      getRequestRows(res);
       setRequestTableLoading(false);
     });
   };
@@ -602,15 +621,12 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             Grant or Revoke Roles for Existing Users
           </Typography>
         </Grid>
-
-        {/* TABLES */}
-
         {/* USERS */}
         <Grid item xs={12}>
           <Card elevation={8}>
             <CardContent>
-              <Grid container direction="row" spacing={5} justifyContent="space-between">
-                <div style={{ height: 440, width: '100%' }}>
+              <Grid>
+                <div style={{ height: 550, width: '100%' }}>
                   <DataGrid
                     loading={usersTableLoading}
                     components={{ Toolbar: QuickSearchToolbar, NoRowsOverlay: CustomNoRowsOverlay }}
@@ -624,11 +640,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                       }
                     }}
                     sortModel={[{ field: 'id', sort: 'asc' }]}
-                    onSelectionModelChange={handleRowSelection}
+                    onRowSelectionModelChange={handleRowSelection}
                     rows={searchedRows}
                     columns={columns}
-                    pageSize={5}
-                    rowsPerPageOptions={[5]}
                     checkboxSelection
                     onCellClick={handleRowClick}
                     onRowClick={handleRowClick}
@@ -675,19 +689,24 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         <Grid item xs={12}>
           <Card elevation={8}>
             <CardContent>
-              <Grid container direction="row" spacing={5} justifyContent="space-between">
-                <div style={{ height: 370, width: '100%' }}>
+              <Grid>
+                <div style={{ height: 550, width: '100%' }}>
                   <DataGrid
                     loading={requestTableLoading}
                     components={{
                       NoRowsOverlay: CustomNoRowsOverlay
                     }}
+                    initialState={{
+                      filter: {
+                        filterModel: {
+                          items: [{ field: 'status', operator: 'equals', value: 'PENDING' }]
+                        }
+                      }
+                    }}
                     onRowSelectionModelChange={handleAccessRequestRowSelection}
                     rows={requestRows}
                     columns={requestColumns}
-                    pageSize={5}
                     sortModel={[{ field: 'id', sort: 'desc' }]}
-                    rowsPerPageOptions={[5]}
                     checkboxSelection
                     onCellClick={handleRowClick}
                     onRowClick={handleRowClick}
