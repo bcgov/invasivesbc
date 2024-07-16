@@ -104,6 +104,11 @@
   z-index: 999;
 }
 
+.maplibregl-ctrl-group > button {
+  height: 30pt;
+  width: 30pt;
+}
+
 .loadedMap {
   display: none;
 }
