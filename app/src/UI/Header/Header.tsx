@@ -307,12 +307,7 @@ const LoginOrOutMemo = React.memo(() => {
   };
 
   const navToUpdateRequest = () => {
-    history.push({
-      pathname: '/AccessRequest',
-      state: {
-        updateInfo: true
-      }
-    });
+    history.push({ pathname: '/AccessRequest', });
     dispatch({
       type: TOGGLE_PANEL,
       payload: { panelOpen: true, fullScreen: true }
