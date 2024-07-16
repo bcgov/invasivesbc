@@ -85,7 +85,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const [fundingAgenciesErrorText, setFundingAgenciesErrorText] = React.useState('');
   const [requestedRolesErrorText, setRequestedRolesErrorText] = React.useState('');
 
-  let isUpdating = false;
+  let isUpdating = authState?.roles?.length > 0 && authState?.extendedInfo?.account_status === 1;
 
   const isValid = (decline: boolean = false, valid: boolean = true): boolean => {
     const requiredFields = [
@@ -169,7 +169,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
         fundingAgencies: fundingAgencies?.toString(),
         requestedRoles: requestedRoles?.toString(),
         comments: comments,
-        status: 'NOT_APPROVED',
         idirUserId: idir_userid,
         bceidUserId: bceid_userid
       };
@@ -202,13 +201,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
       setSubmitted(true);
     }
   };
-
-  if (props?.location?.state?.updateInfo && props?.location?.state?.updateInfo === true) {
-    isUpdating = true;
-  } else {
-    isUpdating = false;
-  }
-
   const [userInfo, setUserInfo] = useState(undefined);
 
   useEffect(() => {
@@ -655,7 +647,6 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                           >
                             <TextField
                               style={{ width: 640 }}
-                              //classes={{ root: classes.root }}
                               multiline
                               rows={4}
                               value={comments}
