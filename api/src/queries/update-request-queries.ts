@@ -85,7 +85,7 @@ export const createUpdateRequestSQL = (updateRequest): SQLStatement => {
         ${updateRequest.psn2 ? updateRequest.psn2 : null},
         ${updateRequest.requestedRoles ? updateRequest.requestedRoles : null},
         ${updateRequest.comments ? updateRequest.comments : ''},
-        ${updateRequest.status},
+        NOT_APPROVED
         ${updateRequest.idirUserId ? updateRequest.idirUserId : null},
         ${updateRequest.bceidUserId ? updateRequest.bceidUserId : null},
         'UPDATE'
@@ -146,8 +146,7 @@ export const approveUpdateRequestsSQL = (updateRequest): SQLStatement => {
             pac_number=${updateRequest.pac_number},
             pac_service_number_1=${updateRequest.pac_service_number_1},
             pac_service_number_2=${updateRequest.pac_service_number_2}
-            where (bceid_userid is not null and bceid_userid=${
-              updateRequest.bceid_userid
-            }) OR (idir_userid is not null and idir_userid=${updateRequest.idir_userid});
+            where (bceid_userid is not null and bceid_userid=${updateRequest.bceid_userid
+    }) OR (idir_userid is not null and idir_userid=${updateRequest.idir_userid});
     `;
 };
