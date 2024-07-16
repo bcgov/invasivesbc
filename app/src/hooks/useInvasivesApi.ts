@@ -27,7 +27,7 @@ export const useInvasivesApi = () => {
       method: 'POST',
       headers: {
         Authorization: await getCurrentJWT(),
-        'Content-Type': 'applicatoin/josn'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify(activitiesSearchCriteria)
     });
