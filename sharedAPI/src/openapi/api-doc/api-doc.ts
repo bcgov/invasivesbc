@@ -6,6 +6,7 @@ import {
   Activity_Monitoring_ChemicalTerrestrialAquaticPlant,
   Activity_Monitoring_MechanicalTerrestrialAquaticPlant
 } from './Activities/Plant/Monitorings';
+import { PublicReportInvasive} from './PublicReportInvasive';
 import {
   Activity_Observation_PlantAquatic,
   Activity_Observation_PlantTerrestrial
@@ -166,6 +167,7 @@ export const api_doc = {
       AdminDefinedShapeResultItem,
 
       AdminDefinedShapeResponse,
+      PublicReportInvasive: PublicReportInvasive,
 
       //treatments
       Activity_Treatment_ChemicalPlantTerrestrial: Activity_Treatment_ChemicalPlantTerrestrial,

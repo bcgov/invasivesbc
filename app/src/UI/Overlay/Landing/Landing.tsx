@@ -46,6 +46,17 @@ export const LandingComponent = (props) => {
     }
   };
 
+  const reportInvasivesPublic = async () => {
+      history.push('/ReportInvasive');
+      /*
+      dispatch({
+        type: TOGGLE_PANEL,
+        payload: { panelOpen: true, fullScreen: true }
+      });
+      */
+    }
+  };
+
   const { authenticated, workingOffline, username, displayName, email, roles } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
   return (
@@ -171,6 +182,17 @@ export const LandingComponent = (props) => {
             </Box>
             <InformationalLinkBox />
           </>
+        )}
+        <Typography variant="h5">
+          <br />
+          <strong>To report invasive species as a member of the public, please submit a Report Invasives form</strong>
+        </Typography>
+        {connected && !activated && (
+          <Box mt={2} paddingBottom={'50px'}>
+            <Button variant="outlined" color="primary" onClick={reportInvasivesPublic}>
+              Report Invasives
+            </Button>
+          </Box>
         )}
         {roles.length === 0 && (
           <Typography variant="h5">

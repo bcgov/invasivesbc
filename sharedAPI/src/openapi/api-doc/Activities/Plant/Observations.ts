@@ -33,3 +33,18 @@ export const Activity_Observation_PlantAquatic = {
     }
   }
 };
+
+export const Activity_Observation_Plant_Public = {
+  type: 'object',
+  properties: {
+    activity_data: {
+      ...Activity
+    },
+    activity_type_data: {
+      ...Observation
+    },
+    activity_subtype_data: {
+      ...Subtype_Data_Observation_PlantAquatic
+    }
+  }
+};
