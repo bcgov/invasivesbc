@@ -9,6 +9,7 @@ import { grantRoleByValueSQL } from 'queries/role-queries';
 import {
   approveUpdateRequestsSQL,
   createUpdateRequestSQL,
+  doesUserExistSQL,
   getUpdateRequestsSQL,
   updateUpdateRequestStatusSQL
 } from 'queries/update-request-queries';
@@ -25,10 +26,10 @@ POST.apiDoc = {
   tags: ['update-request'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Access request post request object.',
@@ -164,7 +165,6 @@ function postHandler(): RequestHandler {
  * Create an update request
  */
 async function createUpdateRequest(req, res, next, newUpdateRequest) {
-  // TODO: Ensure user exists before creating update request
   defaultLog.debug({ label: 'update-request', message: 'create', body: newUpdateRequest });
   const connection = await getDBConnection();
   if (!connection) {
@@ -176,8 +176,16 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
     });
   }
   try {
+    const tokenUser = req.authContext.friendlyUsername;
+    const tokenUserIsRequestUser: boolean = [
+      req.body.newUpdateRequest.idir,
+      req.body.newUpdateRequest.bceid
+    ].includes(tokenUser.toLowerCase())
+
+    const userSQL: SQLStatement = doesUserExistSQL(tokenUser);
     const sqlStatement: SQLStatement = createUpdateRequestSQL(newUpdateRequest);
-    if (!sqlStatement) {
+
+    if (!sqlStatement || !userSQL) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
         req: req.body,
@@ -185,17 +193,20 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
         code: 500
       });
     }
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    return res.status(201).json({
-      message: 'Update request created',
-      request: req.body,
-      result: response.rows,
-      count: response.rowCount,
-      namespace: 'update-request',
-      code: 201
-    });
+
+    const dbResp = await connection.query(userSQL.text, userSQL.values);
+    if (dbResp.rows.length > 0 && tokenUserIsRequestUser) {
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      return res.status(201).json({
+        message: 'Update request created',
+        request: req.body,
+        result: response.rows,
+        count: response.rowCount,
+        namespace: 'update-request',
+        code: 201
+      });
+    }
   } catch (error) {
-    defaultLog.debug({ label: 'create', message: 'error', error });
     return res.status(500).json({
       message: 'Failed to create update request',
       req: req.body,
