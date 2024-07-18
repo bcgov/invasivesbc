@@ -15,6 +15,7 @@
   "dependencies": {
     "@bcgov/bc-sans": "^1.0.1",
     "@capacitor-community/background-geolocation": "^1.2.17",
+    "@capacitor-community/sqlite": "^6.0.1",
     "@capacitor/android": "^6.0.0",
     "@capacitor/app": "^6.0.0",
     "@capacitor/camera": "^6.0.0",
@@ -91,6 +92,7 @@
     "workbox-window": "^7.0.0"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^6.0.0",
     "@esbuild-plugins/node-globals-polyfill": "^0.2.3",
     "@esbuild-plugins/node-modules-polyfill": "^0.2.2",
@@ -160,7 +162,8 @@
     "start:mobileMode": "CONFIGURATION_SOURCE=Provided ENABLE_WDYR=TRUE MOBILE=TRUE VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=web JEEPSQLITE=TRUE vite serve --port 3000 --strictPort",
     "build": "NODE_OPTIONS='--max-old-space-size=8000' ENABLE_STATS=TRUE CONFIGURATION_SOURCE=Provided VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=android vite build",
     "build-prod": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Caddy VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=web vite build -l error",
-    "preview": "vite preview --port 3000"
+    "preview": "vite preview --port 3000",
+    "assets": "npx @capacitor/assets generate --iconBackgroundColor '#fefefe' --iconBackgroundColorDark '#333333' --splashBackgroundColor '#fefefe' --splashBackgroundColorDark '#333333' --ios"
   },
   "jest": {
     "roots": [
