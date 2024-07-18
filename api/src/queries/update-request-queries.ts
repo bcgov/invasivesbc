@@ -39,6 +39,20 @@ export const getUpdateRequestForUserSQL = (username: string, email?: string): SQ
   }
 };
 
+/**
+ * @desc SQL Statement for confirming a user exists.
+ * @param id User ID 'example@idir'
+ */
+export const doesUserExistSQL = (id: string): SQLStatement => (
+  SQL`
+    SELECT user_id
+    FROM application_user
+    WHERE (idir_account_name = LOWER(${id})
+    OR bceid_account_name = LOWER(${id}))
+    AND activation_status = 1;
+  `
+)
+
 export function appendNRQ(input: string) {
   if (input)
     if (input.indexOf('NRQ') == -1) return input + ',NRQ';
@@ -85,7 +99,7 @@ export const createUpdateRequestSQL = (updateRequest): SQLStatement => {
         ${updateRequest.psn2 ? updateRequest.psn2 : null},
         ${updateRequest.requestedRoles ? updateRequest.requestedRoles : null},
         ${updateRequest.comments ? updateRequest.comments : ''},
-        NOT_APPROVED
+        'NOT_APPROVED',
         ${updateRequest.idirUserId ? updateRequest.idirUserId : null},
         ${updateRequest.bceidUserId ? updateRequest.bceidUserId : null},
         'UPDATE'
