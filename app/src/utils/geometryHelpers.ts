@@ -9,6 +9,10 @@ import { Feature } from 'geojson';
  * @param {Feature[]} geoJSON The geometry in GeoJSON format
  */
 export function calculateGeometryArea(geometry: Feature[]) {
+  //zero if linestring:
+  if(geometry?.[geometry?.length - 1]?.geometry?.type === 'LineString') {
+    return 0;
+  }
   let totalArea = 0;
 
   if (!geometry || !geometry.length || geometry[geometry.length - 1].geometry.type === 'LineString') {
@@ -60,18 +64,24 @@ export function calculateLatLng(geom: Feature[]) {
   if (geo.type === 'Point') {
     latitude = geo.coordinates[1];
     longitude = firstCoord;
-  } else if (geo.type === 'LineString') {
+  } else if (geo.type === 'LineString' && geo.coordinates.length > 1) {
     latitude = firstCoord[1];
     longitude = firstCoord[0];
   } else if (geom[0]?.properties?.isRectangle) {
     latitude = firstCoord[0][1];
     longitude = firstCoord[0][0];
   } else {
-    const centerPoint = centroid(geom[0] as any); //center(turf.polygon(geo['coordinates'])).geometry;
+    if(!(geom?.[0]?.coordinates?.length > 1)) {
+      return null;
+    }
+    const centerPoint = centroid(geom[0] as any) //center(turf.polygon(geo['coordinates'])).geometry;
     latitude = centerPoint.geometry.coordinates[1];
     longitude = centerPoint.geometry.coordinates[0];
   }
 
+  if(!latitude || !longitude) {
+    return null;
+  }
   const latlng = {
     latitude: parseFloat(latitude.toFixed(6)),
     longitude: parseFloat(longitude.toFixed(6))

@@ -7,8 +7,8 @@ import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
 import { calc_lat_long_from_utm } from 'utils/utm';
-import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 import { lengthToRadians } from '@turf/helpers';
+import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACK_ME_DRAW_GEO } from 'state/actions';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -212,6 +212,12 @@ export const ActivityForm = (props) => {
           })}
         </ul>
       </div>
+      <Button
+        onClick={()=> dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO })}
+        variant="outlined"
+        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>
+        Click to draw a geometry by tracing your GPS movement
+      </Button>
       <FormContainer />
     </>
   );

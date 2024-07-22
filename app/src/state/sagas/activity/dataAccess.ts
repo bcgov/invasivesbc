@@ -192,6 +192,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       return;
     }
     const sanitizedGeo = fixMisLabledMultiPolygon(modifiedPayload[0]);
+    const isWIPLinestring = sanitizedGeo.geometry.type === 'LineString';
     const isPointGeometry = sanitizedGeo.geometry.type === 'Point';
     reported_area = calculateGeometryArea([sanitizedGeo]);
     if (!isPointGeometry) {
@@ -215,7 +216,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
     let wellInformationArr = [];
     let nearestWells = null;
     let areWellsInside = false;
-    if (reported_area < MAX_AREA) {
+    if (reported_area < MAX_AREA && !isWIPLinestring) {
       if (latitude && longitude) {
         nearestWells = yield getClosestWells(sanitizedGeo, true);
       }
@@ -277,7 +278,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       });
     }
 
-    if (!isWithinBC) {
+    if (!isWithinBC && !isWIPLinestring) {
       yield put({
         type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
         payload: {
@@ -514,7 +515,9 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
     const currentState = yield select(selectActivity);
     const currentActivity = currentState.activity;
 
-    if (currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA) {
+    const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === 'LineString';
+
+    if (currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA && !wipLinestring) {
       yield put({
         type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
         payload: { search_feature: currentActivity.geometry }
