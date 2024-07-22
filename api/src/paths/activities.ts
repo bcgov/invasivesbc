@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { RequestHandler, Response } from 'express';
+import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
