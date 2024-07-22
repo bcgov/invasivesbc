@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
@@ -24,10 +24,10 @@ GET.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -78,10 +78,10 @@ DELETE.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Delete activities',
@@ -296,106 +296,81 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
 
 /**
  * Soft-deletes all activity records based on a list of ids.
- *
  * @return {RequestHandler}
  */
 function deleteActivitiesByIds(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({ label: 'activity', message: 'deleteActivitiesByIds', body: req.body });
-
-    const sanitizedSearchCriteria = new ActivitySearchCriteria({
-      keycloakToken: req.keycloakToken
-    });
-
-    const isAdmin = (req as any).authContext.roles.find((role) => role.role_id === 18) !== undefined;
-    const preferred_username = req.authContext.preferredUsername;
-    defaultLog.debug({ label: 'activity', message: 'roles for delete', body: (req as any).authContext.roles });
-    defaultLog.debug({
-      label: 'activity',
-      message: 'is admin delete',
-      body: { typeof: typeof isAdmin, value: JSON.stringify(isAdmin) }
-    });
-
-    const { ids } = req.body;
-
-    sanitizedSearchCriteria.activity_ids = ids;
-
     const connection = await getDBConnection();
-    if (!connection) {
-      return res
-        .status(503)
-        .json({ message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503 });
-    }
-
-    if (!isAdmin) {
-      const sqlStatement = getActivitiesSQL(sanitizedSearchCriteria, false);
-      defaultLog.debug({ label: 'activity', message: 'non admin delete', body: sqlStatement });
-
-      if (!sqlStatement) {
-        return res
-          .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
-      }
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-      let isAuthorized = true;
-      if (response.rows.length > 0) {
-        response.rows.forEach((row, i) => {
-          if (row.created_by_with_guid !== preferred_username) {
-            isAuthorized = false;
-          }
-        });
-        if (!isAuthorized) {
-          return res.status(401).json({
-            message: 'Invalid request, user is not authorized to delete this record', // better message
-            request: req.body,
-            namespace: 'activities',
-            code: 401
-          });
-        }
-      } else {
-        return res.status(401).json({
-          message: 'Invalid request nothing to delete',
-          request: req.body,
-          namespace: 'activities',
-          code: 401
-        });
-      }
-    }
-
-    if (!ids || !ids.length) {
-      return res
-        .status(400)
-        .json({ message: 'Invalid request, no ids provided', request: req.body, namespace: 'activities', code: 400 });
-    }
-
     try {
-      const sqlStatement: SQLStatement = deleteActivitiesSQL(ids, req);
+      defaultLog.debug({ label: 'activity', message: '[deleteActivitiesByIds]', body: req.body })
 
-      if (!sqlStatement) {
-        return res
-          .status(500)
-          .json({ message: 'Unable to generate SQL statement', request: req.body, namespace: 'activities', code: 500 });
+      const sanitizedSearchCriteria = new ActivitySearchCriteria({ keycloakToken: req.keycloakToken })
+      const isMasterAdmin = (req as any).authContext.roles.some((role: Record<string, any>) => role.role_id === 18)
+      const preferred_username = req.authContext.friendlyUsername;
+      const { ids } = req.body;
+
+      if (ids.length === 0) {
+        return res.status(400).json({
+          message: 'No ids provided', request: req.body, namespace: 'activities', code: 400
+        });
+      };
+
+      sanitizedSearchCriteria.activity_ids = ids;
+      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false);
+      const deleteSQLStatement: SQLStatement = deleteActivitiesSQL(ids, req);
+      if (!connection) {
+        return res.status(503).json({
+          message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503
+        });
+      };
+      if (!sqlStatement || !deleteSQLStatement) {
+        return res.status(500).json({
+          message: 'Unable to generate SQL Statement', request: req.body, namespace: 'activities', code: 500
+        });
+      };
+
+      const recordsToDelete = await connection.query(sqlStatement.text, sqlStatement.values);
+      const userCreatedEntries = recordsToDelete.rows.every((entry) => (
+        entry?.activity_payload?.created_by === preferred_username
+      ));
+
+      if (recordsToDelete.rowCount === 0) {
+        return res.status(404).json({
+          message: 'No ID\'s found matching request', request: req.body, namespace: 'activities', code: 404
+        });
       }
+      if (recordsToDelete.rowCount !== ids.length) {
+        return res.status(404).json({
+          message: 'A record matching a supplied id was not found', request: req.body, namespace: 'activities', code: 404
+        });
+      };
 
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-      return res.status(200).json({
-        message: 'Deleted activities by ids',
+      if (isMasterAdmin || userCreatedEntries) {
+        const response = await connection.query(deleteSQLStatement.text, deleteSQLStatement.values);
+        return res.status(200).json({
+          message: 'Deleted activities by ids',
+          request: req.body,
+          result: response.rows,
+          count: response.rowCount,
+          namespace: 'activities',
+          code: 200
+        });
+      };
+      /* Future Role Handling Logic applied here */
+      return res.status(401).json({
+        message: 'Unauthorized Access',
         request: req.body,
-        result: response.rows,
-        count: response.rowCount,
         namespace: 'activities',
-        code: 200
+        code: 401
       });
-    } catch (error) {
-      defaultLog.debug({ label: 'deleteActivitiesByIds', message: 'error', error });
-      return res
-        .status(500)
-        .json({ message: 'Error deleting activities by ids', error, namespace: 'activities', code: 500 });
+
+    } catch (ex) {
+      defaultLog.error({
+        label: 'activity', message: '[deleteActivitiesByIds]', body: ex
+      });
+      return res.status(500);
     } finally {
       connection.release();
     }
-  };
+  }
 }
