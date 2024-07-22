@@ -1,0 +1,8 @@
+.mobile-beta-access-modal {
+  position: absolute;
+  inset: calc(var(--header-bar-height) + 20px) 20px calc(var(--footer-bar-height) + 20px);
+  border: 2px solid grey;
+  padding: 1rem;
+  z-index: 10000;
+  background-color: white;
+}

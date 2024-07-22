@@ -30,6 +30,7 @@ import Spinner from 'UI/Spinner/Spinner';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useSelector } from 'utils/use_selector';
+import { MobileBetaAccessMessage } from 'UI/Overlay/MobileBetaAccess/MobileBetaAccessMessage';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -251,10 +252,15 @@ const App: React.FC = () => {
     return <ErrorHandler detail={errorDetail} />;
   }
 
-
   return (
     <div id="app" className={appClasses}>
       <Header />
+
+      <MobileOnly>
+        {/* On mobile builds, show a message to BCEID users for now*/}
+        <MobileBetaAccessMessage />
+      </MobileOnly>
+      
       <Map>
         <Overlay>
           <OverlayContentMemo />
