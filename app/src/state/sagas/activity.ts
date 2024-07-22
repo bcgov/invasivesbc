@@ -47,6 +47,10 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS,
   ACTIVITY_UPDATE_PHOTO_REQUEST,
   MAP_INIT_REQUEST,
+  MAP_SET_COORDS,
+  MAP_SET_WHATS_HERE_SECTION,
+  MAP_TOGGLE_TRACKING,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
@@ -90,6 +94,7 @@ import { selectActivity } from 'state/reducers/activity';
 import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
+import { selectMap } from 'state/reducers/map';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -253,6 +258,87 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   yield put({ type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS, payload: { schema: subtypeSchema, uiSchema: uiSchema } });
 }
 
+
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
+  const activityState = yield select(selectActivity);
+  if (activityState.track_me_draw_geo) {
+    // wipe the existing geometry
+    yield put ({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: []}})
+
+
+
+    // let user know
+    yield put({
+      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      payload: {
+        notification: {
+          visible: true,
+          message: 'Start walking to draw a geometry.  Click the button again to stop.',
+          severity: 'success'
+        }
+      }
+    });
+  }
+  else {
+    // let user know
+    //convert the geom
+    const currentGeo = activityState.activity.geometry[0]
+
+    const newGeo = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'Polygon',
+        coordinates: [[...currentGeo.geometry.coordinates, currentGeo.geometry.coordinates[0]]]
+      }
+    }
+
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo]}})
+
+
+    yield put({
+      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      payload: {
+        notification: {
+          visible: true,
+          message: 'Geometry drawing stopped',
+          severity: 'success'
+        }
+      }
+    });
+
+
+  }
+}
+
+
+function* handle_MAP_SET_COORDS(action) {
+  const activityState = yield select(selectActivity);
+  if (activityState.track_me_draw_geo) {
+    let currentGeo = activityState?.activity?.geometry?.[0]
+    if(!currentGeo) {
+      currentGeo = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'LineString',
+          coordinates: []
+        }
+      }
+    }
+    const newGeo = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: 'LineString',
+        coordinates: [...currentGeo.geometry.coordinates, [action.payload.position.coords.longitude, action.payload.position.coords.latitude]]
+      }
+    }
+    //append to linestring
+    yield put ({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo]}})
+  }
+}
+
 function* activityPageSaga() {
   yield all([
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
@@ -261,6 +347,7 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_COPY_REQUEST, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(ACTIVITY_PASTE_REQUEST, handle_ACTIVITY_PASTE_REQUEST),
     takeEvery(ACTIVITY_GET_NETWORK_REQUEST, handle_ACTIVITY_GET_NETWORK_REQUEST),
+    takeEvery(MAP_SET_COORDS, handle_MAP_SET_COORDS),
     takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_READY),
     takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS, handle_USER_SETTINGS_READY),
     takeEvery(ACTIVITY_UPDATE_GEO_REQUEST, handle_ACTIVITY_UPDATE_GEO_REQUEST),
@@ -310,6 +397,7 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_DELETE_REQUEST, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(ACTIVITY_DELETE_NETWORK_REQUEST, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
     takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
+    takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO),
     ...OFFLINE_ACTIVITY_SAGA_HANDLERS
   ]);
 }
