@@ -1,4 +1,4 @@
-import { all, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
@@ -46,6 +46,7 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   ACTIVITY_UPDATE_PHOTO_REQUEST,
+  GET_API_DOC_SUCCESS,
   MAP_INIT_REQUEST,
   MAP_SET_COORDS,
   MAP_SET_WHATS_HERE_SECTION,
@@ -244,8 +245,11 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   const uiSchema = RootUISchemas[activity_subtype];
 
   let apiSpec;
-  const userSettings = yield select(selectUserSettings);
-  console.dir(userSettings)
+  var userSettings = yield select(selectUserSettings);
+  if(!userSettings?.apiDocsWithViewOptions?.components){
+    yield take(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS)
+    userSettings = yield select(selectUserSettings);
+  }
   if (isViewing) {
     apiSpec = userSettings.apiDocsWithViewOptions
   }
