@@ -20,6 +20,7 @@ import { errorHandlerReducer } from './error_handler';
 import { createOfflineActivityReducer, OfflineActivityState } from './offlineActivity';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
+import { createAlertsAndPromptsReducer } from './alertsAndPrompts';
 
 // it will try indexdb first, then fall back to localstorage if not available.
 
@@ -49,6 +50,7 @@ const purgeOldStateOnVersionUpgrade = async (state: any) => {
 function createRootReducer(config: AppConfig) {
   return combineReducers({
     AppMode: appMode,
+    AlertsAndPrompts: createAlertsAndPromptsReducer(config),
     Configuration: createConfigurationReducerWithDefaultState(config),
     Auth: persistReducer<AuthState>(
       {

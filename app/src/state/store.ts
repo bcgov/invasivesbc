@@ -37,7 +37,10 @@ export function setupStore(configuration: AppConfig) {
     logErrors: true,
     diff: true,
     diffPredicate: (getState, action) => {
-      if (action.type.includes('RECORDSET_SET_SORT')) {
+      if (action.type.includes('MAP_TOGGLE_TRACK_ME_DRAW_GEO')) {
+        return true;
+      }
+      if (action.type.includes('ACTIVITY_UPDATE_GEO')) {
         return true;
       }
       return false;
