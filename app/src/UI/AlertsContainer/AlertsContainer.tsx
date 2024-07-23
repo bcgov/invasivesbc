@@ -28,13 +28,13 @@ const AlertsContainer = () => {
   const alerts = useSelector((state: any) => state.AlertsAndPrompts.alerts || [])
 
   return (
-    <div className="snackBarCont">
+    <div className="alertsContainer">
       {alerts.map((alert: AlertMessage) => (
         <Alert
           key={alert.id}
           severity={alert.severity}
           onClose={() => handleClose(alert.id)}
-          className="snackBarAlert"
+          className="alertsContainerAlert"
           icon={<Icon color={alert.severity}>{getImageFromSubject(alert.subject)}</Icon>}
         >
           {alert.content}

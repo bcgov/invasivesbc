@@ -1,4 +1,4 @@
-.snackBarCont {
+.alertsContainer {
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -7,7 +7,7 @@
   right: 4%;
 }
 
-.snackBarAlert {
+.alertsContainerAlert {
   min-width: 240px;
   align-items: center;
   margin: 2pt;
