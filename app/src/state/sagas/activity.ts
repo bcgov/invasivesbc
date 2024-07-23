@@ -52,6 +52,7 @@ import {
   MAP_SET_WHATS_HERE_SECTION,
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO,
+  NEW_ALERT,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
@@ -246,7 +247,7 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
 
   let apiSpec;
   var userSettings = yield select(selectUserSettings);
-  if(!userSettings?.apiDocsWithViewOptions?.components){
+  if (!userSettings?.apiDocsWithViewOptions?.components) {
     yield take(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS)
     userSettings = yield select(selectUserSettings);
   }
@@ -267,19 +268,15 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
   const activityState = yield select(selectActivity);
   if (activityState.track_me_draw_geo) {
     // wipe the existing geometry
-    yield put ({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: []}})
-
-
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } })
 
     // let user know
     yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      type: NEW_ALERT,
       payload: {
-        notification: {
-          visible: true,
-          message: 'Start walking to draw a geometry.  Click the button again to stop.',
-          severity: 'success'
-        }
+        content: 'Start walking to draw a geometry.  Click the button again to stop.',
+        severity: 'success',
+        subject: 'map',
       }
     });
   }
@@ -297,21 +294,15 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
       }
     }
 
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo]}})
-
-
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } })
     yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      type: NEW_ALERT,
       payload: {
-        notification: {
-          visible: true,
-          message: 'Geometry drawing stopped',
-          severity: 'success'
-        }
+        subject: 'map',
+        content: 'Geometry drawing stopped',
+        severity: 'success'
       }
     });
-
-
   }
 }
 
@@ -320,7 +311,7 @@ function* handle_MAP_SET_COORDS(action) {
   const activityState = yield select(selectActivity);
   if (activityState.track_me_draw_geo) {
     let currentGeo = activityState?.activity?.geometry?.[0]
-    if(!currentGeo) {
+    if (!currentGeo) {
       currentGeo = {
         type: 'Feature',
         properties: {},
@@ -339,7 +330,7 @@ function* handle_MAP_SET_COORDS(action) {
       }
     }
     //append to linestring
-    yield put ({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo]}})
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } })
   }
 }
 
