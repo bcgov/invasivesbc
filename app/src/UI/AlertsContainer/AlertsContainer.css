@@ -1,0 +1,14 @@
+.snackBarCont {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  z-index: 50000000;
+  top: 9%;
+  right: 4%;
+}
+
+.snackBarAlert {
+  min-width: 240px;
+  align-items: center;
+  margin: 2pt;
+}
