@@ -31,6 +31,7 @@ import { WebOnly } from 'UI/Predicates/WebOnly';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useSelector } from 'utils/use_selector';
 import { MobileBetaAccessMessage } from 'UI/Overlay/MobileBetaAccess/MobileBetaAccessMessage';
+import AlertsContainer from './AlertsContainer/AlertsContainer';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -254,13 +255,13 @@ const App: React.FC = () => {
 
   return (
     <div id="app" className={appClasses}>
+      <AlertsContainer />
       <Header />
-
       <MobileOnly>
         {/* On mobile builds, show a message to BCEID users for now*/}
         <MobileBetaAccessMessage />
       </MobileOnly>
-      
+
       <Map>
         <Overlay>
           <OverlayContentMemo />
