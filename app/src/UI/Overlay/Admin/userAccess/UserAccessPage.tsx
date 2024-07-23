@@ -38,6 +38,7 @@ import { useSelector } from 'utils/use_selector';
 import { CustomNoRowsOverlay } from '../CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
 import { bcBlue, bcYellow, black } from 'constants/colors';
+import Spinner from 'UI/Spinner/Spinner';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -609,7 +610,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const handleSelectedRoleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedRole(event.target.value);
   };
-
+  if (!authState?.roles.some((role) => role.role_name === 'master_administrator')) {
+    return <Spinner />
+  }
   return (
     <Container
       // className={classes?.container}
