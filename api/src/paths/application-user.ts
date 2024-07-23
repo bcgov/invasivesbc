@@ -76,14 +76,6 @@ function getHandler() {
  * @return {RequestHandler}
  */
 async function getUsers(req, res, next) {
-  if (!isAdminFromAuthContext(req)) {
-    return res.status(401).json({
-      message: 'Unauthorized access',
-      request: req.body,
-      namespace: 'application-user',
-      code: 401
-    })
-  }
   const connection = await getDBConnection();
   if (!connection) {
     return res.status(503).json({
