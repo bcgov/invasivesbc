@@ -2,9 +2,11 @@ import { createNextState } from '@reduxjs/toolkit';
 import { AppConfig } from '../config';
 import { CLEAR_ALERT, CLEAR_ALERTS, CLEAR_PROMPT, CLEAR_PROMPTS, NEW_ALERT, NEW_PROMPT } from 'state/actions';
 import { getUuid } from './userSettings';
+import AlertMessage from 'interfaces/AlertMessage';
+
 
 interface AlertsAndPromptsState {
-  alerts: any[];
+  alerts: AlertMessage[];
   prompts: any[];
 }
 
@@ -21,12 +23,12 @@ export function createAlertsAndPromptsReducer(
       switch (action.type) {
         case NEW_ALERT: {
           const newID = getUuid();
-          draftState.alerts = [...state.alerts, { id: newID, ...action.payload}];
+          draftState.alerts = [...state.alerts, { id: newID, ...action.payload }];
           break;
         }
         case NEW_PROMPT: {
           const newID = getUuid();
-          draftState.prompts = [...state.prompts, {id: newID, ...action.payload}];
+          draftState.prompts = [...state.prompts, { id: newID, ...action.payload }];
           break;
         }
         case CLEAR_ALERTS: {
