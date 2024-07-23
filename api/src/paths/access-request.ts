@@ -14,6 +14,7 @@ import { grantRoleByValueSQL, revokeAllRolesExceptAdmin } from 'queries/role-que
 import { getUserByBCEIDSQL, getUserByIDIRSQL } from 'queries/user-queries';
 import { getLogger } from 'utils/logger';
 import { buildMailer } from 'utils/mailer';
+import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
 
 const defaultLog = getLogger('access-request');
 
@@ -25,10 +26,10 @@ POST.apiDoc = {
   tags: ['access-request'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'Access request post request object.',
@@ -68,10 +69,10 @@ GET.apiDoc = {
   tags: ['access-request'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -98,6 +99,14 @@ GET.apiDoc = {
 
 function getAccessRequests(): RequestHandler {
   return async (req, res, next) => {
+    if (!isAdminFromAuthContext(req)) {
+      return res.status(401).json({
+        message: 'Unauthorized access',
+        request: req.body,
+        namespace: 'access-request',
+        code: 401
+      })
+    }
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({
@@ -140,18 +149,29 @@ function getAccessRequests(): RequestHandler {
     }
   };
 }
-
+/**
+ * @desc Handles post requests, any keycloak user can make an access request, only admins can approve/deny them
+ */
 function postHandler(): RequestHandler {
   return async (req, res, next) => {
     const approvedAccessRequests = req.body.approvedAccessRequests;
     const declinedAccessRequest = req.body.declinedAccessRequest;
     const newAccessRequest = req.body.newAccessRequest;
+    if (newAccessRequest) {
+      return await createAccessRequest(req, res, next, newAccessRequest);
+    }
+    if (!isAdminFromAuthContext(req)) {
+      return res.status(401).json({
+        message: 'Unauthorized access',
+        request: req.body,
+        namespace: 'access-request',
+        code: 401
+      })
+    }
     if (approvedAccessRequests) {
       return await batchApproveAccessRequests(req, res, next, approvedAccessRequests);
     } else if (declinedAccessRequest) {
       return await declineAccessRequest(req, res, next, declinedAccessRequest);
-    } else if (newAccessRequest) {
-      return await createAccessRequest(req, res, next, newAccessRequest);
     } else {
       return res.status(400).json({
         message: 'Invalid request, no approvedAccessRequests, declinedAccessRequest or newAccessRequest specified',

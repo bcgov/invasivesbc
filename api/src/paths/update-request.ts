@@ -15,6 +15,7 @@ import {
 } from 'queries/update-request-queries';
 import { getLogger } from 'utils/logger';
 import { getEmailTemplatesFromDB } from 'paths/email-templates';
+import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
 
 const defaultLog = getLogger('update-request');
 
@@ -144,12 +145,21 @@ function postHandler(): RequestHandler {
     const approvedUpdateRequests = req.body.approvedUpdateRequests;
     const declinedUpdateRequest = req.body.declinedUpdateRequest;
     const newUpdateRequest = req.body.newUpdateRequest;
+    if (newUpdateRequest) {
+      return await createUpdateRequest(req, res, next, newUpdateRequest);
+    }
+    if (!isAdminFromAuthContext(req)) {
+      return res.status(401).json({
+        message: 'Unauthorized access',
+        request: req.body,
+        namespace: 'update-request',
+        code: 401
+      })
+    }
     if (approvedUpdateRequests) {
       return await batchApproveUpdateRequests(req, res, next, approvedUpdateRequests);
     } else if (declinedUpdateRequest) {
       return await declineUpdateRequest(req, res, next, declinedUpdateRequest);
-    } else if (newUpdateRequest) {
-      return await createUpdateRequest(req, res, next, newUpdateRequest);
     } else {
       return res.status(400).json({
         message: 'Invalid request - specify either approvedUpdateRequests, declinedUpdateRequest or newUpdateRequest',

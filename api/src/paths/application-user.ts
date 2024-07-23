@@ -4,6 +4,7 @@ import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getUserByBCEIDSQL, getUserByIDIRSQL, getUsersSQL } from 'queries/user-queries';
 import { getLogger } from 'utils/logger';
+import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
 
 const defaultLog = getLogger('activity/{activityId}');
 
@@ -14,10 +15,10 @@ GET.apiDoc = {
   tags: ['users'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   parameters: [],
   responses: {
@@ -75,6 +76,14 @@ function getHandler() {
  * @return {RequestHandler}
  */
 async function getUsers(req, res, next) {
+  if (!isAdminFromAuthContext(req)) {
+    return res.status(401).json({
+      message: 'Unauthorized access',
+      request: req.body,
+      namespace: 'application-user',
+      code: 401
+    })
+  }
   const connection = await getDBConnection();
   if (!connection) {
     return res.status(503).json({

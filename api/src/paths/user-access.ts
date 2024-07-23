@@ -10,6 +10,7 @@ import {
   revokeRoleFromUserSQL
 } from 'queries/role-queries';
 import { getLogger } from 'utils/logger';
+import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
 
 const defaultLog = getLogger('user-access');
 
@@ -22,10 +23,10 @@ GET.apiDoc = {
   tags: ['user-access'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   parameters: [
     {
@@ -174,6 +175,14 @@ function decideGET() {
 
 function batchGrantRoleToUser(): RequestHandler {
   return async (req, res) => {
+    if (!isAdminFromAuthContext(req)) {
+      return res.status(401).json({
+        message: 'Unauthorized access',
+        request: req.body,
+        namespace: 'user-access',
+        code: 401
+      })
+    }
     defaultLog.debug({ label: 'user-access', message: 'batch-grant', body: req.body });
     const connection = await getDBConnection();
     if (!connection) {
@@ -223,6 +232,14 @@ function batchGrantRoleToUser(): RequestHandler {
 
 function revokeRoleFromUser(): RequestHandler {
   return async (req, res) => {
+    if (!isAdminFromAuthContext(req)) {
+      return res.status(401).json({
+        message: 'Unauthorized access',
+        request: req.body,
+        namespace: 'user-access',
+        code: 401
+      })
+    }
     defaultLog.debug({ label: 'user-access', message: 'revoke', body: req.body });
     const connection = await getDBConnection();
     if (!connection) {
