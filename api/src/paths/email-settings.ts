@@ -6,6 +6,7 @@ import { getDBConnection } from 'database/db';
 import { getEmailSettingsSQL, updateEmailSettingsSQL } from 'queries/email-settings-queries';
 import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
+import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
 
 const defaultLog = getLogger('email-settings');
 
@@ -17,10 +18,10 @@ PUT.apiDoc = {
   tags: ['email-settings'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   requestBody: {
     description: 'email setting put request object.',
@@ -60,10 +61,10 @@ GET.apiDoc = {
   tags: ['email-settings'],
   security: SECURITY_ON
     ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
+      {
+        Bearer: ALL_ROLES
+      }
+    ]
     : [],
   responses: {
     200: {
@@ -129,6 +130,14 @@ export async function getEmailSettingsFromDB() {
 
 function getEmailSettings(): RequestHandler {
   return async (req, res) => {
+    if (!isAdminFromAuthContext(req)) {
+      return res.status(401).json({
+        message: 'Unauthorized access',
+        request: req.body,
+        namespace: 'email-settings',
+        code: 401
+      });
+    };
     const response = await getEmailSettingsFromDB();
     return res.status(response.code).json({ ...response, request: req.body });
   };
@@ -137,8 +146,7 @@ function getEmailSettings(): RequestHandler {
 function updateEmailSettings(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'email-settings', message: 'updateEmailSettings', body: req.params });
-    const isAdmin = (req as any).authContext.roles.find((role) => role.role_id === 18);
-    if (!isAdmin) {
+    if (!isAdminFromAuthContext(req)) {
       return res.status(401).json({
         message: 'Invalid request, user is not authorized to update this record',
         request: req.body,
