@@ -9,6 +9,7 @@
 
 .alertsContainerAlert {
   min-width: 240px;
+  text-align: left;
   align-items: center;
   margin: 2pt;
 }

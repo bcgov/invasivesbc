@@ -1,4 +1,4 @@
-import { Alert, Icon } from "@mui/material";
+import { Alert, AlertTitle, Icon } from "@mui/material";
 import { MapOutlined, Assignment, InsertPhoto } from "@mui/icons-material";
 import { useDispatch, useSelector } from "react-redux";
 import './AlertsContainer.css';
@@ -38,6 +38,7 @@ const AlertsContainer = () => {
           className="alertsContainerAlert"
           icon={<Icon color={alert.severity}>{getImageFromSubject(alert.subject)}</Icon>}
         >
+          {alert.title && <AlertTitle>{alert.title}</AlertTitle>}
           {alert.content}
         </Alert>
       ))}
