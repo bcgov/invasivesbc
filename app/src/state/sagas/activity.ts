@@ -97,6 +97,7 @@ import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from 
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import { selectMap } from 'state/reducers/map';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -275,8 +276,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
       type: NEW_ALERT,
       payload: {
         content: 'Start walking to draw a geometry.  Click the button again to stop.',
-        severity: 'success',
-        subject: 'map',
+        severity: AlertSeverity.Success,
+        subject: AlertSubjects.Map,
       }
     });
   }

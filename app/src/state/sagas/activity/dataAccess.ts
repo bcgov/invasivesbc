@@ -69,6 +69,7 @@ import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectNetworkConnected } from 'state/reducers/network';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 let BC_AREA: any = null;
 
@@ -201,11 +202,9 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
         yield put({
           type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
           payload: {
-            notification: {
-              visible: true,
-              message: 'Activity geometry intersects itself',
-              severity: 'error'
-            }
+            severity: AlertSeverity.Error,
+            subject: AlertSubjects.Map,
+            content: 'Activity geometry intersects itself',
           }
         });
 
