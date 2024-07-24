@@ -300,18 +300,18 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
       yield put({
         type: NEW_ALERT,
         payload: {
-          subject: 'map',
+          subject: AlertSubjects.Map,
           content: 'Geometry drawing stopped',
-          severity: 'success'
+          severity: AlertSeverity.Success
         }
       });
     } else {
       yield put({
         type: NEW_ALERT,
         payload: {
-          subject: 'map',
+          subject: AlertSubjects.Map,
           content: `Unable to get minimum number of coordinates (${minNumberCoords}), abandoning...`,
-          severity: 'error'
+          severity: AlertSeverity.Error
         }
       })
     }
