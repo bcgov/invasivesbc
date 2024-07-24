@@ -75,6 +75,7 @@ export const TrackMeToggle = (props) => {
             placement="top-end">
             <span>
               <IconButton
+                className="button"
                 onClick={() => {
                   setShow(false);
                   if (drawGeometryTracking) {
