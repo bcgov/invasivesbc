@@ -1,6 +1,8 @@
+import { AlertSeverity, AlertSubjects } from "constants/alertEnums";
+
 interface AlertMessage {
-  severity: 'error' | 'info' | 'success' | 'warning';
-  subject: 'map' | 'form' | 'photo';
+  severity: AlertSeverity;
+  subject: AlertSubjects;
   content: string;
   autoClose?: number;
   id: string;
