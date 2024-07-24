@@ -284,26 +284,37 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
   else {
     // let user know
     //convert the geom
-    const currentGeo = activityState.activity.geometry[0]
+    const minNumberCoords = 3;
+    if (activityState?.activity?.geometry?.length > minNumberCoords) {
+      const currentGeo = activityState.activity.geometry[0]
 
-    const newGeo = {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: 'Polygon',
-        coordinates: [[...currentGeo.geometry.coordinates, currentGeo.geometry.coordinates[0]]]
+      const newGeo = {
+        type: 'Feature',
+        properties: {},
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[...currentGeo.geometry.coordinates, currentGeo.geometry.coordinates[0]]]
+        }
       }
+      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } })
+      yield put({
+        type: NEW_ALERT,
+        payload: {
+          subject: 'map',
+          content: 'Geometry drawing stopped',
+          severity: 'success'
+        }
+      });
+    } else {
+      yield put({
+        type: NEW_ALERT,
+        payload: {
+          subject: 'map',
+          content: `Unable to get minimum number of coordinates (${minNumberCoords}), abandoning...`,
+          severity: 'error'
+        }
+      })
     }
-
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } })
-    yield put({
-      type: NEW_ALERT,
-      payload: {
-        subject: 'map',
-        content: 'Geometry drawing stopped',
-        severity: 'success'
-      }
-    });
   }
 }
 
