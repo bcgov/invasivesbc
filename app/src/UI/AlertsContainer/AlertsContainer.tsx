@@ -4,16 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import './AlertsContainer.css';
 import AlertMessage from "interfaces/AlertMessage";
 import { CLEAR_ALERT } from "state/actions";
+import { AlertSubjects } from "constants/alertEnums";
 
 const AlertsContainer = () => {
   const dispatch = useDispatch();
-  const getImageFromSubject = (subject: string) => {
+  const getImageFromSubject = (subject: AlertSubjects) => {
     switch (subject) {
-      case 'map':
+      case AlertSubjects.Map:
         return <MapOutlined />
-      case 'form':
+      case AlertSubjects.Form:
         return <Assignment />
-      case 'photo':
+      case AlertSubjects.Photo:
         return <InsertPhoto />
       default:
         break;
