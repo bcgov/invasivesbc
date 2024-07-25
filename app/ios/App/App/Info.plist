@@ -23,9 +23,7 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>For plotting nearby sites on map as location changes, and for planning site visits</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>To submit site photos</string>
+	<string>We need to track your location to show you location-specific data</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -63,14 +61,20 @@
 	<key>SSO_CLIENT_ID</key>
 	<string>${SSO_CLIENT_ID}</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
-  <false/>
-  <key>NSLocationWhenInUseUsageDescription</key>
-  <string>We need to track your location to show you location-specific data</string>
-  <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-  <string>We need to track your location while your device is locked to allow you to log site data when the device is locked.</string>
-  <key>UIBackgroundModes</key>
-  <array>
-    <string>location</string>
-  </array>
+	<false/>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need to use the photo library to allow you to choose and submit site photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need to use the photo library to allow you to choose and submit site photos.</string>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need to track your location while your device is locked to allow you to log site data when the device is locked.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>We need to use the camera to allow you to submit site photos taken with the device.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 </dict>
 </plist>
