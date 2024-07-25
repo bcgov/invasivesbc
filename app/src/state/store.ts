@@ -36,15 +36,14 @@ export function setupStore(configuration: AppConfig) {
     timestamp: true,
     logErrors: true,
     diff: true,
-    diffPredicate: (getState, action) => {
-      if (action.type.includes('MAP_TOGGLE_TRACK_ME_DRAW_GEO')) {
-        return true;
-      }
-      if (action.type.includes('ACTIVITY_UPDATE_GEO')) {
-        return true;
-      }
-      return false;
-    }
+    diffPredicate: (getState, action) => (
+      ([
+        'MAP_TOGGLE_TRACK_ME_DRAW_GEO',
+        'ACTIVITY_UPDATE_GEO',
+        'GET_SUGGESTED_JURISDICTIONS'
+      ].filter((item) => (
+        action.type.includes(item)
+      )).length > 0))
   });
 
   if (!configuration.TEST && configuration.DEBUG) {
