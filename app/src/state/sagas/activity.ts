@@ -267,11 +267,19 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
 
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
   const activityState = yield select(selectActivity);
+  const minNumberCoords = 3;
+  const InvalidCoordinatesErrorMessage = {
+    subject: AlertSubjects.Map,
+    content: `Unable to get minimum number of coordinates (${minNumberCoords}), abandoning...`,
+    severity: AlertSeverity.Error,
+  }
+
   if (activityState.track_me_draw_geo) {
     // wipe the existing geometry
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } })
-
-    // let user know
+    yield put({
+      type: ACTIVITY_UPDATE_GEO_REQUEST,
+      payload: { geometry: [] }
+    })
     yield put({
       type: NEW_ALERT,
       payload: {
@@ -282,39 +290,28 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
     });
   }
   else {
-    // let user know
-    //convert the geom
-    const minNumberCoords = 3;
-    if (activityState?.activity?.geometry?.length > minNumberCoords) {
-      const currentGeo = activityState.activity.geometry[0]
+    if (activityState.activity?.geometry?.length > 0) {
+      if (activityState?.activity?.geometry[0]?.geometry?.coordinates?.length >= minNumberCoords) {
+        const currentGeo = activityState.activity.geometry[0]
+        const newGeo = {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: 'Polygon',
+            coordinates: [[...currentGeo.geometry.coordinates, currentGeo.geometry.coordinates[0]]]
+          }
+        }
+        yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+        yield put({
+          type: NEW_ALERT, payload: {
+            content: 'Tracking stopped',
+            severity: AlertSeverity.Success,
+            subject: AlertSubjects.Map,
+          }
+        })
 
-      const newGeo = {
-        type: 'Feature',
-        properties: {},
-        geometry: {
-          type: 'Polygon',
-          coordinates: [[...currentGeo.geometry.coordinates, currentGeo.geometry.coordinates[0]]]
-        }
-      }
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } })
-      yield put({
-        type: NEW_ALERT,
-        payload: {
-          subject: AlertSubjects.Map,
-          content: 'Geometry drawing stopped',
-          severity: AlertSeverity.Success
-        }
-      });
-    } else {
-      yield put({
-        type: NEW_ALERT,
-        payload: {
-          subject: AlertSubjects.Map,
-          content: `Unable to get minimum number of coordinates (${minNumberCoords}), abandoning...`,
-          severity: AlertSeverity.Error
-        }
-      })
-    }
+      } else { yield put({ type: NEW_ALERT, payload: InvalidCoordinatesErrorMessage }); }
+    } else { yield put({ type: NEW_ALERT, payload: InvalidCoordinatesErrorMessage }); }
   }
 }
 
