@@ -56,6 +56,7 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAIN_MAP_MOVE,
   MAP_INIT_REQUEST,
+  NEW_ALERT,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_MAP_CENTER_REQUEST
 } from 'state/actions';
@@ -70,6 +71,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import GeoShapes from 'constants/geoShapes';
 
 let BC_AREA: any = null;
 
@@ -151,34 +153,36 @@ function isNumber(value?: string | number): boolean {
   return value != null && value !== '' && !isNaN(Number(value.toString()));
 }
 
-export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
+function getSetNumberFromUser(setNumbers: number[] = [1, 5, 10]): number {
+  let userEnteredArea: number | undefined = undefined;
+  while (!isNumber(userEnteredArea) && !setNumbers.includes(Number(userEnteredArea))) {
+    userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):?') || "")
+  }
+  return userEnteredArea as number;
+}
+
+export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>) {
   const activityState = yield select(selectActivity);
   try {
-    // get spatial fields based on geo
-    const { latitude, longitude } = calculateLatLng(action.payload.geometry) || {};
-    let utm;
-    if (latitude && longitude) utm = calc_utm(longitude, latitude);
-    const modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry));
+    const modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry))
+    const { latitude, longitude } = calculateLatLng(modifiedPayload) || {}
 
-    if (action.payload.geometry && action.payload.geometry.length > 0) {
-      if (action.payload.geometry[0].geometry.type === 'Point') {
-        // if not radius in properties:
-        if (!action.payload.geometry[0].properties.radius) {
-          let userEnteredArea = undefined;
-          while (
-            !(isNumber(userEnteredArea) && userEnteredArea !== null && [1, 5, 10].includes(Number(userEnteredArea)))
-          ) {
-            userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):'));
-          }
-          const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
-          modifiedPayload[0].properties.radius = radiusBasedOnArea;
-        }
+    let utm;
+    if (latitude && longitude) {
+      utm = calc_utm(longitude, latitude)
+    }
+
+    if (modifiedPayload.length > 0 && modifiedPayload[0].geometry.type === GeoShapes.Point) {
+      if (!modifiedPayload[0].properties.radius) {
+        const userEnteredArea = getSetNumberFromUser()
+        const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI)
+        modifiedPayload[0].properties.radius = radiusBasedOnArea;
       }
     }
 
-    let reported_area = calculateGeometryArea(modifiedPayload.geometry);
+    let reported_area = calculateGeometryArea(modifiedPayload.geometry)
 
-    if (modifiedPayload.length < 1) {
+    if (modifiedPayload.length === 0) {
       yield put({
         type: ACTIVITY_UPDATE_GEO_SUCCESS,
         payload: {
@@ -192,44 +196,40 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       });
       return;
     }
-    const sanitizedGeo = fixMisLabledMultiPolygon(modifiedPayload[0]);
-    const isWIPLinestring = sanitizedGeo.geometry.type === 'LineString';
-    const isPointGeometry = sanitizedGeo.geometry.type === 'Point';
+    const sanitizedGeo = fixMisLabledMultiPolygon(modifiedPayload[0]) || [];
+
+    const isWIPLinestring = sanitizedGeo.geometry.type === GeoShapes.LineString;
+    const isPointGeometry = sanitizedGeo.geometry.type === GeoShapes.Point;
     reported_area = calculateGeometryArea([sanitizedGeo]);
+
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       if (hasSelfIntersections) {
         yield put({
-          type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+          type: NEW_ALERT,
           payload: {
             severity: AlertSeverity.Error,
             subject: AlertSubjects.Map,
             content: 'Activity geometry intersects itself',
           }
         });
-
-        return;
       }
     }
 
-    let wellInformationArr = [];
-    let nearestWells = null;
+    let wellInformationArr: Record<string, any>[] = [];
+    let nearestWells: Record<string, any> | null = null;
     let areWellsInside = false;
-    if (reported_area < MAX_AREA && !isWIPLinestring) {
-      if (latitude && longitude) {
-        nearestWells = yield getClosestWells(sanitizedGeo, true);
-      }
-      if (!nearestWells || !nearestWells.well_objects || nearestWells.well_objects.length < 1) {
-        wellInformationArr = [
-          {
-            well_id: 'No wells found',
-            well_proximity: 'No wells found'
-          }
-        ];
+
+    if (reported_area < MAX_AREA && !isWIPLinestring && latitude && longitude) {
+      nearestWells = yield getClosestWells(sanitizedGeo, true);
+      if (nearestWells?.well_objects.length === 0) {
+        wellInformationArr = [{
+          well_id: 'No wells found',
+          well_proximity: 'No wells found'
+        }];
       } else {
-        const { well_objects } = nearestWells;
-        areWellsInside = nearestWells.areWellsInside;
-        console.dir(well_objects);
+        const { well_objects } = nearestWells as Record<string, any>;
+        areWellsInside = (nearestWells as Record<string, any>).areWellsInside;
         well_objects.forEach((well) => {
           if (well.proximity || well.inside) {
             wellInformationArr.push({
@@ -241,73 +241,63 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action) {
       }
     }
 
-    //validate its in bc and within max geometry:
-
+    const geoToTest = sanitizedGeo.geometry.type === GeoShapes.MultiPolygon
+      ? centroid(sanitizedGeo.geometry)
+      : sanitizedGeo;
     let isWithinBC = false;
-    let geoToTest;
-    if (sanitizedGeo.geometry.type === 'MultiPolygon') {
-      geoToTest = centroid(sanitizedGeo.geometry);
-    } else {
-      geoToTest = sanitizedGeo;
-    }
+
     if (sanitizedGeo) {
       if (BC_AREA === null) {
         try {
-          BC_AREA = (yield import('./_bcArea')).default;
+          BC_AREA = (yield import('./_bcArea')).default
         } catch (e) {
-          console.error('could not load bc geometry file, unable to validate bounds');
+          console.error('Could not load BC geometry file, unable to validate bounds');
         }
       }
-      // it's possible it's still null if the import failed
       if (BC_AREA !== null) {
         isWithinBC = booleanContains(BC_AREA.features[0] as any, geoToTest as any);
       }
     }
 
-    if (activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' && areWellsInside) {
+    if (areWellsInside && activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial') {
       yield put({
-        type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+        type: NEW_ALERT,
         payload: {
-          notification: {
-            visible: true,
-            message: 'Warning!  Wells inside treatment area',
-            severity: 'warning'
-          }
+          content: 'Warning! Wells inside treatment area',
+          severity: AlertSeverity.Warning,
+          subject: AlertSubjects.Map
         }
       });
     }
-
     if (!isWithinBC && !isWIPLinestring) {
       yield put({
-        type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+        type: NEW_ALERT,
         payload: {
-          notification: {
-            visible: true,
-            message: 'Activity is not within BC',
-            severity: 'error'
-          }
+          content: 'Activity is not within BC',
+          severity: AlertSeverity.Error,
+          subject: AlertSubjects.Map
         }
       });
-
       return;
     }
-
+    const payload = {
+      geometry: [JSON.parse(JSON.stringify(sanitizedGeo))],
+      utm,
+      lat: latitude,
+      long: longitude,
+      reported_area,
+      Well_Information: wellInformationArr
+    }
     yield put({
       type: ACTIVITY_UPDATE_GEO_SUCCESS,
-      payload: {
-        geometry: [sanitizedGeo],
-        utm: utm,
-        lat: latitude,
-        long: longitude,
-        reported_area: reported_area,
-        Well_Information: wellInformationArr
-      }
+      payload
     });
   } catch (e) {
-    console.error(e);
+    console.error("ERROR", e)
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
+
 
 export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
   const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
@@ -513,10 +503,13 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
   try {
     const currentState = yield select(selectActivity);
     const currentActivity = currentState.activity;
-
+    const hasSelfIntersections = (
+      currentActivity?.geometry?.[0]?.geometry &&
+      kinks(currentActivity?.geometry?.[0]?.geometry).features.length > 0
+    );
     const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === 'LineString';
-
-    if (currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA && !wipLinestring) {
+    const reportedAreaLessThanMaxArea = currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA
+    if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
       yield put({
         type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
         payload: { search_feature: currentActivity.geometry }
