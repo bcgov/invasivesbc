@@ -51,13 +51,16 @@ import {
   MAP_SET_COORDS,
   MAP_SET_WHATS_HERE_SECTION,
   MAP_TOGGLE_TRACKING,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
   NEW_ALERT,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-  USER_SETTINGS_SET_SELECTED_RECORD_REQUEST
+  USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
+  CLEAR_ALERTS
 } from '../actions';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
@@ -98,6 +101,9 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import { selectMap } from 'state/reducers/map';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import { kinks, lineToPolygon, polygon } from '@turf/turf';
+import GeoShapes from 'constants/geoShapes';
+import { calculateGeometryArea } from 'utils/geometryHelpers';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -265,56 +271,106 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
 }
 
 
-function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO(action) {
-  const activityState = yield select(selectActivity);
-  const minNumberCoords = 3;
-  const InvalidCoordinatesErrorMessage = {
-    subject: AlertSubjects.Map,
-    content: `Unable to get minimum number of coordinates (${minNumberCoords}), abandoning...`,
-    severity: AlertSeverity.Error,
-  }
-
-  if (activityState.track_me_draw_geo) {
-    // wipe the existing geometry
-    yield put({
-      type: ACTIVITY_UPDATE_GEO_REQUEST,
-      payload: { geometry: [] }
-    })
-    yield put({
-      type: NEW_ALERT,
-      payload: {
-        content: 'Start walking to draw a geometry.  Click the button again to stop.',
-        severity: AlertSeverity.Success,
-        subject: AlertSubjects.Map,
-      }
-    });
-  }
-  else {
-    if (activityState.activity?.geometry?.length > 0) {
-      if (activityState?.activity?.geometry[0]?.geometry?.coordinates?.length >= minNumberCoords) {
-        const currentGeo = activityState.activity.geometry[0]
-        const newGeo = {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [[...currentGeo.geometry.coordinates, currentGeo.geometry.coordinates[0]]]
-          }
-        }
-        yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
-        yield put({
-          type: NEW_ALERT, payload: {
-            content: 'Tracking stopped',
-            severity: AlertSeverity.Success,
-            subject: AlertSubjects.Map,
-          }
-        })
-
-      } else { yield put({ type: NEW_ALERT, payload: InvalidCoordinatesErrorMessage }); }
-    } else { yield put({ type: NEW_ALERT, payload: InvalidCoordinatesErrorMessage }); }
-  }
+// Alert Messages decoupled from functions
+const editableAlert = {
+  content: 'You can adjust or add to your geometry manually by selecting the blue line, and moving points as needed',
+  severity: AlertSeverity.Info,
+  subject: AlertSubjects.Map,
+}
+const trackingStoppedMessage = {
+  content: 'Tracking Completed Successfully',
+  severity: AlertSeverity.Success,
+  subject: AlertSubjects.Map,
+}
+const earlyExitAlert = {
+  content: '"Track my path" stopped.',
+  severity: AlertSeverity.Info,
+  subject: AlertSubjects.Map,
+}
+const noAreaCalculated = {
+  content: "The calculated area of your shape is 0, please add more points",
+  severity: AlertSeverity.Error,
+  subject: AlertSubjects.Map
+}
+const containsIntersections = {
+  severity: AlertSeverity.Error,
+  subject: AlertSubjects.Map,
+  content: 'Closing this geometry will result in a shape intersection being formed. Please adjust appropriately.',
+}
+const invalidCoordinatesErrorMessage = (minNumberCoords: number) => ({
+  subject: AlertSubjects.Map,
+  content: `Unable to get minimum number of coordinates (${minNumberCoords})`,
+  severity: AlertSeverity.Error,
+})
+/**
+ * @desc Handler for starting GPS drawn shapes. Sets geometry to empty array, alerts user feature live.
+ */
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
+  yield put({
+    type: ACTIVITY_UPDATE_GEO_REQUEST,
+    payload: { geometry: [] }
+  })
+  yield put({
+    type: NEW_ALERT,
+    payload: {
+      content: 'Start walking to draw a geometry. Click the button again to stop.',
+      severity: AlertSeverity.Info,
+      subject: AlertSubjects.Map,
+    }
+  });
 }
 
+/**
+ * @desc Handler for ending GPS drawn shapes. Validates points of GPS, including closing point.
+ *       If all validation passes, the shape is updated and tracking stops,
+ *       else the user is prompted if they wish to abandon progress
+ *       if they abandon progress, Alerts are cleared and shape is erased.
+ *       If no, all validation messages appear, and user continues as they were.
+ */
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
+  const earlyExitConfirmation = (numErrors: number) => `You\'ve attempted to stop tracking, but ${numErrors} error(s) exist, do you want to abandon your progress?`;
+  const activityState = yield select(selectActivity);
+  const minNumberCoords = 3;
+  const validationErrors: Record<string, any>[] = []
+
+  // Early exit on non-existent/zero-length arrays
+  if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
+    yield put({ type: NEW_ALERT, payload: earlyExitAlert });
+    yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
+    return;
+  }
+  const currentGeo = activityState.activity.geometry[0];
+
+  // Validation Checks
+  const geometryIsMinimumLength = currentGeo.geometry.coordinates.length >= minNumberCoords
+  const newGeo = geometryIsMinimumLength ? lineToPolygon(currentGeo) : currentGeo;
+  const geographyWillContainIntersections = kinks(newGeo.geometry).features?.length > 0;
+  const geometryHasPositiveArea = Math.floor(calculateGeometryArea(newGeo.geometry)) >= 0;
+
+  // Error Alerts
+  if (geographyWillContainIntersections) { validationErrors.push(containsIntersections); }
+  if (!geometryHasPositiveArea) { validationErrors.push(noAreaCalculated) }
+  if (!geometryIsMinimumLength) { validationErrors.push(invalidCoordinatesErrorMessage(minNumberCoords)) }
+
+
+  if (validationErrors.length === 0) {
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+    yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
+    yield put({ type: NEW_ALERT, payload: trackingStoppedMessage });
+  } else {
+    yield put({ type: NEW_ALERT, payload: editableAlert })
+    for (const error of validationErrors) {
+      yield put({ type: NEW_ALERT, payload: error })
+    }
+    const userConfirmsExit = confirm(earlyExitConfirmation(validationErrors.length))
+    if (userConfirmsExit) {
+      yield put({ type: CLEAR_ALERTS })
+      yield put({ type: NEW_ALERT, payload: earlyExitAlert });
+      yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
+      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+    }
+  }
+}
 
 function* handle_MAP_SET_COORDS(action) {
   const activityState = yield select(selectActivity);
@@ -334,10 +390,11 @@ function* handle_MAP_SET_COORDS(action) {
       type: 'Feature',
       properties: {},
       geometry: {
-        type: 'LineString',
+        type: currentGeo?.geometry?.type || 'LineString',
         coordinates: [...currentGeo.geometry.coordinates, [action.payload.position.coords.longitude, action.payload.position.coords.latitude]]
       }
     }
+    console.log("Updated",)
     //append to linestring
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } })
   }
@@ -401,7 +458,8 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_DELETE_REQUEST, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(ACTIVITY_DELETE_NETWORK_REQUEST, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
     takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
-    takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO),
+    takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START),
+    takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP),
     ...OFFLINE_ACTIVITY_SAGA_HANDLERS
   ]);
 }
