@@ -34,7 +34,8 @@ import {
   MAP_TOGGLE_LEGENDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
   MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
@@ -916,8 +917,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.positionTracking = !state.positionTracking;
           break;
         }
-        case MAP_TOGGLE_TRACK_ME_DRAW_GEO: {
-          draftState.track_me_draw_geo = !state.track_me_draw_geo;
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO_START: {
+          draftState.track_me_draw_geo = true;
+          break;
+        }
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE: {
+          draftState.track_me_draw_geo = false;
           break;
         }
         case MAP_TOGGLE_WHATS_HERE: {
