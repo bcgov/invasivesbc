@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
-import { MAP_TOGGLE_TRACKING, MAP_TOGGLE_TRACK_ME_DRAW_GEO } from 'state/actions';
+import { MAP_TOGGLE_TRACKING, MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP } from 'state/actions';
 import 'UI/Global.css';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
-import { setMaxParallelImageRequests } from 'maplibre-gl';
 
 export const FindMeToggle = (props) => {
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
@@ -18,7 +17,6 @@ export const FindMeToggle = (props) => {
    */
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
-
   // this is to stop user from clicking it again while things are happening
   return (
     <div ref={divRef} className={positionTracking ? 'map-btn-selected' : 'map-btn'}>
@@ -45,26 +43,34 @@ export const FindMeToggle = (props) => {
     </div>
   );
 };
-
+/**
+ * TrackMeButton
+ * @description Component to handle the functionality of the find me button
+ * @returns {void}
+ */
 export const TrackMeToggle = (props) => {
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
   const drawGeometryTracking = useSelector((state: any) => state.Map?.track_me_draw_geo);
   const dispatch = useDispatch();
-  /**
-   * TrackMeButton
-   * @description Component to handle the functionality of the find me button
-   * @returns {void}
-   */
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
-
+  const clickHandler = () => {
+    const startTrackingConfirmation = 'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.'
+    setShow(false);
+    if (drawGeometryTracking) {
+      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
+    } else if (!drawGeometryTracking && confirm(startTrackingConfirmation)) {
+      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START });
+    } else {
+      return;
+    }
+  }
   // this is to stop user from clicking it again while things are happening
   return (
     <>
       {positionTracking ? (
         <div
           ref={divRef}
-          // id="trackMeToggle"
           className={drawGeometryTracking ? 'map-btn-selected' : 'map-btn'}>
           <Tooltip
             open={show}
@@ -76,21 +82,7 @@ export const TrackMeToggle = (props) => {
             <span>
               <IconButton
                 className="button"
-                onClick={() => {
-                  setShow(false);
-                  if (drawGeometryTracking) {
-                    dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO });
-                  } else if (
-                    !drawGeometryTracking &&
-                    confirm(
-                      'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.'
-                    )
-                  ) {
-                    dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO });
-                  } else {
-                    return;
-                  }
-                }}>
+                onClick={clickHandler}>
                 <PolylineIcon /> <DirectionsWalkIcon />
               </IconButton>
             </span>
