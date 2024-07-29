@@ -8,7 +8,7 @@ import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
 import { calc_lat_long_from_utm } from 'utils/utm';
 import { lengthToRadians } from '@turf/helpers';
-import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACK_ME_DRAW_GEO } from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACK_ME_DRAW_GEO_START } from 'state/actions';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -137,37 +137,37 @@ export const ActivityForm = (props) => {
               <td className={'rightValueCol'}>{new Date(date_created).toLocaleDateString()}</td>
               <br />
             </tr>
-              {activity_history?.length > 1 && (
-                <>
-            <tr>
-              <td className={'rightHeaderCol'}>Updated By:</td>
-              <td className={'rightValueCol'}>{updated_by}</td>
-              <br />
-            </tr>
-            <tr>
-              <td className={'rightHeaderCol'}>Updated At:</td>
-              <td className={'rightValueCol'}>
-                {new Date(received_timestamp ? received_timestamp : date_created).toLocaleDateString()}
-              </td>{' '}
-              <br />
-            </tr>
-            <tr>
-              <td className={'rightHeaderCol'}>Audit Info:</td>
-              <td className={'rightValueCol'}>
-                <Button
-                  onClick={() => {
-                    setShowAuditDialogue(true);
-                  }}
-                  variant="outlined"
-                  sx={{ backgroundColor: 'white', color: '#003366', fontSize: 12, fontWeight: 'medium' }}
-                >
-                  Click to view
-                </Button>
-              </td>
-              <br />
-            </tr>
-            </>
-              )}
+            {activity_history?.length > 1 && (
+              <>
+                <tr>
+                  <td className={'rightHeaderCol'}>Updated By:</td>
+                  <td className={'rightValueCol'}>{updated_by}</td>
+                  <br />
+                </tr>
+                <tr>
+                  <td className={'rightHeaderCol'}>Updated At:</td>
+                  <td className={'rightValueCol'}>
+                    {new Date(received_timestamp ? received_timestamp : date_created).toLocaleDateString()}
+                  </td>{' '}
+                  <br />
+                </tr>
+                <tr>
+                  <td className={'rightHeaderCol'}>Audit Info:</td>
+                  <td className={'rightValueCol'}>
+                    <Button
+                      onClick={() => {
+                        setShowAuditDialogue(true);
+                      }}
+                      variant="outlined"
+                      sx={{ backgroundColor: 'white', color: '#003366', fontSize: 12, fontWeight: 'medium' }}
+                    >
+                      Click to view
+                    </Button>
+                  </td>
+                  <br />
+                </tr>
+              </>
+            )}
             <tr>
               <td className={'rightHeaderCol'}>Batch ID</td>
               <td className={'rightValueCol'}>{batch_id}</td>
@@ -190,30 +190,28 @@ export const ActivityForm = (props) => {
       >
         Click to enter UTM manually
       </Button>
-      <div id="auditInfoDialog" className={showAuditDialogue? 'showAuditInfoDialog': 'hideAuditInfoDialog'}>
+      <div id="auditInfoDialog" className={showAuditDialogue ? 'showAuditInfoDialog' : 'hideAuditInfoDialog'}>
         <Button onClick={() => setShowAuditDialogue(false)}>Close</Button>
         <ul>
           {activity_history?.map((item, index) => {
             return (
-
               <>
-              <li key={index}>
-                <ul className={'inner_audit_list'}>
-                    <li>Version : {item?.version + (item?.iscurrent? ' (Current) ' : '')}</li>
+                <li key={index}>
+                  <ul className={'inner_audit_list'}>
+                    <li>Version : {item?.version + (item?.iscurrent ? ' (Current) ' : '')}</li>
                     <li>Updated By: {item?.updated_by}</li>
                     <li>Activity Status: {item?.form_status}</li>
                     <li>Created at: {item?.created_timestamp}</li>
-
-                </ul>
-              </li>
-              <br/>
+                  </ul>
+                </li>
+                <br />
               </>
             );
           })}
         </ul>
       </div>
       <Button
-        onClick={()=> dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO })}
+        onClick={() => dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START })}
         variant="outlined"
         sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>
         Click to draw a geometry by tracing your GPS movement
