@@ -23,7 +23,8 @@ import {
   ACTIVITY_SET_UNSAVED_NOTIFICATION,
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -134,9 +135,9 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case ACTIVITY_UPDATE_GEO_SUCCESS: {
-          draftState.activity.geometry = action.payload.geometry;
-          draftState.activity.form_data.activity_data.latitude = action.payload.lat? action.payload.lat : null;
-          draftState.activity.form_data.activity_data.longitude = action.payload.long? action.payload.long : null;
+          draftState.activity.geometry = action.payload.geometry || [];
+          draftState.activity.form_data.activity_data.latitude = action.payload.lat ? action.payload.lat : null;
+          draftState.activity.form_data.activity_data.longitude = action.payload.long ? action.payload.long : null;
           draftState.activity.form_data.activity_data.utm_zone = action.payload.utm ? action.payload.utm[0] : null;
           draftState.activity.form_data.activity_data.utm_easting = action.payload.utm ? action.payload.utm[1] : null;
           draftState.activity.form_data.activity_data.utm_northing = action.payload.utm ? action.payload.utm[2] : null;
@@ -205,8 +206,12 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           draftState.activity = action.payload.activity;
           break;
         }
-        case MAP_TOGGLE_TRACK_ME_DRAW_GEO: {
-          draftState.track_me_draw_geo = !draftState.track_me_draw_geo; 
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO_START: {
+          draftState.track_me_draw_geo = true;
+          break;
+        }
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE: {
+          draftState.track_me_draw_geo = false;
           break;
         }
         case ACTIVITY_EDIT_PHOTO_SUCCESS: {
