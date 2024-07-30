@@ -8,7 +8,7 @@ import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
 import { calc_lat_long_from_utm } from 'utils/utm';
 import { lengthToRadians } from '@turf/helpers';
-import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACK_ME_DRAW_GEO_START } from 'state/actions';
+import { MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP, MAP_TOGGLE_TRACKING_ON } from 'state/actions';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -35,6 +35,7 @@ export const ActivityForm = (props) => {
   } = useSelector((state: any) => state.ActivityPage?.activity);
 
   const invasive_plant = useSelector((state: any) => state.ActivityPage?.activity?.invasive_plant);
+  const drawGeometryTracking = useSelector((state: any) => state.Map?.track_me_draw_geo);
 
   const manualUTMEntry = () => {
     let validZone = false;
@@ -88,9 +89,17 @@ export const ActivityForm = (props) => {
       },
       properties: {}
     };
+  }
+  const clickHandler = () => {
+    const startTrackingConfirmation = 'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.'
+    if (drawGeometryTracking) {
+      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
+    } else if (!drawGeometryTracking && confirm(startTrackingConfirmation)) {
+      dispatch({ type: MAP_TOGGLE_TRACKING_ON })
+      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START });
+    }
+  }
 
-    dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [geo] } });
-  };
   return (
     <>
       <div className={'recordHeaderInfo'}>
@@ -211,7 +220,7 @@ export const ActivityForm = (props) => {
         </ul>
       </div>
       <Button
-        onClick={() => dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START })}
+        onClick={clickHandler}
         variant="outlined"
         sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>
         Click to draw a geometry by tracing your GPS movement
