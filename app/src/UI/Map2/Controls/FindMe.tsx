@@ -54,6 +54,7 @@ export const TrackMeToggle = (props) => {
   const dispatch = useDispatch();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
+
   const clickHandler = () => {
     const startTrackingConfirmation = 'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.'
     setShow(false);
