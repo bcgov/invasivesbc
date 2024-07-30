@@ -43,15 +43,14 @@ export const getUpdateRequestForUserSQL = (username: string, email?: string): SQ
  * @desc SQL Statement for confirming a user exists.
  * @param id User ID 'example@idir'
  */
-export const doesUserExistSQL = (id: string): SQLStatement => (
+export const doesUserExistSQL = (id: string): SQLStatement =>
   SQL`
     SELECT user_id
     FROM application_user
     WHERE (idir_account_name = LOWER(${id})
     OR bceid_account_name = LOWER(${id}))
     AND activation_status = 1;
-  `
-)
+  `;
 
 export function appendNRQ(input: string) {
   if (input)
@@ -160,7 +159,8 @@ export const approveUpdateRequestsSQL = (updateRequest): SQLStatement => {
             pac_number=${updateRequest.pac_number},
             pac_service_number_1=${updateRequest.pac_service_number_1},
             pac_service_number_2=${updateRequest.pac_service_number_2}
-            where (bceid_userid is not null and bceid_userid=${updateRequest.bceid_userid
-    }) OR (idir_userid is not null and idir_userid=${updateRequest.idir_userid});
+            where (bceid_userid is not null and bceid_userid=${
+              updateRequest.bceid_userid
+            }) OR (idir_userid is not null and idir_userid=${updateRequest.idir_userid});
     `;
 };

@@ -18,10 +18,10 @@ PUT.apiDoc = {
   tags: ['email-settings'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'email setting put request object.',
@@ -61,10 +61,10 @@ GET.apiDoc = {
   tags: ['email-settings'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -137,7 +137,7 @@ function getEmailSettings(): RequestHandler {
         namespace: 'email-settings',
         code: 401
       });
-    };
+    }
     const response = await getEmailSettingsFromDB();
     return res.status(response.code).json({ ...response, request: req.body });
   };

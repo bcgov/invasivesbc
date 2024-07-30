@@ -27,10 +27,10 @@ POST.apiDoc = {
   tags: ['update-request'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Access request post request object.',
@@ -154,7 +154,7 @@ function postHandler(): RequestHandler {
         request: req.body,
         namespace: 'update-request',
         code: 401
-      })
+      });
     }
     if (approvedUpdateRequests) {
       return await batchApproveUpdateRequests(req, res, next, approvedUpdateRequests);
@@ -187,10 +187,9 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
   }
   try {
     const tokenUser = req.authContext.friendlyUsername;
-    const tokenUserIsRequestUser: boolean = [
-      req.body.newUpdateRequest.idir,
-      req.body.newUpdateRequest.bceid
-    ].includes(tokenUser.toLowerCase())
+    const tokenUserIsRequestUser: boolean = [req.body.newUpdateRequest.idir, req.body.newUpdateRequest.bceid].includes(
+      tokenUser.toLowerCase()
+    );
 
     const userSQL: SQLStatement = doesUserExistSQL(tokenUser);
     const sqlStatement: SQLStatement = createUpdateRequestSQL(newUpdateRequest);

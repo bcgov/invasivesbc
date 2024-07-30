@@ -1,11 +1,11 @@
 type UserRole = {
-  role_id: number,
-  role_name: string,
-  role_description: string
-}
+  role_id: number;
+  role_name: string;
+  role_description: string;
+};
 /**
  * @desc Check users token for auth credential
- * @param req User Request 
+ * @param req User Request
  * @param authRoles List of role_name suitable for given check
  * @returns user has access rights
  */

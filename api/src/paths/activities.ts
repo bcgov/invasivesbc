@@ -6,7 +6,11 @@ import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { streamActivitiesResult } from 'utils/iapp-json-utils';
 import { getDBConnection } from 'database/db';
 import { ActivitySearchCriteria } from 'models/activity';
-import { deleteActivitiesSQL, getActivitiesSQL, getLinkedMonitoringRecordsFromTreatmentSQL } from 'queries/activity-queries';
+import {
+  deleteActivitiesSQL,
+  getActivitiesSQL,
+  getLinkedMonitoringRecordsFromTreatmentSQL
+} from 'queries/activity-queries';
 import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
 import cacheService from 'utils/cache/cache-service';
@@ -25,10 +29,10 @@ GET.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -79,10 +83,10 @@ DELETE.apiDoc = {
   tags: ['activity'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Delete activities',
@@ -303,19 +307,22 @@ function deleteActivitiesByIds(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const connection = await getDBConnection();
     try {
-      defaultLog.debug({ label: 'activity', message: '[deleteActivitiesByIds]', body: req.body })
+      defaultLog.debug({ label: 'activity', message: '[deleteActivitiesByIds]', body: req.body });
 
-      const isMasterAdmin = (req as any).authContext.roles.some((role: Record<string, any>) => role.role_id === 18)
+      const isMasterAdmin = (req as any).authContext.roles.some((role: Record<string, any>) => role.role_id === 18);
       const preferred_username = req.authContext.friendlyUsername;
       const { ids } = req.body;
 
       if (ids.length === 0) {
         return res.status(400).json({
-          message: 'No ids provided', request: req.body, namespace: 'activities', code: 400
+          message: 'No ids provided',
+          request: req.body,
+          namespace: 'activities',
+          code: 400
         });
-      };
+      }
 
-      const sanitizedSearchCriteria = new ActivitySearchCriteria({ keycloakToken: req.keycloakToken })
+      const sanitizedSearchCriteria = new ActivitySearchCriteria({ keycloakToken: req.keycloakToken });
       sanitizedSearchCriteria.activity_ids = ids;
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
 
@@ -323,18 +330,26 @@ function deleteActivitiesByIds(): RequestHandler {
       const deleteSQLStatement: SQLStatement = deleteActivitiesSQL(ids, req);
       if (!connection) {
         return res.status(503).json({
-          message: 'Database connection unavailable', request: req.body, namespace: 'activities', code: 503
+          message: 'Database connection unavailable',
+          request: req.body,
+          namespace: 'activities',
+          code: 503
         });
-      };
+      }
       if (!sqlStatement || !deleteSQLStatement) {
         return res.status(500).json({
-          message: 'Unable to generate SQL Statement', request: req.body, namespace: 'activities', code: 500
+          message: 'Unable to generate SQL Statement',
+          request: req.body,
+          namespace: 'activities',
+          code: 500
         });
-      };
+      }
 
       const recordsToDelete = await connection.query(sqlStatement.text, sqlStatement.values);
       // Identify Treatment Records and check for any matching IDs, exit early if any exist.
-      const recordsWithTreatments = recordsToDelete.rows.filter((entry) => entry?.activity_type === ActivityType.Treatment);
+      const recordsWithTreatments = recordsToDelete.rows.filter(
+        (entry) => entry?.activity_type === ActivityType.Treatment
+      );
       for (const record of recordsWithTreatments) {
         const sql = getLinkedMonitoringRecordsFromTreatmentSQL(record.activity_id);
         const results = await connection.query(sql);
@@ -348,20 +363,26 @@ function deleteActivitiesByIds(): RequestHandler {
         }
       }
 
-      const userCreatedEntries = recordsToDelete.rows.every((entry) => (
-        entry?.activity_payload?.created_by === preferred_username
-      ));
+      const userCreatedEntries = recordsToDelete.rows.every(
+        (entry) => entry?.activity_payload?.created_by === preferred_username
+      );
 
       if (recordsToDelete.rowCount === 0) {
         return res.status(404).json({
-          message: 'No ID\'s found matching request', request: req.body, namespace: 'activities', code: 404
+          message: "No ID's found matching request",
+          request: req.body,
+          namespace: 'activities',
+          code: 404
         });
       }
       if (recordsToDelete.rowCount !== ids.length) {
         return res.status(404).json({
-          message: 'A record matching a supplied id was not found', request: req.body, namespace: 'activities', code: 404
+          message: 'A record matching a supplied id was not found',
+          request: req.body,
+          namespace: 'activities',
+          code: 404
         });
-      };
+      }
 
       if (isMasterAdmin || userCreatedEntries) {
         const response = await connection.query(deleteSQLStatement.text, deleteSQLStatement.values);
@@ -373,7 +394,7 @@ function deleteActivitiesByIds(): RequestHandler {
           namespace: 'activities',
           code: 200
         });
-      };
+      }
       /* Future Specific-Role Handling Logic applied here */
       return res.status(401).json({
         message: 'Unauthorized Access',
@@ -381,14 +402,15 @@ function deleteActivitiesByIds(): RequestHandler {
         namespace: 'activities',
         code: 401
       });
-
     } catch (ex) {
       defaultLog.error({
-        label: 'activity', message: '[deleteActivitiesByIds]', body: ex
+        label: 'activity',
+        message: '[deleteActivitiesByIds]',
+        body: ex
       });
       return res.status(500);
     } finally {
       connection.release();
     }
-  }
+  };
 }

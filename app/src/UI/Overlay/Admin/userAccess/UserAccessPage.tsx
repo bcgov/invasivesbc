@@ -63,16 +63,8 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
       }}
     >
       <div>
-        <GridToolbarColumnsButton
-          style={{ color: bcBlue }}
-          onResize={undefined}
-          onResizeCapture={undefined}
-        />
-        <GridToolbarFilterButton
-          style={{ color: bcBlue }}
-          onResize={undefined}
-          onResizeCapture={undefined}
-        />
+        <GridToolbarColumnsButton style={{ color: bcBlue }} onResize={undefined} onResizeCapture={undefined} />
+        <GridToolbarFilterButton style={{ color: bcBlue }} onResize={undefined} onResizeCapture={undefined} />
         <GridToolbarExport
           style={{ color: bcBlue }}
           csvOptions={{
@@ -295,10 +287,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const getRequestRows = (requests: any) => {
     const formatStatus = (arg): string => {
-      if (arg === 'NOT_APPROVED') return 'PENDING'
-      if (arg === 'REMOVED') return 'DECLINED'
+      if (arg === 'NOT_APPROVED') return 'PENDING';
+      if (arg === 'REMOVED') return 'DECLINED';
       return arg;
-    }
+    };
     const rows = [];
     for (let i = 0; i < requests.length; i++) {
       rows.push({
@@ -611,7 +603,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     setSelectedRole(event.target.value);
   };
   if (!authState?.roles.some((role) => role.role_name === 'master_administrator')) {
-    return <Spinner />
+    return <Spinner />;
   }
   return (
     <Container
@@ -1126,15 +1118,15 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           >
             {mode === Mode.GRANT
               ? availableRoles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  {role.description}
-                </MenuItem>
-              ))
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.description}
+                  </MenuItem>
+                ))
               : userRoles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  {role.description}
-                </MenuItem>
-              ))}
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.description}
+                  </MenuItem>
+                ))}
           </TextField>
         </DialogContent>
         <DialogActions>

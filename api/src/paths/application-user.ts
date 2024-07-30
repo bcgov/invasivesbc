@@ -15,10 +15,10 @@ GET.apiDoc = {
   tags: ['users'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   parameters: [],
   responses: {
