@@ -156,7 +156,7 @@ function isNumber(value?: string | number): boolean {
 function getSetNumberFromUser(setNumbers: number[] = [1, 5, 10]): number {
   let userEnteredArea: number | undefined = undefined;
   while (!isNumber(userEnteredArea) && !setNumbers.includes(Number(userEnteredArea))) {
-    userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):?') || "")
+    userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):?') || '');
   }
   return userEnteredArea as number;
 }
@@ -164,23 +164,23 @@ function getSetNumberFromUser(setNumbers: number[] = [1, 5, 10]): number {
 export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>) {
   const activityState = yield select(selectActivity);
   try {
-    const modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry))
-    const { latitude, longitude } = calculateLatLng(modifiedPayload) || {}
+    const modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry));
+    const { latitude, longitude } = calculateLatLng(modifiedPayload) || {};
 
     let utm;
     if (latitude && longitude) {
-      utm = calc_utm(longitude, latitude)
+      utm = calc_utm(longitude, latitude);
     }
 
     if (modifiedPayload.length > 0 && modifiedPayload[0].geometry.type === GeoShapes.Point) {
       if (!modifiedPayload[0].properties.radius) {
-        const userEnteredArea = getSetNumberFromUser()
-        const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI)
+        const userEnteredArea = getSetNumberFromUser();
+        const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
         modifiedPayload[0].properties.radius = radiusBasedOnArea;
       }
     }
 
-    let reported_area = calculateGeometryArea(modifiedPayload.geometry)
+    let reported_area = calculateGeometryArea(modifiedPayload.geometry);
 
     if (modifiedPayload.length === 0) {
       yield put({
@@ -210,7 +210,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
           payload: {
             severity: AlertSeverity.Error,
             subject: AlertSubjects.Map,
-            content: 'Activity geometry intersects itself',
+            content: 'Activity geometry intersects itself'
           }
         });
       }
@@ -223,10 +223,12 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     if (reported_area < MAX_AREA && !isWIPLinestring && latitude && longitude) {
       nearestWells = yield getClosestWells(sanitizedGeo, true);
       if (nearestWells?.well_objects.length === 0) {
-        wellInformationArr = [{
-          well_id: 'No wells found',
-          well_proximity: 'No wells found'
-        }];
+        wellInformationArr = [
+          {
+            well_id: 'No wells found',
+            well_proximity: 'No wells found'
+          }
+        ];
       } else {
         const { well_objects } = nearestWells as Record<string, any>;
         areWellsInside = (nearestWells as Record<string, any>).areWellsInside;
@@ -241,15 +243,14 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       }
     }
 
-    const geoToTest = sanitizedGeo.geometry.type === GeoShapes.MultiPolygon
-      ? centroid(sanitizedGeo.geometry)
-      : sanitizedGeo;
+    const geoToTest =
+      sanitizedGeo.geometry.type === GeoShapes.MultiPolygon ? centroid(sanitizedGeo.geometry) : sanitizedGeo;
     let isWithinBC = false;
 
     if (sanitizedGeo) {
       if (BC_AREA === null) {
         try {
-          BC_AREA = (yield import('./_bcArea')).default
+          BC_AREA = (yield import('./_bcArea')).default;
         } catch (e) {
           console.error('Could not load BC geometry file, unable to validate bounds');
         }
@@ -287,17 +288,16 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       long: longitude,
       reported_area,
       Well_Information: wellInformationArr
-    }
+    };
     yield put({
       type: ACTIVITY_UPDATE_GEO_SUCCESS,
       payload
     });
   } catch (e) {
-    console.error("ERROR", e)
+    console.error('ERROR', e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
-
 
 export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
   const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
@@ -503,12 +503,11 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
   try {
     const currentState = yield select(selectActivity);
     const currentActivity = currentState.activity;
-    const hasSelfIntersections = (
-      currentActivity?.geometry?.[0]?.geometry &&
-      kinks(currentActivity?.geometry?.[0]?.geometry).features.length > 0
-    );
+    const hasSelfIntersections =
+      currentActivity?.geometry?.[0]?.geometry && kinks(currentActivity?.geometry?.[0]?.geometry).features.length > 0;
     const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === 'LineString';
-    const reportedAreaLessThanMaxArea = currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA
+    const reportedAreaLessThanMaxArea =
+      currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
       yield put({
         type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
@@ -591,9 +590,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
 
     const search_feature = payloadActivity.geometry?.[0]
       ? {
-        type: 'FeatureCollection',
-        features: payloadActivity.geometry
-      }
+          type: 'FeatureCollection',
+          features: payloadActivity.geometry
+        }
       : false;
 
     if (linkedActivitySubtypes.length > 0) {
@@ -680,9 +679,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     const created_by = action.payload.activity.created_by;
     const accessRoles = authState.accessRoles;
     const createdByUser = userName === created_by;
-    const userIsAdmin = accessRoles?.some((
-      (role: Record<string, any>) => [1, 18].includes(role.role_id)
-    ));
+    const userIsAdmin = accessRoles?.some((role: Record<string, any>) => [1, 18].includes(role.role_id));
 
     if (userIsAdmin || createdByUser) {
       isViewing = false;
@@ -694,7 +691,6 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
         isViewing: isViewing
       }
     });
-
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
