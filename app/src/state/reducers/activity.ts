@@ -24,7 +24,7 @@ import {
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -135,13 +135,15 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case ACTIVITY_UPDATE_GEO_SUCCESS: {
-          draftState.activity.geometry = action.payload.geometry || [];
+          draftState.activity.geometry = action.payload.geometry;
           draftState.activity.form_data.activity_data.latitude = action.payload.lat ? action.payload.lat : null;
           draftState.activity.form_data.activity_data.longitude = action.payload.long ? action.payload.long : null;
           draftState.activity.form_data.activity_data.utm_zone = action.payload.utm ? action.payload.utm[0] : null;
           draftState.activity.form_data.activity_data.utm_easting = action.payload.utm ? action.payload.utm[1] : null;
           draftState.activity.form_data.activity_data.utm_northing = action.payload.utm ? action.payload.utm[2] : null;
-          draftState.activity.form_data.activity_data.reported_area = action.payload.reported_area ? action.payload.reported_area : null;
+          draftState.activity.form_data.activity_data.reported_area = action.payload.reported_area
+            ? action.payload.reported_area
+            : null;
           draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
           break;
         }
