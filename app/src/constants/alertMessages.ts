@@ -26,6 +26,12 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
   trackMyPathStoppedEarly: {
     content: '"Track my path" stopped.',
     severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  doesNotEvaluateAsPolygon: {
+    content: 'Given Coordinates could not be evaluated as a Polygon. you may need to update or add new points',
+    severity: AlertSeverity.Error,
     subject: AlertSubjects.Map
   },
 
@@ -33,7 +39,8 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
   canEditInfo: {
     content: 'You can adjust or add to your geometry manually by selecting the blue line, and moving points as needed',
     severity: AlertSeverity.Info,
-    subject: AlertSubjects.Map
+    subject: AlertSubjects.Map,
+    autoClose: 5
   },
 
   // Warnings
@@ -47,12 +54,14 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
   trackingStarted: {
     content: 'Start walking to draw a geometry. Click the button again to stop.',
     severity: AlertSeverity.Info,
-    subject: AlertSubjects.Map
+    subject: AlertSubjects.Map,
+    autoClose: 5
   },
   trackingStoppedSuccess: {
     content: 'Tracking Completed Successfully',
     severity: AlertSeverity.Success,
-    subject: AlertSubjects.Map
+    subject: AlertSubjects.Map,
+    autoClose: 3
   }
 };
 
