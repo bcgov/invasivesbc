@@ -5,9 +5,13 @@ import './AlertsContainer.css';
 import AlertMessage from "interfaces/AlertMessage";
 import { CLEAR_ALERT, CLEAR_ALERTS } from "state/actions";
 import { AlertSubjects } from "constants/alertEnums";
+import { useEffect, useRef } from "react";
 
 const AlertsContainer = () => {
   const dispatch = useDispatch();
+  const timeoutsRef = useRef<ReturnType<typeof setInterval>>({} as ReturnType<typeof setInterval>);
+  const alerts = useSelector((state: any) => state.AlertsAndPrompts.alerts || [])
+
   const getImageFromSubject = (subject: AlertSubjects) => {
     switch (subject) {
       case AlertSubjects.Map:
@@ -21,27 +25,42 @@ const AlertsContainer = () => {
     }
   }
 
-  const handleClose = (alert: AlertMessage) => {
+  const handleClose = (alert) => {
     if (alert.id) {
+      clearTimeout(timeoutsRef.current[alert.id]);
+      delete timeoutsRef.current[alert.id];
       dispatch({
         type: CLEAR_ALERT,
-        payload: {
-          id: alert.id
-        }
-      })
+        payload: { id: alert.id }
+      });
     }
-  }
+  };
   /**
    * @desc Handler for when autoClose parameter used
    * @param alert Alert to be cleared
    */
-  const delayedClear = (alert: AlertMessage) => {
-    if (!alert.autoClose) { return; }
-    setTimeout(() => handleClose(alert), (alert.autoClose * 1000))
-  }
-  const handleClearAll = () => dispatch({ type: CLEAR_ALERTS })
+  const delayedClear = (alert) => {
+    if (!alert.autoClose) return;
+    timeoutsRef.current[alert.id] = setTimeout(() => handleClose(alert), alert.autoClose * 1000);
+  };
+  const handleClearAll = () => {
+    Object.values(timeoutsRef.current).forEach(clearTimeout);
+    timeoutsRef.current = {} as ReturnType<typeof setInterval>;
+    dispatch({ type: CLEAR_ALERTS });
+  };
+  useEffect(() => {
+    alerts.forEach(alert => {
+      if (alert.autoClose && !timeoutsRef.current[alert.id]) {
+        delayedClear(alert);
+      }
+    });
 
-  const alerts = useSelector((state: any) => state.AlertsAndPrompts.alerts || [])
+    // Cleanup function to clear timeouts on unmount
+    return () => {
+      Object.values(timeoutsRef.current).forEach(clearTimeout);
+      timeoutsRef.current = {} as ReturnType<typeof setInterval>;
+    };
+  }, [alerts]);
 
   return (
     <div className="alertsContainer">
@@ -57,9 +76,8 @@ const AlertsContainer = () => {
           Clear All Alerts
         </Button>
       }
-      {alerts.map((alert: AlertMessage) => {
-        if (alert.autoClose) { delayedClear(alert); }
-        return <Alert
+      {alerts.map((alert: AlertMessage) => (
+        <Alert
           key={alert.id}
           severity={alert.severity}
           onClose={() => handleClose(alert)}
@@ -69,7 +87,7 @@ const AlertsContainer = () => {
           {alert.title && <AlertTitle>{alert.title}</AlertTitle>}
           {alert.content}
         </Alert>
-      })}
+      ))}
     </div>
   )
 };
