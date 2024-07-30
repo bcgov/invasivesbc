@@ -4,7 +4,6 @@ import { CLEAR_ALERT, CLEAR_ALERTS, CLEAR_PROMPT, CLEAR_PROMPTS, NEW_ALERT, NEW_
 import { getUuid } from './userSettings';
 import AlertMessage from 'interfaces/AlertMessage';
 
-
 interface AlertsAndPromptsState {
   alerts: AlertMessage[];
   prompts: any[];
@@ -23,7 +22,13 @@ export function createAlertsAndPromptsReducer(
       switch (action.type) {
         case NEW_ALERT: {
           const newID = getUuid();
-          draftState.alerts = [...state.alerts, { id: newID, ...action.payload }];
+          const newAlertIsDuplicate = state.alerts.some(
+            (item: AlertMessage) =>
+              action.payload.content === item.content && action.playload.severity === item.severity
+          );
+          if (!newAlertIsDuplicate) {
+            draftState.alerts = [...state.alerts, { id: newID, ...action.payload }];
+          }
           break;
         }
         case NEW_PROMPT: {
