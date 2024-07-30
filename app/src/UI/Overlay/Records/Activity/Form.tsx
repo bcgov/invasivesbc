@@ -8,13 +8,16 @@ import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
 import { calc_lat_long_from_utm } from 'utils/utm';
 import { lengthToRadians } from '@turf/helpers';
-import { MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP, MAP_TOGGLE_TRACKING_ON } from 'state/actions';
+import {
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
+  MAP_TOGGLE_TRACKING_ON
+} from 'state/actions';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
-
 
   const [showAuditDialogue, setShowAuditDialogue] = useState(false);
 
@@ -89,16 +92,17 @@ export const ActivityForm = (props) => {
       },
       properties: {}
     };
-  }
+  };
   const clickHandler = () => {
-    const startTrackingConfirmation = 'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.'
+    const startTrackingConfirmation =
+      'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.';
     if (drawGeometryTracking) {
       dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
     } else if (!drawGeometryTracking && confirm(startTrackingConfirmation)) {
-      dispatch({ type: MAP_TOGGLE_TRACKING_ON })
+      dispatch({ type: MAP_TOGGLE_TRACKING_ON });
       dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START });
     }
-  }
+  };
 
   return (
     <>
@@ -222,7 +226,8 @@ export const ActivityForm = (props) => {
       <Button
         onClick={clickHandler}
         variant="outlined"
-        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}>
+        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}
+      >
         Click to draw a geometry by tracing your GPS movement
       </Button>
       <FormContainer />
