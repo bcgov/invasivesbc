@@ -67,19 +67,19 @@ const invalidShortID: BatchCellValidationMessage = {
   severity: 'error',
   messageTitle: 'ShortID is not the correct format',
   messageDetail: 'ShortID is not the correct format []'
-}
+};
 
 const invalidRecordType: BatchCellValidationMessage = {
   severity: 'error',
   messageTitle: 'Linked ID not of the right type',
   messageDetail: `The linked record is not of the right type`
-}
+};
 
 const invalidLinkedGeoJSON: BatchCellValidationMessage = {
   severity: 'error',
-  messageTitle: 'Linked Record doesn\'t contain valid GeoJSON',
+  messageTitle: "Linked Record doesn't contain valid GeoJSON",
   messageDetail: 'The linked Record does not contain valid GeoJSON'
-}
+};
 
 const invalidLongID = (shortId: string): BatchCellValidationMessage => ({
   severity: 'error',
@@ -91,19 +91,19 @@ const invalidOverlapping: BatchCellValidationMessage = {
   severity: 'error',
   messageTitle: 'Linked ID area does not overlap',
   messageDetail: `The area of the linked record does not overlap with this record`
-}
+};
 
 const invalidSpeciesMatch: BatchCellValidationMessage = {
   severity: 'error',
-  messageTitle: 'Species in batch record doesn\'t match linked record',
+  messageTitle: "Species in batch record doesn't match linked record",
   messageDetail: 'The species in batch record doesn\t match linked record'
-}
+};
 
 const invalidWKT: BatchCellValidationMessage = {
   severity: 'error',
   messageTitle: 'WKT is missing or malformed',
   messageDetail: 'WKT is missing or malformed'
-}
+};
 
 function _divmod(x: number, y: number) {
   return [Math.floor(x / y), x % y];
@@ -190,7 +190,7 @@ const _handleBooleanCell = (data: string, result: CellValidationResult) => {
         messageTitle: 'Could not be interpreted as a boolean value'
       });
   }
-}
+};
 /**
  * @desc Validates the format of a ShortID for a given record type
  * @param shortId Short ID of batch upload entry
@@ -198,51 +198,70 @@ const _handleBooleanCell = (data: string, result: CellValidationResult) => {
  * @returns Regex Pattern matches ShortID
  */
 const validateShortID = (shortId, activityLetter) => {
-  const shortIdPattern = RegExp(`^[0-9]{2}${activityLetter}[0-9A-Z]{8}$`)
+  const shortIdPattern = RegExp(`^[0-9]{2}${activityLetter}[0-9A-Z]{8}$`);
   return shortIdPattern.test(shortId);
-}
+};
 
 /**
  * @desc  Validation Handler for batch records with type Activity_Monitoring_ChemicalTerrestrialAquaticPlant
  *        Validates fields in form to ensure data properly links with an existing record.
- * @param data 
- * @param result 
+ * @param data
+ * @param result
  */
-const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (shortId: string, result: CellValidationResult, row: Record<string, any>) => {
+const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (
+  shortId: string,
+  result: CellValidationResult,
+  row: Record<string, any>
+) => {
   try {
-    const expectedRecordTypes = ['Activity_Treatment_ChemicalPlantAquatic', 'Activity_Treatment_ChemicalPlantTerrestrial']
-    const batchUploadInvasivePlantRow = 'Monitoring - Terrestrial Invasive Plant'
-    const batchUploadTerrestrialPlantRow = 'Monitoring - Aquatic Invasive Plant'
+    const expectedRecordTypes = [
+      'Activity_Treatment_ChemicalPlantAquatic',
+      'Activity_Treatment_ChemicalPlantTerrestrial'
+    ];
+    const batchUploadInvasivePlantRow = 'Monitoring - Terrestrial Invasive Plant';
+    const batchUploadTerrestrialPlantRow = 'Monitoring - Aquatic Invasive Plant';
     const isValidShortID = validateShortID(shortId, ActivityLetter.Activity_Treatment_ChemicalPlantAquatic);
     const linkedRecord = await getRecordFromShort(shortId);
     const isItTheRightRecordType = expectedRecordTypes.includes(linkedRecord['activity_subtype']);
-    const doTheSpeciesMatch = (
+    const doTheSpeciesMatch =
       linkedRecord['species_treated']?.includes(row.data[batchUploadInvasivePlantRow]) ||
-      linkedRecord['species_treated']?.includes(row.data[batchUploadTerrestrialPlantRow])
-    )
+      linkedRecord['species_treated']?.includes(row.data[batchUploadTerrestrialPlantRow]);
     const thisGeoJSON: any = row.data['WKT'];
     const isValidGeoJSON: boolean = thisGeoJSON || false;
     const linkedGeoJSON: any = JSON.parse(linkedRecord['sample']) || false;
-    const doTheyOverlap = (
-      isValidGeoJSON &&
-      linkedGeoJSON &&
-      booleanIntersects(thisGeoJSON.parsedValue?.geojson, linkedGeoJSON)
-    );
-    if (!doTheSpeciesMatch) { result.validationMessages.push(invalidSpeciesMatch); }
-    if (!doTheyOverlap) { result.validationMessages.push(invalidOverlapping); }
-    if (!isItTheRightRecordType) { result.validationMessages.push(invalidRecordType); }
-    if (!isValidShortID) { result.validationMessages.push(invalidShortID); }
-    if (!linkedGeoJSON) { result.validationMessages.push(invalidLinkedGeoJSON); }
-    if (!linkedRecord) { result.validationMessages.push(invalidLongID(shortId)); }
-    if (!isValidGeoJSON) { result.validationMessages.push(invalidWKT); }
-    if (linkedRecord) { result.parsedValue = linkedRecord['activity_id'] || ''; }
+    const doTheyOverlap =
+      isValidGeoJSON && linkedGeoJSON && booleanIntersects(thisGeoJSON.parsedValue?.geojson, linkedGeoJSON);
+    if (!doTheSpeciesMatch) {
+      result.validationMessages.push(invalidSpeciesMatch);
+    }
+    if (!doTheyOverlap) {
+      result.validationMessages.push(invalidOverlapping);
+    }
+    if (!isItTheRightRecordType) {
+      result.validationMessages.push(invalidRecordType);
+    }
+    if (!isValidShortID) {
+      result.validationMessages.push(invalidShortID);
+    }
+    if (!linkedGeoJSON) {
+      result.validationMessages.push(invalidLinkedGeoJSON);
+    }
+    if (!linkedRecord) {
+      result.validationMessages.push(invalidLongID(shortId));
+    }
+    if (!isValidGeoJSON) {
+      result.validationMessages.push(invalidWKT);
+    }
+    if (linkedRecord) {
+      result.parsedValue = linkedRecord['activity_id'] || '';
+    }
   } catch (e) {
     defaultLog.error({
       message: '[handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant]',
-      error: e,
+      error: e
     });
   }
-}
+};
 
 async function _validateCell(
   template: Template,

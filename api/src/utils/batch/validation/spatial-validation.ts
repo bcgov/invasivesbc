@@ -58,7 +58,9 @@ export const parseGeoJSONasWKT = (input: any) => {
  */
 export const getRecordFromShort = async (shortId: string): Promise<Record<string, any>> => {
   const connection = await getDBConnection();
-  if (!connection) { throw new Error('Could not get a DB Connection'); }
+  if (!connection) {
+    throw new Error('Could not get a DB Connection');
+  }
 
   try {
     const res = await connection.query({
@@ -72,15 +74,15 @@ export const getRecordFromShort = async (shortId: string): Promise<Record<string
       `,
       values: [shortId]
     });
-    delete res.rows[0]['activity_payload']
+    delete res.rows[0]['activity_payload'];
     return res.rows[0];
   } catch (e) {
     defaultLog.error({
       message: '[getRecordFromShort]',
-      error: e,
+      error: e
     });
   }
-}
+};
 /**
  * @desc Parses database for record matching shortID
  * @param shortId shortForm of ID From batch upload record
@@ -88,7 +90,9 @@ export const getRecordFromShort = async (shortId: string): Promise<Record<string
  */
 export const getLongIDFromShort = async (shortId: string): Promise<string> => {
   const connection = await getDBConnection();
-  if (!connection) { throw new Error('Could not get a DB Connection'); }
+  if (!connection) {
+    throw new Error('Could not get a DB Connection');
+  }
 
   try {
     const res = await connection.query({
@@ -106,11 +110,11 @@ export const getLongIDFromShort = async (shortId: string): Promise<string> => {
   } catch (e) {
     defaultLog.error({
       message: '[getLongIDFromShort]',
-      error: e,
+      error: e
     });
     throw new Error('Error validating geometry in the database' + e.message);
   }
-}
+};
 
 /**
  * @desc Parses database for record matching shortID
@@ -119,7 +123,9 @@ export const getLongIDFromShort = async (shortId: string): Promise<string> => {
  */
 export const getRecordTypeFromShort = async (shortId: string): Promise<string> => {
   const connection = await getDBConnection();
-  if (!connection) { throw new Error('Could not get a DB Connection'); }
+  if (!connection) {
+    throw new Error('Could not get a DB Connection');
+  }
 
   try {
     const res = await connection.query({
@@ -136,32 +142,32 @@ export const getRecordTypeFromShort = async (shortId: string): Promise<string> =
   } catch (e) {
     defaultLog.error({
       message: '[getRecordTypeFromShort]',
-      error: e,
+      error: e
     });
     throw new Error('Error validating geometry in the database' + e.message);
   }
-}
+};
 
 export const getGeometryAsGeoJSONFromShort = async (shortId: string): Promise<string> => {
   const connection = await getDBConnection();
-  if (!connection) { throw new Error('Could not get a DB Connection'); }
+  if (!connection) {
+    throw new Error('Could not get a DB Connection');
+  }
 
   try {
-    const res
-      = await connection.query({
-        text: `select geog
+    const res = await connection.query({
+      text: `select geog
                from activity_incoming_data
                where short_id = $1`,
-        values: [shortId]
-      });
+      values: [shortId]
+    });
 
     return res.rows[0]['geog'];
   } catch (e) {
     console.log('error in getGeometryAsGeoJSONFromShort', e);
     throw new Error('Error validating geometry in the database' + e.message);
   }
-}
-
+};
 
 export const autofillFromPostGIS = async (input: string, inputArea?: number): Promise<parsedGeoType> => {
   const connection = await getDBConnection();

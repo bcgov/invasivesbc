@@ -772,7 +772,6 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
   `;
 };
 
-
 export const getActivityHistorySQL = (activityId: string): SQLStatement => {
   return SQL`
   
@@ -786,9 +785,8 @@ export const getActivityHistorySQL = (activityId: string): SQLStatement => {
     SELECT a.*
     FROM activity_version_history a;
 
-  `
-}
-
+  `;
+};
 
 /**
  * SQL query to fetch a grid cells that overlap with given geometry from either large grid or small grid;
@@ -876,18 +874,17 @@ export const deleteActivitiesSQL = (activityIds: Array<string>, req?: any): SQLS
 
 /**
  * @desc SQL Query to get all monitoring records matching a Treatment record
- * @param treatmentRecordID 
+ * @param treatmentRecordID
  * @returns { SQLStatement }
  */
-export const getLinkedMonitoringRecordsFromTreatmentSQL = (treatmentRecordID: string): SQLStatement => (
+export const getLinkedMonitoringRecordsFromTreatmentSQL = (treatmentRecordID: string): SQLStatement =>
   SQL`
     SELECT activity_id
     FROM activity_incoming_data
     WHERE activity_type = 'Monitoring'
     AND iscurrent = True
     AND activity_payload->'form_data'->'activity_type_data'->>'linked_id' = ${treatmentRecordID};
-  `
-);
+  `;
 
 /**
  * SQL query to un-delete activity records.

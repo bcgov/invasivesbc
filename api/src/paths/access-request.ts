@@ -26,10 +26,10 @@ POST.apiDoc = {
   tags: ['access-request'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   requestBody: {
     description: 'Access request post request object.',
@@ -69,10 +69,10 @@ GET.apiDoc = {
   tags: ['access-request'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   responses: {
     200: {
@@ -105,7 +105,7 @@ function getAccessRequests(): RequestHandler {
         request: req.body,
         namespace: 'access-request',
         code: 401
-      })
+      });
     }
     const connection = await getDBConnection();
     if (!connection) {
@@ -166,7 +166,7 @@ function postHandler(): RequestHandler {
         request: req.body,
         namespace: 'access-request',
         code: 401
-      })
+      });
     }
     if (approvedAccessRequests) {
       return await batchApproveAccessRequests(req, res, next, approvedAccessRequests);

@@ -23,10 +23,10 @@ GET.apiDoc = {
   tags: ['user-access'],
   security: SECURITY_ON
     ? [
-      {
-        Bearer: ALL_ROLES
-      }
-    ]
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
     : [],
   parameters: [
     {
@@ -181,7 +181,7 @@ function batchGrantRoleToUser(): RequestHandler {
         request: req.body,
         namespace: 'user-access',
         code: 401
-      })
+      });
     }
     defaultLog.debug({ label: 'user-access', message: 'batch-grant', body: req.body });
     const connection = await getDBConnection();
@@ -238,7 +238,7 @@ function revokeRoleFromUser(): RequestHandler {
         request: req.body,
         namespace: 'user-access',
         code: 401
-      })
+      });
     }
     defaultLog.debug({ label: 'user-access', message: 'revoke', body: req.body });
     const connection = await getDBConnection();

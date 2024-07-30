@@ -101,7 +101,7 @@ function getActivity(): RequestHandler {
       const response2 = await connection.query(sqlStatement2.text, sqlStatement2.values);
 
       const result1 = (response1 && response1.rows && response1.rows[0]) || null;
-      const result2 = (response2 && response2.rows ) || null;
+      const result2 = (response2 && response2.rows) || null;
 
       defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result1) });
 
