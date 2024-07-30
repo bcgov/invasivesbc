@@ -8,8 +8,7 @@
 }
 
 .alertsContainerAlert {
-  min-width: 240px;
-  max-width: 400px;
+  width: 375px;
   text-align: left;
   align-items: center;
   margin: 2pt;

@@ -20,13 +20,27 @@ const AlertsContainer = () => {
         break;
     }
   }
-  const handleClose = (id: string) => {
-    dispatch({
-      type: CLEAR_ALERT,
-      payload: { id }
-    })
+
+  const handleClose = (alert: AlertMessage) => {
+    if (alert.id) {
+      dispatch({
+        type: CLEAR_ALERT,
+        payload: {
+          id: alert.id
+        }
+      })
+    }
+  }
+  /**
+   * @desc Handler for when autoClose parameter used
+   * @param alert Alert to be cleared
+   */
+  const delayedClear = (alert: AlertMessage) => {
+    if (!alert.autoClose) { return; }
+    setTimeout(() => handleClose(alert), (alert.autoClose * 1000))
   }
   const handleClearAll = () => dispatch({ type: CLEAR_ALERTS })
+
   const alerts = useSelector((state: any) => state.AlertsAndPrompts.alerts || [])
 
   return (
@@ -43,18 +57,19 @@ const AlertsContainer = () => {
           Clear All Alerts
         </Button>
       }
-      {alerts.map((alert: AlertMessage) => (
-        <Alert
+      {alerts.map((alert: AlertMessage) => {
+        if (alert.autoClose) { delayedClear(alert); }
+        return <Alert
           key={alert.id}
           severity={alert.severity}
-          onClose={() => handleClose(alert.id)}
+          onClose={() => handleClose(alert)}
           className="alertsContainerAlert"
           icon={<Icon color={alert.severity}>{getImageFromSubject(alert.subject)}</Icon>}
         >
           {alert.title && <AlertTitle>{alert.title}</AlertTitle>}
           {alert.content}
         </Alert>
-      ))}
+      })}
     </div>
   )
 };
