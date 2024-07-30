@@ -1,7 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
-import { MAP_TOGGLE_TRACKING, MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP } from 'state/actions';
+import {
+  MAP_TOGGLE_TRACKING,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP
+} from 'state/actions';
 import 'UI/Global.css';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PolylineIcon from '@mui/icons-material/Polyline';
@@ -56,7 +60,8 @@ export const TrackMeToggle = (props) => {
   const divRef = useRef();
 
   const clickHandler = () => {
-    const startTrackingConfirmation = 'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.'
+    const startTrackingConfirmation =
+      'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.';
     setShow(false);
     if (drawGeometryTracking) {
       dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
@@ -65,25 +70,22 @@ export const TrackMeToggle = (props) => {
     } else {
       return;
     }
-  }
+  };
   // this is to stop user from clicking it again while things are happening
   return (
     <>
       {positionTracking ? (
-        <div
-          ref={divRef}
-          className={drawGeometryTracking ? 'map-btn-selected' : 'map-btn'}>
+        <div ref={divRef} className={drawGeometryTracking ? 'map-btn-selected' : 'map-btn'}>
           <Tooltip
             open={show}
             classes={{ tooltip: 'toolTip' }}
             onMouseEnter={() => setShow(true)}
             onMouseLeave={() => setShow(false)}
             title="Track My Path"
-            placement="top-end">
+            placement="top-end"
+          >
             <span>
-              <IconButton
-                className="button"
-                onClick={clickHandler}>
+              <IconButton className="button" onClick={clickHandler}>
                 <PolylineIcon /> <DirectionsWalkIcon />
               </IconButton>
             </span>

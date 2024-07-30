@@ -1,16 +1,16 @@
-import { Alert, AlertTitle, Button, Icon } from "@mui/material";
-import { MapOutlined, Assignment, InsertPhoto } from "@mui/icons-material";
-import { useDispatch, useSelector } from "react-redux";
+import { Alert, AlertTitle, Button, Icon } from '@mui/material';
+import { MapOutlined, Assignment, InsertPhoto } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
 import './AlertsContainer.css';
-import AlertMessage from "interfaces/AlertMessage";
-import { CLEAR_ALERT, CLEAR_ALERTS } from "state/actions";
-import { AlertSubjects } from "constants/alertEnums";
-import { useEffect, useRef } from "react";
+import AlertMessage from 'interfaces/AlertMessage';
+import { CLEAR_ALERT, CLEAR_ALERTS } from 'state/actions';
+import { AlertSubjects } from 'constants/alertEnums';
+import { useEffect, useRef } from 'react';
 
 const AlertsContainer = () => {
   const dispatch = useDispatch();
   const timeoutsRef = useRef<ReturnType<typeof setInterval>>({} as ReturnType<typeof setInterval>);
-  const alerts = useSelector((state: any) => state.AlertsAndPrompts.alerts || [])
+  const alerts = useSelector((state: any) => state.AlertsAndPrompts.alerts || []);
 
   /**
    * @desc Helper function, converts AlertSubjects to Icons
@@ -18,15 +18,15 @@ const AlertsContainer = () => {
   const getImageFromSubject = (subject: AlertSubjects) => {
     switch (subject) {
       case AlertSubjects.Map:
-        return <MapOutlined />
+        return <MapOutlined />;
       case AlertSubjects.Form:
-        return <Assignment />
+        return <Assignment />;
       case AlertSubjects.Photo:
-        return <InsertPhoto />
+        return <InsertPhoto />;
       default:
         break;
     }
-  }
+  };
 
   const handleClose = (alert) => {
     if (alert.id) {
@@ -52,7 +52,7 @@ const AlertsContainer = () => {
     dispatch({ type: CLEAR_ALERTS });
   };
   useEffect(() => {
-    alerts.forEach(alert => {
+    alerts.forEach((alert) => {
       if (alert.autoClose && !timeoutsRef.current[alert.id]) {
         delayedClear(alert);
       }
@@ -67,8 +67,7 @@ const AlertsContainer = () => {
 
   return (
     <div className="alertsContainer">
-      {
-        alerts.length > 0 &&
+      {alerts.length > 0 && (
         <Button
           variant="contained"
           onClick={handleClearAll}
@@ -78,7 +77,7 @@ const AlertsContainer = () => {
         >
           Clear All Alerts
         </Button>
-      }
+      )}
       {alerts.map((alert: AlertMessage) => (
         <Alert
           key={alert.id}
@@ -92,7 +91,7 @@ const AlertsContainer = () => {
         </Alert>
       ))}
     </div>
-  )
+  );
 };
 
 export default AlertsContainer;
