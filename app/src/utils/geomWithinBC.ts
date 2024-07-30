@@ -1,6 +1,11 @@
 import { BC_AREA } from 'sharedAPI';
 import booleanContains from '@turf/boolean-contains';
 
+/**
+ * @desc Handler function for evaluating user defined shape is within BC
+ * @param geometry Users current shape
+ * @returns If entirety of user defined shape is within British Columbia
+ */
 function* geomWithinBC(geometry) {
   let BC_BACKUP;
   if (BC_AREA === null) {
