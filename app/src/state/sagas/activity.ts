@@ -1,4 +1,4 @@
-import { all, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
@@ -99,11 +99,13 @@ import { selectActivity } from 'state/reducers/activity';
 import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
-import { selectMap } from 'state/reducers/map';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { kinks, lineToPolygon, polygon } from '@turf/turf';
+import { distance, kinks, lineToPolygon } from '@turf/turf';
 import GeoShapes from 'constants/geoShapes';
 import { calculateGeometryArea } from 'utils/geometryHelpers';
+import geomWithinBC from 'utils/geomWithinBC';
+import mappingAlertMessages from 'constants/alertMessages';
+import AlertMessage from 'interfaces/AlertMessage';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -268,72 +270,46 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   yield put({ type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS, payload: { schema: subtypeSchema, uiSchema: uiSchema } });
 }
 
-// Alert Messages decoupled from functions
-const editableAlert = {
-  content: 'You can adjust or add to your geometry manually by selecting the blue line, and moving points as needed',
-  severity: AlertSeverity.Info,
-  subject: AlertSubjects.Map
-};
-const trackingStoppedMessage = {
-  content: 'Tracking Completed Successfully',
-  severity: AlertSeverity.Success,
-  subject: AlertSubjects.Map
-};
-const earlyExitAlert = {
-  content: '"Track my path" stopped.',
-  severity: AlertSeverity.Info,
-  subject: AlertSubjects.Map
-};
-const noAreaCalculated = {
-  content: 'The calculated area of your shape is 0, please add more points',
-  severity: AlertSeverity.Error,
-  subject: AlertSubjects.Map
-};
-const containsIntersections = {
-  severity: AlertSeverity.Error,
-  subject: AlertSubjects.Map,
-  content: 'Closing this geometry will result in a shape intersection being formed. Please adjust appropriately.'
-};
-const invalidCoordinatesErrorMessage = (minNumberCoords: number) => ({
-  subject: AlertSubjects.Map,
-  content: `Unable to get minimum number of coordinates (${minNumberCoords})`,
-  severity: AlertSeverity.Error
-});
 /**
  * @desc Handler for starting GPS drawn shapes. Sets geometry to empty array, alerts user feature live.
  */
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
-  yield put({
-    type: ACTIVITY_UPDATE_GEO_REQUEST,
-    payload: { geometry: [] }
-  });
-  yield put({
-    type: NEW_ALERT,
-    payload: {
-      content: 'Start walking to draw a geometry. Click the button again to stop.',
-      severity: AlertSeverity.Info,
-      subject: AlertSubjects.Map
-    }
-  });
+  yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+  yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingStarted });
 }
 
 /**
- * @desc Handler for ending GPS drawn shapes. Validates points of GPS, including closing point.
+ * @desc Creates a formatted string to display warning to users about incomplete geometries.
+ *       Displays errors as bulletted list due to 'confirm()' being blocking.
+ * @param numErrors All validation errors for current geom
+ * @returns {string} User prompt displaying all errors
+ */
+const earlyExitConfirmation = (numErrors: AlertMessage[]): string => {
+  const errorsList = numErrors.map((error) => error.content).join('\n\u2022 ');
+  return `You\'ve attempted to stop tracking, but ${numErrors.length} error(s) exist, do you want to abandon your progress?\n\u2022 ${errorsList}`;
+};
+
+/**
+ * @desc Handler for Finalizing GPS drawn shapes. Validates points of GPS, including closing point.
  *       If all validation passes, the shape is updated and tracking stops,
  *       else the user is prompted if they wish to abandon progress
  *       if they abandon progress, Alerts are cleared and shape is erased.
  *       If no, all validation messages appear, and user continues as they were.
  */
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
-  const earlyExitConfirmation = (numErrors: number) =>
-    `You\'ve attempted to stop tracking, but ${numErrors} error(s) exist, do you want to abandon your progress?`;
+  const invalidCoordinatesErrorMessage = (minNumberCoords: number): AlertMessage => ({
+    subject: AlertSubjects.Map,
+    content: `Unable to get minimum number of coordinates (${minNumberCoords})`,
+    severity: AlertSeverity.Error
+  });
+
   const activityState = yield select(selectActivity);
   const minNumberCoords = 3;
-  const validationErrors: Record<string, any>[] = [];
+  const validationErrors: AlertMessage[] = [];
 
   // Early exit on non-existent/zero-length arrays
   if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
-    yield put({ type: NEW_ALERT, payload: earlyExitAlert });
+    yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackMyPathStoppedEarly });
     yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
     return;
   }
@@ -341,16 +317,21 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
 
   // Validation Checks
   const geometryIsMinimumLength = currentGeo.geometry.coordinates.length >= minNumberCoords;
+  // Cast current geometry to Polygon if possible
   const newGeo = geometryIsMinimumLength ? lineToPolygon(currentGeo) : currentGeo;
+  const geometryIsWithinBC = yield call(geomWithinBC, newGeo);
   const geographyWillContainIntersections = kinks(newGeo.geometry).features?.length > 0;
   const geometryHasPositiveArea = Math.floor(calculateGeometryArea(newGeo.geometry)) >= 0;
 
   // Error Alerts
+  if (!geometryIsWithinBC) {
+    validationErrors.push(mappingAlertMessages.notWithinBC);
+  }
   if (geographyWillContainIntersections) {
-    validationErrors.push(containsIntersections);
+    validationErrors.push(mappingAlertMessages.willContainIntersections);
   }
   if (!geometryHasPositiveArea) {
-    validationErrors.push(noAreaCalculated);
+    validationErrors.push(mappingAlertMessages.noAreaCalculated);
   }
   if (!geometryIsMinimumLength) {
     validationErrors.push(invalidCoordinatesErrorMessage(minNumberCoords));
@@ -359,23 +340,28 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
   if (validationErrors.length === 0) {
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
-    yield put({ type: NEW_ALERT, payload: trackingStoppedMessage });
+    yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingStoppedSuccess });
   } else {
-    yield put({ type: NEW_ALERT, payload: editableAlert });
+    yield put({ type: NEW_ALERT, payload: mappingAlertMessages.canEditInfo });
     for (const error of validationErrors) {
       yield put({ type: NEW_ALERT, payload: error });
     }
-    const userConfirmsExit = confirm(earlyExitConfirmation(validationErrors.length));
+    const userConfirmsExit = confirm(earlyExitConfirmation(validationErrors));
     if (userConfirmsExit) {
       yield put({ type: CLEAR_ALERTS });
-      yield put({ type: NEW_ALERT, payload: earlyExitAlert });
+      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackMyPathStoppedEarly });
       yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
     }
   }
 }
 
+/**
+ * @desc Handles new coordinates coming in from the TRACK_ME_GEO featureset.
+ *       Evaluates distance between new and previous points to eliminate micro adjustments from GPS sway.
+ */
 function* handle_MAP_SET_COORDS(action) {
+  const MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS = 12;
   const activityState = yield select(selectActivity);
   if (activityState.track_me_draw_geo) {
     let currentGeo = activityState?.activity?.geometry?.[0];
@@ -384,23 +370,33 @@ function* handle_MAP_SET_COORDS(action) {
         type: 'Feature',
         properties: {},
         geometry: {
-          type: 'LineString',
+          type: GeoShapes.LineString,
           coordinates: []
         }
       };
+    }
+
+    const nextCoords = [action.payload.position.coords.longitude, action.payload.position.coords.latitude];
+    const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
+    if (haveCoordinatesToCompare) {
+      const distanceBetweenPoints = distance(
+        currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
+        nextCoords,
+        { units: 'meters' }
+      );
+      if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
+        return;
+      }
     }
     const newGeo = {
       type: 'Feature',
       properties: {},
       geometry: {
-        type: currentGeo?.geometry?.type || 'LineString',
-        coordinates: [
-          ...currentGeo.geometry.coordinates,
-          [action.payload.position.coords.longitude, action.payload.position.coords.latitude]
-        ]
+        type: currentGeo?.geometry?.type || GeoShapes.LineString,
+        coordinates: [...currentGeo.geometry.coordinates, nextCoords]
       }
     };
-    console.log('Updated');
+
     //append to linestring
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
   }
