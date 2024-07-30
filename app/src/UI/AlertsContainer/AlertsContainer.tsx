@@ -12,6 +12,9 @@ const AlertsContainer = () => {
   const timeoutsRef = useRef<ReturnType<typeof setInterval>>({} as ReturnType<typeof setInterval>);
   const alerts = useSelector((state: any) => state.AlertsAndPrompts.alerts || [])
 
+  /**
+   * @desc Helper function, converts AlertSubjects to Icons
+   */
   const getImageFromSubject = (subject: AlertSubjects) => {
     switch (subject) {
       case AlertSubjects.Map:
