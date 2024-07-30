@@ -75,7 +75,9 @@ import {
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
   WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
-  WHATS_HERE_SORT_FILTER_UPDATE
+  WHATS_HERE_SORT_FILTER_UPDATE,
+  MAP_TOGGLE_TRACKING_ON,
+  MAP_TOGGLE_TRACKING_OFF
 } from '../actions';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
@@ -915,6 +917,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case MAP_TOGGLE_TRACKING: {
           draftState.positionTracking = !state.positionTracking;
+          break;
+        }
+        case MAP_TOGGLE_TRACKING_ON: {
+          draftState.positionTracking = true;
+          break;
+        }
+        case MAP_TOGGLE_TRACKING_OFF: {
+          draftState.positionTracking = false;
           break;
         }
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_START: {
