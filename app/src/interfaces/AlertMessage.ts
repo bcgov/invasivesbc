@@ -1,4 +1,4 @@
-import { AlertSeverity, AlertSubjects } from "constants/alertEnums";
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 interface AlertMessage {
   severity: AlertSeverity;
@@ -6,7 +6,7 @@ interface AlertMessage {
   content: string;
   title?: string;
   autoClose?: number;
-  id: string;
+  id?: string;
 }
 
 export default AlertMessage;

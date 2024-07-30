@@ -1,7 +1,6 @@
 import { call, put, select, take } from 'redux-saga/effects';
 import center from '@turf/center';
 import centroid from '@turf/centroid';
-import booleanContains from '@turf/boolean-contains';
 import {
   activity_create_function,
   ActivityStatus,
@@ -70,10 +69,9 @@ import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectNetworkConnected } from 'state/reducers/network';
-import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import GeoShapes from 'constants/geoShapes';
-
-let BC_AREA: any = null;
+import geomWithinBC from 'utils/geomWithinBC';
+import mappingAlertMessages from 'constants/alertMessages';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
@@ -207,11 +205,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       if (hasSelfIntersections) {
         yield put({
           type: NEW_ALERT,
-          payload: {
-            severity: AlertSeverity.Error,
-            subject: AlertSubjects.Map,
-            content: 'Activity geometry intersects itself'
-          }
+          payload: mappingAlertMessages.containsIntersections
         });
       }
     }
@@ -248,37 +242,14 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     let isWithinBC = false;
 
     if (sanitizedGeo) {
-      if (BC_AREA === null) {
-        try {
-          BC_AREA = (yield import('./_bcArea')).default;
-        } catch (e) {
-          console.error('Could not load BC geometry file, unable to validate bounds');
-        }
-      }
-      if (BC_AREA !== null) {
-        isWithinBC = booleanContains(BC_AREA.features[0] as any, geoToTest as any);
-      }
+      isWithinBC = yield call(geomWithinBC, sanitizedGeo);
     }
 
     if (areWellsInside && activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial') {
-      yield put({
-        type: NEW_ALERT,
-        payload: {
-          content: 'Warning! Wells inside treatment area',
-          severity: AlertSeverity.Warning,
-          subject: AlertSubjects.Map
-        }
-      });
+      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.wellsInsideTreatmentArea });
     }
     if (!isWithinBC && !isWIPLinestring) {
-      yield put({
-        type: NEW_ALERT,
-        payload: {
-          content: 'Activity is not within BC',
-          severity: AlertSeverity.Error,
-          subject: AlertSubjects.Map
-        }
-      });
+      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.notWithinBC });
       return;
     }
     const payload = {
