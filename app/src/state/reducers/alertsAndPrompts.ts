@@ -23,8 +23,7 @@ export function createAlertsAndPromptsReducer(
         case NEW_ALERT: {
           const newID = getUuid();
           const newAlertIsDuplicate = state.alerts.some(
-            (item: AlertMessage) =>
-              action.payload.content === item.content && action.playload.severity === item.severity
+            (item: AlertMessage) => action.payload.content === item.content && action.payload.severity === item.severity
           );
           if (!newAlertIsDuplicate) {
             draftState.alerts = [...state.alerts, { id: newID, ...action.payload }];
