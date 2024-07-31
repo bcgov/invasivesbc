@@ -203,6 +203,7 @@ const FormContainer: React.FC<any> = (props) => {
               });
             }}
           >
+            <React.Fragment />
           </Form>
           {isActivityChemTreatment() && (
             <ChemicalTreatmentDetailsForm
