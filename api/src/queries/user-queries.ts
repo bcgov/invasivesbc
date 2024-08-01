@@ -19,6 +19,21 @@ export const getUsersSQL = (): SQLStatement => {
     GROUP BY au.user_id;
   `;
 };
+/**
+ * @desc Sql for limited information regarding users.
+ */
+export const getSanitizedUsersForAutofillSQL = (): SQLStatement => {
+  return SQL`
+  SELECT
+    first_name,
+    last_name,
+    pac_number,
+    pac_service_number_1,
+    pac_service_number_2
+  FROM application_user
+  WHERE account_status = 1;
+  `;
+};
 
 export const getUserByIDIRSQL = (idir_userid: string): SQLStatement => {
   return SQL`

@@ -2,7 +2,12 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
-import { getUserByBCEIDSQL, getUserByIDIRSQL, getUsersSQL } from 'queries/user-queries';
+import {
+  getSanitizedUsersForAutofillSQL,
+  getUserByBCEIDSQL,
+  getUserByIDIRSQL,
+  getUsersSQL
+} from 'queries/user-queries';
 import { getLogger } from 'utils/logger';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
 
@@ -77,6 +82,17 @@ function getHandler() {
  */
 async function getUsers(req, res, next) {
   const connection = await getDBConnection();
+  const userIsAdmin = isAdminFromAuthContext(req);
+  const isAppUser = req?.authContext?.roles.length > 0;
+  if (!isAppUser) {
+    return res.status(401).json({
+      message: 'Unauthorized access',
+      request: req.body,
+      namespace: 'application-user',
+      code: 401
+    });
+  }
+  console.log("It's the User Info!", req.authContext);
   if (!connection) {
     return res.status(503).json({
       message: 'Failed to establish database connection',
@@ -86,7 +102,7 @@ async function getUsers(req, res, next) {
     });
   }
   try {
-    const sqlStatement: SQLStatement = getUsersSQL();
+    const sqlStatement: SQLStatement = userIsAdmin ? getUsersSQL() : getSanitizedUsersForAutofillSQL();
     if (!sqlStatement) {
       return res
         .status(500)
