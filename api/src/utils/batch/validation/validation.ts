@@ -65,8 +65,8 @@ const DATE_TIME_FORMAT = 'YYYY-MM-DDThh:mm';
 
 const invalidShortID: BatchCellValidationMessage = {
   severity: 'error',
-  messageTitle: 'ShortID is not the correct format',
-  messageDetail: 'ShortID is not the correct format []'
+  messageTitle: 'ShortID is invalid',
+  messageDetail: 'ShortID is invalid'
 };
 
 const invalidRecordType: BatchCellValidationMessage = {
@@ -226,6 +226,10 @@ const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (
     const batchUploadInvasivePlantRow = 'Monitoring - Terrestrial Invasive Plant';
     const batchUploadTerrestrialPlantRow = 'Monitoring - Aquatic Invasive Plant';
     const linkedRecord = await getRecordFromShort(shortId);
+    if (!linkedRecord) {
+      result.validationMessages.push(invalidLongID(shortId));
+      return;
+    }
     const isItTheRightRecordType = expectedRecordTypes.includes(linkedRecord['activity_subtype']);
     const doTheSpeciesMatch =
       linkedRecord['species_treated']?.includes(row.data[batchUploadInvasivePlantRow]) ||
@@ -246,9 +250,6 @@ const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (
     }
     if (!linkedGeoJSON) {
       result.validationMessages.push(invalidLinkedGeoJSON);
-    }
-    if (!linkedRecord) {
-      result.validationMessages.push(invalidLongID(shortId));
     }
     if (!isValidGeoJSON) {
       result.validationMessages.push(invalidWKT);
