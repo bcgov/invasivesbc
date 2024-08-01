@@ -214,13 +214,17 @@ const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (
   row: Record<string, any>
 ) => {
   try {
+    const isValidShortID = validateShortID(shortId, ActivityLetter.Activity_Treatment_ChemicalPlantAquatic);
+    if (!isValidShortID) {
+      result.validationMessages.push(invalidShortID);
+      return;
+    }
     const expectedRecordTypes = [
       'Activity_Treatment_ChemicalPlantAquatic',
       'Activity_Treatment_ChemicalPlantTerrestrial'
     ];
     const batchUploadInvasivePlantRow = 'Monitoring - Terrestrial Invasive Plant';
     const batchUploadTerrestrialPlantRow = 'Monitoring - Aquatic Invasive Plant';
-    const isValidShortID = validateShortID(shortId, ActivityLetter.Activity_Treatment_ChemicalPlantAquatic);
     const linkedRecord = await getRecordFromShort(shortId);
     const isItTheRightRecordType = expectedRecordTypes.includes(linkedRecord['activity_subtype']);
     const doTheSpeciesMatch =
@@ -239,9 +243,6 @@ const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (
     }
     if (!isItTheRightRecordType) {
       result.validationMessages.push(invalidRecordType);
-    }
-    if (!isValidShortID) {
-      result.validationMessages.push(invalidShortID);
     }
     if (!linkedGeoJSON) {
       result.validationMessages.push(invalidLinkedGeoJSON);
@@ -293,9 +294,12 @@ async function _validateCell(
 
   switch (templateColumn?.dataType) {
     case 'linked_id':
+      // linked_id is optional, skip this column if data not present
+      if (!data) {
+        break;
+      }
       const thisRecordType = template.subtype;
       switch (thisRecordType) {
-        // chem monitoring
         case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
           await _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant(data, result, row);
           break;
