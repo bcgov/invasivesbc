@@ -18,6 +18,7 @@ import {
   Grid,
   IconButton,
   MenuItem,
+  SelectChangeEvent,
   TextField,
   Theme,
   Tooltip,
@@ -113,6 +114,7 @@ function QuickSearchToolbar(props: QuickSearchToolbarProps) {
 }
 
 const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
+  const nilRole = '';
   enum Mode {
     GRANT,
     REVOKE,
@@ -126,18 +128,18 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const [usersTableLoading, setUsersTableLoading] = useState(false);
   const [requestTableLoading, setRequestTableLoading] = useState(false);
 
-  const [rows, setRows] = useState<any[]>([]);
-  const [requestRows, setRequestRows] = useState<any[]>([]);
+  const [rows, setRows] = useState<Record<string, any>[]>([]);
+  const [requestRows, setRequestRows] = useState<Record<string, any>[]>([]);
   const [searchedRows, setSearchedRows] = useState<any[]>([]);
 
   const [users, setUsers] = useState<any[]>([]);
-  const [selectedUsers, setSelectedUsers] = useState<any[]>([]);
-  const [selectedUserIds, setSelectedUserIds] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<Record<string, any>[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<number[]>([]);
   const [detailsDialogUser, setDetailsDialogUser] = useState<any>({});
   const [detailsDialogUserLoaded, setDetailsDialogUserLoaded] = useState(false);
   const [accessRequests, setAccessRequests] = useState<any[]>([]);
 
-  const [selectedRequestUsers, setSelectedRequestUsers] = useState<any[]>([]);
+  const [selectedRequestUsers, setSelectedRequestUsers] = useState<Record<string, any>[]>([]);
   const [detailsDialogRequestUser, setDetailsDialogRequestUser] = useState<any>({});
   const [detailsDialogRequestUserLoaded, setDetailsDialogRequestUserLoaded] = useState(false);
 
@@ -146,12 +148,12 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const [requestDetailsDialogOpen, setRequestDetailsDialogOpen] = useState(false);
   const [approveDeclineDialogOpen, setApproveDeclineDialogOpen] = useState(false);
 
-  const [availableRoles, setAvailableRoles] = useState<any[]>([]);
-  const [agencyCodes, setAgencyCodes] = useState<any[]>([]);
-  const [employerCodes, setEmployerCodes] = useState<any[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<Record<string, any>[]>([]);
+  const [agencyCodes, setAgencyCodes] = useState<Record<string, any>[]>([]);
+  const [employerCodes, setEmployerCodes] = useState<Record<string, any>[]>([]);
 
   const [userRoles, setUserRoles] = useState<any[]>([]);
-  const [selectedRole, setSelectedRole] = useState<any>({});
+  const [selectedRole, setSelectedRole] = useState<any>(nilRole);
 
   const [searchText, setSearchText] = React.useState('');
 
@@ -227,7 +229,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const handleRowSelection = (ids) => {
     setSelectedUserIds(ids);
-    const selectedUsers = [];
+    const selectedUsers: Record<string, any>[] = [];
     for (let i = 0; i < ids.length; i++) {
       const user = users.find((u) => u.user_id === ids[i]);
       if (user) {
@@ -239,7 +241,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const handleAccessRequestRowSelection = (ids) => {
     // Get user details from ids
-    const requests = [];
+    const requests: Record<string, any>[] = [];
     for (let i = 0; i < ids.length; i++) {
       const user = accessRequests.find((u) => u.access_request_id === ids[i]);
       if (user) {
@@ -256,7 +258,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   */
 
   const getRows = (users: any) => {
-    const rows = [];
+    const rows: Record<string, any>[] = [];
     for (let i = 0; i < users.length; i++) {
       const user = users[i];
       rows.push({
@@ -291,7 +293,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       if (arg === 'REMOVED') return 'DECLINED';
       return arg;
     };
-    const rows = [];
+    const rows: Record<string, any>[] = [];
     for (let i = 0; i < requests.length; i++) {
       rows.push({
         id: requests[i].access_request_id,
@@ -326,53 +328,55 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID', width: 70 },
-    { field: 'firstName', headerName: 'First Name', width: 130 },
+    { field: 'firstName', headerName: 'First Names', width: 130 },
     { field: 'lastName', headerName: 'Last Name', width: 130 },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'expiryDate', headerName: 'Expiry Date', width: 200 },
-    {
-      field: 'role',
-      headerName: 'Role(s)',
-      width: 358
-    },
-    { field: 'accountStatus', headerName: 'Account Status', width: 200, hide: true },
-    { field: 'activationStatus', headerName: 'Activation Status', width: 200, hide: true },
-    { field: 'bceidUserId', headerName: 'BCEID User ID', width: 200, hide: true },
-    { field: 'idirUserId', headerName: 'IDIR User ID', width: 200, hide: true },
-    { field: 'preferredUsername', headerName: 'Preferred Username', width: 200, hide: true },
-    { field: 'createdAt', headerName: 'Created At', width: 200, hide: true },
-    { field: 'idirAccountName', headerName: 'IDIR Account Name', width: 200, hide: true },
-    { field: 'bceidAccountName', headerName: 'BCEID Account Name', width: 200, hide: true },
-    { field: 'workPhoneNumber', headerName: 'Work Phone Number', width: 200, hide: true },
-    { field: 'fundingAgencies', headerName: 'Funding Agencies', width: 200, hide: true },
-    { field: 'employer', headerName: 'Employer', width: 200, hide: true },
-    { field: 'pacNumber', headerName: 'PAC Number', width: 200, hide: true },
-    { field: 'pacServiceNumber1', headerName: 'PAC Service Number 1', width: 200, hide: true },
-    { field: 'pacServiceNumber2', headerName: 'PAC Service Number 2', width: 200, hide: true },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 100,
-      renderCell: renderDetailsButton
-    }
+    { field: 'role', headerName: 'Role(s)', width: 358 },
+    { field: 'accountStatus', headerName: 'Account Status', width: 200 },
+    { field: 'activationStatus', headerName: 'Activation Status', width: 200 },
+    { field: 'bceidUserId', headerName: 'BCEID User ID', width: 200 },
+    { field: 'idirUserId', headerName: 'IDIR User ID', width: 200 },
+    { field: 'preferredUsername', headerName: 'Preferred Username', width: 200, },
+    { field: 'createdAt', headerName: 'Created At', width: 200 },
+    { field: 'idirAccountName', headerName: 'IDIR Account Name', width: 200 },
+    { field: 'bceidAccountName', headerName: 'BCEID Account Name', width: 200 },
+    { field: 'workPhoneNumber', headerName: 'Work Phone Number', width: 200 },
+    { field: 'fundingAgencies', headerName: 'Funding Agencies', width: 200 },
+    { field: 'employer', headerName: 'Employer', width: 200 },
+    { field: 'pacNumber', headerName: 'PAC Number', width: 200 },
+    { field: 'pacServiceNumber1', headerName: 'PAC Service Number 1', width: 200 },
+    { field: 'pacServiceNumber2', headerName: 'PAC Service Number 2', width: 200 },
+    { field: 'actions', headerName: 'Actions', width: 100, renderCell: (row) => renderDetailsButton(row as GridValueGetterParams) }
   ];
+  const initHiddenFields = {
+    accountStatus: false,
+    activationStatus: false,
+    bceidUserId: false,
+    idirUserId: false,
+    preferredUsername: false,
+    createdAt: false,
+    idirAccountName: false,
+    bceidAccountName: false,
+    workPhoneNumber: false,
+    fundingAgencies: false,
+    employer: false,
+    pacNumber: false,
+    pacServiceNumber1: false,
+    pacServiceNumber2: false,
+  }
 
   const requestColumns: GridColDef[] = [
     //1185 max width
     { field: 'id', headerName: 'ID', width: 50 },
-    { field: 'requestType', headerName: 'Type', width: 100, renderCell: renderType },
+    { field: 'requestType', headerName: 'Type', width: 100, renderCell: (row) => renderType(row as GridValueGetterParams) },
     { field: 'firstName', headerName: 'First Name', width: 120 },
     { field: 'lastName', headerName: 'Last Name', width: 120 },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'dateRequested', headerName: 'Date Requested', width: 200 },
     { field: 'pacNumber', headerName: 'PAC Number', width: 120 },
-    { field: 'status', headerName: 'Status', width: 159, renderCell: renderStatus },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 100,
-      renderCell: renderRequestDetailsButton
-    }
+    { field: 'status', headerName: 'Status', width: 159, renderCell: (data) => renderStatus(data as GridValueGetterParams) },
+    { field: 'actions', headerName: 'Actions', width: 100, renderCell: (row) => renderRequestDetailsButton(row as GridValueGetterParams) }
   ];
 
   /*
@@ -435,7 +439,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const getFundingAgencies = () => {
     api.getFundingAgencies().then((res) => {
-      const agencies = [];
+      const agencies: Record<string, any>[] = [];
       for (let i = 0; i < res.length; i++) {
         agencies.push({
           value: res[i].code_name,
@@ -448,7 +452,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const getAvailableRoles = () => {
     api.getRoles().then((res) => {
-      const roles = [];
+      const roles: Record<string, any>[] = [];
       for (let i = 0; i < res.length; i++) {
         roles.push({
           id: res[i].role_id,
@@ -462,7 +466,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const getEmployers = () => {
     api.getEmployers().then((res) => {
-      const employers = [];
+      const employers: Record<string, any>[] = [];
       for (let i = 0; i < res.length; i++) {
         employers.push({
           value: res[i].code_name,
@@ -518,23 +522,20 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const openRoleDialog = (mode: any) => {
-    console.log(mode);
     if (mode === Mode.GRANT) {
-      console.log('is grant');
-      console.log(roleDialogOpen);
       setMode(Mode.GRANT);
       setRoleDialogOpen(true);
     } else {
       api.getRolesForUser(selectedUsers[0].user_id).then((res) => {
-        const roles = [];
-        for (let i = 0; i < res.length; i++) {
+        const roles: Record<string, any>[] = [];
+        for (const role of res) {
           roles.push({
-            id: res.data[i].role_id,
-            name: res.data[i].role_name,
-            description: res.data[i].role_description
+            id: role.role_id,
+            name: role.role_name,
+            description: role.role_description
           });
-          setUserRoles(roles);
         }
+        setUserRoles(roles);
         setMode(Mode.REVOKE);
         setRoleDialogOpen(true);
       });
@@ -543,7 +544,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const closeRoleDialog = () => {
     setRoleDialogOpen(false);
-    setSelectedRole('');
+    setSelectedRole(nilRole);
   };
 
   /* API CALLS */
@@ -552,7 +553,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     api.batchGrantRoleToUser(selectedUserIds, selectedRole).then(() => {
       setRoleDialogOpen(false);
       loadUsers();
-      setSelectedRole('');
+      setSelectedRole(nilRole);
     });
   };
 
@@ -560,7 +561,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     api.revokeRoleFromUser(selectedUserIds[0], selectedRole).then((res) => {
       setRoleDialogOpen(false);
       loadUsers();
-      setSelectedRole('');
+      setSelectedRole(nilRole);
     });
   };
 
@@ -599,8 +600,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     ================================================================================================
   */
 
-  const handleSelectedRoleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedRole(event.target.value);
+  const handleSelectedRoleChange = (event: SelectChangeEvent<any>) => {
+    setSelectedRole(parseInt(event.target.value) || nilRole);
   };
   if (!authState?.roles.some((role) => role.role_name === 'master_administrator')) {
     return <Spinner />;
@@ -638,6 +639,13 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     onRowSelectionModelChange={handleRowSelection}
                     rows={searchedRows}
                     columns={columns}
+                    initialState={{
+                      columns: {
+                        columnVisibilityModel: {
+                          ...initHiddenFields
+                        }
+                      }
+                    }}
                     checkboxSelection
                     onCellClick={handleRowClick}
                     onRowClick={handleRowClick}
@@ -1104,7 +1112,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           </DialogContentText>
           <TextField
             style={{ width: '100%' }}
-            //classes={{ root: classes.root }}
             select
             name="Roles"
             id="available-roles"
@@ -1118,15 +1125,15 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           >
             {mode === Mode.GRANT
               ? availableRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.description}
-                  </MenuItem>
-                ))
+                <MenuItem key={role.id} value={role.id}>
+                  {role.description}
+                </MenuItem>
+              ))
               : userRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.description}
-                  </MenuItem>
-                ))}
+                <MenuItem key={role.id} value={role.id}>
+                  {role.description}
+                </MenuItem>
+              ))}
           </TextField>
         </DialogContent>
         <DialogActions>
