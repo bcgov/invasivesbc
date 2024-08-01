@@ -84,6 +84,7 @@ async function getUsers(req, res, next) {
   const connection = await getDBConnection();
   const userIsAdmin = isAdminFromAuthContext(req);
   const isAppUser = req?.authContext?.roles.length > 0;
+
   if (!isAppUser) {
     return res.status(401).json({
       message: 'Unauthorized access',
@@ -92,7 +93,7 @@ async function getUsers(req, res, next) {
       code: 401
     });
   }
-  console.log("It's the User Info!", req.authContext);
+
   if (!connection) {
     return res.status(503).json({
       message: 'Failed to establish database connection',
