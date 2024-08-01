@@ -19,6 +19,7 @@ export const getUsersSQL = (): SQLStatement => {
     GROUP BY au.user_id;
   `;
 };
+
 /**
  * @desc Sql for limited information regarding users.
  */
