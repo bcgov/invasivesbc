@@ -17,10 +17,11 @@ import {
   Divider,
   Grid,
   IconButton,
+  List,
+  ListItem,
   MenuItem,
   SelectChangeEvent,
   TextField,
-  Theme,
   Tooltip,
   Typography
 } from '@mui/material';
@@ -669,7 +670,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                   <Button
                     disabled={!selectedUsers || selectedUsers.length > 1 || selectedUsers.length === 0}
                     variant="contained"
-                    color="secondary"
+                    color="error"
                     onClick={() => openRoleDialog(Mode.REVOKE)}
                   >
                     Revoke Role
@@ -735,7 +736,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                       !selectedRequestUsers || selectedRequestUsers.length === 0 || selectedRequestUsers.length > 1
                     }
                     variant="contained"
-                    color="secondary"
+                    color="error"
                     onClick={() => openApproveDeclineDialog(Mode.DECLINE)}
                   >
                     Decline Selected User
@@ -1100,18 +1101,16 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           <DialogContentText>
             {mode === Mode.GRANT ? <strong>Selected Users: </strong> : <strong>Selected User: </strong>}
           </DialogContentText>
-          <Grid item>
-            <Typography variant="h6">
-              {selectedUsers.map((user) => (
-                <li key={user.user_id}>{user.first_name + ' ' + user.last_name}</li>
-              ))}
-            </Typography>
-          </Grid>
+          <List dense>
+            {selectedUsers.map((user) => (
+              <ListItem key={user.user_id}>{user.first_name + ' ' + user.last_name}</ListItem>
+            ))}
+          </List>
           <DialogContentText>
             Select a role to {mode === Mode.GRANT ? 'grant to the selected users.' : 'revoke from the selected user.'}
           </DialogContentText>
           <TextField
-            style={{ width: '100%' }}
+            sx={{ mt: 2, width: '100%' }}
             select
             name="Roles"
             id="available-roles"
@@ -1136,17 +1135,17 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
               ))}
           </TextField>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ p: '8pt' }}>
           <Button variant="outlined" onClick={closeRoleDialog}>
             Cancel
           </Button>
           {mode === Mode.GRANT && (
-            <Button variant="contained" color="primary" onClick={grantRole}>
+            <Button variant="contained" color="success" onClick={grantRole}>
               Grant
             </Button>
           )}
           {mode === Mode.REVOKE && (
-            <Button variant="contained" color="secondary" onClick={revokeRole}>
+            <Button variant="contained" color="error" onClick={revokeRole}>
               Revoke
             </Button>
           )}
@@ -1185,15 +1184,20 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           <DialogContentText>
             {mode === Mode.APPROVE ? <strong>Selected Users: </strong> : <strong>Selected User: </strong>}
           </DialogContentText>
-          <Grid item>
-            <Typography variant="h6">
-              {selectedRequestUsers.map((user) => (
-                <li key={user.id}>{user.first_name + ' ' + user.last_name}</li>
-              ))}
-            </Typography>
-          </Grid>
+          <List dense>
+            {selectedRequestUsers.map((user) => (
+              <ListItem key={user.id}>
+                {user.first_name + ' ' + user.last_name}
+                <List>
+                  {user.requested_roles.split(",").map((roleReq: string) => (
+                    <ListItem key={`${user.id}-${roleReq}`}>{roleReq}</ListItem>
+                  ))}
+                </List>
+              </ListItem>
+            ))}
+          </List>
         </DialogContent>
-        <DialogActions>
+        <DialogActions sx={{ p: '8pt' }}>
           <Button variant="outlined" onClick={closeApproveDeclineDialog}>
             Cancel
           </Button>
@@ -1203,7 +1207,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             </Button>
           )}
           {mode === Mode.DECLINE && (
-            <Button variant="contained" color="secondary" onClick={declineUser}>
+            <Button variant="contained" color="error" onClick={declineUser}>
               Decline
             </Button>
           )}
