@@ -101,7 +101,7 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
         }
         return console.error(error);
       }
-      if (location !== null) {
+      if (location) {
         coordChannel.put({
           type: MAP_SET_COORDS,
           payload: {
@@ -116,8 +116,11 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
           }
         });
       }
+      return console.log(location);
     }
-  );
+  ).then((watchID) => {
+    watcherID = watchID;
+  });
 
   let counter = 0;
   while (state.positionTracking) {
