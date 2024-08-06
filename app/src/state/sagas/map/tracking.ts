@@ -118,9 +118,7 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
       }
       return console.log(location);
     }
-  ).then((watchID) => {
-    watcherID = watchID;
-  });
+  );
 
   let counter = 0;
   while (state.positionTracking) {
