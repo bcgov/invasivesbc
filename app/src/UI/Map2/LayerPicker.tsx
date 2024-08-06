@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   TOGGLE_CUSTOMIZE_LAYERS,
@@ -12,7 +11,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 
-export const LayerPicker = (props: any) => {
+export const LayerPicker = () => {
   const layerPickerOpen = useSelector((state: any) => state.Map?.layerPickerOpen);
   const dispatch = useDispatch();
   const WMSLayers = useSelector((state: any) => state?.Map?.simplePickerLayers2);
@@ -20,7 +19,17 @@ export const LayerPicker = (props: any) => {
   const drawnLayers = useSelector((state: any) => state.Map?.clientBoundaries);
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   return (
-    <div id="layerPickerElement" className={layerPickerOpen ? 'layerPickerOpen' : 'layerPickerClosed'}>
+    <div
+      id="layerPickerElement"
+      className={layerPickerOpen ? 'layerPickerOpen' : 'layerPickerClosed'}
+      style={{
+        maxHeight: '60vh',
+        overflowY: 'auto',
+        maxWidth: '100%',
+        textWrap: 'wrap',
+        boxSizing: 'border-box'
+      }}
+    >
       <div id="layerPickerToggleOpen" onClick={() => dispatch({ type: TOGGLE_LAYER_PICKER_OPEN })}>
         <>
           {layerPickerOpen ? (
