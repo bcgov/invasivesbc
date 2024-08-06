@@ -1,20 +1,31 @@
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, Grid, List, ListItem, Typography } from "@mui/material";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  Grid,
+  List,
+  ListItem,
+  Typography
+} from '@mui/material';
 
 type Props = {
-  open: boolean,
-  detailsDialogUser: Record<string, any>
-  employerCodes: Record<string, any>[]
-  agencyCodes: Record<string, any>[]
-  closeDetailsDialog: () => void,
-  renewUser: () => void
-}
+  open: boolean;
+  detailsDialogUser: Record<string, any>;
+  employerCodes: Record<string, any>[];
+  agencyCodes: Record<string, any>[];
+  closeDetailsDialog: () => void;
+  renewUser: () => void;
+};
 const DetailsModal = ({
   open,
   closeDetailsDialog,
   detailsDialogUser,
   employerCodes,
   agencyCodes,
-  renewUser,
+  renewUser
 }: Props) => {
   return (
     <Dialog
@@ -79,28 +90,6 @@ const DetailsModal = ({
             </Typography>
           </Grid>
         )}
-        {detailsDialogUser.employer && (
-          <>
-            <Grid item>
-              <Typography>
-                <strong>Employer: </strong>
-              </Typography>
-            </Grid>
-            <Grid item>
-              {detailsDialogUser.employer.split(',').map((employer) => (
-                <Typography key={employer}>
-                  <ListItem key={employer}>
-                    {employerCodes.map((employerCode) => {
-                      if (employerCode.value === employer) {
-                        return employerCode.description;
-                      }
-                    })}
-                  </ListItem>
-                </Typography>
-              ))}
-            </Grid>
-          </>
-        )}
         {detailsDialogUser.pacNumber && (
           <Grid item>
             <Typography>
@@ -125,6 +114,26 @@ const DetailsModal = ({
             </Typography>
           </Grid>
         )}
+        {detailsDialogUser.employer && (
+          <>
+            <Grid item>
+              <Typography>
+                <strong>Employer: </strong>
+              </Typography>
+            </Grid>
+            <Grid item>
+              {detailsDialogUser.employer.split(',').map((employer) => (
+                <ListItem key={employer}>
+                  {employerCodes.map((employerCode) => {
+                    if (employerCode.value === employer) {
+                      return <Typography key={employerCode.description}>{employerCode.description}</Typography>;
+                    }
+                  })}
+                </ListItem>
+              ))}
+            </Grid>
+          </>
+        )}
         {detailsDialogUser.fundingAgencies && detailsDialogUser.fundingAgencies.length > 0 && (
           <>
             <Grid item>
@@ -136,13 +145,11 @@ const DetailsModal = ({
               <List dense>
                 {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
                   <ListItem>
-                    <Typography key={agency}>
-                      {agencyCodes.map((agencyCode) => {
-                        if (agencyCode.value === agency) {
-                          return agencyCode.description;
-                        }
-                      })}
-                    </Typography>
+                    {agencyCodes.map((agencyCode) => {
+                      if (agencyCode.value === agency) {
+                        return <Typography key={agency}>{agencyCode.description}</Typography>;
+                      }
+                    })}
                   </ListItem>
                 ))}
               </List>
@@ -152,17 +159,13 @@ const DetailsModal = ({
         {detailsDialogUser.role && detailsDialogUser.role.length > 0 && (
           <>
             <Grid item>
-              <Typography fontWeight="bold">
-                Roles:
-              </Typography>
+              <Typography fontWeight="bold">Roles:</Typography>
             </Grid>
             <Grid item>
               <List dense>
                 {detailsDialogUser.role.split(',').map((role) => (
                   <ListItem key={role}>
-                    <Typography key={role}>
-                      {role}
-                    </Typography>
+                    <Typography key={role}>{role}</Typography>
                   </ListItem>
                 ))}
               </List>
@@ -186,6 +189,6 @@ const DetailsModal = ({
         </Button>
       </DialogActions>
     </Dialog>
-  )
-}
+  );
+};
 export default DetailsModal;
