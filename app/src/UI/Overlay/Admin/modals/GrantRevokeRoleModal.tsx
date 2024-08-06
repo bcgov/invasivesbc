@@ -46,7 +46,18 @@ const GrantRevokeRoleModal = ({
   revokeRole
 }: Props) => {
   return (
-    <Dialog open={open} onClose={closeRoleDialog} aria-labelledby="form-dialog-title" maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={closeRoleDialog}
+      aria-labelledby="form-dialog-title"
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          maxHeight: '60vh'
+        }
+      }}
+    >
       <DialogTitle id="form-dialog-title">{mode === Mode.GRANT ? 'Grant Role' : 'Revoke Role'}</DialogTitle>
       <Divider />
       <DialogContent>

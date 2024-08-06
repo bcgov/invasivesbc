@@ -35,7 +35,18 @@ const ApproveDeclineModal = ({
   declineUser
 }: Props) => {
   return (
-    <Dialog open={open} onClose={closeApproveDeclineDialog} aria-labelledby="form-dialog-title" maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={closeApproveDeclineDialog}
+      aria-labelledby="form-dialog-title"
+      maxWidth="sm"
+      fullWidth
+      PaperProps={{
+        sx: {
+          maxHeight: '60vh'
+        }
+      }}
+    >
       <DialogTitle id="form-dialog-title">{mode === Mode.APPROVE ? 'Approve Request' : 'Decline Request'}</DialogTitle>
       <Divider />
       <DialogContent>

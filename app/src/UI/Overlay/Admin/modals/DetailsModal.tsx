@@ -35,6 +35,11 @@ const DetailsModal = ({
       aria-describedby="alert-dialog-description"
       maxWidth="sm"
       fullWidth
+      PaperProps={{
+        sx: {
+          maxHeight: '60vh'
+        }
+      }}
     >
       <DialogTitle id="alert-dialog-title" fontWeight="bold">
         {detailsDialogUser.firstName + ' ' + detailsDialogUser.lastName}
