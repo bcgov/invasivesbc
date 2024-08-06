@@ -25,7 +25,8 @@ export const LayerPicker = () => {
       style={{
         maxHeight: '60vh',
         overflowY: 'auto',
-        maxWidth: '100%',
+        width: '100%',
+        maxWidth: '525px',
         textWrap: 'wrap',
         boxSizing: 'border-box'
       }}
