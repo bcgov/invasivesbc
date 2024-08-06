@@ -126,7 +126,7 @@ const DetailsModal = ({
                 <ListItem key={employer}>
                   {employerCodes.map((employerCode) => {
                     if (employerCode.value === employer) {
-                      return <Typography key={employerCode.description}>{employerCode.description}</Typography>;
+                      return <Typography key={employerCode.value}>{employerCode.description}</Typography>;
                     }
                   })}
                 </ListItem>
@@ -144,10 +144,10 @@ const DetailsModal = ({
             <Grid item>
               <List dense>
                 {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
-                  <ListItem>
+                  <ListItem key={agency}>
                     {agencyCodes.map((agencyCode) => {
                       if (agencyCode.value === agency) {
-                        return <Typography key={agency}>{agencyCode.description}</Typography>;
+                        return <Typography key={agencyCode.value}>{agencyCode.description}</Typography>;
                       }
                     })}
                   </ListItem>
