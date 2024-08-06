@@ -1,38 +1,20 @@
 
 import { red, green, blue } from '@mui/material/colors';
 import {
-  Box,
   Button,
   Card,
   CardActions,
   CardContent,
   Chip,
   Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Divider,
-  FormControl,
   Grid,
-  IconButton,
-  InputLabel,
-  List,
-  ListItem,
-  MenuItem,
-  Select,
   SelectChangeEvent,
-  TextField,
   Tooltip,
   Typography
 } from '@mui/material';
 import {
   DataGrid,
   GridColDef,
-  GridToolbarColumnsButton,
-  GridToolbarExport,
-  GridToolbarFilterButton,
   GridValueGetterParams
 } from '@mui/x-data-grid';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
@@ -41,9 +23,13 @@ import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
 import { CustomNoRowsOverlay } from '../CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
-import { bcBlue, bcYellow, black } from 'constants/colors';
+import { bcYellow, black } from 'constants/colors';
 import Spinner from 'UI/Spinner/Spinner';
 import QuickSearchToolbar from './QuickSearchToolbar';
+import AccessRequestModal from '../modals/AccessRequestModal';
+import ApproveDeclineModal from '../modals/ApproveDeclineModal';
+import GrantRevokeRoleModal from '../modals/GrantRevokeRoleModal';
+import DetailsModal from '../modals/DetailsModal';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -543,7 +529,6 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   }
   return (
     <Container
-      // className={classes?.container}
       style={{ paddingBottom: '50px' }}
     >
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
@@ -689,475 +674,50 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         ================================================================================================
       */}
 
-      {/*
-        ###
-        Details dialog
-        ###
-      */}
-      {detailsDialogUserLoaded && (
-        <Dialog
+      {detailsDialogUserLoaded &&
+        <DetailsModal
           open={detailsDialogOpen}
-          onClose={closeDetailsDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle id="alert-dialog-title" fontWeight="bold">
-            {detailsDialogUser.firstName + ' ' + detailsDialogUser.lastName}
-          </DialogTitle>
-          <DialogContent>
-            <Grid item>
-              <Typography>
-                <strong>Email: </strong>
-                {detailsDialogUser.email}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography>
-                <strong>Username: </strong>
-                {detailsDialogUser.preferredUsername}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography>
-                <strong>Expiry Date: </strong>
-                {detailsDialogUser.expiryDate}
-              </Typography>
-            </Grid>
-            {detailsDialogUser.bceidUserId && (
-              <Grid item>
-                <Typography>
-                  <strong>BCEID User ID: </strong>
-                  {detailsDialogUser.bceidUserId}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogUser.idirUserId && (
-              <Grid item>
-                <Typography>
-                  <strong>IDIR User ID: </strong>
-                  {detailsDialogUser.idirUserId}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogUser.idirAccountName && (
-              <Grid item>
-                <Typography>
-                  <strong>IDIR Account Name: </strong>
-                  {detailsDialogUser.idirAccountName}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogUser.workPhoneNumber && (
-              <Grid item>
-                <Typography>
-                  <strong>Work Phone: </strong>
-                  {detailsDialogUser.workPhoneNumber}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogUser.employer && (
-              <>
-                <Grid item>
-                  <Typography>
-                    <strong>Employer: </strong>
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  {detailsDialogUser.employer.split(',').map((employer) => (
-                    <Typography key={employer}>
-                      <ListItem key={employer}>
-                        {employerCodes.map((employerCode) => {
-                          if (employerCode.value === employer) {
-                            return employerCode.description;
-                          }
-                        })}
-                      </ListItem>
-                    </Typography>
-                  ))}
-                </Grid>
-              </>
-            )}
-            {detailsDialogUser.pacNumber && (
-              <Grid item>
-                <Typography>
-                  <strong>PAC Number: </strong>
-                  {detailsDialogUser.pacNumber}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogUser.pacServiceNumber1 && (
-              <Grid item>
-                <Typography>
-                  <strong>PAC Service Number 1: </strong>
-                  {detailsDialogUser.pacServiceNumber1}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogUser.pacServiceNumber2 && (
-              <Grid item>
-                <Typography>
-                  <strong>PAC Service Number 2: </strong>
-                  {detailsDialogUser.pacServiceNumber2}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogUser.fundingAgencies && detailsDialogUser.fundingAgencies.length > 0 && (
-              <>
-                <Grid item>
-                  <Typography>
-                    <strong>Funding Agencies: </strong>
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <List dense>
-                    {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
-                      <ListItem>
-                        <Typography key={agency}>
-                          {agencyCodes.map((agencyCode) => {
-                            if (agencyCode.value === agency) {
-                              return agencyCode.description;
-                            }
-                          })}
-                        </Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-              </>
-            )}
-            {detailsDialogUser.role && detailsDialogUser.role.length > 0 && (
-              <>
-                <Grid item>
-                  <Typography fontWeight="bold">
-                    Roles:
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <List dense>
-                    {detailsDialogUser.role.split(',').map((role) => (
-                      <ListItem key={role}>
-                        <Typography key={role}>
-                          {role}
-                        </Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-              </>
-            )}
-          </DialogContent>
-          <Divider />
-          <DialogActions>
-            <Button
-              disabled={new Date(detailsDialogUser.expiryDate) > new Date()}
-              variant="contained"
-              color="secondary"
-              onClick={renewUser}
-              autoFocus
-            >
-              Renew User
-            </Button>
-            <Button variant="contained" onClick={closeDetailsDialog} autoFocus>
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+          closeDetailsDialog={closeDetailsDialog}
+          detailsDialogUser={detailsDialogUser}
+          employerCodes={employerCodes}
+          agencyCodes={agencyCodes}
+          renewUser={renewUser}
+        />}
 
-      {/*
-        ###
-        Access Request Details Dialog
-        ###
-      */}
-      {detailsDialogRequestUserLoaded && (
-        <Dialog
-          open={requestDetailsDialogOpen}
-          onClose={closeRequestDetailsDialog}
-          aria-labelledby="alert-dialog-title"
-          aria-describedby="alert-dialog-description"
-          maxWidth="sm"
-          fullWidth
-        >
-          <DialogTitle id="alert-dialog-title" fontWeight="bold">
-            {detailsDialogRequestUser.firstName + ' ' + detailsDialogRequestUser.lastName}
-          </DialogTitle>
-          <DialogContent>
-            <Grid item>
-              <Typography>
-                <strong>Email: </strong>
-                {detailsDialogRequestUser.email}
-              </Typography>
-            </Grid>
-            {detailsDialogRequestUser.bceidUserId && (
-              <Grid item>
-                <Typography>
-                  <strong>BCEID User ID: </strong>
-                  {detailsDialogRequestUser.bceidUserId}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogRequestUser.idirUserId && (
-              <Grid item>
-                <Typography>
-                  <strong>IDIR User ID: </strong>
-                  {detailsDialogRequestUser.idirUserId}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogRequestUser.bceidAccountName && (
-              <Grid item>
-                <Typography>
-                  <strong>BCEID Account Name: </strong>
-                  {detailsDialogRequestUser.bceidAccountName}
-                </Typography>
-              </Grid>
-            )}
-            {detailsDialogRequestUser.idirAccountName && (
-              <Grid item>
-                <Typography>
-                  <strong>IDIR Account Name: </strong>
-                  {detailsDialogRequestUser.idirAccountName}
-                </Typography>
-              </Grid>
-            )}
-            <Grid item>
-              <Typography>
-                <strong>Work Phone: </strong>
-                {detailsDialogRequestUser.workPhoneNumber}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography>
-                <strong>Employer: </strong>
-              </Typography>
-            </Grid>
-            <Grid item>
-              <List dense>
-                {detailsDialogRequestUser.employer.split(',').map((employer) => (
-                  <ListItem key={employer}>
-                    <Typography key={employer}>
-                      {employerCodes.map((employerCode) => {
-                        if (employerCode.value === employer)
-                          return (employerCode.description)
-                      })}
-                    </Typography>
-                  </ListItem>
-                ))}
-              </List>
-            </Grid>
-            <Grid item>
-              <Typography>
-                <strong>PAC Number: </strong>
-                {detailsDialogRequestUser.pacNumber}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography>
-                <strong>PAC Service Number 1: </strong>
-                {detailsDialogRequestUser.pacServiceNumber1}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <Typography>
-                <strong>PAC Service Number 2: </strong>
-                {detailsDialogRequestUser.pacServiceNumber2}
-              </Typography>
-            </Grid>
-            {detailsDialogRequestUser.fundingAgencies && detailsDialogRequestUser.fundingAgencies.length > 0 && (
-              <>
-                <Grid item>
-                  <Typography fontWeight="bold">
-                    Funding Agencies:
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  {detailsDialogRequestUser.fundingAgencies.split(',').map((agency) => (
-                    <ListItem key={agency}>
-                      <Typography key={agency}>
-                        {agencyCodes.map((agencyCode) => {
-                          if (agencyCode.value === agency) {
-                            return agencyCode.description
-                          }
-                        })}
-                      </Typography>
-                    </ListItem>
-                  ))}
-                </Grid>
-              </>
-            )}
-            {detailsDialogRequestUser.requestedRoles && detailsDialogRequestUser.requestedRoles.length > 0 && (
-              <>
-                <Grid item>
-                  <Typography fontWeight="bold">
-                    Requested Roles:
-                  </Typography>
-                </Grid>
-                <Grid item>
-                  <List dense>
-                    {detailsDialogRequestUser.requestedRoles.split(',').map((role) => (
-                      <ListItem key={role}>
-                        <Typography>
-                          {availableRoles.map((roleCode) => {
-                            if (roleCode.name === role) {
-                              return roleCode.description;
-                            }
-                          })}
-                        </Typography>
-                      </ListItem>
-                    ))}
-                  </List>
-                </Grid>
-              </>
-            )}
-          </DialogContent>
-          <Divider />
-          <DialogActions>
-            <Button variant="contained" onClick={closeRequestDetailsDialog} autoFocus>
-              Close
-            </Button>
-          </DialogActions>
-        </Dialog>
-      )}
+      {detailsDialogRequestUserLoaded &&
+        <AccessRequestModal
+          closeRequestDetailsDialog={closeRequestDetailsDialog}
+          requestDetailsDialogOpen={requestDetailsDialogOpen}
+          detailsDialogRequestUser={detailsDialogRequestUser}
+          employerCodes={employerCodes}
+          agencyCodes={agencyCodes}
+          availableRoles={availableRoles}
+        />
+      }
 
-      {/*
-        ###
-        Role grant/revoke flexible dialog
-        ###
-      */}
-      <Dialog
-        open={roleDialogOpen}
-        onClose={closeRoleDialog}
-        aria-labelledby="form-dialog-title"
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle id="form-dialog-title">{mode === Mode.GRANT ? 'Grant Role' : 'Revoke Role'}</DialogTitle>
-        <Divider />
-        <DialogContent>
-          <DialogContentText fontWeight="bold">
-            {mode === Mode.GRANT
-              ? "Selected Users:"
-              : "Selected User:"}
-          </DialogContentText>
-          <List dense>
-            {selectedUsers.map((user) => (
-              <ListItem key={user.user_id}>{user.first_name + ' ' + user.last_name}</ListItem>
-            ))}
-          </List>
-          <DialogContentText>
-            Select a role to {mode === Mode.GRANT ? 'grant to the selected users.' : 'revoke from the selected user.'}
-          </DialogContentText>
-          <FormControl fullWidth sx={{ marginTop: "5pt" }}>
-            <InputLabel>Available Roles</InputLabel>
-            <Select
-              id="available-roles"
-              value={selectedRole}
-              label="Available Roles"
-              onChange={handleSelectedRoleChange}
-            >
-              {mode === Mode.GRANT
-                ? availableRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.description}
-                  </MenuItem>
-                ))
-                : userRoles.map((role) => (
-                  <MenuItem key={role.id} value={role.id}>
-                    {role.description}
-                  </MenuItem>
-                ))}
-            </Select>
-          </FormControl>
+      {detailsDialogRequestUserLoaded &&
+        <GrantRevokeRoleModal
+          open={roleDialogOpen}
+          mode={mode}
+          selectedUsers={selectedUsers}
+          selectedRole={selectedRole}
+          availableRoles={availableRoles}
+          userRoles={userRoles}
+          closeRoleDialog={closeRoleDialog}
+          handleSelectedRoleChange={handleSelectedRoleChange}
+          grantRole={grantRole}
+          revokeRole={revokeRole}
+        />}
 
-        </DialogContent>
-        <DialogActions sx={{ p: '8pt' }}>
-          <Button variant="outlined" onClick={closeRoleDialog}>
-            Cancel
-          </Button>
-          {mode === Mode.GRANT && (
-            <Button variant="contained" color="success" onClick={grantRole}>
-              Grant
-            </Button>
-          )}
-          {mode === Mode.REVOKE && (
-            <Button variant="contained" color="error" onClick={revokeRole}>
-              Revoke
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
-
-      {/*
-        ###
-        Approve request / decline request flexible dialog
-        ###
-      */}
-      <Dialog
-        open={approveDeclineDialogOpen}
-        onClose={closeApproveDeclineDialog}
-        aria-labelledby="form-dialog-title"
-        maxWidth="sm"
-        fullWidth
-      >
-        <DialogTitle id="form-dialog-title">
-          {mode === Mode.APPROVE ? 'Approve Request' : 'Decline Request'}
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          <DialogContentText fontWeight="bold">
-            {mode === Mode.APPROVE
-              ? "Approve selected requests?"
-              : "Decline the selected request?"}
-          </DialogContentText>
-          {mode === Mode.APPROVE && (
-            <DialogContentText>
-              The requested roles will be granted to the user. These can be changed at any time by an admin.
-            </DialogContentText>
-          )}
-          <DialogContentText fontWeight="bold">
-            {mode === Mode.APPROVE
-              ? 'Selected Users:'
-              : 'Selected User:'}
-          </DialogContentText>
-          <List dense>
-            {selectedRequestUsers.map((user) => (
-              <ListItem key={user.id}>
-                {user.first_name + ' ' + user.last_name}
-                <List dense>
-                  {user.requested_roles.split(",").map((roleReq: string) => (
-                    <ListItem key={`${user.id}-${roleReq}`}>{roleReq}</ListItem>
-                  ))}
-                </List>
-              </ListItem>
-            ))}
-          </List>
-        </DialogContent>
-        <DialogActions sx={{ p: '8pt' }}>
-          <Button variant="outlined" onClick={closeApproveDeclineDialog}>
-            Cancel
-          </Button>
-          {mode === Mode.APPROVE && (
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={approveUsers}
-            >
-              Approve
-            </Button>
-          )}
-          {mode === Mode.DECLINE && (
-            <Button
-              variant="contained"
-              color="error"
-              onClick={declineUser}
-            >
-              Decline
-            </Button>
-          )}
-        </DialogActions>
-      </Dialog>
+      {detailsDialogRequestUserLoaded &&
+        <ApproveDeclineModal
+          open={approveDeclineDialogOpen}
+          mode={mode}
+          selectedRequestUsers={selectedRequestUsers}
+          closeApproveDeclineDialog={closeApproveDeclineDialog}
+          approveUsers={approveUsers}
+          declineUser={declineUser}
+        />}
     </Container>
   );
 };
