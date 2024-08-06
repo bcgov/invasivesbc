@@ -1,6 +1,6 @@
-
 import { red, green, blue } from '@mui/material/colors';
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -12,11 +12,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import {
-  DataGrid,
-  GridColDef,
-  GridValueGetterParams
-} from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId, GridValueGetterParams } from '@mui/x-data-grid';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import React, { useEffect, useState } from 'react';
 import { selectAuth } from 'state/reducers/auth';
@@ -64,6 +60,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const [selectedRequestUsers, setSelectedRequestUsers] = useState<Record<string, any>[]>([]);
   const [detailsDialogRequestUser, setDetailsDialogRequestUser] = useState<any>({});
   const [detailsDialogRequestUserLoaded, setDetailsDialogRequestUserLoaded] = useState(false);
+  const [selectionModel, setSelectionModel] = useState<GridRowId[]>([]);
 
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
   const [roleDialogOpen, setRoleDialogOpen] = useState(false);
@@ -170,6 +167,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         requests.push(user);
       }
     }
+    setSelectionModel(ids);
     setSelectedRequestUsers(requests);
   };
 
@@ -259,7 +257,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     { field: 'activationStatus', headerName: 'Activation Status', width: 200 },
     { field: 'bceidUserId', headerName: 'BCEID User ID', width: 200 },
     { field: 'idirUserId', headerName: 'IDIR User ID', width: 200 },
-    { field: 'preferredUsername', headerName: 'Preferred Username', width: 200, },
+    { field: 'preferredUsername', headerName: 'Preferred Username', width: 200 },
     { field: 'createdAt', headerName: 'Created At', width: 200 },
     { field: 'idirAccountName', headerName: 'IDIR Account Name', width: 200 },
     { field: 'bceidAccountName', headerName: 'BCEID Account Name', width: 200 },
@@ -269,7 +267,12 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     { field: 'pacNumber', headerName: 'PAC Number', width: 200 },
     { field: 'pacServiceNumber1', headerName: 'PAC Service Number 1', width: 200 },
     { field: 'pacServiceNumber2', headerName: 'PAC Service Number 2', width: 200 },
-    { field: 'actions', headerName: 'Actions', width: 100, renderCell: (row) => renderDetailsButton(row as GridValueGetterParams) }
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: (row) => renderDetailsButton(row as GridValueGetterParams)
+    }
   ];
 
   const initHiddenFields = {
@@ -286,20 +289,34 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     employer: false,
     pacNumber: false,
     pacServiceNumber1: false,
-    pacServiceNumber2: false,
-  }
+    pacServiceNumber2: false
+  };
 
   const requestColumns: GridColDef[] = [
     //1185 max width
     { field: 'id', headerName: 'ID', width: 50 },
-    { field: 'requestType', headerName: 'Type', width: 100, renderCell: (row) => renderType(row as GridValueGetterParams) },
+    {
+      field: 'requestType',
+      headerName: 'Type',
+      width: 100,
+      renderCell: (row) => renderType(row as GridValueGetterParams)
+    },
     { field: 'firstName', headerName: 'First Name', width: 120 },
     { field: 'lastName', headerName: 'Last Name', width: 120 },
     { field: 'email', headerName: 'Email', width: 200 },
     { field: 'dateRequested', headerName: 'Date Requested', width: 200 },
-    { field: 'pacNumber', headerName: 'PAC Number', width: 120 },
-    { field: 'status', headerName: 'Status', width: 159, renderCell: (data) => renderStatus(data as GridValueGetterParams) },
-    { field: 'actions', headerName: 'Actions', width: 100, renderCell: (row) => renderRequestDetailsButton(row as GridValueGetterParams) }
+    {
+      field: 'status',
+      headerName: 'Status',
+      width: 159,
+      renderCell: (data) => renderStatus(data as GridValueGetterParams)
+    },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 100,
+      renderCell: (row) => renderRequestDetailsButton(row as GridValueGetterParams)
+    }
   ];
 
   /*
@@ -329,7 +346,9 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   /* ON MOUNT */
 
   useEffect(() => {
-    if (!authState?.authenticated) { return; }
+    if (!authState?.authenticated) {
+      return;
+    }
     loadUsers();
     getAvailableRoles();
     getFundingAgencies();
@@ -431,11 +450,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const openApproveDeclineDialog = (mode: any) => {
     if (mode === Mode.APPROVE) {
       setMode(Mode.APPROVE);
-      setApproveDeclineDialogOpen(true);
     } else {
       setMode(Mode.DECLINE);
-      setApproveDeclineDialogOpen(true);
     }
+    setApproveDeclineDialogOpen(true);
   };
 
   const closeApproveDeclineDialog = () => {
@@ -488,9 +506,11 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
 
   const approveUsers = () => {
     // TODO: Handle multiple types of requests
-    api.approveAccessRequests(selectedRequestUsers).then((response) => {
+    api.approveAccessRequests(selectedRequestUsers).then(() => {
       closeApproveDeclineDialog();
       loadUsers();
+      setSelectionModel([]);
+      setSelectedRequestUsers([]);
     });
   };
 
@@ -499,11 +519,15 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       api.declineUpdateRequest(selectedRequestUsers[0]).then(() => {
         closeApproveDeclineDialog();
         loadUsers();
+        setSelectionModel([]);
+        setSelectedRequestUsers([]);
       });
     } else {
       api.declineAccessRequest(selectedRequestUsers[0]).then(() => {
         closeApproveDeclineDialog();
         loadUsers();
+        setSelectedRequestUsers([]);
+        setSelectionModel([]);
       });
     }
   };
@@ -528,9 +552,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     return <Spinner />;
   }
   return (
-    <Container
-      style={{ paddingBottom: '50px' }}
-    >
+    <Container style={{ paddingBottom: '50px' }}>
       <Grid container spacing={4} style={{ paddingTop: '2rem' }}>
         <Grid item xs={12}>
           <Typography variant="h4" align="center">
@@ -613,7 +635,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           <Card elevation={8}>
             <CardContent>
               <Grid>
-                <div style={{ height: 550, width: '100%' }}>
+                <Box style={{ height: 550, width: '100%' }}>
                   <DataGrid
                     loading={requestTableLoading}
                     components={{
@@ -626,6 +648,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                         }
                       }
                     }}
+                    rowSelectionModel={selectionModel}
                     onRowSelectionModelChange={handleAccessRequestRowSelection}
                     rows={requestRows}
                     columns={requestColumns}
@@ -634,7 +657,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     onCellClick={handleRowClick}
                     onRowClick={handleRowClick}
                   />
-                </div>
+                </Box>
               </Grid>
             </CardContent>
             <CardActions>
@@ -674,7 +697,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         ================================================================================================
       */}
 
-      {detailsDialogUserLoaded &&
+      {detailsDialogUserLoaded && (
         <DetailsModal
           open={detailsDialogOpen}
           closeDetailsDialog={closeDetailsDialog}
@@ -682,9 +705,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           employerCodes={employerCodes}
           agencyCodes={agencyCodes}
           renewUser={renewUser}
-        />}
+        />
+      )}
 
-      {detailsDialogRequestUserLoaded &&
+      {detailsDialogRequestUserLoaded && (
         <AccessRequestModal
           closeRequestDetailsDialog={closeRequestDetailsDialog}
           requestDetailsDialogOpen={requestDetailsDialogOpen}
@@ -693,31 +717,29 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           agencyCodes={agencyCodes}
           availableRoles={availableRoles}
         />
-      }
+      )}
 
-      {detailsDialogRequestUserLoaded &&
-        <GrantRevokeRoleModal
-          open={roleDialogOpen}
-          mode={mode}
-          selectedUsers={selectedUsers}
-          selectedRole={selectedRole}
-          availableRoles={availableRoles}
-          userRoles={userRoles}
-          closeRoleDialog={closeRoleDialog}
-          handleSelectedRoleChange={handleSelectedRoleChange}
-          grantRole={grantRole}
-          revokeRole={revokeRole}
-        />}
+      <GrantRevokeRoleModal
+        open={roleDialogOpen}
+        mode={mode}
+        selectedUsers={selectedUsers}
+        selectedRole={selectedRole}
+        availableRoles={availableRoles}
+        userRoles={userRoles}
+        closeRoleDialog={closeRoleDialog}
+        handleSelectedRoleChange={handleSelectedRoleChange}
+        grantRole={grantRole}
+        revokeRole={revokeRole}
+      />
 
-      {detailsDialogRequestUserLoaded &&
-        <ApproveDeclineModal
-          open={approveDeclineDialogOpen}
-          mode={mode}
-          selectedRequestUsers={selectedRequestUsers}
-          closeApproveDeclineDialog={closeApproveDeclineDialog}
-          approveUsers={approveUsers}
-          declineUser={declineUser}
-        />}
+      <ApproveDeclineModal
+        open={approveDeclineDialogOpen}
+        mode={mode}
+        selectedRequestUsers={selectedRequestUsers}
+        closeApproveDeclineDialog={closeApproveDeclineDialog}
+        approveUsers={approveUsers}
+        declineUser={declineUser}
+      />
     </Container>
   );
 };
