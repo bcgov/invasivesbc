@@ -15,11 +15,14 @@ import {
   DialogContentText,
   DialogTitle,
   Divider,
+  FormControl,
   Grid,
   IconButton,
+  InputLabel,
   List,
   ListItem,
   MenuItem,
+  Select,
   SelectChangeEvent,
   TextField,
   Tooltip,
@@ -41,6 +44,7 @@ import { CustomNoRowsOverlay } from '../CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
 import { bcBlue, bcYellow, black } from 'constants/colors';
 import Spinner from 'UI/Spinner/Spinner';
+import FormContainer from 'UI/Overlay/Records/Activity/form/FormContainer';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -1109,31 +1113,28 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           <DialogContentText>
             Select a role to {mode === Mode.GRANT ? 'grant to the selected users.' : 'revoke from the selected user.'}
           </DialogContentText>
-          <TextField
-            sx={{ mt: 2, width: '100%' }}
-            select
-            name="Roles"
-            id="available-roles"
-            variant="outlined"
-            label="Available Roles"
-            SelectProps={{
-              multiple: false,
-              value: selectedRole,
-              onChange: handleSelectedRoleChange
-            }}
-          >
-            {mode === Mode.GRANT
-              ? availableRoles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  {role.description}
-                </MenuItem>
-              ))
-              : userRoles.map((role) => (
-                <MenuItem key={role.id} value={role.id}>
-                  {role.description}
-                </MenuItem>
-              ))}
-          </TextField>
+          <FormControl fullWidth sx={{ marginTop: "5pt" }}>
+            <InputLabel>Available Roles</InputLabel>
+            <Select
+              id="available-roles"
+              value={selectedRole}
+              label="Available Roles"
+              onChange={handleSelectedRoleChange}
+            >
+              {mode === Mode.GRANT
+                ? availableRoles.map((role) => (
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.description}
+                  </MenuItem>
+                ))
+                : userRoles.map((role) => (
+                  <MenuItem key={role.id} value={role.id}>
+                    {role.description}
+                  </MenuItem>
+                ))}
+            </Select>
+          </FormControl>
+
         </DialogContent>
         <DialogActions sx={{ p: '8pt' }}>
           <Button variant="outlined" onClick={closeRoleDialog}>
