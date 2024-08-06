@@ -1,5 +1,4 @@
-import ClearIcon from '@mui/icons-material/Clear';
-import SearchIcon from '@mui/icons-material/Search';
+
 import { red, green, blue } from '@mui/material/colors';
 import {
   Box,
@@ -44,78 +43,10 @@ import { CustomNoRowsOverlay } from '../CustomNoRowsOverlay';
 import EmailSetup from '../email-setup/EmailSetup';
 import { bcBlue, bcYellow, black } from 'constants/colors';
 import Spinner from 'UI/Spinner/Spinner';
-import FormContainer from 'UI/Overlay/Records/Activity/form/FormContainer';
+import QuickSearchToolbar from './QuickSearchToolbar';
 
 interface IAccessRequestPage {
   classes?: any;
-}
-
-interface QuickSearchToolbarProps {
-  clearSearch: () => void;
-  onChange: () => void;
-  value: string;
-}
-
-function QuickSearchToolbar(props: QuickSearchToolbarProps) {
-  return (
-    <Box
-      sx={{
-        p: 2,
-        pb: 1,
-        justifyContent: 'space-between',
-        display: 'flex',
-        alignItems: 'flex-start',
-        flexWrap: 'wrap'
-      }}
-    >
-      <div>
-        <GridToolbarColumnsButton style={{ color: bcBlue }} onResize={undefined} onResizeCapture={undefined} />
-        <GridToolbarFilterButton style={{ color: bcBlue }} onResize={undefined} onResizeCapture={undefined} />
-        <GridToolbarExport
-          style={{ color: bcBlue }}
-          csvOptions={{
-            includeHeaders: true,
-            allColumns: true,
-            fileName: 'InvasivesBC - Application Users (' + new Date().toISOString() + ')'
-          }}
-        />
-      </div>
-      <TextField
-        variant="standard"
-        value={props.value}
-        onChange={props.onChange}
-        placeholder="Search…"
-        InputProps={{
-          startAdornment: <SearchIcon fontSize="small" />,
-          endAdornment: (
-            <IconButton
-              title="Clear"
-              aria-label="Clear"
-              size="small"
-              style={{ visibility: props.value ? 'visible' : 'hidden' }}
-              onClick={props.clearSearch}
-            >
-              <ClearIcon fontSize="small" />
-            </IconButton>
-          )
-        }}
-        sx={{
-          width: {
-            xs: 1,
-            sm: 'auto'
-          },
-          m: (theme) => theme.spacing(1, 0.5, 1.5),
-          '& .MuiSvgIconRoot': {
-            mr: 0.5
-          },
-          '& .MuiInputUnderline:before': {
-            borderBottom: 1,
-            borderColor: 'divider'
-          }
-        }}
-      />
-    </Box>
-  );
 }
 
 const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
@@ -247,8 +178,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   const handleAccessRequestRowSelection = (ids) => {
     // Get user details from ids
     const requests: Record<string, any>[] = [];
-    for (let i = 0; i < ids.length; i++) {
-      const user = accessRequests.find((u) => u.access_request_id === ids[i]);
+    for (const id of ids) {
+      const user = accessRequests.find((u) => u.access_request_id === id);
       if (user) {
         requests.push(user);
       }
@@ -299,27 +230,27 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
       return arg;
     };
     const rows: Record<string, any>[] = [];
-    for (let i = 0; i < requests.length; i++) {
+    for (const request of requests) {
       rows.push({
-        id: requests[i].access_request_id,
-        requestType: requests[i].request_type || 'ACCESS',
-        firstName: requests[i].first_name,
-        lastName: requests[i].last_name,
-        email: requests[i].primary_email,
-        employer: requests[i].employer,
-        pacNumber: requests[i].pac_number,
-        status: formatStatus(requests[i].status),
-        requestedRoles: requests[i].requested_roles,
-        bceidAccountName: requests[i].bceid_account_name,
-        bceidUserId: requests[i].bceid_userid,
-        comments: requests[i].comments,
-        fundingAgencies: requests[i].funding_agencies,
-        idirAccountName: requests[i].idir_account_name,
-        idirUserId: requests[i].idir_userid,
-        pacServiceNumber1: requests[i].pac_service_number_1,
-        pacServiceNumber2: requests[i].pac_service_number_2,
-        workPhoneNumber: requests[i].work_phone_number,
-        dateRequested: new Date(requests[i].created_at).toLocaleString()
+        id: request.access_request_id,
+        requestType: request.request_type || 'ACCESS',
+        firstName: request.first_name,
+        lastName: request.last_name,
+        email: request.primary_email,
+        employer: request.employer,
+        pacNumber: request.pac_number,
+        status: formatStatus(request.status),
+        requestedRoles: request.requested_roles,
+        bceidAccountName: request.bceid_account_name,
+        bceidUserId: request.bceid_userid,
+        comments: request.comments,
+        fundingAgencies: request.funding_agencies,
+        idirAccountName: request.idir_account_name,
+        idirUserId: request.idir_userid,
+        pacServiceNumber1: request.pac_service_number_1,
+        pacServiceNumber2: request.pac_service_number_2,
+        workPhoneNumber: request.work_phone_number,
+        dateRequested: new Date(request.created_at).toLocaleString()
       });
     }
     setRequestRows(rows);
@@ -354,6 +285,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
     { field: 'pacServiceNumber2', headerName: 'PAC Service Number 2', width: 200 },
     { field: 'actions', headerName: 'Actions', width: 100, renderCell: (row) => renderDetailsButton(row as GridValueGetterParams) }
   ];
+
   const initHiddenFields = {
     accountStatus: false,
     activationStatus: false,
@@ -411,9 +343,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   /* ON MOUNT */
 
   useEffect(() => {
-    if (!authState?.authenticated) {
-      return;
-    }
+    if (!authState?.authenticated) { return; }
     loadUsers();
     getAvailableRoles();
     getFundingAgencies();
@@ -773,31 +703,31 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           maxWidth="sm"
           fullWidth
         >
-          <DialogTitle id="alert-dialog-title">
-            <strong>{detailsDialogUser.firstName + ' ' + detailsDialogUser.lastName}</strong>
+          <DialogTitle id="alert-dialog-title" fontWeight="bold">
+            {detailsDialogUser.firstName + ' ' + detailsDialogUser.lastName}
           </DialogTitle>
           <DialogContent>
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>Email: </strong>
                 {detailsDialogUser.email}
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>Username: </strong>
                 {detailsDialogUser.preferredUsername}
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>Expiry Date: </strong>
                 {detailsDialogUser.expiryDate}
               </Typography>
             </Grid>
             {detailsDialogUser.bceidUserId && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>BCEID User ID: </strong>
                   {detailsDialogUser.bceidUserId}
                 </Typography>
@@ -805,7 +735,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogUser.idirUserId && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>IDIR User ID: </strong>
                   {detailsDialogUser.idirUserId}
                 </Typography>
@@ -813,7 +743,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogUser.idirAccountName && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>IDIR Account Name: </strong>
                   {detailsDialogUser.idirAccountName}
                 </Typography>
@@ -821,7 +751,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogUser.workPhoneNumber && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>Work Phone: </strong>
                   {detailsDialogUser.workPhoneNumber}
                 </Typography>
@@ -830,21 +760,20 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             {detailsDialogUser.employer && (
               <>
                 <Grid item>
-                  <Typography variant="h6">
+                  <Typography>
                     <strong>Employer: </strong>
                   </Typography>
                 </Grid>
                 <Grid item>
                   {detailsDialogUser.employer.split(',').map((employer) => (
-                    <Typography variant="h6" key={employer}>
-                      <li key={employer}>
+                    <Typography key={employer}>
+                      <ListItem key={employer}>
                         {employerCodes.map((employerCode) => {
                           if (employerCode.value === employer) {
                             return employerCode.description;
                           }
-                          return '';
                         })}
-                      </li>
+                      </ListItem>
                     </Typography>
                   ))}
                 </Grid>
@@ -852,7 +781,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogUser.pacNumber && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>PAC Number: </strong>
                   {detailsDialogUser.pacNumber}
                 </Typography>
@@ -860,7 +789,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogUser.pacServiceNumber1 && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>PAC Service Number 1: </strong>
                   {detailsDialogUser.pacServiceNumber1}
                 </Typography>
@@ -868,7 +797,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogUser.pacServiceNumber2 && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>PAC Service Number 2: </strong>
                   {detailsDialogUser.pacServiceNumber2}
                 </Typography>
@@ -877,39 +806,44 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             {detailsDialogUser.fundingAgencies && detailsDialogUser.fundingAgencies.length > 0 && (
               <>
                 <Grid item>
-                  <Typography variant="h6">
+                  <Typography>
                     <strong>Funding Agencies: </strong>
                   </Typography>
                 </Grid>
                 <Grid item>
-                  {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
-                    <Typography variant="h6" key={agency}>
-                      <li key={agency}>
-                        {agencyCodes.map((agencyCode) => {
-                          if (agencyCode.value === agency) {
-                            return agencyCode.description;
-                          }
-                          return '';
-                        })}
-                      </li>
-                    </Typography>
-                  ))}
+                  <List dense>
+                    {detailsDialogUser.fundingAgencies.split(',').map((agency) => (
+                      <ListItem>
+                        <Typography key={agency}>
+                          {agencyCodes.map((agencyCode) => {
+                            if (agencyCode.value === agency) {
+                              return agencyCode.description;
+                            }
+                          })}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
                 </Grid>
               </>
             )}
             {detailsDialogUser.role && detailsDialogUser.role.length > 0 && (
               <>
                 <Grid item>
-                  <Typography variant="h6">
-                    <strong>Roles: </strong>
+                  <Typography fontWeight="bold">
+                    Roles:
                   </Typography>
                 </Grid>
                 <Grid item>
-                  {detailsDialogUser.role.split(',').map((role) => (
-                    <Typography variant="h6" key={role}>
-                      <li key={role}>{role}</li>
-                    </Typography>
-                  ))}
+                  <List dense>
+                    {detailsDialogUser.role.split(',').map((role) => (
+                      <ListItem key={role}>
+                        <Typography key={role}>
+                          {role}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
                 </Grid>
               </>
             )}
@@ -946,19 +880,19 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
           maxWidth="sm"
           fullWidth
         >
-          <DialogTitle id="alert-dialog-title">
-            <strong>{detailsDialogRequestUser.firstName + ' ' + detailsDialogRequestUser.lastName}</strong>
+          <DialogTitle id="alert-dialog-title" fontWeight="bold">
+            {detailsDialogRequestUser.firstName + ' ' + detailsDialogRequestUser.lastName}
           </DialogTitle>
           <DialogContent>
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>Email: </strong>
                 {detailsDialogRequestUser.email}
               </Typography>
             </Grid>
             {detailsDialogRequestUser.bceidUserId && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>BCEID User ID: </strong>
                   {detailsDialogRequestUser.bceidUserId}
                 </Typography>
@@ -966,7 +900,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogRequestUser.idirUserId && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>IDIR User ID: </strong>
                   {detailsDialogRequestUser.idirUserId}
                 </Typography>
@@ -974,7 +908,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogRequestUser.bceidAccountName && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>BCEID Account Name: </strong>
                   {detailsDialogRequestUser.bceidAccountName}
                 </Typography>
@@ -982,51 +916,51 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             )}
             {detailsDialogRequestUser.idirAccountName && (
               <Grid item>
-                <Typography variant="h6">
+                <Typography>
                   <strong>IDIR Account Name: </strong>
                   {detailsDialogRequestUser.idirAccountName}
                 </Typography>
               </Grid>
             )}
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>Work Phone: </strong>
                 {detailsDialogRequestUser.workPhoneNumber}
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>Employer: </strong>
               </Typography>
             </Grid>
             <Grid item>
-              {detailsDialogRequestUser.employer.split(',').map((employer) => (
-                <Typography variant="h6" key={employer}>
-                  <li key={employer}>
-                    {employerCodes.map((employerCode) => {
-                      if (employerCode.value === employer) {
-                        return employerCode.description;
-                      }
-                      return '';
-                    })}
-                  </li>
-                </Typography>
-              ))}
+              <List dense>
+                {detailsDialogRequestUser.employer.split(',').map((employer) => (
+                  <ListItem key={employer}>
+                    <Typography key={employer}>
+                      {employerCodes.map((employerCode) => {
+                        if (employerCode.value === employer)
+                          return (employerCode.description)
+                      })}
+                    </Typography>
+                  </ListItem>
+                ))}
+              </List>
             </Grid>
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>PAC Number: </strong>
                 {detailsDialogRequestUser.pacNumber}
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>PAC Service Number 1: </strong>
                 {detailsDialogRequestUser.pacServiceNumber1}
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="h6">
+              <Typography>
                 <strong>PAC Service Number 2: </strong>
                 {detailsDialogRequestUser.pacServiceNumber2}
               </Typography>
@@ -1034,22 +968,21 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             {detailsDialogRequestUser.fundingAgencies && detailsDialogRequestUser.fundingAgencies.length > 0 && (
               <>
                 <Grid item>
-                  <Typography variant="h6">
-                    <strong>Funding Agencies: </strong>
+                  <Typography fontWeight="bold">
+                    Funding Agencies:
                   </Typography>
                 </Grid>
                 <Grid item>
                   {detailsDialogRequestUser.fundingAgencies.split(',').map((agency) => (
-                    <Typography variant="h6" key={agency}>
-                      <li key={agency}>
+                    <ListItem key={agency}>
+                      <Typography key={agency}>
                         {agencyCodes.map((agencyCode) => {
                           if (agencyCode.value === agency) {
-                            return agencyCode.description;
+                            return agencyCode.description
                           }
-                          return '';
                         })}
-                      </li>
-                    </Typography>
+                      </Typography>
+                    </ListItem>
                   ))}
                 </Grid>
               </>
@@ -1057,23 +990,24 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             {detailsDialogRequestUser.requestedRoles && detailsDialogRequestUser.requestedRoles.length > 0 && (
               <>
                 <Grid item>
-                  <Typography variant="h6">
-                    <strong>Requested Roles: </strong>
+                  <Typography fontWeight="bold">
+                    Requested Roles:
                   </Typography>
                 </Grid>
                 <Grid item>
-                  {detailsDialogRequestUser.requestedRoles.split(',').map((role) => (
-                    <Typography variant="h6" key={role}>
-                      <li key={role}>
-                        {availableRoles.map((roleCode) => {
-                          if (roleCode.name === role) {
-                            return roleCode.description;
-                          }
-                          return '';
-                        })}
-                      </li>
-                    </Typography>
-                  ))}
+                  <List dense>
+                    {detailsDialogRequestUser.requestedRoles.split(',').map((role) => (
+                      <ListItem key={role}>
+                        <Typography>
+                          {availableRoles.map((roleCode) => {
+                            if (roleCode.name === role) {
+                              return roleCode.description;
+                            }
+                          })}
+                        </Typography>
+                      </ListItem>
+                    ))}
+                  </List>
                 </Grid>
               </>
             )}
@@ -1102,8 +1036,10 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         <DialogTitle id="form-dialog-title">{mode === Mode.GRANT ? 'Grant Role' : 'Revoke Role'}</DialogTitle>
         <Divider />
         <DialogContent>
-          <DialogContentText>
-            {mode === Mode.GRANT ? <strong>Selected Users: </strong> : <strong>Selected User: </strong>}
+          <DialogContentText fontWeight="bold">
+            {mode === Mode.GRANT
+              ? "Selected Users:"
+              : "Selected User:"}
           </DialogContentText>
           <List dense>
             {selectedUsers.map((user) => (
@@ -1170,26 +1106,26 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         </DialogTitle>
         <Divider />
         <DialogContent>
-          <DialogContentText>
-            {mode === Mode.APPROVE ? (
-              <strong>Approve selected requests?</strong>
-            ) : (
-              <strong>Decline the selected request?</strong>
-            )}
+          <DialogContentText fontWeight="bold">
+            {mode === Mode.APPROVE
+              ? "Approve selected requests?"
+              : "Decline the selected request?"}
           </DialogContentText>
           {mode === Mode.APPROVE && (
             <DialogContentText>
               The requested roles will be granted to the user. These can be changed at any time by an admin.
             </DialogContentText>
           )}
-          <DialogContentText>
-            {mode === Mode.APPROVE ? <strong>Selected Users: </strong> : <strong>Selected User: </strong>}
+          <DialogContentText fontWeight="bold">
+            {mode === Mode.APPROVE
+              ? 'Selected Users:'
+              : 'Selected User:'}
           </DialogContentText>
           <List dense>
             {selectedRequestUsers.map((user) => (
               <ListItem key={user.id}>
                 {user.first_name + ' ' + user.last_name}
-                <List>
+                <List dense>
                   {user.requested_roles.split(",").map((roleReq: string) => (
                     <ListItem key={`${user.id}-${roleReq}`}>{roleReq}</ListItem>
                   ))}
@@ -1203,12 +1139,20 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
             Cancel
           </Button>
           {mode === Mode.APPROVE && (
-            <Button variant="contained" color="primary" onClick={approveUsers}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={approveUsers}
+            >
               Approve
             </Button>
           )}
           {mode === Mode.DECLINE && (
-            <Button variant="contained" color="error" onClick={declineUser}>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={declineUser}
+            >
               Decline
             </Button>
           )}
