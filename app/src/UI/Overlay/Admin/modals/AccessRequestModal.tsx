@@ -35,6 +35,11 @@ const AccessRequestModal = ({
       aria-describedby="alert-dialog-description"
       maxWidth="sm"
       fullWidth
+      PaperProps={{
+        sx: {
+          maxHeight: '60vh'
+        }
+      }}
     >
       <DialogTitle id="alert-dialog-title" fontWeight="bold">
         {detailsDialogRequestUser.firstName + ' ' + detailsDialogRequestUser.lastName}
