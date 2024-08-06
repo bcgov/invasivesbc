@@ -10,20 +10,11 @@ import {
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-  ACTIVITY_UPDATE_SYNC_STATE,
-  NETWORK_GO_ONLINE
+  ACTIVITY_UPDATE_SYNC_STATE
 } from 'state/actions';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-
-export function* trigger_NETWORK_ONLINE() {
-  const connected = yield select(selectNetworkConnected);
-  if (connected) {
-    yield delay(100);
-    yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC });
-  }
-}
 
 export function* handle_ACTIVITY_SAVE_OFFLINE() {
   // all logic handled in the reducer
@@ -148,6 +139,5 @@ export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
   takeEvery(ACTIVITY_GET_LOCAL_REQUEST, handle_ACTIVITY_GET_LOCAL_REQUEST),
   takeEvery(ACTIVITY_SAVE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE),
   takeEvery(ACTIVITY_CREATE_LOCAL, handle_ACTIVITY_CREATE_LOCAL),
-  takeLeading(ACTIVITY_RUN_OFFLINE_SYNC, handle_ACTIVITY_RUN_OFFLINE_SYNC),
-  takeLeading(NETWORK_GO_ONLINE, trigger_NETWORK_ONLINE)
+  takeLeading(ACTIVITY_RUN_OFFLINE_SYNC, handle_ACTIVITY_RUN_OFFLINE_SYNC)
 ];
