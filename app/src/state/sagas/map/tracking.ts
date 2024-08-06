@@ -6,6 +6,10 @@ import { BackgroundGeolocationPlugin } from '@capacitor-community/background-geo
 import { selectMap } from 'state/reducers/map';
 import { MAP_SET_COORDS, MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING } from 'state/actions';
 
+let BackgroundGeolocation: BackgroundGeolocationPlugin | null = null;
+
+const coordChannel = channel();
+
 function* handle_MAP_TOGGLE_TRACKING_FALLBACK() {
   const state = yield select(selectMap);
 
@@ -13,7 +17,7 @@ function* handle_MAP_TOGGLE_TRACKING_FALLBACK() {
     return;
   }
 
-  const coordChannel = channel();
+  coordChannel.flush(() => {});
 
   const callback = async (position) => {
     try {
@@ -63,18 +67,24 @@ function* handle_MAP_TOGGLE_TRACKING_FALLBACK() {
   Geolocation.clearWatch(watchID);
 }
 
-async function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
+function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
+  coordChannel.flush(() => {});
+
   const state = yield select(selectMap);
 
   if (!state.positionTracking) {
     return;
   }
 
-  const coordChannel = channel();
+  if (BackgroundGeolocation == null) {
+    BackgroundGeolocation = registerPlugin('BackgroundGeolocation');
+    if (BackgroundGeolocation == null) {
+      console.error('Cannot enable BackgroundGeolocation plugin');
+      return;
+    }
+  }
 
-  const BackgroundGeolocation: BackgroundGeolocationPlugin = registerPlugin('BackgroundGeolocation');
-
-  const watchId = await BackgroundGeolocation.addWatcher(
+  const watchId = yield BackgroundGeolocation.addWatcher(
     {
       requestPermissions: true,
       stale: false,
@@ -83,14 +93,29 @@ async function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
     function callback(location, error) {
       if (error) {
         if (error.code === 'NOT_AUTHORIZED') {
-          if (window.confirm('This feature requires location tracking permission. Would you like to enable it?')) {
-            BackgroundGeolocation.openSettings();
+          if (BackgroundGeolocation !== null) {
+            if (window.confirm('This feature requires location tracking permission. Would you like to enable it?')) {
+              BackgroundGeolocation.openSettings();
+            }
           }
         }
         return console.error(error);
       }
-
-      return console.log(location);
+      if (location !== null) {
+        coordChannel.put({
+          type: MAP_SET_COORDS,
+          payload: {
+            position: {
+              coords: {
+                latitude: location?.latitude,
+                longitude: location?.longitude,
+                accuracy: location?.accuracy,
+                heading: location?.bearing
+              }
+            }
+          }
+        });
+      }
     }
   );
 
@@ -108,7 +133,7 @@ async function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
     counter++;
   }
 
-  await BackgroundGeolocation.removeWatcher({ id: watchId });
+  yield BackgroundGeolocation.removeWatcher({ id: watchId });
 }
 
 function* handle_MAP_TOGGLE_TRACKING() {

@@ -74,13 +74,17 @@ export const getRecordFromShort = async (shortId: string): Promise<Record<string
       `,
       values: [shortId]
     });
-    delete res.rows[0]['activity_payload'];
-    return res.rows[0];
+    if (res.rowCount > 0) {
+      delete res.rows[0]['activity_payload'];
+      return res.rows[0];
+    }
   } catch (e) {
     defaultLog.error({
       message: '[getRecordFromShort]',
       error: e
     });
+  } finally {
+    connection.release();
   }
 };
 /**
@@ -105,7 +109,6 @@ export const getLongIDFromShort = async (shortId: string): Promise<string> => {
       `,
       values: [shortId]
     });
-
     return res.rows[0]['activity_id'];
   } catch (e) {
     defaultLog.error({
@@ -113,6 +116,8 @@ export const getLongIDFromShort = async (shortId: string): Promise<string> => {
       error: e
     });
     throw new Error('Error validating geometry in the database' + e.message);
+  } finally {
+    connection.release();
   }
 };
 
@@ -145,6 +150,8 @@ export const getRecordTypeFromShort = async (shortId: string): Promise<string> =
       error: e
     });
     throw new Error('Error validating geometry in the database' + e.message);
+  } finally {
+    connection.release();
   }
 };
 
@@ -161,11 +168,12 @@ export const getGeometryAsGeoJSONFromShort = async (shortId: string): Promise<st
                where short_id = $1`,
       values: [shortId]
     });
-
     return res.rows[0]['geog'];
   } catch (e) {
     console.log('error in getGeometryAsGeoJSONFromShort', e);
     throw new Error('Error validating geometry in the database' + e.message);
+  } finally {
+    connection.release();
   }
 };
 
