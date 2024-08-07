@@ -54,7 +54,7 @@ export const FindMeToggle = (props) => {
  * @returns {void}
  */
 export const TrackMeToggle = (props) => {
-  const positionTracking = useSelector((state) => state.Map?.positionTracking);
+  const positionTracking = useSelector((state) => state.Map.positionTracking);
   const drawGeometryTracking = useSelector((state) => state.Map.track_me_draw_geo);
   const dispatch = useDispatch();
   const [show, setShow] = React.useState(false);
