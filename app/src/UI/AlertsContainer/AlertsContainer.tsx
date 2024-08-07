@@ -1,16 +1,17 @@
 import { Alert, AlertTitle, Button, Icon } from '@mui/material';
 import { MapOutlined, Assignment, InsertPhoto } from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './AlertsContainer.css';
 import AlertMessage from 'interfaces/AlertMessage';
 import { CLEAR_ALERT, CLEAR_ALERTS } from 'state/actions';
 import { AlertSubjects } from 'constants/alertEnums';
 import { useEffect, useRef } from 'react';
+import { useSelector } from 'utils/use_selector';
 
 const AlertsContainer = () => {
   const dispatch = useDispatch();
   const timeoutsRef = useRef<ReturnType<typeof setInterval>>({} as ReturnType<typeof setInterval>);
-  const alerts = useSelector((state: any) => state.AlertsAndPrompts.alerts || []);
+  const alerts = useSelector((state) => state.AlertsAndPrompts.alerts || []);
 
   /**
    * @desc Helper function, converts AlertSubjects to Icons
