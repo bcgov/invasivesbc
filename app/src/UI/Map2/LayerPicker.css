@@ -1,0 +1,8 @@
+#layerPickerElement {
+  max-height: 60vh;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 525px;
+  text-wrap: wrap;
+  box-sizing: border-box;
+}

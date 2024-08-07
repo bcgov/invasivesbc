@@ -10,6 +10,7 @@ import LayersIcon from '@mui/icons-material/Layers';
 import CloseIcon from '@mui/icons-material/Close';
 import { Button } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
+import './LayerPicker.css';
 
 export const LayerPicker = () => {
   const layerPickerOpen = useSelector((state: any) => state.Map?.layerPickerOpen);
@@ -19,18 +20,7 @@ export const LayerPicker = () => {
   const drawnLayers = useSelector((state: any) => state.Map?.clientBoundaries);
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
   return (
-    <div
-      id="layerPickerElement"
-      className={layerPickerOpen ? 'layerPickerOpen' : 'layerPickerClosed'}
-      style={{
-        maxHeight: '60vh',
-        overflowY: 'auto',
-        width: '100%',
-        maxWidth: '525px',
-        textWrap: 'wrap',
-        boxSizing: 'border-box'
-      }}
-    >
+    <div id="layerPickerElement" className={layerPickerOpen ? 'layerPickerOpen' : 'layerPickerClosed'}>
       <div id="layerPickerToggleOpen" onClick={() => dispatch({ type: TOGGLE_LAYER_PICKER_OPEN })}>
         <>
           {layerPickerOpen ? (
