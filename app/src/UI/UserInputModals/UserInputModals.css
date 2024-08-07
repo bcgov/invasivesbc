@@ -1,0 +1,23 @@
+#confirmationModal {
+  position: absolute;
+  background-color: white;
+  width: 100%;
+  max-width: 425pt;
+  left: 50%;
+  top: 50%;
+  max-height: 80vh;
+  transform: translate(-50%, -50%);
+  overflow-y: auto;
+}
+
+#confirmationModal > .titleBox {
+  width: 100%;
+  height: 40pt;
+  border: 1pt solid black;
+}
+
+#confirmationModal > .modalTitle {
+  background-color: var(--bc-blue);
+  color: #fff;
+  border-bottom: 2pt solid var(--bc-yellow);
+}
