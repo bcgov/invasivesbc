@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useRef, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import {
   MAP_TOGGLE_TRACKING,
@@ -10,9 +10,10 @@ import 'UI/Global.css';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
+import { useSelector } from 'utils/use_selector';
 
 export const FindMeToggle = (props) => {
-  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
+  const positionTracking = useSelector((state) => state.Map?.positionTracking);
   const dispatch = useDispatch();
   /**
    * TrackMeButton
@@ -53,8 +54,8 @@ export const FindMeToggle = (props) => {
  * @returns {void}
  */
 export const TrackMeToggle = (props) => {
-  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
-  const drawGeometryTracking = useSelector((state: any) => state.Map?.track_me_draw_geo);
+  const positionTracking = useSelector((state) => state.Map?.positionTracking);
+  const drawGeometryTracking = useSelector((state) => state.Map.track_me_draw_geo);
   const dispatch = useDispatch();
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
@@ -103,8 +104,8 @@ export const TrackMeToggle = (props) => {
  * @returns {void}
  */
 export const LocationMarker = (props) => {
-  const userCoords = useSelector((state: any) => state.Map?.userCoords);
-  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
+  const userCoords = useSelector((state) => state.Map?.userCoords);
+  const positionTracking = useSelector((state) => state.Map?.positionTracking);
   const [UTM, setUTM] = useState([]);
 
   /*
