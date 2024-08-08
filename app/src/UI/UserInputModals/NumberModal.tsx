@@ -6,11 +6,8 @@ import {
   DialogTitle,
   Divider,
   FormControl,
-  FormHelperText,
-  InputLabel,
   MenuItem,
   Modal,
-  Select,
   TextField,
   Typography
 } from '@mui/material';
@@ -20,29 +17,29 @@ import { useState } from 'react';
 /**
  * @type {Props} Confirmation Modal Prompts
  * @property {function} callback Function to trigger on user confirmation
- * @property {function} closeModal Handler for closing modal after response
- * @property {boolean} open state variable for modal opening
- * @property {string} title Title for modal
- * @property {string[] | string} prompt Main text body, Can use array to handle multiple paragraphs
- * @property {string} label Override label for user input field
- * @property {number} min
- * @property {number} max
- * @property {number[]} selectOptions set of numbers user can select
  * @property {string} cancelText Text override for 'Cancel' button text
  * @property {string} confirmText Text override for 'Confirm' button text
+ * @property {function} closeModal Handler for closing modal after response
+ * @property {string} label Override label for user input field
+ * @property {number} max
+ * @property {number} min
+ * @property {boolean} open state variable for modal opening
+ * @property {string[] | string} prompt Main text body, Can use array to handle multiple paragraphs
+ * @property {number[]} selectOptions set of numbers user can select
+ * @property {string} title Title for modal
  */
 type Props = {
   callback: () => void;
-  closeModal: () => void;
-  open: boolean;
-  title: string;
-  prompt: string[] | string;
-  label?: string;
-  min?: number;
-  max?: number;
-  selectOptions?: number[];
   cancelText?: string;
+  closeModal: () => void;
   confirmText?: string;
+  label?: string;
+  max?: number;
+  min?: number;
+  open: boolean;
+  prompt: string[] | string;
+  selectOptions?: number[];
+  title: string;
 };
 const NumberModal = ({
   open,
@@ -78,9 +75,9 @@ const NumberModal = ({
     } else if (min !== undefined && max !== undefined && !(min <= userNumber && userNumber <= max)) {
       error = `Number must be between (${min}) and (${max})`;
     } else if (min !== undefined && !(min <= userNumber)) {
-      error = `Number must be less than or equal to (${max})`;
+      error = `Number must be greater than or equal to (${min})`;
     } else if (max !== undefined && !(userNumber <= max)) {
-      error = `Number must be greater or equal to (${min}`;
+      error = `Number must be less than or equal to (${max})`;
     }
     setValidationError(error);
     return error === '';
@@ -99,8 +96,8 @@ const NumberModal = ({
         <DialogTitle className="modalTitle">{title}</DialogTitle>
         <Divider />
         <DialogContent>
-          {typeof prompt === typeof [] ? (
-            (prompt as string[]).map((item, index) => <Typography key={index}>{item}</Typography>)
+          {Array.isArray(prompt) ? (
+            prompt.map((item, index) => <Typography key={index}>{item}</Typography>)
           ) : (
             <Typography>{prompt}</Typography>
           )}
@@ -108,30 +105,30 @@ const NumberModal = ({
         <FormControl className="inputCont">
           {selectOptions ? (
             <>
-              <InputLabel id="selectLabel">{label || 'Select a number'}</InputLabel>
-              <Select
-                labelId="selectLabel"
-                value={userNumber?.toString()}
-                onChange={(evt) => handleChange(evt.target.value)}
-                onBlur={validateUserInput}
+              <TextField
                 error={!!validationError}
+                helperText={validationError}
+                label={label || 'Select a number'}
+                onBlur={validateUserInput}
+                onChange={(evt) => handleChange(evt.target.value)}
+                select
+                value={userNumber?.toString()}
               >
                 {selectOptions.map((item) => (
                   <MenuItem value={item}>{item}</MenuItem>
                 ))}
-              </Select>
-              <FormHelperText sx={{ color: 'red' }}>{validationError}</FormHelperText>
+              </TextField>
             </>
           ) : (
             <TextField
               aria-label="Number Input"
-              value={userNumber}
-              label={label || 'Select a value'}
-              onChange={(evt) => handleChange(evt.currentTarget.value)}
-              onBlur={validateUserInput}
               error={!!validationError}
               helperText={validationError}
               inputProps={{ type: 'number' }}
+              label={label || 'Select a value'}
+              onBlur={validateUserInput}
+              onChange={(evt) => handleChange(evt.currentTarget.value)}
+              value={userNumber}
             />
           )}
         </FormControl>
