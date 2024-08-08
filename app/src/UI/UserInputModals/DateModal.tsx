@@ -16,33 +16,10 @@ import './UserInputModals.css';
 import { useState } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
+import { DateModalInterface } from 'interfaces/prompt-interfaces';
+import { closeModal } from 'utils/userPrompts';
 
-/**
- * @type {Props} Confirmation Modal Prompts
- * @property {function} callback Function to trigger on user confirmation
- * @property {string} cancelText Text override for 'Cancel' button text
- * @property {string} confirmText Text override for 'Confirm' button text
- * @property {function} closeModal Handler for closing modal after response
- * @property {string} label Override label for user input field
- * @property {number} max
- * @property {number} min
- * @property {boolean} open state variable for modal opening
- * @property {number[]} selectOptions set of numbers user can select
- * @property {string} title Title for modal
- */
-type Props = {
-  callback: () => void;
-  cancelText?: string;
-  closeModal: () => void;
-  confirmText?: string;
-  label?: string;
-  max?: Date;
-  min?: Date;
-  open: boolean;
-  prompt: string[] | string;
-  title: string;
-};
-const DateModal = ({ open, callback, closeModal, prompt, title, confirmText, cancelText, min, max, label }: Props) => {
+const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, max, label }: DateModalInterface) => {
   const [userDate, setUserDate] = useState<Dayjs>(dayjs());
   const [validationError, setValidationError] = useState<string>('');
   /**
@@ -75,11 +52,11 @@ const DateModal = ({ open, callback, closeModal, prompt, title, confirmText, can
     const inputIsValid = validateUserInput();
     if (inputIsValid) {
       callback();
-      closeModal();
+      closeModal(id);
     }
   };
   return (
-    <Modal open={open} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+    <Modal open aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
       <Box id="confirmationModal">
         <DialogTitle className="modalTitle">{title}</DialogTitle>
         <Divider />
@@ -102,7 +79,7 @@ const DateModal = ({ open, callback, closeModal, prompt, title, confirmText, can
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={closeModal}>{cancelText || 'Cancel'}</Button>
+          <Button onClick={closeModal.bind(this, id)}>{cancelText || 'Cancel'}</Button>
           <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
         </DialogActions>
       </Box>

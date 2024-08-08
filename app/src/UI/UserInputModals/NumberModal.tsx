@@ -13,47 +13,21 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { useState } from 'react';
+import { NumberModalInterface } from 'interfaces/prompt-interfaces';
+import { closeModal } from 'utils/userPrompts';
 
-/**
- * @type {Props} Confirmation Modal Prompts
- * @property {function} callback Function to trigger on user confirmation
- * @property {string} cancelText Text override for 'Cancel' button text
- * @property {string} confirmText Text override for 'Confirm' button text
- * @property {function} closeModal Handler for closing modal after response
- * @property {string} label Override label for user input field
- * @property {number} max
- * @property {number} min
- * @property {boolean} open state variable for modal opening
- * @property {string[] | string} prompt Main text body, Can use array to handle multiple paragraphs
- * @property {number[]} selectOptions set of numbers user can select
- * @property {string} title Title for modal
- */
-type Props = {
-  callback: () => void;
-  cancelText?: string;
-  closeModal: () => void;
-  confirmText?: string;
-  label?: string;
-  max?: number;
-  min?: number;
-  open: boolean;
-  prompt: string[] | string;
-  selectOptions?: number[];
-  title: string;
-};
 const NumberModal = ({
-  open,
   callback,
-  closeModal,
   prompt,
   title,
+  id,
   confirmText,
   cancelText,
   min,
   max,
   selectOptions,
   label
-}: Props) => {
+}: NumberModalInterface) => {
   const [userNumber, setUserNumber] = useState<number>(0);
   const [validationError, setValidationError] = useState<string>('');
   /**
@@ -87,11 +61,11 @@ const NumberModal = ({
     const inputIsValid = validateUserInput();
     if (inputIsValid) {
       callback();
-      closeModal();
+      closeModal(id);
     }
   };
   return (
-    <Modal open={open} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+    <Modal open aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
       <Box id="confirmationModal">
         <DialogTitle className="modalTitle">{title}</DialogTitle>
         <Divider />
@@ -134,7 +108,7 @@ const NumberModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={closeModal}>{cancelText || 'Cancel'}</Button>
+          <Button onClick={closeModal.bind(this, id)}>{cancelText || 'Cancel'}</Button>
           <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
         </DialogActions>
       </Box>

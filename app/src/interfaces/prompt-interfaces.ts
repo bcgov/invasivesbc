@@ -10,12 +10,10 @@
  * @property {string} title Title for modal
  */
 interface BasePromptInterface {
-  id?: string;
+  id: string;
   callback: () => void;
   cancelText?: string;
-  closeModal: () => void;
   confirmText?: string;
-  open: boolean;
   prompt: string[] | string;
   title: string;
 }

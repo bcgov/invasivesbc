@@ -13,45 +13,15 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { useState } from 'react';
+import { TextModalInterface } from 'interfaces/prompt-interfaces';
+import { closeModal } from 'utils/userPrompts';
 
-/**
- * @type {Props} Confirmation Modal Prompts
- * @property {function} callback Function to trigger on user confirmation
- * @property {string} cancelText Text override for 'Cancel' button text
- * @property {function} closeModal Handler for closing modal after response
- * @property {string} confirmText Text override for 'Confirm' button text
- * @property {string} label Override label for user input field
- * @property {number} max Max length of characters for response
- * @property {number} min Min length of characters for response
- * @property {boolean} open state variable for modal opening
- * @property {string[] | string} prompt Main text body, Can use array to handle multiple paragraphs
- * @property {RegExp} regex Regex pattern to validate user input against
- * @property {string} regexErrorText Override error message for regex errors, otherwise shows pattern
- * @property {string[]} selectOptions set of numbers user can select
- * @property {string} title Title for modal
- */
-type Props = {
-  callback: () => void;
-  cancelText?: string;
-  closeModal: () => void;
-  confirmText?: string;
-  label?: string;
-  max?: number;
-  min?: number;
-  open: boolean;
-  prompt: string[] | string;
-  regex?: RegExp;
-  regexErrorText?: string;
-  selectOptions?: string[];
-  title: string;
-};
 const TextModal = ({
-  open,
   callback,
-  closeModal,
   prompt,
   regex,
   regexErrorText,
+  id,
   title,
   min,
   max,
@@ -59,7 +29,7 @@ const TextModal = ({
   cancelText,
   selectOptions,
   label
-}: Props) => {
+}: TextModalInterface) => {
   const [userResponse, setUserResponse] = useState<string>('');
   const [validationError, setValidationError] = useState<string>('');
   /**
@@ -91,12 +61,12 @@ const TextModal = ({
     const inputIsValid = validateUserInput();
     if (inputIsValid) {
       callback();
-      closeModal();
+      closeModal(id);
     }
   };
 
   return (
-    <Modal open={open} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
+    <Modal open={true} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
       <Box id="confirmationModal">
         <DialogTitle className="modalTitle">{title}</DialogTitle>
         <Divider />
@@ -138,7 +108,7 @@ const TextModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={closeModal}>{cancelText || 'Cancel'}</Button>
+          <Button onClick={closeModal.bind(this, id)}>{cancelText || 'Cancel'}</Button>
           <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
         </DialogActions>
       </Box>
