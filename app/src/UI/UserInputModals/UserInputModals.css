@@ -21,3 +21,11 @@
   color: #fff;
   border-bottom: 2pt solid var(--bc-yellow);
 }
+
+#confirmationModal > .inputCont {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 5pt 15pt;
+  margin-bottom: 1em;
+}
