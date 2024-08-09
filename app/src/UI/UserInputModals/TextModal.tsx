@@ -86,7 +86,7 @@ const TextModal = ({
               <TextField
                 error={!!validationError}
                 helperText={validationError}
-                label={label || 'Select a value from the list'}
+                label={label || 'Select a response from the list'}
                 onBlur={validateUserInput}
                 onChange={(evt) => handleChange(evt.target.value)}
                 select
@@ -102,7 +102,7 @@ const TextModal = ({
               aria-label="Text Input"
               error={!!validationError}
               helperText={validationError}
-              label={label || 'Select a value'}
+              label={label || 'Enter your response'}
               onBlur={validateUserInput}
               onChange={(evt) => handleChange(evt.currentTarget.value)}
               value={userResponse}
