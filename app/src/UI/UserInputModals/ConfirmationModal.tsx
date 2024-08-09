@@ -1,12 +1,27 @@
 import { Box, Button, DialogActions, DialogContent, DialogTitle, Divider, Modal, Typography } from '@mui/material';
 import './UserInputModals.css';
-import { ConfirmationModalInterface } from 'interfaces/prompt-interfaces';
+import { ConfirmationModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import { closeModal } from 'utils/userPrompts';
+import { useDispatch } from 'react-redux';
+import { UnknownAction } from 'redux';
 
+/**
+ * @desc Customizable Input Modal for collecting boolean responses from a user.
+ */
 const ConfirmationModal = ({ callback, id, prompt, title, confirmText, cancelText }: ConfirmationModalInterface) => {
+  const dispatch = useDispatch();
+  const handleRedux = (redux: ReduxPayload[]) => {
+    for (const action of redux) {
+      dispatch(action as UnknownAction);
+    }
+  };
   const handleConfirmation = () => {
-    callback();
-    closeModal(id);
+    handleRedux(callback(true) || []);
+    dispatch(closeModal(id!));
+  };
+  const handleClose = () => {
+    handleRedux(callback(false) || []);
+    dispatch(closeModal(id!));
   };
   return (
     <Modal open={true} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
@@ -22,7 +37,7 @@ const ConfirmationModal = ({ callback, id, prompt, title, confirmText, cancelTex
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={closeModal.bind(this, id)}>{cancelText || 'Cancel'}</Button>
+          <Button onClick={handleClose}>{cancelText || 'Cancel'}</Button>
           <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
         </DialogActions>
       </Box>
