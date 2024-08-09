@@ -16,18 +16,34 @@ import './UserInputModals.css';
 import { useState } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
-import { DateModalInterface } from 'interfaces/prompt-interfaces';
+import { DateModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import { closeModal } from 'utils/userPrompts';
+import { useDispatch } from 'react-redux';
+import { UnknownAction } from 'redux';
 
 const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, max, label }: DateModalInterface) => {
   const [userDate, setUserDate] = useState<Dayjs>(dayjs());
   const [validationError, setValidationError] = useState<string>('');
+  const dispatch = useDispatch();
+  const handleClose = () => dispatch(closeModal(id!));
   /**
    * @desc change handler for select menu
    */
   const handleChange = (value: Dayjs) => {
     setUserDate(value);
     validateUserInput();
+  };
+  const handleRedux = (redux: ReduxPayload[]) => {
+    for (const action of redux) {
+      dispatch(action as UnknownAction);
+    }
+  };
+  const handleConfirmation = () => {
+    const inputIsValid = validateUserInput();
+    if (inputIsValid) {
+      handleRedux(callback(userDate.toDate()) || []);
+      handleClose();
+    }
   };
   /**
    * @desc Validate number input against supplied props.
@@ -48,13 +64,6 @@ const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, 
     return error === '';
   };
 
-  const handleConfirmation = () => {
-    const inputIsValid = validateUserInput();
-    if (inputIsValid) {
-      callback();
-      closeModal(id);
-    }
-  };
   return (
     <Modal open aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
       <Box id="confirmationModal">
@@ -79,7 +88,7 @@ const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, 
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={closeModal.bind(this, id)}>{cancelText || 'Cancel'}</Button>
+          <Button onClick={handleClose}>{cancelText || 'Cancel'}</Button>
           <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
         </DialogActions>
       </Box>
