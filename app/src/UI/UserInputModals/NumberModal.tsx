@@ -51,9 +51,15 @@ const NumberModal = ({
    */
   const handleChange = (value: string) => {
     if (acceptFloats) {
-      setUserNumber(parseFloat(value));
+      const result = parseFloat(value);
+      if (!isNaN(result)) {
+        setUserNumber(result);
+      }
     } else {
-      setUserNumber(parseInt(value));
+      const result = parseInt(value);
+      if (!isNaN(result)) {
+        setUserNumber(result);
+      }
     }
     validateUserInput();
   };

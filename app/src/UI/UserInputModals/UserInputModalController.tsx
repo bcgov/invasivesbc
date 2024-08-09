@@ -62,6 +62,7 @@ const UserInputModalController = () => {
           prompt={prompt.prompt}
           selectOptions={prompt.selectOptions}
           title={prompt.title}
+          acceptFloats={prompt?.acceptFloats}
         />
       );
     case PromptTypes.Text:
