@@ -13,8 +13,10 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { useState } from 'react';
-import { TextModalInterface } from 'interfaces/prompt-interfaces';
+import { ReduxPayload, TextModalInterface } from 'interfaces/prompt-interfaces';
 import { closeModal } from 'utils/userPrompts';
+import { useDispatch } from 'react-redux';
+import { UnknownAction } from 'redux';
 
 const TextModal = ({
   callback,
@@ -32,13 +34,22 @@ const TextModal = ({
 }: TextModalInterface) => {
   const [userResponse, setUserResponse] = useState<string>('');
   const [validationError, setValidationError] = useState<string>('');
-  /**
-   * @desc change handler for select menu
-   */
-  const handleChange = (value: string) => {
-    setUserResponse(value);
+  const dispatch = useDispatch();
+
+  const handleChange = (value: string) => setUserResponse(value);
+  const handleClose = () => dispatch(closeModal(id!));
+  const handleRedux = (redux: ReduxPayload[]) => {
+    for (const action of redux) {
+      dispatch(action as UnknownAction);
+    }
   };
 
+  const handleConfirmation = () => {
+    if (validateUserInput()) {
+      handleRedux(callback(userResponse) || []);
+      handleClose();
+    }
+  };
   const validateUserInput = (): boolean => {
     let error = '';
     let resLength = userResponse.length;
@@ -55,14 +66,6 @@ const TextModal = ({
     }
     setValidationError(error);
     return error === '';
-  };
-
-  const handleConfirmation = () => {
-    const inputIsValid = validateUserInput();
-    if (inputIsValid) {
-      callback();
-      closeModal(id);
-    }
   };
 
   return (
@@ -108,7 +111,7 @@ const TextModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={closeModal.bind(this, id)}>{cancelText || 'Cancel'}</Button>
+          <Button onClick={handleClose}>{cancelText || 'Cancel'}</Button>
           <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
         </DialogActions>
       </Box>
