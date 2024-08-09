@@ -32,6 +32,7 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { useSelector } from 'utils/use_selector';
 import { MobileBetaAccessMessage } from 'UI/Overlay/MobileBetaAccess/MobileBetaAccessMessage';
 import AlertsContainer from './AlertsContainer/AlertsContainer';
+import UserInputModalController from './UserInputModals/UserInputModalController';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -256,6 +257,7 @@ const App: React.FC = () => {
   return (
     <div id="app" className={appClasses}>
       <AlertsContainer />
+      <UserInputModalController />
       <Header />
       <MobileOnly>
         {/* On mobile builds, show a message to BCEID users for now*/}
