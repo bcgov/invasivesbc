@@ -26,13 +26,13 @@ export function createAlertsAndPromptsReducer(
             (item: AlertMessage) => action.payload.content === item.content && action.payload.severity === item.severity
           );
           if (!newAlertIsDuplicate) {
-            draftState.alerts = [...state.alerts, { id: newID, ...action.payload }];
+            draftState.alerts = [...state.alerts, { ...action.payload, id: newID }];
           }
           break;
         }
         case NEW_PROMPT: {
           const newID = getUuid();
-          draftState.prompts = [...state.prompts, { id: newID, ...action.payload }];
+          draftState.prompts = [...state.prompts, { ...action.payload, id: newID }];
           break;
         }
         case CLEAR_ALERTS: {
