@@ -106,6 +106,7 @@ import { calculateGeometryArea } from 'utils/geometryHelpers';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import AlertMessage from 'interfaces/AlertMessage';
+import { promptConfirmationInput } from 'utils/userPrompts';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -279,17 +280,6 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
 }
 
 /**
- * @desc Creates a formatted string to display warning to users about incomplete geometries.
- *       Displays errors as bulletted list due to 'confirm()' being blocking.
- * @param numErrors All validation errors for current geom
- * @returns {string} User prompt displaying all errors
- */
-const earlyExitConfirmation = (numErrors: AlertMessage[]): string => {
-  const errorsList = numErrors.map((error) => error.content).join('\n\u2022 ');
-  return `You\'ve attempted to stop tracking, but ${numErrors.length} error(s) exist, do you want to abandon your progress?\n\u2022 ${errorsList}`;
-};
-
-/**
  * @desc Handler for Finalizing GPS drawn shapes. Validates points of GPS, including closing point.
  *       If all validation passes, the shape is updated and tracking stops,
  *       else the user is prompted if they wish to abandon progress
@@ -346,13 +336,24 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
     for (const error of validationErrors) {
       yield put({ type: NEW_ALERT, payload: error });
     }
-    const userConfirmsExit = confirm(earlyExitConfirmation(validationErrors));
-    if (userConfirmsExit) {
-      yield put({ type: CLEAR_ALERTS });
-      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackMyPathStoppedEarly });
-      yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
-    }
+    const callback = (userConfirmsExit: boolean) => {
+      if (userConfirmsExit) {
+        return [
+          { type: CLEAR_ALERTS },
+          { type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE },
+          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
+          { type: NEW_ALERT, payload: mappingAlertMessages.trackMyPathStoppedEarly }
+        ];
+      }
+    };
+    yield put(
+      promptConfirmationInput({
+        title: 'Errors in current geography',
+        prompt: `You\'ve attempted to stop tracking, but ${validationErrors.length} error(s) exist, do you want to abandon your progress?`,
+        confirmText: 'Stop Tracking',
+        callback
+      })
+    );
   }
 }
 
