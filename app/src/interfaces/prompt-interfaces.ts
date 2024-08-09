@@ -53,6 +53,7 @@ export interface TextModalInterface extends BasePromptInterface {
  * @property {string} label Override label for user input field
  * @property {number} min minimum range for response
  * @property {number} max maximum range for response
+ * @property {boolean} acceptFloats Allow user to enter floats as input value
  */
 export interface NumberModalInterface extends BasePromptInterface {
   selectOptions?: number[];
@@ -60,6 +61,7 @@ export interface NumberModalInterface extends BasePromptInterface {
   label?: string;
   max?: number;
   min?: number;
+  acceptFloats?: boolean;
 }
 
 /**

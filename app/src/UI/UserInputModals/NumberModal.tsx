@@ -13,8 +13,10 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { useState } from 'react';
-import { NumberModalInterface } from 'interfaces/prompt-interfaces';
+import { NumberModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
 import { closeModal } from 'utils/userPrompts';
+import { useDispatch } from 'react-redux';
+import { UnknownAction } from 'redux';
 
 const NumberModal = ({
   callback,
@@ -26,21 +28,43 @@ const NumberModal = ({
   min,
   max,
   selectOptions,
-  label
+  label,
+  acceptFloats
 }: NumberModalInterface) => {
   const [userNumber, setUserNumber] = useState<number>(0);
   const [validationError, setValidationError] = useState<string>('');
+  const dispatch = useDispatch();
+  const handleRedux = (redux: ReduxPayload[]) => {
+    for (const action of redux) {
+      dispatch(action as UnknownAction);
+    }
+  };
+  const handleConfirmation = () => {
+    const inputIsValid = validateUserInput();
+    if (inputIsValid) {
+      handleRedux(callback(userNumber) || []);
+      handleClose();
+    }
+  };
   /**
    * @desc change handler for select menu
    */
   const handleChange = (value: string) => {
-    setUserNumber(parseInt(value));
+    if (acceptFloats) {
+      setUserNumber(parseFloat(value));
+    } else {
+      setUserNumber(parseInt(value));
+    }
     validateUserInput();
+  };
+
+  const handleClose = () => {
+    dispatch(closeModal(id!));
   };
   /**
    * @desc Validate number input against supplied props.
    *       Has to explicitly check if undefined as 0 is falsey.
-   * @returns numbers pass validation, or true if none supplied.
+   * @returns numbers pass validation, defaults true if no validators supplied.
    */
   const validateUserInput = (): boolean => {
     let error: string = '';
@@ -57,13 +81,6 @@ const NumberModal = ({
     return error === '';
   };
 
-  const handleConfirmation = () => {
-    const inputIsValid = validateUserInput();
-    if (inputIsValid) {
-      callback();
-      closeModal(id);
-    }
-  };
   return (
     <Modal open aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">
       <Box id="confirmationModal">
@@ -108,7 +125,7 @@ const NumberModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={closeModal.bind(this, id)}>{cancelText || 'Cancel'}</Button>
+          <Button onClick={handleClose}>{cancelText || 'Cancel'}</Button>
           <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
         </DialogActions>
       </Box>
