@@ -28,7 +28,7 @@ export const closeModal = (id: string): UnknownAction => ({
  * @param {ConfirmationModalInterface} prompt component props
  * @returns {ReduxPayload}
  */
-export const promptConfirmationInput = (prompt: ConfirmationModalInterface): ReduxPayload => {
+export const promptConfirmationInput = (prompt: ConfirmationModalInterface) => {
   prompt.type = PromptTypes.Confirmation;
   return {
     type: NEW_PROMPT,
@@ -40,7 +40,7 @@ export const promptConfirmationInput = (prompt: ConfirmationModalInterface): Red
  * @param {DateModalInterface} prompt component props
  * @returns {ReduxPayload}
  */
-export const promptDateInput = (prompt: DateModalInterface): ReduxPayload => {
+export const promptDateInput = (prompt: DateModalInterface) => {
   prompt.type = PromptTypes.Date;
   return {
     type: NEW_PROMPT,
@@ -52,7 +52,7 @@ export const promptDateInput = (prompt: DateModalInterface): ReduxPayload => {
  * @param {NumberModalInterface} prompt component props
  * @returns {ReduxPayload}
  */
-export const promptNumberInput = (prompt: NumberModalInterface): ReduxPayload => {
+export const promptNumberInput = (prompt: NumberModalInterface) => {
   prompt.type = PromptTypes.Number;
   return {
     type: NEW_PROMPT,
@@ -64,7 +64,7 @@ export const promptNumberInput = (prompt: NumberModalInterface): ReduxPayload =>
  * @param {TextModalInterface} prompt component props
  * @returns {ReduxPayload}
  */
-export const promptTextInput = (prompt: TextModalInterface): ReduxPayload => {
+export const promptTextInput = (prompt: TextModalInterface) => {
   prompt.type = PromptTypes.Text;
   return {
     type: NEW_PROMPT,

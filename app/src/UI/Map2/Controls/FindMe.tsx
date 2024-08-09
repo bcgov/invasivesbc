@@ -11,6 +11,7 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import { useSelector } from 'utils/use_selector';
+import { promptConfirmationInput } from 'utils/userPrompts';
 
 export const FindMeToggle = (props) => {
   const positionTracking = useSelector((state) => state.Map?.positionTracking);
@@ -60,16 +61,25 @@ export const TrackMeToggle = (props) => {
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
 
+  const promptHandler = (res: boolean) => {
+    if (!drawGeometryTracking && res) {
+      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START });
+    }
+  };
   const clickHandler = () => {
-    const startTrackingConfirmation =
-      'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.';
     setShow(false);
     if (drawGeometryTracking) {
       dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
-    } else if (!drawGeometryTracking && confirm(startTrackingConfirmation)) {
-      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START });
     } else {
-      return;
+      dispatch(
+        promptConfirmationInput({
+          callback: promptHandler,
+          prompt:
+            'On the Activity Page this will edit your geometry for the record, and create a polygon once complete.',
+          title: 'Are you sure you want to track your path?',
+          confirmText: 'Start Tracking'
+        })
+      );
     }
   };
   // this is to stop user from clicking it again while things are happening
