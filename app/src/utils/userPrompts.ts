@@ -1,5 +1,6 @@
 /**
  * @desc Helper functions for Prompt system, used to ensure prop correctness when creating a prompts
+ * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Prompt-System }
  */
 
 import { PromptTypes } from 'constants/promptEnums';

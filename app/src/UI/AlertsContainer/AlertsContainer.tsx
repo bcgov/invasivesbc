@@ -1,3 +1,7 @@
+/**
+ * @desc Main controller for the User Alert System
+ * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Alert-System }
+ */
 import { Alert, AlertTitle, Button, Icon } from '@mui/material';
 import { MapOutlined, Assignment, InsertPhoto } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';

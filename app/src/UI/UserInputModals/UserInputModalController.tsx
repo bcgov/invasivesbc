@@ -13,6 +13,7 @@ import {
 } from 'interfaces/prompt-interfaces';
 /**
  * @desc Handler for all User Input Modals, Uses Redux store as a queue to display prompts to user when input is needed
+ * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Prompt-System }
  */
 const UserInputModalController = () => {
   const prompts = useSelector((state) => state.AlertsAndPrompts.prompts) || [];

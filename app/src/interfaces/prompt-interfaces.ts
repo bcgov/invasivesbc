@@ -1,5 +1,6 @@
 /**
  * @desc Interfaces for Prompt System, contains all props for inputs.
+ * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Prompt-System }
  */
 import { PromptTypes } from 'constants/promptEnums';
 
