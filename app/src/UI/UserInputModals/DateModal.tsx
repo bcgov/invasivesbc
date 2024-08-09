@@ -53,11 +53,11 @@ const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, 
   const validateUserInput = (): boolean => {
     const currDate = userDate.toDate();
     let error = '';
-    if (min && max && !(min <= currDate && currDate <= max)) {
+    if (min && max && (currDate < min || max < currDate)) {
       error = `Date needs to occur between ${min.toLocaleDateString()} and ${max.toLocaleDateString()}`;
-    } else if (min && !(min <= currDate)) {
+    } else if (min && currDate < min) {
       error = `Date needs to occur on or after ${min.toLocaleDateString()}`;
-    } else if (max && !(currDate <= max)) {
+    } else if (max && max < currDate) {
       error = `Date needs to occur on or before ${max.toLocaleDateString()}`;
     }
     setValidationError(error);

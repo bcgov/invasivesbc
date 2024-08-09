@@ -78,11 +78,11 @@ const NumberModal = ({
     let error: string = '';
     if (selectOptions && !selectOptions.includes(userNumber)) {
       error = 'Must select a value from the select menu';
-    } else if (min !== undefined && max !== undefined && !(min <= userNumber && userNumber <= max)) {
+    } else if (min !== undefined && max !== undefined && (userNumber < min || max < userNumber)) {
       error = `Number must be between (${min}) and (${max})`;
-    } else if (min !== undefined && !(min <= userNumber)) {
+    } else if (min !== undefined && userNumber < min) {
       error = `Number must be greater than or equal to (${min})`;
-    } else if (max !== undefined && !(userNumber <= max)) {
+    } else if (max !== undefined && max < userNumber) {
       error = `Number must be less than or equal to (${max})`;
     }
     setValidationError(error);

@@ -57,11 +57,11 @@ const TextModal = ({
       error = 'You need to select an option from the menu';
     } else if (regex && !regex.test(userResponse)) {
       error = regexErrorText || `Response does not match pattern ${regex}`;
-    } else if (min !== undefined && max !== undefined && !(min <= resLength && resLength <= max)) {
+    } else if (min !== undefined && max !== undefined && (resLength < min || max < resLength)) {
       error = `Response must be between (${min}) and (${max}) characters in length`;
-    } else if (min !== undefined && !(min <= resLength)) {
+    } else if (min !== undefined && resLength < min) {
       error = `Response must be greater than or equal to (${max}) characters in length`;
-    } else if (max !== undefined && !(resLength <= max)) {
+    } else if (max !== undefined && max < resLength) {
       error = `Response must be less than or equal to (${max}) characters in length`;
     }
     setValidationError(error);
