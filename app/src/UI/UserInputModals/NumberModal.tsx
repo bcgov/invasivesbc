@@ -50,7 +50,9 @@ const NumberModal = ({
    * @desc change handler for select menu
    */
   const handleChange = (value: string) => {
-    if (acceptFloats) {
+    if (value === '') {
+      setUserNumber(0);
+    } else if (acceptFloats) {
       const result = parseFloat(value);
       if (!isNaN(result)) {
         setUserNumber(result);
@@ -105,7 +107,7 @@ const NumberModal = ({
               <TextField
                 error={!!validationError}
                 helperText={validationError}
-                label={label || 'Select a number'}
+                label={label || 'Select a value'}
                 onBlur={validateUserInput}
                 onChange={(evt) => handleChange(evt.target.value)}
                 select
@@ -122,7 +124,7 @@ const NumberModal = ({
               error={!!validationError}
               helperText={validationError}
               inputProps={{ type: 'number' }}
-              label={label || 'Select a value'}
+              label={label || 'Enter response'}
               onBlur={validateUserInput}
               onChange={(evt) => handleChange(evt.currentTarget.value)}
               value={userNumber}
