@@ -1,4 +1,13 @@
 /**
+ * @desc Interfaces for Prompt System, contains all props for inputs.
+ */
+import { PromptTypes } from 'constants/promptEnums';
+
+export interface ReduxPayload {
+  type: string;
+  payload?: Record<string, any>;
+}
+/**
  * @interface BasePromptInterface Confirmation Modal Prompts
  * @property {function} callback Function to trigger on user confirmation
  * @property {string} cancelText Text override for 'Cancel' button text
@@ -10,8 +19,8 @@
  * @property {string} title Title for modal
  */
 interface BasePromptInterface {
-  id: string;
-  callback: () => void;
+  id?: string;
+  type?: PromptTypes;
   cancelText?: string;
   confirmText?: string;
   prompt: string[] | string;
@@ -28,6 +37,7 @@ interface BasePromptInterface {
  * @property {number} max maximum character length for response
  */
 export interface TextModalInterface extends BasePromptInterface {
+  callback: (input: string) => void | ReduxPayload[];
   label?: string;
   max?: number;
   min?: number;
@@ -46,6 +56,7 @@ export interface TextModalInterface extends BasePromptInterface {
  */
 export interface NumberModalInterface extends BasePromptInterface {
   selectOptions?: number[];
+  callback: (input: number) => void | ReduxPayload[];
   label?: string;
   max?: number;
   min?: number;
@@ -60,6 +71,7 @@ export interface NumberModalInterface extends BasePromptInterface {
  */
 export interface DateModalInterface extends BasePromptInterface {
   label?: string;
+  callback: (input: Date) => void | ReduxPayload[];
   max?: Date;
   min?: Date;
 }
@@ -67,5 +79,8 @@ export interface DateModalInterface extends BasePromptInterface {
 /**
  * @interface ConfirmationModalInterface
  * @extends BasePromptInterface
+ * @boolean Action result for user input. if an array is returned, fires all redux actions contained
  */
-export interface ConfirmationModalInterface extends BasePromptInterface {}
+export interface ConfirmationModalInterface extends BasePromptInterface {
+  callback: (input: boolean) => void | ReduxPayload[];
+}
