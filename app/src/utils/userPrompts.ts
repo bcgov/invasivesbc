@@ -7,7 +7,6 @@ import {
   ConfirmationModalInterface,
   DateModalInterface,
   NumberModalInterface,
-  ReduxPayload,
   TextModalInterface
 } from 'interfaces/prompt-interfaces';
 import { UnknownAction } from 'redux';
@@ -26,7 +25,6 @@ export const closeModal = (id: string): UnknownAction => ({
 /**
  * @desc Helper function for creating modals to gather a 'boolean' input
  * @param {ConfirmationModalInterface} prompt component props
- * @returns {ReduxPayload}
  */
 export const promptConfirmationInput = (prompt: ConfirmationModalInterface) => {
   prompt.type = PromptTypes.Confirmation;
@@ -38,7 +36,6 @@ export const promptConfirmationInput = (prompt: ConfirmationModalInterface) => {
 /**
  * @desc Helper function for creating modals to gather a 'Date' input
  * @param {DateModalInterface} prompt component props
- * @returns {ReduxPayload}
  */
 export const promptDateInput = (prompt: DateModalInterface) => {
   prompt.type = PromptTypes.Date;
@@ -50,7 +47,6 @@ export const promptDateInput = (prompt: DateModalInterface) => {
 /**
  * @desc Helper function for creating modals to gather a 'Number' input
  * @param {NumberModalInterface} prompt component props
- * @returns {ReduxPayload}
  */
 export const promptNumberInput = (prompt: NumberModalInterface) => {
   prompt.type = PromptTypes.Number;
@@ -62,7 +58,6 @@ export const promptNumberInput = (prompt: NumberModalInterface) => {
 /**
  * @desc Helper function for creating modals to gather a string input
  * @param {TextModalInterface} prompt component props
- * @returns {ReduxPayload}
  */
 export const promptTextInput = (prompt: TextModalInterface) => {
   prompt.type = PromptTypes.Text;
