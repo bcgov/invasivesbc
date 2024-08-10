@@ -71,7 +71,7 @@ const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, 
         <Divider />
         <DialogContent>
           {Array.isArray(prompt) ? (
-            prompt.map((item, index) => <Typography key={index}>{item}</Typography>)
+            prompt.map((item) => <Typography key={item}>{item}</Typography>)
           ) : (
             <Typography>{prompt}</Typography>
           )}

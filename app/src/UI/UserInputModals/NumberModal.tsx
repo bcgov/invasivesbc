@@ -96,7 +96,7 @@ const NumberModal = ({
         <Divider />
         <DialogContent>
           {Array.isArray(prompt) ? (
-            prompt.map((item, index) => <Typography key={index}>{item}</Typography>)
+            prompt.map((item) => <Typography key={item}>{item}</Typography>)
           ) : (
             <Typography>{prompt}</Typography>
           )}

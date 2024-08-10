@@ -22,11 +22,7 @@
   font-weight: 700;
   src: url('../../node_modules/@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff') format('woff');
 }
-:root {
-  --bc-blue: #003366;
-  --bc-yellow: #fcba19;
-  --eigengrau: #16161d;
-}
+
 body {
   background-color: #036;
   margin: 0;
@@ -113,6 +109,9 @@ body {
   --overlay-grip-height: 25px; /* grab handle */
   --extra-top-padding: 0px;
   --extra-bottom-padding: 0px;
+  --bc-blue: #003366;
+  --bc-yellow: #fcba19;
+  --eigengrau: #16161d;
 }
 
 @media only screen and (width <= 800px) {

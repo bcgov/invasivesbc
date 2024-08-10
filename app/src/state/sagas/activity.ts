@@ -349,7 +349,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
     yield put(
       promptConfirmationInput({
         title: 'Errors in current geography',
-        prompt: `You\'ve attempted to stop tracking, but ${validationErrors.length} error(s) exist, do you want to abandon your progress?`,
+        prompt: `You've attempted to stop tracking, but ${validationErrors.length} error(s) exist, do you want to abandon your progress?`,
         confirmText: 'Stop Tracking',
         callback
       })

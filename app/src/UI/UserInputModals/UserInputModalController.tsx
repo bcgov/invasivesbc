@@ -18,7 +18,7 @@ import {
 const UserInputModalController = () => {
   const prompts = useSelector((state) => state.AlertsAndPrompts.prompts) || [];
   if (prompts.length === 0) {
-    return <Fragment />;
+    return;
   }
   let prompt: Record<string, any>;
   switch (prompts[0].type) {
@@ -85,7 +85,7 @@ const UserInputModalController = () => {
         />
       );
     default:
-      return <Fragment />;
+      return;
   }
 };
 

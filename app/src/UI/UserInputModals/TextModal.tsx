@@ -75,7 +75,7 @@ const TextModal = ({
         <Divider />
         <DialogContent>
           {Array.isArray(prompt) ? (
-            prompt.map((item, index) => <Typography key={index}>{item}</Typography>)
+            prompt.map((item) => <Typography key={item}>{item}</Typography>)
           ) : (
             <Typography>{prompt}</Typography>
           )}
@@ -92,7 +92,9 @@ const TextModal = ({
               value={userResponse}
             >
               {selectOptions.map((item) => (
-                <MenuItem value={item}>{item}</MenuItem>
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
               ))}
             </TextField>
           ) : (
