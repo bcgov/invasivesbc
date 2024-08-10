@@ -41,7 +41,7 @@ const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, 
   const handleConfirmation = () => {
     const inputIsValid = validateUserInput();
     if (inputIsValid) {
-      handleRedux(callback(userDate.toDate()) || []);
+      handleRedux(callback(userDate.toDate()) ?? []);
       handleClose();
     }
   };
@@ -79,7 +79,7 @@ const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, 
         <FormControl className="inputCont">
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <DatePicker
-              label={label || 'Enter date of event'}
+              label={label ?? 'Enter date of event'}
               value={userDate}
               onChange={(newVal) => newVal && handleChange(newVal)}
             />
@@ -88,8 +88,8 @@ const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, 
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText || 'Cancel'}</Button>
-          <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
+          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
         </DialogActions>
       </Box>
     </Modal>

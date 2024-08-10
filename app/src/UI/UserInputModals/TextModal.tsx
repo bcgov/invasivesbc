@@ -46,7 +46,7 @@ const TextModal = ({
 
   const handleConfirmation = () => {
     if (validateUserInput()) {
-      handleRedux(callback(userResponse) || []);
+      handleRedux(callback(userResponse) ?? []);
       handleClose();
     }
   };
@@ -56,7 +56,7 @@ const TextModal = ({
     if (selectOptions?.length && !selectOptions.includes(userResponse)) {
       error = 'You need to select an option from the menu';
     } else if (regex && !regex.test(userResponse)) {
-      error = regexErrorText || `Response does not match pattern ${regex}`;
+      error = regexErrorText ?? `Response does not match pattern ${regex}`;
     } else if (min !== undefined && max !== undefined && (resLength < min || max < resLength)) {
       error = `Response must be between (${min}) and (${max}) characters in length`;
     } else if (min !== undefined && resLength < min) {
@@ -86,7 +86,7 @@ const TextModal = ({
               <TextField
                 error={!!validationError}
                 helperText={validationError}
-                label={label || 'Select a response from the list'}
+                label={label ?? 'Select a response from the list'}
                 onBlur={validateUserInput}
                 onChange={(evt) => handleChange(evt.target.value)}
                 select
@@ -102,7 +102,7 @@ const TextModal = ({
               aria-label="Text Input"
               error={!!validationError}
               helperText={validationError}
-              label={label || 'Enter your response'}
+              label={label ?? 'Enter your response'}
               onBlur={validateUserInput}
               onChange={(evt) => handleChange(evt.currentTarget.value)}
               value={userResponse}
@@ -111,8 +111,8 @@ const TextModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText || 'Cancel'}</Button>
-          <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
+          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
         </DialogActions>
       </Box>
     </Modal>

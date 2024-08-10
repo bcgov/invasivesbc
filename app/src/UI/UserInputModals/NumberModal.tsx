@@ -42,7 +42,7 @@ const NumberModal = ({
   const handleConfirmation = () => {
     const inputIsValid = validateUserInput();
     if (inputIsValid) {
-      handleRedux(callback(userNumber) || []);
+      handleRedux(callback(userNumber) ?? []);
       handleClose();
     }
   };
@@ -107,7 +107,7 @@ const NumberModal = ({
               <TextField
                 error={!!validationError}
                 helperText={validationError}
-                label={label || 'Select a value'}
+                label={label ?? 'Select a value'}
                 onBlur={validateUserInput}
                 onChange={(evt) => handleChange(evt.target.value)}
                 select
@@ -124,7 +124,7 @@ const NumberModal = ({
               error={!!validationError}
               helperText={validationError}
               inputProps={{ type: 'number' }}
-              label={label || 'Enter response'}
+              label={label ?? 'Enter response'}
               onBlur={validateUserInput}
               onChange={(evt) => handleChange(evt.currentTarget.value)}
               value={userNumber}
@@ -133,8 +133,8 @@ const NumberModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText || 'Cancel'}</Button>
-          <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
+          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
         </DialogActions>
       </Box>
     </Modal>

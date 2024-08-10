@@ -16,11 +16,11 @@ const ConfirmationModal = ({ callback, id, prompt, title, confirmText, cancelTex
     }
   };
   const handleConfirmation = () => {
-    handleRedux(callback(true) || []);
+    handleRedux(callback(true) ?? []);
     dispatch(closeModal(id!));
   };
   const handleClose = () => {
-    handleRedux(callback(false) || []);
+    handleRedux(callback(false) ?? []);
     dispatch(closeModal(id!));
   };
   return (
@@ -37,8 +37,8 @@ const ConfirmationModal = ({ callback, id, prompt, title, confirmText, cancelTex
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText || 'Cancel'}</Button>
-          <Button onClick={handleConfirmation}>{confirmText || 'Confirm'}</Button>
+          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
         </DialogActions>
       </Box>
     </Modal>
