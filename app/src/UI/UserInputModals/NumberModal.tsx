@@ -103,21 +103,19 @@ const NumberModal = ({
         </DialogContent>
         <FormControl className="inputCont">
           {selectOptions ? (
-            <>
-              <TextField
-                error={!!validationError}
-                helperText={validationError}
-                label={label ?? 'Select a value'}
-                onBlur={validateUserInput}
-                onChange={(evt) => handleChange(evt.target.value)}
-                select
-                value={userNumber?.toString()}
-              >
-                {selectOptions.map((item) => (
-                  <MenuItem value={item}>{item}</MenuItem>
-                ))}
-              </TextField>
-            </>
+            <TextField
+              error={!!validationError}
+              helperText={validationError}
+              label={label ?? 'Select a value'}
+              onBlur={validateUserInput}
+              onChange={(evt) => handleChange(evt.target.value)}
+              select
+              value={userNumber?.toString()}
+            >
+              {selectOptions.map((item) => (
+                <MenuItem value={item}>{item}</MenuItem>
+              ))}
+            </TextField>
           ) : (
             <TextField
               aria-label="Number Input"

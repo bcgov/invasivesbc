@@ -82,21 +82,19 @@ const TextModal = ({
         </DialogContent>
         <FormControl className="inputCont">
           {selectOptions ? (
-            <>
-              <TextField
-                error={!!validationError}
-                helperText={validationError}
-                label={label ?? 'Select a response from the list'}
-                onBlur={validateUserInput}
-                onChange={(evt) => handleChange(evt.target.value)}
-                select
-                value={userResponse}
-              >
-                {selectOptions.map((item) => (
-                  <MenuItem value={item}>{item}</MenuItem>
-                ))}
-              </TextField>
-            </>
+            <TextField
+              error={!!validationError}
+              helperText={validationError}
+              label={label ?? 'Select a response from the list'}
+              onBlur={validateUserInput}
+              onChange={(evt) => handleChange(evt.target.value)}
+              select
+              value={userResponse}
+            >
+              {selectOptions.map((item) => (
+                <MenuItem value={item}>{item}</MenuItem>
+              ))}
+            </TextField>
           ) : (
             <TextField
               aria-label="Text Input"
