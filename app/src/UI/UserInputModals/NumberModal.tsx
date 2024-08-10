@@ -113,7 +113,9 @@ const NumberModal = ({
               value={userNumber?.toString()}
             >
               {selectOptions.map((item) => (
-                <MenuItem value={item}>{item}</MenuItem>
+                <MenuItem key={item} value={item}>
+                  {item}
+                </MenuItem>
               ))}
             </TextField>
           ) : (

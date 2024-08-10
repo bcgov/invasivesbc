@@ -2,7 +2,6 @@ import DateModal from './DateModal';
 import NumberModal from './NumberModal';
 import TextModal from './TextModal';
 import ConfirmationModal from './ConfirmationModal';
-import { Fragment } from 'react/jsx-runtime';
 import { useSelector } from 'utils/use_selector';
 import { PromptTypes } from 'constants/promptEnums';
 import {

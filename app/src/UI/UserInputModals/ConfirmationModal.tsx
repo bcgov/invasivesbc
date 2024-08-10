@@ -30,7 +30,7 @@ const ConfirmationModal = ({ callback, id, prompt, title, confirmText, cancelTex
         <Divider />
         <DialogContent>
           {typeof prompt === typeof [] ? (
-            (prompt as string[]).map((item, index) => <Typography key={index}>{item}</Typography>)
+            (prompt as string[]).map((item) => <Typography key={item}>{item}</Typography>)
           ) : (
             <Typography>{prompt}</Typography>
           )}
