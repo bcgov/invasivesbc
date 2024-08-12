@@ -18,6 +18,7 @@
 .HeaderBar {
   height: var(--header-bar-height);
   cursor: pointer;
+  width: 100%;
   background-color: #036;
   position: relative;
   z-index: 2147483646;
@@ -110,13 +111,16 @@
   left: 10px;
   align-items: center;
   height: var(--header-bar-height);
-
-  img {
-    box-sizing: border-box;
-    height: calc(var(--header-bar-height) - 20px);
-  }
 }
 
+#InvBcLogo {
+  box-sizing: border-box;
+  object-fit: 'contain';
+  background-color: white;
+  border-radius: 5px;
+  padding: 5;
+  height: calc(var(--header-bar-height) - 20px);
+}
 .avatar-menu {
   display: flex;
   position: absolute;
@@ -151,5 +155,4 @@ div.network-status-display {
     line-height: 1.5;
     letter-spacing: 0.00938em;
   }
-
 }
