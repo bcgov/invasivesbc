@@ -202,16 +202,7 @@ const LogoutButton = () => {
 const InvIcon = () => {
   return (
     <div className="inv-icon">
-      <img
-        src={invbclogo}
-        style={{
-          objectFit: 'contain',
-          backgroundColor: 'white',
-          borderRadius: 4,
-          padding: 5
-        }}
-        alt="B.C. Government Logo"
-      />
+      <img src={invbclogo} id="InvBcLogo" alt="B.C. Government Logo" />
       <div id="appTitle">InvasivesBC</div>
     </div>
   );
@@ -307,7 +298,7 @@ const LoginOrOutMemo = React.memo(() => {
   };
 
   const navToUpdateRequest = () => {
-    history.push({ pathname: '/AccessRequest', });
+    history.push({ pathname: '/AccessRequest' });
     dispatch({
       type: TOGGLE_PANEL,
       payload: { panelOpen: true, fullScreen: true }
