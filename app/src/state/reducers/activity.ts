@@ -20,8 +20,6 @@ import {
   ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_SET_SAVED_HASH_SUCCESS,
-  ACTIVITY_SET_UNSAVED_NOTIFICATION,
-  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START
@@ -38,13 +36,11 @@ interface ActivityState {
   failCode: number | null;
   initialized: boolean;
   loading: boolean;
-  notification: any | null;
   saved_activity_hash: string | null;
   suggestedJurisdictions: [];
   suggestedPersons: [];
   suggestedTreatmentIDs: [];
   track_me_draw_geo: boolean;
-  unsaved_notification: any | null;
   activity_copy_buffer: object | null;
 }
 
@@ -57,12 +53,10 @@ const initialState: ActivityState = {
   initialized: false,
   loading: false,
   track_me_draw_geo: false,
-  notification: null,
   saved_activity_hash: null,
   suggestedJurisdictions: [],
   suggestedPersons: [],
   suggestedTreatmentIDs: [],
-  unsaved_notification: null,
   activity_copy_buffer: null
 };
 
@@ -84,12 +78,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             failCode: null,
             initialized: false,
             loading: false,
-            notification: null,
             saved_activity_hash: null,
             suggestedJurisdictions: [],
             suggestedPersons: [],
-            suggestedTreatmentIDs: [],
-            unsaved_notification: null
+            suggestedTreatmentIDs: []
           };
           break;
         }
@@ -103,12 +95,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             failCode: null,
             initialized: false,
             loading: false,
-            notification: null,
             saved_activity_hash: null,
             suggestedJurisdictions: [],
             suggestedPersons: [],
             suggestedTreatmentIDs: [],
-            unsaved_notification: null,
             activity_copy_buffer
           };
           break;
@@ -183,12 +173,6 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           draftState.activity = { ...action.payload.activity };
           break;
         }
-        case ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS: {
-          draftState.notification = action.payload.notification;
-          //setTimeout(()=> { draftState.notification = null }, 5000)
-
-          break;
-        }
         case ACTIVITY_COPY_SUCCESS: {
           draftState.activity_copy_buffer = {
             form_data: action.payload.form_data
@@ -226,10 +210,6 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         }
         case ACTIVITY_SET_SAVED_HASH_SUCCESS: {
           draftState.saved_activity_hash = action.payload.saved;
-          break;
-        }
-        case ACTIVITY_SET_UNSAVED_NOTIFICATION: {
-          draftState.unsaved_notification = action.payload.unsaved_notification;
           break;
         }
         default:

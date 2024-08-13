@@ -9,23 +9,22 @@ import {
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
-  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-  ACTIVITY_UPDATE_SYNC_STATE
+  ACTIVITY_UPDATE_SYNC_STATE,
+  NEW_ALERT
 } from 'state/actions';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE() {
   // all logic handled in the reducer
   yield put({
-    type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+    type: NEW_ALERT,
     payload: {
-      notification: {
-        visible: true,
-        message: 'Saved locally',
-        severity: 'info'
-      }
+      content: 'Saved locally',
+      severity: AlertSeverity.Info,
+      subject: AlertSubjects.Form
     }
   });
 

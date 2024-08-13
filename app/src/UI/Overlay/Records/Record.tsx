@@ -1,17 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
 import './Records.css';
 import { Route, useHistory } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  ACTIVITY_SET_UNSAVED_NOTIFICATION,
-  ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
-  PAN_AND_ZOOM_TO_ACTIVITY
-} from 'state/actions';
+import { useSelector } from 'react-redux';
 import { ActivityForm } from './Activity/Form';
 import { ActivityPhotos } from './Activity/Photos';
 import { OverlayHeader } from '../OverlayHeader';
-import { Alert, Button, Snackbar } from '@mui/material';
+import { Button } from '@mui/material';
 import { RENDER_DEBUG } from 'UI/App';
 
 export const Activity = (props) => {
@@ -21,48 +16,13 @@ export const Activity = (props) => {
   const urlFromAppModeState = useSelector((state: any) => state.AppMode?.url);
 
   const history = useHistory();
-  const dispatch = useDispatch();
   const id = history.location.pathname.split(':')[1]?.split('/')[0];
-  const notification = useSelector((state: any) => state.ActivityPage?.notification);
-  const unsaved_notification = useSelector((state: any) => state.ActivityPage?.unsaved_notification);
   const failCode = useSelector((state: any) => state.ActivityPage?.failCode);
   const activity_ID = useSelector((state: any) => state.ActivityPage?.activity?.activity_id);
 
   const loading = useSelector((state: any) => state.ActivityPage?.loading);
   const apiDocsWithSelectOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithSelectOptions);
   const apiDocsWithViewOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithViewOptions);
-
-  const handleAPIErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    dispatch({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
-      payload: {
-        notification: {
-          visible: false,
-          message: '',
-          severity: 'success'
-        }
-      }
-    });
-  };
-
-  const handleUnsavedClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    dispatch({
-      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
-      payload: {
-        notification: {
-          visible: false,
-          message: '',
-          severity: 'error'
-        }
-      }
-    });
-  };
 
   return (
     <div className="records__activity">
@@ -110,16 +70,6 @@ export const Activity = (props) => {
           else return <div>loading</div>;
         }}
       />
-      <Snackbar open={notification?.visible} autoHideDuration={3000} onClose={handleAPIErrorClose}>
-        <Alert onClose={handleAPIErrorClose} severity={notification?.severity} sx={{ width: '100%' }}>
-          {notification?.message}
-        </Alert>
-      </Snackbar>
-      <Snackbar open={unsaved_notification?.visible} onClose={handleUnsavedClose}>
-        <Alert onClose={handleUnsavedClose} severity={unsaved_notification?.severity} sx={{ width: '100%' }}>
-          {unsaved_notification?.message}
-        </Alert>
-      </Snackbar>
     </div>
   );
 };
