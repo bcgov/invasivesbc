@@ -161,6 +161,8 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         }
         case ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS: {
           draftState.suggestedTreatmentIDs = [...action.payload.suggestedTreatmentIDs];
+          if(draftState?.schema?.properties?.activity_type_data?.properties?.linked_id)
+          draftState.schema.properties.activity_type_data.properties.linked_id.options = action.payload.suggestedTreatmentIDs
           break;
         }
         case ACTIVITY_CREATE_SUCCESS: {
