@@ -7,5 +7,6 @@ export enum PromptTypes {
   Confirmation,
   Date,
   Number,
+  Radio,
   Text
 }

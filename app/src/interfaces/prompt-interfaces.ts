@@ -69,8 +69,22 @@ export interface NumberModalInterface extends BasePromptInterface {
 }
 
 /**
- * @type {Props} Confirmation Modal Prompts
+ * @type {RadioModalInterface}
  * @extends BasePromptInterface
+ * @property {(input: string | number) => void | ReduxPayload[]} callback Action result for user input. if an array is returned, fires all redux actions contained
+ * @property {string} label Override value for label displayed in RadioGroup
+ * @property {string[] | number[]} options Options that will be displayed to a user / handled in the callback
+ */
+export interface RadioModalInterface extends BasePromptInterface {
+  callback: <T extends string | number>(input: T) => void | ReduxPayload[];
+  label?: string;
+  options: string[] | number[];
+}
+
+/**
+ * @type {ConfirmationModalInterface} Confirmation Modal Prompts
+ * @extends BasePromptInterface
+ * @property {(input: string) => void | ReduxPayload[]} callback Action result for user input. if an array is returned, fires all redux actions contained
  * @property {string} label Override label for user input field
  * @property {number} min minimum character length for response
  * @property {number} max maximum character length for response

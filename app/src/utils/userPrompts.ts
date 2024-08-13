@@ -8,6 +8,7 @@ import {
   ConfirmationModalInterface,
   DateModalInterface,
   NumberModalInterface,
+  RadioModalInterface,
   TextModalInterface
 } from 'interfaces/prompt-interfaces';
 import { UnknownAction } from 'redux';
@@ -56,6 +57,19 @@ export const promptNumberInput = (prompt: NumberModalInterface) => {
     payload: prompt
   };
 };
+
+/**
+ * @desc Helper function for creating modals to present options to a user
+ * @param {RadioModalInterface} prompt component props
+ */
+export const promptRadioInput = (prompt: RadioModalInterface) => {
+  prompt.type = PromptTypes.Radio;
+  return {
+    type: NEW_PROMPT,
+    payload: prompt
+  };
+};
+
 /**
  * @desc Helper function for creating modals to gather a string input
  * @param {TextModalInterface} prompt component props

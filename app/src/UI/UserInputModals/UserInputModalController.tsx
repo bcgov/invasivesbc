@@ -8,8 +8,11 @@ import {
   ConfirmationModalInterface,
   DateModalInterface,
   NumberModalInterface,
+  RadioModalInterface,
   TextModalInterface
 } from 'interfaces/prompt-interfaces';
+import RadioModal from './RadioModal';
+
 /**
  * @desc Handler for all User Input Modals, Uses Redux store as a queue to display prompts to user when input is needed
  * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Prompt-System }
@@ -63,6 +66,20 @@ const UserInputModalController = () => {
           selectOptions={prompt.selectOptions}
           title={prompt.title}
           acceptFloats={prompt?.acceptFloats}
+        />
+      );
+    case PromptTypes.Radio:
+      prompt = prompts[0] as RadioModalInterface;
+      return (
+        <RadioModal
+          callback={prompt.callback}
+          cancelText={prompt?.cancelText}
+          confirmText={prompt?.confirmText}
+          id={prompt.id}
+          label={prompt?.label}
+          options={prompt.options}
+          prompt={prompt.prompt}
+          title={prompt.title}
         />
       );
     case PromptTypes.Text:
