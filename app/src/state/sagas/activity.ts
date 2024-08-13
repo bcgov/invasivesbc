@@ -328,7 +328,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
  *       Evaluates distance between new and previous points to eliminate micro adjustments from GPS sway.
  */
 function* handle_MAP_SET_COORDS(action) {
-  const MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS = 12;
+  const MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS = 2;
   const activityState = yield select(selectActivity);
   if (activityState.track_me_draw_geo) {
     let currentGeo = activityState?.activity?.geometry?.[0];
