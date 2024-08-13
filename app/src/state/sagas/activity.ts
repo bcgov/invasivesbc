@@ -38,10 +38,7 @@ import {
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_SET_SAVED_HASH_FAILURE,
   ACTIVITY_SET_SAVED_HASH_SUCCESS,
-  ACTIVITY_SET_UNSAVED_NOTIFICATION,
   ACTIVITY_SUBMIT_REQUEST,
-  ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
-  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_AUTOFILL_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
@@ -80,7 +77,6 @@ import {
   handle_ACTIVITY_SAVE_REQUEST,
   handle_ACTIVITY_SAVE_SUCCESS,
   handle_ACTIVITY_SUBMIT_REQUEST,
-  handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST,
   handle_ACTIVITY_UPDATE_GEO_REQUEST,
   handle_ACTIVITY_UPDATE_GEO_SUCCESS,
   handle_GET_SUGGESTED_JURISDICTIONS_REQUEST,
@@ -126,13 +122,11 @@ function* handle_ACTIVITY_DELETE_SUCESS(action) {
     }
   });
   yield put({
-    type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+    type: NEW_ALERT,
     payload: {
-      notification: {
-        visible: true,
-        message: 'Activity deleted successfully',
-        severity: 'success'
-      }
+      content: 'Activity deleted successfully',
+      severity: AlertSeverity.Success,
+      subject: AlertSubjects.Form
     }
   });
   yield put({ type: MAP_INIT_REQUEST });
@@ -145,17 +139,6 @@ function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {
       type: ACTIVITY_SET_SAVED_HASH_SUCCESS,
       payload: {
         saved: activityState?.current_activity_hash
-      }
-    });
-
-    yield put({
-      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
-      payload: {
-        unsaved_notification: {
-          visible: false,
-          message: '',
-          severity: 'warning'
-        }
       }
     });
   } catch (e) {
@@ -192,21 +175,6 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
         current: currentHash
       }
     });
-
-    /*
-   Not useful yet as form state is updated before the user does anything, so the user would see this no matter what
-
-   yield put({
-      type: ACTIVITY_SET_UNSAVED_NOTIFICATION,
-      payload: {
-        unsaved_notification: {
-          visible: visible,
-          message: visible ? 'There are unsaved changes on this form' : '',
-          severity: 'warning'
-        }
-      }
-    });
-    */
   } catch (e) {
     console.error(e);
     yield put({
@@ -237,13 +205,11 @@ function* handle_URL_CHANGE(action) {
 
 function* handle_ACTIVITY_DELETE_FAILURE(action) {
   yield put({
-    type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+    type: NEW_ALERT,
     payload: {
-      notification: {
-        visible: true,
-        message: 'Activity delete failed',
-        severity: 'error'
-      }
+      subject: AlertSubjects.Form,
+      message: 'Activity delete failed',
+      severity: AlertSeverity.Error
     }
   });
 }
@@ -433,7 +399,6 @@ function* activityPageSaga() {
     ),
     takeEvery(ACTIVITY_SAVE_REQUEST, handle_ACTIVITY_SAVE_REQUEST),
     takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SAVE_SUCCESS),
-    takeEvery(ACTIVITY_TOGGLE_NOTIFICATION_REQUEST, handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST),
     takeEvery(ACTIVITY_SAVE_NETWORK_REQUEST, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
     takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
     takeEvery(ACTIVITY_CREATE_REQUEST, handle_ACTIVITY_CREATE_REQUEST),

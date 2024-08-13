@@ -13,16 +13,15 @@ import {
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
-  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-  AUTH_INITIALIZE_COMPLETE
+  AUTH_INITIALIZE_COMPLETE,
+  NEW_ALERT
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
-//
 export function* handle_ACTIVITY_CREATE_NETWORK(action) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
-
   yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.activity.activity_id } });
 }
 
@@ -112,13 +111,11 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
   if (networkReturn.status < 200 || networkReturn.status > 299) {
     yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      type: NEW_ALERT,
       payload: {
-        notification: {
-          visible: true,
-          message: networkReturn.data.message,
-          severity: 'error'
-        }
+        content: networkReturn.data.message,
+        severity: AlertSeverity.Error,
+        subject: AlertSubjects.Form
       }
     });
   } else {

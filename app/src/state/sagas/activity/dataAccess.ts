@@ -50,7 +50,6 @@ import {
   ACTIVITY_SAVE_NETWORK_FAILURE,
   ACTIVITY_SAVE_NETWORK_REQUEST,
   ACTIVITY_SAVE_OFFLINE,
-  ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAIN_MAP_MOVE,
@@ -72,6 +71,7 @@ import { selectNetworkConnected } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
@@ -275,13 +275,12 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
   try {
     yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: activity_id } });
     yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
+      type: NEW_ALERT,
       payload: {
-        notification: {
-          visible: true,
-          message: 'Activity saved successfully',
-          severity: 'success'
-        }
+        autoClose: 5,
+        content: 'Activity saved successfully',
+        severity: AlertSeverity.Success,
+        subject: AlertSubjects.Form
       }
     });
 
@@ -310,21 +309,6 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
       console.error(e);
       yield put({ type: ACTIVITY_SAVE_NETWORK_FAILURE });
     }
-  }
-}
-
-export function* handle_ACTIVITY_TOGGLE_NOTIFICATION_REQUEST(action) {
-  try {
-    yield put({
-      type: ACTIVITY_TOGGLE_NOTIFICATION_SUCCESS,
-      payload: {
-        notification: {
-          ...action.payload.notification
-        }
-      }
-    });
-  } catch (e) {
-    console.error(e);
   }
 }
 
