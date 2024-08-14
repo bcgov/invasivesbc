@@ -17,7 +17,7 @@ export const getAccessRequestsSQL = (): SQLStatement => {
  */
 export const userHasPendingAccessRequestSQL = (username: string): SQLStatement => {
   return SQL`
-    SELECT *
+    SELECT access_request_id
     FROM access_request
     WHERE request_type = 'ACCESS'
     AND status = 'NOT_APPROVED'
@@ -61,23 +61,23 @@ export const updateAccessRequestSQL = (access_request_id: number, accessRequest:
   return SQL`
     UPDATE access_request
     SET
-      idir_account_name = ${accessRequest?.idir},
-      bceid_account_name = ${accessRequest?.bceid},
-      first_name = ${accessRequest?.firstName},
-      last_name = ${accessRequest?.lastName},
-      primary_email = ${accessRequest?.email},
-      work_phone_number = ${accessRequest?.phone},
+      idir_account_name = ${accessRequest.idir ? accessRequest.idir : null},
+      bceid_account_name = ${accessRequest.bceid ? accessRequest.bceid : null},
+      first_name = ${accessRequest.firstName ? accessRequest.firstName : null},
+      last_name = ${accessRequest.lastName ? accessRequest.lastName : null},
+      primary_email = ${accessRequest.email ? accessRequest.email : null},
+      work_phone_number = ${accessRequest.phone ? accessRequest.phone : null},
       funding_agencies = ${appendNRQ(accessRequest?.fundingAgencies)},
       employer = ${appendNRQ(accessRequest?.employer)},
-      pac_number = ${accessRequest?.pacNumber},
-      pac_service_number_1 = ${accessRequest?.psn1},
-      pac_service_number_2 = ${accessRequest?.psn2},
-      requested_roles = ${accessRequest?.requested_roles},
-      comments = ${accessRequest?.comments},
-      idir_userid = ${accessRequest?.idirUserId},
-      bceid_userid = ${accessRequest?.bceidUserId},
+      pac_number = ${accessRequest.pacNumber ? accessRequest.pacNumber : null},
+      pac_service_number_1 = ${accessRequest.psn1 ? accessRequest.psn1 : null},
+      pac_service_number_2 = ${accessRequest.psn2 ? accessRequest.psn2 : null},
+      requested_roles = ${accessRequest.requestedRoles ? accessRequest.requestedRoles : null},
+      comments = ${accessRequest.comments ? accessRequest.comments : null},
+      idir_userid = ${accessRequest.idirUserId ? accessRequest.idirUserId : null},
+      bceid_userid = ${accessRequest.bceidUserId ? accessRequest.bceidUserId : null},
       updated_at = CURRENT_TIMESTAMP
-    WHERE access_request_id=${access_request_id}
+    WHERE access_request_id = ${access_request_id}
     AND status = 'NOT_APPROVED'
   `;
 };
