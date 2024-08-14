@@ -430,14 +430,27 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 
 export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
   const activityState = yield select(selectActivity);
-  try {
+
+  const { MOBILE } = yield select(selectConfiguration);
+
+  if (MOBILE) {
     yield put({
-      type: ACTIVITY_SAVE_NETWORK_REQUEST,
-      payload: { activity_id: activityState.activity_id, form_status: ActivityStatus.SUBMITTED }
+      type: ACTIVITY_SAVE_OFFLINE,
+      payload: {
+        id: activityState?.activity?.activity_id,
+        data: { ...activityState.activity, form_status: ActivityStatus.SUBMITTED }
+      }
     });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+  } else {
+    try {
+      yield put({
+        type: ACTIVITY_SAVE_NETWORK_REQUEST,
+        payload: { activity_id: activityState.activity_id, form_status: ActivityStatus.SUBMITTED }
+      });
+    } catch (e) {
+      console.error(e);
+      yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    }
   }
 }
 

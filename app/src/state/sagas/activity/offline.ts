@@ -5,6 +5,7 @@ import {
   ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_LOCAL_REQUEST,
+  ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
@@ -17,7 +18,8 @@ import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
-export function* handle_ACTIVITY_SAVE_OFFLINE() {
+export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
+  //const shortId = action.payload.
   // all logic handled in the reducer
   yield put({
     type: NEW_ALERT,
@@ -28,9 +30,13 @@ export function* handle_ACTIVITY_SAVE_OFFLINE() {
     }
   });
 
+  // reload the activity in case the reducer modified it (create time, etc.)
+  yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.id } });
+
+  // trigger a sync if we're online
   const connected = yield select(selectNetworkConnected);
   if (connected) {
-    yield delay(100);
+    yield delay(500);
     yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC });
   }
 }

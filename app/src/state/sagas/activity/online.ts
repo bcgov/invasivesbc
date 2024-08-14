@@ -25,7 +25,7 @@ export function* handle_ACTIVITY_CREATE_NETWORK(action) {
   yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.activity.activity_id } });
 }
 
-export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST(action) {
+export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
     console.dir(activityState);
@@ -89,18 +89,24 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   };
 
   // handle delete photos if needed
-  const keys_to_delete = [];
-  if (newActivity.media_delete_keys?.length) {
-    const keys = newActivity.media_delete_keys;
-    for (const key of keys) {
-      const deleteReturn = yield InvasivesAPI_Call('DELETE', `/api/media/delete/${key}`);
-      if (deleteReturn) {
-        keys_to_delete.push(key);
+  const keys_to_delete: string[] = [];
+  const filtered_media_delete_keys: string[] = [];
+  if (newActivity.media_delete_keys) {
+    if (newActivity.media_delete_keys.length > 0) {
+      {
+        const keys = newActivity.media_delete_keys;
+        for (const key of keys) {
+          const deleteReturn = yield InvasivesAPI_Call('DELETE', `/api/media/delete/${key}`);
+          if (deleteReturn) {
+            keys_to_delete.push(key);
+          }
+        }
       }
     }
+    filtered_media_delete_keys.push(
+      ...newActivity.media_delete_keys.filter((key: string) => !keys_to_delete.includes(key))
+    );
   }
-
-  const filtered_media_delete_keys = newActivity.media_delete_keys.filter((key) => !keys_to_delete.includes(key));
 
   const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
     ...newActivity,
@@ -151,7 +157,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
   }
 }
 
-export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE(action) {
+export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE() {
   try {
     const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
 
