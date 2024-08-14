@@ -234,7 +234,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
         pacServiceNumber1: request.pac_service_number_1,
         pacServiceNumber2: request.pac_service_number_2,
         workPhoneNumber: request.work_phone_number,
-        dateRequested: new Date(request.created_at).toLocaleString()
+        dateRequested: new Date(request.updated_at).toLocaleString()
       });
     }
     setRequestRows(rows);
@@ -652,7 +652,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     onRowSelectionModelChange={handleAccessRequestRowSelection}
                     rows={requestRows}
                     columns={requestColumns}
-                    sortModel={[{ field: 'id', sort: 'desc' }]}
+                    sortModel={[{ field: 'dateRequested', sort: 'desc' }]}
                     checkboxSelection
                     onCellClick={handleRowClick}
                     onRowClick={handleRowClick}
