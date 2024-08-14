@@ -8,7 +8,9 @@ import {
   approveAccessRequestsSQL,
   createAccessRequestSQL,
   getAccessRequestsSQL,
-  updateAccessRequestStatusSQL
+  updateAccessRequestSQL,
+  updateAccessRequestStatusSQL,
+  userHasPendingAccessRequestSQL
 } from 'queries/access-request-queries';
 import { grantRoleByValueSQL, revokeAllRolesExceptAdmin } from 'queries/role-queries';
 import { getUserByBCEIDSQL, getUserByIDIRSQL } from 'queries/user-queries';
@@ -198,7 +200,15 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
     });
   }
   try {
-    const sqlStatement: SQLStatement = createAccessRequestSQL(newAccessRequest);
+    const { bceid, idir } = newAccessRequest;
+    const pendingRequestSQL = userHasPendingAccessRequestSQL(bceid ?? idir);
+    const pendingRequestSQLResponse = await connection.query(pendingRequestSQL.text, pendingRequestSQL.values);
+    const updateExistingRequest = pendingRequestSQLResponse.rowCount > 0;
+
+    const sqlStatement: SQLStatement = updateExistingRequest
+      ? updateAccessRequestSQL(pendingRequestSQLResponse.rows[0].access_request_id, newAccessRequest)
+      : createAccessRequestSQL(newAccessRequest);
+
     if (!sqlStatement) {
       return res.status(500).json({
         message: 'Failed to build SQL statement',
@@ -210,7 +220,7 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
     const result = { count: (response && response.rowCount) || 0 };
     return res.status(200).json({
-      message: 'Access request created',
+      message: `Access request ${updateExistingRequest ? 'updated' : 'created'}`,
       request: req.body,
       result: result,
       namespace: 'access-request',
