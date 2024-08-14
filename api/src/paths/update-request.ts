@@ -11,7 +11,9 @@ import {
   createUpdateRequestSQL,
   doesUserExistSQL,
   getUpdateRequestsSQL,
-  updateUpdateRequestStatusSQL
+  updateUpdateRequestSQL,
+  updateUpdateRequestStatusSQL,
+  userHasPendingUpdateRequestSQL
 } from 'queries/update-request-queries';
 import { getLogger } from 'utils/logger';
 import { getEmailTemplatesFromDB } from 'paths/email-templates';
@@ -190,9 +192,14 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
     const tokenUserIsRequestUser: boolean = [req.body.newUpdateRequest.idir, req.body.newUpdateRequest.bceid].includes(
       tokenUser.toLowerCase()
     );
+    const pendingRequestSQL = userHasPendingUpdateRequestSQL(tokenUser);
+    const pendingRequestSQLResponse = await connection.query(pendingRequestSQL.text, pendingRequestSQL.values);
+    const updateExistingRequest = pendingRequestSQLResponse.rowCount > 0;
 
     const userSQL: SQLStatement = doesUserExistSQL(tokenUser);
-    const sqlStatement: SQLStatement = createUpdateRequestSQL(newUpdateRequest);
+    const sqlStatement: SQLStatement = updateExistingRequest
+      ? updateUpdateRequestSQL(pendingRequestSQLResponse.rows[0].access_request_id, newUpdateRequest)
+      : createUpdateRequestSQL(newUpdateRequest);
 
     if (!sqlStatement || !userSQL) {
       return res.status(500).json({
@@ -207,7 +214,7 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
     if (dbResp.rows.length > 0 && tokenUserIsRequestUser) {
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
       return res.status(201).json({
-        message: 'Update request created',
+        message: `Update request ${updateExistingRequest ? 'updated' : 'created'}`,
         request: req.body,
         result: response.rows,
         count: response.rowCount,

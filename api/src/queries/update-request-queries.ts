@@ -58,6 +58,49 @@ export function appendNRQ(input: string) {
     else return input;
   return 'NRQ';
 }
+
+/**
+ * @param username Identity submitted for an update request
+ * @returns All pending rows associated with a user
+ */
+export const userHasPendingUpdateRequestSQL = (username: string): SQLStatement => {
+  return SQL`
+    SELECT access_request_id
+    FROM access_request
+    WHERE request_type = 'UPDATE'
+    AND status = 'NOT_APPROVED'
+    AND (
+      idir_account_name=${username}
+      OR
+      bceid_account_name=${username}
+    )
+  `;
+};
+
+export const updateUpdateRequestSQL = (
+  access_request_id: string,
+  newUpdateRequest: Record<string, any>
+): SQLStatement => {
+  console.log(access_request_id);
+  return SQL`
+    UPDATE access_request
+    SET 
+      first_name = ${newUpdateRequest.firstName ? newUpdateRequest.firstName : null},
+      last_name = ${newUpdateRequest.lastName ? newUpdateRequest.lastName : null},
+      primary_email = ${newUpdateRequest.email ? newUpdateRequest.email : null},
+      work_phone_number = ${newUpdateRequest.phone ? newUpdateRequest.phone : null},
+      funding_agencies = ${appendNRQ(newUpdateRequest.fundingAgencies ?? null)},
+      employer = ${appendNRQ(newUpdateRequest?.employer)},
+      pac_number = ${newUpdateRequest.pacNumber ? newUpdateRequest.pacNumber : null},
+      pac_service_number_1 = ${newUpdateRequest.psn1 ? newUpdateRequest.psn1 : null},
+      pac_service_number_2 = ${newUpdateRequest.psn2 ? newUpdateRequest.psn2 : null},
+      requested_roles = ${newUpdateRequest.requestedRoles ? newUpdateRequest.requestedRoles : null},
+      comments = ${newUpdateRequest.comments ? newUpdateRequest.comments : null},
+      updated_at = CURRENT_TIMESTAMP
+    WHERE access_request_id = ${access_request_id}
+    AND status = 'NOT_APPROVED'
+  `;
+};
 /**
  * SQL query to create an access request.
  *
