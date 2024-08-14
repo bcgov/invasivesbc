@@ -12,6 +12,24 @@ export const getAccessRequestsSQL = (): SQLStatement => {
 };
 
 /**
+ * @param username Identity submitted for an access request
+ * @returns All pending rows associated with a user
+ */
+export const userHasPendingAccessRequestSQL = (username: string): SQLStatement => {
+  return SQL`
+    SELECT *
+    FROM access_request
+    WHERE request_type = 'ACCESS'
+    AND status = 'NOT_APPROVED'
+    AND (
+      idir_account_name=${username}
+      OR
+      bceid_account_name=${username}
+    )
+  `;
+};
+
+/**
  * SQL query to fetch an access request based on email.
  * @param email The user's email
  * @returns The user with that email
@@ -21,14 +39,7 @@ export const getAccessRequestForUserSQL = (username: string, email?: string): SQ
     return null;
   }
 
-  let isIdir;
-
-  if (username.includes('idir')) {
-    isIdir = true;
-  } else {
-    isIdir = false;
-  }
-
+  const isIdir = username.includes('idir');
   if (email) {
     return isIdir
       ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND primary_email = ${email} AND status = 'APPROVED' order by updated_at desc;`
@@ -38,6 +49,37 @@ export const getAccessRequestForUserSQL = (username: string, email?: string): SQ
       ? SQL`SELECT * FROM access_request WHERE idir_account_name=${username} AND status = 'APPROVED' order by updated_at desc;`
       : SQL`SELECT * FROM access_request WHERE bceid_account_name=${username} AND status = 'APPROVED' order by updated_at desc;`;
   }
+};
+
+/**
+ * @desc SQL To update an existing Access Request
+ * @param access_request_id ID of already existing request
+ * @param accessRequest Payload object for new information
+ * @returns {SQL}
+ */
+export const updateAccessRequestSQL = (access_request_id: number, accessRequest: Record<string, any>): SQLStatement => {
+  return SQL`
+    UPDATE access_request
+    SET
+      idir_account_name = ${accessRequest?.idir},
+      bceid_account_name = ${accessRequest?.bceid},
+      first_name = ${accessRequest?.firstName},
+      last_name = ${accessRequest?.lastName},
+      primary_email = ${accessRequest?.email},
+      work_phone_number = ${accessRequest?.phone},
+      funding_agencies = ${appendNRQ(accessRequest?.fundingAgencies)},
+      employer = ${appendNRQ(accessRequest?.employer)},
+      pac_number = ${accessRequest?.pacNumber},
+      pac_service_number_1 = ${accessRequest?.psn1},
+      pac_service_number_2 = ${accessRequest?.psn2},
+      requested_roles = ${accessRequest?.requested_roles},
+      comments = ${accessRequest?.comments},
+      idir_userid = ${accessRequest?.idirUserId},
+      bceid_userid = ${accessRequest?.bceidUserId},
+      updated_at = CURRENT_TIMESTAMP
+    WHERE access_request_id=${access_request_id}
+    AND status = 'NOT_APPROVED'
+  `;
 };
 
 /**
