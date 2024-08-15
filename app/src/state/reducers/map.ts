@@ -82,6 +82,7 @@ import {
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
+import GeoShapes from 'constants/geoShapes';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -238,7 +239,10 @@ export interface MapState {
   map_zoom: number;
   panned: boolean;
   positionTracking: boolean;
-  track_me_draw_geo: boolean;
+  track_me_draw_geo: {
+    isTracking: boolean;
+    type: GeoShapes | null;
+  };
   quickPanToRecord: boolean;
   recordSetForCSV: number;
   recordTables: object;
@@ -405,7 +409,10 @@ const initialState: MapState = {
   MapMode: 'VECTOR_ENDPOINT',
   panned: false,
   positionTracking: false,
-  track_me_draw_geo: false,
+  track_me_draw_geo: {
+    isTracking: false,
+    type: null
+  },
   quickPanToRecord: false,
 
   recordSetForCSV: 0,
@@ -928,11 +935,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_START: {
-          draftState.track_me_draw_geo = true;
+          draftState.track_me_draw_geo = {
+            isTracking: true,
+            type: action.payload.type ?? null
+          };
           break;
         }
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE: {
-          draftState.track_me_draw_geo = false;
+          draftState.track_me_draw_geo = {
+            isTracking: false,
+            type: null
+          };
           break;
         }
         case MAP_TOGGLE_WHATS_HERE: {

@@ -330,7 +330,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
 function* handle_MAP_SET_COORDS(action) {
   const MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS = 1;
   const activityState = yield select(selectActivity);
-  if (activityState.track_me_draw_geo) {
+  if (activityState.track_me_draw_geo.isTracking) {
     let currentGeo = activityState?.activity?.geometry?.[0];
     if (!currentGeo) {
       currentGeo = {
