@@ -100,7 +100,7 @@ export const ActivityForm = (props) => {
     } else {
       const callback = (input: string | number) => {
         dispatch({ type: MAP_TOGGLE_TRACKING_ON });
-        dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: input });
+        dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: { type: input } });
       };
       dispatch(
         promptRadioInput({
