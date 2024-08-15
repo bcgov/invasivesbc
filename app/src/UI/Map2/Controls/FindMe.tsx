@@ -64,7 +64,7 @@ export const TrackMeToggle = (props) => {
 
   const promptHandler = (input: string | number) => {
     console.log(input);
-    dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: input });
+    dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: { type: input } });
   };
   const clickHandler = () => {
     setShow(false);

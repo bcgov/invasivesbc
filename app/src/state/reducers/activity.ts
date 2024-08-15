@@ -27,6 +27,7 @@ import {
 
 import { AppConfig } from '../config';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
+import GeoShapes from 'constants/geoShapes';
 
 interface ActivityState {
   activity: any;
@@ -40,7 +41,10 @@ interface ActivityState {
   suggestedJurisdictions: [];
   suggestedPersons: [];
   suggestedTreatmentIDs: [];
-  track_me_draw_geo: boolean;
+  track_me_draw_geo: {
+    isTracking: boolean;
+    type: GeoShapes | null;
+  };
   activity_copy_buffer: object | null;
 }
 
@@ -52,7 +56,10 @@ const initialState: ActivityState = {
   failCode: null,
   initialized: false,
   loading: false,
-  track_me_draw_geo: false,
+  track_me_draw_geo: {
+    isTracking: false,
+    type: null
+  },
   saved_activity_hash: null,
   suggestedJurisdictions: [],
   suggestedPersons: [],
@@ -161,8 +168,9 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         }
         case ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS: {
           draftState.suggestedTreatmentIDs = [...action.payload.suggestedTreatmentIDs];
-          if(draftState?.schema?.properties?.activity_type_data?.properties?.linked_id)
-          draftState.schema.properties.activity_type_data.properties.linked_id.options = action.payload.suggestedTreatmentIDs
+          if (draftState?.schema?.properties?.activity_type_data?.properties?.linked_id)
+            draftState.schema.properties.activity_type_data.properties.linked_id.options =
+              action.payload.suggestedTreatmentIDs;
           break;
         }
         case ACTIVITY_CREATE_SUCCESS: {
@@ -195,11 +203,17 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_START: {
-          draftState.track_me_draw_geo = true;
+          draftState.track_me_draw_geo = {
+            isTracking: true,
+            type: action.payload.type ?? null
+          };
           break;
         }
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE: {
-          draftState.track_me_draw_geo = false;
+          draftState.track_me_draw_geo = {
+            isTracking: false,
+            type: null
+          };
           break;
         }
         case ACTIVITY_EDIT_PHOTO_SUCCESS: {
