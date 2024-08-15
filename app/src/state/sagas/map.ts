@@ -88,6 +88,7 @@ import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
+import { promptNumberInput } from 'utils/userPrompts';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -925,27 +926,25 @@ function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
 }
 
 function* handle_MAP_ON_SHAPE_CREATE(action) {
+  const callback = (width: number) => {
+    const newGeo = turf.buffer(action.payload.geometry, width / 10000);
+    if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
+      return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo ? newGeo : action.payload] } }];
+    }
+  };
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
-  let newGeo = null;
   if (action?.payload?.geometry?.type === 'LineString') {
-    let width = null;
-    while (typeof width !== 'number') {
-      try {
-        const raw = prompt('Enter width in m for line to be buffered: ');
-        width = Number(raw);
-        if (typeof raw === 'object') {
-          return;
-        }
-      } catch (e) {
-        alert('Not a number');
-      }
-    }
-    newGeo = turf.buffer(action.payload.geometry, width / 1000);
-  }
-
-  if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo ? newGeo : action.payload] } });
+    yield put(
+      promptNumberInput({
+        title: 'Buffer needed',
+        prompt: 'Enter width in meters for line to be buffered:',
+        min: 0.001,
+        acceptFloats: true,
+        callback,
+        label: 'Meters'
+      })
+    );
   }
 }
 
