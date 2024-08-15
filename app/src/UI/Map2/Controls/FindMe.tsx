@@ -11,7 +11,8 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import { useSelector } from 'utils/use_selector';
-import { promptConfirmationInput } from 'utils/userPrompts';
+import { promptRadioInput } from 'utils/userPrompts';
+import GeoShapes from 'constants/geoShapes';
 
 export const FindMeToggle = (props) => {
   const positionTracking = useSelector((state) => state.Map?.positionTracking);
@@ -61,21 +62,21 @@ export const TrackMeToggle = (props) => {
   const [show, setShow] = React.useState(false);
   const divRef = useRef();
 
-  const promptHandler = (res: boolean) => {
-    if (!drawGeometryTracking && res) {
-      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START });
-    }
+  const promptHandler = (input: string | number) => {
+    console.log(input);
+    dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: input });
   };
   const clickHandler = () => {
     setShow(false);
-    if (drawGeometryTracking) {
+    if (drawGeometryTracking.isTracking) {
       dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
     } else {
       dispatch(
-        promptConfirmationInput({
+        promptRadioInput({
           callback: promptHandler,
+          options: [GeoShapes.LineString, GeoShapes.Polygon],
           prompt:
-            'On the Activity Page this will edit your geometry for the record, and create a polygon once complete.',
+            "Select the type of shape you wish to create. If you choose a LineString you'll be able to add a buffer at the end",
           title: 'Are you sure you want to track your path?',
           confirmText: 'Start Tracking'
         })
@@ -86,7 +87,7 @@ export const TrackMeToggle = (props) => {
   return (
     <>
       {positionTracking ? (
-        <div ref={divRef} className={drawGeometryTracking ? 'map-btn-selected' : 'map-btn'}>
+        <div ref={divRef} className={drawGeometryTracking.isTracking ? 'map-btn-selected' : 'map-btn'}>
           <Tooltip
             open={show}
             classes={{ tooltip: 'toolTip' }}
