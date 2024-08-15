@@ -20,6 +20,7 @@ import { UnknownAction } from 'redux';
 
 const TextModal = ({
   callback,
+  disableCancel,
   prompt,
   regex,
   regexErrorText,
@@ -111,7 +112,7 @@ const TextModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
           <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
         </DialogActions>
       </Box>

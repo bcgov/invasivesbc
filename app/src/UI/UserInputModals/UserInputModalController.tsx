@@ -29,6 +29,7 @@ const UserInputModalController = () => {
       return (
         <ConfirmationModal
           callback={prompt.callback}
+          disableCancel={prompt?.disableCancel}
           id={prompt.id}
           title={prompt.title}
           prompt={prompt.prompt}
@@ -43,6 +44,7 @@ const UserInputModalController = () => {
           callback={prompt.callback}
           cancelText={prompt?.cancelText}
           confirmText={prompt?.confirmText}
+          disableCancel={prompt?.disableCancel}
           id={prompt.id}
           label={prompt?.label}
           max={prompt?.max}
@@ -55,9 +57,11 @@ const UserInputModalController = () => {
       prompt = prompts[0] as NumberModalInterface;
       return (
         <NumberModal
+          acceptFloats={prompt?.acceptFloats}
           callback={prompt?.callback}
           cancelText={prompt.cancelText}
           confirmText={prompt.confirmText}
+          disableCancel={prompt?.disableCancel}
           id={prompt.id}
           label={prompt.label}
           max={prompt.max}
@@ -65,7 +69,6 @@ const UserInputModalController = () => {
           prompt={prompt.prompt}
           selectOptions={prompt.selectOptions}
           title={prompt.title}
-          acceptFloats={prompt?.acceptFloats}
         />
       );
     case PromptTypes.Radio:
@@ -75,6 +78,7 @@ const UserInputModalController = () => {
           callback={prompt.callback}
           cancelText={prompt?.cancelText}
           confirmText={prompt?.confirmText}
+          disableCancel={prompt?.disableCancel}
           id={prompt.id}
           label={prompt?.label}
           options={prompt.options}
@@ -88,6 +92,7 @@ const UserInputModalController = () => {
         <TextModal
           callback={prompt?.callback}
           cancelText={prompt?.cancelText}
+          disableCancel={prompt?.disableCancel}
           confirmText={prompt?.confirmText}
           label={prompt?.label}
           id={prompt.id}

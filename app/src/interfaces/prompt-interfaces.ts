@@ -12,6 +12,7 @@ export interface ReduxPayload {
  * @interface BasePromptInterface Confirmation Modal Prompts
  * @property {string} cancelText Text override for 'Cancel' button text
  * @property {string} confirmText Text override for 'Confirm' button text
+ * @property {boolean} disableCancel Hides the cancel button from the modal.
  * @property {string} id Id for a given Prompt (Used for deleting)
  * @property {string[] | string} prompt Main text body, Can use array to handle multiple paragraphs
  * @property {string} title Title for modal
@@ -20,6 +21,7 @@ export interface ReduxPayload {
 interface BasePromptInterface {
   cancelText?: string;
   confirmText?: string;
+  disableCancel?: boolean;
   id?: string;
   prompt: string[] | string;
   title: string;

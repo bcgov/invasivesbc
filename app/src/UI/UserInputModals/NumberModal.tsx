@@ -21,6 +21,7 @@ import { UnknownAction } from 'redux';
 const NumberModal = ({
   callback,
   prompt,
+  disableCancel,
   title,
   id,
   confirmText,
@@ -133,7 +134,7 @@ const NumberModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
           <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
         </DialogActions>
       </Box>

@@ -21,7 +21,18 @@ import { closeModal } from 'utils/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
 
-const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, max, label }: DateModalInterface) => {
+const DateModal = ({
+  callback,
+  disableCancel,
+  prompt,
+  id,
+  title,
+  confirmText,
+  cancelText,
+  min,
+  max,
+  label
+}: DateModalInterface) => {
   const [userDate, setUserDate] = useState<Dayjs>(dayjs());
   const [validationError, setValidationError] = useState<string>('');
   const dispatch = useDispatch();
@@ -88,7 +99,7 @@ const DateModal = ({ callback, prompt, id, title, confirmText, cancelText, min, 
         </FormControl>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
           <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
         </DialogActions>
       </Box>
