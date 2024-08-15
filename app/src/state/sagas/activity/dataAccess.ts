@@ -471,9 +471,14 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
   try {
     const currentState = yield select(selectActivity);
     const currentActivity = currentState.activity;
-    const hasSelfIntersections =
-      currentActivity?.geometry?.[0]?.geometry && kinks(currentActivity?.geometry?.[0]?.geometry).features.length > 0;
-    const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === 'LineString';
+    let hasSelfIntersections = false;
+    if (
+      currentActivity?.geometry?.[0]?.geometry &&
+      currentActivity?.geometry?.[0]?.geometry?.type !== GeoShapes.Point
+    ) {
+      hasSelfIntersections = kinks(currentActivity?.geometry?.[0]?.geometry).features.length > 0;
+    }
+    const wipLinestring = currentActivity?.geometry?.[0]?.geometry?.type === GeoShapes.LineString;
     const reportedAreaLessThanMaxArea =
       currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
