@@ -1,4 +1,5 @@
 import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { buffer } from '@turf/turf';
 import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
@@ -102,7 +103,7 @@ import { calculateGeometryArea } from 'utils/geometryHelpers';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import AlertMessage from 'interfaces/AlertMessage';
-import { promptConfirmationInput } from 'utils/userPrompts';
+import { promptConfirmationInput, promptNumberInput } from 'utils/userPrompts';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -258,23 +259,42 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
     content: `Unable to get minimum number of coordinates (${minNumberCoords})`,
     severity: AlertSeverity.Error
   });
-
+  let minNumberCoords: number = 0;
   const activityState = yield select(selectActivity);
-  const minNumberCoords = 3;
-  const validationErrors: AlertMessage[] = [];
+  const shape = activityState.track_me_draw_geo.type;
+  console.log(shape, activityState);
 
-  // Early exit on non-existent/zero-length arrays
+  // Early exit on non-existent/zero-length geometry arrays
   if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
     yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackMyPathStoppedEarly });
     yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
     return;
   }
+
+  const validationErrors: AlertMessage[] = [];
   const currentGeo = activityState.activity.geometry[0];
+  let newGeo = currentGeo;
+  let geometryIsMinimumLength: boolean = false;
+
+  switch (shape) {
+    case GeoShapes.Polygon:
+      minNumberCoords = 3;
+      geometryIsMinimumLength = currentGeo.geometry.coordinates.length >= minNumberCoords;
+      if (geometryIsMinimumLength) {
+        // Cast current geometry to Polygon if possible
+        newGeo = lineToPolygon(currentGeo) ?? currentGeo;
+      }
+      break;
+    case GeoShapes.LineString:
+      minNumberCoords = 2;
+      geometryIsMinimumLength = currentGeo.geometry.coordinates.length >= minNumberCoords;
+      break;
+    default:
+      break;
+  }
 
   // Validation Checks
-  const geometryIsMinimumLength = currentGeo.geometry.coordinates.length >= minNumberCoords;
-  // Cast current geometry to Polygon if possible
-  const newGeo = geometryIsMinimumLength ? lineToPolygon(currentGeo) : currentGeo;
+
   const geometryIsWithinBC = yield call(geomWithinBC, newGeo);
   const geographyWillContainIntersections = kinks(newGeo.geometry).features?.length > 0;
   const geometryHasPositiveArea = Math.floor(calculateGeometryArea(newGeo.geometry)) >= 0;
@@ -294,9 +314,31 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
   }
 
   if (validationErrors.length === 0) {
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
-    yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
-    yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingStoppedSuccess });
+    if (shape === GeoShapes.LineString) {
+      const lineStringCallback = (width: number) => {
+        const bufferedLine = buffer(newGeo, width / 10000);
+        return [
+          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [bufferedLine] } },
+          { type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE },
+          { type: NEW_ALERT, payload: mappingAlertMessages.trackingStoppedSuccess }
+        ];
+      };
+      yield put(
+        promptNumberInput({
+          title: 'Buffer needed',
+          prompt: 'Enter width in meters for line to be buffered:',
+          min: 0.001,
+          acceptFloats: true,
+          disableCancel: true,
+          callback: lineStringCallback,
+          label: 'Meters'
+        })
+      );
+    } else {
+      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+      yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
+      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingStoppedSuccess });
+    }
   } else {
     yield put({ type: NEW_ALERT, payload: mappingAlertMessages.canEditInfo });
     for (const error of validationErrors) {
