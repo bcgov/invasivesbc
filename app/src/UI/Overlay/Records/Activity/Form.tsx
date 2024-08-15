@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import FormContainer from './form/FormContainer';
 import { useDispatch, useSelector } from 'react-redux';
 import './Form.css';
@@ -7,12 +7,13 @@ import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
 import { calc_lat_long_from_utm } from 'utils/utm';
-import { lengthToRadians } from '@turf/helpers';
 import {
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
   MAP_TOGGLE_TRACKING_ON
 } from 'state/actions';
+import GeoShapes from 'constants/geoShapes';
+import { promptRadioInput } from 'utils/userPrompts';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -94,13 +95,23 @@ export const ActivityForm = (props) => {
     };
   };
   const clickHandler = () => {
-    const startTrackingConfirmation =
-      'Are you sure you want to track your path? On the Activity Page this will edit your geometry for the record, and create a polygon once complete.';
-    if (drawGeometryTracking) {
+    if (drawGeometryTracking.isTracking) {
       dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
-    } else if (!drawGeometryTracking && confirm(startTrackingConfirmation)) {
-      dispatch({ type: MAP_TOGGLE_TRACKING_ON });
-      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START });
+    } else {
+      const callback = (input: string | number) => {
+        dispatch({ type: MAP_TOGGLE_TRACKING_ON });
+        dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: input });
+      };
+      dispatch(
+        promptRadioInput({
+          callback,
+          options: [GeoShapes.LineString, GeoShapes.Polygon],
+          prompt:
+            "Select the type of shape you wish to create. If you choose a LineString you'll be able to add a buffer at the end",
+          title: 'Are you sure you want to track your path?',
+          confirmText: 'Start Tracking'
+        })
+      );
     }
   };
 
