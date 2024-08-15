@@ -23,7 +23,17 @@ import { ChangeEvent, useState } from 'react';
 /**
  * @desc Customizable Input Modal for collecting boolean responses from a user.
  */
-const RadioModal = ({ callback, id, prompt, title, confirmText, cancelText, options, label }: RadioModalInterface) => {
+const RadioModal = ({
+  callback,
+  disableCancel,
+  id,
+  prompt,
+  title,
+  confirmText,
+  cancelText,
+  options,
+  label
+}: RadioModalInterface) => {
   const [userInput, setUserInput] = useState<number | string>('');
   const dispatch = useDispatch();
   const handleRedux = (redux: ReduxPayload[]) => {
@@ -72,7 +82,7 @@ const RadioModal = ({ callback, id, prompt, title, confirmText, cancelText, opti
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
           <Button onClick={handleConfirmation} disabled={!(options as any[]).includes(userInput)}>
             {confirmText ?? 'Confirm'}
           </Button>

@@ -8,7 +8,15 @@ import { UnknownAction } from 'redux';
 /**
  * @desc Customizable Input Modal for collecting boolean responses from a user.
  */
-const ConfirmationModal = ({ callback, id, prompt, title, confirmText, cancelText }: ConfirmationModalInterface) => {
+const ConfirmationModal = ({
+  callback,
+  disableCancel,
+  id,
+  prompt,
+  title,
+  confirmText,
+  cancelText
+}: ConfirmationModalInterface) => {
   const dispatch = useDispatch();
   const handleRedux = (redux: ReduxPayload[]) => {
     for (const action of redux) {
@@ -37,7 +45,7 @@ const ConfirmationModal = ({ callback, id, prompt, title, confirmText, cancelTex
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>
+          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
           <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
         </DialogActions>
       </Box>
