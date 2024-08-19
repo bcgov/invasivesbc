@@ -72,6 +72,7 @@ import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import { promptNumberInput } from 'utils/userPrompts';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
@@ -147,18 +148,6 @@ const fixMisLabledMultiPolygon = (input) => {
   }
 };
 
-function isNumber(value?: string | number): boolean {
-  return value != null && value !== '' && !isNaN(Number(value.toString()));
-}
-
-function getSetNumberFromUser(setNumbers: number[] = [1, 5, 10]): number {
-  let userEnteredArea: number | undefined = undefined;
-  while (!isNumber(userEnteredArea) && !setNumbers.includes(Number(userEnteredArea))) {
-    userEnteredArea = parseInt(prompt('Enter area of geometry in square meters (1, 5, or 10):?') || '');
-  }
-  return userEnteredArea as number;
-}
-
 export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>) {
   const activityState = yield select(selectActivity);
   try {
@@ -172,9 +161,26 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
 
     if (modifiedPayload.length > 0 && modifiedPayload[0].geometry.type === GeoShapes.Point) {
       if (!modifiedPayload[0].properties.radius) {
-        const userEnteredArea = getSetNumberFromUser();
-        const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
-        modifiedPayload[0].properties.radius = radiusBasedOnArea;
+        /* When radius is missing from point  payload, Prompt user for input, and refire the geometry in the callback, with radius added. */
+        yield put(
+          promptNumberInput({
+            title: 'Area Needed',
+            prompt: 'Enter the area of geometry in m\u00b2',
+            min: 1,
+            max: 10,
+            callback: (userEnteredArea: number) => {
+              const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
+              modifiedPayload[0].properties.radius = radiusBasedOnArea;
+              return [
+                {
+                  type: ACTIVITY_UPDATE_GEO_REQUEST,
+                  payload: { geometry: modifiedPayload }
+                }
+              ];
+            }
+          })
+        );
+        return;
       }
     }
 
