@@ -52,12 +52,21 @@ export interface DateModalInterface extends BasePromptInterface {
 }
 
 /**
+ * @desc Response object interface for user created UTMs
+ */
+export interface UtmInputObj {
+  zone: number;
+  northing: number;
+  easting: number;
+  results: number[];
+}
+/**
  * @interface ManualUtmModalInterface
  * @extends BasePromptInterface
- * @property { (input: UtmObject) => void | ReduxPayload[] } callback Action result for user input. if an array is returned, fires all redux actions contained
+ * @property { (input: UtmInputObj) => void | ReduxPayload[] } callback Action result for user input. if an array is returned, fires all redux actions contained
  */
 export interface ManualUtmModalInterface extends BasePromptInterface {
-  callback: (input: number[]) => void | ReduxPayload[];
+  callback: (input: UtmInputObj) => void | ReduxPayload[];
 }
 /**
  * @interface NumberModalInterface
