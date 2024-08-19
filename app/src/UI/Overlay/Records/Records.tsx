@@ -27,6 +27,7 @@ import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
 import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
+import { promptConfirmationInput } from 'utils/userPrompts';
 
 export const Records = () => {
   const MapMode = useSelector((state: any) => state.Map?.MapMode);
@@ -123,19 +124,26 @@ export const Records = () => {
 
   const onClickDeleteRecordSet = (set: any, e) => {
     e.stopPropagation();
-    if (
-      /*eslint-disable*/
-      confirm(
-        'Are you sure you want to remove this record set?  The data will persist but you will no longer have this set of filters or the map layer.'
-      )
-    ) {
-      dispatch({
-        type: USER_SETTINGS_REMOVE_RECORD_SET,
-        payload: {
-          setID: set
-        }
-      });
-    }
+    const callback = (userConfirmation: boolean) => {
+      if (userConfirmation) {
+        dispatch({
+          type: USER_SETTINGS_REMOVE_RECORD_SET,
+          payload: {
+            setID: set
+          }
+        });
+      }
+    };
+    dispatch(
+      promptConfirmationInput({
+        title: 'Deleting Record Set',
+        prompt: [
+          'Are you sure you want to remove this record set?',
+          'The data will persist but you will no longer have this set of filters or the map layer.'
+        ],
+        callback
+      })
+    );
   };
 
   const onClickInitCache = (set: any, e) => {
@@ -250,8 +258,9 @@ export const Records = () => {
                       borderWidth: typeof highlightedSet === 'string' && highlightedSet === set ? '5px' : '1px',
                       padding: typeof highlightedSet === 'string' && highlightedSet === set ? '0px 5px' : '4px 9px',
                       boxSizing: 'border-box',
-                      height: '30pt',
-                    }}>
+                      height: '30pt'
+                    }}
+                  >
                     <div key={set + 'spinner'}>{!loadMap?.[set] ? <Spinner /> : <></>}</div>
                     <div className="records_set_left_hand_items">
                       <>
@@ -293,7 +302,11 @@ export const Records = () => {
                         )}
                       </>
                       <div className="records_set_name">
-                        {isEditingName && !['1', '2', '3'].includes(set) ? <></> : <Typography>{recordSets?.[set]?.recordSetName}</Typography>}
+                        {isEditingName && !['1', '2', '3'].includes(set) ? (
+                          <></>
+                        ) : (
+                          <Typography>{recordSets?.[set]?.recordSetName}</Typography>
+                        )}
                       </div>
                     </div>
 
@@ -382,8 +395,8 @@ export const Records = () => {
                       </Tooltip>
 
                       {recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
-                        recordSets?.[set]?.recordSetName === 'All IAPP Records' ||
-                        recordSets?.[set]?.recordSetName === 'My Drafts' ? (
+                      recordSets?.[set]?.recordSetName === 'All IAPP Records' ||
+                      recordSets?.[set]?.recordSetName === 'My Drafts' ? (
                         <></>
                       ) : (
                         <div className="records_set_layer_colour">
@@ -400,8 +413,8 @@ export const Records = () => {
                       )}
 
                       {recordSets?.[set]?.recordSetName === 'All InvasivesBC Activities' ||
-                        recordSets?.[set]?.recordSetName === 'All IAPP Records' ||
-                        recordSets?.[set]?.recordSetName === 'My Drafts' ? (
+                      recordSets?.[set]?.recordSetName === 'All IAPP Records' ||
+                      recordSets?.[set]?.recordSetName === 'My Drafts' ? (
                         <></>
                       ) : (
                         <Tooltip
