@@ -32,7 +32,7 @@ const NumberModal = ({
   label,
   acceptFloats
 }: NumberModalInterface) => {
-  const [userNumber, setUserNumber] = useState<number>(0);
+  const [userNumber, setUserNumber] = useState<number>();
   const [validationError, setValidationError] = useState<string>('');
   const dispatch = useDispatch();
   const handleRedux = (redux: ReduxPayload[]) => {
@@ -43,7 +43,7 @@ const NumberModal = ({
   const handleConfirmation = () => {
     const inputIsValid = validateUserInput();
     if (inputIsValid) {
-      handleRedux(callback(userNumber) ?? []);
+      handleRedux(callback((userNumber as number) ?? 0) ?? []);
       handleClose();
     }
   };
@@ -51,18 +51,9 @@ const NumberModal = ({
    * @desc change handler for select menu
    */
   const handleChange = (value: string) => {
-    if (value === '') {
-      setUserNumber(0);
-    } else if (acceptFloats) {
-      const result = parseFloat(value);
-      if (!isNaN(result)) {
-        setUserNumber(result);
-      }
-    } else {
-      const result = parseInt(value);
-      if (!isNaN(result)) {
-        setUserNumber(result);
-      }
+    const result = acceptFloats ? parseFloat(value) : parseInt(value);
+    if (!isNaN(result)) {
+      setUserNumber(result);
     }
     validateUserInput();
   };
@@ -77,7 +68,9 @@ const NumberModal = ({
    */
   const validateUserInput = (): boolean => {
     let error: string = '';
-    if (selectOptions && !selectOptions.includes(userNumber)) {
+    if (typeof userNumber !== 'number') {
+      error = 'Value cannot be blank.';
+    } else if (selectOptions && !selectOptions.includes(userNumber)) {
       error = 'Must select a value from the select menu';
     } else if (min !== undefined && max !== undefined && (userNumber < min || max < userNumber)) {
       error = `Number must be between (${min}) and (${max})`;
@@ -128,7 +121,7 @@ const NumberModal = ({
               label={label ?? 'Enter response'}
               onBlur={validateUserInput}
               onChange={(evt) => handleChange(evt.currentTarget.value)}
-              value={userNumber}
+              value={userNumber ?? ''}
             />
           )}
         </FormControl>
