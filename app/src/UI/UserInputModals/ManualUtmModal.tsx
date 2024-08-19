@@ -12,7 +12,7 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { useEffect, useState } from 'react';
-import { ManualUtmModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
+import { ManualUtmModalInterface, ReduxPayload, UtmInputObj } from 'interfaces/prompt-interfaces';
 import { closeModal } from 'utils/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
@@ -30,7 +30,7 @@ const ManualUtmModal = ({
   const [zone, setUserZone] = useState<number>();
   const [easting, setUserEasting] = useState<number>();
   const [northing, setUserNorthing] = useState<number>();
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<number[]>([]);
 
   const dispatch = useDispatch();
   const handleRedux = (redux: ReduxPayload[]) => {
@@ -39,10 +39,15 @@ const ManualUtmModal = ({
     }
   };
   const handleConfirmation = () => {
-    handleRedux(callback(results) ?? []);
+    handleRedux(callback(buildResponse()) ?? []);
     handleClose();
   };
-
+  const buildResponse = (): UtmInputObj => ({
+    zone: zone!,
+    easting: easting!,
+    northing: northing!,
+    results: results
+  });
   /**
    * Calculate lat long from UTM.
    */

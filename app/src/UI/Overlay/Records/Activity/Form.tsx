@@ -13,7 +13,8 @@ import {
   MAP_TOGGLE_TRACKING_ON
 } from 'state/actions';
 import GeoShapes from 'constants/geoShapes';
-import { promptRadioInput } from 'utils/userPrompts';
+import { promptRadioInput, promptUtmInput } from 'utils/userPrompts';
+import { UtmInputObj } from 'interfaces/prompt-interfaces';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -41,58 +42,28 @@ export const ActivityForm = (props) => {
   const invasive_plant = useSelector((state: any) => state.ActivityPage?.activity?.invasive_plant);
   const drawGeometryTracking = useSelector((state: any) => state.Map?.track_me_draw_geo);
 
+  /**
+   * @desc Handler for creating a manual UTM Entry initiated by user
+   */
   const manualUTMEntry = () => {
-    let validZone = false;
-    let zone;
-    let validNorthing = false;
-    let northing;
-    let validEasting = false;
-    let easting;
-
-    while (!validZone) {
-      zone = prompt('Enter a valid UTM Zone');
-      if (zone === null) return;
-      if (!isNaN(Number(zone))) {
-        validZone = true;
-        break;
-      }
-    }
-    if (!validZone) {
-      return; // allow for cancel
-    }
-    while (!validEasting) {
-      easting = prompt('Enter a valid UTM Easting');
-      if (easting === null) return;
-      if (!isNaN(Number(easting))) {
-        validEasting = true;
-        break;
-      }
-    }
-    if (!validEasting) {
-      //allow for cancel
-      return;
-    }
-    while (!validNorthing) {
-      northing = prompt('Enter a valid UTM Northing');
-      if (northing === null) return;
-      if (!isNaN(Number(northing))) {
-        validNorthing = true;
-        break;
-      }
-    }
-    if (!validNorthing) {
-      return; // allow for cancel
-    }
-
-    const result = JSON.parse(JSON.stringify(calc_lat_long_from_utm(Number(zone), Number(easting), Number(northing))));
-    const geo: any = {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [result[0], result[1]]
-      },
-      properties: {}
+    const utmCallback = (input: UtmInputObj) => {
+      const geo: any = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [input.results[0], input.results[1]]
+        },
+        properties: {}
+      };
     };
+
+    dispatch(
+      promptUtmInput({
+        title: 'Enter a manual UTM',
+        prompt: 'Fill in the fields below to create your own UTM Coordinates',
+        callback: utmCallback
+      })
+    );
   };
   const clickHandler = () => {
     if (drawGeometryTracking.isTracking) {
