@@ -1,5 +1,7 @@
 import DateModal from './DateModal';
+import ManualUtmModal from './ManualUtmModal';
 import NumberModal from './NumberModal';
+import RadioModal from './RadioModal';
 import TextModal from './TextModal';
 import ConfirmationModal from './ConfirmationModal';
 import { useSelector } from 'utils/use_selector';
@@ -7,11 +9,11 @@ import { PromptTypes } from 'constants/promptEnums';
 import {
   ConfirmationModalInterface,
   DateModalInterface,
+  ManualUtmModalInterface,
   NumberModalInterface,
   RadioModalInterface,
   TextModalInterface
 } from 'interfaces/prompt-interfaces';
-import RadioModal from './RadioModal';
 
 /**
  * @desc Handler for all User Input Modals, Uses Redux store as a queue to display prompts to user when input is needed
@@ -51,6 +53,19 @@ const UserInputModalController = () => {
           min={prompt?.min}
           prompt={prompt?.prompt}
           title={prompt?.title}
+        />
+      );
+    case PromptTypes.ManualUtm:
+      prompt = prompts[0] as ManualUtmModalInterface;
+      return (
+        <ManualUtmModal
+          cancelText={prompt?.cancelText}
+          callback={prompt.callback}
+          confirmText={prompt?.confirmText}
+          disableCancel={prompt?.disableCancel}
+          id={prompt.id}
+          prompt={prompt.prompt}
+          title={prompt.title}
         />
       );
     case PromptTypes.Number:

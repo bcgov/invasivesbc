@@ -52,6 +52,14 @@ export interface DateModalInterface extends BasePromptInterface {
 }
 
 /**
+ * @interface ManualUtmModalInterface
+ * @extends BasePromptInterface
+ * @property { (input: UtmObject) => void | ReduxPayload[] } callback Action result for user input. if an array is returned, fires all redux actions contained
+ */
+export interface ManualUtmModalInterface extends BasePromptInterface {
+  callback: (input: number[]) => void | ReduxPayload[];
+}
+/**
  * @interface NumberModalInterface
  * @extends BasePromptInterface
  * @property {boolean} acceptFloats Allow user to enter floats as input value
