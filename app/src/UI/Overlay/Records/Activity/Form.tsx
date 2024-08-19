@@ -44,6 +44,7 @@ export const ActivityForm = (props) => {
 
   /**
    * @desc Handler for creating a manual UTM Entry initiated by user
+   * @TODO Finish flow of function
    */
   const manualUTMEntry = () => {
     const utmCallback = (input: UtmInputObj) => {
