@@ -7,6 +7,7 @@ import { PromptTypes } from 'constants/promptEnums';
 import {
   ConfirmationModalInterface,
   DateModalInterface,
+  ManualUtmModalInterface,
   NumberModalInterface,
   RadioModalInterface,
   TextModalInterface
@@ -76,6 +77,18 @@ export const promptRadioInput = (prompt: RadioModalInterface) => {
  */
 export const promptTextInput = (prompt: TextModalInterface) => {
   prompt.type = PromptTypes.Text;
+  return {
+    type: NEW_PROMPT,
+    payload: prompt
+  };
+};
+
+/**
+ * @desc Helper function for creating modals to gather manual UTM inputs
+ * @param {ManualUtmModalInterface} prompt component props
+ */
+export const promptUtmInput = (prompt: ManualUtmModalInterface) => {
+  prompt.type = PromptTypes.ManualUtm;
   return {
     type: NEW_PROMPT,
     payload: prompt
