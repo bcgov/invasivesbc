@@ -1,0 +1,30 @@
+#customMapLayerDialog {
+}
+
+#customMapLayerDialog .dialogTitle {
+  background-color: var(--bc-blue);
+  color: white;
+  border-bottom: 2pt solid var(--bc-yellow);
+  margin-bottom: 5pt;
+}
+
+#customMapLayerDialog .dialogBody {
+  background-color: white;
+  display: flex;
+  width: 400px;
+  max-width: 100%;
+  min-height: 50pt;
+  box-sizing: border-box;
+  padding: 10pt;
+}
+
+#customMapLayerDialog .dialogBody .formCont {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#customMapLayerDialog .dialogBody div .MuiFormControl-root {
+  margin: 5pt 0;
+}
