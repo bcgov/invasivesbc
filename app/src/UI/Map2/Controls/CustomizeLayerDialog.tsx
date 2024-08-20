@@ -4,199 +4,202 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
+  Divider,
   FormControl,
-  InputLabel,
   MenuItem,
-  Select,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import {
   DRAW_CUSTOM_LAYER,
+  NEW_ALERT,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
-  TOGGLE_CUSTOMIZE_LAYERS
+  TOGGLE_CUSTOMIZE_LAYERS,
+  TOGGLE_LAYER_PICKER_OPEN
 } from 'state/actions';
+import './CustomizeLayerDialog.css';
 
 import KMLShapesUpload from './KMLShapesUpload';
+import { useSelector } from 'utils/use_selector';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 
 const CustomizeLayerMenu = (props) => {
+  enum MenuState {
+    Init,
+    New,
+    Remove,
+    Upload
+  }
+  enum LayerOptions {
+    Draw = 'Draw',
+    UploadKml = 'Upload KML/KMZ',
+    WMS = 'WMS Link',
+    WFS = 'WFS Link'
+  }
+
   const dispatch = useDispatch();
-
-  //  const classes = useStyles();
-  const history = useHistory();
-
-  const dialogueOpen = useSelector((state: any) => state.Map.customizeLayersToggle);
+  const dialogueOpen = useSelector((state) => state.Map.customizeLayersToggle);
 
   //menu options
-  const newLayerTypeOptions = ['Draw', 'Upload KML/KMZ', 'WMS Link', 'WFS Link'];
-  const [optionVal, setOptionVal] = useState('Draw');
-  const [subMenuType, setSubMenuType] = useState('Init');
-  const [newLayerName, setNewLayerName] = useState('');
-  const [layerToDelete, setLayerToDelete] = useState(null);
+  const [layerToDelete, setLayerToDelete] = useState<string>();
+  const [newLayerName, setNewLayerName] = useState<string>();
+  const [optionVal, setOptionVal] = useState<LayerOptions>();
+  const [subMenuType, setSubMenuType] = useState<MenuState>(MenuState.Init);
 
-  const clientBoundaries = useSelector((state: any) => state.Map.clientBoundaries).map((boundary) => {
+  const clientBoundaries = useSelector((state) => state.Map.clientBoundaries).map((boundary) => {
     return { ...boundary, type: 'Client' };
   });
-  const serverBoundaries = useSelector((state: any) => state.Map.serverBoundaries).map((boundary) => {
+
+  const serverBoundaries = useSelector((state) => state.Map.serverBoundaries).map((boundary) => {
     return { ...boundary, type: 'Server' };
   });
 
   const customLayers = [...clientBoundaries, ...serverBoundaries];
 
+  const handleCreateLayer = () => {
+    switch (optionVal) {
+      case LayerOptions.UploadKml:
+        setSubMenuType(MenuState.Upload);
+        break;
+      case LayerOptions.Draw:
+        dispatch({ type: TOGGLE_LAYER_PICKER_OPEN });
+        dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
+        dispatch({
+          type: NEW_ALERT,
+          payload: {
+            content: 'Complete your layer by drawing a shape with the map tools.',
+            subject: AlertSubjects.Map,
+            severity: AlertSeverity.Info
+          }
+        });
+        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+        cleanup();
+        break;
+      default:
+        cleanup();
+    }
+  };
+
+  const handleRemoveLayer = () => {
+    const type = customLayers.filter((layer) => layer.id === layerToDelete)?.[0]?.type;
+    switch (type) {
+      case 'Client':
+        dispatch({ type: REMOVE_CLIENT_BOUNDARY, payload: { id: layerToDelete } });
+        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+        cleanup();
+        break;
+      case 'Server':
+        dispatch({ type: REMOVE_SERVER_BOUNDARY, payload: { id: layerToDelete } });
+        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+        cleanup();
+        break;
+    }
+    cleanup();
+  };
+
+  const handleExit = () => {
+    dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+    cleanup();
+  };
+  // Reset states to default
   const cleanup = () => {
-    setSubMenuType('Init');
-    setOptionVal('Draw');
-    setLayerToDelete(null);
-    setNewLayerName('');
+    setSubMenuType(MenuState.Init);
+    setOptionVal(undefined);
+    setLayerToDelete(undefined);
+    setNewLayerName(undefined);
   };
 
   const onKMLDone = () => {
-    cleanup();
     dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+    cleanup();
   };
 
   return (
-    <Dialog open={dialogueOpen}>
-      <DialogTitle>Add or remove a custom layer</DialogTitle>
-
-      <Box>
+    <Dialog open={dialogueOpen} id="customMapLayerDialog">
+      <DialogTitle className="dialogTitle">Custom Map Layer Controls</DialogTitle>
+      <Box className="dialogBody">
         {
           {
-            New: (
-              <FormControl>
-                <InputLabel>New Layer type</InputLabel>
-                <Select value={optionVal} onChange={(e) => setOptionVal(e.target.value)} label="Choose new Layer type">
-                  {newLayerTypeOptions.map((option) => (
-                    <MenuItem disabled={['WMS Link', 'WFS Link'].includes(option)} key={Math.random()} value={option}>
+            [MenuState.Init]: <Typography>Customize your map by adding or removing custom layers</Typography>,
+            [MenuState.New]: (
+              <FormControl className="formCont">
+                <TextField
+                  label="Choose new layer type"
+                  onChange={(e) => setOptionVal(e.target.value as LayerOptions)}
+                  select
+                  value={optionVal ?? ''}
+                >
+                  {Object.values(LayerOptions).map((option) => (
+                    <MenuItem
+                      disabled={[LayerOptions.WMS, LayerOptions.WFS].includes(option as LayerOptions)}
+                      key={option}
+                      value={option}
+                    >
                       {option}
                     </MenuItem>
                   ))}
-                </Select>
+                </TextField>
                 <TextField
-                  value={newLayerName}
-                  onChange={(e) => setNewLayerName(e.target.value)}
                   label="Name your new layer"
-                ></TextField>
+                  onChange={(e) => setNewLayerName(e.target.value)}
+                  value={newLayerName ?? ''}
+                />
               </FormControl>
             ),
-            Remove: (
-              <FormControl>
-                <InputLabel>Remove Layer</InputLabel>
-                <Select
-                  value={layerToDelete}
+            [MenuState.Remove]: (
+              <FormControl className="formCont">
+                <TextField
+                  label="Choose layer to remove"
                   onChange={(e) => setLayerToDelete(e.target.value)}
-                  label="Choose Layer to remove"
+                  select
+                  value={layerToDelete ?? ''}
                 >
                   {customLayers.map((option) => (
                     <MenuItem key={'customlayermenuitem' + option.id} value={option.id}>
                       {option.title + ' - ' + option.type}
                     </MenuItem>
                   ))}
-                </Select>
+                </TextField>
               </FormControl>
             ),
-            Upload: <KMLShapesUpload title={newLayerName} open={subMenuType === 'Upload'} whenDone={onKMLDone} />,
-            Init: <></>
+            [MenuState.Upload]: (
+              <KMLShapesUpload title={newLayerName} open={subMenuType === MenuState.Upload} whenDone={onKMLDone} />
+            )
           }[subMenuType]
         }
       </Box>
-
+      <Divider />
       <DialogActions>
         {
           {
-            Init: (
+            [MenuState.Init]: (
               <>
-                <Button
-                  onClick={() => {
-                    setSubMenuType('New');
-                  }}
-                >
-                  Add new
-                </Button>
-                <Button
-                  onClick={() => {
-                    setSubMenuType('Remove');
-                  }}
-                >
-                  Remove existing
-                </Button>
+                <Button onClick={setSubMenuType.bind(this, MenuState.New)}>Add New Layer</Button>
+                <Button onClick={setSubMenuType.bind(this, MenuState.Remove)}>Remove existing</Button>
               </>
             ),
-            New: (
+            [MenuState.New]: (
               <>
-                <Button
-                  onClick={() => {
-                    switch (optionVal) {
-                      case 'Upload KML/KMZ':
-                        setSubMenuType('Upload');
-                        break;
-                      case 'Draw':
-                        dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
-                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-                        cleanup();
-                        break;
-                      default:
-                        cleanup();
-                    }
-                  }}
-                >
+                <Button onClick={handleCreateLayer} disabled={!newLayerName || !optionVal}>
                   Create
                 </Button>
-                <Button
-                  onClick={() => {
-                    cleanup();
-                  }}
-                >
-                  Back
-                </Button>
+                <Button onClick={cleanup}>Back</Button>
               </>
             ),
-            Remove: (
+            [MenuState.Remove]: (
               <>
-                <Button
-                  disabled={layerToDelete === null}
-                  onClick={() => {
-                    const type = customLayers.filter((layer) => layer.id === layerToDelete)?.[0]?.type;
-
-                    switch (type) {
-                      case 'Client':
-                        dispatch({ type: REMOVE_CLIENT_BOUNDARY, payload: { id: layerToDelete } });
-                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-                        cleanup();
-                        break;
-                      case 'Server':
-                        dispatch({ type: REMOVE_SERVER_BOUNDARY, payload: { id: layerToDelete } });
-                        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-                        cleanup();
-                        break;
-                    }
-                    cleanup();
-                  }}
-                >
+                <Button disabled={!layerToDelete} onClick={handleRemoveLayer}>
                   Remove
                 </Button>
-                <Button
-                  onClick={() => {
-                    cleanup();
-                  }}
-                >
-                  Back
-                </Button>
+                <Button onClick={cleanup}>Back</Button>
               </>
             )
           }[subMenuType]
         }
-        <Button
-          onClick={() => {
-            dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-            cleanup();
-          }}
-        >
-          Exit
-        </Button>
+        <Button onClick={handleExit}>Exit</Button>
       </DialogActions>
     </Dialog>
   );
