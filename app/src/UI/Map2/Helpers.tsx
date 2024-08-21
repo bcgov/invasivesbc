@@ -159,7 +159,7 @@ export const mapInit = (
         public_layer: {
           type: 'vector',
           url: `pmtiles://${PMTILES_URL}`,
-          attribution: 'Powered by ESRI',
+          attribution: 'Powered by ESRI'
         }
       },
       layers: [
@@ -569,39 +569,34 @@ export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE)
 
   */
   const storeLayersIds = storeLayers.map((layer) => {
-    return 'recordset-layer-' + layer.recordSetID + '-'
-  })
+    return 'recordset-layer-' + layer.recordSetID + '-';
+  });
 
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
-  const allThatAreRecordSetLayers = allLayersOnMap.filter(layer => 
-    layer.includes('recordset-layer')
-  )
-  const allThatAreRecordSetSources = allSourcesOnMap.filter(source => 
-    source.includes('recordset-layer-')
-  )
-  const recordSetLayersThatAreNotInStore = allThatAreRecordSetLayers.filter(layer => 
-       storeLayersIds.filter(storeLayerId => layer.includes(storeLayerId)).length === 0
-  )
-  const recordSetSourcesThatAreNotInStore = allThatAreRecordSetSources.filter(source => 
-       storeLayersIds.filter(storeLayerId => source.includes(storeLayerId)).length === 0
-  )
+  const allThatAreRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes('recordset-layer'));
+  const allThatAreRecordSetSources = allSourcesOnMap.filter((source) => source.includes('recordset-layer-'));
+  const recordSetLayersThatAreNotInStore = allThatAreRecordSetLayers.filter(
+    (layer) => storeLayersIds.filter((storeLayerId) => layer.includes(storeLayerId)).length === 0
+  );
+  const recordSetSourcesThatAreNotInStore = allThatAreRecordSetSources.filter(
+    (source) => storeLayersIds.filter((storeLayerId) => source.includes(storeLayerId)).length === 0
+  );
 
-  recordSetLayersThatAreNotInStore.map(layer => {
+  recordSetLayersThatAreNotInStore.map((layer) => {
     try {
-      map.removeLayer(layer)
-    } catch(e) {
-      console.log('error removing layer', e)
+      map.removeLayer(layer);
+    } catch (e) {
+      console.log('error removing layer', e);
     }
-  })
-  recordSetSourcesThatAreNotInStore.map(source => {
+  });
+  recordSetSourcesThatAreNotInStore.map((source) => {
     try {
-      map.removeSource(source)
-    } catch(e) {
-      console.log('error removing source', e)
+      map.removeSource(source);
+    } catch (e) {
+      console.log('error removing source', e);
     }
-  })
-
+  });
 
   // now update the layers that are in the store
   storeLayers.map((layer: any) => {
@@ -1018,9 +1013,9 @@ export const refreshDrawControls = (
   drawingCustomLayer
 ) => {
   /*
-          We fully tear down map box draw and readd depending on app state / route, to have conditionally rendered controls:
-          Because mapbox draw doesn't clean up its old sources properly we need to do it manually
-       */
+    We fully tear down map box draw and readd depending on app state / route, to have conditionally rendered controls:
+    Because mapbox draw doesn't clean up its old sources properly we need to do it manually
+   */
   map.getLayersOrder().map((layer) => {
     if (/gl-draw/.test(layer)) {
       map.removeLayer(layer);
@@ -1041,34 +1036,21 @@ export const refreshDrawControls = (
   }
 
   if (!map.draw) {
-    if (/Report|Batch|Landing|WhatsHere/.test(appModeUrl)) {
-      initDrawModes(map, drawSetter, dispatch, uHistory, true, null, whatsHereToggle, null, draw);
-    } else if (/Records/.test(appModeUrl)) {
-      if (/Activity/.test(appModeUrl)) {
-        initDrawModes(
-          map,
-          drawSetter,
-          dispatch,
-          uHistory,
-          false,
-          activityGeo,
-          whatsHereToggle,
-          drawingCustomLayer,
-          draw
-        );
-      } else {
-        initDrawModes(map, drawSetter, dispatch, uHistory, false, null, whatsHereToggle, drawingCustomLayer, draw);
-      }
-    }
+    const noMapVisible = /Report|Batch|Landing|WhatsHere/.test(appModeUrl);
+    const userInActivity = /Activity/.test(appModeUrl);
+    const hideControls = (noMapVisible || !userInActivity) && !drawingCustomLayer;
+    initDrawModes(
+      map,
+      drawSetter,
+      dispatch,
+      uHistory,
+      hideControls,
+      userInActivity ? activityGeo : null,
+      whatsHereToggle,
+      drawingCustomLayer ?? null,
+      draw
+    );
   }
-
-  /*
-    if (whatsHereToggle && draw) {
-      draw.changeMode('whats_here_box_mode');
-    } else {
-      draw.changeMode('do_nothing');
-    }
-    */
 };
 
 export const refreshWhatsHereFeature = (map, options: any) => {
