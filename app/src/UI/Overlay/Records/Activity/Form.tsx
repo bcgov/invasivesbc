@@ -6,8 +6,8 @@ import './Form.css';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
-import { calc_lat_long_from_utm } from 'utils/utm';
 import {
+  ACTIVITY_UPDATE_GEO_REQUEST,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
   MAP_TOGGLE_TRACKING_ON
@@ -44,18 +44,18 @@ export const ActivityForm = (props) => {
 
   /**
    * @desc Handler for creating a manual UTM Entry initiated by user
-   * @TODO Finish flow of function
    */
   const manualUTMEntry = () => {
     const utmCallback = (input: UtmInputObj) => {
       const geo: any = {
         type: 'Feature',
         geometry: {
-          type: 'Point',
+          type: GeoShapes.Point,
           coordinates: [input.results[0], input.results[1]]
         },
         properties: {}
       };
+      dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [geo] } });
     };
 
     dispatch(
