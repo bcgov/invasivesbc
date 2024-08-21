@@ -93,14 +93,14 @@ const ManualUtmModal = ({
           />
           <TextField
             sx={{ margin: '10pt 0' }}
-            aria-label="Number Input"
+            aria-label="Easting"
             inputProps={{ type: 'number' }}
             label="Easting"
             onChange={(evt) => handleChange(evt.currentTarget.value, setUserEasting)}
             value={easting ?? ''}
           />
           <TextField
-            aria-label="Number Input"
+            aria-label="Northing"
             inputProps={{ type: 'number' }}
             label="Northing"
             onChange={(evt) => handleChange(evt.currentTarget.value, setUserNorthing)}
