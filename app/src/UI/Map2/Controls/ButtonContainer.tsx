@@ -14,25 +14,27 @@ import { HDToggle } from 'UI/Map2/Controls/HDToggle';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 
 export const ButtonContainer = () => {
-  const isAuth = useSelector((state) => state.Auth?.authenticated);
+  const isAuth = useSelector((state) => state.Auth.authenticated);
+  const workingOffline = useSelector((state) => state.Auth.workingOffline);
 
   return (
     <div id="map-btn-container">
       <HDToggle />
       <BaseMapToggle />
 
-      {isAuth && <FindMeToggle />}
+      {(isAuth || workingOffline) && <FindMeToggle />}
 
       <WebOnly>
         <LegendsButton />
       </WebOnly>
 
-      {isAuth && <TrackMeToggle />}
+      {(isAuth || workingOffline) && <TrackMeToggle />}
+
       <AccuracyToggle />
 
-      {isAuth && <WhatsHereButton />}
+      {(isAuth || workingOffline) && <WhatsHereButton />}
 
-      {isAuth && <NewRecord />}
+      {(isAuth || workingOffline) && <NewRecord />}
 
       <WebOnly>
         {isAuth && <CenterCurrentRecord type="Activity" />}
