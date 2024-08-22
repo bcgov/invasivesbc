@@ -38,7 +38,7 @@ export const WhatsHereButton = (props) => {
                   dispatch({
                     type: NEW_ALERT,
                     payload: {
-                      content: "Draw a rectangle on the map to show what's there",
+                      content: 'Outline a region on the map to view records in the area.',
                       autoClose: 5,
                       severity: AlertSeverity.Info,
                       subject: AlertSubjects.Map
