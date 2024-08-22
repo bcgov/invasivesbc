@@ -122,3 +122,10 @@ app/ios/DerivedData
 invasivesbc.code-workspace
 
 Caddyfile-local
+
+# Playwright
+**/test-results
+**/playwright-report
+**/blob-report
+**/playwright/.cache/
+**/playwright
