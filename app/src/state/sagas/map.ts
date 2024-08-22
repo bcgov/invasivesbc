@@ -949,11 +949,13 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
 }
 
 function* handle_MAP_ON_SHAPE_UPDATE(action) {
-  const appModeUrl = yield select((state: any) => state.AppMode.url);
+  const { appModeUrl, panelOpen } = yield select((state: any) => state.AppMode);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
-
   if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload] } });
+  }
+  if (!panelOpen) {
+    yield put({ type: TOGGLE_PANEL });
   }
 }
 
