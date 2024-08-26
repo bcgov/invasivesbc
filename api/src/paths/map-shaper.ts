@@ -51,7 +51,13 @@ function getSimplifiedGeoJSON(): RequestHandler {
 
     get.concat(decodedUrl, function (err, res1, data) {
       if (err) {
-        throw err;
+        return res.status(500).json({
+          message: 'Failed to get simplified GeoJSON',
+          request: req.query,
+          error: err,
+          namespace: 'map-shaper',
+          code: 500
+        });
       }
 
       try {
