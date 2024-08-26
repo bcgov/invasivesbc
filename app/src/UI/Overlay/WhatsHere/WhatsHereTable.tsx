@@ -24,7 +24,6 @@ export const WhatsHereTable = (props) => {
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
   const history = useHistory();
 
-  console.log("Really, what's here", whatsHere);
   const position = whatsHere?.feature?.geometry ? center(whatsHere?.feature?.geometry)?.geometry.coordinates : [0, 0];
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
