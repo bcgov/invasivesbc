@@ -1,20 +1,14 @@
 .whatshere-container {
   width: 100%;
-  background-color: #003366;
+  background-color: var(--bc-blue);
   color: white !important;
 
   button {
-    background-color: #003366;
     color: white;
   }
-
-  [class*='Mui-selected'] {
-    background-color: #003366 !important;
-    color: white !important;
-    border-bottom-color: #fcba19 !important;
-    border-bottom-style: solid !important;
-    border-bottom-width: 6px;
-  }
+}
+.whatshere-margin {
+  margin: 5pt;
 }
 
 .whatshere-table {
@@ -25,12 +19,15 @@
 .whatshere-position {
   height: 450px;
 }
-
+.whatshere-margin {
+  width: 5pt 0;
+}
 .whatshere-table-container {
   margin: 0 1rem;
   padding-bottom: 3rem;
   background-color: white;
 }
+
 .whatshere_back_button {
   margin-right: 0;
   position: absolute;
@@ -39,7 +36,6 @@
 .whatshere-header {
   background-color: #003366;
   color: white;
-
   display: flex;
   align-items: center;
 }

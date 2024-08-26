@@ -3,7 +3,6 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@mui/x-date-pickers/icons';
 import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { WHATS_HERE_PAGE_ACTIVITY, WHATS_HERE_PAGE_POI } from 'state/actions';
 import { useDispatch, useSelector } from 'react-redux';
-import './WhatsHerePagination.css';
 
 type PropTypes = {
   type: string;
@@ -34,81 +33,61 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
   return (
     <div key={'pagination'} className={'whatsHere-pagination'}>
       <div key={'paginationControls'}>
-        {pageNumber <= 0 ? (
-          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
-            <DoubleArrowLeftIcon />
-          </Button>
-        ) : (
-          <Button
-            sx={{ m: 0, p: 0 }}
-            size={'small'}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: actionType,
-                payload: {
-                  page: 0,
-                  limit: pageLimit
-                }
-              });
-            }}
-          >
-            <DoubleArrowLeftIcon />
-          </Button>
-        )}
-        {pageNumber <= 0 ? (
-          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
-            <ArrowLeftIcon></ArrowLeftIcon>
-          </Button>
-        ) : (
-          <Button
-            sx={{ m: 0, p: 0 }}
-            size={'small'}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: actionType,
-                payload: {
-                  page: pageNumber - 1,
-                  limit: pageLimit
-                }
-              });
-            }}
-          >
-            <ArrowLeftIcon />
-          </Button>
-        )}
-        <span>
+        <Button
+          className="whiteBg"
+          disabled={pageNumber <= 0}
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch({
+              type: actionType,
+              payload: {
+                page: 0,
+                limit: pageLimit
+              }
+            });
+          }}
+        >
+          <DoubleArrowLeftIcon sx={{ color: 'black' }} />
+        </Button>
+        <Button
+          className="whiteBg"
+          disabled={pageNumber <= 0}
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch({
+              type: actionType,
+              payload: {
+                page: pageNumber - 1,
+                limit: pageLimit
+              }
+            });
+          }}
+        >
+          <ArrowLeftIcon sx={{ color: 'black' }} />
+        </Button>
+        <span style={{ margin: '0 5pt' }}>
           {pageNumber + 1} / {Math.ceil(setLength / pageLimit)}
         </span>
-        {(pageNumber + 1) * pageLimit >= setLength ? (
-          <Button disabled sx={{ m: 0, p: 0 }} size={'small'}>
-            <ArrowRightIcon />
-          </Button>
-        ) : (
-          <Button
-            sx={{ m: 0, p: 0 }}
-            size={'small'}
-            onClick={(e) => {
-              e.stopPropagation();
-              dispatch({
-                type: actionType,
-                payload: {
-                  page: pageNumber + 1,
-                  limit: pageLimit
-                }
-              });
-            }}
-          >
-            <ArrowRightIcon />
-          </Button>
-        )}
+        <Button
+          className="whiteBg"
+          disabled={(pageNumber + 1) * pageLimit >= setLength}
+          onClick={(e) => {
+            e.stopPropagation();
+            dispatch({
+              type: actionType,
+              payload: {
+                page: pageNumber + 1,
+                limit: pageLimit
+              }
+            });
+          }}
+        >
+          <ArrowRightIcon sx={{ color: 'black' }} />
+        </Button>
       </div>
       <div key={'paginationRecords'}>
-        <span>
-          Showing records {pageLimit * (pageNumber + 1) - pageLimit + 1} -{' '}
-          {setLength < pageLimit * (pageNumber + 1) ? setLength : pageLimit * (pageNumber + 1)} out of {setLength}
-        </span>
+        Showing records {pageLimit * (pageNumber + 1) - pageLimit + 1} -{' '}
+        {setLength < pageLimit * (pageNumber + 1) ? setLength : pageLimit * (pageNumber + 1)} out of {setLength}
       </div>
     </div>
   );
