@@ -9,7 +9,7 @@ import {
 } from 'state/actions';
 import NoRowsInSearch from './NoRowsInSearch';
 
-export const RenderTablePOI = (props: any) => {
+const RenderTablePOI = () => {
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector((state: any) => state.Auth);
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);

@@ -9,7 +9,7 @@ import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import NoRowsInSearch from './NoRowsInSearch';
 
-export const RenderTableActivity = (props: any) => {
+const RenderTableActivity = () => {
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector((state) => state.Auth);
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
@@ -132,3 +132,5 @@ export const RenderTableActivity = (props: any) => {
     </div>
   );
 };
+
+export default RenderTableActivity;
