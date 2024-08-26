@@ -1,7 +1,17 @@
 .whatsHere-pagination {
   color: black;
-
+  margin-top: 8pt;
   button {
-    width: 20px !important;
+    margin: 0 3pt;
   }
+  span {
+    color: black;
+  }
+}
+.whiteBg {
+  background-color: white !important;
+}
+
+.whiteBg:disabled {
+  background-color: lightgray !important;
 }
