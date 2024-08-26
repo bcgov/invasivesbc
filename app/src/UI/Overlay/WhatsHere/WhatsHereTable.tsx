@@ -1,18 +1,19 @@
-import React from 'react';
+import { ChangeEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import center from '@turf/center';
-import { Button, Divider, Grid, Tab, TableContainer, Tabs } from '@mui/material';
+import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
 import { MAP_SET_WHATS_HERE_SECTION } from 'state/actions';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import { useHistory } from 'react-router';
 
 import { OverlayHeader } from '../OverlayHeader';
-import { RenderTableActivity } from './Subcomponents/RenderTableActivity';
+import RenderTableActivity from './Subcomponents/RenderTableActivity';
 import RenderTablePOI from './Subcomponents/RenderTablePOI';
 import { useSelector } from 'utils/use_selector';
 import { calc_utm } from 'utils/utm';
 import './WhatsHereTable.css';
+import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
 
 export const createDataUTM = (name: string, value: any) => {
   return { name, value };
@@ -32,7 +33,7 @@ export const WhatsHereTable = () => {
     createDataUTM('Northing', utmResult[2])
   ];
 
-  const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
+  const handleChange = (_event: ChangeEvent<{}>, newSection: string) => {
     dispatch({
       type: MAP_SET_WHATS_HERE_SECTION,
       payload: {
@@ -60,7 +61,8 @@ export const WhatsHereTable = () => {
         <div className="whatshere-table-container">
           <div className="whatshere_back_button">
             <Button onClick={() => history.goBack()} variant="contained">
-              {'< Back'}
+              <ArrowLeftIcon />
+              Back
             </Button>
           </div>
           <div id="whatsherepopup" className="whatshere-table">
