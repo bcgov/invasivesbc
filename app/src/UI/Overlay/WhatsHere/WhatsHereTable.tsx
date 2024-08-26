@@ -5,16 +5,16 @@ import center from '@turf/center';
 import { useSelector } from 'utils/use_selector';
 import { calc_utm } from 'utils/utm';
 import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
-import { RenderTableActivity, RenderTablePOI, RenderTablePosition } from 'utils/WhatsHereTableHelpers';
-import { MAP_SET_WHATS_HERE_SECTION, MAP_TOGGLE_WHATS_HERE, TOGGLE_PANEL } from 'state/actions';
+import { MAP_SET_WHATS_HERE_SECTION } from 'state/actions';
 
 import './WhatsHereTable.css';
 
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
-import LocationOnIcon from '@mui/icons-material/LocationOn';
 import { useHistory } from 'react-router';
 import { OverlayHeader } from '../OverlayHeader';
+import { RenderTableActivity } from './Subcomponents/RenderTableActivity';
+import RenderTablePOI from './Subcomponents/RenderTablePOI';
 
 export const createDataUTM = (name: string, value: any) => {
   return { name, value };
@@ -24,6 +24,7 @@ export const WhatsHereTable = (props) => {
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
   const history = useHistory();
 
+  console.log("Really, what's here", whatsHere);
   const position = whatsHere?.feature?.geometry ? center(whatsHere?.feature?.geometry)?.geometry.coordinates : [0, 0];
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
@@ -32,12 +33,6 @@ export const WhatsHereTable = (props) => {
     createDataUTM('Northing', utmResult[2])
   ];
   const dispatch = useDispatch();
-
-  const popupOnClose = () => {
-    history.goBack();
-    dispatch({ type: MAP_TOGGLE_WHATS_HERE });
-    dispatch({ type: TOGGLE_PANEL });
-  };
 
   const handleChange = (_event: React.ChangeEvent<{}>, newSection: string) => {
     dispatch({
@@ -50,9 +45,6 @@ export const WhatsHereTable = (props) => {
 
   const goToRecord = () => {
     const id = whatsHere.section === 'invasivesbc' ? whatsHere?.clickedActivity : whatsHere?.clickedIAPP;
-    // if (authenticated && roles.length > 0) {
-    // }
-    // authentication is needed eventually
     if (whatsHere?.section === 'invasivesbc') {
       history.push(`/Records/Activity:${id}/form`);
     } else if (whatsHere?.highlightedType === 'IAPP') {
@@ -69,7 +61,7 @@ export const WhatsHereTable = (props) => {
 
   return (
     <div className="whatshere-container">
-      <OverlayHeader closeCallback={popupOnClose}></OverlayHeader>
+      <OverlayHeader />
       {whatsHere?.section ? (
         <div className="whatshere-table-container">
           <div className="whatshere_back_button">
@@ -85,7 +77,6 @@ export const WhatsHereTable = (props) => {
               </div>
               <Tabs value={whatsHere?.section} onChange={handleChange} centered>
                 <Tab value="invasivesbc" label="InvasivesBC Records" icon={<FolderIcon />} />
-                {/* value="databc" label="Data BC" icon={<StorageIcon />} */}
                 <Tab value="iapp" label="IAPP Records" icon={<AdjustIcon />} />
               </Tabs>
             </Grid>
