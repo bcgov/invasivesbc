@@ -7,12 +7,12 @@ import {
   WHATS_HERE_ID_CLICKED,
   WHATS_HERE_SORT_FILTER_UPDATE
 } from 'state/actions';
+import NoRowsInSearch from './NoRowsInSearch';
 
 export const RenderTablePOI = (props: any) => {
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector((state: any) => state.Auth);
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
-  // const errorContext = useContext(ErrorContext);
 
   const dispatchUpdatedID = (params) => {
     dispatch({
@@ -29,102 +29,46 @@ export const RenderTablePOI = (props: any) => {
       field: 'id',
       headerName: 'IAPP ID',
       hide: true,
+      flex: 0.1,
       sortable: false,
       renderCell: (params) => {
-        return (
-          <div
-            onMouseEnter={() => {
-              dispatchUpdatedID(params);
-            }}
-          >
-            {params.value}
-          </div>
-        );
+        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
       }
     },
     {
       field: 'site_id',
       headerName: 'Site ID',
       sortable: false,
-
-      width: 70,
+      flex: 0.1,
       renderCell: (params) => {
-        return (
-          <div
-            onMouseEnter={() => {
-              dispatchUpdatedID(params);
-            }}
-          >
-            {params.value}
-          </div>
-        );
+        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
       }
     },
-    /*{
-      field: 'reported_area',
-      headerName: 'Reported Area',
-      sortable: false,
-      minWidth: 115,
-      renderCell: (params) => {
-        return (
-          <div
-            onMouseEnter={() => {
-              dispatchUpdatedID(params);
-            }}>
-            {params.value}
-          </div>
-        );
-      }
-    },*/
     {
       field: 'earliest_survey',
       headerName: 'Earliest Survey',
       sortable: false,
-      minWidth: 115,
+      flex: 0.15,
       renderCell: (params) => {
-        return (
-          <div
-            onMouseEnter={() => {
-              dispatchUpdatedID(params);
-            }}
-          >
-            {params.value}
-          </div>
-        );
+        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
       }
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdictions',
       sortable: false,
-      width: 500,
+      flex: 0.4,
       renderCell: (params) => {
-        return (
-          <div
-            onMouseEnter={() => {
-              dispatchUpdatedID(params);
-            }}
-          >
-            {params.value}
-          </div>
-        );
+        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
       }
     },
     {
       field: 'species_code',
       headerName: 'Species',
       sortable: false,
-      width: 200,
+      flex: 0.2,
       renderCell: (params) => {
-        return (
-          <div
-            onMouseEnter={() => {
-              dispatchUpdatedID(params);
-            }}
-          >
-            {params.value}
-          </div>
-        );
+        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
       }
     }
   ];
@@ -148,36 +92,27 @@ export const RenderTablePOI = (props: any) => {
 
   return (
     <>
-      {whatsHere?.section === 'iapp' ? (
-        <div style={{ height: '100%', minWidth: '100%', display: 'flex', flexDirection: 'column' }}>
+      {whatsHere.iappRows.length > 0 ? (
+        <div>
           <DataGrid
             columns={columns}
             rows={whatsHere?.iappRows}
             hideFooterPagination
             hideFooter
             disableColumnMenu
-            getRowHeight={() => 'auto'}
-            headerHeight={30}
             onColumnHeaderClick={(c) => {
               dispatch({ type: WHATS_HERE_SORT_FILTER_UPDATE, payload: { recordType: 'IAPP', field: c.field } });
             }}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
               if (authenticated && roles.length > 0) {
                 highlightPOI(params);
-              } else {
-                // errorContext.pushError({
-                //   message:
-                //     'InvasivesBC Access is required to view complete records. Access can be requested at the top right of the page under the Person Icon',
-                //   code: 401,
-                //   namespace: ''
-                // });
               }
             }}
           />
           <WhatsHerePagination type="iapp" />
         </div>
       ) : (
-        <></>
+        <NoRowsInSearch />
       )}
     </>
   );
