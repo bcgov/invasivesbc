@@ -97,29 +97,24 @@ export const ActivityForm = (props) => {
             <tr>
               <td className={'leftHeaderCol'}>Activity ID:</td>
               <td className={'leftValueCol'}>{short_id}</td>
-              <br />
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Form Status:</td>
               <td className={'leftValueCol'}>{form_status}</td>
-              <br />
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Activity Type:</td>
               <td className={'leftValueCol'}>{activity_type}</td>
-              <br />
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Activity Sub-type:</td>
               <td className={'leftValueCol'}>{ActivitySubtypeShortLabels[activity_subtype]}</td>
-              <br />
             </tr>
             <tr>
               <td className={'leftHeaderCol'}>Activity Date:</td>
               <td className={'leftValueCol'}>
                 {new Date(form_data.activity_data.activity_date_time).toLocaleDateString()}
               </td>{' '}
-              <br />
             </tr>
           </tbody>
         </table>
@@ -128,26 +123,22 @@ export const ActivityForm = (props) => {
             <tr>
               <td className={'rightHeaderCol'}>Created By:</td>
               <td className={'rightValueCol'}>{created_by}</td>
-              <br />
             </tr>
             <tr>
               <td className={'rightHeaderCol'}>Created At:</td>
               <td className={'rightValueCol'}>{new Date(date_created).toLocaleDateString()}</td>
-              <br />
             </tr>
             {activity_history?.length > 1 && (
               <>
                 <tr>
                   <td className={'rightHeaderCol'}>Updated By:</td>
                   <td className={'rightValueCol'}>{updated_by}</td>
-                  <br />
                 </tr>
                 <tr>
                   <td className={'rightHeaderCol'}>Updated At:</td>
                   <td className={'rightValueCol'}>
                     {new Date(received_timestamp ? received_timestamp : date_created).toLocaleDateString()}
                   </td>{' '}
-                  <br />
                 </tr>
                 <tr>
                   <td className={'rightHeaderCol'}>Audit Info:</td>
@@ -162,20 +153,17 @@ export const ActivityForm = (props) => {
                       Click to view
                     </Button>
                   </td>
-                  <br />
                 </tr>
               </>
             )}
             <tr>
               <td className={'rightHeaderCol'}>Batch ID</td>
               <td className={'rightValueCol'}>{batch_id}</td>
-              <br />
             </tr>
             {invasive_plant && invasive_plant != '' && (
               <tr>
                 <td className={'rightHeaderCol'}>Invasive Plant</td>
                 <td className={'rightValueCol'}>{invasive_plant}</td>
-                <br />
               </tr>
             )}
           </tbody>
@@ -202,7 +190,6 @@ export const ActivityForm = (props) => {
                     <li>Created at: {item?.created_timestamp}</li>
                   </ul>
                 </li>
-                <br />
               </>
             );
           })}

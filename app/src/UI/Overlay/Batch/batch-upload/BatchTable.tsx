@@ -141,12 +141,7 @@ const BatchTableCell = ({ field, row }) => {
           row.data[field]?.validationMessages.map((m) => (
             <li key={m.messageTitle}>
               <strong>{m.messageTitle}</strong>
-              {m.messageDetail && (
-                <>
-                  <br />
-                  {JSON.stringify(m.messageDetail, null, 2)}
-                </>
-              )}
+              {m.messageDetail && <>{JSON.stringify(m.messageDetail, null, 2)}</>}
             </li>
           ))}
         <div className={'metadata'}>

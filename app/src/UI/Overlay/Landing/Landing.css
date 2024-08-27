@@ -23,7 +23,10 @@ body {
   margin: 1rem;
   padding: 4rem;
 }
-
+.bottomAccess {
+  font-size: 16pt;
+  font-weight: bold;
+}
 @media (device-width >= 600px) {
   .cardWidth {
     width: 600;
