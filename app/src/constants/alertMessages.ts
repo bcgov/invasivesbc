@@ -57,6 +57,20 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
     subject: AlertSubjects.Map,
     autoClose: 5
   },
+  trackingStartedPolygon: {
+    content:
+      'Start walking to create a shape. Click the button again to stop. When tracking ends, your shape will be closed, forming a polygon.',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 15
+  },
+  trackingStartedLineString: {
+    content:
+      "Begin drawing a shape by walking. Click the button again to stop. Once your shape is complete, you'll be asked to specify a buffer zone.",
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 15
+  },
   trackingStoppedSuccess: {
     content: 'Tracking Completed Successfully',
     severity: AlertSeverity.Success,
