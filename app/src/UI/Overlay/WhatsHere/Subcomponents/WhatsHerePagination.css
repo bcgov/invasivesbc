@@ -5,10 +5,3 @@
     color: black;
   }
 }
-.whiteBg {
-  background-color: white !important;
-}
-
-.whiteBg:disabled {
-  background-color: lightgray !important;
-}
