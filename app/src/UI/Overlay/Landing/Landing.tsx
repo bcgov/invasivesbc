@@ -58,8 +58,7 @@ export const LandingComponent = (props) => {
           <>
             <Box mt={2}>
               <Typography variant="h5">User Information</Typography>
-              <br />
-              <Grid className="userInfoItemGrid" container spacing={2}>
+              <Grid className="userInfoItemGrid" container spacing={2} sx={{ mt: 2 }}>
                 <Grid item md={3}>
                   <Box overflow="hidden" textOverflow="ellipsis">
                     <Typography>
@@ -173,10 +172,9 @@ export const LandingComponent = (props) => {
           </>
         )}
         {roles.length === 0 && (
-          <Typography variant="h5">
-            <br />
-            <strong>To gain full access to the InvasivesBC application, please submit an access request.</strong>
-          </Typography>
+          <p className="bottomAccess">
+            To gain full access to the InvasivesBC application, please submit an access request.
+          </p>
         )}
         {connected && !activated && (
           <Box mt={2} paddingBottom={'50px'}>

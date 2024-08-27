@@ -22,8 +22,7 @@ import {
   OutlinedInput,
   Select,
   Typography,
-  Tooltip,
-  Theme
+  Tooltip
 } from '@mui/material';
 //import { makeStyles } from '@mui/styles';
 import { SelectChangeEvent } from '@mui/material';
@@ -334,29 +333,31 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
                 )} */}
                 {(transferAccess === 'yes' || isUpdating) && (
                   <Grid container direction="column" spacing={3}>
-                    {!isUpdating && (
+                    {isUpdating ? (
                       <Grid item>
-                        {' '}
-                        <Typography variant="body1" align="center">
-                          The following information is required to properly establish your access to the new InvasivesBC
-                          applications. This information will not be shared with any other organization within
-                          government or externally with other agencies.
-                          <br />
-                          <br />
-                          If you have more than one IAPP user account (i.e. two or more BCeIDs), please provide a
-                          separate form for each account.
-                          <br />
-                        </Typography>
-                      </Grid>
-                    )}
-                    {isUpdating && (
-                      <Grid item>
-                        <Typography variant="body1" align="center">
+                        <p>
                           Please update any necessary fields if they have changed since you submitted your access
                           request. Your information will be updated upon review.
-                        </Typography>
+                        </p>
                       </Grid>
+                    ) : (
+                      <>
+                        <Grid item>
+                          <p>
+                            The following information is required to properly establish your access to the new
+                            InvasivesBC applications. This information will not be shared with any other organization
+                            within government or externally with other agencies.
+                          </p>
+                        </Grid>
+                        <Grid item>
+                          <p>
+                            If you have more than one IAPP user account (i.e. two or more BCeIDs), please provide a
+                            separate form for each account.
+                          </p>
+                        </Grid>
+                      </>
                     )}
+
                     {!isUpdating && (
                       <Grid item>
                         <Grid container direction="row" spacing={5}>
