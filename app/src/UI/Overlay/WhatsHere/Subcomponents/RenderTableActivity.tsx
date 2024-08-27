@@ -28,18 +28,14 @@ const RenderTableActivity = () => {
       headerName: 'Activity ID',
       flex: 0.2,
       sortable: false,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     },
     {
       field: 'activity_type',
       headerName: 'Activity Type',
       sortable: false,
       flex: 0.2,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     },
     {
       field: 'reported_area',
@@ -60,27 +56,21 @@ const RenderTableActivity = () => {
       headerName: 'Created',
       flex: 0.25,
       sortable: false,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdiction Code',
       flex: 0.4,
       sortable: false,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     },
     {
       field: 'species_code',
       headerName: 'Species Code',
       sortable: false,
       flex: 0.3,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     }
   ];
 
@@ -105,7 +95,7 @@ const RenderTableActivity = () => {
       {whatsHere.activityRows.length > 0 ? (
         <>
           <DataGrid
-            sx={{ overflowX: 'auto' }}
+            sx={{ overflowX: 'auto', minHeight: '318px' }}
             columns={columns}
             rows={whatsHere?.activityRows}
             hideFooterPagination
