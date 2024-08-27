@@ -6,3 +6,9 @@
   text-wrap: wrap;
   box-sizing: border-box;
 }
+
+.layerPickerList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
