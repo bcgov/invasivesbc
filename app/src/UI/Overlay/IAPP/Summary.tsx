@@ -139,7 +139,7 @@ export const Summary: React.FC<IAPPSitePropType> = ({ record }) => {
             <Grid item xs={9} sm={4}>
               <ul className="jurisdictionSum">
                 {jurisdictions.map((jurisdiction) => (
-                  <li>
+                  <li key={jurisdiction.jurisdiction_code}>
                     {jurisdiction.jurisdiction_code} ({jurisdiction.percent_covered}%)
                   </li>
                 )) || 'Not Provided'}
