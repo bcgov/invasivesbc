@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { ArrowLeftIcon, ArrowRightIcon } from '@mui/x-date-pickers/icons';
 import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { WHATS_HERE_PAGE_ACTIVITY, WHATS_HERE_PAGE_POI } from 'state/actions';
@@ -33,8 +33,7 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
   return (
     <div key={'pagination'} className={'whatsHere-pagination'}>
       <div key={'paginationControls'}>
-        <Button
-          className="whiteBg"
+        <IconButton
           disabled={pageNumber <= 0}
           onClick={(e) => {
             e.stopPropagation();
@@ -47,10 +46,9 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
             });
           }}
         >
-          <DoubleArrowLeftIcon sx={{ color: 'black' }} />
-        </Button>
-        <Button
-          className="whiteBg"
+          <DoubleArrowLeftIcon />
+        </IconButton>
+        <IconButton
           disabled={pageNumber <= 0}
           onClick={(e) => {
             e.stopPropagation();
@@ -63,13 +61,12 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
             });
           }}
         >
-          <ArrowLeftIcon sx={{ color: 'black' }} />
-        </Button>
+          <ArrowLeftIcon />
+        </IconButton>
         <span style={{ margin: '0 5pt' }}>
           {pageNumber + 1} / {Math.ceil(setLength / pageLimit)}
         </span>
-        <Button
-          className="whiteBg"
+        <IconButton
           disabled={(pageNumber + 1) * pageLimit >= setLength}
           onClick={(e) => {
             e.stopPropagation();
@@ -82,8 +79,8 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
             });
           }}
         >
-          <ArrowRightIcon sx={{ color: 'black' }} />
-        </Button>
+          <ArrowRightIcon />
+        </IconButton>
       </div>
       <div key={'paginationRecords'}>
         Showing records {pageLimit * (pageNumber + 1) - pageLimit + 1} -{' '}
