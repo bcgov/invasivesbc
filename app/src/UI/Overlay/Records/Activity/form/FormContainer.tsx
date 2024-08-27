@@ -126,31 +126,27 @@ const FormContainer: React.FC<any> = (props) => {
         //revalidate formData after the setState is run
         $this.validate($this.state.formData);
         //update formData of the activity via onFormChange
-        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => { });
+        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {});
       });
     }, 100);
     handleClose();
   };
 
-  const isActivityChemTreatment = (): boolean => (
+  const isActivityChemTreatment = (): boolean =>
     activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-    activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic'
-  );
+    activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic';
 
   const ErrorListTemplate = (err: any) => {
     return (
       <>
-        {err.errors?.length > 0 ? (
+        {err.errors?.length > 0 && (
           <div>
-            <br></br>
-            <br></br>
-            <br></br>
-            <Typography color="error" variant="h6">
+            <Typography color="error" sx={{ mt: 8, mb: 4 }}>
               Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can however
               save in progress work, and come back later.
             </Typography>
           </div>
-        ) : null}
+        )}
       </>
     );
   };
@@ -158,7 +154,7 @@ const FormContainer: React.FC<any> = (props) => {
   const [isDisabled, setIsDisabled] = useState(false);
   useEffect(() => {
     const createdByUser = username === created_by;
-    const userIsAdmin = accessRoles?.some(role => role.role_id === 18)
+    const userIsAdmin = accessRoles?.some((role) => role.role_id === 18);
     if (createdByUser || userIsAdmin) {
       setIsDisabled(false);
     } else {
@@ -231,7 +227,8 @@ const FormContainer: React.FC<any> = (props) => {
         open={open}
         onClose={handleClose}
         aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description">
+        aria-describedby="alert-dialog-description"
+      >
         <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
@@ -240,15 +237,12 @@ const FormContainer: React.FC<any> = (props) => {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button
-            onClick={proceedClick}
-            color="primary"
-            autoFocus>
+          <Button onClick={proceedClick} color="primary" autoFocus>
             Proceed
           </Button>
         </DialogActions>
       </Dialog>
-    </Box >
+    </Box>
   );
 };
 
