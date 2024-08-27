@@ -78,8 +78,10 @@ export const ActivityForm = (props) => {
         promptRadioInput({
           callback,
           options: [GeoShapes.LineString, GeoShapes.Polygon],
-          prompt:
-            "Select the type of shape you wish to create. If you choose a LineString you'll be able to add a buffer at the end",
+          prompt: [
+            'You are about to enable GeoTracking, a tool that uses GPS coordinates to draw a shape on the map.',
+            'To complete the shape, select the GeoTracking button again.'
+          ],
           title: 'Are you sure you want to track your path?',
           confirmText: 'Start Tracking'
         })
