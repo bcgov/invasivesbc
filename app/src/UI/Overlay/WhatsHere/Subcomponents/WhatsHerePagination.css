@@ -1,9 +1,6 @@
 .whatsHere-pagination {
   color: black;
   margin-top: 8pt;
-  button {
-    margin: 0 3pt;
-  }
   span {
     color: black;
   }

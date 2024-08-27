@@ -60,7 +60,7 @@ export const WhatsHereTable = () => {
       {whatsHere?.section && (
         <div className="whatshere-table-container">
           <div className="whatshere_back_button">
-            <Button onClick={() => history.goBack()} variant="contained">
+            <Button onClick={history.goBack} color="info" variant="contained">
               <ArrowLeftIcon />
               Back
             </Button>
@@ -78,12 +78,12 @@ export const WhatsHereTable = () => {
             <Grid container spacing={2} justifyContent="center">
               <Grid item sx={{ mb: 1 }}>
                 {whatsHere?.section === 'invasivesbc' && whatsHere?.clickedActivity && (
-                  <Button variant="contained" onClick={goToRecord}>
+                  <Button variant="outlined" onClick={goToRecord}>
                     {getActivityDescriptionForOpenButton()}
                   </Button>
                 )}
                 {whatsHere?.section === 'iapp' && whatsHere?.clickedIAPP && (
-                  <Button variant="contained" onClick={goToRecord}>
+                  <Button variant="outlined" onClick={goToRecord}>
                     {getIAPPDescriptionForOpenButton()}
                   </Button>
                 )}
