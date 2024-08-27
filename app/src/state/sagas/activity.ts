@@ -242,8 +242,20 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
  * @desc Handler for starting GPS drawn shapes. Sets geometry to empty array, alerts user feature live.
  */
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
+  let message: AlertMessage;
+  const shape = (yield select(selectActivity))?.track_me_draw_geo?.type;
+  switch (shape) {
+    case GeoShapes.LineString:
+      message = mappingAlertMessages.trackingStartedLineString;
+      break;
+    case GeoShapes.Polygon:
+      message = mappingAlertMessages.trackingStartedPolygon;
+      break;
+    default:
+      message = mappingAlertMessages.trackingStarted;
+  }
   yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
-  yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingStarted });
+  yield put({ type: NEW_ALERT, payload: message });
 }
 
 /**
