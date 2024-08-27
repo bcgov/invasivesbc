@@ -36,71 +36,75 @@ export const LayerPicker = () => {
           <div id="WMSLayersHeader" className="layerPickerCategoryHeader">
             DataBC Layers:
           </div>
-          {WMSLayers?.map((layer: any) => {
-            return (
-              <div key={layer.title} className="layerPickerLayer">
-                <input
-                  type="checkbox"
-                  id={layer.title}
-                  onChange={() => dispatch({ type: TOGGLE_WMS_LAYER, payload: { layer } })}
-                  name={layer?.title || 'Layer name is null'}
-                  value={layer?.toggle}
-                  checked={layer?.toggle}
-                />
-                <label htmlFor={layer.title}>{layer?.title}</label>
-              </div>
-            );
-          })}
+          <ul className="layerPickerList">
+            {WMSLayers?.map((layer: any) => {
+              return (
+                <li key={layer.title} className="layerPickerLayer">
+                  <input
+                    type="checkbox"
+                    id={layer.title}
+                    onChange={() => dispatch({ type: TOGGLE_WMS_LAYER, payload: { layer } })}
+                    name={layer?.title || 'Layer name is null'}
+                    value={layer?.toggle}
+                    checked={layer?.toggle}
+                  />
+                  <label htmlFor={layer.title}>{layer?.title}</label>
+                </li>
+              );
+            })}
+          </ul>
         </>
       ) : (
         <></>
       )}
       {layerPickerOpen ? (
         <>
-          <br />
           <div id="KMLLayersHeader" className="layerPickerCategoryHeader">
             Uploaded Layers:
           </div>
-          {KMLLayers?.map((layer: any) => {
-            return (
-              <div key={layer.title + layer.id} className="layerPickerLayer">
-                <input
-                  type="checkbox"
-                  id={layer.title}
-                  onChange={() => dispatch({ type: TOGGLE_KML_LAYER, payload: { layer } })}
-                  name={layer?.title || 'Layer name is null'}
-                  value={layer?.toggle}
-                  checked={layer?.toggle}
-                />
-                <label htmlFor={layer.title}>{layer?.title}</label>
-              </div>
-            );
-          })}
+          <ul className="layerPickerList">
+            {KMLLayers?.map((layer: any) => {
+              return (
+                <li key={layer.title + layer.id} className="layerPickerLayer">
+                  <input
+                    type="checkbox"
+                    id={layer.title}
+                    onChange={() => dispatch({ type: TOGGLE_KML_LAYER, payload: { layer } })}
+                    name={layer?.title || 'Layer name is null'}
+                    value={layer?.toggle}
+                    checked={layer?.toggle}
+                  />
+                  <label htmlFor={layer.title}>{layer?.title}</label>
+                </li>
+              );
+            })}
+          </ul>
         </>
       ) : (
         <></>
       )}
       {layerPickerOpen ? (
         <>
-          <br />
           <div id="DrawnBoundariesHeader" className="layerPickerCategoryHeader">
             Drawn Layers:
           </div>
-          {drawnLayers?.map((layer: any) => {
-            return (
-              <div key={layer.title + layer.id} className="layerPickerLayer">
-                <input
-                  type="checkbox"
-                  id={layer.title}
-                  onChange={() => dispatch({ type: TOGGLE_DRAWN_LAYER, payload: { layer } })}
-                  name={layer?.title || 'Layer name is null'}
-                  value={layer?.toggle}
-                  checked={layer?.toggle}
-                />
-                <label htmlFor={layer.title}>{layer?.title}</label>
-              </div>
-            );
-          })}
+          <ul className="layerPickerList">
+            {drawnLayers?.map((layer: any) => {
+              return (
+                <li key={layer.title + layer.id} className="layerPickerLayer">
+                  <input
+                    type="checkbox"
+                    id={layer.title}
+                    onChange={() => dispatch({ type: TOGGLE_DRAWN_LAYER, payload: { layer } })}
+                    name={layer?.title || 'Layer name is null'}
+                    value={layer?.toggle}
+                    checked={layer?.toggle}
+                  />
+                  <label htmlFor={layer.title}>{layer?.title}</label>
+                </li>
+              );
+            })}
+          </ul>
         </>
       ) : (
         <></>

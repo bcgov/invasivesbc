@@ -4,6 +4,7 @@ import React from 'react';
 import { getJurisdictions } from '../../../utils/IAPPHelpers';
 import { SurveysTable } from './SurveyTable';
 import { TreatmentsTable } from './TreatmentsTable';
+import './Summary.css';
 // import { TreatmentsTable } from './ExtractTables';
 // import { getJurisdictions } from './IAPP-Functions';
 // import { SurveysTable } from './SurveyTable';
@@ -136,14 +137,13 @@ export const Summary: React.FC<IAPPSitePropType> = ({ record }) => {
               <Typography>Jurisdictions:</Typography>
             </Grid>
             <Grid item xs={9} sm={4}>
-              {jurisdictions.map((jurisdiction) => {
-                return (
-                  <>
+              <ul className="jurisdictionSum">
+                {jurisdictions.map((jurisdiction) => (
+                  <li>
                     {jurisdiction.jurisdiction_code} ({jurisdiction.percent_covered}%)
-                    <br />
-                  </>
-                );
-              }) || 'Not Provided'}
+                  </li>
+                )) || 'Not Provided'}
+              </ul>
             </Grid>
 
             <Grid item xs={3} sm={2}>
