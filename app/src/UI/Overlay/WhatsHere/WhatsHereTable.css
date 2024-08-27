@@ -1,7 +1,5 @@
 .whatshere-container {
   width: 100%;
-  /* background-color: var(--bc-blue); */
-  /* color: white !important; */
 }
 .whatshere-margin {
   margin: 5pt;
@@ -21,7 +19,6 @@
 .whatshere-table-container {
   margin: 0 1rem;
   padding-bottom: 3rem;
-  /* background-color: white; */
 }
 
 .whatshere_back_button {
@@ -30,8 +27,6 @@
   position: absolute;
 }
 .whatshere-header {
-  /* background-color: #003366; */
-  /* color: white; */
   display: flex;
   align-items: center;
 }
