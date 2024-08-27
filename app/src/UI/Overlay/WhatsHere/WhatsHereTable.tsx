@@ -78,12 +78,12 @@ export const WhatsHereTable = () => {
             <Grid container spacing={2} justifyContent="center">
               <Grid item sx={{ mb: 1 }}>
                 {whatsHere?.section === 'invasivesbc' && whatsHere?.clickedActivity && (
-                  <Button variant="outlined" onClick={goToRecord}>
+                  <Button variant="contained" color="info" onClick={goToRecord}>
                     {getActivityDescriptionForOpenButton()}
                   </Button>
                 )}
                 {whatsHere?.section === 'iapp' && whatsHere?.clickedIAPP && (
-                  <Button variant="outlined" onClick={goToRecord}>
+                  <Button variant="contained" color="info" onClick={goToRecord}>
                     {getIAPPDescriptionForOpenButton()}
                   </Button>
                 )}
