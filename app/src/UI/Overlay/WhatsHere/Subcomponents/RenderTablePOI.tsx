@@ -9,7 +9,7 @@ import {
 } from 'state/actions';
 import NoRowsInSearch from './NoRowsInSearch';
 
-const RenderTablePOI = () => {
+const RenderTablePOI = (props: any) => {
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector((state: any) => state.Auth);
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
@@ -31,45 +31,35 @@ const RenderTablePOI = () => {
       hide: true,
       flex: 0.1,
       sortable: false,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     },
     {
       field: 'site_id',
       headerName: 'Site ID',
       sortable: false,
       flex: 0.1,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     },
     {
       field: 'earliest_survey',
       headerName: 'Earliest Survey',
       sortable: false,
       flex: 0.15,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     },
     {
       field: 'jurisdiction_code',
       headerName: 'Jurisdictions',
       sortable: false,
       flex: 0.4,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     },
     {
       field: 'species_code',
       headerName: 'Species',
       sortable: false,
       flex: 0.2,
-      renderCell: (params) => {
-        return <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>;
-      }
+      renderCell: (params) => <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>{params.value}</div>
     }
   ];
 
@@ -95,6 +85,7 @@ const RenderTablePOI = () => {
       {whatsHere.iappRows.length > 0 ? (
         <div>
           <DataGrid
+            sx={{ overflowX: 'auto', minHeight: '318px' }}
             columns={columns}
             rows={whatsHere?.iappRows}
             hideFooterPagination
