@@ -2,43 +2,32 @@ import { useSelector } from 'utils/use_selector';
 import { OverlayHeader } from '../OverlayHeader';
 import area from '@turf/area';
 import './OfflineMapSettings.css';
-import { useState } from 'react';
 import { Button } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import { NEW_ALERT } from 'state/actions';
-import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import { OFFLINE_MAP_CACHING_DELETE, OFFLINE_MAP_CACHING_DOWNLOAD } from 'state/actions';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const OfflineMapSettings = () => {
-  const drawnLayers = useSelector((state) => state.Map?.clientBoundaries);
-  const [downloadLayers, setDownloadLayers] = useState<Record<string, any>[]>([]);
+  const { clientBoundaries, cachedMapLayers } = useSelector((state) => state.Map);
   const dispatch = useDispatch();
 
-  const handleClick = (id) => {
-    const eventItem = drawnLayers.find((item) => item.id === id);
-    if (!downloadLayers.includes(eventItem)) {
-      setDownloadLayers((oldVal) => [...oldVal, eventItem]);
+  const validateCustomLayerDetails = () => {};
+  const handleDownloadCustomLayer = () => {};
+
+  const handleDownload = (id) => {
+    const eventEntry = clientBoundaries.find((item) => item.id === id);
+    if (!cachedMapLayers.includes(eventEntry)) {
       dispatch({
-        type: NEW_ALERT,
-        payload: {
-          content: 'Map Downloading...',
-          subject: AlertSubjects.Map,
-          severity: AlertSeverity.Info,
-          autoClose: 5
-        }
+        type: OFFLINE_MAP_CACHING_DOWNLOAD,
+        payload: { ...eventEntry }
       });
     }
   };
   const handleDelete = (id) => {
-    setDownloadLayers((oldVal) => oldVal.filter((item) => item.id !== id));
+    const eventEntry = clientBoundaries.find((item) => item.id === id);
     dispatch({
-      type: NEW_ALERT,
-      payload: {
-        content: 'Map Successfully Deleted',
-        subject: AlertSubjects.Map,
-        severity: AlertSeverity.Info,
-        autoClose: 5
-      }
+      type: OFFLINE_MAP_CACHING_DELETE,
+      payload: { ...eventEntry }
     });
   };
   const gridColumns: GridColDef[] = [
@@ -75,7 +64,12 @@ const OfflineMapSettings = () => {
     headerName: '',
     flex: 0.1,
     renderCell: (params) => (
-      <Button variant="contained" color="primary" onClick={handleClick.bind(this, params.value)}>
+      <Button
+        variant="contained"
+        color="primary"
+        disabled={cachedMapLayers.some((item) => item.id === params.value)}
+        onClick={handleDownload.bind(this, params.value)}
+      >
         Download Tiles
       </Button>
     ),
@@ -100,7 +94,7 @@ const OfflineMapSettings = () => {
         <h2>User Layers</h2>
         <DataGrid
           columns={[...gridColumns, downloadCol]}
-          rows={drawnLayers}
+          rows={clientBoundaries}
           sx={{ minWidth: '600pt', minHeight: 370 }}
           disableColumnFilter
           disableColumnMenu
@@ -109,7 +103,7 @@ const OfflineMapSettings = () => {
         <h2>Currently Cached Maps</h2>
         <DataGrid
           columns={[...gridColumns, deleteCol]}
-          rows={downloadLayers}
+          rows={cachedMapLayers}
           sx={{ minWidth: '600pt', minHeight: 370 }}
           disableColumnFilter
           disableColumnMenu
