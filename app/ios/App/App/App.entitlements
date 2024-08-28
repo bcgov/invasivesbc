@@ -4,8 +4,8 @@
 <dict>
 	<key>com.apple.developer.associated-domains</key>
 	<array>
-		<string>webcredentials:invasivesbc.gov.bc.ca</string>
-		<string>applinks:invasivesbc.gov.bc.ca</string>
+		<string>webcredentials:invasivesbc-ios.apps.silver.devops.gov.bc.ca</string>
+		<string>applinks:invasivesbc-ios.apps.silver.devops.gov.bc.ca</string>
 	</array>
 </dict>
 </plist>
