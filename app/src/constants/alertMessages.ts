@@ -89,5 +89,46 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
     autoClose: 3
   }
 };
-
 export default mappingAlertMessages;
+
+/**
+ * @desc Alerts focused around the Offline Map Caching feature.
+ */
+export const mapCaching = {
+  downloadStart: {
+    content: 'Downloading Map...',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 3
+  },
+  downloadSuccess: {
+    content: 'Map Downloaded',
+    severity: AlertSeverity.Success,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  downloadFailed: {
+    content: 'Map Failed to Download',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  deleteStart: {
+    content: 'Deleting Map...',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 3
+  },
+  deleteSuccess: {
+    content: 'Map Successfully Deleted',
+    severity: AlertSeverity.Success,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  deleteFailed: {
+    content: 'Failed to Delete Map Cache',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  }
+};
