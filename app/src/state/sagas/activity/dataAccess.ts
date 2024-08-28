@@ -434,7 +434,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
   }
 }
 
-export function* handle_ACTIVITY_SUBMIT_REQUEST(action) {
+export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
 
   const { MOBILE } = yield select(selectConfiguration);

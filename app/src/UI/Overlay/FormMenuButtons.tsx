@@ -41,59 +41,40 @@ export const FormMenuButtons = (props) => {
   const handleSaveDraft = () => {
     dispatch({ type: ACTIVITY_SAVE_REQUEST });
     dispatch({ type: OVERLAY_MENU_TOGGLE });
-  }
+  };
   const handlePublish = () => {
     dispatch({ type: ACTIVITY_SUBMIT_REQUEST });
     dispatch({ type: OVERLAY_MENU_TOGGLE });
-  }
+  };
   const handleCopy = () => {
     dispatch({ type: ACTIVITY_COPY_REQUEST });
     dispatch({ type: OVERLAY_MENU_TOGGLE });
-  }
+  };
   const handlePaste = () => {
     dispatch({ type: ACTIVITY_PASTE_REQUEST });
     dispatch({ type: OVERLAY_MENU_TOGGLE });
-  }
+  };
   const handleDelete = () => {
     dispatch({ type: ACTIVITY_DELETE_REQUEST });
     dispatch({ type: OVERLAY_MENU_TOGGLE });
     setTimeout(() => history.back(), 5000);
-  }
+  };
 
   return (
     <>
-      <Button
-        onClick={handleSaveDraft}
-        disabled={saveDisabled || draftDisabled}
-        variant="contained"
-      >
+      <Button onClick={handleSaveDraft} disabled={saveDisabled || draftDisabled} variant="contained">
         SAVE TO DRAFT {connected || '(LOCAL OFFLINE)'}
       </Button>
-      <Button
-        onClick={handlePublish}
-        disabled={saveDisabled || !connected || activityErrors?.length > 0}
-        variant="contained"
-      >
-        SAVE & PUBLISH TO SUBMITTED
+      <Button onClick={handlePublish} disabled={saveDisabled || activityErrors?.length > 0} variant="contained">
+        SAVE & PUBLISH TO SUBMITTED {connected || '(LOCAL OFFLINE)'}
       </Button>
-      <Button
-        onClick={handleCopy}
-        variant="contained"
-      >
+      <Button onClick={handleCopy} variant="contained">
         COPY FORM
       </Button>
-      <Button
-        disabled={saveDisabled}
-        onClick={handlePaste}
-        variant="contained"
-      >
+      <Button disabled={saveDisabled} onClick={handlePaste} variant="contained">
         PASTE FORM
       </Button>
-      <Button
-        disabled={saveDisabled || !connected}
-        onClick={handleDelete}
-        variant="contained"
-      >
+      <Button disabled={saveDisabled || !connected} onClick={handleDelete} variant="contained">
         DELETE
       </Button>
     </>
