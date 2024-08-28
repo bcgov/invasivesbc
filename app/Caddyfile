@@ -20,6 +20,10 @@ route {
 }
 
 route {
+  header /.well-known/apple-app-site-association Content-Type application/json
+}
+
+route {
   try_files {path} /index.html
   header /index.html {
     Cache-Control max-age=0,no-cache,no-store,must-revalidate
