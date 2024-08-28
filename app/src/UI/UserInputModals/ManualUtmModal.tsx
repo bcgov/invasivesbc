@@ -27,9 +27,9 @@ const ManualUtmModal = ({
   confirmText,
   cancelText
 }: ManualUtmModalInterface) => {
-  const [zone, setUserZone] = useState<number>();
-  const [easting, setUserEasting] = useState<number>();
-  const [northing, setUserNorthing] = useState<number>();
+  const [zone, setUserZone] = useState<string>();
+  const [easting, setUserEasting] = useState<string>();
+  const [northing, setUserNorthing] = useState<string>();
   const [results, setResults] = useState<number[]>([]);
 
   const dispatch = useDispatch();
@@ -43,27 +43,36 @@ const ManualUtmModal = ({
     handleClose();
   };
   const buildResponse = (): UtmInputObj => ({
-    zone: zone!,
-    easting: easting!,
-    northing: northing!,
+    zone: parseFloat(zone!),
+    easting: parseFloat(easting!),
+    northing: parseFloat(northing!),
     results: results
   });
   /**
    * Calculate lat long from UTM.
    */
   useEffect(() => {
-    if (zone !== undefined && easting !== undefined && northing !== undefined) {
-      setResults(calc_lat_long_from_utm(zone, easting, northing) ?? []);
+    try {
+      if (zone !== undefined && easting !== undefined && northing !== undefined) {
+        setResults(calc_lat_long_from_utm(parseFloat(zone), parseFloat(easting), parseFloat(northing)) ?? []);
+      } else {
+        setResults([]);
+      }
+    } catch (ex) {
+      console.error(ex);
+      setResults([]);
     }
   }, [zone, easting, northing]);
 
   /**
    * @desc change handler for all inputs
    */
-  const handleChange = (value: string, setter: (input: number) => void) => {
-    const result = parseFloat(value);
-    if (!isNaN(result)) {
-      setter(result);
+  const handleChange = (value: string, setter: (input: string | undefined) => void) => {
+    const regex = /^[+-]?\d*(?:[.,]\d*)?$/;
+    if (!value) {
+      setter(undefined);
+    } else if (regex.test(value)) {
+      setter(value);
     }
   };
 
@@ -86,7 +95,6 @@ const ManualUtmModal = ({
         <FormControl className="inputCont">
           <TextField
             aria-label="Zone"
-            inputProps={{ type: 'number' }}
             label="Zone"
             onChange={(evt) => handleChange(evt.currentTarget.value, setUserZone)}
             value={zone ?? ''}
@@ -94,14 +102,12 @@ const ManualUtmModal = ({
           <TextField
             sx={{ margin: '10pt 0' }}
             aria-label="Easting"
-            inputProps={{ type: 'number' }}
             label="Easting"
             onChange={(evt) => handleChange(evt.currentTarget.value, setUserEasting)}
             value={easting ?? ''}
           />
           <TextField
             aria-label="Northing"
-            inputProps={{ type: 'number' }}
             label="Northing"
             onChange={(evt) => handleChange(evt.currentTarget.value, setUserNorthing)}
             value={northing ?? ''}

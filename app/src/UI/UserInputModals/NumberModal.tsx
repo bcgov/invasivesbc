@@ -55,10 +55,10 @@ const NumberModal = ({
     const floatReg = /^[+-]?\d*(?:[.,]\d*)?$/;
     const intReg = /^-?[0-9]+$/;
     const regex = acceptFloats ? floatReg : intReg;
-    if (regex.test(value)) {
-      setUserNumber(value);
-    } else if (!value) {
+    if (!value) {
       setUserNumber(undefined);
+    } else if (regex.test(value)) {
+      setUserNumber(value);
     }
     validateUserInput(parseFloat(value));
   };
