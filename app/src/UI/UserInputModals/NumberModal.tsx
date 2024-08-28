@@ -32,7 +32,7 @@ const NumberModal = ({
   label,
   acceptFloats
 }: NumberModalInterface) => {
-  const [userNumber, setUserNumber] = useState<number>();
+  const [userNumber, setUserNumber] = useState<string>();
   const [validationError, setValidationError] = useState<string>('');
   const dispatch = useDispatch();
   const handleRedux = (redux: ReduxPayload[]) => {
@@ -41,21 +41,26 @@ const NumberModal = ({
     }
   };
   const handleConfirmation = () => {
-    const inputIsValid = validateUserInput();
+    const inputIsValid = validateUserInput(parseFloat(userNumber!));
     if (inputIsValid) {
-      handleRedux(callback((userNumber as number) ?? 0) ?? []);
+      const responseNum = parseFloat(userNumber!);
+      handleRedux(callback(responseNum) ?? []);
       handleClose();
     }
   };
   /**
-   * @desc change handler for select menu
+   * @desc change handler user input. Uses regex validation for updating input.
    */
   const handleChange = (value: string) => {
-    const result = acceptFloats ? parseFloat(value) : parseInt(value);
-    if (!isNaN(result)) {
-      setUserNumber(result);
+    const floatReg = /^[+-]?\d*(?:[.,]\d*)?$/;
+    const intReg = /^-?[0-9]+$/;
+    const regex = acceptFloats ? floatReg : intReg;
+    if (regex.test(value)) {
+      setUserNumber(value);
+    } else if (!value) {
+      setUserNumber(undefined);
     }
-    validateUserInput();
+    validateUserInput(parseFloat(value));
   };
 
   const handleClose = () => {
@@ -66,9 +71,9 @@ const NumberModal = ({
    *       Has to explicitly check if undefined as 0 is falsey.
    * @returns numbers pass validation, defaults true if no validators supplied.
    */
-  const validateUserInput = (): boolean => {
+  const validateUserInput = (userNumber: number): boolean => {
     let error: string = '';
-    if (typeof userNumber !== 'number') {
+    if (isNaN(userNumber)) {
       error = 'Value cannot be blank.';
     } else if (selectOptions && !selectOptions.includes(userNumber)) {
       error = 'Must select a value from the select menu';
@@ -101,7 +106,7 @@ const NumberModal = ({
               error={!!validationError}
               helperText={validationError}
               label={label ?? 'Select a value'}
-              onBlur={validateUserInput}
+              onBlur={() => validateUserInput(parseFloat(userNumber!))}
               onChange={(evt) => handleChange(evt.target.value)}
               select
               value={userNumber?.toString()}
@@ -117,9 +122,7 @@ const NumberModal = ({
               aria-label="Number Input"
               error={!!validationError}
               helperText={validationError}
-              inputProps={{ type: 'number' }}
               label={label ?? 'Enter response'}
-              onBlur={validateUserInput}
               onChange={(evt) => handleChange(evt.currentTarget.value)}
               value={userNumber ?? ''}
             />
@@ -128,7 +131,9 @@ const NumberModal = ({
         <Divider />
         <DialogActions>
           {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
-          <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
+          <Button onClick={handleConfirmation} disabled={validationError !== '' || !userNumber}>
+            {confirmText ?? 'Confirm'}
+          </Button>
         </DialogActions>
       </Box>
     </Modal>
