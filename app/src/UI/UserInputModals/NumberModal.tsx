@@ -53,7 +53,7 @@ const NumberModal = ({
    */
   const handleChange = (value: string) => {
     const floatReg = /^[+-]?\d*(?:[.,]\d*)?$/;
-    const intReg = /^-?[0-9]+$/;
+    const intReg = /^[+-]?\d*$/;
     const regex = acceptFloats ? floatReg : intReg;
     if (!value) {
       setUserNumber(undefined);
