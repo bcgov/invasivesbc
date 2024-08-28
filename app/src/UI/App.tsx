@@ -45,7 +45,7 @@ const EmbeddedReportsPage = React.lazy(() => import('./Overlay/Reports/EmbeddedR
 const AccessRequestPage = React.lazy(() => import('./Overlay/AccessRequest/AccessRequestPage'));
 const TrainingPage = React.lazy(() => import('./Overlay/Training/Training'));
 const NewsPage = React.lazy(() => import('./Overlay/News/NewsPage'));
-
+const OfflineMapSettings = React.lazy(() => import('./Overlay/OfflineMap/OfflineMapSettings'));
 const LegendsPopup = React.lazy(() => import('./Overlay/Legend/LegendsPopup'));
 
 export const RENDER_DEBUG = false;
@@ -209,6 +209,14 @@ const OverlayContentMemo = () => {
         )}
       />
       <Route path="/WhatsHere" render={() => <WhatsHereTable />} />
+      <Route
+        path="/OfflineMap"
+        render={() => (
+          <Suspense fallback={<Spinner />}>
+            <OfflineMapSettings />
+          </Suspense>
+        )}
+      />
     </div>
   );
 };

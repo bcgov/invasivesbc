@@ -1,0 +1,17 @@
+.offlineMapTable {
+  padding: 1em;
+  width: 600pt;
+  thead {
+    font-size: 18pt;
+  }
+}
+
+#offlineMapContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  table:last-child {
+    margin-bottom: 1em;
+  }
+}
