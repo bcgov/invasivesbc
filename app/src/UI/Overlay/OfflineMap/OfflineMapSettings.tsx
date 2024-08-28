@@ -33,14 +33,14 @@ const OfflineMapSettings = () => {
   const gridColumns: GridColDef[] = [
     {
       field: 'title',
-      headerName: 'Layer Name',
       flex: 0.1,
+      headerName: 'Layer Name',
       sortable: false
     },
     {
       field: 'area',
-      headerName: 'Area of Layer',
       flex: 0.1,
+      headerName: 'Area of Layer',
       renderCell: (params) => (
         <div>
           {Math.floor(area(params.row.geojson.geometry)).toLocaleString()}
@@ -51,8 +51,8 @@ const OfflineMapSettings = () => {
     },
     {
       field: 'estFileSize',
-      headerName: 'Est. File Size',
       flex: 0.1,
+      headerName: 'Est. File Size',
       renderCell: (params) => (
         <div>{Math.floor(((area(params.row.geojson.geometry) / (50 ^ 2)) * 45) / 150000).toLocaleString()}mb</div>
       ),
@@ -61,8 +61,8 @@ const OfflineMapSettings = () => {
   ];
   const downloadCol: GridColDef = {
     field: 'id',
-    headerName: '',
     flex: 0.1,
+    headerName: '',
     renderCell: (params) => (
       <Button
         variant="contained"
@@ -78,8 +78,8 @@ const OfflineMapSettings = () => {
 
   const deleteCol: GridColDef = {
     field: 'id',
-    headerName: '',
     flex: 0.1,
+    headerName: '',
     renderCell: (params) => (
       <Button onClick={handleDelete.bind(this, params.value)} variant="contained" color="error">
         Delete Tiles
