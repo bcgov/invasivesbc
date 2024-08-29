@@ -45,7 +45,7 @@ function* handle_OFFLINE_MAP_CACHING_DELETE_ALL_SUCCESS() {
   yield put({ type: NEW_ALERT, payload: mapCaching.deleteAllSuccess });
 }
 function* handle_OFFLINE_MAP_CACHING_DELETE_ALL_FAILURE() {
-  yield put({ type: NEW_ALERT, payload: mapCaching.deleteAllSuccess });
+  yield put({ type: NEW_ALERT, payload: mapCaching.deleteAllFailed });
 }
 
 /**

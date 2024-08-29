@@ -80,7 +80,8 @@ import {
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
   OFFLINE_MAP_CACHING_DOWNLOAD_SUCCESS,
-  OFFLINE_MAP_CACHING_DELETE_SUCCESS
+  OFFLINE_MAP_CACHING_DELETE_SUCCESS,
+  OFFLINE_MAP_CACHING_DELETE_ALL_SUCCESS
 } from '../actions';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
@@ -865,6 +866,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case OFFLINE_MAP_CACHING_DELETE_SUCCESS: {
           draftState.cachedMapLayers = [...draftState.cachedMapLayers.filter((item) => item.id !== action.payload?.id)];
+          break;
+        }
+        case OFFLINE_MAP_CACHING_DELETE_ALL_SUCCESS: {
+          draftState.cachedMapLayers = [];
           break;
         }
         case MAP_DELETE_LAYER_AND_TABLE: {
