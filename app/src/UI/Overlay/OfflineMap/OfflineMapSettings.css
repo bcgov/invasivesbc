@@ -1,17 +1,47 @@
-.offlineMapTable {
-  padding: 1em;
-  width: 600pt;
-  thead {
-    font-size: 18pt;
-  }
-}
-
 #offlineMapContainer {
+  .customBox {
+    align-items: center;
+    border: 1pt solid lightgray;
+    border-radius: 3pt;
+    display: flex;
+    justify-content: center;
+    min-height: 100pt;
+    width: 600pt;
+  }
+
+  .innerCustom {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 10pt;
+    width: 80%;
+  }
+
+  .noRows {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    min-height: 250pt;
+    text-align: center;
+  }
+
+  align-items: center;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: center;
-  table:last-child {
-    margin-bottom: 1em;
+  margin-bottom: 20pt;
+  width: 100%;
+
+  h2 {
+    font-size: 24pt;
+  }
+  h3 {
+    font-size: 18pt;
+  }
+  h2,
+  h3 {
+    margin: 15pt 0 0 0;
   }
 }
