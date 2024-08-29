@@ -304,7 +304,10 @@ export interface MapState {
     serverActivityIDs: any[];
     serverIAPPIDs: any[];
   };
-  cachedMapLayers: Record<string, any>[];
+  offlineMaps: {
+    cachedMapLayers: Record<string, any>[];
+    drawing: boolean;
+  };
   workingLayerName: string;
   layerPickerOpen: boolean;
   //
@@ -473,7 +476,10 @@ const initialState: MapState = {
     serverActivityIDs: [],
     serverIAPPIDs: []
   },
-  cachedMapLayers: [],
+  offlineMaps: {
+    cachedMapLayers: [],
+    drawing: false
+  },
   workingLayerName: ''
 };
 
@@ -861,15 +867,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case OFFLINE_MAP_CACHING_DOWNLOAD_SUCCESS: {
-          draftState.cachedMapLayers = [...draftState.cachedMapLayers, { ...action.payload }];
+          draftState.offlineMaps.cachedMapLayers = [...draftState.offlineMaps.cachedMapLayers, { ...action.payload }];
           break;
         }
         case OFFLINE_MAP_CACHING_DELETE_SUCCESS: {
-          draftState.cachedMapLayers = [...draftState.cachedMapLayers.filter((item) => item.id !== action.payload?.id)];
+          draftState.offlineMaps.cachedMapLayers = [
+            ...draftState.offlineMaps.cachedMapLayers.filter((item) => item.id !== action.payload?.id)
+          ];
           break;
         }
         case OFFLINE_MAP_CACHING_DELETE_ALL_SUCCESS: {
-          draftState.cachedMapLayers = [];
+          draftState.offlineMaps.cachedMapLayers = [];
           break;
         }
         case MAP_DELETE_LAYER_AND_TABLE: {

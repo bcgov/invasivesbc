@@ -19,7 +19,10 @@ const OfflineMapSettings = () => {
   const [customInputValid, setCustomInputValid] = useState<boolean>(false);
   const [tempMapShape, setTempMapShape] = useState<number[][]>([]);
 
-  const { clientBoundaries, cachedMapLayers } = useSelector((state) => state.Map);
+  const {
+    clientBoundaries,
+    offlineMaps: { cachedMapLayers }
+  } = useSelector((state) => state.Map);
   const dispatch = useDispatch();
 
   useEffect(() => {
