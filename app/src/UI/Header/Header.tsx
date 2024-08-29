@@ -32,7 +32,6 @@ import {
   FileUpload,
   Home,
   Map,
-  MapOutlined,
   Newspaper,
   School,
   SignalWifi4Bar,
@@ -516,17 +515,19 @@ export const Header: React.FC = () => {
         >
           <Map />
         </Tab>
-        <Tab
-          key={'tab10'}
-          path={'/OfflineMap'}
-          label={'Offline Maps'}
-          platform={'both'}
-          predicate={'authenticated_online'}
-          panelOpen={true}
-          panelFullScreen={false}
-        >
-          <MapOutlined />
-        </Tab>
+        {DEBUG && (
+          <Tab
+            key={'tab10'}
+            path={'/OfflineMap'}
+            label={'Offline Maps'}
+            platform={'both'}
+            predicate={'authenticated_online'}
+            panelOpen={true}
+            panelFullScreen={false}
+          >
+            <Map />
+          </Tab>
+        )}
         {MOBILE && <OfflineSyncHeaderButton />}
         {DEBUG && MOBILE && <NetworkStateControl />}
       </ButtonWrapper>
