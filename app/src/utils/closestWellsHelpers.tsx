@@ -20,6 +20,9 @@ export function* getClosestWells(inputGeometry, online) {
     } else {
       return getWellsArray(returnVal.features, firstFeature);
     }
+  } else {
+    /* TODO */
+    return { well_objects: [], areWellsInside: undefined };
   }
   //if offline: try to get layer data from sqlite local storage
   /*  else {
