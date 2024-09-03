@@ -221,7 +221,8 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     let areWellsInside = false;
 
     if (reported_area < MAX_AREA && !isWIPLinestring && latitude && longitude) {
-      nearestWells = yield getClosestWells(sanitizedGeo, true);
+      const networkState = yield select(selectNetworkConnected);
+      nearestWells = yield getClosestWells(sanitizedGeo, networkState.connected);
       if (nearestWells?.well_objects.length === 0) {
         wellInformationArr = [
           {
