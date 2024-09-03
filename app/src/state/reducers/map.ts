@@ -716,7 +716,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.clientBoundaries.push({
             id: getUuid(),
             title: draftState?.workingLayerName,
-            geojson: action.payload.feature,
+            geojson: action.payload,
             toggle: true
           });
           draftState.workingLayerName = null;
@@ -727,19 +727,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.workingLayerName = action.payload.name;
           break;
         }
-        case MAP_ON_SHAPE_UPDATE: {
-          if (draftState.drawingCustomLayer) {
-            draftState.drawingCustomLayer = false;
-            draftState.clientBoundaries.push({
-              id: getUuid(),
-              title: draftState?.workingLayerName,
-              geojson: action.payload,
-              toggle: true
-            });
-            draftState.workingLayerName = null;
-          }
-          break;
-        }
+
         case IAPP_EXTENT_FILTER_SUCCESS: {
           draftState.IAPPBoundsPolygon = action.payload.bounds;
           break;
