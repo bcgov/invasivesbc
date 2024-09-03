@@ -949,13 +949,13 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
 }
 
 function* handle_MAP_ON_SHAPE_UPDATE(action) {
-  const { url, panelOpen } = yield select((state: any) => state.AppMode);
-  const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
-  if (url && /Activity/.test(url) && !whatsHereToggle) {
+  const { url } = yield select((state) => state.AppMode);
+  const { drawingCustomLayer, whatsHere } = yield select((state) => state.Map);
+
+  if (drawingCustomLayer) {
+    yield put({ type: CUSTOM_LAYER_DRAWN, payload: action.payload });
+  } else if (url && /Activity/.test(url) && !whatsHere.toggle) {
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload] } });
-  }
-  if (!panelOpen) {
-    yield put({ type: TOGGLE_PANEL });
   }
 }
 
