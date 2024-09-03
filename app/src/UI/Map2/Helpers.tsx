@@ -898,8 +898,6 @@ export const initDrawModes = (
     )
   });
 
-  drawSetter(localDraw);
-
   const drawCreateListener = customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle);
   const drawUpdatelistener = customDrawListenerUpdate(localDraw);
   const drawSelectionchangeListener = customDrawListenerSelectionChange(localDraw, dispatch);
@@ -912,12 +910,14 @@ export const initDrawModes = (
   attachedListeners.push(new WeakRef(drawUpdatelistener));
   attachedListeners.push(new WeakRef(drawCreateListener));
 
-  map.addControl(localDraw, 'top-left');
-
+  if (!map.hasControl(draw)) {
+    map.addControl(localDraw, 'top-left');
+  }
   if (activityGeo) {
     console.dir(activityGeo);
     localDraw.add({ type: 'FeatureCollection', features: activityGeo });
   }
+  drawSetter(localDraw);
 };
 
 export const handlePositionTracking = (
@@ -1016,26 +1016,16 @@ export const refreshDrawControls = (
     We fully tear down map box draw and readd depending on app state / route, to have conditionally rendered controls:
     Because mapbox draw doesn't clean up its old sources properly we need to do it manually
    */
-  map.getLayersOrder().map((layer) => {
-    if (/gl-draw/.test(layer)) {
-      map.removeLayer(layer);
-    }
-  });
-  Object.keys(map.style.sourceCaches).map((source) => {
-    if (/mapbox-gl-draw/.test(source)) {
-      map.removeSource(source);
-    }
-  });
   try {
-    if (draw) {
+    if (map.hasControl(draw)) {
       map.removeControl(draw);
       drawSetter(null);
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
-  if (!map.draw) {
+  if (!map.hasControl(draw)) {
     const noMapVisible = /Report|Batch|Landing|WhatsHere/.test(appModeUrl);
     const userInActivity = /Activity/.test(appModeUrl);
     const hideControls = (noMapVisible || !userInActivity) && !drawingCustomLayer;
