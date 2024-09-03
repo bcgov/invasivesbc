@@ -4,15 +4,18 @@ import polygonToLine from '@turf/polygon-to-line';
 import inside from '@turf/inside';
 import buffer from '@turf/buffer';
 import { getDataFromDataBCv2 } from './WFSConsumer';
+import { selectNetworkConnected } from 'state/reducers/network';
+import { select } from 'redux-saga/effects';
 
 //gets layer data based on the layer name
-export function* getClosestWells(inputGeometry, online) {
+export function* getClosestWells(inputGeometry) {
   const firstFeature = inputGeometry;
+  const networkState = yield select(selectNetworkConnected);
   //get the map extent as geoJson polygon feature
   const bufferedGeo = buffer(firstFeature, 1, { units: 'kilometers' });
   //if well layer is selected
   //if online, just get data from WFSonline consumer
-  if (online) {
+  if (networkState.connected) {
     const returnVal = yield getDataFromDataBCv2('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo, true);
 
     if (!returnVal?.features) {
