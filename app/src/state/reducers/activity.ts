@@ -62,7 +62,7 @@ const initialState: ActivityState = {
   track_me_draw_geo: {
     isTracking: false,
     type: null,
-    drawingShape: true
+    drawingShape: false
   },
   saved_activity_hash: null,
   suggestedJurisdictions: [],
