@@ -4,7 +4,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { registerPlugin } from '@capacitor/core';
 import { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
 import { selectMap } from 'state/reducers/map';
-import { MAP_SET_COORDS, MAP_TOGGLE_PANNED, MAP_TOGGLE_TRACKING } from 'state/actions';
+import { MAP_SET_COORDS, MAP_TOGGLE_TRACKING } from 'state/actions';
 
 let BackgroundGeolocation: BackgroundGeolocationPlugin | null = null;
 
