@@ -914,10 +914,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           break;
         }
         case MAP_TOGGLE_TRACKING: {
+          if (!state.positionTracking) {
+            draftState.panned = true;
+          }
           draftState.positionTracking = !state.positionTracking;
           break;
         }
         case MAP_TOGGLE_TRACKING_ON: {
+          draftState.panned = true;
           draftState.positionTracking = true;
           break;
         }

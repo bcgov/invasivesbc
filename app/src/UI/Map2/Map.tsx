@@ -72,6 +72,7 @@ export const Map = (props: any) => {
   const userCoords = useSelector((state: any) => state.Map?.userCoords);
   const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
   const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
+  const panned = useSelector((state: any) => state.Map.panned);
   const positionMarker = new maplibregl.Marker({ element: positionMarkerEl });
   const accuracyCircle = useSelector((state: any) => {
     if (state.Map?.userCoords?.long) {
@@ -113,7 +114,7 @@ export const Map = (props: any) => {
 
   useEffect(() => {
     if (!map.current || mapReady) return;
-    
+
     if (map.current !== null) {
       map.current.once('idle', function () {
         if (map.current !== null) {
@@ -225,8 +226,16 @@ export const Map = (props: any) => {
   // User position tracking and marker
   useEffect(() => {
     if (!mapReady) return;
-    handlePositionTracking(map.current, positionMarker, userCoords, accuracyCircle, accuracyToggle, positionTracking);
-  }, [userCoords, positionTracking, accuracyToggle, mapReady]);
+    handlePositionTracking(
+      map.current,
+      positionMarker,
+      userCoords,
+      accuracyCircle,
+      accuracyToggle,
+      positionTracking,
+      panned
+    );
+  }, [userCoords, positionTracking, accuracyToggle, mapReady, panned]);
 
   //Toggle Topo
   useEffect(() => {

@@ -926,7 +926,8 @@ export const handlePositionTracking = (
   userCoords,
   accuracyCircle,
   accuracyToggle,
-  positionTracking
+  positionTracking,
+  panToUser: boolean
 ) => {
   function animateMarker(timestamp) {
     positionMarker.setLngLat([userCoords.long, userCoords.lat]);
@@ -937,7 +938,9 @@ export const handlePositionTracking = (
   }
 
   if (userCoords && positionTracking) {
-    map.jumpTo({ center: [userCoords.long, userCoords.lat] });
+    if (panToUser) {
+      map.jumpTo({ center: [userCoords.long, userCoords.lat] });
+    }
     // Start the animation.
     requestAnimationFrame(animateMarker);
     if (!map.getSource('accuracyCircle') && accuracyCircle) {
