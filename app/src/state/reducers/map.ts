@@ -76,7 +76,9 @@ import {
   WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
   WHATS_HERE_SORT_FILTER_UPDATE,
   MAP_TOGGLE_TRACKING_ON,
-  MAP_TOGGLE_TRACKING_OFF
+  MAP_TOGGLE_TRACKING_OFF,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME
 } from '../actions';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
@@ -241,6 +243,7 @@ export interface MapState {
   track_me_draw_geo: {
     isTracking: boolean;
     type: GeoShapes | null;
+    drawingShape: boolean;
   };
   quickPanToRecord: boolean;
   recordSetForCSV: number;
@@ -410,7 +413,8 @@ const initialState: MapState = {
   positionTracking: false,
   track_me_draw_geo: {
     isTracking: false,
-    type: null
+    type: null,
+    drawingShape: false
   },
   quickPanToRecord: false,
 
@@ -924,15 +928,25 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_START: {
           draftState.track_me_draw_geo = {
             isTracking: true,
-            type: action.payload.type ?? null
+            type: action.payload.type ?? null,
+            drawingShape: true
           };
           break;
         }
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE: {
           draftState.track_me_draw_geo = {
             isTracking: false,
-            type: null
+            type: null,
+            drawingShape: false
           };
+          break;
+        }
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE: {
+          draftState.track_me_draw_geo.drawingShape = false;
+          break;
+        }
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME: {
+          draftState.track_me_draw_geo.drawingShape = true;
           break;
         }
         case MAP_TOGGLE_WHATS_HERE: {

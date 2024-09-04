@@ -49,7 +49,18 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Warning,
     subject: AlertSubjects.Map
   },
-
+  trackingPaused: {
+    content: 'GeoTracking paused',
+    severity: AlertSeverity.Warning,
+    subject: AlertSubjects.Map,
+    autoClose: 3
+  },
+  trackingResumed: {
+    content: 'GeoTracking resumed',
+    severity: AlertSeverity.Success,
+    subject: AlertSubjects.Map,
+    autoClose: 3
+  },
   // Success
   trackingStarted: {
     content: 'Start walking to draw a geometry. Click the button again to stop.',

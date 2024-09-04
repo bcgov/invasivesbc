@@ -22,6 +22,8 @@ import {
   ACTIVITY_SET_SAVED_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START
 } from '../actions';
 
@@ -44,6 +46,7 @@ interface ActivityState {
   track_me_draw_geo: {
     isTracking: boolean;
     type: GeoShapes | null;
+    drawingShape: boolean;
   };
   activity_copy_buffer: object | null;
 }
@@ -58,7 +61,8 @@ const initialState: ActivityState = {
   loading: false,
   track_me_draw_geo: {
     isTracking: false,
-    type: null
+    type: null,
+    drawingShape: true
   },
   saved_activity_hash: null,
   suggestedJurisdictions: [],
@@ -205,15 +209,25 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_START: {
           draftState.track_me_draw_geo = {
             isTracking: true,
-            type: action.payload.type ?? null
+            type: action.payload.type ?? null,
+            drawingShape: true
           };
           break;
         }
         case MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE: {
           draftState.track_me_draw_geo = {
             isTracking: false,
-            type: null
+            type: null,
+            drawingShape: false
           };
+          break;
+        }
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE: {
+          draftState.track_me_draw_geo.drawingShape = false;
+          break;
+        }
+        case MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME: {
+          draftState.track_me_draw_geo.drawingShape = true;
           break;
         }
         case ACTIVITY_EDIT_PHOTO_SUCCESS: {
