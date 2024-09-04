@@ -58,7 +58,9 @@ import {
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
-  CLEAR_ALERTS
+  CLEAR_ALERTS,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME
 } from '../actions';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
@@ -377,6 +379,14 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
   }
 }
 
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME() {
+  console.log('Alpha');
+  yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingResumed });
+}
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
+  console.log('Beta');
+  yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingPaused });
+}
 /**
  * @desc Handles new coordinates coming in from the TRACK_ME_GEO featureset.
  *       Evaluates distance between new and previous points to eliminate micro adjustments from GPS sway.
@@ -482,6 +492,8 @@ function* activityPageSaga() {
     takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
     takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START),
     takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP),
+    takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE),
+    takeEvery(MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME),
     ...OFFLINE_ACTIVITY_SAGA_HANDLERS
   ]);
 }
