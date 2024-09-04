@@ -50,18 +50,13 @@ function* handle_MAP_TOGGLE_TRACKING_FALLBACK() {
   };
   const watchID = yield Geolocation.watchPosition(options, callback);
 
-  let counter = 0;
   while (state.positionTracking) {
-    if (counter === 0) {
-      yield put({ type: MAP_TOGGLE_PANNED, payload: { target: 'me' } });
-    }
     const currentMapState = yield select(selectMap);
     if (!currentMapState.positionTracking) {
       return;
     }
     const action = yield take(coordChannel);
     yield put(action);
-    counter++;
   }
 
   Geolocation.clearWatch(watchID);
@@ -120,18 +115,13 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
     }
   );
 
-  let counter = 0;
   while (state.positionTracking) {
-    if (counter === 0) {
-      yield put({ type: MAP_TOGGLE_PANNED, payload: { target: 'me' } });
-    }
     const currentMapState = yield select(selectMap);
     if (!currentMapState.positionTracking) {
       return;
     }
     const action = yield take(coordChannel);
     yield put(action);
-    counter++;
   }
 
   yield BackgroundGeolocation.removeWatcher({ id: watchId });
