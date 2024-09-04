@@ -354,6 +354,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
       yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingStoppedSuccess });
     }
   } else {
+    yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE });
     yield put({ type: NEW_ALERT, payload: mappingAlertMessages.canEditInfo });
     for (const error of validationErrors) {
       yield put({ type: NEW_ALERT, payload: error });
@@ -373,6 +374,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
         title: 'Errors in current geography',
         prompt: `You've attempted to stop tracking, but ${validationErrors.length} error(s) exist, do you want to abandon your progress?`,
         confirmText: 'Stop Tracking',
+        cancelText: 'Continue',
         callback
       })
     );
@@ -392,7 +394,11 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
 function* handle_MAP_SET_COORDS(action) {
   const MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS = 1;
   const activityState = yield select(selectActivity);
-  if (activityState.track_me_draw_geo.drawingShape) {
+  const {
+    track_me_draw_geo: { isTracking, drawingShape }
+  } = activityState;
+
+  if (isTracking && drawingShape) {
     let currentGeo = activityState?.activity?.geometry?.[0];
     if (!currentGeo) {
       currentGeo = {
