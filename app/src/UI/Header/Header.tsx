@@ -45,6 +45,7 @@ import { useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
+import RefreshButton from './RefreshButton';
 
 type TabPredicate =
   | 'authenticated_any'
@@ -369,6 +370,7 @@ const LoginOrOutMemo = React.memo(() => {
         )}
         {!authenticated && !workingOffline && <LoginButton />}
         {workingOffline && <LoginButton labelText={'Go Online'} />}
+        {MOBILE && <RefreshButton />}
         {(authenticated || workingOffline) && <LogoutButton />}
       </Menu>
     </div>
