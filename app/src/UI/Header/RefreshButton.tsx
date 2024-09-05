@@ -1,10 +1,9 @@
 import { Refresh } from '@mui/icons-material';
 import { ListItemIcon, MenuItem } from '@mui/material';
-import longPressEvent from 'utils/longPressEvent';
-
+import useLongPress from 'utils/useLongPress';
 const RefreshButton = () => {
   const handleRefresh = () => location.reload();
-  const { handlers } = longPressEvent(handleRefresh);
+  const { handlers } = useLongPress(handleRefresh);
   return (
     <MenuItem {...handlers}>
       <ListItemIcon>
