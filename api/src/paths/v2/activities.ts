@@ -150,10 +150,6 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = false;
   }
 
-  if (!isAuth || !roleName || !roleName.includes('master_administrator')) {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideBiocontrolReleases = true;
-  }
-
   sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
   let id_list_valid = true;
@@ -903,10 +899,6 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
     where.append(
       ` and  ${tableAlias}.activity_id in (${filterObject.ids_to_filter.map((id) => "'" + id + "'").join(',')}) `
     );
-  }
-
-  if (filterObject.serverSideNamedFilters.hideBiocontrolReleases) {
-    where.append(` and ${tableAlias}.activity_subtype not in ('Activity_Biocontrol_Release') `);
   }
 
   return where;
