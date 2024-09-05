@@ -2,17 +2,24 @@ import { useState, useRef } from 'react';
 
 /**
  * @desc Optional Settings for hook
- * @property {Function} onClickCallback Event for click events, when longpresses end early
+ * @property {Function} onClick Event for click events, when longpresses end early
  * @property {number} delay time of longpress in ms
  */
 interface Options {
-  onClickCallback?: Function;
+  onClick?: Function;
   delay?: number;
 }
 
 /**
- * @desc Custom Callback event hook for longpress, works for mobile and pc
- * @external {@link https://github.com/colbyfayock/my-long-press} Source, refactored to TS and modified.
+ * @desc Custom event hook for longpress. can fire an event after a longpress, or optionally add a separate function for onClick
+ *       Use:
+ *        1.Import longPressEvent to component file,
+ *           - const { handlers } = longPressEvent(callbackFunction, {options});
+ *        2. use rest parameters as attributes on longpress target
+ *           - <button {...handlers}> Press Me!</button>
+ *
+ * @summary Custom Callback event hook for longpress, works for mobile and pc
+ * @external {@link https://github.com/colbyfayock/my-long-press} Source reference, refactored to TS and modified.
  * @param callback Action to follow longpress.
  * @param {Options} options additional customization
  * @returns custom hook for longpress event.
