@@ -24,7 +24,7 @@ interface Options {
  * @param {Options} options additional customization
  * @returns custom hook for longpress event.
  */
-const longPressEvent = (callback: Function, options?: Options) => {
+const useLongPress = (callback: Function, options?: Options) => {
   enum Actions {
     longpress,
     click
@@ -47,8 +47,8 @@ const longPressEvent = (callback: Function, options?: Options) => {
       callback();
       return;
     }
-    if (options?.onClickCallback) {
-      options.onClickCallback();
+    if (options?.onClick) {
+      options.onClick();
     }
     setAction(Actions.click);
   };
@@ -72,4 +72,4 @@ const longPressEvent = (callback: Function, options?: Options) => {
   };
 };
 
-export default longPressEvent;
+export default useLongPress;
