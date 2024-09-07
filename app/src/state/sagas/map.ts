@@ -89,6 +89,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import { promptNumberInput } from 'utils/userPrompts';
+import { BASE_LAYER_HANDLERS } from 'state/sagas/map/base-layers';
 
 function* handle_ACTIVITY_DEBUG(action) {
   console.log('halp');
@@ -1037,7 +1038,8 @@ function* activitiesPageSaga() {
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
-    ...TRACKING_SAGA_HANDLERS
+    ...TRACKING_SAGA_HANDLERS,
+    ...BASE_LAYER_HANDLERS
   ]);
 }
 

@@ -27,9 +27,7 @@ import {
   MAP_SET_WHATS_HERE_PAGE_LIMIT,
   MAP_SET_WHATS_HERE_SECTION,
   MAP_TOGGLE_ACCURACY,
-  MAP_TOGGLE_BASEMAP,
   MAP_TOGGLE_GEOJSON_CACHE,
-  MAP_TOGGLE_HD,
   MAP_TOGGLE_LEGENDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
@@ -78,7 +76,9 @@ import {
   MAP_TOGGLE_TRACKING_ON,
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
+  MAP_CHOOSE_BASEMAP,
+  MAP_UPDATE_AVAILABLE_BASEMAPS
 } from '../actions';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
@@ -212,9 +212,10 @@ const DEFAULT_LOCAL_LAYERS = [
 
 export interface MapState {
   [MIGRATION_VERSION_KEY]: number;
+  baseMapLayer: string | null;
+  availableBaseMapLayers: string[];
   MapMode: string;
   CanTriggerCSV: boolean;
-  HDToggle: boolean;
   IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
   IAPPGeoJSONDict: object;
@@ -225,7 +226,6 @@ export interface MapState {
   activityPageMapExtentToggle: boolean;
   activity_center: [number, number];
   activity_zoom: number;
-  baseMapToggle: boolean;
   clientBoundaries: any[];
   currentOpenSet: string;
   customizeLayersToggle: boolean;
@@ -385,7 +385,6 @@ const initialState: MapState = {
 
   CanTriggerCSV: true,
 
-  HDToggle: false,
   accuracyToggle: false,
 
   IAPPBoundsPolygon: undefined,
@@ -396,7 +395,9 @@ const initialState: MapState = {
   activitiesGeoJSONDict: {},
   activityPageMapExtentToggle: false,
 
-  baseMapToggle: false,
+  baseMapLayer: null,
+  availableBaseMapLayers: [],
+
   clientBoundaries: [],
   currentOpenSet: null,
   customizeLayersToggle: false,
@@ -892,12 +893,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.accuracyToggle = !state.accuracyToggle;
           break;
         }
-        case MAP_TOGGLE_BASEMAP: {
-          draftState.baseMapToggle = !state.baseMapToggle;
+        case MAP_CHOOSE_BASEMAP: {
+          draftState.baseMapLayer = action.payload;
           break;
         }
-        case MAP_TOGGLE_HD: {
-          draftState.HDToggle = !state.HDToggle;
+        case MAP_UPDATE_AVAILABLE_BASEMAPS: {
+          draftState.availableBaseMapLayers = action.payload;
           break;
         }
         case MAP_TOGGLE_LEGENDS: {
