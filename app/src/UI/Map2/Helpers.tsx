@@ -2,6 +2,7 @@ import maplibregl, { NavigationControl, ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
+import { MAP_DEFINITIONS } from 'UI/Map2/constants';
 import './map.css';
 
 // Draw tools:
@@ -31,6 +32,7 @@ export const mapInit = (
   api_base,
   getAuthHeaderCallback: () => string,
   PUBLIC_MAP_URL,
+  MOBILE,
   map_center
 ) => {
   const coordinatesContainer = document.createElement('div');
@@ -95,6 +97,54 @@ export const mapInit = (
   // this is so we share one instance across the JS code and the map renderer
   protocol.add(p);
 
+  if (MOBILE) {
+    maplibregl.addProtocol('baked', async (request) => {
+      const base64tobuffer = (s) => {
+        const binaryString = atob(s);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes.buffer;
+      };
+      //console.dir(request.url);
+      try {
+        const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
+
+        const staticData: {
+          z: number;
+          x: number;
+          y: number;
+          data: string;
+        }[] = (await import('constants/map_blobs.json')).default;
+
+        const res = staticData.find((e) => e.z == new Number(z) && e.x == new Number(x) && e.y == new Number(y));
+        if (!res) {
+          //console.error('Error fetching tile');
+
+          // this is a blank 256x256 image
+          return {
+            data: base64tobuffer(
+              'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg=='
+            )
+          };
+        }
+
+        return { data: base64tobuffer(res.data) };
+      } catch (e) {
+        //console.error('Error fetching tile', e);
+        //throw new Error('Cannot fetch local tile for ' + request.url);
+
+        // this is a blank 256x256 image
+        return {
+          data: base64tobuffer(
+            'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg=='
+          )
+        };
+      }
+    });
+  }
+
   //now get the most current auth token from auth provider
   map.current = new maplibregl.Map({
     container: mapContainer.current,
@@ -119,161 +169,27 @@ export const mapInit = (
       glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
       version: 8,
       sources: {
-        'wms-test-source': {
-          type: 'raster',
-          tiles: [
-            'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
-          ],
-          tileSize: 256,
-          maxzoom: 24
-        },
-        'Esri-Sat-LayerHD': {
-          type: 'raster',
-          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-          tileSize: 256,
-          maxzoom: 24
-        },
-        'Esri-Sat-LayerSD': {
-          type: 'raster',
-          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-          tileSize: 256,
-          attribution: 'Powered by ESRI',
-          maxzoom: 18
-        },
-        'Esri-Sat-Label': {
-          type: 'raster',
-          tiles: [
-            'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
-          ],
-          tileSize: 256,
-          attribution: 'Powered by ESRI',
-          maxzoom: 18
-        },
-        'Esri-Topo': {
-          type: 'raster',
-          tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
-          tileSize: 256,
-          attribution: 'Powered by ESRI',
-          maxzoom: 18
-        },
-        public_layer: {
-          type: 'vector',
-          url: `pmtiles://${PMTILES_URL}`,
-          attribution: 'Powered by ESRI'
-        }
+        // 'wms-test-source': {
+        //   type: 'raster',
+        //   tiles: [
+        //     'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
+        //   ],
+        //   tileSize: 256,
+        //   maxzoom: 24
+        // }
+        // offline_layer: {
+        //   type: 'raster',
+        //   tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
+        //   tileSize: 256,
+        //   attribution: 'Powered by ESRI',
+        //   maxzoom: 2
+        // },
+        ...MAP_DEFINITIONS.reduce((result, item) => {
+          result[item.name] = item.source;
+          return result;
+        }, {})
       },
-      layers: [
-        {
-          id: 'Esri-Sat-LayerHD',
-          type: 'raster',
-          source: 'Esri-Sat-LayerHD',
-          minzoom: 0
-        },
-        {
-          id: 'Esri-Sat-LayerSD',
-          type: 'raster',
-          source: 'Esri-Sat-LayerSD',
-          minzoom: 0
-        },
-        {
-          id: 'Esri-Sat-Label',
-          type: 'raster',
-          source: 'Esri-Sat-Label',
-          minzoom: 0
-        },
-        {
-          id: 'Esri-Topo',
-          type: 'raster',
-          source: 'Esri-Topo',
-          minzoom: 0,
-          layout: {
-            visibility: 'none'
-          }
-        },
-        {
-          id: 'invasivesbc-pmtile-vector',
-          source: 'public_layer',
-          'source-layer': 'invasives',
-          type: 'fill',
-          paint: {
-            'fill-color': 'lightskyblue'
-          },
-          minzoom: 0,
-          maxzoom: 24
-        },
-        {
-          id: 'iapp-pmtile-vector',
-          source: 'public_layer',
-          'source-layer': 'iapp',
-          type: 'circle',
-          paint: {
-            'circle-color': 'limegreen'
-          },
-          minzoom: 0,
-          maxzoom: 24
-        },
-        {
-          id: 'invasivesbc-pmtile-vector-label',
-          source: 'public_layer',
-          'source-layer': 'invasives',
-          type: 'symbol',
-          layout: {
-            //                'icon-image': 'dog-park-11',
-            'text-field': [
-              'format',
-              ['upcase', ['get', 'id']],
-              { 'font-scale': 0.9 },
-              '\n',
-              {},
-              ['get', 'map_symbol'],
-              { 'font-scale': 0.9 }
-            ],
-            // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-            'text-font': ['literal', ['Open Sans Bold']],
-            // 'text-font': ['literal', ['Open Sans Semibold']],
-            'text-offset': [0, 0.6],
-            'text-anchor': 'top'
-          },
-          paint: {
-            'text-color': 'black',
-            'text-halo-color': 'white',
-            'text-halo-width': 1,
-            'text-halo-blur': 1
-          },
-          minzoom: 0,
-          maxzoom: 24
-        },
-        {
-          id: 'iapp-pmtile-vector-label',
-          source: 'public_layer',
-          'source-layer': 'iapp',
-          type: 'symbol',
-          layout: {
-            'text-field': [
-              'format',
-              ['concat', 'IAPP Site: ', ['get', 'site_id']],
-              { 'font-scale': 0.9 },
-              '\n',
-              {},
-              ['get', 'map_symbol'],
-              { 'font-scale': 0.9 }
-            ],
-            // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-            'text-font': ['literal', ['Open Sans Bold']],
-            // 'text-font': ['literal', ['Open Sans Semibold']],
-            'text-offset': [0, 0.6],
-            'text-anchor': 'top'
-          },
-          paint: {
-            'text-color': 'black',
-            'text-halo-color': 'white',
-            'text-halo-width': 1,
-            'text-halo-blur': 1
-          },
-          minzoom: 0,
-          maxzoom: 24
-        }
-      ]
+      layers: MAP_DEFINITIONS.flatMap((m) => m.layers)
     }
   });
 
@@ -564,7 +480,7 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
 };
 
 export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE) => {
-  /* 
+  /*
       First need to delete the layers who's record set was deleted altogether:
 
   */
@@ -722,10 +638,9 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   if (!map) return;
 
   if (!map.getLayer(layer)) return;
-  if (layer.includes('Sat')) {
-    console.log('** layer exists can toggle');
-  }
+
   const visibility = map.getLayoutProperty(layer, 'visibility');
+
   if (visibility !== 'visible' && boolToggle) {
     map.setLayoutProperty(layer, 'visibility', 'visible');
   }

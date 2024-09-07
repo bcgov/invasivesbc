@@ -165,7 +165,8 @@
     "build": "NODE_OPTIONS='--max-old-space-size=8000' ENABLE_STATS=TRUE CONFIGURATION_SOURCE=Provided VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=android vite build",
     "build-prod": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Caddy VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=web vite build -l error",
     "preview": "vite preview --port 3000",
-    "assets": "npx @capacitor/assets generate --iconBackgroundColor '#fefefe' --iconBackgroundColorDark '#333333' --splashBackgroundColor '#fefefe' --splashBackgroundColorDark '#333333' --ios"
+    "assets": "npx @capacitor/assets generate --iconBackgroundColor '#fefefe' --iconBackgroundColorDark '#333333' --splashBackgroundColor '#fefefe' --splashBackgroundColorDark '#333333' --ios",
+    "download-tiles": "npx "
   },
   "jest": {
     "roots": [
