@@ -5,7 +5,20 @@ import { useSelector } from 'utils/use_selector';
 import { MAP_CHOOSE_BASEMAP } from 'state/actions';
 import 'UI/Global.css';
 import { MAP_DEFINITIONS } from 'UI/Map2/constants';
-import { DeviceUnknown, Hd, Landscape, Sd, Map } from '@mui/icons-material';
+import {
+  DeviceUnknown,
+  DownloadForOffline,
+  Hd,
+  Landscape,
+  Map,
+  OfflineBolt,
+  OfflinePin,
+  OfflineShare,
+  Sd,
+  SignalCellular0Bar,
+  SignalCellularNodata,
+  SignalCellularNullOutlined
+} from '@mui/icons-material';
 
 export const BaseMapSelect = () => {
   const dispatch = useDispatch();
@@ -24,6 +37,8 @@ export const BaseMapSelect = () => {
         return <Landscape />;
       case 'Map':
         return <Map />;
+      case 'Offline':
+        return <SignalCellularNodata />;
       case 'N/A':
       default:
         return <DeviceUnknown />;
