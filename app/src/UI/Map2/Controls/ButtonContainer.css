@@ -76,6 +76,15 @@
       border-right: none;
     }
 
+
+    div:first-child:last-child {
+      /* the special case when there's only one button */
+
+      .button {
+        border-radius: 20%;
+      }
+    }
+
     .button {
       padding: 0;
       margin: 0;
@@ -86,8 +95,6 @@
       color: #036;
 
     }
-
-
   }
 
   .map-btn {

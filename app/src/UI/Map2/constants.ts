@@ -200,28 +200,6 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     ]
   },
   {
-    displayName: 'Offline',
-    name: 'offline_base_map',
-    icon: 'Offline',
-    tooltip: 'Locally stored base map',
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).build(),
-    source: {
-      type: 'raster',
-      tiles: ['baked://offline/{z}/{x}/{y}'],
-      tileSize: 256,
-      attribution: 'Powered by ESRI',
-      maxzoom: 6 // must match bundled tiles
-    },
-    layers: [
-      {
-        id: `Offline-Topo`,
-        type: 'raster',
-        source: 'offline_base_map',
-        minzoom: 0
-      }
-    ]
-  },
-  {
     name: 'public_layer',
 
     displayName: 'Public Map',
@@ -323,6 +301,28 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         },
         minzoom: 0,
         maxzoom: 24
+      }
+    ]
+  },
+  {
+    displayName: 'Offline',
+    name: 'offline_base_map',
+    icon: 'Offline',
+    tooltip: 'Locally-stored low-resolution base map',
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).build(),
+    source: {
+      type: 'raster',
+      tiles: ['baked://offline/{z}/{x}/{y}'],
+      tileSize: 256,
+      attribution: 'Powered by ESRI',
+      maxzoom: 6 // must match bundled tiles
+    },
+    layers: [
+      {
+        id: `Offline-Topo`,
+        type: 'raster',
+        source: 'offline_base_map',
+        minzoom: 0
       }
     ]
   }

@@ -20,6 +20,7 @@ import {
   IAPP_TABLE_ROWS_GET_SUCCESS,
   INIT_SERVER_BOUNDARIES_GET,
   MAIN_MAP_MOVE,
+  MAP_CHOOSE_BASEMAP,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_MODE_SET,
@@ -30,10 +31,15 @@ import {
   MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_LEGENDS,
   MAP_TOGGLE_PANNED,
-  MAP_TOGGLE_TRACKING,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
+  MAP_TOGGLE_TRACKING,
+  MAP_TOGGLE_TRACKING_OFF,
+  MAP_TOGGLE_TRACKING_ON,
   MAP_TOGGLE_WHATS_HERE,
+  MAP_UPDATE_AVAILABLE_BASEMAPS,
   MAP_WHATS_HERE_FEATURE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
   MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
@@ -72,13 +78,7 @@ import {
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
   WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
-  WHATS_HERE_SORT_FILTER_UPDATE,
-  MAP_TOGGLE_TRACKING_ON,
-  MAP_TOGGLE_TRACKING_OFF,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
-  MAP_CHOOSE_BASEMAP,
-  MAP_UPDATE_AVAILABLE_BASEMAPS
+  WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
@@ -899,6 +899,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case MAP_UPDATE_AVAILABLE_BASEMAPS: {
           draftState.availableBaseMapLayers = action.payload;
+
+          // if there was no previously-selected base map layer or if the currently-selected layer became unavailable,
+          // then select another
+          if (draftState.availableBaseMapLayers.length > 0) {
+            if (!draftState.baseMapLayer || !draftState.availableBaseMapLayers.includes(draftState.baseMapLayer)) {
+              draftState.baseMapLayer = draftState.availableBaseMapLayers[0];
+            }
+          }
           break;
         }
         case MAP_TOGGLE_LEGENDS: {
