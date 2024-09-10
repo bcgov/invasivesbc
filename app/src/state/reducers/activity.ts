@@ -12,6 +12,8 @@ import {
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
@@ -41,6 +43,10 @@ interface ActivityState {
   loading: boolean;
   saved_activity_hash: string | null;
   suggestedJurisdictions: [];
+  biocontrol: {
+    plantToAgentMap: Record<string, any>[];
+    listOfAgents: Record<string, any>[] | null;
+  };
   suggestedPersons: [];
   suggestedTreatmentIDs: [];
   track_me_draw_geo: {
@@ -65,6 +71,10 @@ const initialState: ActivityState = {
     drawingShape: false
   },
   saved_activity_hash: null,
+  biocontrol: {
+    plantToAgentMap: [],
+    listOfAgents: null
+  },
   suggestedJurisdictions: [],
   suggestedPersons: [],
   suggestedTreatmentIDs: [],
@@ -90,6 +100,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             initialized: false,
             loading: false,
             saved_activity_hash: null,
+            biocontrol: {
+              plantToAgentMap: [],
+              listOfAgents: null
+            },
             suggestedJurisdictions: [],
             suggestedPersons: [],
             suggestedTreatmentIDs: []
@@ -107,6 +121,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             initialized: false,
             loading: false,
             saved_activity_hash: null,
+            biocontrol: {
+              plantToAgentMap: [],
+              listOfAgents: null
+            },
             suggestedJurisdictions: [],
             suggestedPersons: [],
             suggestedTreatmentIDs: [],
@@ -168,6 +186,25 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             draftState.suggestedPersons = [...action.payload.suggestedPersons];
           }
           draftState.suggestedPersons = [...action.payload.suggestedPersons];
+          break;
+        }
+        case ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS: {
+          draftState.biocontrol.plantToAgentMap = [...action.payload.suggestedBiocontrolTreatments];
+          break;
+        }
+        case ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS: {
+          const biocontrolAgentOptionsAvailable =
+            draftState?.schema.properties?.activity_subtype_data?.properties?.Biocontrol_Collection_Information?.items
+              ?.properties?.biological_agent_code?.options;
+          if (biocontrolAgentOptionsAvailable) {
+            if (!draftState.biocontrol.listOfAgents) {
+              // This sets a list of agents in state that we can run subsequent filters on.
+              draftState.biocontrol.listOfAgents = JSON.parse(JSON.stringify(biocontrolAgentOptionsAvailable));
+            }
+            // We can override the options for the agent select menu using the filtered properties
+            draftState.schema.properties.activity_subtype_data.properties.Biocontrol_Collection_Information.items.properties.biological_agent_code.options =
+              [...action.payload.suggestedBiocontrolTreatments];
+          }
           break;
         }
         case ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS: {
