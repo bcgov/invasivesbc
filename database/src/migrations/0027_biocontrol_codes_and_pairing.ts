@@ -97,11 +97,7 @@ export async function up(knex: Knex) {
     $$ LANGUAGE plpgsql;
   `);
 
-  /* Create trigger populating the IDS when codes are entered in table
-      39 = invasive_plant_aquatic_code
-      40 = invasive_plant_code
-      43 = biological_agent_code
-  */
+  /* Create trigger populating the IDS when codes are entered in table */
 
   await knex.raw(`
     CREATE OR REPLACE FUNCTION invasivesbc.populate_pkeys()
