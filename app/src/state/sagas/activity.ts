@@ -457,13 +457,8 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
     console.error(ex);
   }
 }
-type ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_TYPE = {
-  payload: {
-    agentListTarget: string;
-    plantCode: string;
-  };
-};
-function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS(action: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_TYPE) {
+
+function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS(action) {
   const activityState = yield select(selectActivity);
   const { agentListTarget, plantCode } = action.payload;
 
