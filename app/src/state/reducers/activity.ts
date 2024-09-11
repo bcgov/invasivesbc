@@ -32,8 +32,10 @@ import {
 import { AppConfig } from '../config';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
+import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
-interface ActivityState {
+export interface ActivityState {
+  [MIGRATION_VERSION_KEY]: number;
   activity: any;
   current_activity_hash: string | null;
   error: boolean;
@@ -58,6 +60,7 @@ interface ActivityState {
 }
 
 const initialState: ActivityState = {
+  [MIGRATION_VERSION_KEY]: CURRENT_MIGRATION_VERSION,
   activity: null,
   current_activity_hash: null,
   error: false,

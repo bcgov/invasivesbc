@@ -4,7 +4,7 @@ import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import { persistReducer } from 'redux-persist';
 import appMode from './appMode';
-import { createActivityReducer } from './activity';
+import { ActivityState, createActivityReducer } from './activity';
 import { AuthState, createAuthReducer } from './auth';
 import { createBatchReducer } from './batch';
 import { createEmailSettingsReducer } from './emailSettings';
@@ -64,7 +64,16 @@ function createRootReducer(config: AppConfig) {
     ),
     UserInfo: createUserInfoReducer({ loaded: false, accessRequested: false, activated: false }),
     Network: createNetworkReducer({ connected: true }),
-    ActivityPage: createActivityReducer(config),
+    ActivityPage: persistReducer<ActivityState>(
+      {
+        key: 'activity',
+        storage: platformStorage,
+        stateReconciler: autoMergeLevel1,
+        migrate: purgeOldStateOnVersionUpgrade,
+        whitelist: [MIGRATION_VERSION_KEY, 'biocontrol']
+      },
+      createActivityReducer(config)
+    ),
     IAPPSitePage: createIAPPSiteReducer(config),
     UserSettings: persistReducer<UserSettingsState>(
       {
