@@ -104,7 +104,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             loading: false,
             saved_activity_hash: null,
             biocontrol: {
-              plantToAgentMap: [],
+              plantToAgentMap: draftState.biocontrol.plantsToAgentMap ?? [],
               listOfAgents: null
             },
             suggestedJurisdictions: [],
@@ -125,7 +125,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             loading: false,
             saved_activity_hash: null,
             biocontrol: {
-              plantToAgentMap: [],
+              plantToAgentMap: draftState.biocontrol.plantsToAgentMap ?? [],
               listOfAgents: null
             },
             suggestedJurisdictions: [],
