@@ -457,29 +457,38 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
     console.error(ex);
   }
 }
-function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS(action) {
+type ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_TYPE = {
+  payload: {
+    agentListTarget: string;
+    plantCode: string;
+  };
+};
+function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS(action: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_TYPE) {
   const activityState = yield select(selectActivity);
-  const invasivePlantCode = action.payload.plantCode;
+  const { agentListTarget, plantCode } = action.payload;
+
+  // Get the complete list of Biocontrol agents
   const biocontrolState =
     activityState?.biocontrol?.listOfAgents ??
-    activityState?.schema?.properties?.activity_subtype_data?.properties?.Biocontrol_Collection_Information?.items
-      ?.properties?.biological_agent_code.options ??
+    activityState?.schema?.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
+      ?.biological_agent_code.options ??
     null;
-  if (invasivePlantCode && biocontrolState) {
-    const plantTreatments = activityState.biocontrol.plantToAgentMap.map((item) => {
-      if (item.plant_code_name === invasivePlantCode) {
-        return item.agent_code_name;
-      }
-    });
-    const filteredAgents = biocontrolState.filter((item) => plantTreatments.includes(item.value));
+
+  if (plantCode && biocontrolState) {
+    const treatmentsBasedOnPlant = activityState.biocontrol.plantToAgentMap.map(
+      (item: Record<string, any>) => item.plant_code_name === plantCode && item.agent_code_name
+    );
+    const filteredAgents = biocontrolState.filter((item: Record<string, any>) =>
+      treatmentsBasedOnPlant.includes(item.value)
+    );
     yield put({
       type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
-      payload: { suggestedBiocontrolTreatments: filteredAgents }
+      payload: { suggestedBiocontrolTreatments: filteredAgents, agentListTarget }
     });
   } else if (biocontrolState) {
     yield put({
       type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
-      payload: { suggestedBiocontrolTreatments: biocontrolState }
+      payload: { suggestedBiocontrolTreatments: biocontrolState, agentListTarget }
     });
   }
 }

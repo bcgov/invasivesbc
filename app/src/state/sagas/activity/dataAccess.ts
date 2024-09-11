@@ -75,6 +75,7 @@ import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { promptNumberInput } from 'utils/userPrompts';
+import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPayload';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
@@ -369,7 +370,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
     const lastField = action.payload.lastField;
-    const mapState = yield select(selectMap);
 
     let updatedFormData = action.payload.eventFormData;
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
@@ -379,23 +379,19 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal ||
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
     ) {
-      const plantCode =
-        updatedFormData?.activity_subtype_data?.Biocontrol_Collection_Information?.[0]?.invasive_plant_code;
-      const prevPlantCode =
-        beforeActivity?.form_data?.activity_subtype_data?.Biocontrol_Collection_Information?.[0]?.invasive_plant_code;
-
+      const { plantCode, prevPlantCode, agentListTarget } = getPlantCodesFromPayload(beforeActivity, updatedFormData);
+      console.log(plantCode, prevPlantCode, agentListTarget);
+      updatedFormData?.activity_subtype_data?.[agentListTarget]?.[0]?.invasive_plant_code;
       // Fire handlers to filter the agents list based on the selected plant code, only fire when value has changed
       if (plantCode && plantCode !== prevPlantCode) {
         // Reset the biological_agent_code, since list has been updated
-        delete updatedFormData.activity_subtype_data.Biocontrol_Collection_Information[0].biological_agent_code;
-        yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS, payload: { plantCode } });
+        delete updatedFormData?.activity_subtype_data?.[agentListTarget]?.[0]?.biological_agent_code;
+        yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS, payload: { plantCode, agentListTarget } });
       }
       //auto fills total release quantity (only on biocontrol release activity)
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
       updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
-      // Autofills total bioagent quantity specifically for biocontrol collections
-      // updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
     }
 
     if (beforeState.activity.activity_type === ActivityType.Treatment && beforeState.suggestedPersons) {

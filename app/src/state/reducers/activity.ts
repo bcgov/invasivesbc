@@ -193,17 +193,19 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS: {
+          const { agentListTarget } = action.payload;
           const biocontrolAgentOptionsAvailable =
-            draftState?.schema.properties?.activity_subtype_data?.properties?.Biocontrol_Collection_Information?.items
-              ?.properties?.biological_agent_code?.options;
+            draftState?.schema.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
+              ?.biological_agent_code?.options;
           if (biocontrolAgentOptionsAvailable) {
             if (!draftState.biocontrol.listOfAgents) {
               // This sets a list of agents in state that we can run subsequent filters on.
               draftState.biocontrol.listOfAgents = JSON.parse(JSON.stringify(biocontrolAgentOptionsAvailable));
             }
-            // We can override the options for the agent select menu using the filtered properties
-            draftState.schema.properties.activity_subtype_data.properties.Biocontrol_Collection_Information.items.properties.biological_agent_code.options =
-              [...action.payload.suggestedBiocontrolTreatments];
+            // Override the options for the agent select menu using the filtered properties
+            draftState.schema.properties.activity_subtype_data.properties[
+              agentListTarget
+            ].items.properties.biological_agent_code.options = [...action.payload.suggestedBiocontrolTreatments];
           }
           break;
         }
