@@ -316,9 +316,51 @@ export async function up(knex: Knex) {
       ('YT', 'RHINNET'),
       ('YT', 'RHINPIL');
   `);
+  // Give admins the biocontrol role
+  await knex.raw(`
+    WITH admins AS (
+      SELECT user_id
+      FROM invasivesbc.user_access
+      WHERE role_id = 18
+    ), biocontrol_role AS (
+      SELECT role_id
+      FROM invasivesbc.user_role
+      WHERE role_name = 'biocontrol_user'
+    )
+    INSERT INTO invasivesbc.user_access (user_id, role_id)
+    SELECT admins.user_id, biocontrol_role.role_id
+    FROM admins, biocontrol_role
+    ON CONFLICT (user_id, role_id) DO NOTHING;
+`);
+  // Give AAFC users the biocontrol role
+  await knex.raw(`
+      WITH aafc_users AS (
+      SELECT user_id
+      FROM invasivesbc.application_user
+      WHERE account_status = 1 
+      AND 'AAFC' = ANY(string_to_array(employer, ','))
+    ), biocontrol_role AS (
+      SELECT role_id
+      FROM invasivesbc.user_role
+      WHERE role_name = 'biocontrol_user'
+    )
+    INSERT INTO invasivesbc.user_access (user_id, role_id)
+    SELECT aafc_users.user_id, biocontrol_role.role_id
+    FROM aafc_users, biocontrol_role
+    ON CONFLICT (user_id, role_id) DO NOTHING;
+  `);
 }
 
 export async function down(knex: Knex) {
+  // Remove biocontrol assignments
+  await knex.raw(`
+    DELETE FROM invasivesbc.user_access
+    WHERE role_id IN (
+      SELECT role_id
+      FROM invasivesbc.user_role
+      WHERE role_name = 'biocontrol_user'
+    )
+  `);
   // Remove Biocontrol role
   await knex.raw(`
     DELETE FROM
