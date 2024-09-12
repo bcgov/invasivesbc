@@ -316,6 +316,35 @@ export async function up(knex: Knex) {
       ('YT', 'RHINNET'),
       ('YT', 'RHINPIL');
   `);
+
+  await knex.raw(`
+    CREATE TABLE IF NOT EXISTS invasivesbc.private_biocontrol_agents (
+      agent_code_pkey INTEGER PRIMARY KEY,
+      agent_code_name VARCHAR(40) NOT NULL,
+      agent_code_description VARCHAR(300),
+      FOREIGN KEY (agent_code_pkey) REFERENCES invasivesbc.code(code_id)
+    );
+    COMMENT ON TABLE  invasivesbc.private_biocontrol_agents IS 'Biocontrol Agents that should be removed from unauthorized search results';
+    COMMENT ON COLUMN invasivesbc.private_biocontrol_agents.agent_code_pkey        IS 'Primary Key for entry in Code table';
+    COMMENT ON COLUMN invasivesbc.private_biocontrol_agents.agent_code_name        IS 'value of "code_name" column in code table';
+    COMMENT ON COLUMN invasivesbc.private_biocontrol_agents.agent_code_description IS 'value of "code_description" column in code table';
+  `);
+
+  await knex.raw(`
+    WITH init_private AS (
+      SELECT *
+      FROM invasivesbc.code
+      WHERE code_header_id = 43
+      AND code_description IN (
+        'ARCHNEU [Archanara neurica]',
+        'LENIGEM [Lenisa geminipuncta]',
+        'CHEIURB [Cheilosia urbana]'
+      )
+    ) INSERT INTO invasivesbc.private_biocontrol_agents(agent_code_pkey, agent_code_name, agent_code_description)
+     SELECT code_id, code_name, code_description
+     FROM init_private
+     ON CONFLICT DO NOTHING;
+  `);
   // Give admins the biocontrol role
   await knex.raw(`
     WITH admins AS (
@@ -371,9 +400,10 @@ export async function down(knex: Knex) {
 
   // Remove Tables, Functions, Triggers
   await knex.raw(`
-    DROP TRIGGER  IF EXISTS trg_populate_pkeys ON invasivesbc.plant_agent_treatment;  
-    DROP FUNCTION IF EXISTS invasivesbc.get_code_id_for_plant_agents(VARCHAR, INTEGER);  
-    DROP FUNCTION IF EXISTS invasivesbc.populate_pkeys();  
+    DROP TRIGGER  IF EXISTS trg_populate_pkeys ON invasivesbc.plant_agent_treatment;
+    DROP FUNCTION IF EXISTS invasivesbc.get_code_id_for_plant_agents(VARCHAR, INTEGER);
+    DROP FUNCTION IF EXISTS invasivesbc.populate_pkeys();
+    DROP TABLE    IF EXISTS invasivesbc.private_biocontrol_agents;
     DROP TABLE    IF EXISTS invasivesbc.plant_agent_treatment;
   `);
 

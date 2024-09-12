@@ -911,10 +911,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.serverSideNamedFilters.hideBiocontrolReleases) {
     where.append(
       ` AND ${tableAlias}.species_biocontrol_full not in (
-        'ARCHNEU [Archanara neurica]',
-        'LENIGEM [Lenisa geminipuncta]',
-        'CHEIURB [Cheilosia urbana]'
-      ) `
+          SELECT agent_code_description
+          FROM invasivesbc.private_biocontrol_agents
+        ) `
     );
   }
 
