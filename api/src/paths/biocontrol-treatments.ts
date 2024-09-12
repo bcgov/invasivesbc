@@ -50,7 +50,7 @@ function getBiocontrolTreatments(): RequestHandler {
     try {
       const sqlStatement: SQLStatement = SQL`SELECT plant_code_name, agent_code_name FROM plant_agent_treatment;`;
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
-      const result = (response && response.rows) ?? null;
+      const result = response?.rows ?? null;
 
       return res.status(200).json({
         message: 'Biocontrol Treatments retrieved',

@@ -10,7 +10,6 @@ import {
   populateSpeciesArrays
 } from 'sharedAPI';
 import { kinks } from '@turf/turf';
-import { selectMap } from 'state/reducers/map';
 
 import {
   autoFillNameByPAC,
@@ -38,7 +37,6 @@ import {
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
@@ -380,8 +378,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
     ) {
       const { plantCode, prevPlantCode, agentListTarget } = getPlantCodesFromPayload(beforeActivity, updatedFormData);
-      console.log(plantCode, prevPlantCode, agentListTarget);
-      updatedFormData?.activity_subtype_data?.[agentListTarget]?.[0]?.invasive_plant_code;
       // Fire handlers to filter the agents list based on the selected plant code, only fire when value has changed
       if (plantCode && plantCode !== prevPlantCode) {
         // Reset the biological_agent_code, since list has been updated

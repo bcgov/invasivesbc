@@ -112,7 +112,6 @@ import AlertMessage from 'interfaces/AlertMessage';
 import { promptConfirmationInput, promptNumberInput } from 'utils/userPrompts';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { ConstructionOutlined } from '@mui/icons-material';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {

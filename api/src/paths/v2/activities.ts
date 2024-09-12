@@ -152,7 +152,7 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   if (
     !isAuth ||
     !roleName ||
-    !(req as any).authContext?.roles.some((role: Record<string, any>) =>
+    !req.authContext?.roles.some((role: Record<string, any>) =>
       ['biocontrol_user', 'master_administrator'].includes(role.role_name)
     )
   ) {
