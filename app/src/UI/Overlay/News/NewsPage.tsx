@@ -1,8 +1,14 @@
-import React from 'react';
 import './NewsPage.css';
 
-const NewsPage = (props: any) => {
+const NewsPage = () => {
   const newsItems = [
+    {
+      title: 'September 16th, 2024: Biocontrol filtering',
+      content: `
+• New "Primary Biocontrol User" role created and has been applied to users currently working with Primary Agents.  Users without this role added will not see Biocontrol Records for primary biocontrol agents.
+• When creating biocontrol records, the invasive plant chosen in the form will restrict the biocontrol agent drop down menu to only those agents that are relevant for the invasive plant species chosen.  This will help reduce unintentional errors and speed up data entry time.
+`
+    },
     {
       title: 'June 20, 2024: TEMP Point batch uploaded shapes',
       content: `
