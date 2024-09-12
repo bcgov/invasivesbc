@@ -1,6 +1,7 @@
 import { all, put, select, take, takeEvery } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
 import {
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
   AUTH_INITIALIZE_COMPLETE,
   GET_API_DOC_ONLINE,
   GET_API_DOC_REQUEST,
@@ -163,7 +164,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   yield put({ type: GET_API_DOC_REQUEST });
   yield take(GET_API_DOC_SUCCESS);
-
+  yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE });
   yield put({
     type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
     payload: {

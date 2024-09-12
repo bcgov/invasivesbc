@@ -60,7 +60,11 @@ import {
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
   CLEAR_ALERTS,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS
 } from '../actions';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
@@ -106,6 +110,8 @@ import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import AlertMessage from 'interfaces/AlertMessage';
 import { promptConfirmationInput, promptNumberInput } from 'utils/userPrompts';
+import { selectNetworkConnected } from 'state/reducers/network';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -436,6 +442,50 @@ function* handle_MAP_SET_COORDS(action) {
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
   }
 }
+function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
+  const connected = yield select(selectNetworkConnected);
+  try {
+    if (connected) {
+      const networkReturn = yield InvasivesAPI_Call('GET', '/api/biocontrol-treatments');
+      yield put({
+        type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
+        payload: { suggestedBiocontrolTreatments: networkReturn?.data?.result ?? [] }
+      });
+    }
+  } catch (ex) {
+    console.error(ex);
+  }
+}
+
+function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS(action) {
+  const activityState = yield select(selectActivity);
+  const { agentListTarget, plantCode } = action.payload;
+
+  // Get the complete list of Biocontrol agents
+  const biocontrolState =
+    activityState?.biocontrol?.listOfAgents ??
+    activityState?.schema?.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
+      ?.biological_agent_code.options ??
+    null;
+
+  if (plantCode && biocontrolState) {
+    const treatmentsBasedOnPlant = activityState.biocontrol.plantToAgentMap.map(
+      (item: Record<string, any>) => item.plant_code_name === plantCode && item.agent_code_name
+    );
+    const filteredAgents = biocontrolState.filter((item: Record<string, any>) =>
+      treatmentsBasedOnPlant.includes(item.value)
+    );
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
+      payload: { suggestedBiocontrolTreatments: filteredAgents, agentListTarget }
+    });
+  } else if (biocontrolState) {
+    yield put({
+      type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
+      payload: { suggestedBiocontrolTreatments: biocontrolState, agentListTarget }
+    });
+  }
+}
 
 function* activityPageSaga() {
   yield all([
@@ -461,6 +511,11 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
     takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
+    takeEvery(
+      ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
+      handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE
+    ),
+    takeEvery(ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS, handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS),
     takeEvery(
       ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
       handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE

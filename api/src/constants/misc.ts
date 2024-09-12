@@ -20,7 +20,8 @@ export enum Role {
   INDIGENOUS_RISO_STAFF_PLANTS = 'indigenous_riso_staff_plants',
   INDIGENOUS_RISO_STAFF_BOTH = 'indigenous_riso_staff_both',
   MUSSEL_INSPECTION_OFFICER = 'mussel_inspection_officer',
-  MASTER_ADMINISTRATOR = 'master_administrator'
+  MASTER_ADMINISTRATOR = 'master_administrator',
+  PRIMARY_BIOCONTROL_USER = 'biocontrol_user'
 }
 
 export const SECURITY_ON = process.env.SECURITY_ON === 'false' ? false : true;
@@ -47,7 +48,8 @@ export const ALL_ROLES = [
   Role.INDIGENOUS_RISO_STAFF_PLANTS,
   Role.INDIGENOUS_RISO_STAFF_BOTH,
   Role.MUSSEL_INSPECTION_OFFICER,
-  Role.MASTER_ADMINISTRATOR
+  Role.MASTER_ADMINISTRATOR,
+  Role.PRIMARY_BIOCONTROL_USER
 ];
 
 /**

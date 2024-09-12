@@ -149,7 +149,15 @@ export function sanitizeActivityFilterObject(filterObject: any, req: any) {
   } else {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = false;
   }
-
+  if (
+    !isAuth ||
+    !roleName ||
+    !req.authContext?.roles.some((role: Record<string, any>) =>
+      ['biocontrol_user', 'master_administrator'].includes(role.role_name)
+    )
+  ) {
+    sanitizedSearchCriteria.serverSideNamedFilters.hideBiocontrolReleases = true;
+  }
   sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
   let id_list_valid = true;
@@ -897,7 +905,15 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
 
   if (filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0) {
     where.append(
-      ` and  ${tableAlias}.activity_id in (${filterObject.ids_to_filter.map((id) => "'" + id + "'").join(',')}) `
+      ` and ${tableAlias}.activity_id in (${filterObject.ids_to_filter.map((id) => "'" + id + "'").join(',')}) `
+    );
+  }
+  if (filterObject.serverSideNamedFilters.hideBiocontrolReleases) {
+    where.append(
+      ` AND ${tableAlias}.species_biocontrol_full not in (
+          SELECT agent_code_description
+          FROM invasivesbc.private_biocontrol_agents
+        ) `
     );
   }
 

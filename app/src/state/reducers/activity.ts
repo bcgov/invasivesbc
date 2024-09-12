@@ -12,6 +12,8 @@ import {
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
@@ -30,8 +32,10 @@ import {
 import { AppConfig } from '../config';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
+import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 
-interface ActivityState {
+export interface ActivityState {
+  [MIGRATION_VERSION_KEY]: number;
   activity: any;
   current_activity_hash: string | null;
   error: boolean;
@@ -41,6 +45,10 @@ interface ActivityState {
   loading: boolean;
   saved_activity_hash: string | null;
   suggestedJurisdictions: [];
+  biocontrol: {
+    plantToAgentMap: Record<string, any>[];
+    listOfAgents: Record<string, any>[] | null;
+  };
   suggestedPersons: [];
   suggestedTreatmentIDs: [];
   track_me_draw_geo: {
@@ -52,6 +60,7 @@ interface ActivityState {
 }
 
 const initialState: ActivityState = {
+  [MIGRATION_VERSION_KEY]: CURRENT_MIGRATION_VERSION,
   activity: null,
   current_activity_hash: null,
   error: false,
@@ -65,6 +74,10 @@ const initialState: ActivityState = {
     drawingShape: false
   },
   saved_activity_hash: null,
+  biocontrol: {
+    plantToAgentMap: [],
+    listOfAgents: null
+  },
   suggestedJurisdictions: [],
   suggestedPersons: [],
   suggestedTreatmentIDs: [],
@@ -90,6 +103,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             initialized: false,
             loading: false,
             saved_activity_hash: null,
+            biocontrol: {
+              plantToAgentMap: draftState.biocontrol.plantsToAgentMap ?? [],
+              listOfAgents: null
+            },
             suggestedJurisdictions: [],
             suggestedPersons: [],
             suggestedTreatmentIDs: []
@@ -107,6 +124,10 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             initialized: false,
             loading: false,
             saved_activity_hash: null,
+            biocontrol: {
+              plantToAgentMap: draftState.biocontrol.plantsToAgentMap ?? [],
+              listOfAgents: null
+            },
             suggestedJurisdictions: [],
             suggestedPersons: [],
             suggestedTreatmentIDs: [],
@@ -168,6 +189,27 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             draftState.suggestedPersons = [...action.payload.suggestedPersons];
           }
           draftState.suggestedPersons = [...action.payload.suggestedPersons];
+          break;
+        }
+        case ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS: {
+          draftState.biocontrol.plantToAgentMap = [...action.payload.suggestedBiocontrolTreatments];
+          break;
+        }
+        case ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS: {
+          const { agentListTarget } = action.payload;
+          const biocontrolAgentOptionsAvailable =
+            draftState?.schema.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
+              ?.biological_agent_code?.options;
+          if (biocontrolAgentOptionsAvailable) {
+            if (!draftState.biocontrol.listOfAgents) {
+              // This sets a list of agents in state that we can run subsequent filters on.
+              draftState.biocontrol.listOfAgents = JSON.parse(JSON.stringify(biocontrolAgentOptionsAvailable));
+            }
+            // Override the options for the agent select menu using the filtered properties
+            draftState.schema.properties.activity_subtype_data.properties[
+              agentListTarget
+            ].items.properties.biological_agent_code.options = [...action.payload.suggestedBiocontrolTreatments];
+          }
           break;
         }
         case ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS: {

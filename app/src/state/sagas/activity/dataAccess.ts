@@ -10,7 +10,6 @@ import {
   populateSpeciesArrays
 } from 'sharedAPI';
 import { kinks } from '@turf/turf';
-import { selectMap } from 'state/reducers/map';
 
 import {
   autoFillNameByPAC,
@@ -37,6 +36,7 @@ import {
   ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
@@ -73,6 +73,7 @@ import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { promptNumberInput } from 'utils/userPrompts';
+import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPayload';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   const { MOBILE } = yield select(selectConfiguration);
@@ -323,7 +324,6 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action) {
 
   try {
     const authState = yield select(selectAuth);
-    //    const { extendedInfo, displayName, roles } = useSelector(selectAuth);
 
     const newActivity = yield call(
       activity_create_function,
@@ -368,24 +368,26 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
     const lastField = action.payload.lastField;
-    const mapState = yield select(selectMap);
 
     let updatedFormData = action.payload.eventFormData;
-
     updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
-
     if (
       beforeActivity.activity_type === ActivityType.Biocontrol ||
       beforeActivity.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant ||
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal ||
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
     ) {
+      const { plantCode, prevPlantCode, agentListTarget } = getPlantCodesFromPayload(beforeActivity, updatedFormData);
+      // Fire handlers to filter the agents list based on the selected plant code, only fire when value has changed
+      if (plantCode && plantCode !== prevPlantCode) {
+        // Reset the biological_agent_code, since list has been updated
+        delete updatedFormData?.activity_subtype_data?.[agentListTarget]?.[0]?.biological_agent_code;
+        yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS, payload: { plantCode, agentListTarget } });
+      }
       //auto fills total release quantity (only on biocontrol release activity)
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
       updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
-      // Autofills total bioagent quantity specifically for biocontrol collections
-      // updatedFormData = autofillBiocontrolCollectionTotalQuantity(updatedFormData);
     }
 
     if (beforeState.activity.activity_type === ActivityType.Treatment && beforeState.suggestedPersons) {
