@@ -330,7 +330,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           break;
         }
         case USER_SETTINGS_ADD_RECORD_SET: {
-          draftState.recordSets[Object.keys(draftState.recordSets).length + 1] = {
+          draftState.recordSets[Date.now()] = {
             tableFilters: [],
             color: 'blue',
             drawOrder: 0,
