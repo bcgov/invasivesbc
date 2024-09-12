@@ -89,5 +89,70 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
     autoClose: 3
   }
 };
-
 export default mappingAlertMessages;
+
+/**
+ * @desc Alerts focused around the Offline Map Caching feature.
+ */
+export const mapCaching = {
+  createCustomLayer: {
+    content: 'Start drawing to create a custom layer',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 3
+  },
+  downloadStart: {
+    content: 'Downloading map...',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 3
+  },
+  downloadSuccess: {
+    content: 'Map downloaded',
+    severity: AlertSeverity.Success,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  downloadFailed: {
+    content: 'Map failed to download',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  deleteStart: {
+    content: 'Deleting map...',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 3
+  },
+  deleteSuccess: {
+    content: 'Map successfully deleted',
+    severity: AlertSeverity.Success,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  deleteFailed: {
+    content: 'Failed to delete map cache',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  deleteAllStart: {
+    content: 'Deleting all downloaded maps...',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Map,
+    autoClose: 3
+  },
+  deleteAllSuccess: {
+    content: 'All map caches deleted',
+    severity: AlertSeverity.Success,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
+  deleteAllFailed: {
+    content: 'Failure occured while deleting map caches',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  }
+};

@@ -1031,7 +1031,7 @@ export const refreshDrawControls = (
   if (!map.hasControl(draw)) {
     const noMapVisible = /Report|Batch|Landing|WhatsHere/.test(appModeUrl);
     const userInActivity = /Activity/.test(appModeUrl);
-    const hideControls = (noMapVisible || !userInActivity) && !drawingCustomLayer;
+    const hideControls = (noMapVisible || !userInActivity) && !drawingCustomLayer && !/OfflineMap/.test(appModeUrl);
     initDrawModes(
       map,
       drawSetter,

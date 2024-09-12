@@ -38,7 +38,11 @@ const ConfirmationModal = ({
         <Divider />
         <DialogContent>
           {typeof prompt === typeof [] ? (
-            (prompt as string[]).map((item) => <Typography key={item}>{item}</Typography>)
+            (prompt as string[]).map((item) => (
+              <Typography key={item} sx={{ my: 1 }}>
+                {item}
+              </Typography>
+            ))
           ) : (
             <Typography>{prompt}</Typography>
           )}

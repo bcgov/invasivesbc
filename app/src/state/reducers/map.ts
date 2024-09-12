@@ -78,7 +78,10 @@ import {
   MAP_TOGGLE_TRACKING_ON,
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME
+  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
+  OFFLINE_MAP_CACHING_DOWNLOAD_SUCCESS,
+  OFFLINE_MAP_CACHING_DELETE_SUCCESS,
+  OFFLINE_MAP_CACHING_DELETE_ALL_SUCCESS
 } from '../actions';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
@@ -301,7 +304,10 @@ export interface MapState {
     serverActivityIDs: any[];
     serverIAPPIDs: any[];
   };
-
+  offlineMaps: {
+    cachedMapLayers: Record<string, any>[];
+    drawing: boolean;
+  };
   workingLayerName: string;
   layerPickerOpen: boolean;
   //
@@ -469,6 +475,10 @@ const initialState: MapState = {
 
     serverActivityIDs: [],
     serverIAPPIDs: []
+  },
+  offlineMaps: {
+    cachedMapLayers: [],
+    drawing: false
   },
   workingLayerName: ''
 };
@@ -854,6 +864,20 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.map_zoom = action.payload.zoom;
           draftState.map_center = action.payload.center;
           draftState.panned = false;
+          break;
+        }
+        case OFFLINE_MAP_CACHING_DOWNLOAD_SUCCESS: {
+          draftState.offlineMaps.cachedMapLayers = [...draftState.offlineMaps.cachedMapLayers, { ...action.payload }];
+          break;
+        }
+        case OFFLINE_MAP_CACHING_DELETE_SUCCESS: {
+          draftState.offlineMaps.cachedMapLayers = [
+            ...draftState.offlineMaps.cachedMapLayers.filter((item) => item.id !== action.payload?.id)
+          ];
+          break;
+        }
+        case OFFLINE_MAP_CACHING_DELETE_ALL_SUCCESS: {
+          draftState.offlineMaps.cachedMapLayers = [];
           break;
         }
         case MAP_DELETE_LAYER_AND_TABLE: {

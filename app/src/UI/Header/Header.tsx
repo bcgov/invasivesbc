@@ -446,7 +446,6 @@ export const Header: React.FC = () => {
         >
           <Home />
         </Tab>
-
         <Tab
           key={'tab2'}
           path="/Records"
@@ -458,11 +457,8 @@ export const Header: React.FC = () => {
         >
           <ManageSearchIcon />
         </Tab>
-
         <ActivityTabMemo />
-
         <IAPPTabMemo />
-
         <Tab
           key={'tab5'}
           path={'/Batch/list'}
@@ -474,7 +470,6 @@ export const Header: React.FC = () => {
         >
           <FileUpload />
         </Tab>
-
         <Tab
           key={'tab6'}
           path={'/Reports'}
@@ -486,7 +481,6 @@ export const Header: React.FC = () => {
         >
           <Assessment />
         </Tab>
-
         <Tab
           key="tab7-1/2"
           path="/News"
@@ -498,7 +492,6 @@ export const Header: React.FC = () => {
         >
           <Newspaper />
         </Tab>
-
         <Tab
           key={'tab7'}
           path={'/Training'}
@@ -510,9 +503,7 @@ export const Header: React.FC = () => {
         >
           <School />
         </Tab>
-
         <AdminPanelMemo />
-
         <Tab
           key={'tab8'}
           path={'/Map'}
@@ -524,9 +515,20 @@ export const Header: React.FC = () => {
         >
           <Map />
         </Tab>
-
+        {DEBUG && (
+          <Tab
+            key={'tab10'}
+            path={'/OfflineMap'}
+            label={'Offline Maps'}
+            platform={'both'}
+            predicate={'authenticated_online'}
+            panelOpen={true}
+            panelFullScreen={false}
+          >
+            <Map />
+          </Tab>
+        )}
         {MOBILE && <OfflineSyncHeaderButton />}
-
         {DEBUG && MOBILE && <NetworkStateControl />}
       </ButtonWrapper>
 

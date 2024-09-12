@@ -5,13 +5,14 @@ import { createBrowserHistory } from 'history';
 import { persistStore } from 'redux-persist';
 import { createRootReducer } from './reducers/rootReducer';
 import { AUTH_INITIALIZE_REQUEST, URL_CHANGE } from './actions';
+import activitiesPageSaga from './sagas/map';
 import activityPageSaga from './sagas/activity';
 import authenticationSaga from './sagas/auth/auth';
 import batchSaga from './sagas/batch';
 import emailSettingsSaga from './sagas/email-setup/emailSettings';
 import emailTemplatesSaga from './sagas/email-setup/emailTemplates';
 import iappPageSaga from './sagas/iappsite';
-import activitiesPageSaga from './sagas/map';
+import offlineMapCachingSaga from './sagas/caching/offlineMapCaching';
 import trainingVideosSaga from './sagas/training_videos';
 import userSettingsSaga from './sagas/userSettings';
 import { AppConfig } from './config';
@@ -36,14 +37,7 @@ export function setupStore(configuration: AppConfig) {
     timestamp: true,
     logErrors: true,
     diff: true,
-    diffPredicate: (getState, action) => (
-      ([
-        'MAP_TOGGLE_TRACK_ME_DRAW_GEO',
-        'ACTIVITY_UPDATE_GEO',
-        'GET_SUGGESTED_JURISDICTIONS'
-      ].filter((item) => (
-        action.type.includes(item)
-      )).length > 0))
+    diffPredicate: (getState, action) => [].filter((item) => action.type.includes(item)).length > 0
   });
 
   if (!configuration.TEST && configuration.DEBUG) {
@@ -72,15 +66,16 @@ export function setupStore(configuration: AppConfig) {
     });
   }
 
-  sagaMiddleware.run(authenticationSaga);
-  sagaMiddleware.run(activityPageSaga);
-  sagaMiddleware.run(iappPageSaga);
   sagaMiddleware.run(activitiesPageSaga);
-  sagaMiddleware.run(userSettingsSaga);
+  sagaMiddleware.run(activityPageSaga);
+  sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(batchSaga);
-  sagaMiddleware.run(trainingVideosSaga);
   sagaMiddleware.run(emailSettingsSaga);
   sagaMiddleware.run(emailTemplatesSaga);
+  sagaMiddleware.run(iappPageSaga);
+  sagaMiddleware.run(offlineMapCachingSaga);
+  sagaMiddleware.run(trainingVideosSaga);
+  sagaMiddleware.run(userSettingsSaga);
 
   globalStore.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 
