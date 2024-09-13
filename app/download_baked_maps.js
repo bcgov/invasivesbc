@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 //
 import fs from 'node:fs';
+import sqlite3 from 'sqlite3';
 
 const ROUGH_BOUNDS = {
   type: 'FeatureCollection',
@@ -47,11 +48,10 @@ function tileURL(z, x, y) {
 }
 
 const WRITE_FILES = false;
-const WRITE_BIG_JSON_STRUCTURE = true;
+const WRITE_BIG_JSON_STRUCTURE = false;
+const WRITE_SQLITE = true;
 
 async function computeRequiredTiles() {
-  var estimated_size = 0;
-
   const minLat = Math.min(...ROUGH_BOUNDS.features[0].geometry.coordinates[0].map((c) => c[1]));
   const maxLat = Math.max(...ROUGH_BOUNDS.features[0].geometry.coordinates[0].map((c) => c[1]));
   const minLng = Math.min(...ROUGH_BOUNDS.features[0].geometry.coordinates[0].map((c) => c[0]));
@@ -59,7 +59,25 @@ async function computeRequiredTiles() {
 
   console.log(`${minLat} to ${maxLat} by ${minLng} to ${maxLng}`);
 
+  // for JSON write
   const blob = [];
+
+  let db;
+
+  if (WRITE_SQLITE) {
+    db = new sqlite3.Database('./public/assets/databases/tile_store.db');
+    //language=SQLite
+    db.run(`CREATE TABLE BAKED_TILES
+            (
+              TILESET VARCHAR NOT NULL,
+              Z       INTEGER NOT NULL,
+              X       INTEGER NOT NULL,
+              Y       INTEGER NOT NULL,
+              DATA    BLOB    NOT NULL
+            );`);
+    //language=SQLite
+    // db.run(`CREATE UNIQUE INDEX TILE_COORDS ON BAKED_TILES (Z, X, Y, TILESET);`);
+  }
 
   for (var z = 0; z <= MAX_ZOOM; z++) {
     var startTileLat = lat2tile(minLat, z);
@@ -87,12 +105,22 @@ async function computeRequiredTiles() {
             data: data.toString('base64')
           });
         }
+        if (WRITE_SQLITE) {
+          db.run(
+            `INSERT INTO BAKED_TILES (TILESET, Z, X, Y, DATA)
+             VALUES (?, ?, ?, ?, ?)`,
+            ['offline', z, x, y, data]
+          );
+        }
       }
     }
   }
   // you might need a lot of RAM if you use a high zoom level -- this is really just for local testing
   if (WRITE_BIG_JSON_STRUCTURE) {
     fs.writeFileSync(`./src/constants/map_blobs.json`, JSON.stringify(blob, null, 2));
+  }
+  if (WRITE_SQLITE) {
+    db.close();
   }
 }
 

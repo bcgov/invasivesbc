@@ -4,21 +4,8 @@ import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
 import { MAP_CHOOSE_BASEMAP } from 'state/actions';
 import 'UI/Global.css';
-import { MAP_DEFINITIONS } from 'UI/Map2/constants';
-import {
-  DeviceUnknown,
-  DownloadForOffline,
-  Hd,
-  Landscape,
-  Map,
-  OfflineBolt,
-  OfflinePin,
-  OfflineShare,
-  Sd,
-  SignalCellular0Bar,
-  SignalCellularNodata,
-  SignalCellularNullOutlined
-} from '@mui/icons-material';
+import { MAP_DEFINITIONS } from 'UI/Map2/helpers/layer-definitions';
+import { DeviceUnknown, Hd, Landscape, Map, Sd, SignalCellularNodata } from '@mui/icons-material';
 
 export const BaseMapSelect = () => {
   const dispatch = useDispatch();
@@ -39,6 +26,10 @@ export const BaseMapSelect = () => {
         return <Map />;
       case 'Offline':
         return <SignalCellularNodata />;
+      case 'OfflineVector':
+        return <Landscape />;
+      case 'OfflineSatellite':
+        return <Sd />;
       case 'N/A':
       default:
         return <DeviceUnknown />;
@@ -63,16 +54,14 @@ export const BaseMapSelect = () => {
               title={found.tooltip}
               placement="top-end"
             >
-              <span>
-                <IconButton
-                  className={'button'}
-                  onClick={() => {
-                    dispatch({ type: MAP_CHOOSE_BASEMAP, payload: l });
-                  }}
-                >
-                  {renderIcon(found)}
-                </IconButton>
-              </span>
+              <IconButton
+                className={'basemap-btn'}
+                onClick={() => {
+                  dispatch({ type: MAP_CHOOSE_BASEMAP, payload: l });
+                }}
+              >
+                {renderIcon(found)}
+              </IconButton>
             </Tooltip>
           </div>
         );

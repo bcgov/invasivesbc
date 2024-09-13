@@ -6,8 +6,10 @@ import setupStore, { historySingleton } from 'state/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import App from './UI/App';
 import './main.css';
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { defineCustomElements as pwaLoader } from '@ionic/pwa-elements/loader';
 import { PersistorContext } from 'utils/PersistorContext';
+import { TileCacheService } from 'UI/Map2/helpers/tile-cache';
+import { TileCacheContext } from 'utils/TileCacheContext';
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(import.meta.env.MODE === 'production' ? '/worker.js' : '/dev-sw.js?dev-sw', {
@@ -15,10 +17,20 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-// For tests, please leave:
-export let exportStore;
-import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) => {
+async function mountApp(CONFIG) {
   const { store, persistor } = setupStore(CONFIG);
+
+  let tileCache: TileCacheService | null = null;
+  if (CONFIG.MOBILE) {
+    switch (import.meta.env.VITE_TARGET_PLATFORM) {
+      case 'android':
+      case 'ios':
+        tileCache = new TileCacheService();
+        await tileCache.initializeTileCache();
+        break;
+    }
+  }
+
   exportStore = store;
 
   const container = document.getElementById('root');
@@ -28,15 +40,27 @@ import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) 
       root.render(
         <PersistGate loading={null} persistor={persistor}>
           <PersistorContext.Provider value={persistor}>
-            <Router history={historySingleton}>
-              <Provider store={store}>
-                <App />
-              </Provider>
-            </Router>
+            <TileCacheContext.Provider value={tileCache}>
+              <Router history={historySingleton}>
+                <Provider store={store}>
+                  <App />
+                </Provider>
+              </Router>
+            </TileCacheContext.Provider>
           </PersistorContext.Provider>
         </PersistGate>
       );
     }
-    defineCustomElements(window);
+
+    pwaLoader(window);
   }
+}
+
+// For tests, please leave:
+export let exportStore;
+
+import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) => {
+  mountApp(CONFIG).then(() => {
+    console.log('app loaded');
+  });
 });
