@@ -40,7 +40,6 @@
     }
   }
 
-
   .basemap-btn-group {
     padding: 0;
     margin: 0;
@@ -52,49 +51,55 @@
       padding: 0;
       margin: 0;
       border-right: 1px solid darkgrey;
-      width: fit-content;
+      aspect-ratio: 1;
+      flex-shrink: 0;
 
       &.selected {
-        .button {
+        .basemap-btn {
           background-color: #036;
           color: #fcba19;
         }
       }
-    }
 
-    div:first-child {
-      .button {
-        border-radius: 20% 0 0 20%;
+      .basemap-btn {
+        height: 100%;
+        width: var(--map-button-bar-height);
+        font-weight: bold;
+        border-radius: 0;
+        font-size: 14px;
+        background-color: white;
+        color: #036;
+        flex-shrink: 0;
       }
-    }
 
-    div:last-child {
-      .button {
-        border-radius: 0 20% 20% 0;
+      &:first-child:not(:only-child) {
+        .basemap-btn {
+          border-radius: 20% 0 0 20%;
+        }
       }
 
-      border-right: none;
-    }
+      &:last-child:not(:only-child) {
+        .basemap-btn {
+          border-radius: 0 20% 20% 0;
+        }
 
-
-    div:first-child:last-child {
-      /* the special case when there's only one button */
-
-      .button {
-        border-radius: 20%;
+        border-right: none;
       }
+
+      &:only-child {
+        /* the special case when there's only one button */
+
+        .basemap-btn {
+          border-radius: 20%;
+
+        }
+
+        border: none;
+
+      }
+
     }
 
-    .button {
-      padding: 0;
-      margin: 0;
-      border-radius: 0;
-      font-weight: normal;
-      font-size: 14px;
-      background-color: white;
-      color: #036;
-
-    }
   }
 
   .map-btn {

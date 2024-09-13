@@ -1,5 +1,5 @@
 import { put, select, takeEvery } from 'redux-saga/effects';
-import { MAP_DEFINITIONS } from 'UI/Map2/constants';
+import { MAP_DEFINITIONS } from 'UI/Map2/helpers/layer-definitions';
 import { RootState } from 'state/reducers/rootReducer';
 import { MAP_UPDATE_AVAILABLE_BASEMAPS } from 'state/actions';
 

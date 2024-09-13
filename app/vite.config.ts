@@ -15,7 +15,6 @@ function buildSpecificDefines() {
 
   const isMobile = JSON.stringify('TRUE' === process.env.MOBILE);
 
-  defines['ENABLE_JEEPSQLITE'] = JSON.stringify('TRUE' === process.env.JEEPSQLITE);
   defines['CONFIGURATION_IS_MOBILE'] = JSON.stringify(isMobile);
   defines['CONFIGURATION_TEST'] = false;
 

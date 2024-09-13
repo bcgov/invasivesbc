@@ -2,7 +2,7 @@ import maplibregl, { NavigationControl, ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
-import { MAP_DEFINITIONS } from 'UI/Map2/constants';
+import { MAP_DEFINITIONS } from 'UI/Map2/helpers/layer-definitions';
 import './map.css';
 
 // Draw tools:
@@ -11,6 +11,7 @@ import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE, MAP_WHATS_HERE_FEATURE } from 'state/actions';
 import proj4 from 'proj4';
+
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
 // @ts-ignore
@@ -33,7 +34,8 @@ export const mapInit = (
   getAuthHeaderCallback: () => string,
   PUBLIC_MAP_URL,
   MOBILE,
-  map_center
+  map_center,
+  tileCache
 ) => {
   const coordinatesContainer = document.createElement('div');
   coordinatesContainer.style.position = 'absolute';
@@ -76,7 +78,7 @@ export const mapInit = (
     `;
   });
 
-  const protocol = new Protocol();
+  const pmtilesProtocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {
       const callback = (err, data) => {
@@ -86,7 +88,7 @@ export const mapInit = (
           resolve({ data });
         }
       };
-      protocol.tile(request, callback);
+      pmtilesProtocol.tile(request, callback);
     });
   });
 
@@ -95,7 +97,7 @@ export const mapInit = (
   const p = new PMTiles(PMTILES_URL);
 
   // this is so we share one instance across the JS code and the map renderer
-  protocol.add(p);
+  pmtilesProtocol.add(p);
 
   if (MOBILE) {
     maplibregl.addProtocol('baked', async (request) => {
@@ -111,30 +113,8 @@ export const mapInit = (
       try {
         const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
 
-        const staticData: {
-          z: number;
-          x: number;
-          y: number;
-          data: string;
-        }[] = (await import('constants/map_blobs.json')).default;
-
-        const res = staticData.find((e) => e.z == new Number(z) && e.x == new Number(x) && e.y == new Number(y));
-        if (!res) {
-          //console.error('Error fetching tile');
-
-          // this is a blank 256x256 image
-          return {
-            data: base64tobuffer(
-              'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg=='
-            )
-          };
-        }
-
-        return { data: base64tobuffer(res.data) };
+        return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
       } catch (e) {
-        //console.error('Error fetching tile', e);
-        //throw new Error('Cannot fetch local tile for ' + request.url);
-
         // this is a blank 256x256 image
         return {
           data: base64tobuffer(
@@ -169,21 +149,6 @@ export const mapInit = (
       glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
       version: 8,
       sources: {
-        // 'wms-test-source': {
-        //   type: 'raster',
-        //   tiles: [
-        //     'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
-        //   ],
-        //   tileSize: 256,
-        //   maxzoom: 24
-        // }
-        // offline_layer: {
-        //   type: 'raster',
-        //   tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
-        //   tileSize: 256,
-        //   attribution: 'Powered by ESRI',
-        //   maxzoom: 2
-        // },
         ...MAP_DEFINITIONS.reduce((result, item) => {
           result[item.name] = item.source;
           return result;

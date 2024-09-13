@@ -1,7 +1,7 @@
 import circle from '@turf/circle';
 import maplibregl, { Map as MapLibre } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import './map.css';
 import centroid from '@turf/centroid';
@@ -30,7 +30,8 @@ import {
 } from './Helpers';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
-import { allLayerIdsInDefinition, allLayerIdsNotInDefinition } from 'UI/Map2/constants';
+import { allLayerIdsInDefinition, allLayerIdsNotInDefinition } from 'UI/Map2/helpers/layer-definitions';
+import { TileCacheContext } from 'utils/TileCacheContext';
 
 /*
 
@@ -40,6 +41,7 @@ import { allLayerIdsInDefinition, allLayerIdsNotInDefinition } from 'UI/Map2/con
  */
 export const Map = (props: any) => {
   const { API_BASE, MOBILE } = useSelector((state) => state.Configuration.current);
+  const tileCache = useContext(TileCacheContext);
 
   const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
@@ -175,7 +177,8 @@ export const Map = (props: any) => {
       },
       PUBLIC_MAP_URL,
       MOBILE,
-      map_center
+      map_center,
+      tileCache
     );
   }, [authInitiated, map_center]);
 
