@@ -41,6 +41,11 @@ jobs:
         run: |
           npm ci
 
+      - name: Apply Patches
+        working-directory: ./app
+        run: |
+          npx patch-package 
+
       - name: Run build
         working-directory: ./app
         env:

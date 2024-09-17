@@ -1,0 +1,23 @@
+diff --git a/node_modules/@capacitor/ios/Capacitor/Capacitor/WebViewAssetHandler.swift b/node_modules/@capacitor/ios/Capacitor/Capacitor/WebViewAssetHandler.swift
+index 17649b2..27f7c74 100644
+--- a/node_modules/@capacitor/ios/Capacitor/Capacitor/WebViewAssetHandler.swift
++++ b/node_modules/@capacitor/ios/Capacitor/Capacitor/WebViewAssetHandler.swift
+@@ -25,6 +25,9 @@ open class WebViewAssetHandler: NSObject, WKURLSchemeHandler {
+     }
+ 
+     open func webView(_ webView: WKWebView, start urlSchemeTask: WKURLSchemeTask) {
++        
++        
++        
+         let startPath: String
+         let url = urlSchemeTask.request.url!
+         let stringToLoad = url.path
+@@ -122,7 +125,7 @@ open class WebViewAssetHandler: NSObject, WKURLSchemeHandler {
+     }
+ 
+     open func isMediaExtension(pathExtension: String) -> Bool {
+-        let mediaExtensions = ["m4v", "mov", "mp4",
++        let mediaExtensions = ["m4v", "mov", "mp4", "pmtiles",
+                                "aac", "ac3", "aiff", "au", "flac", "m4a", "mp3", "wav"]
+         if mediaExtensions.contains(pathExtension.lowercased()) {
+             return true
