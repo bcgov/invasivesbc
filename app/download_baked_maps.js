@@ -30,7 +30,7 @@ const ROUGH_BOUNDS = {
 };
 
 // must match layer definition
-const MAX_ZOOM = 6;
+const MAX_ZOOM = 10;
 
 function long2tile(lon, zoom) {
   return Math.floor(((lon + 180) / 360) * Math.pow(2, zoom));
@@ -44,7 +44,8 @@ function lat2tile(lat, zoom) {
 }
 
 function tileURL(z, x, y) {
-  return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}`;
+ // return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}`;
+ return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
 }
 
 const WRITE_FILES = false;
