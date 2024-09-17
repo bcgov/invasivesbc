@@ -98,6 +98,7 @@ export const mapInit = (
 
   // this is so we share one instance across the JS code and the map renderer
   pmtilesProtocol.add(p);
+  // pmtilesProtocol.add(new PMTiles(new Fetc()));
 
   if (MOBILE) {
     maplibregl.addProtocol('baked', async (request) => {
@@ -131,6 +132,7 @@ export const mapInit = (
     maxZoom: 24,
     zoom: 3,
     minZoom: 0,
+    maxBounds: [-141.7761, 46.41459, -114.049, 60.00678],
     transformRequest: (url, resourceType) => {
       if (url.includes(api_base)) {
         return {
@@ -146,7 +148,10 @@ export const mapInit = (
     },
     center: [map_center[1], map_center[0]],
     style: {
-      glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+      sprite: '/assets/basemaps/sprite/sprite',
+      glyphs: MOBILE
+        ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
+        : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
       version: 8,
       sources: {
         ...MAP_DEFINITIONS.reduce((result, item) => {

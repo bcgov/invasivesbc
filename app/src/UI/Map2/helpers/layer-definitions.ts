@@ -215,7 +215,6 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     source: {
       type: 'vector',
       url: 'pmtiles://https://nrs.objectstore.gov.bc.ca/rzivsz/invasives-prod.pmtiles'
-      //url: `pmtiles://${PMTILES_URL}`
     },
     layers: [
       {
@@ -263,8 +262,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
             { 'font-scale': 0.9 }
           ],
           // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-          'text-font': ['literal', ['Open Sans Bold']],
-          // 'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
         },
@@ -293,8 +291,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
             { 'font-scale': 0.9 }
           ],
           // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-          'text-font': ['literal', ['Open Sans Bold']],
-          // 'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
         },
@@ -320,7 +317,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
       tiles: ['baked://offline/{z}/{x}/{y}'],
       tileSize: 256,
       attribution: 'Powered by ESRI',
-      maxzoom: 5 // must match bundled tiles
+      maxzoom: 10 // must match bundled tiles
     },
     layers: [
       {
@@ -339,9 +336,9 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(false).build(),
     source: {
       type: 'vector',
-      url: 'pmtiles://http://localhost:3000/assets/tiles/tiles.pmtiles',
+      url: 'pmtiles:///assets/tiles/tiles2.pmtiles',
       attribution: '© OpenMapTiles © OpenStreetMap contributors',
-      maxzoom: 12 // must match bundled tiles
+      maxzoom: 14 // must match bundled tiles
     },
 
     layers: [
@@ -637,7 +634,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         filter: ['==', '$type', 'Point'],
         layout: {
           'text-field': '{housenumber}',
-          'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-size': 10
         },
         paint: {
@@ -1197,7 +1194,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
           'icon-size': 1,
           'text-anchor': 'top',
           'text-field': '{name:latin}\n{name:nonlatin}',
-          'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-max-width': 8,
           'text-offset': [0, 0.5],
           'text-size': 11,
@@ -1221,7 +1218,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
           'icon-size': 1,
           'text-anchor': 'top',
           'text-field': '{name:latin}\n{name:nonlatin}',
-          'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-max-width': 8,
           'text-offset': [0, 0.5],
           'text-size': 11,
@@ -1244,7 +1241,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         layout: {
           'symbol-placement': 'line',
           'text-field': '{name:latin} {name:nonlatin}',
-          'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-letter-spacing': 0.1,
           'text-rotation-alignment': 'map',
           'text-size': {
@@ -1273,7 +1270,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         layout: {
           'text-anchor': 'center',
           'text-field': '{name:latin}\n{name:nonlatin}',
-          'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-max-width': 6,
           'text-size': {
             type: 'interval',
@@ -1300,7 +1297,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         filter: ['all', ['==', '$type', 'Point'], ['==', 'class', 'city']],
         layout: {
           'text-field': '{name:latin}\n{name:nonlatin}',
-          'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-max-width': 10,
           'text-size': {
             type: 'interval',
@@ -1326,7 +1323,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         filter: ['all', ['==', '$type', 'Point'], ['==', 'class', 'country'], ['!has', 'iso_a2']],
         layout: {
           'text-field': '{name:latin}',
-          'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-max-width': 10,
           'text-size': {
             type: 'interval',
@@ -1353,7 +1350,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         filter: ['all', ['==', '$type', 'Point'], ['==', 'class', 'country'], ['has', 'iso_a2']],
         layout: {
           'text-field': '{name:latin}',
-          'text-font': ['literal', ['Open Sans Bold']],
+          'text-font': ['literal', ['Noto Sans Bold']],
           'text-max-width': 10,
           'text-size': {
             type: 'interval',
