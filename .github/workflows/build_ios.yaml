@@ -51,6 +51,12 @@ jobs:
         run: |
           npm run build:ios
 
+      - name: Install Asset Pack
+        run: |
+          curl https://nrs.objectstore.gov.bc.ca/rzivsz/asset_pack_sept17_2024.tar.gz -O
+          tar xzf asset_pack_sept17_2024.tar.gz && rm asset_pack_sept17_2024.tar.gz
+        working-directory: ./app/public/assets
+
       - name: Capacitor update
         run: npx cap update ios
         working-directory: ./app
