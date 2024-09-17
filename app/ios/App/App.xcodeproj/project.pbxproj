@@ -391,7 +391,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.bc.gov.invasive-species";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "InvasivesBC - Plants and Animals - 2023/24";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "InvasivesBC - Plants and Animals";
 				SSO_BASE_URL = "https://loginproxy.gov.bc.ca/auth/realms/standard";
 				SSO_CLIENT_ID = "invasives-bc-4565";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
@@ -426,7 +426,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.bc.gov.invasive-species";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "InvasivesBC - Plants and Animals - 2023/24";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "InvasivesBC - Plants and Animals";
 				SSO_BASE_URL = "https://loginproxy.gov.bc.ca/auth/realms/standard";
 				SSO_CLIENT_ID = "invasives-bc-4565";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
