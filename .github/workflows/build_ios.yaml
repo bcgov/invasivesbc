@@ -44,7 +44,7 @@ jobs:
       - name: Apply Patches
         working-directory: ./app
         run: |
-          npx patch-package 
+          npx patch-package
 
       - name: Run build
         working-directory: ./app
@@ -58,8 +58,7 @@ jobs:
 
       - name: Install Asset Pack
         run: |
-          curl https://nrs.objectstore.gov.bc.ca/rzivsz/asset_pack_sept17_2024.tar.gz -O
-          tar xzf asset_pack_sept17_2024.tar.gz && rm asset_pack_sept17_2024.tar.gz
+          curl --no-progress-meter https://nrs.objectstore.gov.bc.ca/rzivsz/asset_pack_sept17_2024.tar.gz -O && tar xzf asset_pack_sept17_2024.tar.gz && rm asset_pack_sept17_2024.tar.gz && find .
         working-directory: ./app/public/assets
 
       - name: Capacitor update
@@ -73,6 +72,10 @@ jobs:
       - name: CocoaPod Install
         working-directory: ./app/ios/App
         run: pod install
+
+      - name: List App files (DEBUG)
+        working-directory: ./app/ios/App
+        run: find .
 
       - name: Increment Build No.
         working-directory: ./app/ios/App
