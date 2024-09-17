@@ -36,7 +36,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
   if (geo.geometry.type === GeoShapes.Point && !geo.properties.hasOwnProperty('radius')) {
     totalArea = 1;
   } else if (geo.geometry.type === GeoShapes.Point && geo.properties.hasOwnProperty('radius')) {
-    totalArea = Math.PI * Math.pow(geo.properties.radius, 2);
+    totalArea = Math.round(Math.PI * Math.pow(geo.properties.radius, 2));
   } else if (geo.geometry.type === GeoShapes.Polygon) {
     totalArea = area(turf.polygon(geo.geometry['coordinates']));
   }
