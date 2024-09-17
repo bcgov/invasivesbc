@@ -82,6 +82,13 @@ class MapDefinitionEligibilityPredicatesBuilder {
   }
 }
 
+// available from CDN, but not in asset pack
+let VECTOR_MAP_FONT_FACE = 'Open Sans Bold';
+if (import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true') {
+  // available locally, but not from CDN
+  VECTOR_MAP_FONT_FACE = 'Noto Sans Bold';
+}
+
 type MapSourceAndLayerDefinition = {
   name: string;
 
@@ -262,7 +269,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
             { 'font-scale': 0.9 }
           ],
           // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
         },
@@ -291,7 +298,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
             { 'font-scale': 0.9 }
           ],
           // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-offset': [0, 0.6],
           'text-anchor': 'top'
         },
@@ -333,10 +340,10 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     name: 'offline_vector_map',
     icon: 'OfflineVector',
     tooltip: 'Locally-stored high-resolution vector base map',
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(false).build(),
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).build(),
     source: {
       type: 'vector',
-      url: 'pmtiles:///assets/tiles/tiles2.pmtiles',
+      url: 'pmtiles:///assets/tiles/tiles14.pmtiles',
       attribution: '© OpenMapTiles © OpenStreetMap contributors',
       maxzoom: 14 // must match bundled tiles
     },
@@ -634,7 +641,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         filter: ['==', '$type', 'Point'],
         layout: {
           'text-field': '{housenumber}',
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-size': 10
         },
         paint: {
@@ -1194,7 +1201,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
           'icon-size': 1,
           'text-anchor': 'top',
           'text-field': '{name:latin}\n{name:nonlatin}',
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-max-width': 8,
           'text-offset': [0, 0.5],
           'text-size': 11,
@@ -1218,7 +1225,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
           'icon-size': 1,
           'text-anchor': 'top',
           'text-field': '{name:latin}\n{name:nonlatin}',
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-max-width': 8,
           'text-offset': [0, 0.5],
           'text-size': 11,
@@ -1241,7 +1248,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         layout: {
           'symbol-placement': 'line',
           'text-field': '{name:latin} {name:nonlatin}',
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-letter-spacing': 0.1,
           'text-rotation-alignment': 'map',
           'text-size': {
@@ -1270,7 +1277,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         layout: {
           'text-anchor': 'center',
           'text-field': '{name:latin}\n{name:nonlatin}',
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-max-width': 6,
           'text-size': {
             type: 'interval',
@@ -1297,7 +1304,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         filter: ['all', ['==', '$type', 'Point'], ['==', 'class', 'city']],
         layout: {
           'text-field': '{name:latin}\n{name:nonlatin}',
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-max-width': 10,
           'text-size': {
             type: 'interval',
@@ -1323,7 +1330,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         filter: ['all', ['==', '$type', 'Point'], ['==', 'class', 'country'], ['!has', 'iso_a2']],
         layout: {
           'text-field': '{name:latin}',
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-max-width': 10,
           'text-size': {
             type: 'interval',
@@ -1350,7 +1357,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
         filter: ['all', ['==', '$type', 'Point'], ['==', 'class', 'country'], ['has', 'iso_a2']],
         layout: {
           'text-field': '{name:latin}',
-          'text-font': ['literal', ['Noto Sans Bold']],
+          'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
           'text-max-width': 10,
           'text-size': {
             type: 'interval',

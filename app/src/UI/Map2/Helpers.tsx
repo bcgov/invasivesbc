@@ -126,6 +126,17 @@ export const mapInit = (
     });
   }
 
+  // just filter on the platform predicate to exclude build-specific protocols
+  const FILTERED_DEFINITIONS = MAP_DEFINITIONS.filter((d) => {
+    if (d.predicates.mobileOnly && !MOBILE) {
+      return false;
+    }
+    if (d.predicates.webOnly && MOBILE) {
+      return false;
+    }
+    return true;
+  });
+
   //now get the most current auth token from auth provider
   map.current = new maplibregl.Map({
     container: mapContainer.current,
@@ -148,18 +159,18 @@ export const mapInit = (
     },
     center: [map_center[1], map_center[0]],
     style: {
-      sprite: '/assets/basemaps/sprite/sprite',
+      ...(MOBILE && { sprite: '/assets/basemaps/sprite/sprite' }),
       glyphs: MOBILE
         ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
         : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
       version: 8,
       sources: {
-        ...MAP_DEFINITIONS.reduce((result, item) => {
+        ...FILTERED_DEFINITIONS.reduce((result, item) => {
           result[item.name] = item.source;
           return result;
         }, {})
       },
-      layers: MAP_DEFINITIONS.flatMap((m) => m.layers)
+      layers: FILTERED_DEFINITIONS.flatMap((m) => m.layers)
     }
   });
 
