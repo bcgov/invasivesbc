@@ -46,6 +46,11 @@ jobs:
         run: |
           npx patch-package
 
+      - name: Install Asset Pack
+        run: |
+          curl --no-progress-meter https://nrs.objectstore.gov.bc.ca/rzivsz/asset_pack_sept17_2024.tar.gz -O && tar xzf asset_pack_sept17_2024.tar.gz && rm asset_pack_sept17_2024.tar.gz && find .
+        working-directory: ./app/public/assets
+
       - name: Run build
         working-directory: ./app
         env:
@@ -55,11 +60,6 @@ jobs:
           IAPP_GEOJSON_URL: ${{ secrets.APPV2_IAPP_GEOJSON_URL }}
         run: |
           npm run build:ios
-
-      - name: Install Asset Pack
-        run: |
-          curl --no-progress-meter https://nrs.objectstore.gov.bc.ca/rzivsz/asset_pack_sept17_2024.tar.gz -O && tar xzf asset_pack_sept17_2024.tar.gz && rm asset_pack_sept17_2024.tar.gz && find .
-        working-directory: ./app/public/assets
 
       - name: Capacitor update
         run: npx cap update ios
