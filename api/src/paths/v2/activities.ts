@@ -910,10 +910,14 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   }
   if (filterObject.serverSideNamedFilters.hideBiocontrolReleases) {
     where.append(
-      ` AND ${tableAlias}.species_biocontrol_full not in (
-          SELECT agent_code_description
-          FROM invasivesbc.private_biocontrol_agents
-        ) `
+      ` AND (
+          ${tableAlias}.species_biocontrol_full is null
+          OR 
+          ${tableAlias}.species_biocontrol_full not in (
+            SELECT agent_code_description
+            FROM invasivesbc.private_biocontrol_agents
+            )
+          ) `
     );
   }
 
