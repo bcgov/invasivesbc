@@ -381,7 +381,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       // Fire handlers to filter the agents list based on the selected plant code, only fire when value has changed
       if (plantCode && plantCode !== prevPlantCode) {
         // Reset the biological_agent_code, since list has been updated
-        delete updatedFormData?.activity_subtype_data?.[agentListTarget]?.[0]?.biological_agent_code;
         yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS, payload: { plantCode, agentListTarget } });
       }
       //auto fills total release quantity (only on biocontrol release activity)
