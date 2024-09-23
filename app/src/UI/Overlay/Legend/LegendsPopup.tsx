@@ -1,6 +1,5 @@
-import React from 'react';
-
 import './LegendsPopup.css';
+import mapLayers from './mapLayers';
 
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import Button from '@mui/material/Button';
@@ -1856,7 +1855,7 @@ const LegendsPopup = () => {
               Layer Picker feature of the application with the source object name from the BC Data warehouse -
               accessible through the <a href="https://catalogue.data.gov.bc.ca/">British Columbia Data Catalogue</a>.
             </p>
-            <table className="table table-blue-header">
+            <table className="table table-striped table-blue-header">
               <thead>
                 <tr>
                   <th>Layer Picker Label</th>
@@ -1864,54 +1863,12 @@ const LegendsPopup = () => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>Regional DistrictsM</td>
-                  <td>WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP</td>
-                </tr>
-                <tr>
-                  <td>BC ParksM</td>
-                  <td>WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW</td>
-                </tr>
-                <tr>
-                  <td>Municipality BoundariesM</td>
-                  <td>WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP</td>
-                </tr>
-                <tr>
-                  <td>BC Major WatershedsM</td>
-                  <td>WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS</td>
-                </tr>
-                <tr>
-                  <td>Freshwater Atlas RiversM</td>
-                  <td>WHSE_BASEMAPPING.FWA_RIVERS_POLY</td>
-                </tr>
-                <tr>
-                  <td>Freshwater LakesM</td>
-                  <td>WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP</td>
-                </tr>
-                <tr>
-                  <td>Freshwater Atlas Stream NetworkM</td>
-                  <td>WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP</td>
-                </tr>
-                <tr>
-                  <td>Water Licenses Drinking WaterM</td>
-                  <td>WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SP</td>
-                </tr>
-                <tr>
-                  <td>Water Rights LicensesM</td>
-                  <td>WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV</td>
-                </tr>
-                <tr>
-                  <td>Water WellsM</td>
-                  <td>WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW</td>
-                </tr>
-                <tr>
-                  <td>Digital Road Atlas (DRA) – Master Partially-Attributed Roads</td>
-                  <td>WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP</td>
-                </tr>
-                <tr>
-                  <td>MOTI RFIM</td>
-                  <td>WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP</td>
-                </tr>
+                {mapLayers.map((layer) => (
+                  <tr>
+                    <td>{layer.layerPickerLabel}</td>
+                    <td>{layer.objectName}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
