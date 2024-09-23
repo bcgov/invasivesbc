@@ -1,4 +1,5 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
+import { MOBILE, MOBILE_PLATFORM, MOBILE_PLATFORM_TYPE } from 'state/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
@@ -10,7 +11,7 @@ import {
   TABS_GET_INITIAL_STATE_REQUEST,
   USERINFO_LOAD_COMPLETE
 } from 'state/actions';
-import AuthBridge from 'utils/auth/authBridge'; // not a saga, but an exported convenience function
+import AuthBridge from 'utils/auth/authBridge';
 
 // not a saga, but an exported convenience function
 type withCurrentJWTCallback = (header: string) => Promise<any>;
@@ -95,7 +96,7 @@ function* refreshRoles() {
 }
 
 function* authenticationSaga() {
-  if (import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true') {
+  if (MOBILE && MOBILE_PLATFORM == MOBILE_PLATFORM_TYPE.IOS) {
     // use native authentication bridge for better user experience
     yield all([takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles), ...nativeAuthEffects]);
   } else {

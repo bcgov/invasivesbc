@@ -14,8 +14,9 @@ import iappPageSaga from './sagas/iappsite';
 import activitiesPageSaga from './sagas/map';
 import trainingVideosSaga from './sagas/training_videos';
 import userSettingsSaga from './sagas/userSettings';
-import { AppConfig } from './config';
 import { createSagaCrashHandler } from './sagas/error_handler';
+import { AppConfig } from './config';
+import { DEBUG } from './build-time-config';
 
 const historySingleton = createBrowserHistory();
 
@@ -46,7 +47,7 @@ export function setupStore(configuration: AppConfig) {
       )).length > 0))
   });
 
-  if (!configuration.TEST && configuration.DEBUG) {
+  if (DEBUG) {
     globalStore = configureStore({
       reducer: createRootReducer(configuration),
       middleware: (getDefaultMiddleware) => {
