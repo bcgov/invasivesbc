@@ -126,7 +126,6 @@ const DEFAULT_LOCAL_LAYERS = [
       'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP',
     toggle: false
   },
-
   {
     title: 'Cut blocks',
     type: 'wms',
@@ -207,8 +206,17 @@ const DEFAULT_LOCAL_LAYERS = [
       'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
       'WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP',
     toggle: false
+  },
+  {
+    title: 'PMBC Parcel Cadastre',
+    type: 'wms',
+    url:
+      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&style=5899&OWNER_TYPE=Private&raster-opacity=0.5&styles=5903&layers=' +
+      'WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+    toggle: false,
+    opacity: 0.6
   }
-];
+].sort((a, b) => (a.title < b.title ? -1 : 1));
 
 export interface MapState {
   [MIGRATION_VERSION_KEY]: number;
