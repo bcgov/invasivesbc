@@ -14,7 +14,7 @@ import { RecordSet } from './Overlay/Records/RecordSet';
 import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
 import { IAPPRecord } from './Overlay/IAPP/IAPPRecord';
 import { FormMenuButtons } from './Overlay/FormMenuButtons';
-import { selectGlobalErrorState } from '../state/reducers/error_handler';
+import { selectGlobalErrorState } from 'state/reducers/error_handler';
 import { ErrorHandler } from './ErrorHandler/ErrorHandler';
 import { LayerPicker } from './Map2/LayerPicker';
 import NewRecordDialog from './Overlay/Records/NewRecordDialog';
@@ -32,7 +32,7 @@ import { useSelector } from 'utils/use_selector';
 import { MobileBetaAccessMessage } from 'UI/Overlay/MobileBetaAccess/MobileBetaAccessMessage';
 import AlertsContainer from './AlertsContainer/AlertsContainer';
 import UserInputModalController from './UserInputModals/UserInputModalController';
-import { MOBILE, MOBILE_PLATFORM, MOBILE_PLATFORM_TYPE } from '../state/build-time-config';
+import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -228,20 +228,20 @@ const App: React.FC = () => {
       newAppClasses.push('is-mobile');
     }
 
-    switch (MOBILE_PLATFORM) {
-      case MOBILE_PLATFORM_TYPE.ANDROID:
+    switch (PLATFORM) {
+      case Platform.ANDROID:
         newAppClasses.push('android');
         break;
-      case MOBILE_PLATFORM_TYPE.IOS:
+      case Platform.IOS:
         newAppClasses.push('ios');
         break;
-      case MOBILE_PLATFORM_TYPE.WEB:
+      case Platform.WEB:
       default:
         newAppClasses.push('web');
         break;
     }
     setAppclasses(newAppClasses.join(' '));
-  }, [MOBILE_PLATFORM]);
+  }, [PLATFORM]);
 
   if (!authInitiated) return <div id="app-pre-auth-init" />;
 

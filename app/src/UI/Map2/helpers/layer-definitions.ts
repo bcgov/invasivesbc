@@ -1,4 +1,5 @@
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
+import { MOBILE } from 'state/build-time-config';
 
 // base64-encoded blank tile image 256x256
 export const FALLBACK_IMAGE =
