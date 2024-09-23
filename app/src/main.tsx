@@ -10,6 +10,7 @@ import { defineCustomElements as pwaLoader } from '@ionic/pwa-elements/loader';
 import { PersistorContext } from 'utils/PersistorContext';
 import { TileCacheService } from 'UI/Map2/helpers/tile-cache';
 import { TileCacheContext } from 'utils/TileCacheContext';
+import { MOBILE, MOBILE_PLATFORM, MOBILE_PLATFORM_TYPE } from 'state/build-time-config';
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(import.meta.env.MODE === 'production' ? '/worker.js' : '/dev-sw.js?dev-sw', {
@@ -21,10 +22,10 @@ async function mountApp(CONFIG) {
   const { store, persistor } = setupStore(CONFIG);
 
   let tileCache: TileCacheService | null = null;
-  if (CONFIG.MOBILE) {
-    switch (import.meta.env.VITE_TARGET_PLATFORM) {
-      case 'android':
-      case 'ios':
+  if (MOBILE) {
+    switch (MOBILE_PLATFORM) {
+      case MOBILE_PLATFORM_TYPE.ANDROID:
+      case MOBILE_PLATFORM_TYPE.IOS:
         tileCache = new TileCacheService();
         await tileCache.initializeTileCache();
         break;

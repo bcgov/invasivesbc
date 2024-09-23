@@ -66,7 +66,6 @@ import { getClosestWells } from 'utils/closestWellsHelpers';
 import { calc_utm } from 'utils/utm';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { selectConfiguration } from 'state/reducers/configuration';
 import { selectNetworkConnected } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
@@ -74,9 +73,9 @@ import mappingAlertMessages from 'constants/alertMessages';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { promptNumberInput } from 'utils/userPrompts';
 import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPayload';
+import { MOBILE } from 'state/build-time-config';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
-  const { MOBILE } = yield select(selectConfiguration);
 
   try {
     if (MOBILE) {
@@ -299,7 +298,6 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
 
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   const activityState = yield select(selectActivity);
-  const { MOBILE } = yield select(selectConfiguration);
 
   if (MOBILE) {
     yield put({
@@ -320,7 +318,6 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
-  const { MOBILE } = yield select(selectConfiguration);
 
   try {
     const authState = yield select(selectAuth);
@@ -437,8 +434,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 
 export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
-
-  const { MOBILE } = yield select(selectConfiguration);
 
   if (MOBILE) {
     yield put({

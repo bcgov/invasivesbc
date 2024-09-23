@@ -28,11 +28,11 @@ import { OfflineDataSyncDialog } from 'UI/OfflineDataSync/OfflineDataSyncDialog'
 
 import Spinner from 'UI/Spinner/Spinner';
 import { WebOnly } from 'UI/Predicates/WebOnly';
-import { selectConfiguration } from 'state/reducers/configuration';
 import { useSelector } from 'utils/use_selector';
 import { MobileBetaAccessMessage } from 'UI/Overlay/MobileBetaAccess/MobileBetaAccessMessage';
 import AlertsContainer from './AlertsContainer/AlertsContainer';
 import UserInputModalController from './UserInputModals/UserInputModalController';
+import { MOBILE, MOBILE_PLATFORM, MOBILE_PLATFORM_TYPE } from '../state/build-time-config';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -214,10 +214,9 @@ const OverlayContentMemo = () => {
 };
 
 const App: React.FC = () => {
-  const authInitiated = useSelector((state: any) => state.Auth.initialized);
-  const { detail: errorDetail, actions, hasCrashed } = useSelector(selectGlobalErrorState);
+  const authInitiated = useSelector((state) => state.Auth.initialized);
+  const { detail: errorDetail, hasCrashed } = useSelector(selectGlobalErrorState);
   const { disrupted } = useSelector(selectAuth);
-  const { MOBILE } = useSelector(selectConfiguration);
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
@@ -229,20 +228,20 @@ const App: React.FC = () => {
       newAppClasses.push('is-mobile');
     }
 
-    switch (import.meta.env.VITE_TARGET_PLATFORM) {
-      case 'android':
+    switch (MOBILE_PLATFORM) {
+      case MOBILE_PLATFORM_TYPE.ANDROID:
         newAppClasses.push('android');
         break;
-      case 'ios':
+      case MOBILE_PLATFORM_TYPE.IOS:
         newAppClasses.push('ios');
         break;
-      case 'web':
+      case MOBILE_PLATFORM_TYPE.WEB:
       default:
         newAppClasses.push('web');
         break;
     }
     setAppclasses(newAppClasses.join(' '));
-  }, [import.meta.env.VITE_TARGET_PLATFORM]);
+  }, [MOBILE_PLATFORM]);
 
   if (!authInitiated) return <div id="app-pre-auth-init" />;
 

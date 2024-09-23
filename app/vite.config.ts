@@ -13,17 +13,7 @@ function buildSpecificDefines() {
 
   defines['minify'] = false;
 
-  const isMobile = JSON.stringify('TRUE' === process.env.MOBILE);
-
-  defines['CONFIGURATION_IS_MOBILE'] = JSON.stringify(isMobile);
-  defines['CONFIGURATION_TEST'] = false;
-
-  if (process.env.CONFIGURATION_SOURCE === undefined || process.env.CONFIGURATION_SOURCE === 'Hardcoded') {
-    const commitHash = execSync('git rev-parse --short HEAD').toString();
-
-    defines['INJECTED_COMMIT_HASH'] = JSON.stringify(commitHash);
-    defines['CONFIGURATION_SOURCE'] = JSON.stringify('Hardcoded');
-  } else if (process.env.CONFIGURATION_SOURCE === 'Provided') {
+  if (process.env.CONFIGURATION_SOURCE === 'Provided') {
     defines['CONFIGURATION_SOURCE'] = JSON.stringify('Provided');
     const commitHash = execSync('git rev-parse --short HEAD').toString();
 
@@ -41,11 +31,6 @@ function buildSpecificDefines() {
     defines['CONFIGURATION_PUBLIC_MAP_URL'] = JSON.stringify(process.env['PUBLIC_MAP_URL']);
     defines['CONFIGURATION_IAPP_GEOJSON_URL'] = JSON.stringify(process.env['IAPP_GEOJSON_URL']);
     defines['CONFIGURATION_SILENT_CHECK_URI'] = JSON.stringify(process.env['SILENT_CHECK_URI']);
-    if (process.env.KEYCLOAK_ADAPTER === undefined) {
-      defines['CONFIGURATION_KEYCLOAK_ADAPTER'] = JSON.stringify('web');
-    } else {
-      defines['CONFIGURATION_KEYCLOAK_ADAPTER'] = JSON.stringify(process.env['KEYCLOAK_ADAPTER']);
-    }
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {
     defines['minify'] = false;
 

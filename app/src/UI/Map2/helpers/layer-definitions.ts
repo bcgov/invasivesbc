@@ -84,7 +84,7 @@ class MapDefinitionEligibilityPredicatesBuilder {
 
 // available from CDN, but not in asset pack
 let VECTOR_MAP_FONT_FACE = 'Open Sans Bold';
-if (import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true') {
+if (MOBILE) {
   // available locally, but not from CDN
   VECTOR_MAP_FONT_FACE = 'Noto Sans Bold';
 }

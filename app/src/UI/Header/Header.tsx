@@ -43,9 +43,9 @@ import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { RENDER_DEBUG } from 'UI/App';
 import { useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
-import { selectConfiguration } from 'state/reducers/configuration';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 import RefreshButton from './RefreshButton';
+import { MOBILE } from 'state/build-time-config';
 
 type TabPredicate =
   | 'authenticated_any'
@@ -71,7 +71,6 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
   ref.current += 1;
 
   const urlFromAppModeState = useSelector((state) => state.AppMode.url);
-  const { MOBILE } = useSelector(selectConfiguration);
 
   const history = useHistory();
 
@@ -269,7 +268,6 @@ const AdminPanelMemo = () => {
 const LoginOrOutMemo = React.memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { MOBILE } = useSelector(selectConfiguration);
   const { authenticated, offlineUsers, workingOffline } = useSelector(selectAuth);
   const activated = useSelector((state) => state.UserInfo.activated);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
