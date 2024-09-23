@@ -208,7 +208,7 @@ const DEFAULT_LOCAL_LAYERS = [
     toggle: false
   },
   {
-    title: 'PMBC Parcel Cadastre',
+    title: 'PMBC Parcel Cadastre - Private',
     type: 'wms',
     url:
       'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&style=5899&OWNER_TYPE=Private&raster-opacity=0.5&styles=5903&layers=' +
