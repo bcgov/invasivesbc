@@ -9,6 +9,9 @@ import { RENDER_DEBUG } from 'UI/App';
 const InvasivePlantsAccordion = () => {
   const ref = useRef(0);
   ref.current += 1;
+  if (RENDER_DEBUG) {
+    console.log('%c InvasivePlantsAccordion render:' + ref.current.toString(), 'color: yellow');
+  }
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
