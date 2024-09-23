@@ -3,19 +3,6 @@
   width: 100%;
 }
 
-.records_set {
-  height: 30px;
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  border-style: dotted;
-  border-width: 1px;
-  border-color: green;
-  background-color: #fff;
-  color: black;
-  overflow: auto;
-}
-
 .record_sets_header_new_set_button {
   margin-left: auto;
 }
@@ -26,6 +13,22 @@
   display: flex;
   flex-direction: row;
   justify-content: left;
+}
+
+.records_set {
+  height: 50px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding-left: 1rem;
+  border: 1pt solid black;
+  box-sizing: border-box;
+  color: black;
+  overflow: hidden;
+}
+
+.records_set:hover {
+  cursor: pointer;
 }
 
 .records_set_name {
