@@ -424,7 +424,9 @@ const NetworkStateControl: React.FC = () => {
 export const Header: React.FC = () => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
+  }
 
   const { DEBUG, MOBILE } = useSelector((state) => state.Configuration.current);
 

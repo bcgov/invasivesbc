@@ -40,9 +40,10 @@ import { RENDER_DEBUG } from 'UI/App';
 const FormContainer: React.FC<any> = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%c FormContainer render:' + ref.current.toString(), 'color: yellow');
+  }
 
-  const authenticated = useSelector((state) => state.Auth.authenticated);
   const username = useSelector((state) => state.Auth.username);
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
 

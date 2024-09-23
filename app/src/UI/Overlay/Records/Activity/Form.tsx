@@ -19,7 +19,9 @@ import { UtmInputObj } from 'interfaces/prompt-interfaces';
 export const ActivityForm = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
+  }
 
   const [showAuditDialogue, setShowAuditDialogue] = useState(false);
 
