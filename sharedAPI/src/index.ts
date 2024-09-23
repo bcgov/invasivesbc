@@ -105,13 +105,9 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
     const calculationResults = performCalculation(area, formData, businessCodes);
     newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
 
-    // TODO:  copy blob autofill stuff from tankmix accordion
-
-    // TODO:  copy blob autofill stuff from herbicides accordion
-
     return newActivity;
   } catch (e) {
-    console.log('error autofilling chem fields', (e as Error).stack);
+    console.error('error autofilling chem fields', e);
     throw e;
   }
 };

@@ -97,8 +97,7 @@ function* keepTokenFresh() {
           }
         }
       } catch (e) {
-        console.log('auth refresh failure');
-        console.dir(e);
+        console.error(e);
         if (!disrupted) {
           yield put({ type: AUTH_SET_DISRUPTED });
         }
@@ -113,7 +112,7 @@ function* keepTokenFresh() {
     }
   } finally {
     if (yield cancelled()) {
-      console.log('token freshness task shutting down');
+      console.info('token freshness task shutting down');
     }
   }
 }

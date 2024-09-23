@@ -11,7 +11,9 @@ import { RENDER_DEBUG } from 'UI/App';
 const TankMix: React.FC = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%c FormCoTankMixntainer render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%c FormCoTankMixntainer render:' + ref.current.toString(), 'color: yellow');
+  }
   const form_dataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = form_dataContext;
 
@@ -36,7 +38,6 @@ const TankMix: React.FC = (props) => {
         }
       }
     }));
-    console.log('tank mix hook');
   }, [currentTankMix]);
 
   const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>(

@@ -119,9 +119,7 @@ function* handle_USER_SETTINGS_READY(action) {
   // }
 }
 
-function* handle_ACTIVITY_DEBUG(action) {
-  console.log('halp');
-}
+function* handle_ACTIVITY_DEBUG(action) {}
 
 function* handle_ACTIVITY_DELETE_SUCESS(action) {
   yield put({
@@ -282,7 +280,6 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
   let minNumberCoords: number = 0;
   const activityState = yield select(selectActivity);
   const shape = activityState.track_me_draw_geo.type;
-  console.log(shape, activityState);
 
   // Early exit on non-existent/zero-length geometry arrays
   if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {

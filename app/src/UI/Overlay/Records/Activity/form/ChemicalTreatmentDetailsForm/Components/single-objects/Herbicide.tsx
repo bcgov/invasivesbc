@@ -278,7 +278,6 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             onBlur={(event) => {
               const input = event.target.value;
               if (input === '') {
-                console.log('is blank string');
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
                   product_application_rate: undefined
@@ -327,7 +326,6 @@ const Herbicide: React.FC<IHerbicideComponent> = ({ herbicide, index, classes, i
             onBlur={(event) => {
               const input = event.target.value;
               if (input === '') {
-                console.log('blank string');
                 setCurrentHerbicide((prevFields) => ({
                   ...prevFields,
                   amount_of_mix: undefined

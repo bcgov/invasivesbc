@@ -81,7 +81,6 @@ export const updateUpdateRequestSQL = (
   access_request_id: string,
   newUpdateRequest: Record<string, any>
 ): SQLStatement => {
-  console.log(access_request_id);
   return SQL`
     UPDATE access_request
     SET 

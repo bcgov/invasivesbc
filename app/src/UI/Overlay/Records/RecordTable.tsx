@@ -124,7 +124,6 @@ export const RecordTable = (props) => {
                   });
                 }}
                 onTouchStart={(e) => {
-                  console.log('e');
                   dispatch({
                     type: USER_TOUCHED_RECORD,
                     payload: {

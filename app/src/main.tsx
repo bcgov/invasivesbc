@@ -61,7 +61,5 @@ async function mountApp(CONFIG) {
 export let exportStore;
 
 import(/* webpackChunkName: "app_config" */ './state/config').then(({ CONFIG }) => {
-  mountApp(CONFIG).then(() => {
-    console.log('app loaded');
-  });
+  mountApp(CONFIG).then(() => {});
 });

@@ -65,8 +65,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
 
       // props.photoState.setPhotos([...props.photoState.photos, photo]);
     } catch (e) {
-      console.log('user cancelled or other camera problem');
-      console.log(JSON.stringify(e));
+      console.error('user cancelled or other camera problem', e);
     }
   };
 

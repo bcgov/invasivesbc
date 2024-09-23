@@ -33,7 +33,9 @@ import { useSelector } from 'react-redux';
 const ChemicalTreatmentDetailsForm = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) { console.log('%cChemTreatmentDetailsForm:' + ref.current.toString(), 'color: yellow'); }
+  if (RENDER_DEBUG) {
+    console.log('%cChemTreatmentDetailsForm:' + ref.current.toString(), 'color: yellow');
+  }
 
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
@@ -45,27 +47,28 @@ const ChemicalTreatmentDetailsForm = (props) => {
   const [localErrors, setLocalErrors] = useState([]);
   const [reportedArea, setReportedArea] = useState(0);
   const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
-    form_data: { ...props.form_data.activity_subtype_data.chemical_treatment_details },
+    form_data: { ...props.form_data.activity_subtype_data.chemical_treatment_details }
   });
   const [tankMixOn, setTankMixOn] = useState(formDetails.form_data.tank_mix);
-  const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(formDetails.form_data.chemical_application_method);
+  const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
+    formDetails.form_data.chemical_application_method
+  );
 
   /**
    * @desc Grabs codes from the apiSpec tailored to ChemicalTreatmentDetails sections
    * @returns {Record<string, any>[]}
    */
   const createCodes = () => {
-    const sharedcodes = apiDocsWithViewOptions
-    const newCodes: Record<string, any> = {}
+    const sharedcodes = apiDocsWithViewOptions;
+    const newCodes: Record<string, any> = {};
     for (let key of Object.keys(sharedcodes)) {
-      newCodes[key] = sharedcodes[key].options
-        .map(({ value, label }) => ({
-          value,
-          label
-        }))
+      newCodes[key] = sharedcodes[key].options.map(({ value, label }) => ({
+        value,
+        label
+      }));
     }
     return newCodes;
-  }
+  };
 
   /**
    * @desc Creates an object containing all codesets used by the component
@@ -73,27 +76,29 @@ const ChemicalTreatmentDetailsForm = (props) => {
    */
   const createDictionary = (): Record<string, any> => {
     const herbicideDictionary: Record<string, any> = {};
-    [...codes.liquid_herbicide_code, ...codes.granular_herbicide_code]
-      .forEach((item) => herbicideDictionary[item.value] = item.label)
+    [...codes.liquid_herbicide_code, ...codes.granular_herbicide_code].forEach(
+      (item) => (herbicideDictionary[item.value] = item.label)
+    );
 
-    const chemicalMethodsDirect = codes.chemical_method_direct
+    const chemicalMethodsDirect = codes.chemical_method_direct;
     const chemicalApplicationMethodChoices: any[] = formDetails.form_data.tank_mix
       ? [...codes.chemical_method_spray]
-      : [...codes.chemical_method_spray, ...chemicalMethodsDirect]
-    const chemical_method_direct_code_values: string[] = chemicalMethodsDirect.map(code => code.value)
+      : [...codes.chemical_method_spray, ...chemicalMethodsDirect];
+    const chemical_method_direct_code_values: string[] = chemicalMethodsDirect.map((code) => code.value);
 
     return {
       herbicideDictionary,
       chemicalApplicationMethodChoices,
-      chemical_method_direct_code_values,
-    }
-  }
+      chemical_method_direct_code_values
+    };
+  };
 
   const subtypeSchema = 'ChemicalTreatment_Species_Codes';
-  const apiDocsWithViewOptions = useSelector((state: Record<string, any>) => (
-    state.UserSettings.apiDocsWithViewOptions.components?.schemas[subtypeSchema].properties)
+  const apiDocsWithViewOptions = useSelector(
+    (state: Record<string, any>) =>
+      state.UserSettings.apiDocsWithViewOptions.components?.schemas[subtypeSchema].properties
   );
-  const codes: Record<string, any> = createCodes()
+  const codes: Record<string, any> = createCodes();
   const codeDictionary: Record<string, any[]> = createDictionary();
 
   // After initial load, setFormDetails to contain all needed keys
@@ -105,13 +110,12 @@ const ChemicalTreatmentDetailsForm = (props) => {
       activitySubType: props.activitySubType,
       disabled: props.disabled,
       errors: []
-    })
+    });
   }, []);
 
   useEffect(() => {
     setReportedArea(props.form_data.activity_data.reported_area);
   }, [props.form_data]);
-
 
   useEffect(() => {
     props.onChange(
@@ -157,7 +161,8 @@ const ChemicalTreatmentDetailsForm = (props) => {
                 ...props.form_data.activity_subtype_data,
                 chemical_treatment_details: {
                   ...formDetails.form_data,
-                  errors: true, calculation_results: undefined
+                  errors: true,
+                  calculation_results: undefined
                 }
               }
             },
@@ -202,21 +207,27 @@ const ChemicalTreatmentDetailsForm = (props) => {
   }, [localErrors]);
 
   useEffect(() => {
-    if (!codeDictionary) { return; }
+    if (!codeDictionary) {
+      return;
+    }
     setFormDetails((prevFormDetails) => ({
       ...prevFormDetails,
       form_data: {
         ...prevFormDetails.form_data,
         tank_mix: tankMixOn,
         chemical_application_method: chemicalApplicationMethod,
-        chemical_application_method_type: codeDictionary.chemical_method_direct_code_values.includes(chemicalApplicationMethod)
+        chemical_application_method_type: codeDictionary.chemical_method_direct_code_values.includes(
+          chemicalApplicationMethod
+        )
           ? 'direct'
           : 'spray'
       }
     }));
   }, [tankMixOn, chemicalApplicationMethod]);
 
-  if (!formDetails.activitySubType) { return <CircularProgress /> }
+  if (!formDetails.activitySubType) {
+    return <CircularProgress />;
+  }
   return (
     <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
       <Typography variant="h5">Chemical Treatment Details</Typography>
@@ -233,10 +244,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
             >
               <HelpOutlineIcon />
             </Tooltip>
-            <FormLabel
-              style={{ marginTop: '25px' }}
-              component="legend"
-            >
+            <FormLabel style={{ marginTop: '25px' }} component="legend">
               Tank Mix
             </FormLabel>
 
@@ -273,7 +281,9 @@ const ChemicalTreatmentDetailsForm = (props) => {
               label={'Chemical Application Method'}
               parentState={{ chemicalApplicationMethod, setChemicalApplicationMethod }}
               onChange={(event, value) => {
-                if (value === null) { return; }
+                if (value === null) {
+                  return;
+                }
                 setChemicalApplicationMethod(value.value);
               }}
             />

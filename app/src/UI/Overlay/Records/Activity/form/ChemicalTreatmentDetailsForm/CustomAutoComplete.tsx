@@ -66,11 +66,6 @@ const CustomAutoComplete = ({
       value={labelValuePair}
       disabled={disabled}
       isOptionEqualToValue={(option, value) => {
-        if (id === 'herbicide-type') {
-          // console.log(option);
-          // console.log(value);
-        }
-
         if ((value as any).value === null) {
           return true;
         } else if ((option as any).value === (value as any).value) {

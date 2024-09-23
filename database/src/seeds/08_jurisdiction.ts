@@ -55,6 +55,6 @@ export async function seed(knex: Knex): Promise<void> {
       update public.jurisdiction set code_name='FED' where jurisdictn='Federal';
         `);
   } catch (e) {
-    console.log('failed to build sql for seed 08', e);
+    console.error('failed to build sql for seed 08', e);
   }
 }

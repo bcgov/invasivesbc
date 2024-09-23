@@ -10,7 +10,6 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 function* fetchEmailSettings() {
-  console.log('Fetch called...');
   const configuration = yield select(selectConfiguration);
 
   const res = yield fetch(configuration.API_BASE + `/api/email-settings`, {

@@ -93,7 +93,6 @@ export const Records = () => {
   };
 
   const onClickToggleLayer = (set: any, e) => {
-    console.log('clicked');
     e.stopPropagation();
     dispatch({
       type: USER_SETTINGS_SET_RECORDSET,

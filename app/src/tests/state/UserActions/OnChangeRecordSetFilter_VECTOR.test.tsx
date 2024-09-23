@@ -206,9 +206,6 @@ describe('Can trigger refetch for both table and data on filter change', functio
     const initialHash = store.getState()?.UserSettings?.recordSets?.[2].tableFiltersHash;
     const filterID = store.getState()?.UserSettings?.recordSets?.[2].tableFilters[0].id;
 
-    console.log('filterID', filterID);
-    console.log(initialHash);
-
     store.dispatch({
       type: RECORDSET_REMOVE_FILTER,
       payload: {
@@ -221,8 +218,6 @@ describe('Can trigger refetch for both table and data on filter change', functio
     await waitFor(() => {
       // there is a new filter hash
       expect(store.getState()?.UserSettings?.recordSets?.[2].tableFiltersHash !== initialHash).toBeTruthy();
-      console.log(store.getState()?.UserSettings?.recordSets?.[2].tableFiltersHash);
-      // the table and layer are reloaded and have matching hashes to the recordset
     });
   });
 });

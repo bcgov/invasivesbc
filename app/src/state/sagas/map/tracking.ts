@@ -40,7 +40,7 @@ function* handle_MAP_TOGGLE_TRACKING_FALLBACK() {
         });
       }
     } catch (e) {
-      console.log(JSON.stringify(e));
+      console.error(e);
     }
   };
 

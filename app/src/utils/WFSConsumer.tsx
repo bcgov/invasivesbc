@@ -9,8 +9,7 @@ const getHTTP = async (url) => {
   try {
     return await fetch(url);
   } catch (e) {
-    console.log('failed http:');
-    console.log(JSON.stringify(e));
+    console.error('failed http:', e);
     return null;
   }
 };
@@ -52,9 +51,7 @@ const albersToGeog = (featureCollection: Object[]) => {
     const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
     return reprojected;
   } catch (e) {
-    console.log('error converting back to geog from albers:');
-    console.log(JSON.stringify(e));
-    console.log(e);
+    console.error('error converting back to geog from albers:', e);
   }
 };
 
@@ -91,7 +88,6 @@ export const getDataFromDataBC: any = async (
   let resp = await getSimplifiedJSON(encode(URL), '0.02');
 
   const returnVal = resp;
-  // console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {
     return returnVal;
   } else {
@@ -109,8 +105,7 @@ export const getDataFromDataBC: any = async (
       }
       return returnVal;
     } catch (e) {
-      console.log('error fetching data from databc');
-      console.log(e);
+      console.error('error fetching data from databc', e);
     }
     return [];
   }
@@ -130,7 +125,6 @@ export function* getDataFromDataBCv2(
   let resp = yield getSimplifiedGeoJSON(encode(URL), '0.02');
 
   const returnVal = resp;
-  // console.log('***features converted: ' + returnVal.length);
   if (!pageSize && !startIndex) {
     return returnVal;
   } else {
@@ -148,8 +142,7 @@ export function* getDataFromDataBCv2(
       }
       return returnVal;
     } catch (e) {
-      console.log('error fetching data from databc');
-      console.log(e);
+      console.error('error fetching data from databc', e);
     }
     return [];
   }

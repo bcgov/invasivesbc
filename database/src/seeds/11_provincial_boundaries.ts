@@ -14,6 +14,6 @@ export async function seed(knex: Knex): Promise<void> {
 
     await knex.raw(sql.toString());
   } catch (e) {
-    console.log('failed to build sql for seed 11', e);
+    console.error('failed to build sql for seed 11', e);
   }
 }

@@ -37,12 +37,10 @@ function buildSpecificDefines() {
     defines['CONFIGURATION_SOURCE'] = JSON.stringify('Caddy');
 
     if (process.env['OPENSHIFT_BUILD_COMMIT'] !== undefined) {
-      console.log('Building in Openshift');
       defines['INJECTED_COMMIT_HASH'] = JSON.stringify(process.env['OPENSHIFT_BUILD_COMMIT']);
     } else if (process.env['SOURCE_GIT_COMMIT'] !== undefined) {
       defines['INJECTED_COMMIT_HASH'] = JSON.stringify(process.env['SOURCE_GIT_COMMIT']);
     } else {
-      console.log('Using fallback commit hash');
       defines['INJECTED_COMMIT_HASH'] = JSON.stringify('local');
     }
   } else {

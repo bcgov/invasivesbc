@@ -3,21 +3,18 @@ import { Typography, Button } from '@mui/material';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import AddIcon from '@mui/icons-material/Add';
 import InvasivePlant from '../single-objects/InvasivePlant';
-import '../../../../Form.css'
+import '../../../../Form.css';
 import { RENDER_DEBUG } from 'UI/App';
 
 const InvasivePlantsAccordion = () => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) { console.log('%c InvasivePlantsAccordion render:' + ref.current.toString(), 'color: yellow'); }
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 
   return (
     <div id="invasive_plants_section">
-      <Typography
-        style={{ width: '33%', flexShrink: 0 }}
-        variant="h5">
+      <Typography style={{ width: '33%', flexShrink: 0 }} variant="h5">
         Invasive Plants
       </Typography>
 

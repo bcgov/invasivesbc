@@ -91,10 +91,6 @@ import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import { promptNumberInput } from 'utils/userPrompts';
 import { BASE_LAYER_HANDLERS } from 'state/sagas/map/base-layers';
 
-function* handle_ACTIVITY_DEBUG(action) {
-  console.log('halp');
-}
-
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
 }
@@ -657,7 +653,6 @@ function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
   //     } else {
   //     }
   //     const ptsWithin = turf.pointsWithinPolygon(points, bounds);
-  //     console.log(ptsWithin);
   //     labels.push({ id: key, features: ptsWithin });
   //   }
   // });
@@ -694,7 +689,6 @@ function* handle_URL_CHANGE(action) {
       recordSetsState = yield select(selectUserSettings);
       recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
     }
-    console.log('%crecordSetType:, ' + recordSetType, 'color: #00ff00');
     const mapState = yield select(selectMap);
     const page = mapState.recordTables?.[id]?.page || 0;
     const limit = mapState.recordTables?.[id]?.limit || 20;
@@ -894,10 +888,7 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
 
   yield all(
     actions.map((action) => {
-      console.dir(action);
       if (action.payload.filterID) {
-        console.log('wat');
-        console.dir(action);
         return put(action);
       }
     })

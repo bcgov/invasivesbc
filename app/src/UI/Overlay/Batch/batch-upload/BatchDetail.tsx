@@ -13,7 +13,7 @@ const StyledSelect = {
   width: '70pt',
   height: '25pt',
   paddingLeft: '0.5em'
-} as React.CSSProperties
+} as React.CSSProperties;
 
 const BatchMetadata = ({ batch }) => {
   const dispatch = useDispatch();
@@ -98,7 +98,7 @@ const BatchMetadata = ({ batch }) => {
                     disabled={!uploadReady}
                     variant={'contained'}
                     onClick={uploadRevisedData}
-                    sx={{ 'mt': '0.25em' }}
+                    sx={{ mt: '0.25em' }}
                   >
                     Upload
                   </Button>
@@ -115,7 +115,6 @@ const BatchMetadata = ({ batch }) => {
                     value={execFinalState}
                     style={StyledSelect}
                     onChange={(e) => {
-                      console.log('changed');
                       setExecFinalState(e.target.value);
                     }}
                   >
