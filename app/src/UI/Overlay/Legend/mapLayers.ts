@@ -51,6 +51,6 @@ const mapLayers = [
     layerPickerLabel: 'PMBC Parcel Cadastre - Private',
     objectName: 'WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW'
   }
-].sort((a, b) => (a.layerPickerLabel > b.layerPickerLabel ? -1 : 1));
+].sort((a, b) => (a.layerPickerLabel < b.layerPickerLabel ? -1 : 1));
 
 export default mapLayers;
