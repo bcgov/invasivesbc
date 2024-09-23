@@ -10,7 +10,9 @@ import { RENDER_DEBUG } from 'UI/App';
 const HerbicidesAccordion = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%HerbicidesAccordion:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%HerbicidesAccordion:' + ref.current.toString(), 'color: yellow');
+  }
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = formDataContext;
 

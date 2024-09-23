@@ -12,7 +12,9 @@ import { RENDER_DEBUG } from 'UI/App';
 export const Activity = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%cActivity  content render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%cActivity  content render:' + ref.current.toString(), 'color: yellow');
+  }
   const urlFromAppModeState = useSelector((state: any) => state.AppMode?.url);
 
   const history = useHistory();

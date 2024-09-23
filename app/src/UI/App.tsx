@@ -93,7 +93,9 @@ const BatchRoutes: React.FC = () => {
 const OverlayContentMemo = () => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%cOverlay content render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%cOverlay content render:' + ref.current.toString(), 'color: yellow');
+  }
 
   const overlayMenuOpen = useSelector((state) => state.AppMode.overlay_menu_toggle);
   const fullScreen = useSelector((state) => state.AppMode.panelFullScreen);
@@ -219,7 +221,9 @@ const App: React.FC = () => {
   const { disrupted } = useSelector(selectAuth);
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
+  }
   const [appClasses, setAppclasses] = useState('');
 
   useEffect(() => {

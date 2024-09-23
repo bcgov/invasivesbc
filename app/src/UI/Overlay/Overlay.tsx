@@ -6,7 +6,9 @@ import { useSelector } from 'utils/use_selector';
 const Overlay = (props) => {
   const ref = useRef(0);
   ref.current += 1;
-  if (RENDER_DEBUG) console.log('%cOverlay render:' + ref.current.toString(), 'color: yellow');
+  if (RENDER_DEBUG) {
+    console.log('%cOverlay render:' + ref.current.toString(), 'color: yellow');
+  }
 
   const panelOpen = useSelector((state) => state.AppMode.panelOpen);
   const fullScreen = useSelector((state) => state.AppMode.panelFullScreen);
