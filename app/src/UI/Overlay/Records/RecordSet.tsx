@@ -49,7 +49,7 @@ export const RecordSet = (props) => {
         <div className="recordSet_container">
           <OverlayHeader />
           <div className="stickyHeader">
-            <div className="recordSet_header" style={{ backgroundColor: recordSet?.color }}>
+            <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + 50 }}>
               <div className="recordSet_back_button">
                 <Button onClick={onClickBackButton} variant="contained">
                   {'< Back'}
