@@ -289,7 +289,6 @@ const Filter = (props) => {
           ref={value}
           className="filterSelect"
           onChange={(e) => {
-            console.log('it changed');
             debouncedUpdate(e.target.value);
           }}
           type="text"

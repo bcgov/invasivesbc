@@ -669,7 +669,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           if (
             draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash
           ) {
-            console.log(
+            console.warn(
               'hash mismatch',
               draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash,
               action.payload.tableFiltersHash
@@ -677,12 +677,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           if (Number(draftState.recordTables?.[action.payload.recordSetID]?.limit) !== Number(action.payload.limit)) {
-            console.log(
+            console.warn(
               'limit mismatch',
               draftState.recordTables?.[action.payload.recordSetID]?.limit,
               action.payload.limit
             );
-            console.log(
+            console.warn(
               'typeof',
               typeof draftState.recordTables?.[action.payload.recordSetID]?.limit,
               typeof action.payload.limit
@@ -690,7 +690,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           if (Number(draftState.recordTables?.[action.payload.recordSetID]?.page) !== Number(action.payload.page)) {
-            console.log(
+            console.warn(
               'page mismatch',
               draftState.recordTables?.[action.payload.recordSetID]?.page,
               action.payload.page
@@ -743,7 +743,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           //Everything should point to this now instead:
           draftState.IAPPGeoJSONDict = {};
           action.payload.IAPPGeoJSON.features.map((feature) => {
-            if (!feature.properties.site_id) console.log('no site_id', feature);
+            if (!feature.properties.site_id) console.warn('no site_id', feature);
             if (feature?.properties?.site_id) {
               draftState.IAPPGeoJSONDict[feature.properties.site_id] = feature;
             }
@@ -802,7 +802,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
         case TOGGLE_KML_LAYER: {
           const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
-          console.log(index);
           draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
           const strippedOfShapes = draftState.serverBoundaries.map((item) => {
             const returnVal = { ...item };

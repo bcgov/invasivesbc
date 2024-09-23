@@ -9,21 +9,21 @@ export const runServer = (server) => {
     try {
       server.listen({ onUnhandledRequest: 'error' });
     } catch (e) {
-      console.log('error', e);
+      console.error('error', e);
     }
   });
   afterAll(() => {
     try {
       server.close();
     } catch (e) {
-      console.log('error', e);
+      console.error('error', e);
     }
   });
   afterEach(() => {
     try {
       server.resetHandlers();
     } catch (e) {
-      console.log('error', e);
+      console.error('error', e);
     }
   });
 };
@@ -43,11 +43,11 @@ export const overRideRunningServer = (server, overRideServer) => {
     server.close();
     server.resetHandlers();
   } catch (e) {
-    console.log('error', e);
+    console.error('error', e);
   }
   try {
     runServer(overRideServer);
   } catch (e) {
-    console.log('error', e);
+    console.error('error', e);
   }
 };

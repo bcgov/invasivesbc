@@ -76,7 +76,6 @@ import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPaylo
 import { MOBILE } from 'state/build-time-config';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
-
   try {
     if (MOBILE) {
       yield put({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: action.payload.activityID } });
@@ -125,12 +124,7 @@ const checkForMisLabledMultiPolygon = (input) => {
   if (input.geometry.type !== 'MultiPolygon') {
     return false;
   }
-  if (
-    input.geometry.type === 'MultiPolygon' &&
-    input.geometry.coordinates.length === 1 &&
-    input.geometry.coordinates[0][0][0].length === 2
-  ) {
-    console.log('MultiPolygon mislabeled as Polygon, correcting...');
+  if (input.geometry.coordinates.length === 1 && input.geometry.coordinates[0][0][0].length === 2) {
     return true;
   }
   return false;
@@ -318,7 +312,6 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_CREATE_REQUEST(action) {
-
   try {
     const authState = yield select(selectAuth);
 

@@ -217,14 +217,14 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
     filterObject.limit = action.payload.limit;
 
     if (mapState?.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash) {
-      console.log('Stale tableRow request (tableFiltersHash mismatch), aborting');
+      console.warn('Stale tableRow request (tableFiltersHash mismatch), aborting');
       return;
     }
     if (
       mapState?.recordTables?.[action.payload.recordSetID]?.page !== action.payload.page ||
       mapState?.recordTables?.[action.payload.recordSetID]?.limit !== action.payload.limit
     ) {
-      console.log('Stale tableRow request (page or limit mismatch), aborting');
+      console.warn('Stale tableRow request (page or limit mismatch), aborting');
       return;
     }
 
@@ -262,14 +262,14 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
     filterObject.limit = action.payload.limit;
 
     if (mapState?.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash) {
-      console.log('Stale tableRow request (tableFiltersHash mismatch), aborting');
+      console.warn('Stale tableRow request (tableFiltersHash mismatch), aborting');
       return;
     }
     if (
       mapState?.recordTables?.[action.payload.recordSetID]?.page !== action.payload.page ||
       mapState?.recordTables?.[action.payload.recordSetID]?.limit !== action.payload.limit
     ) {
-      console.log('Stale tableRow request (page or limit mismatch), aborting');
+      console.warn('Stale tableRow request (page or limit mismatch), aborting');
       return;
     }
     if (true) {

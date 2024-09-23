@@ -186,11 +186,7 @@ export const mapInit = (
 export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
 
-  console.log('checking if recordset colorscheme is loaded:' + typeof layer.recordSetID);
-  // hack so the colorschemes apply
-
   if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
-    console.log('colorscheme its not loaded');
     return;
   }
 
@@ -337,12 +333,9 @@ export const deleteStaleActivityLayer = (map: any, layer: any) => {
     try {
       map.removeLayer(staleLayer);
     } catch (e) {
-      console.log('error removing layer' + staleLayer);
+      console.error('error removing layer' + staleLayer);
     }
   });
-
-  // get all sources:
-  //  console.log(map.style.sourceCaches);
 
   const staleSources = Object.keys(map.style.sourceCaches).filter((source) => {
     return source.includes('recordset-layer-' + layer.recordSetID) && !source.includes(layer.tableFiltersHash);
@@ -353,7 +346,7 @@ export const deleteStaleActivityLayer = (map: any, layer: any) => {
       try {
         map.removeSource(staleSource);
       } catch (e) {
-        console.log('error removing source', e);
+        console.error('error removing source', e);
       }
     }
   });
@@ -441,7 +434,7 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
     try {
       map.removeLayer(staleLayer);
     } catch (e) {
-      console.log('error removing layer' + staleLayer);
+      console.error('error removing layer' + staleLayer);
     }
   });
 
@@ -454,7 +447,7 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
       try {
         map.removeSource(staleSource);
       } catch (e) {
-        console.log('error removing source', e);
+        console.error('error removing source', e);
       }
     }
   });
@@ -484,14 +477,14 @@ export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE)
     try {
       map.removeLayer(layer);
     } catch (e) {
-      console.log('error removing layer', e);
+      console.error('error removing layer', e);
     }
   });
   recordSetSourcesThatAreNotInStore.map((source) => {
     try {
       map.removeSource(source);
     } catch (e) {
-      console.log('error removing source', e);
+      console.error('error removing source', e);
     }
   });
 
@@ -538,12 +531,8 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
               map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color || FALLBACK_COLOR);
             }
           } else {
-            //console.log('is iapp to color')
-
             currentColor = fillPolygonLayerStyle.paint['circle-color'];
-            //console.log('color is: ', currentColor, 'layer color is: ', layer.layerState.color || layer.layerState.colorScheme, 'fallback is: ', FALLBACK_COLOR)
             if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
-              // console.log('colors dont match, updating')
               map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
             }
           }
@@ -627,7 +616,6 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
   if (visibility !== 'none' && !boolToggle) {
     map.setLayoutProperty(layer, 'visibility', 'none');
-    console.log('toggle off');
   }
 };
 
@@ -635,13 +623,12 @@ const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_t
   //enforce one at a time everywhere
   const feature = e.features[0];
   try {
-    console.log('creating feature');
     if (drawInstance) {
       drawInstance.deleteAll();
       drawInstance.add(feature);
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
 
   // For whats here
@@ -686,9 +673,6 @@ export const initDrawModes = (
   drawingCustomLayer,
   draw
 ) => {
-  console.log('Map event listeners:');
-  console.dir(map?._listeners);
-
   ['draw.selectionchange', 'draw.create', 'draw.update'].map((eName) => {
     map._listeners[eName]?.map((l) => {
       let indexToSplice = -1;
@@ -955,11 +939,8 @@ export const refreshWhatsHereFeature = (map, options: any) => {
       map.removeSource(layerID);
     }
   } catch (e) {
-    console.log(e);
+    console.error(e);
   }
-
-  console.log('***whatsherefeature');
-  console.dir(options);
 
   if (map && options?.whatsHereFeature?.geometry) {
     map

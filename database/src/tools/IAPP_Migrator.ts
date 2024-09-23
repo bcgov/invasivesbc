@@ -620,62 +620,42 @@ const loadAllData = async () => {
   if (!cli.flags.site) {
     return;
   }
-  console.log('Loading sites...');
   results.siteData = await loadACSV(cli.flags.site);
-  console.log(results.siteData.length + ' sites loaded.');
 
   if (cli.flags.survey) {
-    console.log('Loading surveys...');
     results.surveyData = await loadACSV(cli.flags.survey);
-    console.log(results.surveyData.length + ' surveys loaded.');
   }
 
   if (cli.flags.mechanicalTreatment) {
-    console.log('Loading mechanical treatments...');
     results.mechanicalTreatmentData = await loadACSV(cli.flags.mechanicalTreatment);
-    console.log(results.mechanicalTreatmentData.length + ' mech treatments loaded.');
   }
 
   if (cli.flags.mechanicalMonitoring) {
-    console.log('Loading mechanical monitoring...');
     results.mechanicalMonitoringData = await loadACSV(cli.flags.mechanicalMonitoring);
-    console.log(results.mechanicalMonitoringData.length + ' mech monitoring records loaded.');
   }
 
   if (cli.flags.chemicalTreatment) {
-    console.log('Loading chemical treatments...');
     results.chemicalTreatmentData = await loadACSV(cli.flags.chemicalTreatment);
-    console.log(results.chemicalTreatmentData.length + ' chem treatments loaded.');
   }
 
   if (cli.flags.chemicalMonitoring) {
-    console.log('Loading chemical monitoring...');
     results.chemicalMonitoringData = await loadACSV(cli.flags.chemicalMonitoring);
-    console.log(results.chemicalMonitoringData.length + ' chem monitoring records loaded.');
   }
 
   if (cli.flags.biologicalTreatment) {
-    console.log('Loading bio treatments...');
     results.biologicalTreatmentData = await loadACSV(cli.flags.biologicalTreatment);
-    console.log(results.biologicalTreatmentData.length + ' bio treatments loaded.');
   }
 
   if (cli.flags.biologicalMonitoring) {
-    console.log('Loading bio monitoring...');
     results.biologicalMonitoringData = await loadACSV(cli.flags.biologicalMonitoring);
-    console.log(results.biologicalMonitoringData.length + ' bio monitoring records loaded.');
   }
 
   if (cli.flags.dispersal) {
-    console.log('Loading dispersals...');
     results.dispersalData = await loadACSV(cli.flags.dispersal);
-    console.log(results.dispersalData.length + ' dispersal records loaded.');
   }
 
   if (cli.flags.bioControlOutput) {
-    console.log('Loading bio control outputs...');
     results.bioControlOutputData = await loadACSV(cli.flags.bioControlOutput);
-    console.log(results.bioControlOutputData.length + ' bio control output records loaded.');
   }
 
   return results;
@@ -911,7 +891,6 @@ const main = async () => {
 
               switch (Object.keys(matchedSpecies).length) {
                 case 0:
-                  // console.log('NO MATCHING SPECIES: ', matchedSpecies, survey.Species, survey.CommonName);
                   break;
                 case 1:
                   bestMatch = Object.keys(matchedSpecies)[0];
@@ -924,8 +903,6 @@ const main = async () => {
                     bestMatch = perfectMatches[0];
                     break;
                   }
-                  // if (perfectMatches.length > 1)
-                  //   console.log('perfect match conflict', matchedSpecies, survey.Species, survey.CommonName);
 
                   const excellentMatches = Object.keys(matchedSpecies).filter(
                     (match) => matchedSpecies[match] === 'excellent'
@@ -934,43 +911,30 @@ const main = async () => {
                     bestMatch = excellentMatches[0];
                     break;
                   }
-                  // if (excellentMatches.length > 1)
-                  //   console.log('excellent match conflict', matchedSpecies, survey.Species, survey.CommonName);
 
                   const greatMatches = Object.keys(matchedSpecies).filter((match) => matchedSpecies[match] === 'great');
                   if (greatMatches.length === 1) {
                     bestMatch = greatMatches[0];
                     break;
                   }
-                  // if (greatMatches.length > 1)
-                  //   console.log('great match conflict', matchedSpecies, survey.Species, survey.CommonName);
 
                   const goodMatches = Object.keys(matchedSpecies).filter((match) => matchedSpecies[match] === 'good');
                   if (goodMatches.length === 1) {
                     bestMatch = goodMatches[0];
                     break;
                   }
-                  // if (goodMatches.length > 1)
-                  //   console.log('good match conflict', matchedSpecies, survey.Species, survey.CommonName);
 
                   const fairMatches = Object.keys(matchedSpecies).filter((match) => matchedSpecies[match] === 'fair');
                   if (fairMatches.length === 1) {
                     bestMatch = fairMatches[0];
                     break;
                   }
-                  // if (fairMatches.length > 1)
-                  //   console.log('fair match conflict', matchedSpecies, survey.Species, survey.CommonName);
 
                   const poorMatches = Object.keys(matchedSpecies).filter((match) => matchedSpecies[match] === 'poor');
                   if (poorMatches.length === 1) {
                     bestMatch = poorMatches[0];
                     break;
                   }
-                  // if (poorMatches.length > 1)
-                  //   console.log('poor match conflict', matchedSpecies, survey.Species, survey.CommonName);
-
-                  // if (!bestMatch)
-                  //   console.log('ALL conflicting matches: ', matchedSpecies, survey.Species, survey.CommonName);
                 }
               }
             }
@@ -979,7 +943,7 @@ const main = async () => {
               if (!speciesMatchFailures[survey.Species]) speciesMatchFailures[survey.Species] = {};
               if (!speciesMatchFailures[survey.Species]?.[survey.CommonName]) {
                 speciesMatchFailures[survey.Species][survey.CommonName] = 1;
-                console.log(
+                console.warn(
                   'No match: ',
                   speciesMatchFailures,
                   speciesMatches,
@@ -997,7 +961,6 @@ const main = async () => {
               if (!speciesMatches[survey.Species]) speciesMatches[survey.Species] = {};
               speciesMatches[survey.Species][survey.CommonName] = bestMatch;
             }
-            // console.log('Match: ', bestMatch, matchedSpecies[bestMatch], surveyMissedMatchCount);
 
             return {
               survey_id: survey.SurveyID,
@@ -1256,7 +1219,7 @@ const main = async () => {
       // process.stdout.write(`${siteRecordID},`);
       if (pois?.length) await axios.post(urlstring, pois, postconfig);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 };

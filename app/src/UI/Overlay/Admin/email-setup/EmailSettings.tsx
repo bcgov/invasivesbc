@@ -63,7 +63,6 @@ const EmailSettings = (props) => {
   }, []);
 
   const onSubmitEmailSettings = ({ formData }) => {
-    console.log('Update Called ****');
     dispatch({
       type: EMAIL_SETTINGS_UPDATE,
       payload: formData

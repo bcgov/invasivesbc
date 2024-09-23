@@ -170,7 +170,7 @@ export const getGeometryAsGeoJSONFromShort = async (shortId: string): Promise<st
     });
     return res.rows[0]['geog'];
   } catch (e) {
-    console.log('error in getGeometryAsGeoJSONFromShort', e);
+    console.error('error in getGeometryAsGeoJSONFromShort', e);
     throw new Error('Error validating geometry in the database' + e.message);
   } finally {
     connection.release();
@@ -209,7 +209,7 @@ export const autofillFromPostGIS = async (input: string, inputArea?: number): Pr
       geog: res.rows[0]['geog']
     };
   } catch (e) {
-    console.log('error in autofillFromPostGIS', e);
+    console.error('error in autofillFromPostGIS', e);
     throw new Error('Error validating geometry in the database' + e.message);
   } finally {
     connection.release();

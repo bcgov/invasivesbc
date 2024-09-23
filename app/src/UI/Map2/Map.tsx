@@ -191,8 +191,6 @@ export const Map = (props: any) => {
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-    console.log('all layers');
-    console.dir(map.current.getStyle().layers);
   }, [storeLayers, map.current, mapReady]);
 
   // Layer picker:
@@ -224,9 +222,7 @@ export const Map = (props: any) => {
     try {
       if (map_center && map_zoom) map.current.jumpTo({ center: map_center, zoom: map_zoom });
     } catch (e) {
-      console.log('jumpTo failed, probable invalid coords');
-      console.dir(map_center);
-      console.dir(e);
+      console.error(e);
     }
   }, [map_center, map_zoom]);
 
@@ -304,7 +300,6 @@ export const Map = (props: any) => {
 
   //Highlighted Record
   useEffect(() => {
-    console.log('***highlighted rec hook');
     if (!mapReady) return;
     if (!map.current) return;
 
@@ -342,10 +337,7 @@ export const Map = (props: any) => {
   // toggle public map pmtile layer
   useEffect(() => {
     if (!mapReady) return;
-
-    console.log('checking if logged in:', loggedIn);
     if (loggedIn) {
-      console.log('logged in');
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector-label', false);
@@ -365,8 +357,7 @@ export const Map = (props: any) => {
       positionMarker?.setRotationAlignment('map');
       positionMarker?.setRotation(userCoords?.heading);
     } catch (e) {
-      console.log('error rotating marker');
-      console.dir(e);
+      console.error(e);
     }
   }, [userCoords?.heading, mapReady]);
 
