@@ -49,8 +49,10 @@ export const Records = () => {
   const MapMode = useSelector((state) => state.Map?.MapMode);
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
 
-  const [loadMap, setLoadMap] = useState({});
+  const [highlightedSet, setHighlightedSet] = useState<string | null>();
   const [isActivitiesGeoJSONLoaded, setActivitiesGeoJSONLoaded] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [loadMap, setLoadMap] = useState({});
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -206,8 +208,8 @@ export const Records = () => {
     }, 3000);
   };
 
-  const [highlightedSet, setHighlightedSet] = useState<string | null>();
-  const [isEditingName, setIsEditingName] = useState(false);
+  const highlightSet = (set: string) => setHighlightedSet(set);
+  const unHighlightSet = () => setHighlightedSet(null);
 
   if (!recordSets) {
     return;
@@ -222,8 +224,10 @@ export const Records = () => {
             onClick={() => {
               history.push('/Records/List/Local:' + set);
             }}
-            onMouseOver={setHighlightedSet.bind(this, set)}
-            onMouseOut={setHighlightedSet.bind(this, null)}
+            onMouseOver={highlightSet.bind(this, set)}
+            onFocus={highlightSet.bind(this, set)}
+            onMouseOut={unHighlightSet}
+            onBlur={unHighlightSet}
             className={'records_set'}
             // Adjust Opacity of the background-color when hovering
             style={{ backgroundColor: `${recordSets?.[set]?.color}${highlightedSet === set ? 65 : 20}` }}
