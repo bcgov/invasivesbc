@@ -1,5 +1,5 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
-import { MOBILE, MOBILE_PLATFORM, MOBILE_PLATFORM_TYPE } from 'state/build-time-config';
+import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
@@ -96,7 +96,7 @@ function* refreshRoles() {
 }
 
 function* authenticationSaga() {
-  if (MOBILE && MOBILE_PLATFORM == MOBILE_PLATFORM_TYPE.IOS) {
+  if (MOBILE && PLATFORM == Platform.IOS) {
     // use native authentication bridge for better user experience
     yield all([takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles), ...nativeAuthEffects]);
   } else {

@@ -3,9 +3,9 @@ import { channel } from 'redux-saga';
 import { Geolocation } from '@capacitor/geolocation';
 import { registerPlugin } from '@capacitor/core';
 import { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
+import { PLATFORM, Platform } from 'state/build-time-config';
 import { selectMap } from 'state/reducers/map';
 import { MAP_SET_COORDS, MAP_TOGGLE_TRACKING } from 'state/actions';
-import { MOBILE_PLATFORM, MOBILE_PLATFORM_TYPE } from '../../build-time-config';
 
 let BackgroundGeolocation: BackgroundGeolocationPlugin | null = null;
 
@@ -129,11 +129,11 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
 }
 
 function* handle_MAP_TOGGLE_TRACKING() {
-  switch (MOBILE_PLATFORM) {
-    case MOBILE_PLATFORM_TYPE.IOS:
+  switch (PLATFORM) {
+    case Platform.IOS:
       yield handle_MAP_TOGGLE_TRACKING_BACKGROUND();
       break;
-    case MOBILE_PLATFORM_TYPE.WEB:
+    case Platform.WEB:
     default:
       yield handle_MAP_TOGGLE_TRACKING_FALLBACK();
       break;
