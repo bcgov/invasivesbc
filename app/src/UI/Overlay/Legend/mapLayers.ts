@@ -48,7 +48,7 @@ const mapLayers = [
     objectName: 'WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
   },
   {
-    layerPickerLabel: 'PMBC Parcel Cadastre',
+    layerPickerLabel: 'PMBC Parcel Cadastre - Private',
     objectName: 'WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW'
   }
 ].sort((a, b) => (a.layerPickerLabel > b.layerPickerLabel ? -1 : 1));
