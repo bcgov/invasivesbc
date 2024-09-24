@@ -230,7 +230,7 @@ export const Records = () => {
             onBlur={unHighlightSet}
             className={'records_set'}
             // Adjust Opacity of the background-color when hovering
-            style={{ backgroundColor: `${recordSets?.[set]?.color}${highlightedSet === set ? 65 : 20}` }}
+            style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
           >
             {!loadMap?.[set] && (
               <div key={set + 'spinner'}>
@@ -238,7 +238,7 @@ export const Records = () => {
               </div>
             )}
             <div className="records_set_left_hand_items">
-              {isEditingName && !DEFAULT_RECORD_TYPES.includes(recordSets?.[set]?.recordSetName) ? (
+              {isEditingName && !DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName) ? (
                 <>
                   <input
                     onChange={(e) =>
@@ -251,7 +251,7 @@ export const Records = () => {
                       e.stopPropagation();
                     }}
                     type="text"
-                    value={recordSets?.[set]?.recordSetName}
+                    value={recordSets[set]?.recordSetName}
                   />
                   <Button
                     onClick={(e) => {
@@ -263,7 +263,7 @@ export const Records = () => {
                   </Button>
                 </>
               ) : (
-                !DEFAULT_RECORD_TYPES.includes(recordSets?.[set]?.recordSetName) && (
+                !DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName) && (
                   <IconButton
                     onClick={(e) => {
                       e.stopPropagation();
@@ -276,26 +276,26 @@ export const Records = () => {
                 )
               )}
               <div className="records_set_name">
-                {!(isEditingName && !DEFAULT_RECORD_TYPES.includes(recordSets?.[set]?.recordSetName)) && (
-                  <Typography>{recordSets?.[set]?.recordSetName}</Typography>
+                {!(isEditingName && !DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)) && (
+                  <Typography>{recordSets[set]?.recordSetName}</Typography>
                 )}
               </div>
             </div>
 
             <div className="records_set_right_hand_items">
-              {CONFIGURATION_IS_MOBILE && recordSets?.[set]?.cached && (
+              {CONFIGURATION_IS_MOBILE && recordSets[set]?.cached && (
                 <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to clear cached data for this layer of records">
                   <Button
                     className="records__set__layer_cache"
                     onClick={(e) => onClickInitClearCache(set, e)}
                     variant="outlined"
                   >
-                    {!recordSets?.[set]?.isDeletingCache ? <EjectIcon /> : 'Deleting Cache'}
+                    {!recordSets[set]?.isDeletingCache ? <EjectIcon /> : 'Deleting Cache'}
                   </Button>
                 </Tooltip>
               )}
 
-              {CONFIGURATION_IS_MOBILE && recordSets?.[set]?.cached && (
+              {CONFIGURATION_IS_MOBILE && recordSets[set]?.cached && (
                 <Tooltip
                   classes={{ tooltip: 'toolTip' }}
                   title="Click to toggle viewing cached data or online if available"
@@ -305,7 +305,7 @@ export const Records = () => {
                     onClick={(e) => onClickToggleViewCache(set, e)}
                     variant="outlined"
                   >
-                    {recordSets?.[set]?.offlineMode ? <WifiOffIcon /> : <WifiIcon />}
+                    {recordSets[set]?.offlineMode ? <WifiOffIcon /> : <WifiIcon />}
                   </Button>
                 </Tooltip>
               )}
@@ -316,11 +316,11 @@ export const Records = () => {
                     onClick={(e) => onClickInitCache(set, e)}
                     variant="outlined"
                   >
-                    {recordSets?.[set]?.cached ? (
+                    {recordSets[set]?.cached ? (
                       <>
-                        <FileDownloadDoneIcon /> {recordSets?.[set]?.cachedTime}
+                        <FileDownloadDoneIcon /> {recordSets[set]?.cachedTime}
                       </>
-                    ) : recordSets?.[set]?.isCaching ? (
+                    ) : recordSets[set]?.isCaching ? (
                       'saving'
                     ) : (
                       <>
@@ -340,7 +340,7 @@ export const Records = () => {
                   onClick={(e) => onClickToggleLabel(set, e)}
                   color="primary"
                 >
-                  {recordSets?.[set]?.labelToggle ? <LabelIcon /> : <LabelClearIcon />}
+                  {recordSets[set]?.labelToggle ? <LabelIcon /> : <LabelClearIcon />}
                 </IconButton>
               </Tooltip>
 
@@ -353,11 +353,11 @@ export const Records = () => {
                   onClick={(e) => onClickToggleLayer(set, e)}
                   color="primary"
                 >
-                  {recordSets?.[set]?.mapToggle ? <LayersIcon /> : <LayersClearIcon />}
+                  {recordSets[set]?.mapToggle ? <LayersIcon /> : <LayersClearIcon />}
                 </IconButton>
               </Tooltip>
 
-              {!DEFAULT_RECORD_TYPES.includes(recordSets?.[set]?.recordSetName) && (
+              {!DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName) && (
                 <Tooltip
                   placement="bottom-start"
                   classes={{ tooltip: 'toolTip' }}
@@ -369,7 +369,7 @@ export const Records = () => {
                 </Tooltip>
               )}
 
-              {!DEFAULT_RECORD_TYPES.includes(recordSets?.[set]?.recordSetName) && (
+              {!DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName) && (
                 <Tooltip
                   classes={{ tooltip: 'toolTip' }}
                   title="Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration."
