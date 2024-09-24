@@ -46,6 +46,26 @@ POST.apiDoc = {
   }
 };
 
+/**
+ * @desc modify getActivitiesSQLv2 query to return a bounding box for the recordset
+ * @param cte ActivitiesSQL Query being used as Common Table Expression (CTE)
+ * @returns { SQLStatement } Bounding box SQL
+ */
+const bboxSql = (cte: SQLStatement): SQLStatement => {
+  const bboxQuery: SQLStatement = SQL` WITH userQuery AS ( `;
+  // Remove semicolons from original query, swap activity_id column to geog
+  bboxQuery.append(cte.text.replaceAll(/;/g, '').replace('activity_id', 'geog'));
+  bboxQuery.append(` )
+          SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
+          FROM userQuery
+          WHERE geog IS not null;
+        `);
+  return bboxQuery;
+};
+
+/**
+ * @desc Create Bounding box based on the filter properties for a given recordset
+ */
 function postHandler(): RequestHandler {
   return async (req, res, next) => {
     const connection = await getDBConnection();
@@ -57,21 +77,24 @@ function postHandler(): RequestHandler {
       });
     }
     try {
+      defaultLog.debug({ label: 'recordset-bbox', message: 'postHandler', body: req.body });
       if (req.body?.filterObjects?.[0]) {
         const activitiesSql: SQLStatement = getActivitiesSQLv2(
           sanitizeActivityFilterObject(req.body.filterObjects[0], req)
         );
-        let newSQL: SQLStatement = SQL` WITH userQuery AS ( `;
+        const convertedSql = bboxSql(activitiesSql);
+        const response = await connection.query(convertedSql.text, convertedSql.values);
 
-        newSQL.append(activitiesSql.text.replaceAll(/;/g, '').replace('activity_id', 'geog'));
-        newSQL.append(` )
-          SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
-          FROM userQuery
-          WHERE geog IS not null;
-        `);
-        const response = await connection.query(newSQL.text, newSQL.values);
-        // const response = await connection.query(activitiesSql.text, activitiesSql.values);
-        res.status(200).json(response);
+        if (response.rowCount > 0) {
+          return res.status(200).json(response.rows[0]);
+        } else {
+          return res.status(404).json({
+            message: 'No Results',
+            request: req.body,
+            namespace: 'recordset-bbox',
+            code: 404
+          });
+        }
       } else {
         return res.status(400).json({
           message: 'Missing filter Objects from request',
@@ -80,14 +103,18 @@ function postHandler(): RequestHandler {
           code: 400
         });
       }
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      defaultLog.debug({
+        lavel: 'recordset-bbox',
+        message: 'error',
+        error
+      });
       return res.status(500).json({
         message: 'Server Error occured',
         request: req.body,
         namespace: 'recordset-bbox',
         code: 500,
-        error: e
+        error
       });
     } finally {
       connection.release();
