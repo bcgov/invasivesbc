@@ -29,7 +29,13 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            properties: {}
+            type: 'object',
+            properties: {
+              bbox: {
+                type: 'string',
+                description: 'Bounding box for the given filters'
+              }
+            }
           }
         }
       }
@@ -67,7 +73,7 @@ const bboxSql = (cte: SQLStatement): SQLStatement => {
  * @desc Create Bounding box based on the filter properties for a given recordset
  */
 function postHandler(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req, res) => {
     const connection = await getDBConnection();
     if (!connection) {
       return res.status(503).json({
