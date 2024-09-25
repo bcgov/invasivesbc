@@ -5,8 +5,8 @@ import GeoShapes from 'constants/geoShapes';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
-import { promptRadioInput } from 'state/actions/userPrompts/userPrompts';
-import GeoTracking from 'state/actions/geotracking/geotracking';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import Prompt from 'state/actions/prompts/Prompt';
 
 /**
  * TrackMeButton
@@ -28,7 +28,7 @@ export const GeoTrackingButton = (props) => {
       dispatch(GeoTracking.stop());
     } else {
       dispatch(
-        promptRadioInput({
+        Prompt.radio({
           callback: promptHandler,
           options: [GeoShapes.LineString, GeoShapes.Polygon],
           prompt: [

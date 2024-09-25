@@ -7,6 +7,7 @@ import {
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP
 } from 'state/actions';
+
 class GeoTracking {
   /**
    * @desc Action Creator for premature exit of GeoTracking Feature

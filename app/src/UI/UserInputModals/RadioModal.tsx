@@ -15,10 +15,10 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { RadioModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'state/actions/userPrompts/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
 import { ChangeEvent, useState } from 'react';
+import Prompt from 'state/actions/prompts/Prompt';
 
 /**
  * @desc Customizable Input Modal for collecting boolean responses from a user.
@@ -49,7 +49,7 @@ const RadioModal = ({
     }
   };
   const handleClose = () => {
-    dispatch(closeModal(id!));
+    dispatch(Prompt.closeOne(id!));
   };
   const handleConfirmation = () => {
     handleRedux(callback(userInput) ?? []);

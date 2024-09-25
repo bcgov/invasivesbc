@@ -18,7 +18,7 @@ import {
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { createAlert } from 'state/actions/userAlerts.ts/userAlerts';
+import Alerts from 'state/actions/alerts/Alerts';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
@@ -117,7 +117,7 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
   //        const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
   if (networkReturn.status < 200 || networkReturn.status > 299) {
     yield put(
-      createAlert({
+      Alerts.create({
         content: networkReturn.data.message,
         severity: AlertSeverity.Error,
         subject: AlertSubjects.Form
