@@ -1,5 +1,5 @@
+import { getActivitiesSQLv2 } from 'queries/activities-v2-queries';
 import { getDBConnection } from 'database/db';
-import { getActivitiesSQLv2 } from 'paths/v2/activities';
 import { getIAPPSQLv2 } from 'paths/v2/iapp';
 
 export interface TileService {
