@@ -11,7 +11,7 @@ import GeoShapes from 'constants/geoShapes';
 import { promptRadioInput } from 'state/actions/userPrompts/userPrompts';
 import { UtmInputObj } from 'interfaces/prompt-interfaces';
 import { promptUtmInput } from 'state/actions/userPrompts/userPrompts';
-import { startGeoTracking, stopGeoTracking } from 'state/actions/geotracking/geotracking';
+import GeoTracking from 'state/actions/geotracking/geotracking';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -67,11 +67,11 @@ export const ActivityForm = (props) => {
   };
   const clickHandler = () => {
     if (drawGeometryTracking.isTracking) {
-      dispatch(stopGeoTracking());
+      dispatch(GeoTracking.stop());
     } else {
       const callback = (input: string | number) => {
         dispatch({ type: MAP_TOGGLE_TRACKING_ON });
-        dispatch(startGeoTracking(input as GeoShapes));
+        dispatch(GeoTracking.start(input as GeoShapes));
       };
       dispatch(
         promptRadioInput({

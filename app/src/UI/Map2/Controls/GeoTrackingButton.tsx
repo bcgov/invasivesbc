@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import { promptRadioInput } from 'state/actions/userPrompts/userPrompts';
-import { startGeoTracking, stopGeoTracking } from 'state/actions/geotracking/geotracking';
+import GeoTracking from 'state/actions/geotracking/geotracking';
 
 /**
  * TrackMeButton
@@ -20,12 +20,12 @@ export const GeoTrackingButton = (props) => {
   const divRef = useRef();
 
   const promptHandler = (input: string | number) => {
-    dispatch(startGeoTracking(input as GeoShapes));
+    dispatch(GeoTracking.start(input as GeoShapes));
   };
   const clickHandler = () => {
     setShow(false);
     if (isTracking) {
-      dispatch(stopGeoTracking());
+      dispatch(GeoTracking.stop());
     } else {
       dispatch(
         promptRadioInput({

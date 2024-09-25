@@ -2,7 +2,7 @@ import { Pause, PlayArrow } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { pauseGeoTracking, resumeGeoTracking } from 'state/actions/geotracking/geotracking';
+import GeoTracking from 'state/actions/geotracking/geotracking';
 import { useSelector } from 'utils/use_selector';
 
 const PauseGeoTrackingButton = () => {
@@ -13,9 +13,9 @@ const PauseGeoTrackingButton = () => {
 
   const handleClick = () => {
     if (drawingShape) {
-      dispatch(pauseGeoTracking());
+      dispatch(GeoTracking.pause());
     } else {
-      dispatch(resumeGeoTracking());
+      dispatch(GeoTracking.resume());
     }
   };
   return (
