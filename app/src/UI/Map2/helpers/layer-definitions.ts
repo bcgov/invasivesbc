@@ -5,6 +5,11 @@ import { MOBILE } from 'state/build-time-config';
 export const FALLBACK_IMAGE =
   'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg==';
 
+// these layers are used as placeholders so the others can be placed relative to them
+const LAYER_Z_BACKGROUND = 'LAYER_Z_BACKGROUND';
+const LAYER_Z_MID = 'LAYER_Z_MID';
+const LAYER_Z_FOREGROUND = 'LAYER_Z_FOREGROUND';
+
 type MapDefinitionEligibilityPredicates = {
   directlySelectable: boolean;
   mobileOnly: boolean;
@@ -1964,5 +1969,8 @@ export {
   allLayerIdsInDefinition,
   allLayerIdsNotInDefinition,
   layersForDefinition,
-  allSourceIDsRequiredForDefinition
+  allSourceIDsRequiredForDefinition,
+  LAYER_Z_BACKGROUND,
+  LAYER_Z_MID,
+  LAYER_Z_FOREGROUND
 };

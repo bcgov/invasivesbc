@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { PostgresTileService } from 'utils/vectors/tile-service';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
-import { sanitizeActivityFilterObject } from 'paths/v2/activities';
+import { sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
 import { sanitizeIAPPFilterObject } from 'paths/v2/iapp';
 
 export const GET: Operation = [tile()];

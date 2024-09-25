@@ -2,7 +2,12 @@ import maplibregl, { NavigationControl, ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
-import { MAP_DEFINITIONS } from 'UI/Map2/helpers/layer-definitions';
+import {
+  LAYER_Z_BACKGROUND,
+  LAYER_Z_FOREGROUND,
+  LAYER_Z_MID,
+  MAP_DEFINITIONS
+} from 'UI/Map2/helpers/layer-definitions';
 import './map.css';
 
 // Draw tools:
@@ -158,7 +163,29 @@ export const mapInit = (
           return result;
         }, {})
       },
-      layers: []
+      layers: [
+        {
+          id: LAYER_Z_BACKGROUND,
+          type: 'background',
+          layout: {
+            visibility: 'none'
+          }
+        },
+        {
+          id: LAYER_Z_MID,
+          type: 'background',
+          layout: {
+            visibility: 'none'
+          }
+        },
+        {
+          id: LAYER_Z_FOREGROUND,
+          type: 'background',
+          layout: {
+            visibility: 'none'
+          }
+        }
+      ]
     }
   });
 
@@ -292,10 +319,11 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
     labelLayer['source-layer'] = 'data';
   }
 
-  map.addSource(layerID, source).addLayer(fillLayer);
-  map.addLayer(borderLayer);
-  map.addLayer(circleMarkerZoomedOutLayer);
-  map.addLayer(labelLayer);
+  map.addSource(layerID, source);
+  map.addLayer(fillLayer, LAYER_Z_MID);
+  map.addLayer(borderLayer, LAYER_Z_MID);
+  map.addLayer(circleMarkerZoomedOutLayer, LAYER_Z_MID);
+  map.addLayer(labelLayer, LAYER_Z_MID);
 };
 
 export const deleteStaleActivityLayer = (map: any, layer: any) => {
@@ -404,9 +432,9 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
     labelLayer['source-layer'] = 'data';
   }
 
-  map.addSource(layerID, source).addLayer(circleLayer);
+  map.addSource(layerID, source).addLayer(circleLayer, LAYER_Z_MID);
 
-  map.addLayer(labelLayer);
+  map.addLayer(labelLayer, LAYER_Z_BACKGROUND);
 };
 
 export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
@@ -820,25 +848,28 @@ export const handlePositionTracking = (
             features: [accuracyCircle]
           }
         })
-        .addLayer({
-          id: 'accuracyCircle',
-          source: 'accuracyCircle',
-          type: 'fill',
-          paint: {
-            'fill-color': 'green',
-            'fill-opacity': 0.5
+        .addLayer(
+          {
+            id: 'accuracyCircle',
+            source: 'accuracyCircle',
+            type: 'fill',
+            paint: {
+              'fill-color': 'green',
+              'fill-opacity': 0.5
+            },
+            layout: {
+              visibility: accuracyToggle ? 'visible' : 'none'
+            }
           },
-          layout: {
-            visibility: accuracyToggle ? 'visible' : 'none'
-          }
-        });
+          LAYER_Z_FOREGROUND
+        );
     }
   }
   toggleLayerOnBool(map, 'accuracyCircle', accuracyToggle && positionTracking);
 };
 export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
   simplePickerLayers2.map((layer) => {
-    if (!map.getSource(layer.url) && layer.toggle && layer.type === 'wms')
+    if (!map.getSource(layer.url) && layer.toggle && layer.type === 'wms') {
       map
         .addSource(layer.url, {
           type: 'raster',
@@ -846,15 +877,23 @@ export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
           tileSize: 256,
           maxzoom: 18
         })
-        .addLayer({
-          id: layer.url,
-          type: 'raster',
-          source: layer.url,
-          minzoom: 0,
-          paint: {
-            'raster-opacity': layer.opacity ? layer.opacity : 1
-          }
-        });
+        .addLayer(
+          {
+            id: layer.url,
+            type: 'raster',
+            source: layer.url,
+            minzoom: 0,
+            paint: {
+              'raster-opacity': layer.opacity ? layer.opacity : 1
+            }
+          },
+          LAYER_Z_MID
+        );
+    }
+    if (layer.toggle) {
+      // bring to top
+      map.moveLayer(layer.url, LAYER_Z_FOREGROUND);
+    }
   });
 };
 
@@ -867,6 +906,10 @@ export const refreshWMSOnToggle = (simplePickerLayers2, map) => {
       }
       if (visibility !== 'visible' && layer.toggle) {
         map.setLayoutProperty(layer.url, 'visibility', 'visible');
+        if (layer.toggle) {
+          // bring to top
+          map.moveLayer(layer.url, LAYER_Z_FOREGROUND);
+        }
       }
     }
   });
@@ -936,30 +979,36 @@ export const refreshWhatsHereFeature = (map, options: any) => {
         type: 'geojson',
         data: options.whatsHereFeature.geometry
       })
-      .addLayer({
-        id: layerID + 'shape',
-        source: layerID,
-        type: 'fill',
-        paint: {
-          'fill-color': 'white',
-          'fill-outline-color': 'black',
-          'fill-opacity': 0.4
+      .addLayer(
+        {
+          id: layerID + 'shape',
+          source: layerID,
+          type: 'fill',
+          paint: {
+            'fill-color': 'white',
+            'fill-outline-color': 'black',
+            'fill-opacity': 0.4
+          },
+          minzoom: 0,
+          maxzoom: 24
         },
-        minzoom: 0,
-        maxzoom: 24
-      })
-      .addLayer({
-        id: layerID + 'outline',
-        source: layerID,
-        type: 'line',
-        paint: {
-          'line-color': 'black',
-          'line-opacity': 1,
-          'line-width': 3
+        LAYER_Z_FOREGROUND
+      )
+      .addLayer(
+        {
+          id: layerID + 'outline',
+          source: layerID,
+          type: 'line',
+          paint: {
+            'line-color': 'black',
+            'line-opacity': 1,
+            'line-width': 3
+          },
+          minzoom: 0,
+          maxzoom: 24
         },
-        minzoom: 0,
-        maxzoom: 24
-      });
+        LAYER_Z_FOREGROUND
+      );
   }
 };
 
@@ -1017,41 +1066,50 @@ export const refreshHighlightedRecord = (map, options: any) => {
         type: 'geojson',
         data: options.userRecordOnHoverRecordRow.geometry[0]
       })
-      .addLayer({
-        id: layerID + 'shape',
-        source: layerID,
-        type: 'fill',
-        paint: {
-          'fill-color': 'white',
-          'fill-outline-color': 'black',
-          'fill-opacity': 0.7
+      .addLayer(
+        {
+          id: layerID + 'shape',
+          source: layerID,
+          type: 'fill',
+          paint: {
+            'fill-color': 'white',
+            'fill-outline-color': 'black',
+            'fill-opacity': 0.7
+          },
+          minzoom: 0,
+          maxzoom: 24
         },
-        minzoom: 0,
-        maxzoom: 24
-      })
-      .addLayer({
-        id: layerID + 'outline',
-        source: layerID,
-        type: 'line',
-        paint: {
-          'line-color': 'black',
-          'line-opacity': 1,
-          'line-width': 3
+        LAYER_Z_FOREGROUND
+      )
+      .addLayer(
+        {
+          id: layerID + 'outline',
+          source: layerID,
+          type: 'line',
+          paint: {
+            'line-color': 'black',
+            'line-opacity': 1,
+            'line-width': 3
+          },
+          minzoom: 0,
+          maxzoom: 24
         },
-        minzoom: 0,
-        maxzoom: 24
-      })
-      .addLayer({
-        id: layerID + 'zoomoutcircle',
-        source: layerID,
-        type: 'circle',
-        paint: {
-          'circle-color': 'white',
-          'circle-radius': 3
+        LAYER_Z_FOREGROUND
+      )
+      .addLayer(
+        {
+          id: layerID + 'zoomoutcircle',
+          source: layerID,
+          type: 'circle',
+          paint: {
+            'circle-color': 'white',
+            'circle-radius': 3
+          },
+          minzoom: 0,
+          maxzoom: 24
         },
-        minzoom: 0,
-        maxzoom: 24
-      });
+        LAYER_Z_FOREGROUND
+      );
   }
 
   if (map && options.userRecordOnHoverRecordType === 'IAPP' && options.userRecordOnHoverRecordRow) {
@@ -1060,17 +1118,20 @@ export const refreshHighlightedRecord = (map, options: any) => {
         type: 'geojson',
         data: options.userRecordOnHoverRecordRow.geometry
       })
-      .addLayer({
-        id: layerID,
-        source: layerID,
-        type: 'circle',
-        paint: {
-          'circle-color': 'yellow',
-          'circle-radius': 3
+      .addLayer(
+        {
+          id: layerID,
+          source: layerID,
+          type: 'circle',
+          paint: {
+            'circle-color': 'yellow',
+            'circle-radius': 3
+          },
+          minzoom: 0,
+          maxzoom: 24
         },
-        minzoom: 0,
-        maxzoom: 24
-      });
+        LAYER_Z_FOREGROUND
+      );
   }
 
   /*
@@ -1091,18 +1152,21 @@ export const addServerBoundariesIfNotExists = (serverBoundaries, map) => {
             type: 'geojson',
             data: layer.geojson
           })
-          .addLayer({
-            id: layerID,
-            source: layerID,
-            type: 'fill',
-            paint: {
-              'fill-color': 'blue',
-              'fill-outline-color': 'yellow',
-              'fill-opacity': 0.5
+          .addLayer(
+            {
+              id: layerID,
+              source: layerID,
+              type: 'fill',
+              paint: {
+                'fill-color': 'blue',
+                'fill-outline-color': 'yellow',
+                'fill-opacity': 0.5
+              },
+              minzoom: 0,
+              maxzoom: 24
             },
-            minzoom: 0,
-            maxzoom: 24
-          });
+            LAYER_Z_FOREGROUND
+          );
       }
     });
   }
@@ -1138,18 +1202,21 @@ export const addClientBoundariesIfNotExists = (clientBoundaries, map) => {
             type: 'geojson',
             data: layer.geojson
           })
-          .addLayer({
-            id: layerID,
-            source: layerID,
-            type: 'fill',
-            paint: {
-              'fill-color': 'blue',
-              'fill-outline-color': 'yellow',
-              'fill-opacity': 0.5
+          .addLayer(
+            {
+              id: layerID,
+              source: layerID,
+              type: 'fill',
+              paint: {
+                'fill-color': 'blue',
+                'fill-outline-color': 'yellow',
+                'fill-opacity': 0.5
+              },
+              minzoom: 0,
+              maxzoom: 24
             },
-            minzoom: 0,
-            maxzoom: 24
-          });
+            LAYER_Z_FOREGROUND
+          );
       }
     });
   }
