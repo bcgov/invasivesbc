@@ -6,12 +6,14 @@ import { getLogger } from 'utils/logger';
 import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
 import { getDBConnection } from 'database/db';
 
-const defaultLog = getLogger('recordset-bbox');
+const NAMESPACE = 'bbox';
+
+const defaultLog = getLogger(NAMESPACE);
 export const POST: Operation = [postHandler()];
 
 POST.apiDoc = {
   description: 'Fetch bounding box based on search criteria',
-  tags: ['bbox'],
+  tags: [NAMESPACE],
   security: SECURITY_ON ? [{ Bearer: ALL_ROLES }] : [],
   requestBody: {
     description: 'Recordset search filter criteria',
@@ -61,12 +63,12 @@ function postHandler(): RequestHandler {
     if (!connection) {
       return res.status(503).json({
         message: 'Database connection unavailable',
-        namespace: 'recordset-bbox',
+        namespace: NAMESPACE,
         code: 503
       });
     }
     try {
-      defaultLog.debug({ label: 'recordset-bbox', message: 'postHandler', body: req.body });
+      defaultLog.debug({ label: NAMESPACE, message: 'postHandler', body: req.body });
       if (req.body?.filterObjects?.[0]) {
         const filterObject = sanitizeActivityFilterObject(req.body.filterObjects[0], req);
         filterObject.boundingBoxOnly = true;
@@ -79,7 +81,7 @@ function postHandler(): RequestHandler {
           return res.status(404).json({
             message: 'No Results',
             request: req.body,
-            namespace: 'recordset-bbox',
+            namespace: NAMESPACE,
             code: 404
           });
         }
@@ -87,20 +89,20 @@ function postHandler(): RequestHandler {
         return res.status(400).json({
           message: 'Missing filter Objects from request',
           request: req.body,
-          namespace: 'recordset-bbox',
+          namespace: NAMESPACE,
           code: 400
         });
       }
     } catch (error) {
       defaultLog.debug({
-        lavel: 'recordset-bbox',
+        label: NAMESPACE,
         message: 'error',
         error
       });
       return res.status(500).json({
         message: 'Server Error occured',
         request: req.body,
-        namespace: 'recordset-bbox',
+        namespace: NAMESPACE,
         code: 500,
         error
       });
