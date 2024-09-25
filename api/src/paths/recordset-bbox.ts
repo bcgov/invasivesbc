@@ -60,11 +60,15 @@ POST.apiDoc = {
 const bboxSql = (cte: SQLStatement): SQLStatement => {
   const bboxQuery: SQLStatement = SQL` WITH userQuery AS ( `;
   // Remove semicolons from original query, swap activity_id column to geog
-  bboxQuery.append(cte.text.replaceAll(/;/g, '').replace('activity_id', 'geog'));
+  bboxQuery.append(cte.text.replaceAll(/;/g, ''));
   bboxQuery.append(` )
           SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
-          FROM userQuery
-          WHERE geog IS not null;
+          FROM invasivesbc.activity_incoming_data
+          WHERE geog IS not null
+          AND activity_id in (
+            SELECT activity_id
+            FROM userQuery
+          )
         `);
   return bboxQuery;
 };
