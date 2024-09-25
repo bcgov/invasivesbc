@@ -59,7 +59,7 @@ POST.apiDoc = {
  */
 const bboxSql = (cte: SQLStatement): SQLStatement => {
   const bboxQuery: SQLStatement = SQL` WITH userQuery AS ( `;
-  // Remove semicolons from original query, swap activity_id column to geog
+  // Remove semicolons from original query
   bboxQuery.append(cte.text.replaceAll(/;/g, ''));
   bboxQuery.append(` )
           SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
