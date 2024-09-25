@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP } from 'state/actions';
 import { useSelector } from 'utils/use_selector';
-import { promptRadioInput } from 'utils/userPrompts';
+import { promptRadioInput } from 'state/actions/userPrompts/userPrompts';
 /**
  * TrackMeButton
  * @description Component to handle the functionality of the find me button

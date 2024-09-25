@@ -13,8 +13,9 @@ import {
   MAP_TOGGLE_TRACKING_ON
 } from 'state/actions';
 import GeoShapes from 'constants/geoShapes';
-import { promptRadioInput, promptUtmInput } from 'utils/userPrompts';
+import { promptRadioInput } from 'state/actions/userPrompts/userPrompts';
 import { UtmInputObj } from 'interfaces/prompt-interfaces';
+import { promptUtmInput } from 'state/actions/userPrompts/userPrompts';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);

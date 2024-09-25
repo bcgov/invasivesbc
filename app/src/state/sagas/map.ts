@@ -88,8 +88,8 @@ import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
-import { promptNumberInput } from 'utils/userPrompts';
 import { BASE_LAYER_HANDLERS } from 'state/sagas/map/base-layers';
+import { promptNumberInput } from 'state/actions/userPrompts/userPrompts';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });

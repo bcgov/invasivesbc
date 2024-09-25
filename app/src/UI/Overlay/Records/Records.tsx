@@ -25,7 +25,7 @@ import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
 import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
-import { promptConfirmationInput } from 'utils/userPrompts';
+import { promptConfirmationInput } from 'state/actions/userPrompts/userPrompts';
 import { useSelector } from 'utils/use_selector';
 
 export const Records = () => {

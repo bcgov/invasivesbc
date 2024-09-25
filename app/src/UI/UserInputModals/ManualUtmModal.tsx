@@ -13,7 +13,7 @@ import {
 import './UserInputModals.css';
 import { useEffect, useState } from 'react';
 import { ManualUtmModalInterface, ReduxPayload, UtmInputObj } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'utils/userPrompts';
+import { closeModal } from 'state/actions/userPrompts/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
 import { calc_lat_long_from_utm } from 'utils/utm';

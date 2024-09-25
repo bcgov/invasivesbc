@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import './UserInputModals.css';
 import { RadioModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'utils/userPrompts';
+import { closeModal } from 'state/actions/userPrompts/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
 import { ChangeEvent, useState } from 'react';
