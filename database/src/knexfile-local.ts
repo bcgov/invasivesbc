@@ -2,11 +2,11 @@ module.exports = {
   local: {
     client: 'pg',
     connection: {
-      host: 'localhost',
-      port: process.env.DB_PORT || 5432,
-      database: 'InvasivesBC',
-      user: 'invasivebc',
-      password: 'postgres',
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT ?? 5432,
+      database: process.env.DB_DATABASE,
+      user: process.env.DB_USER,
+      password: process.env.DB_USER,
       multipleStatements: true
     },
     pool: {
@@ -26,7 +26,7 @@ module.exports = {
     client: 'postgresql',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: process.env.DB_PORT ?? 5432,
       database: process.env.DB_DATABASE,
       user: process.env.DB_USER,
       password: process.env.DB_PASS
@@ -48,7 +48,7 @@ module.exports = {
     client: 'pg',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: process.env.DB_PORT ?? 5432,
       database: process.env.DB_DATABASE,
       user: process.env.DB_USER,
       password: process.env.DB_PASS
@@ -66,7 +66,7 @@ module.exports = {
     client: 'pg',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: process.env.DB_PORT ?? 5432,
       database: process.env.DB_DATABASE,
       user: process.env.DB_USER,
       password: process.env.DB_PASS
@@ -84,7 +84,7 @@ module.exports = {
     client: 'pg',
     connection: {
       host: process.env.DB_HOST,
-      port: process.env.DB_PORT || 5432,
+      port: process.env.DB_PORT ?? 5432,
       database: process.env.DB_DATABASE,
       user: process.env.DB_USER,
       password: process.env.DB_PASS

@@ -8,33 +8,33 @@ export async function seed(knex: Knex): Promise<void> {
      * If we are in development use the light dataset for
      * speeding up the development life cycle.
      */
-    const env: string = process.env.REACT_APP_REAL_NODE_ENV;
-    let url: string;
-    if (env.match(/dev/i) || env.match(/local/i)) {
-      url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction_vancouver_island.sql.gz';
-    } else {
-      url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
-    }
+    // const env: string = process.env.REACT_APP_REAL_NODE_ENV;
+    // let url: string;
+    // if (env.match(/dev/i) || env.match(/local/i)) {
+    //   url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction_vancouver_island.sql.gz';
+    // } else {
+    //   url = 'https://nrs.objectstore.gov.bc.ca/seeds/jurisdiction.sql.gz';
+    // }
 
-    // Fetch data
-    const { data } = await axios.get(url, { responseType: 'arraybuffer' });
+    // // Fetch data
+    // const { data } = await axios.get(url, { responseType: 'arraybuffer' });
 
-    // Unzip to text
-    const sql: string = await ungzip(data);
+    // // Unzip to text
+    // const sql: string = await ungzip(data);
 
-    // Clear the table
-    const clear = 'truncate table public.jurisdiction;';
-    await knex.raw(clear);
+    // // Clear the table
+    // const clear = 'truncate table public.jurisdiction;';
+    // await knex.raw(clear);
 
-    /**
-     * This file is too big to run all at once.
-     * Split up by lines.
-     */
+    // /**
+    //  * This file is too big to run all at once.
+    //  * Split up by lines.
+    //  */
 
-    const lines = sql.toString().split(/\r?\n/);
-    for (const line of lines) {
-      if (line.length > 0) await knex.raw(line);
-    }
+    // const lines = sql.toString().split(/\r?\n/);
+    // for (const line of lines) {
+    //   if (line.length > 0) await knex.raw(line);
+    // }
 
     await knex.raw(`      
       update public.jurisdiction set code_name='CPR' where jurisdictn='CP Rail';

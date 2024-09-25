@@ -1,106 +1,135 @@
-version: '3.5'
-
 services:
+  ########################################################################
+  #                              POSTGIS                                 #
+  ########################################################################
   db:
+    platform: linux/x86_64
     image: postgis/postgis:14-3.2-alpine
-    container_name: ${PROJECT_NAME}-${TAG}-db
+    container_name: invasives-db
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT:-5432}:${DB_PORT:-5432}
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-      - POSTGRES_DB=${DB_DATABASE}
-      - PORT=${DB_PORT}
-      - TZ=America/Vancouver
+      POSTGRES_USER: ${DB_USER:-invasivebc}
+      POSTGRES_PASSWORD: ${DB_PASS:-admin}
+      POSTGRES_DB: ${DB_DATABASE:-InvasivesBC}
+      PG_HOST: ${PG_HOST:-localhost}
+      DB_PORT: ${DB_PORT:-5432}
+      TZ: ${TZ:-America/Vancouver}
     networks:
-      - local-network
+      - invasives-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready', '-U', '${DB_USER:-admin}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     volumes:
       - postgres:/var/lib/postgresql/data
-      - ./database/.docker/db/entrypoint:/docker-entrypoint-initdb.d
+  ########################################################################
+  #                              PG ADMIN                                #
+  ########################################################################
+  pgadmin:
+    container_name: invasives-pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@invasives.com
+    networks:
+      - invasives-network
 
-  ## Run the database migrations and seeding
+  # ## Run the database migrations and seeding
   db_setup:
-    image: ${PROJECT_NAME}-${TAG}-postgres-setup-img
-    container_name: ${PROJECT_NAME}-${TAG}-db-setup
+    container_name: invasives-migrator
     build:
       context: ./database
       dockerfile: ./.docker/db/Dockerfile.setup
     environment:
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_PORT=${DB_PORT}
-      - DB_DATABASE=${DB_DATABASE}
-      - ENVIRONMENT=local
-      - REACT_APP_REAL_NODE_ENV=local
-      - NODE_ENV=local
-      - SKIP_POSTGRES9_COMPATIBILITY=true
-    networks:
-      - local-network
-    links:
-      - db
+      DB_HOST: ${DB_HOST:-localhost}
+      DB_USER: ${DB_USER:-invasivebc}
+      DB_PASS: ${DB_PASS:-admin}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE:-InvasivesBC}
+      ENVIRONMENT: local
+      REACT_APP_REAL_NODE_ENV: local
+      NODE_ENV: local
+      SKIP_POSTGRES9_COMPATIBILITY: true
+
     restart: on-failure
     depends_on:
-      - db
-      # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully
-      # started before the setup runs. Possible better solutions:
-      # https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
-
-
-  ## Build the api docker image
-  api:
-    image: ${PROJECT_NAME}-${TAG}-api-img
-    container_name: ${PROJECT_NAME}-${TAG}-api
-    build:
-      context: ./
-      dockerfile: ./api/.docker/api/Dockerfile
-    ports:
-      - ${API_PORT}:${API_PORT}
-    environment:
-      - API_HOST=${API_HOST}
-      - API_PORT=${API_PORT}
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_PORT=${DB_PORT}
-      - DB_DATABASE=${DB_DATABASE}
-      - APP_CERTIFICATE_URL=${APP_CERTIFICATE_URL}
-      - APP_CERTIFICATE_URL_TEST=${APP_CERTIFICATE_URL_TEST}
-      - ENVIRONMENT=local
-      - NODE_ENV=local
-      - OBJECT_STORE_URL=${OBJECT_STORE_URL}
-      - OBJECT_STORE_ACCESS_KEY_ID=${OBJECT_STORE_ACCESS_KEY_ID}
-      - OBJECT_STORE_SECRET_KEY_ID=${OBJECT_STORE_SECRET_KEY_ID}
-      - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
-    volumes:
-      - ./api:/opt/app-root/src
-      - npmcache_api:/opt/app-root/src/node_modules
+      db:
+        condition: service_healthy
     networks:
-      - local-network
+      - invasives-network
     links:
       - db
-    depends_on:
-      - db
-      - db_setup
 
-  # Build the nginx web-server docker image
-  nginx:
-    image: ${PROJECT_NAME}-${TAG}-nginx-img
-    container_name: ${PROJECT_NAME}-${TAG}-nginx
-    build:
-      context: ./.docker/nginx
-      dockerfile: Dockerfile
-    restart: always
-    ports:
-      - 80:80
-    depends_on:
-      - db
-      - api
-    networks:
-      - local-network
+  #   networks:
+  #     - local-network
+  #   links:
+  #     - db
+  #   restart: on-failure
+  #   depends_on:
+  #     - db
+  #     # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully
+  #     # started before the setup runs. Possible better solutions:
+  #     # https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
+
+  # ## Build the api docker image
+  # api:
+  #   image: ${PROJECT_NAME}-${TAG}-api-img
+  #   container_name: ${PROJECT_NAME}-${TAG}-api
+  #   build:
+  #     context: ./
+  #     dockerfile: ./api/.docker/api/Dockerfile
+  #   ports:
+  #     - ${API_PORT}:${API_PORT}
+  #   environment:
+  #     - API_HOST=${API_HOST}
+  #     - API_PORT=${API_PORT}
+  #     - DB_HOST=${DB_HOST}
+  #     - DB_USER=${DB_USER}
+  #     - DB_PASS=${DB_PASS}
+  #     - DB_PORT=${DB_PORT}
+  #     - DB_DATABASE=${DB_DATABASE}
+  #     - APP_CERTIFICATE_URL=${APP_CERTIFICATE_URL}
+  #     - APP_CERTIFICATE_URL_TEST=${APP_CERTIFICATE_URL_TEST}
+  #     - ENVIRONMENT=local
+  #     - NODE_ENV=local
+  #     - OBJECT_STORE_URL=${OBJECT_STORE_URL}
+  #     - OBJECT_STORE_ACCESS_KEY_ID=${OBJECT_STORE_ACCESS_KEY_ID}
+  #     - OBJECT_STORE_SECRET_KEY_ID=${OBJECT_STORE_SECRET_KEY_ID}
+  #     - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
+  #   volumes:
+  #     - ./api:/opt/app-root/src
+  #     - npmcache_api:/opt/app-root/src/node_modules
+  #   networks:
+  #     - local-network
+  #   links:
+  #     - db
+  #   depends_on:
+  #     - db
+  #     - db_setup
+
+  # # Build the nginx web-server docker image
+  # nginx:
+  #   image: ${PROJECT_NAME}-${TAG}-nginx-img
+  #   container_name: ${PROJECT_NAME}-${TAG}-nginx
+  #   build:
+  #     context: ./.docker/nginx
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - 80:80
+  #   depends_on:
+  #     - db
+  #     - api
+  #   networks:
+  #     - local-network
 
 networks:
-  local-network:
+  invasives-network:
     driver: bridge
 
 volumes:

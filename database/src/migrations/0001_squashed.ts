@@ -1,11 +1,15 @@
 import { Knex } from 'knex';
 
 export async function up(knex: Knex) {
-
   await knex.raw(
     //language=PostgreSQL
     `
-
+        -- Enable PostGIS (includes raster)
+        CREATE EXTENSION IF NOT EXISTS postgis;
+        
+        -- Enable Topology
+        CREATE EXTENSION IF NOT EXISTS postgis_topology;
+        
         CREATE SCHEMA invasivesbc;
 
         set search_path to invasivesbc, public;
@@ -10806,8 +10810,8 @@ export async function up(knex: Knex) {
             ADD CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES invasivesbc.user_role (role_id) ON DELETE CASCADE;
         ALTER TABLE ONLY invasivesbc.user_access
             ADD CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES invasivesbc.application_user (user_id) ON DELETE CASCADE;
-    `);
-
+    `
+  );
 }
 
 export async function down(knex: Knex) {

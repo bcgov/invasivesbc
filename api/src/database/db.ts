@@ -1,14 +1,16 @@
 import { Pool, PoolClient, PoolConfig } from 'pg';
 import { getLogger } from 'utils/logger';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const defaultLog = getLogger('db');
 
-const DB_HOST: string = process.env.DB_HOST || 'localhost';
-const DB_PORT: number = Number(process.env.DB_PORT) || 5432;
-const DB_USERNAME: string = process.env.DB_USER || 'invasivebc';
-const DB_PASSWORD: string = process.env.DB_PASS || 'world';
-const DB_DATABASE: string = process.env.DB_DATABASE || 'invasives';
-const DB_SCHEMA: string = process.env.DB_SCHEMA || 'invasivesbc';
+const DB_HOST: string = process.env.DB_HOST;
+const DB_PORT: number = Number(process.env.DB_PORT);
+const DB_USERNAME: string = process.env.DB_USER;
+const DB_PASSWORD: string = process.env.DB_PASS;
+const DB_DATABASE: string = process.env.DB_DATABASE;
+const DB_SCHEMA: string = process.env.DB_SCHEMA;
 
 const poolConfig: PoolConfig = {
   user: DB_USERNAME,
