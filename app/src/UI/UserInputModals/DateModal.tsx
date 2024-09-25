@@ -17,7 +17,7 @@ import { useState } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'utils/userPrompts';
+import { closeModal } from 'state/actions/userPrompts/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
 

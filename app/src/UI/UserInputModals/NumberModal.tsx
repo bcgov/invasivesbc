@@ -14,7 +14,7 @@ import {
 import './UserInputModals.css';
 import { useState } from 'react';
 import { NumberModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'utils/userPrompts';
+import { closeModal } from 'state/actions/userPrompts/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
 

@@ -71,7 +71,7 @@ import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { promptNumberInput } from 'utils/userPrompts';
+import { promptNumberInput } from 'state/actions/userPrompts/userPrompts';
 import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPayload';
 import { MOBILE } from 'state/build-time-config';
 

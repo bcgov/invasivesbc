@@ -109,9 +109,9 @@ import { calculateGeometryArea } from 'utils/geometryHelpers';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import AlertMessage from 'interfaces/AlertMessage';
-import { promptConfirmationInput, promptNumberInput } from 'utils/userPrompts';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import { promptConfirmationInput, promptNumberInput } from 'state/actions/userPrompts/userPrompts';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
