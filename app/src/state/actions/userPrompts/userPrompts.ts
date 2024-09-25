@@ -68,6 +68,4 @@ export const promptUtmInput = createAction(NEW_PROMPT, (prompt: ManualUtmModalIn
  * @param id ID for the Payload object in the prompts array
  * @returns {ReduxPayload} Payload needed to delete the modal
  */
-export const closeModal = createAction(CLEAR_PROMPT, (id: string) => ({
-  payload: { id }
-}));
+export const closeModal = createAction(CLEAR_PROMPT, (id: string) => ({ payload: { id } }));

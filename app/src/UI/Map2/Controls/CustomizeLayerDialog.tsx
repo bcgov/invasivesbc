@@ -14,7 +14,6 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {
   DRAW_CUSTOM_LAYER,
-  NEW_ALERT,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
   TOGGLE_CUSTOMIZE_LAYERS,
@@ -25,6 +24,7 @@ import './CustomizeLayerDialog.css';
 import KMLShapesUpload from './KMLShapesUpload';
 import { useSelector } from 'utils/use_selector';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import { createAlert } from 'state/actions/userAlerts.ts/userAlerts';
 
 const CustomizeLayerMenu = (props) => {
   enum MenuState {
@@ -67,14 +67,13 @@ const CustomizeLayerMenu = (props) => {
       case LayerOptions.Draw:
         dispatch({ type: TOGGLE_LAYER_PICKER_OPEN });
         dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
-        dispatch({
-          type: NEW_ALERT,
-          payload: {
+        dispatch(
+          createAlert({
             content: 'Complete your layer by drawing a shape with the map tools.',
             subject: AlertSubjects.Map,
             severity: AlertSeverity.Info
-          }
-        });
+          })
+        );
         dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
         cleanup();
         break;
