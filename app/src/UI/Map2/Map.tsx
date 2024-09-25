@@ -33,6 +33,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import {
   allLayerIdsNotInDefinition,
   allSourceIDsRequiredForDefinition,
+  LAYER_Z_BACKGROUND,
   layersForDefinition,
   MAP_DEFINITIONS
 } from 'UI/Map2/helpers/layer-definitions';
@@ -202,9 +203,10 @@ export const Map = (props: any) => {
   // Layer picker:
   useEffect(() => {
     if (!mapReady) return;
+    if (!map.current) return;
     addWMSLayersIfNotExist(simplePickerLayers2, map.current);
     refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2, map.current, mapReady]);
+  }, [simplePickerLayers2, map.current, mapReady, baseMapLayer]);
 
   useEffect(() => {
     if (!mapReady) return;
@@ -298,7 +300,7 @@ export const Map = (props: any) => {
     // finally add the layers (which depend on the sources)
     for (const layerSpec of layersForDefinition(baseMapLayer)) {
       if (!map.current.getLayer(layerSpec.id)) {
-        map.current.addLayer(layerSpec);
+        map.current.addLayer(layerSpec, LAYER_Z_BACKGROUND);
       }
     }
   }, [baseMapLayer, map.current, mapReady]);
