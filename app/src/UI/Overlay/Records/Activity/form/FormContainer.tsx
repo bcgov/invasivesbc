@@ -19,7 +19,6 @@ import { SelectAutoCompleteContextProvider } from 'UI/Overlay/Records/Activity/f
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
 import ObjectFieldTemplate from 'rjsf/templates/ObjectFieldTemplate';
-import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import MultiSelectAutoComplete from 'rjsf/widgets/MultiSelectAutoComplete';
 import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from 'UI/Overlay/Records/Activity/form/rjsfTheme';
@@ -37,7 +36,7 @@ import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransf
 import debounce from 'lodash.debounce';
 import { RENDER_DEBUG } from 'UI/App';
 
-const FormContainer: React.FC<any> = (props) => {
+const FormContainer = () => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) {
@@ -55,7 +54,6 @@ const FormContainer: React.FC<any> = (props) => {
   const activity_ID = useSelector((state) => state.ActivityPage.activity.activity_id);
   const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
 
-  const MOBILE = useSelector((state) => state.Configuration.current.MOBILE);
   const darkTheme = useSelector((state) => state.UserSettings.darkTheme);
 
   const apiDocsWithViewOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions);

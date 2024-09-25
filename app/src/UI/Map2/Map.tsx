@@ -1,5 +1,5 @@
 import circle from '@turf/circle';
-import maplibregl, { Map as MapLibre } from 'maplibre-gl';
+import maplibregl, { LngLatLike, Map as MapLibre } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -30,8 +30,14 @@ import {
 } from './Helpers';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
-import { allLayerIdsInDefinition, allLayerIdsNotInDefinition } from 'UI/Map2/helpers/layer-definitions';
+import {
+  allLayerIdsNotInDefinition,
+  allSourceIDsRequiredForDefinition,
+  layersForDefinition,
+  MAP_DEFINITIONS
+} from 'UI/Map2/helpers/layer-definitions';
 import { TileCacheContext } from 'utils/TileCacheContext';
+import { MOBILE } from 'state/build-time-config';
 
 /*
 
@@ -40,7 +46,7 @@ import { TileCacheContext } from 'utils/TileCacheContext';
 
  */
 export const Map = (props: any) => {
-  const { API_BASE, MOBILE } = useSelector((state) => state.Configuration.current);
+  const { API_BASE } = useSelector((state) => state.Configuration.current);
   const tileCache = useContext(TileCacheContext);
 
   const [draw, setDraw] = useState(null);
@@ -220,7 +226,9 @@ export const Map = (props: any) => {
     if (!map.current) return;
 
     try {
-      if (map_center && map_zoom) map.current.jumpTo({ center: map_center, zoom: map_zoom });
+      if (map_center && map_zoom) {
+        map.current.jumpTo({ center: map_center, zoom: map_zoom });
+      }
     } catch (e) {
       console.error(e);
     }
@@ -252,17 +260,46 @@ export const Map = (props: any) => {
       return;
     }
 
-    const activateLayers = allLayerIdsInDefinition(baseMapLayer);
     const deactivateLayers = allLayerIdsNotInDefinition(baseMapLayer);
 
-    for (const layerId of map.current.getLayersOrder()) {
-      if (activateLayers.includes(layerId)) {
-        map.current.setLayoutProperty(layerId, 'visibility', 'visible');
+    const allSources = MAP_DEFINITIONS.map((m) => {
+      return {
+        id: m.name,
+        source: m.source
+      };
+    });
+
+    const sourcesRequired = allSources.filter((s) => allSourceIDsRequiredForDefinition(baseMapLayer).includes(s.id));
+    const sourcesNotRequired = allSources.filter(
+      (s) => !allSourceIDsRequiredForDefinition(baseMapLayer).includes(s.id)
+    );
+
+    // first remove the unneeded layers
+    for (const layerId of deactivateLayers) {
+      if (map.current.getLayer(layerId)) {
+        map.current.removeLayer(layerId);
       }
-      if (deactivateLayers.includes(layerId)) {
-        map.current.setLayoutProperty(layerId, 'visibility', 'none');
+    }
+
+    // now we can delete associated sources we no longer reference
+    for (const source of sourcesNotRequired) {
+      if (map.current.getSource(source.id)) {
+        map.current.removeSource(source.id);
       }
-      // otherwise it's not a layer we control
+    }
+
+    // ...add the required sources in
+    for (const source of sourcesRequired) {
+      if (!map.current.getSource(source.id)) {
+        map.current.addSource(source.id, source.source);
+      }
+    }
+
+    // finally add the layers (which depend on the sources)
+    for (const layerSpec of layersForDefinition(baseMapLayer)) {
+      if (!map.current.getLayer(layerSpec.id)) {
+        map.current.addLayer(layerSpec);
+      }
     }
   }, [baseMapLayer, map.current, mapReady]);
 
@@ -308,15 +345,21 @@ export const Map = (props: any) => {
     if (quickPanToRecord) {
       if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'IAPP') {
         if (userRecordOnHoverRecordRow.geometry) {
-          map.current.jumpTo({ center: centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates, zoom: 15 });
+          const c = centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates as LngLatLike;
+          if (c) {
+            map.current.jumpTo({ center: c, zoom: 15 });
+          }
         }
       }
       if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'Activity') {
         if (userRecordOnHoverRecordRow.geometry?.[0]) {
-          map.current.jumpTo({
-            center: centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates,
-            zoom: 15
-          });
+          const c = centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates as LngLatLike;
+          if (c) {
+            map.current.jumpTo({
+              center: c,
+              zoom: 15
+            });
+          }
         }
       }
     }

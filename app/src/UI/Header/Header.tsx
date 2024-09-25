@@ -428,8 +428,6 @@ export const Header: React.FC = () => {
     console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
   }
 
-  const { DEBUG, MOBILE } = useSelector((state) => state.Configuration.current);
-
   return (
     <div className="HeaderBar">
       <InvIcon />
@@ -527,7 +525,7 @@ export const Header: React.FC = () => {
 
         {MOBILE && <OfflineSyncHeaderButton />}
 
-        {DEBUG && MOBILE && <NetworkStateControl />}
+        {MOBILE && <NetworkStateControl />}
       </ButtonWrapper>
 
       <LoginOrOutMemo />
