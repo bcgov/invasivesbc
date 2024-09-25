@@ -14,9 +14,9 @@ import {
 import './UserInputModals.css';
 import { useState } from 'react';
 import { ReduxPayload, TextModalInterface } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'state/actions/userPrompts/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
+import Prompt from 'state/actions/prompts/Prompt';
 
 const TextModal = ({
   callback,
@@ -38,7 +38,7 @@ const TextModal = ({
   const dispatch = useDispatch();
 
   const handleChange = (value: string) => setUserResponse(value);
-  const handleClose = () => dispatch(closeModal(id!));
+  const handleClose = () => dispatch(Prompt.closeOne(id!));
   const handleRedux = (redux: ReduxPayload[]) => {
     for (const action of redux) {
       dispatch(action as UnknownAction);

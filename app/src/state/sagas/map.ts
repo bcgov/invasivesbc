@@ -89,7 +89,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import { BASE_LAYER_HANDLERS } from 'state/sagas/map/base-layers';
-import { promptNumberInput } from 'state/actions/userPrompts/userPrompts';
+import Prompt from 'state/actions/prompts/Prompt';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -928,7 +928,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
   if (action?.payload?.geometry?.type === 'LineString') {
     yield put(
-      promptNumberInput({
+      Prompt.number({
         title: 'Buffer needed',
         prompt: 'Enter width in meters for line to be buffered:',
         min: 0.001,

@@ -9,7 +9,7 @@ import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import { useHistory } from 'react-router-dom';
 import 'UI/Global.css';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { createAlert } from 'state/actions/userAlerts.ts/userAlerts';
+import Alerts from 'state/actions/alerts/Alerts';
 
 export const WhatsHereButton = (props) => {
   const dispatch = useDispatch();
@@ -37,7 +37,7 @@ export const WhatsHereButton = (props) => {
                 if ((whatsHere as any)?.toggle == false) {
                   dispatch({ type: MAP_TOGGLE_WHATS_HERE });
                   dispatch(
-                    createAlert({
+                    Alerts.create({
                       content: 'Outline a region on the map to view records in the area.',
                       autoClose: 5,
                       severity: AlertSeverity.Info,

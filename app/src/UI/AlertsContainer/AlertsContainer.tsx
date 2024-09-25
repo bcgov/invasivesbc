@@ -10,7 +10,7 @@ import AlertMessage from 'interfaces/AlertMessage';
 import { AlertSubjects } from 'constants/alertEnums';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'utils/use_selector';
-import { clearAlert, clearAllAlerts } from 'state/actions/userAlerts.ts/userAlerts';
+import Alerts from 'state/actions/alerts/Alerts';
 
 const AlertsContainer = () => {
   const dispatch = useDispatch();
@@ -37,7 +37,7 @@ const AlertsContainer = () => {
     if (id) {
       clearTimeout(timeoutsRef.current[id]);
       delete timeoutsRef.current[id];
-      dispatch(clearAlert(id));
+      dispatch(Alerts.deleteOne(id));
     }
   };
   /**
@@ -52,7 +52,7 @@ const AlertsContainer = () => {
   const handleClearAll = () => {
     Object.values(timeoutsRef.current).forEach(clearTimeout);
     timeoutsRef.current = {} as ReturnType<typeof setInterval>;
-    dispatch(clearAllAlerts());
+    dispatch(Alerts.deleteAll());
   };
 
   useEffect(() => {

@@ -2,7 +2,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { IconButton } from '@mui/material';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { useDispatch } from 'react-redux';
-import { createAlert } from 'state/actions/userAlerts.ts/userAlerts';
+import Alerts from 'state/actions/alerts/Alerts';
 
 type PropTypes = {
   content: string;
@@ -13,7 +13,7 @@ export const CopyToClipboardButton = ({ content }: PropTypes) => {
   const copyToClipboard = async () => {
     if (!navigator.clipboard) {
       dispatch(
-        createAlert({
+        Alerts.create({
           content: 'No clipboard supported',
           subject: AlertSubjects.Form,
           severity: AlertSeverity.Error
@@ -23,7 +23,7 @@ export const CopyToClipboardButton = ({ content }: PropTypes) => {
     }
     await navigator.clipboard.writeText(content);
     dispatch(
-      createAlert({
+      Alerts.create({
         content: 'Copied to clipboard!',
         subject: AlertSubjects.Form,
         severity: AlertSeverity.Success,

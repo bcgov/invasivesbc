@@ -24,7 +24,7 @@ import './CustomizeLayerDialog.css';
 import KMLShapesUpload from './KMLShapesUpload';
 import { useSelector } from 'utils/use_selector';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { createAlert } from 'state/actions/userAlerts.ts/userAlerts';
+import Alerts from 'state/actions/alerts/Alerts';
 
 const CustomizeLayerMenu = (props) => {
   enum MenuState {
@@ -68,7 +68,7 @@ const CustomizeLayerMenu = (props) => {
         dispatch({ type: TOGGLE_LAYER_PICKER_OPEN });
         dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
         dispatch(
-          createAlert({
+          Alerts.create({
             content: 'Complete your layer by drawing a shape with the map tools.',
             subject: AlertSubjects.Map,
             severity: AlertSeverity.Info

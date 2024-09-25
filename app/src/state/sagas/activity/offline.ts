@@ -16,13 +16,13 @@ import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity 
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { createAlert } from 'state/actions/userAlerts.ts/userAlerts';
+import Alerts from 'state/actions/alerts/Alerts';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   //const shortId = action.payload.
   // all logic handled in the reducer
   yield put(
-    createAlert({
+    Alerts.create({
       content: 'Saved locally',
       severity: AlertSeverity.Info,
       subject: AlertSubjects.Form
