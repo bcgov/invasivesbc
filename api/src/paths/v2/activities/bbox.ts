@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import SQL, { SQLStatement } from 'sql-template-strings';
+import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
 import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
@@ -53,27 +53,6 @@ POST.apiDoc = {
 };
 
 /**
- * @desc modify getActivitiesSQLv2 query to return a bounding box for the recordset
- * @param cte ActivitiesSQL Query being used as Common Table Expression (CTE)
- * @returns { SQLStatement } Bounding box SQL
- */
-const bboxSql = (cte: SQLStatement): SQLStatement => {
-  const bboxQuery: SQLStatement = SQL` WITH userQuery AS ( `;
-  // Remove semicolons from original query
-  bboxQuery.append(cte.text.replaceAll(/;/g, ''));
-  bboxQuery.append(` )
-          SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
-          FROM invasivesbc.activity_incoming_data
-          WHERE geog IS not null
-          AND activity_id in (
-            SELECT activity_id
-            FROM userQuery
-          )
-        `);
-  return bboxQuery;
-};
-
-/**
  * @desc Create Bounding box based on the filter properties for a given recordset
  */
 function postHandler(): RequestHandler {
@@ -89,11 +68,10 @@ function postHandler(): RequestHandler {
     try {
       defaultLog.debug({ label: 'recordset-bbox', message: 'postHandler', body: req.body });
       if (req.body?.filterObjects?.[0]) {
-        const activitiesSql: SQLStatement = getActivitiesSQLv2(
-          sanitizeActivityFilterObject(req.body.filterObjects[0], req)
-        );
-        const convertedSql = bboxSql(activitiesSql);
-        const response = await connection.query(convertedSql.text, convertedSql.values);
+        const filterObject = sanitizeActivityFilterObject(req.body.filterObjects[0], req);
+        filterObject.boundingBoxOnly = true;
+        const activitiesSql: SQLStatement = getActivitiesSQLv2(filterObject);
+        const response = await connection.query(activitiesSql.text, activitiesSql.values);
 
         if (response.rowCount > 0) {
           return res.status(200).json(response.rows[0]);

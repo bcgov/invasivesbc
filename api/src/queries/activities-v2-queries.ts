@@ -267,17 +267,30 @@ function getActivitiesSQLv2(filterObject: any) {
     sqlStatement = whereStatement(sqlStatement, filterObject);
     sqlStatement = groupByStatement(sqlStatement, filterObject);
     if (filterObject.vt_request) {
-      sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom;`);
-    } else if (filterObject.boundingBoxOnly) {
-      sqlStatement.append(`) SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox;`);
-    } else {
+      sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom`);
+    } else if (!filterObject.boundingBoxOnly) {
+      // we don't want limits or offsets when computing the bounding box
       sqlStatement = orderByStatement(sqlStatement, filterObject);
       sqlStatement = limitStatement(sqlStatement, filterObject);
       sqlStatement = offSetStatement(sqlStatement, filterObject);
     }
 
-    defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
-    return sqlStatement;
+    if (filterObject.boundingBoxOnly) {
+      // wrap the whole thing into a subquery for the aggregate function
+      const wrappedStatement = SQL` WITH userQuery AS ( `.append(sqlStatement.text).append(` )
+        SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
+        FROM invasivesbc.activity_incoming_data
+        WHERE geog IS not null
+          AND activity_id in (SELECT activity_id
+                              FROM userQuery)`);
+
+      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: wrappedStatement });
+
+      return wrappedStatement;
+    } else {
+      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
+      return sqlStatement;
+    }
   } catch (e) {
     defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', body: e.message });
     throw e;
@@ -818,7 +831,7 @@ function limitStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function offSetStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const offset = sqlStatement.append(` offset ${filterObject.offset};`);
+  const offset = sqlStatement.append(` offset ${filterObject.offset}`);
   return offset;
 }
 
