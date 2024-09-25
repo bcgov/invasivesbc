@@ -882,12 +882,6 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
 
     layers: [
       {
-        id: `Esri-Sat-LayerSD-RasterTest`,
-        type: 'raster',
-        source: 'Esri-Sat-LayerSD',
-        minzoom: 0
-      },
-      {
         id: 'background',
         type: 'background',
         paint: {
