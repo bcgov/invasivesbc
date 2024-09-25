@@ -9,6 +9,7 @@ export const createAlert = createAction<AlertMessage>(NEW_ALERT);
 
 /**
  * @desc Action Creator for deleting one User Alert
+ * @param {string} id Identifier of alert being deleted
  */
 export const clearAlert = createAction(CLEAR_ALERT, (id: string) => ({ payload: { id } }));
 
