@@ -7,15 +7,15 @@ import { MapOutlined, Assignment, InsertPhoto } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import './AlertsContainer.css';
 import AlertMessage from 'interfaces/AlertMessage';
-import { CLEAR_ALERT, CLEAR_ALERTS } from 'state/actions';
 import { AlertSubjects } from 'constants/alertEnums';
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'utils/use_selector';
+import { clearAlert, clearAllAlerts } from 'state/actions/userAlerts.ts/userAlerts';
 
 const AlertsContainer = () => {
   const dispatch = useDispatch();
   const timeoutsRef = useRef<ReturnType<typeof setInterval>>({} as ReturnType<typeof setInterval>);
-  const alerts = useSelector((state) => state.AlertsAndPrompts.alerts || []);
+  const alerts = useSelector((state) => state.AlertsAndPrompts.alerts);
 
   /**
    * @desc Helper function, converts AlertSubjects to Icons
@@ -33,32 +33,31 @@ const AlertsContainer = () => {
     }
   };
 
-  const handleClose = (alert) => {
-    if (alert.id) {
-      clearTimeout(timeoutsRef.current[alert.id]);
-      delete timeoutsRef.current[alert.id];
-      dispatch({
-        type: CLEAR_ALERT,
-        payload: { id: alert.id }
-      });
+  const handleClose = (id: string) => {
+    if (id) {
+      clearTimeout(timeoutsRef.current[id]);
+      delete timeoutsRef.current[id];
+      dispatch(clearAlert(id));
     }
   };
   /**
    * @desc Handler for when autoClose parameter used
    * @param alert Alert to be cleared
    */
-  const delayedClear = (alert) => {
+  const delayedClear = (alert: AlertMessage) => {
     if (!alert.autoClose) return;
-    timeoutsRef.current[alert.id] = setTimeout(() => handleClose(alert), alert.autoClose * 1000);
+    timeoutsRef.current[alert.id!] = setTimeout(() => handleClose(alert.id!), alert.autoClose * 1000);
   };
+
   const handleClearAll = () => {
     Object.values(timeoutsRef.current).forEach(clearTimeout);
     timeoutsRef.current = {} as ReturnType<typeof setInterval>;
-    dispatch({ type: CLEAR_ALERTS });
+    dispatch(clearAllAlerts());
   };
+
   useEffect(() => {
     alerts.forEach((alert) => {
-      if (alert.autoClose && !timeoutsRef.current[alert.id]) {
+      if (alert.autoClose && !timeoutsRef.current[alert.id!]) {
         delayedClear(alert);
       }
     });
@@ -83,16 +82,16 @@ const AlertsContainer = () => {
           Clear All Alerts
         </Button>
       )}
-      {alerts.map((alert: AlertMessage) => (
+      {alerts.map(({ id, severity, subject, title, content }) => (
         <Alert
-          key={alert.id}
-          severity={alert.severity}
-          onClose={() => handleClose(alert)}
+          key={id}
+          severity={severity}
+          onClose={() => handleClose(id!)}
           className="alertsContainerAlert"
-          icon={<Icon color={alert.severity}>{getImageFromSubject(alert.subject)}</Icon>}
+          icon={<Icon color={severity}>{getImageFromSubject(subject)}</Icon>}
         >
-          {alert.title && <AlertTitle>{alert.title}</AlertTitle>}
-          {alert.content}
+          {title && <AlertTitle>{title}</AlertTitle>}
+          {content}
         </Alert>
       ))}
     </div>

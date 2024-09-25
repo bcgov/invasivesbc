@@ -1,7 +1,6 @@
-import { createNextState } from '@reduxjs/toolkit';
+import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { AppConfig } from '../config';
 import { CLEAR_ALERT, CLEAR_ALERTS, CLEAR_PROMPT, CLEAR_PROMPTS, NEW_ALERT, NEW_PROMPT } from 'state/actions';
-import { getUuid } from './userSettings';
 import AlertMessage from 'interfaces/AlertMessage';
 
 interface AlertsAndPromptsState {
@@ -21,7 +20,7 @@ export function createAlertsAndPromptsReducer(
     return createNextState(state, (draftState) => {
       switch (action.type) {
         case NEW_ALERT: {
-          const newID = getUuid();
+          const newID = nanoid();
           const newAlertIsDuplicate = state.alerts.some(
             (item: AlertMessage) => action.payload.content === item.content && action.payload.severity === item.severity
           );
@@ -31,7 +30,7 @@ export function createAlertsAndPromptsReducer(
           break;
         }
         case NEW_PROMPT: {
-          const newID = getUuid();
+          const newID = nanoid();
           draftState.prompts = [...state.prompts, { ...action.payload, id: newID }];
           break;
         }

@@ -52,13 +52,11 @@ import {
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
-  NEW_ALERT,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
   USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
-  CLEAR_ALERTS,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
@@ -112,6 +110,7 @@ import AlertMessage from 'interfaces/AlertMessage';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { promptConfirmationInput, promptNumberInput } from 'state/actions/userPrompts/userPrompts';
+import { clearAllAlerts, createAlert } from 'state/actions/userAlerts.ts/userAlerts';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -128,14 +127,13 @@ function* handle_ACTIVITY_DELETE_SUCESS(action) {
       activeActivity: null
     }
   });
-  yield put({
-    type: NEW_ALERT,
-    payload: {
+  yield put(
+    createAlert({
       content: 'Activity deleted successfully',
       severity: AlertSeverity.Success,
       subject: AlertSubjects.Form
-    }
-  });
+    })
+  );
   yield put({ type: MAP_INIT_REQUEST });
 }
 
@@ -211,14 +209,13 @@ function* handle_URL_CHANGE(action) {
 }
 
 function* handle_ACTIVITY_DELETE_FAILURE(action) {
-  yield put({
-    type: NEW_ALERT,
-    payload: {
+  yield put(
+    createAlert({
       subject: AlertSubjects.Form,
-      message: 'Activity delete failed',
+      content: 'Activity delete failed',
       severity: AlertSeverity.Error
-    }
-  });
+    })
+  );
 }
 
 function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
@@ -261,7 +258,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
       message = mappingAlertMessages.trackingStarted;
   }
   yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
-  yield put({ type: NEW_ALERT, payload: message });
+  yield put(createAlert(message));
 }
 
 /**
@@ -283,7 +280,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
 
   // Early exit on non-existent/zero-length geometry arrays
   if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
-    yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackMyPathStoppedEarly });
+    yield put(createAlert(mappingAlertMessages.trackMyPathStoppedEarly));
     yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
     return;
   }
@@ -337,7 +334,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
         return [
           { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [bufferedLine] } },
           { type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE },
-          { type: NEW_ALERT, payload: mappingAlertMessages.trackingStoppedSuccess }
+          createAlert(mappingAlertMessages.trackingStoppedSuccess)
         ];
       };
       yield put(
@@ -354,21 +351,21 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
     } else {
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
       yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
-      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingStoppedSuccess });
+      yield put(createAlert(mappingAlertMessages.trackingStoppedSuccess));
     }
   } else {
     yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE });
-    yield put({ type: NEW_ALERT, payload: mappingAlertMessages.canEditInfo });
+    yield put(createAlert(mappingAlertMessages.canEditInfo));
     for (const error of validationErrors) {
-      yield put({ type: NEW_ALERT, payload: error });
+      yield put(createAlert(error));
     }
     const callback = (userConfirmsExit: boolean) => {
       if (userConfirmsExit) {
         return [
-          { type: CLEAR_ALERTS },
+          clearAllAlerts(),
           { type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE },
           { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
-          { type: NEW_ALERT, payload: mappingAlertMessages.trackMyPathStoppedEarly }
+          createAlert(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
       }
     };
@@ -385,10 +382,10 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
 }
 
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME() {
-  yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingResumed });
+  yield put(createAlert(mappingAlertMessages.trackingResumed));
 }
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
-  yield put({ type: NEW_ALERT, payload: mappingAlertMessages.trackingPaused });
+  yield put(createAlert(mappingAlertMessages.trackingPaused));
 }
 /**
  * @desc Handles new coordinates coming in from the TRACK_ME_GEO featureset.

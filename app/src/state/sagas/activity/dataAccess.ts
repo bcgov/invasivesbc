@@ -54,7 +54,6 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAIN_MAP_MOVE,
   MAP_INIT_REQUEST,
-  NEW_ALERT,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_MAP_CENTER_REQUEST
 } from 'state/actions';
@@ -74,6 +73,7 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { promptNumberInput } from 'state/actions/userPrompts/userPrompts';
 import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPayload';
 import { MOBILE } from 'state/build-time-config';
+import { createAlert } from 'state/actions/userAlerts.ts/userAlerts';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -203,10 +203,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       if (hasSelfIntersections) {
-        yield put({
-          type: NEW_ALERT,
-          payload: mappingAlertMessages.containsIntersections
-        });
+        yield put(createAlert(mappingAlertMessages.containsIntersections));
       }
     }
 
@@ -246,10 +243,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     }
 
     if (areWellsInside && activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial') {
-      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.wellsInsideTreatmentArea });
+      yield put(createAlert(mappingAlertMessages.wellsInsideTreatmentArea));
     }
     if (!isWithinBC && !isWIPLinestring) {
-      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.notWithinBC });
+      yield put(createAlert(mappingAlertMessages.notWithinBC));
       return;
     }
     const payload = {
@@ -274,15 +271,14 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
   const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
   try {
     yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: activity_id } });
-    yield put({
-      type: NEW_ALERT,
-      payload: {
+    yield put(
+      createAlert({
         autoClose: 5,
         content: 'Activity saved successfully',
         severity: AlertSeverity.Success,
         subject: AlertSubjects.Form
-      }
-    });
+      })
+    );
 
     yield put({ type: MAP_INIT_REQUEST });
   } catch (e) {

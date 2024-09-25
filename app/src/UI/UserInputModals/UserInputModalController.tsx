@@ -20,7 +20,7 @@ import {
  * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Prompt-System }
  */
 const UserInputModalController = () => {
-  const prompts = useSelector((state) => state.AlertsAndPrompts.prompts) || [];
+  const prompts = useSelector((state) => state.AlertsAndPrompts.prompts);
   if (prompts.length === 0) {
     return;
   }
