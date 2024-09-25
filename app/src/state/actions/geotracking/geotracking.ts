@@ -12,30 +12,30 @@ class GeoTracking {
   /**
    * @desc Action Creator for premature exit of GeoTracking Feature
    */
-  static earlyExit = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE);
+  static readonly earlyExit = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE);
 
   /**
    * @desc Action Creator for starting the GeoTracking feature
    * @param {GeoShapes} type Feature type being created
    */
-  static start = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, (type: GeoShapes) => ({
+  static readonly start = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, (type: GeoShapes) => ({
     payload: { type }
   }));
 
   /**
    * @desc Action Creator for resuming Geotracking, allowing points to start being placed again
    */
-  static resume = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME);
+  static readonly resume = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME);
 
   /**
    * @desc Action Creator for completing GeoTracking feature
    */
-  static stop = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP);
+  static readonly stop = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP);
 
   /**
    * @desc Action Creator for pausing Geotracking, stopping points from being plotted
    */
-  static pause = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE);
+  static readonly pause = createAction(MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE);
 }
 
 export default GeoTracking;
