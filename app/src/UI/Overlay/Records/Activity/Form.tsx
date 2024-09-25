@@ -6,16 +6,12 @@ import './Form.css';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
-import {
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
-  MAP_TOGGLE_TRACKING_ON
-} from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACKING_ON } from 'state/actions';
 import GeoShapes from 'constants/geoShapes';
 import { promptRadioInput } from 'state/actions/userPrompts/userPrompts';
 import { UtmInputObj } from 'interfaces/prompt-interfaces';
 import { promptUtmInput } from 'state/actions/userPrompts/userPrompts';
+import { startGeoTracking, stopGeoTracking } from 'state/actions/geotracking/geotracking';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -71,11 +67,11 @@ export const ActivityForm = (props) => {
   };
   const clickHandler = () => {
     if (drawGeometryTracking.isTracking) {
-      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
+      dispatch(stopGeoTracking());
     } else {
       const callback = (input: string | number) => {
         dispatch({ type: MAP_TOGGLE_TRACKING_ON });
-        dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: { type: input } });
+        dispatch(startGeoTracking(input as GeoShapes));
       };
       dispatch(
         promptRadioInput({

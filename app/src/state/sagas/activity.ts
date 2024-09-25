@@ -51,7 +51,6 @@ import {
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE,
   USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
@@ -111,6 +110,7 @@ import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { promptConfirmationInput, promptNumberInput } from 'state/actions/userPrompts/userPrompts';
 import { clearAllAlerts, createAlert } from 'state/actions/userAlerts.ts/userAlerts';
+import { closeGeoTracking, pauseGeoTracking } from 'state/actions/geotracking/geotracking';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -281,7 +281,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
   // Early exit on non-existent/zero-length geometry arrays
   if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
     yield put(createAlert(mappingAlertMessages.trackMyPathStoppedEarly));
-    yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
+    yield put(closeGeoTracking());
     return;
   }
 
@@ -333,7 +333,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
         const bufferedLine = buffer(newGeo, width / 10000);
         return [
           { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [bufferedLine] } },
-          { type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE },
+          closeGeoTracking(),
           createAlert(mappingAlertMessages.trackingStoppedSuccess)
         ];
       };
@@ -350,11 +350,11 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
       );
     } else {
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
-      yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE });
+      yield put(closeGeoTracking());
       yield put(createAlert(mappingAlertMessages.trackingStoppedSuccess));
     }
   } else {
-    yield put({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE });
+    yield put(pauseGeoTracking());
     yield put(createAlert(mappingAlertMessages.canEditInfo));
     for (const error of validationErrors) {
       yield put(createAlert(error));
@@ -363,7 +363,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
       if (userConfirmsExit) {
         return [
           clearAllAlerts(),
-          { type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE },
+          closeGeoTracking(),
           { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
           createAlert(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
