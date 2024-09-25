@@ -1,9 +1,9 @@
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getLogger } from 'utils/logger';
-import { getActivitiesSQLv2, sanitizeActivityFilterObject } from './v2/activities';
 import SQL, { SQLStatement } from 'sql-template-strings';
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getLogger } from 'utils/logger';
+import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
 import { getDBConnection } from 'database/db';
 
 const defaultLog = getLogger('recordset-bbox');
@@ -11,7 +11,7 @@ export const POST: Operation = [postHandler()];
 
 POST.apiDoc = {
   description: 'Fetch bounding box based on search criteria',
-  tags: ['recordset-bbox'],
+  tags: ['bbox'],
   security: SECURITY_ON ? [{ Bearer: ALL_ROLES }] : [],
   requestBody: {
     description: 'Recordset search filter criteria',
