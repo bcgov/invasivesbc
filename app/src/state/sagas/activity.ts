@@ -44,11 +44,8 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   ACTIVITY_UPDATE_PHOTO_REQUEST,
-  GET_API_DOC_SUCCESS,
   MAP_INIT_REQUEST,
   MAP_SET_COORDS,
-  MAP_SET_WHATS_HERE_SECTION,
-  MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
   PAN_AND_ZOOM_TO_ACTIVITY,
@@ -108,6 +105,7 @@ import mappingAlertMessages from 'constants/alertMessages';
 import AlertMessage from 'interfaces/AlertMessage';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 import Prompt from 'state/actions/prompts/Prompt';
 import Alerts from 'state/actions/alerts/Alerts';
 import GeoTracking from 'state/actions/geotracking/Geotracking';
@@ -121,12 +119,7 @@ function* handle_USER_SETTINGS_READY(action) {
 function* handle_ACTIVITY_DEBUG(action) {}
 
 function* handle_ACTIVITY_DELETE_SUCESS(action) {
-  yield put({
-    type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
-    payload: {
-      activeActivity: null
-    }
-  });
+  yield put(UserSettings.RecordSet.setSelected(null));
   yield put(
     Alerts.create({
       content: 'Activity deleted successfully',
@@ -158,7 +151,7 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
   yield delay(2000);
 
   try {
-    if (action.type === 'ACTIVITY_ON_FORM_CHANGE_SUCCESS' && !action.payload.unsavedDelay) return;
+    if (action.type === ACTIVITY_ON_FORM_CHANGE_SUCCESS && !action.payload.unsavedDelay) return;
 
     const activityState = yield select(selectActivity);
     const activitySerialized = JSON.stringify(activityState?.activity);
