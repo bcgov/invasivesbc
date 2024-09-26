@@ -9,7 +9,7 @@ import { Button } from '@mui/material';
 import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACKING_ON } from 'state/actions';
 import GeoShapes from 'constants/geoShapes';
 import { UtmInputObj } from 'interfaces/prompt-interfaces';
-import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import GeoTracking from 'state/actions/geotracking/Geotracking';
 import Prompt from 'state/actions/prompts/Prompt';
 
 export const ActivityForm = (props) => {
