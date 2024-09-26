@@ -11,8 +11,6 @@ import {
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
-  EXPORT_CONFIG_LOAD_REQUEST,
-  EXPORT_CONFIG_LOAD_SUCCESS,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_SUCCESS,
@@ -20,12 +18,10 @@ import {
   IAPP_TABLE_ROWS_GET_ONLINE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
   MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
-  WHATS_HERE_ACTIVITY_ROWS_REQUEST,
-  WHATS_HERE_IAPP_ROWS_REQUEST,
-  WHATS_HERE_PAGE_POI
+  WHATS_HERE_ACTIVITY_ROWS_REQUEST
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
-import { selectUserSettings } from 'state/reducers/userSettings';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -330,7 +326,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
 
   yield put({ type: MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
-  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST, payload: { page: 0 } });
+  yield put(WhatsHere.iapp_rows_request());
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
