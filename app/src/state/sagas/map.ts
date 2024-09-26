@@ -90,6 +90,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import { BASE_LAYER_HANDLERS } from 'state/sagas/map/base-layers';
 import Prompt from 'state/actions/prompts/Prompt';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -278,8 +279,8 @@ function* handle_WHATS_HERE_FEATURE(action) {
       yield take(IAPP_GEOJSON_GET_SUCCESS);
     }
 
-    yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY });
-    yield put({ type: MAP_WHATS_HERE_INIT_GET_POI });
+    yield put(WhatsHere.map_init_get_activity());
+    yield put(WhatsHere.map_init_get_poi());
   }
 }
 
@@ -376,8 +377,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
 }
 
 function* handle_WHATS_HERE_PAGE_POI(action) {
-  // WHATS_HERE_IAPP_ROWS_REQUEST
-  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
+  yield put(WhatsHere.iapp_rows_request());
 }
 
 function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
@@ -534,7 +534,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
 }
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
-  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
+  yield put(WhatsHere.activity_rows_request());
 }
 
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
@@ -602,10 +602,10 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
 function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
   switch (action.payload.recordType) {
     case 'IAPP':
-      yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
+      yield put(WhatsHere.iapp_rows_request());
       break;
     default:
-      yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
+      yield put(WhatsHere.activity_rows_request());
       break;
   }
 }
@@ -956,8 +956,8 @@ function* handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
 }
 
 function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
-  yield put({ type: WHATS_HERE_IAPP_ROWS_REQUEST });
-  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
+  yield put(WhatsHere.iapp_rows_request());
+  yield put(WhatsHere.activity_rows_request());
 }
 
 function* handle_RECORDSET_SET_SORT(action) {
