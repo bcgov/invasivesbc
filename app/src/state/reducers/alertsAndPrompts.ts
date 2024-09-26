@@ -36,7 +36,7 @@ export function createAlertsAndPromptsReducer(
         draftState.prompts = state.prompts.filter((prompt) => prompt.id !== action.payload.id);
       } else if (Prompt.closeAll.match(action)) {
         draftState.prompts = [];
-      } else if (Prompt.NEW_PROMPT.match(action.type)) {
+      } else if (RegExp(Prompt.NEW_PROMPT).exec(action.type)) {
         const newPrompt: PromptAction = action.payload;
         const newID = nanoid();
         draftState.prompts = [...state.prompts, { ...newPrompt, id: newID }];
