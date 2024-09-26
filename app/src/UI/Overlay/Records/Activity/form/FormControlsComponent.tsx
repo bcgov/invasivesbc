@@ -5,7 +5,7 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_DELETE_SUCCESS, USER_SETTINGS_SET_SELECTED_RECORD_REQUEST } from 'state/actions';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 export interface IFormControlsComponentProps {
   classes?: any;
@@ -37,12 +37,7 @@ const FormControlsComponent: React.FC<IFormControlsComponentProps> = (props: any
     //TODO refactor this all to happen in a side effect triggered by a request action
     // On record deletion, clear selected record
     if (activeActivity === activity_id) {
-      dispatch({
-        type: USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
-        payload: {
-          activeActivity: null
-        }
-      });
+      dispatch(UserSettings.RecordSet.setSelected(null));
     }
     const activityIds = [activity_id];
     dataAccess.deleteActivities(activityIds).then(() => {

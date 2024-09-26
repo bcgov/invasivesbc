@@ -15,18 +15,15 @@ import CheckIcon from '@mui/icons-material/Check';
 
 import { Button, IconButton, Tooltip, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import {
-  INIT_CACHE_RECORDSET,
-  USER_SETTINGS_ADD_RECORD_SET,
-  USER_SETTINGS_REMOVE_RECORD_SET,
-  USER_SETTINGS_SET_RECORDSET
-} from 'state/actions';
+import { INIT_CACHE_RECORDSET } from 'state/actions';
 import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
 import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
 import { promptConfirmationInput } from 'utils/userPrompts';
 import { useSelector } from 'utils/use_selector';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export const Records = () => {
   const DEFAULT_RECORD_TYPES = ['All InvasivesBC Activities', 'All IAPP Records', 'My Drafts'];
@@ -78,56 +75,26 @@ export const Records = () => {
   const onClickToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     console.dir(e);
     e.stopPropagation();
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
-        updatedSet: {
-          labelToggle: !recordSets?.[set]?.labelToggle
-        },
-        setName: set
-      }
-    });
+    dispatch(UserSettings.RecordSet.set({ labelToggle: !recordSets?.[set]?.labelToggle }, set));
   };
 
   const onClickToggleLayer = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
-        updatedSet: {
-          mapToggle: !recordSets?.[set]?.mapToggle
-        },
-        setName: set
-      }
-    });
+    dispatch(UserSettings.RecordSet.set({ mapToggle: !recordSets?.[set]?.mapToggle }, set));
   };
 
   const onClickCycleColour = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     const currentIndex = RECORD_COLOURS.indexOf(recordSets?.[set]?.color);
     const nextIndex = (currentIndex + 1) % RECORD_COLOURS.length;
-
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
-        updatedSet: {
-          color: RECORD_COLOURS[nextIndex]
-        },
-        setName: set
-      }
-    });
+    dispatch(UserSettings.RecordSet.set({ color: RECORD_COLOURS[nextIndex] }, set));
   };
 
   const onClickDeleteRecordSet = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     const callback = (userConfirmation: boolean) => {
       if (userConfirmation) {
-        dispatch({
-          type: USER_SETTINGS_REMOVE_RECORD_SET,
-          payload: {
-            setID: set
-          }
-        });
+        dispatch(UserSettings.RecordSet.remove(set));
       }
     };
     dispatch(
@@ -152,59 +119,26 @@ export const Records = () => {
     });
 
     setTimeout(() => {
-      dispatch({
-        type: USER_SETTINGS_SET_RECORDSET,
-        payload: {
-          updatedSet: {
-            cached: true,
-            cachedTime: new Date().toLocaleDateString(),
-            offlineMode: true
-          },
-          setName: set
-        }
-      });
+      dispatch(
+        UserSettings.RecordSet.set({ cached: true, cachedTime: new Date().toLocaleString, offlineMode: true }, set)
+      );
     }, 3000);
   };
 
   const onClickToggleViewCache = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
-        updatedSet: {
-          offlineMode: !recordSets?.[set]?.offlineMode
-        },
-        setName: set
-      }
-    });
+    UserSettings.RecordSet.set({ offlineMode: !recordSets?.[set]?.offlineMode }, set);
   };
 
   const onClickInitClearCache = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    dispatch({
-      type: USER_SETTINGS_SET_RECORDSET,
-      payload: {
-        updatedSet: {
-          isDeletingCache: true
-        },
-        setName: set
-      }
-    });
+    UserSettings.RecordSet.set({ isDeletingCache: true }, set);
 
     setTimeout(() => {
-      dispatch({
-        type: USER_SETTINGS_SET_RECORDSET,
-        payload: {
-          updatedSet: {
-            cached: false,
-            cachedTime: '',
-            offlineMode: false,
-            isDeletingCache: false,
-            isCaching: false
-          },
-          setName: set
-        }
-      });
+      UserSettings.RecordSet.set(
+        { cached: false, cachedTime: '', offlineMode: false, isDeletingCache: false, isCaching: false },
+        set
+      );
     }, 3000);
   };
 
@@ -241,17 +175,12 @@ export const Records = () => {
               {isEditingName && !DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName) ? (
                 <>
                   <input
-                    onChange={(e) =>
-                      dispatch({
-                        type: USER_SETTINGS_SET_RECORDSET,
-                        payload: { updatedSet: { recordSetName: e.target.value }, setName: set }
-                      })
-                    }
+                    type="text"
+                    value={recordSets[set]?.recordSetName}
+                    onChange={(e) => dispatch(UserSettings.RecordSet.set({ recordSetName: e.target.value }, set))}
                     onClick={(e) => {
                       e.stopPropagation();
                     }}
-                    type="text"
-                    value={recordSets[set]?.recordSetName}
                   />
                   <Button
                     onClick={(e) => {
@@ -384,15 +313,12 @@ export const Records = () => {
         );
       })}
       <Button
-        onClick={dispatch.bind(this, { type: USER_SETTINGS_ADD_RECORD_SET, payload: { recordSetType: 'Activity' } })}
+        onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.Activity))}
         className={'addRecordSet'}
       >
         Add Layer of Records
       </Button>
-      <Button
-        onClick={dispatch.bind(this, { type: USER_SETTINGS_ADD_RECORD_SET, payload: { recordSetType: 'IAPP' } })}
-        className={'addRecordSet'}
-      >
+      <Button onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.IAPP))} className={'addRecordSet'}>
         Add IAPP Layer of Records
       </Button>
     </div>
