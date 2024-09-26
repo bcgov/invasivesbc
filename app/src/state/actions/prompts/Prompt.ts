@@ -12,7 +12,7 @@ import {
 } from 'interfaces/prompt-interfaces';
 import { createAction } from '@reduxjs/toolkit';
 import { PromptTypes } from 'constants/promptEnums';
-import { CLEAR_PROMPT, NEW_PROMPT } from 'state/actions';
+import { CLEAR_PROMPT, CLEAR_PROMPTS, NEW_PROMPT } from 'state/actions';
 
 class Prompt {
   /**
@@ -70,9 +70,13 @@ class Prompt {
   /**
    * @desc DRY handler for closing input modal
    * @param id ID for the Payload object in the prompts array
-   * @returns {ReduxPayload} Payload needed to delete the modal
    */
   static readonly closeOne = createAction(CLEAR_PROMPT, (id: string) => ({ payload: { id } }));
+
+  /**
+   * @desc Clear all input modals in the queue
+   */
+  static readonly closeAll = createAction(CLEAR_PROMPTS);
 }
 
 export default Prompt;
