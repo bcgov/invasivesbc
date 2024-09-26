@@ -2,13 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
-import { MAP_TOGGLE_WHATS_HERE, NEW_ALERT } from 'state/actions';
+import { NEW_ALERT } from 'state/actions';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import { useHistory } from 'react-router-dom';
 import 'UI/Global.css';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 export const WhatsHereButton = (props) => {
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export const WhatsHereButton = (props) => {
               className={'button'}
               onClick={() => {
                 if ((whatsHere as any)?.toggle == false) {
-                  dispatch({ type: MAP_TOGGLE_WHATS_HERE });
+                  dispatch(WhatsHere.toggle());
                   dispatch({
                     type: NEW_ALERT,
                     payload: {
