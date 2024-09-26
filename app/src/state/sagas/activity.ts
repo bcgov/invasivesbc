@@ -110,7 +110,7 @@ import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import Prompt from 'state/actions/prompts/Prompt';
 import Alerts from 'state/actions/alerts/Alerts';
-import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import GeoTracking from 'state/actions/geotracking/Geotracking';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {

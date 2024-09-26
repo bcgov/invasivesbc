@@ -5,7 +5,7 @@ import GeoShapes from 'constants/geoShapes';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
-import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import GeoTracking from 'state/actions/geotracking/Geotracking';
 import Prompt from 'state/actions/prompts/Prompt';
 
 /**
