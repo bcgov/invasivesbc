@@ -128,7 +128,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   yield put({ type: GET_API_DOC_REQUEST });
   yield take(GET_API_DOC_SUCCESS);
   yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE });
-  UserSettings.InitState.getSuccess({ ...defaultRecordSet, ...recordSets });
+  yield put(UserSettings.InitState.getSuccess({ ...defaultRecordSet, ...recordSets }));
 }
 
 function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
