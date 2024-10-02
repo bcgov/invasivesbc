@@ -33,9 +33,7 @@ import {
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
   MAP_TOGGLE_GEOJSON_CACHE,
-  MAP_WHATS_HERE_FEATURE,
   MAP_WHATS_HERE_INIT_GET_ACTIVITY,
-  MAP_WHATS_HERE_INIT_GET_POI,
   PAGE_OR_LIMIT_UPDATE,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
@@ -50,10 +48,7 @@ import {
   SET_CURRENT_OPEN_SET,
   TOGGLE_PANEL,
   URL_CHANGE,
-  USER_SETTINGS_ADD_RECORD_SET,
-  WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-  WHATS_HERE_IAPP_ROWS_REQUEST,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
@@ -100,31 +95,9 @@ function* handle_MAP_INIT_REQUEST(action) {
   const authState = yield select(selectAuth);
   const mapState = yield select(selectMap);
   const sets = {};
-  // sets['2'] = action.payload.recordSets[2];
-  // sets['3'] = action.payload.recordSets[3];
-  const filterCriteria = yield getSearchCriteriaFromFilters(
-    [],
-    //    action.payload.recordSets[2].advancedFilterRows,
-    sets,
-    '2',
-    false,
-    [],
-    //action.payload.recordSets[2].gridFilters,
-    0,
-    100000
-  );
+  const filterCriteria = yield getSearchCriteriaFromFilters([], sets, '2', false, [], 0, 100000);
 
-  const IAPP_filter = yield getSearchCriteriaFromFilters(
-    [],
-    //action.payload.recordSets[3].advancedFilterRows,
-    sets,
-    '3',
-    true,
-    [],
-    //action.payload.recordSets[3].gridFilters,
-    0,
-    100
-  );
+  const IAPP_filter = yield getSearchCriteriaFromFilters([], sets, '3', true, [], 0, 100);
 
   if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
     yield put({
@@ -168,7 +141,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
     mapState = yield select(selectMap);
 
     const toggledOnActivityLayers = mapState.layers.filter((layer) => {
-      return layer.layerState.mapToggle && layer.type === 'Activity';
+      return layer.layerState.mapToggle && layer.type === RecordSetType.Activity;
     });
 
     const activityLayersLoading = toggledOnActivityLayers.filter((layer) => {
@@ -176,7 +149,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
     });
 
     const toggledOnIAPPLayers = mapState.layers.filter((layer) => {
-      return layer.layerState.mapToggle && layer.type === 'IAPP';
+      return layer.layerState.mapToggle && layer.type === RecordSetType.IAPP;
     });
 
     const IAPPLayersLoading = toggledOnIAPPLayers.filter((layer) => {
@@ -215,7 +188,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
           filterType: 'spatialFilterDrawn',
           operator: 'CONTAINED IN',
           filter: '0.652479498272151712093656568',
-          geojson: action.payload.feature
+          geojson: action.payload
         }
       ],
       limit: 200000
@@ -243,7 +216,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
           filterType: 'spatialFilterDrawn',
           operator: 'CONTAINED IN',
           filter: '0.652479498272151712093656568',
-          geojson: action.payload.feature
+          geojson: action.payload
         }
       ],
       limit: 200000
@@ -264,10 +237,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
       });
     }
 
-    yield put({
-      type: WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
-      payload: { activities: activitiesServerIDList, iapp: iappServerIDList }
-    });
+    yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
   }
 
   if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
@@ -286,9 +256,9 @@ function* handle_WHATS_HERE_FEATURE(action) {
 
 function* whatsHereSaga() {
   yield all([
-    takeEvery(MAP_WHATS_HERE_INIT_GET_POI, handle_MAP_WHATS_HERE_INIT_GET_POI),
+    takeEvery(WhatsHere.map_init_get_poi, handle_MAP_WHATS_HERE_INIT_GET_POI),
     takeEvery(MAP_WHATS_HERE_INIT_GET_ACTIVITY, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY),
-    takeEvery(MAP_WHATS_HERE_FEATURE, handle_WHATS_HERE_FEATURE)
+    takeEvery(WhatsHere.map_feature, handle_WHATS_HERE_FEATURE)
   ]);
 }
 
@@ -534,7 +504,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
 }
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
-  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST });
+  yield put(WhatsHere.activity_rows_request);
 }
 
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
@@ -958,9 +928,9 @@ function* activitiesPageSaga() {
     takeEvery(CUSTOM_LAYER_DRAWN, handle_CUSTOM_LAYER_DRAWN),
 
     takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
-    takeEvery(WHATS_HERE_SERVER_FILTERED_IDS_FETCHED, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
+    takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
 
-    takeEvery(USER_SETTINGS_ADD_RECORD_SET, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),
@@ -981,12 +951,11 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
-    //    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
-    takeEvery(WHATS_HERE_IAPP_ROWS_REQUEST, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
+    takeEvery(WhatsHere.iapp_rows_request, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
     takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),
     takeEvery(WHATS_HERE_SORT_FILTER_UPDATE, handle_WHATS_HERE_SORT_FILTER_UPDATE),
     takeEvery(WHATS_HERE_PAGE_ACTIVITY, handle_WHATS_HERE_PAGE_ACTIVITY),
-    takeEvery(WHATS_HERE_ACTIVITY_ROWS_REQUEST, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
+    takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),

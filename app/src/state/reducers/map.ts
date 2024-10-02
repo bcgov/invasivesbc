@@ -38,11 +38,7 @@ import {
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACKING_ON,
-  MAP_TOGGLE_WHATS_HERE,
   MAP_UPDATE_AVAILABLE_BASEMAPS,
-  MAP_WHATS_HERE_FEATURE,
-  MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
-  MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
   MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
   OVERLAY_MENU_TOGGLE,
@@ -73,7 +69,6 @@ import {
   WHATS_HERE_ID_CLICKED,
   WHATS_HERE_PAGE_ACTIVITY,
   WHATS_HERE_PAGE_POI,
-  WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
   WHATS_HERE_SORT_FILTER_UPDATE
 } from '../actions';
 import { AppConfig } from '../config';
@@ -82,6 +77,7 @@ import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offl
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -297,7 +293,7 @@ export interface MapState {
     ActivitySortField: string;
     ActivitySortDirection: string;
 
-    IAPPIDs: any[];
+    IAPPIDs: string[];
     iappRows: any[];
     IAPPPage: number;
     IAPPLimit: number;
@@ -498,12 +494,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.layers.splice(index, 1);
       } else if (UserSettings.RecordSet.set.match(action)) {
         const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
-        if (!draftState.layers[layerIndex]?.layerState)
-          draftState.layers[layerIndex].layerState = {
-            color: '#000000',
-            mapToggle: false,
-            drawOrder: 0
-          };
         Object.keys(action.payload.updatedSet).map((key) => {
           if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
             draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
@@ -516,7 +506,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload);
         draftState.serverBoundaries.splice(index, 1);
       } else if (UserSettings.InitState.getSuccess.match(action)) {
-        Object.keys(action.payload.recordSets).forEach((setID) => {
+        Object.keys(action.payload.recordSets).map((setID) => {
           let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
           if (!draftState.layers[layerIndex]) {
             draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
@@ -534,42 +524,72 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           if (action.payload.recordSets[setID].drawOrder)
             draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
         });
+      } else if (WhatsHere.toggle.match(action)) {
+        if (draftState.whatsHere.toggle) {
+          draftState.whatsHere.loadingActivities = false;
+          draftState.whatsHere.loadingIAPP = false;
+        } else {
+          draftState.whatsHere.toggle = !state.whatsHere.toggle;
+          draftState.whatsHere.feature = null;
+          draftState.whatsHere.iappRows = [];
+          draftState.whatsHere.activityRows = [];
+          draftState.whatsHere.limit = 5;
+          draftState.whatsHere.page = 0;
+        }
+      } else if (WhatsHere.map_init_get_poi_ids_fetched.match(action)) {
+        draftState.whatsHere.IAPPIDs = action.payload ?? [];
+        draftState.whatsHere.iappRows = [];
+        draftState.whatsHere.IAPPPage = 0;
+        draftState.whatsHere.IAPPLimit = 15;
+      } else if (WhatsHere.map_init_get_activity_ids_fetched.match(action)) {
+        draftState.whatsHere.ActivityIDs = [...action.payload];
+        draftState.whatsHere.activityRows = [];
+        draftState.whatsHere.ActivityPage = 0;
+        draftState.whatsHere.ActivityLimit = 15;
+      } else if (WhatsHere.map_feature.match(action)) {
+        draftState.whatsHere.clickedActivity = null;
+        draftState.whatsHere.clickedActivityDescription = null;
+        draftState.whatsHere.clickedIAPP = null;
+        draftState.whatsHere.clickedIAPPDescription = null;
+        draftState.whatsHere.loadingActivities = true;
+        draftState.whatsHere.loadingIAPP = true;
+        draftState.whatsHere.feature = action.payload;
+        draftState.whatsHere.toggle = state.whatsHere.toggle;
+        draftState.whatsHere.limit = 5;
+        draftState.whatsHere.page = 0;
+      } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
+        draftState.whatsHere.serverActivityIDs = action.payload.activities;
+        draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
+
+        const toggledOnActivityLayers = draftState.layers.filter(
+          (layer) => layer.type === RecordSetType.Activity && layer.layerState.mapToggle
+        );
+
+        const toggledOnIAPPLayers = draftState.layers.filter(
+          (layer) => layer.type === RecordSetType.IAPP && layer.layerState.mapToggle
+        );
+
+        let localActivityIDs = [];
+
+        toggledOnActivityLayers.map((layer) => {
+          localActivityIDs = localActivityIDs.concat(layer.IDList);
+        });
+
+        let localIAPPIDs = [];
+
+        toggledOnIAPPLayers.map((layer) => {
+          localIAPPIDs = localIAPPIDs.concat(layer.IDList);
+        });
+
+        const iappIDs = [];
+        const activityIDs = [];
+        localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
+        localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
+
+        draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
+        draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
       } else {
         switch (action.type) {
-          case WHATS_HERE_SERVER_FILTERED_IDS_FETCHED: {
-            draftState.whatsHere.serverActivityIDs = action.payload.activities;
-            draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
-
-            const toggledOnActivityLayers = draftState.layers.filter(
-              (layer) => layer.type === RecordSetType.Activity && layer.layerState.mapToggle
-            );
-
-            const toggledOnIAPPLayers = draftState.layers.filter(
-              (layer) => layer.type === RecordSetType.IAPP && layer.layerState.mapToggle
-            );
-
-            let localActivityIDs = [];
-
-            toggledOnActivityLayers.map((layer) => {
-              localActivityIDs = localActivityIDs.concat(layer.IDList);
-            });
-
-            let localIAPPIDs = [];
-
-            toggledOnIAPPLayers.map((layer) => {
-              localIAPPIDs = localIAPPIDs.concat(layer.IDList);
-            });
-
-            const iappIDs = [];
-            const activityIDs = [];
-            localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
-            localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
-
-            draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
-            draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
-
-            break;
-          }
           case TOGGLE_LAYER_PICKER_OPEN:
             draftState.layerPickerOpen = !draftState.layerPickerOpen;
             break;
@@ -984,47 +1004,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME: {
             draftState.track_me_draw_geo.drawingShape = true;
-            break;
-          }
-          case MAP_TOGGLE_WHATS_HERE: {
-            if (draftState.whatsHere.toggle) {
-              draftState.whatsHere.loadingActivities = false;
-              draftState.whatsHere.loadingIAPP = false;
-            } else {
-              draftState.whatsHere.toggle = !state.whatsHere.toggle;
-              draftState.whatsHere.feature = null;
-              draftState.whatsHere.iappRows = [];
-              draftState.whatsHere.activityRows = [];
-              draftState.whatsHere.limit = 5;
-              draftState.whatsHere.page = 0;
-            }
-            break;
-          }
-          case MAP_WHATS_HERE_FEATURE: {
-            draftState.whatsHere.clickedActivity = null;
-            draftState.whatsHere.clickedActivityDescription = null;
-            draftState.whatsHere.clickedIAPP = null;
-            draftState.whatsHere.clickedIAPPDescription = null;
-            draftState.whatsHere.loadingActivities = true;
-            draftState.whatsHere.loadingIAPP = true;
-            draftState.whatsHere.feature = action.payload.feature;
-            draftState.whatsHere.toggle = state.whatsHere.toggle;
-            draftState.whatsHere.limit = 5;
-            draftState.whatsHere.page = 0;
-            break;
-          }
-          case MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED: {
-            draftState.whatsHere.ActivityIDs = [...action.payload.IDs];
-            draftState.whatsHere.activityRows = [];
-            draftState.whatsHere.ActivityPage = 0;
-            draftState.whatsHere.ActivityLimit = 15;
-            break;
-          }
-          case MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED: {
-            draftState.whatsHere.IAPPIDs = [...action.payload.IDs];
-            draftState.whatsHere.iappRows = [];
-            draftState.whatsHere.IAPPPage = 0;
-            draftState.whatsHere.IAPPLimit = 15;
             break;
           }
           case MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY: {

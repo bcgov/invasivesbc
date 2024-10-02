@@ -43,7 +43,7 @@ export const Records = () => {
   const CONFIGURATION_IS_MOBILE = useSelector((state) => state.Configuration?.current?.MOBILE);
   const isIAPPGeoJSONLoaded = useSelector((state) => state.Map?.IAPPGeoJSONDict !== undefined);
   const mapLayers = useSelector((state) => state.Map.layers);
-  const MapMode = useSelector((state) => state.Map?.MapMode);
+  const MapMode = useSelector((state) => state.Map.MapMode);
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
 
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
@@ -61,7 +61,7 @@ export const Records = () => {
   useEffect(() => {
     const rv = {};
     mapLayers.forEach((layer) => {
-      const geojson = layer?.type === 'Activity' ? isActivitiesGeoJSONLoaded : isIAPPGeoJSONLoaded;
+      const geojson = layer?.type === RecordSetType.Activity ? isActivitiesGeoJSONLoaded : isIAPPGeoJSONLoaded;
       if (MapMode !== 'VECTOR_ENDPOINT') {
         rv[layer?.recordSetID] = !layer?.loading && geojson;
       } else {

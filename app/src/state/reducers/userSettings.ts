@@ -9,7 +9,6 @@ import {
   GET_API_DOC_SUCCESS,
   IAPP_GET_SUCCESS,
   INIT_CACHE_RECORDSET,
-  MAP_TOGGLE_WHATS_HERE,
   OPEN_NEW_RECORD_MENU,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
@@ -23,6 +22,7 @@ import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offl
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Boundary from 'interfaces/Boundary';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
@@ -113,6 +113,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.boundaries = draftState.boundaries.filter((boundary: Boundary) => boundary.id !== action.payload.id);
       } else if (UserSettings.Theme.setDark.match(action)) {
         draftState.darkTheme = !draftState.darkTheme;
+      } else if (WhatsHere.toggle.match(action)) {
+        draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
       } else {
         switch (action.type) {
           case ACTIVITY_GET_REQUEST: {
@@ -127,10 +129,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           case GET_API_DOC_SUCCESS: {
             draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
             draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
-            break;
-          }
-          case MAP_TOGGLE_WHATS_HERE: {
-            draftState.recordsExpanded = action.payload?.toggle ? false : draftState.recordsExpanded;
             break;
           }
           case OPEN_NEW_RECORD_MENU: {

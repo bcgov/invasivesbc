@@ -14,8 +14,9 @@ import './map.css';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
-import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE, MAP_WHATS_HERE_FEATURE } from 'state/actions';
+import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import proj4 from 'proj4';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -649,10 +650,7 @@ const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_t
 
   // For whats here
   if (whats_here_toggle) {
-    dispatch({
-      type: MAP_WHATS_HERE_FEATURE,
-      payload: { feature: { type: 'Feature', geometry: feature.geometry } }
-    });
+    dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
     uHistory.push('/WhatsHere');
   } else {
     dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
