@@ -1,18 +1,6 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  createTheme,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  ThemeOptions,
-  ThemeProvider,
-  Typography
-} from '@mui/material';
+import { Box, CircularProgress, createTheme, ThemeOptions, ThemeProvider, Typography } from '@mui/material';
 import { Form } from '@rjsf/mui';
+import CoreForm from '@rjsf/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 import { SelectAutoCompleteContextProvider } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
@@ -24,7 +12,7 @@ import SingleSelectAutoComplete from 'rjsf/widgets/SingleSelectAutoComplete';
 import rjsfTheme from 'UI/Overlay/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { useSelector } from 'utils/use_selector';
-import { useDispatch } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
 import {
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
   ACTIVITY_ERRORS,
@@ -46,28 +34,38 @@ const FormContainer = () => {
   const username = useSelector((state) => state.Auth.username);
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
 
-  const formDataState = useSelector((state) => state.ActivityPage.activity.form_data);
+  const formDataState = useSelector(
+    (state) => state.ActivityPage.activity.form_data,
+    (a, b) => {
+      console.dir(a);
+      if (a == null || b == null) {
+        return a == b;
+      }
+
+      if (shallowEqual(a.activity_data, b.activity_data)) {
+        return true;
+      }
+
+      return shallowEqual(a, b);
+    }
+  );
+
   const pasteCount = useSelector((state) => state.ActivityPage.pasteCount);
 
   const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
-  const activity_type = useSelector((state) => state.ActivityPage.activity.activity_type);
   const activity_ID = useSelector((state) => state.ActivityPage.activity.activity_id);
   const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
+  const reported_area = useSelector((state) => state.ActivityPage.activity.form_data.activity_data?.reported_area);
 
   const darkTheme = useSelector((state) => state.UserSettings.darkTheme);
 
-  const apiDocsWithViewOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions);
-  const apiDocsWithSelectOptions = useSelector((state) => state.UserSettings.apiDocsWithSelectOptions);
-
-  const suggestedTreatmentIDS = useSelector((state) => state.ActivityPage.suggestedTreatmentIDs);
-
   const dispatch = useDispatch();
 
-  const activitySchema = useSelector((state: any) => state.ActivityPage.schema);
-  const activityUISchema = useSelector((state: any) => state.ActivityPage.uiSchema);
+  const activitySchema = useSelector((state) => state.ActivityPage.schema);
+  const activityUISchema = useSelector((state) => state.ActivityPage.uiSchema);
 
   const debouncedFormChange = useCallback(
-    debounce((event, ref, lastField, callbackFun) => {
+    debounce((event, ref, lastField) => {
       dispatch({
         type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
         payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null }
@@ -76,18 +74,10 @@ const FormContainer = () => {
     []
   );
 
-  const errorTransformers = useCallback(() => {
-    return getCustomErrorTransformer;
-  }, []);
-
   const customValidators = useCallback(() => {
     return validatorForActivity(activity_subtype, null);
   }, [JSON.stringify(activity_subtype)]);
-  const [focusedFieldArgs, setFocusedFieldArgs] = useState(null);
-  const [open, setOpen] = React.useState(false);
-  const [alertMsg, setAlertMsg] = React.useState(null);
-  const [field, setField] = React.useState('');
-  const formRef = React.createRef();
+  const formRef: React.RefObject<CoreForm> = React.createRef();
 
   const rjsfThemeDark = createTheme({
     ...rjsfTheme,
@@ -95,50 +85,19 @@ const FormContainer = () => {
   } as ThemeOptions);
   const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 
-  //open dialog window (visual)
-  const openDialog = () => setOpen(true);
-  //close the dialog window (visual)
-  const handleClose = () => setOpen(false);
-
   useEffect(() => {
     const currentState = formRef.current?.state;
     dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
   }, [formRef]);
 
-  const proceedClick = () => {
-    //setTimeout is called so that the setState works as expected
-    setTimeout(() => {
-      const $this = formRef.current;
-      //declare and initialize no validation fields array from formData if any
-      let noValidationFields: string[] = [];
-      if ($this.state.formData.forceNoValidationFields) {
-        noValidationFields = [...$this.state.formData.forceNoValidationFields];
-      }
-      //add field to no validation if not there already
-      if (!noValidationFields.includes(field)) {
-        noValidationFields.push(field);
-      }
-      //set new state with updated array of noValidate fields
-      const newFormData = $this.state.formData;
-      newFormData.forceNoValidationFields = noValidationFields;
-      $this.setState({ formData: newFormData }, () => {
-        //revalidate formData after the setState is run
-        $this.validate($this.state.formData);
-        //update formData of the activity via onFormChange
-        debouncedFormChange({ formData: formRef.current.state.formData }, formRef, null, (updatedFormData) => {});
-      });
-    }, 100);
-    handleClose();
-  };
-
   const isActivityChemTreatment = (): boolean =>
     activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
     activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic';
 
-  const ErrorListTemplate = (err: any) => {
+  const ErrorListTemplate = (err: { errors?: unknown[] }) => {
     return (
       <>
-        {err.errors?.length > 0 && (
+        {(err.errors?.length || 0) > 0 && (
           <div>
             <Typography color="error" sx={{ mt: 8, mb: 4 }}>
               Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can however
@@ -180,9 +139,9 @@ const FormContainer = () => {
               'single-select-autocomplete': SingleSelectAutoComplete
             }}
             readonly={isDisabled}
-            key={activity_ID + pasteCount}
+            key={activity_ID + pasteCount + reported_area}
             disabled={isDisabled}
-            formData={formDataState || null}
+            formData={formDataState}
             schema={activitySchema}
             uiSchema={activityUISchema}
             liveValidate={true}
@@ -193,9 +152,7 @@ const FormContainer = () => {
             autoComplete="off"
             ref={formRef}
             onChange={(event) => {
-              debouncedFormChange(event, formRef, focusedFieldArgs, (updatedFormData) => {
-                //setformData(updatedFormData);
-              });
+              debouncedFormChange(event, formRef, null);
             }}
           >
             <React.Fragment />
@@ -221,26 +178,6 @@ const FormContainer = () => {
           )}
         </SelectAutoCompleteContextProvider>
       </ThemeProvider>
-
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">{'Are you sure?'}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">{alertMsg}</DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={proceedClick} color="primary" autoFocus>
-            Proceed
-          </Button>
-        </DialogActions>
-      </Dialog>
     </Box>
   );
 };

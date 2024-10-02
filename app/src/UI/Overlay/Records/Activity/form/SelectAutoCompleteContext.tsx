@@ -25,7 +25,7 @@ function reducer(state: State, action: Action) {
   }
 }
 
-export const SelectAutoCompleteContextProvider: React.FC = ({ children }) => {
+export const SelectAutoCompleteContextProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialValues);
 
   return (

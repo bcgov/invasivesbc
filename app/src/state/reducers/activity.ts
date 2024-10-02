@@ -1,4 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
+import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
   ACTIVITY_ADD_PHOTO_SUCCESS,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
@@ -12,8 +13,8 @@ import {
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
+  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
@@ -28,8 +29,6 @@ import {
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_START
 } from '../actions';
-
-import { AppConfig } from '../config';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -57,6 +56,8 @@ export interface ActivityState {
     drawingShape: boolean;
   };
   activity_copy_buffer: object | null;
+  uiSchema: UiSchema | undefined;
+  schema: RJSFSchema | undefined;
 }
 
 const initialState: ActivityState = {
@@ -81,10 +82,12 @@ const initialState: ActivityState = {
   suggestedJurisdictions: [],
   suggestedPersons: [],
   suggestedTreatmentIDs: [],
-  activity_copy_buffer: null
+  activity_copy_buffer: null,
+  schema: undefined,
+  uiSchema: undefined
 };
 
-function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAction) => ActivityState {
+function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
   return (state = initialState, action) => {
     return createNextState(state, (draftState) => {
       switch (action.type) {
@@ -94,7 +97,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
           break;
         }
         case ACTIVITY_DELETE_SUCCESS: {
-          draftState = {
+          Object.assign(draftState, {
             activity: null,
             current_activity_hash: null,
             error: false,
@@ -110,12 +113,12 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             suggestedJurisdictions: [],
             suggestedPersons: [],
             suggestedTreatmentIDs: []
-          };
+          });
           break;
         }
         case ACTIVITY_CREATE_REQUEST: {
           const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
-          draftState = {
+          Object.assign(draftState, {
             activity: null,
             current_activity_hash: null,
             error: false,
@@ -132,7 +135,7 @@ function createActivityReducer(configuration: AppConfig): (ActivityState, AnyAct
             suggestedPersons: [],
             suggestedTreatmentIDs: [],
             activity_copy_buffer
-          };
+          });
           break;
         }
         case ACTIVITY_GET_FAILURE: {
