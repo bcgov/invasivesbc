@@ -1,14 +1,9 @@
 import { put, select } from 'redux-saga/effects';
 import centroid from '@turf/centroid';
-import { selectActivity } from '../../reducers/activity';
 import { selectIAPPSite } from '../../reducers/iappsite';
-import {
-  IAPP_GET_FAILURE,
-  IAPP_GET_NETWORK_REQUEST,
-  MAIN_MAP_MOVE,
-  USER_SETTINGS_SET_MAP_CENTER_REQUEST
-} from 'state/actions';
+import { IAPP_GET_FAILURE, IAPP_GET_NETWORK_REQUEST, MAIN_MAP_MOVE } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 export function* handle_IAPP_GET_REQUEST(action) {
   try {
@@ -37,12 +32,7 @@ export function* handle_IAPP_GET_REQUEST(action) {
 
 export function* handle_IAPP_GET_SUCCESS(action) {
   try {
-    yield put({
-      type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-      payload: {
-        center: action.payload.iapp?.geom?.geometry?.coordinates
-      }
-    });
+    yield put(UserSettings.Map.setCenter(action.payload.iapp?.geom?.geometry?.coordinates));
   } catch (e) {
     console.error(e);
     yield put({ type: IAPP_GET_FAILURE });

@@ -10,17 +10,14 @@ import {
   Select
 } from '@mui/material';
 import { useHistory } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  ACTIVITY_CREATE_REQUEST,
-  CLOSE_NEW_RECORD_MENU,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
-} from 'state/actions';
+import { ACTIVITY_CREATE_REQUEST, CLOSE_NEW_RECORD_MENU } from 'state/actions';
 import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 import './NewRecordDialog.css';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 export interface INewRecordDialog {}
 
@@ -90,7 +87,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   };
 
   const setNewRecordDialogState = (value: INewRecordDialogState) => {
-    dispatch({ type: USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST, payload: value });
+    dispatch(UserSettings.setNewRecordDialogueState(value));
   };
 
   const handleRecordCategoryChange = (event: any) => {

@@ -5,104 +5,76 @@ import {
   AUTH_INITIALIZE_COMPLETE,
   GET_API_DOC_ONLINE,
   GET_API_DOC_REQUEST,
-  GET_API_DOC_SUCCESS,
-  USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE,
-  USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST,
-  USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
-  USER_SETTINGS_DELETE_BOUNDARY_REQUEST,
-  USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
-  USER_SETTINGS_DELETE_KML_FAILURE,
-  USER_SETTINGS_DELETE_KML_REQUEST,
-  USER_SETTINGS_DELETE_KML_SUCCESS,
-  USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_FAILURE,
-  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
-  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
-  USER_SETTINGS_SET_BOUNDARIES_FAILURE,
-  USER_SETTINGS_SET_BOUNDARIES_REQUEST,
-  USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
-  USER_SETTINGS_SET_DARK_THEME,
-  USER_SETTINGS_SET_MAP_CENTER_FAILURE,
-  USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-  USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
+  GET_API_DOC_SUCCESS
 } from '../actions';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { selectConfiguration } from 'state/reducers/configuration';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
-  yield put({ type: USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS });
+  yield put(UserSettings.toggleRecordExpandSuccess());
 }
 
 function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST(action) {
   try {
     const userSettings = yield select(selectUserSettings);
-    const sets = userSettings?.recordSets;
+    const sets = userSettings.recordSets;
     const current = sets[action.payload.setName];
 
-    yield put({ type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS, payload: { recordSets: sets } });
+    yield put(UserSettings.Boundaries.removeFromSetSuccess(sets));
   } catch (e) {
     console.error(e);
-    yield put({ type: USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_FAILURE });
+    yield put(UserSettings.Boundaries.removeFromSetFailure());
   }
 }
 
 function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
   try {
     const userSettings = yield select(selectUserSettings);
-    const sets = userSettings?.recordSets;
+    const sets = userSettings.recordSets;
     const current = sets[action.payload.setName];
 
-    const boundary = JSON.parse(action.payload?.boundary);
+    const boundary = JSON.parse(action.payload?.searchedBoundary);
     const patchedBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
     current.searchBoundary = patchedBoundary;
 
-    yield put({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS, payload: { recordSets: sets } });
+    yield put(UserSettings.Boundaries.addToSetSuccess(sets));
   } catch (e) {
     console.error(e);
-    yield put({ type: USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE });
+    yield put(UserSettings.Boundaries.addToSetFailure());
   }
 }
 
 function* handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST(action) {
   try {
     if (action.payload.boundaries !== null) {
-      // const newAppState = localStorage.setItem('boundaries', JSON.stringify(action.payload.boundaries));
       // can't set local storage on kml set since some are too big...
-      yield put({ type: USER_SETTINGS_SET_BOUNDARIES_SUCCESS, payload: action.payload });
+      yield put(UserSettings.Boundaries.setSuccess(action.payload));
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: USER_SETTINGS_SET_BOUNDARIES_FAILURE, payload: action.payload });
+    yield put(UserSettings.Boundaries.setFailure(action.payload));
   }
 }
 
 function* handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST(action) {
-  yield put({ type: USER_SETTINGS_DELETE_BOUNDARY_SUCCESS, payload: action.payload });
+  yield put(UserSettings.Boundaries.deleteSuccess(action.payload));
 }
 
 function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
   try {
     // needs offline handling
     const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/admin-defined-shapes/`, {
-      server_id: action.payload.server_id
+      server_id: action.payload
     });
 
     if (networkReturn) {
-      yield put({ type: USER_SETTINGS_DELETE_KML_SUCCESS, payload: action.payload });
+      yield put(UserSettings.KML.deleteSuccess(action.payload));
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: USER_SETTINGS_DELETE_KML_FAILURE, payload: action.payload });
+    yield put(UserSettings.KML.deleteFailure(action.payload));
   }
 }
 
@@ -111,7 +83,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   const defaultRecordSet = {
     '1': {
-      recordSetType: 'Activity',
+      recordSetType: RecordSetType.Activity,
       recordSetName: 'My Drafts',
       // add draft key
       tableFilters: [
@@ -134,7 +106,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       drawOrder: 1
     },
     '2': {
-      recordSetType: 'Activity',
+      recordSetType: RecordSetType.Activity,
       recordSetName: 'All InvasivesBC Activities',
       colorScheme: {
         Biocontrol: '#845ec2',
@@ -146,7 +118,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       drawOrder: 2
     },
     '3': {
-      recordSetType: 'IAPP',
+      recordSetType: RecordSetType.IAPP,
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
       drawOrder: 3
@@ -156,56 +128,33 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   yield put({ type: GET_API_DOC_REQUEST });
   yield take(GET_API_DOC_SUCCESS);
   yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE });
-  yield put({
-    type: USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-    payload: {
-      recordSets: {
-        ...defaultRecordSet,
-        ...recordSets
-      }
-    }
-  });
+  UserSettings.InitState.getSuccess({ ...defaultRecordSet, ...recordSets });
 }
 
 function* handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST(action) {
-  yield put({
-    type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-    payload: {
-      ...action.payload,
-      activeActivity: action.payload.id
-    }
-  });
+  yield put(UserSettings.Activity.setActiveActivityIdSuccess(action.payload));
 }
 
 function* handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST(action) {
-  yield put({
-    type: USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
-    payload: { activeIAPP: action.payload.id }
-  });
+  yield put(UserSettings.IAPP.setActiveSuccess(action.payload));
 }
 
 function* handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST(action) {
-  yield put({
-    type: USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-    payload: action.payload
-  });
+  yield put(UserSettings.setNewRecordDialogueStateSuccess());
 }
 
 function* handle_APP_AUTH_READY(action) {
-  if (action.payload.authenticated) yield put({ type: USER_SETTINGS_GET_INITIAL_STATE_REQUEST });
+  if (action.payload.authenticated) yield put(UserSettings.InitState.get());
 }
 
 function* handle_USER_SETTINGS_SET_DARK_THEME(action) {}
 
 function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
   try {
-    yield put({
-      type: USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
-      payload: action.payload
-    });
+    yield put(UserSettings.Map.setCenterSuccess(action.payload));
   } catch (e) {
     console.error(e);
-    yield put({ type: USER_SETTINGS_SET_MAP_CENTER_FAILURE });
+    yield put(UserSettings.Map.setCenterFailure);
   }
 }
 
@@ -236,24 +185,21 @@ function* handle_GET_API_DOC_ONLINE(action) {
 function* userSettingsSaga() {
   yield all([
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
-    takeEvery(USER_SETTINGS_GET_INITIAL_STATE_REQUEST, handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
     takeEvery(GET_API_DOC_REQUEST, handle_GET_API_DOC_REQUEST),
     takeEvery(GET_API_DOC_ONLINE, handle_GET_API_DOC_ONLINE),
-    takeEvery(USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
-    takeEvery(USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST, handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST),
-    takeEvery(
-      USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
-      handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
-    ),
+    takeEvery(UserSettings.InitState.get, handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
+    takeEvery(UserSettings.Activity.setActiveActivityId, handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
+    takeEvery(UserSettings.IAPP.setActive, handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST),
+    takeEvery(UserSettings.setNewRecordDialogueState, handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST),
 
-    takeEvery(USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST, handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST),
-    takeEvery(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
-    takeEvery(USER_SETTINGS_SET_BOUNDARIES_REQUEST, handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST),
-    takeEvery(USER_SETTINGS_DELETE_BOUNDARY_REQUEST, handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST),
-    takeEvery(USER_SETTINGS_DELETE_KML_REQUEST, handle_USER_SETTINGS_DELETE_KML_REQUEST),
-    takeEvery(USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
-    takeEvery(USER_SETTINGS_SET_DARK_THEME, handle_USER_SETTINGS_SET_DARK_THEME),
-    takeEvery(USER_SETTINGS_SET_MAP_CENTER_REQUEST, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST)
+    takeEvery(UserSettings.Boundaries.addToSet, handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST),
+    takeEvery(UserSettings.Boundaries.removeFromSet, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
+    takeEvery(UserSettings.Boundaries.set, handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST),
+    takeEvery(UserSettings.Boundaries.delete, handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST),
+    takeEvery(UserSettings.KML.delete, handle_USER_SETTINGS_DELETE_KML_REQUEST),
+    takeEvery(UserSettings.toggleRecordExpand, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
+    takeEvery(UserSettings.Theme.setDark, handle_USER_SETTINGS_SET_DARK_THEME),
+    takeEvery(UserSettings.Map.setCenter, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST)
   ]);
 }
 

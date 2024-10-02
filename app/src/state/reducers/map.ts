@@ -67,8 +67,6 @@ import {
   URL_CHANGE,
   USER_CLICKED_RECORD,
   USER_HOVERED_RECORD,
-  USER_SETTINGS_DELETE_KML_SUCCESS,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   USER_TOUCHED_RECORD,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
   WHATS_HERE_IAPP_ROWS_SUCCESS,
@@ -514,6 +512,28 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         if (draftState.layers[layerIndex].layerState.mapToggle === false) {
           draftState.layers[layerIndex].layerState.labelToggle = false;
         }
+      } else if (UserSettings.KML.deleteSuccess.match(action)) {
+        const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload);
+        draftState.serverBoundaries.splice(index, 1);
+      } else if (UserSettings.InitState.getSuccess.match(action)) {
+        Object.keys(action.payload.recordSets).forEach((setID) => {
+          let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+          if (!draftState.layers[layerIndex]) {
+            draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
+            layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+          }
+          draftState.layers[layerIndex].layerState = {};
+          if (action.payload.recordSets[setID].colorScheme)
+            draftState.layers[layerIndex].layerState.colorScheme = action.payload.recordSets[setID].colorScheme;
+          if (action.payload.recordSets[setID].color)
+            draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
+          if (action.payload.recordSets[setID].mapToggle)
+            draftState.layers[layerIndex].layerState.mapToggle = action.payload.recordSets[setID].mapToggle;
+          if (action.payload.recordSets[setID].labelToggle)
+            draftState.layers[layerIndex].layerState.labelToggle = action.payload.recordSets[setID].labelToggle;
+          if (action.payload.recordSets[setID].drawOrder)
+            draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
+        });
       } else {
         switch (action.type) {
           case WHATS_HERE_SERVER_FILTERED_IDS_FETCHED: {
@@ -855,28 +875,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
 
-          case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-            Object.keys(action.payload.recordSets).map((setID) => {
-              let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-              if (!draftState.layers[layerIndex]) {
-                draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
-                layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-              }
-              draftState.layers[layerIndex].layerState = {};
-              if (action.payload.recordSets[setID].colorScheme)
-                draftState.layers[layerIndex].layerState.colorScheme = action.payload.recordSets[setID].colorScheme;
-              if (action.payload.recordSets[setID].color)
-                draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
-              if (action.payload.recordSets[setID].mapToggle)
-                draftState.layers[layerIndex].layerState.mapToggle = action.payload.recordSets[setID].mapToggle;
-              if (action.payload.recordSets[setID].labelToggle)
-                draftState.layers[layerIndex].layerState.labelToggle = action.payload.recordSets[setID].labelToggle;
-              if (action.payload.recordSets[setID].drawOrder)
-                draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
-            });
-            break;
-          }
-
           case MAIN_MAP_MOVE: {
             draftState.map_zoom = action.payload.zoom;
             draftState.map_center = action.payload.center;
@@ -1163,11 +1161,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.userRecordOnHoverRecordType = action.payload.recordType;
             draftState.userRecordOnHoverRecordID = action.payload.id;
             draftState.userRecordOnHoverRecordRow = action.payload.row;
-            break;
-          }
-          case USER_SETTINGS_DELETE_KML_SUCCESS: {
-            const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload.server_id);
-            draftState.serverBoundaries.splice(index, 1);
             break;
           }
           case USER_TOUCHED_RECORD: {

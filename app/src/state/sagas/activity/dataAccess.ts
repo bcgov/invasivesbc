@@ -53,9 +53,7 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAIN_MAP_MOVE,
-  MAP_INIT_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_SET_MAP_CENTER_REQUEST
+  MAP_INIT_REQUEST
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -74,6 +72,7 @@ import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPaylo
 import { MOBILE } from 'state/build-time-config';
 import Alerts from 'state/actions/alerts/Alerts';
 import Prompt from 'state/actions/prompts/Prompt';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -333,10 +332,7 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action) {
 
 export function* handle_ACTIVITY_CREATE_SUCCESS(action) {
   try {
-    yield put({
-      type: USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-      payload: { activeActivity: action.payload.activity_id, id: action.payload.activity_id }
-    });
+    yield put(UserSettings.Activity.setActiveActivityId(action.payload.activity_id));
     yield put({
       type: ACTIVITY_GET_REQUEST,
       payload: {
@@ -622,12 +618,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
       centerPoint = center(action.payload.activity?.geometry[0]?.geometry);
     }
     if (centerPoint && isGeo) {
-      yield put({
-        type: USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-        payload: {
-          center: centerPoint.geometry.coordinates
-        }
-      });
+      yield put(UserSettings.Map.setCenter(centerPoint.geometry.coordinates));
     }
     if (isLinkedTreatmentSubtype(type)) {
       yield put({

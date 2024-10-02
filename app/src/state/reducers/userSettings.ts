@@ -15,26 +15,14 @@ import {
   RECORDSET_CLEAR_FILTERS,
   RECORDSET_REMOVE_FILTER,
   RECORDSET_SET_SORT,
-  RECORDSET_UPDATE_FILTER,
-  USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
-  USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
-  USER_SETTINGS_DELETE_KML_SUCCESS,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS,
-  USER_SETTINGS_SET_API_ERROR_DIALOG,
-  USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
-  USER_SETTINGS_SET_DARK_THEME,
-  USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS
+  RECORDSET_UPDATE_FILTER
 } from '../actions';
 
 import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import Boundary from 'interfaces/Boundary';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
@@ -60,12 +48,7 @@ export interface UserSettingsState {
   };
   recordsExpanded: boolean;
 
-  boundaries: {
-    geos: [];
-    id: number;
-    name: string;
-    server_id: any;
-  }[];
+  boundaries: Boundary[];
 
   darkTheme: boolean;
 }
@@ -105,6 +88,31 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         Object.keys(action.payload.updatedSet).forEach((key) => {
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
         });
+      } else if (UserSettings.Map.setCenterSuccess.match(action)) {
+        draftState.mapCenter = action.payload;
+      } else if (UserSettings.Activity.setActiveActivityIdSuccess.match(action)) {
+        draftState.activeActivity = action.payload;
+        draftState.activeActivityDescription = action.payload;
+      } else if (UserSettings.IAPP.setActiveSuccess.match(action)) {
+        draftState.activeIAPP = action.payload;
+      } else if (UserSettings.InitState.getSuccess.match(action)) {
+        draftState.recordSets = { ...action.payload.recordSets };
+      } else if (UserSettings.Boundaries.setSuccess.match(action)) {
+        draftState.boundaries = action.payload;
+      } else if (UserSettings.Boundaries.deleteSuccess.match(action)) {
+        draftState.boundaries = draftState.boundaries?.filter(
+          (boundary: Boundary) => boundary.server_id !== action.payload.server_id
+        );
+      } else if (UserSettings.Boundaries.removeFromSetSuccess.match(action)) {
+        draftState.recordSets = { ...action.payload };
+      } else if (UserSettings.toggleRecordExpandSuccess.match(action)) {
+        draftState.recordsExpanded = !draftState.recordsExpanded;
+      } else if (UserSettings.Boundaries.addToSetSuccess.match(action)) {
+        draftState.recordSets = { ...action.payload };
+      } else if (UserSettings.Boundaries.deleteSuccess.match(action)) {
+        draftState.boundaries = draftState.boundaries.filter((boundary: Boundary) => boundary.id !== action.payload.id);
+      } else if (UserSettings.Theme.setDark.match(action)) {
+        draftState.darkTheme = !draftState.darkTheme;
       } else {
         switch (action.type) {
           case ACTIVITY_GET_REQUEST: {
@@ -112,8 +120,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             break;
           }
           case ACTIVITY_DELETE_SUCCESS: {
-            draftState.activeActivity = '';
-            draftState.activeActivityDescription = '';
+            draftState.activeActivity = null;
+            draftState.activeActivityDescription = null;
             break;
           }
           case GET_API_DOC_SUCCESS: {
@@ -302,64 +310,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             // clear sort:
             delete draftState.recordSets[action.payload.setID].sortOrder;
             delete draftState.recordSets[action.payload.setID].sortColumn;
-            break;
-          }
-          case USER_SETTINGS_GET_INITIAL_STATE_SUCCESS: {
-            draftState.recordSets = { ...action.payload.recordSets };
-            draftState.recordsExpanded = action.payload.recordsExpanded;
-            break;
-          }
-          case USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS: {
-            draftState.activeActivity = action.payload.id;
-            draftState.activeActivityDescription = action.payload.description;
-            break;
-          }
-          case USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS: {
-            draftState.activeIAPP = action.payload.activeIAPP;
-            break;
-          }
-          case USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS: {
-            draftState.newRecordDialogState = action.payload;
-            break;
-          }
-          case USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS: {
-            draftState.recordSets = { ...action.payload.recordSets };
-            break;
-          }
-
-          //MW: these are all wrong we shouldn't clobber all sets from the dispatching components copy of state
-          case USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS: {
-            draftState.recordSets = { ...action.payload.recordSets };
-            break;
-          }
-          case USER_SETTINGS_SET_BOUNDARIES_SUCCESS: {
-            draftState.boundaries = action.payload.boundaries;
-            break;
-          }
-          case USER_SETTINGS_DELETE_BOUNDARY_SUCCESS: {
-            draftState.boundaries = draftState.boundaries.filter((boundary) => boundary.id !== action.payload.id);
-            break;
-          }
-          case USER_SETTINGS_DELETE_KML_SUCCESS: {
-            draftState.boundaries = draftState.boundaries?.filter(
-              (boundary) => boundary.server_id !== action.payload.server_id
-            );
-            break;
-          }
-          case USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS: {
-            draftState.recordsExpanded = !draftState.recordsExpanded;
-            break;
-          }
-          case USER_SETTINGS_SET_DARK_THEME: {
-            draftState.darkTheme = action.payload.enabled;
-            break;
-          }
-          case USER_SETTINGS_SET_MAP_CENTER_SUCCESS: {
-            draftState.mapCenter = action.payload.center;
-            break;
-          }
-          case USER_SETTINGS_SET_API_ERROR_DIALOG: {
-            draftState.APIErrorDialog = action.payload.APIErrorDialog;
             break;
           }
           default:
