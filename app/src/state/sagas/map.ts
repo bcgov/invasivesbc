@@ -51,8 +51,6 @@ import {
   TOGGLE_PANEL,
   URL_CHANGE,
   USER_SETTINGS_ADD_RECORD_SET,
-  USER_SETTINGS_DELETE_KML_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
   WHATS_HERE_ACTIVITY_ROWS_REQUEST,
   WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
   WHATS_HERE_IAPP_ROWS_REQUEST,
@@ -91,6 +89,8 @@ import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import { BASE_LAYER_HANDLERS } from 'state/sagas/map/base-layers';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
+import { RecordSetType } from 'interfaces/UserRecordSet';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -649,7 +649,7 @@ function* handle_URL_CHANGE(action) {
     let recordSetsState = yield select(selectUserSettings);
     let recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
     if (recordSetType === undefined) {
-      yield take(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS);
+      yield take(UserSettings.InitState.getSuccess);
       recordSetsState = yield select(selectUserSettings);
       recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
     }
@@ -657,7 +657,7 @@ function* handle_URL_CHANGE(action) {
     const page = mapState.recordTables?.[id]?.page || 0;
     const limit = mapState.recordTables?.[id]?.limit || 20;
 
-    if (recordSetType === 'Activity') {
+    if (recordSetType === RecordSetType.Activity) {
       yield put({
         type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
         payload: {
@@ -860,7 +860,7 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
 }
 
 function* handle_REMOVE_SERVER_BOUNDARY(action) {
-  yield put({ type: USER_SETTINGS_DELETE_KML_REQUEST, payload: { server_id: action.payload.id } });
+  yield put(UserSettings.KML.delete(action.payload.id));
 }
 
 function* handle_DRAW_CUSTOM_LAYER(action) {
@@ -964,7 +964,7 @@ function* activitiesPageSaga() {
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),
-    takeEvery(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
+    takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
