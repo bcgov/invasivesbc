@@ -16,12 +16,11 @@ import {
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_TABLE_ROWS_GET_ONLINE,
-  MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED,
-  MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED,
-  WHATS_HERE_ACTIVITY_ROWS_REQUEST
+  MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -296,7 +295,7 @@ function largePush(src, dest) {
   }
 }
 
-export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
+export function* handle_MAP_WHATS_HERE_INIT_GET_POI() {
   const currentMapState = yield select((state) => state.Map);
 
   const featuresFilteredByUserShape = Object.values(currentMapState?.IAPPGeoJSONDict)?.filter((feature: any) => {
@@ -313,7 +312,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   const unfilteredRecordSetIDs = [];
 
   currentMapState?.layers.map((layer) => {
-    if (layer?.type === 'IAPP' && layer?.layerState.mapToggle) {
+    if (layer?.type === RecordSetType.IAPP && layer?.layerState.mapToggle) {
       largePush(layer?.IDList, unfilteredRecordSetIDs);
     }
   });
@@ -325,7 +324,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI(action) {
   // Filter duplicates
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
 
-  yield put({ type: MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
+  yield put(WhatsHere.map_init_get_poi_ids_fetched(recordSetUniqueFilteredIDs));
   yield put(WhatsHere.iapp_rows_request());
 }
 
@@ -384,8 +383,8 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   // Filter duplicates
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
 
-  yield put({ type: MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED, payload: { IDs: recordSetUniqueFilteredIDs } });
-  yield put({ type: WHATS_HERE_ACTIVITY_ROWS_REQUEST, payload: { page: 0 } });
+  yield put(WhatsHere.map_init_get_activity_ids_fetched(recordSetUniqueFilteredIDs));
+  yield put(WhatsHere.activity_rows_request);
 }
 
 function getSelectColumnsByRecordSetType(recordSetType: any) {

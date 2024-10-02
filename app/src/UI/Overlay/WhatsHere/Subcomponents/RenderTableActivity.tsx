@@ -8,6 +8,8 @@ import WhatsHerePagination from './WhatsHerePagination';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import NoRowsInSearch from './NoRowsInSearch';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 const RenderTableActivity = () => {
   const dispatch = useDispatch();
@@ -103,6 +105,7 @@ const RenderTableActivity = () => {
             disableColumnMenu
             disableColumnFilter
             onColumnHeaderClick={(c) => {
+              dispatch(WhatsHere.sort_filter_update(RecordSetType.Activity, c.field));
               dispatch({
                 type: WHATS_HERE_SORT_FILTER_UPDATE,
                 payload: { recordType: 'Activity', field: c.field }

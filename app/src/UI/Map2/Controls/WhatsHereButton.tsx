@@ -2,7 +2,6 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
-import { NEW_ALERT } from 'state/actions';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
@@ -22,7 +21,7 @@ export const WhatsHereButton = (props) => {
 
   if (whatsHere) {
     return (
-      <div ref={divRef} className={(whatsHere as any)?.toggle ? 'map-btn-selected' : 'map-btn'}>
+      <div ref={divRef} className={whatsHere.toggle ? 'map-btn-selected' : 'map-btn'}>
         <Tooltip
           open={show}
           onMouseEnter={() => setShow(true)}
@@ -35,8 +34,8 @@ export const WhatsHereButton = (props) => {
             <IconButton
               className={'button'}
               onClick={() => {
-                if ((whatsHere as any)?.toggle == false) {
-                  dispatch(WhatsHere.toggle());
+                if (whatsHere.toggle == false) {
+                  dispatch(WhatsHere.toggle(true));
                   dispatch(
                     Alerts.create({
                       content: 'Outline a region on the map to view records in the area.',
@@ -50,7 +49,7 @@ export const WhatsHereButton = (props) => {
                 }
               }}
             >
-              {(whatsHere as any)?.loadingActivities || (whatsHere as any)?.loadingIAPP ? <HourglassTopIcon /> : <></>}
+              {whatsHere.loadingActivities || whatsHere.loadingIAPP ? <HourglassTopIcon /> : <></>}
               <DocumentScannerIcon />
             </IconButton>
           </span>
@@ -79,15 +78,5 @@ export const WhatsHereDrawComponent = (props) => {
       if (ref.current) (ref.current as any).disable();
     };
   }, [whatsHere]);
-
-  /*
-  useMapEvent('draw:created' as any, (e) => {
-    if ((whatsHere as any).toggle && (whatsHere as any)?.feature === null) {
-      history.push('/WhatsHere');
-      dispatch({ type: MAP_WHATS_HERE_FEATURE, payload: { feature: e.layer.toGeoJSON() } });
-    }
-  });
-  */
-
   return <></>;
 };

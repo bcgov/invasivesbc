@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import {
   MAP_TOGGLE_WHATS_HERE,
   MAP_WHATS_HERE_FEATURE,
@@ -26,19 +27,31 @@ import {
 } from 'state/actions';
 
 class WhatsHere {
-  // Implemented
-  static readonly toggle = createAction(MAP_TOGGLE_WHATS_HERE);
+  static readonly toggle = createAction<boolean>(MAP_TOGGLE_WHATS_HERE);
   static readonly iapp_rows_request = createAction(WHATS_HERE_IAPP_ROWS_REQUEST);
   static readonly activity_rows_request = createAction(WHATS_HERE_ACTIVITY_ROWS_REQUEST);
   static readonly map_init_get_poi = createAction(MAP_WHATS_HERE_INIT_GET_POI);
   static readonly map_init_get_activity = createAction(MAP_WHATS_HERE_INIT_GET_ACTIVITY);
 
+  static readonly map_init_get_activity_ids_fetched = createAction<string[]>(
+    MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED
+  );
+  static readonly map_feature = createAction<Record<string, any>>(MAP_WHATS_HERE_FEATURE);
+  static readonly server_filtered_ids_fetched = createAction(
+    WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
+    (activities, iapp) => ({
+      payload: { activities, iapp }
+    })
+  );
+
+  static readonly map_init_get_poi_ids_fetched = createAction<string[]>(MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED);
   // Needs Typed Payloads before Converting
-  static readonly map_init_get_activity_ids_fetched = createAction(MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED);
-  static readonly map_feature = createAction(MAP_WHATS_HERE_FEATURE);
-  static readonly server_filtered_ids_fetched = createAction(WHATS_HERE_SERVER_FILTERED_IDS_FETCHED);
-  static readonly map_init_get_poi_ids_fetched = createAction(MAP_WHATS_HERE_INIT_GET_POI_IDS_FETCHED);
-  static readonly sort_filter_update = createAction(WHATS_HERE_SORT_FILTER_UPDATE);
+  static readonly sort_filter_update = createAction(
+    WHATS_HERE_SORT_FILTER_UPDATE,
+    (type: RecordSetType, field: string) => ({
+      payload: { type, field }
+    })
+  );
   static readonly map_set_section = createAction(MAP_SET_WHATS_HERE_SECTION);
   static readonly set_highlighted_iapp = createAction(MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP);
   static readonly set_highlighted_activity = createAction(MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY);
