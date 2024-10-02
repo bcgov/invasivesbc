@@ -2,13 +2,14 @@ import React, { useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
-import { MAP_TOGGLE_WHATS_HERE, NEW_ALERT } from 'state/actions';
+import { MAP_TOGGLE_WHATS_HERE } from 'state/actions';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 
 import DocumentScannerIcon from '@mui/icons-material/DocumentScanner';
 import { useHistory } from 'react-router-dom';
 import 'UI/Global.css';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import Alerts from 'state/actions/alerts/Alerts';
 
 export const WhatsHereButton = (props) => {
   const dispatch = useDispatch();
@@ -35,15 +36,14 @@ export const WhatsHereButton = (props) => {
               onClick={() => {
                 if ((whatsHere as any)?.toggle == false) {
                   dispatch({ type: MAP_TOGGLE_WHATS_HERE });
-                  dispatch({
-                    type: NEW_ALERT,
-                    payload: {
+                  dispatch(
+                    Alerts.create({
                       content: 'Outline a region on the map to view records in the area.',
                       autoClose: 5,
                       severity: AlertSeverity.Info,
                       subject: AlertSubjects.Map
-                    }
-                  });
+                    })
+                  );
                 } else {
                   history.goBack();
                 }

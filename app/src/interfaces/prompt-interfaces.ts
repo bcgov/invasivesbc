@@ -120,3 +120,11 @@ export interface TextModalInterface extends BasePromptInterface {
   regexErrorText?: string;
   selectOptions?: string[];
 }
+
+export type PromptAction =
+  | TextModalInterface
+  | ConfirmationModalInterface
+  | RadioModalInterface
+  | NumberModalInterface
+  | DateModalInterface
+  | ManualUtmModalInterface;

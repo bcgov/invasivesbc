@@ -54,7 +54,6 @@ import {
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAIN_MAP_MOVE,
   MAP_INIT_REQUEST,
-  NEW_ALERT,
   USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
   USER_SETTINGS_SET_MAP_CENTER_REQUEST
 } from 'state/actions';
@@ -71,9 +70,10 @@ import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { promptNumberInput } from 'utils/userPrompts';
 import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPayload';
 import { MOBILE } from 'state/build-time-config';
+import Alerts from 'state/actions/alerts/Alerts';
+import Prompt from 'state/actions/prompts/Prompt';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -157,7 +157,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       if (!modifiedPayload[0].properties.radius) {
         /* When radius is missing from point  payload, Prompt user for input, and refire the geometry in the callback, with radius added. */
         yield put(
-          promptNumberInput({
+          Prompt.number({
             title: 'Area Needed',
             prompt: 'Enter the area of geometry in m\u00b2',
             min: 1,
@@ -203,10 +203,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       if (hasSelfIntersections) {
-        yield put({
-          type: NEW_ALERT,
-          payload: mappingAlertMessages.containsIntersections
-        });
+        yield put(Alerts.create(mappingAlertMessages.containsIntersections));
       }
     }
 
@@ -246,10 +243,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     }
 
     if (areWellsInside && activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial') {
-      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.wellsInsideTreatmentArea });
+      yield put(Alerts.create(mappingAlertMessages.wellsInsideTreatmentArea));
     }
     if (!isWithinBC && !isWIPLinestring) {
-      yield put({ type: NEW_ALERT, payload: mappingAlertMessages.notWithinBC });
+      yield put(Alerts.create(mappingAlertMessages.notWithinBC));
       return;
     }
     const payload = {
@@ -274,15 +271,14 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
   const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
   try {
     yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: activity_id } });
-    yield put({
-      type: NEW_ALERT,
-      payload: {
+    yield put(
+      Alerts.create({
         autoClose: 5,
         content: 'Activity saved successfully',
         severity: AlertSeverity.Success,
         subject: AlertSubjects.Form
-      }
-    });
+      })
+    );
 
     yield put({ type: MAP_INIT_REQUEST });
   } catch (e) {

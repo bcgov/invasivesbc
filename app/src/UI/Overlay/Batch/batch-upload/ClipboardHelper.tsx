@@ -2,37 +2,38 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { IconButton } from '@mui/material';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { useDispatch } from 'react-redux';
-import { NEW_ALERT } from 'state/actions';
+import Alerts from 'state/actions/alerts/Alerts';
 
-export const CopyToClipboardButton = (props: { content: string }) => {
+type PropTypes = {
+  content: string;
+};
+export const CopyToClipboardButton = ({ content }: PropTypes) => {
   const dispatch = useDispatch();
 
-  const copyToClipboard = async ({ value }: any) => {
+  const copyToClipboard = async () => {
     if (!navigator.clipboard) {
-      dispatch({
-        type: NEW_ALERT,
-        payload: {
+      dispatch(
+        Alerts.create({
           content: 'No clipboard supported',
           subject: AlertSubjects.Form,
           severity: AlertSeverity.Error
-        }
-      });
+        })
+      );
       return;
     }
-    await navigator.clipboard.writeText(value);
-    dispatch({
-      type: NEW_ALERT,
-      payload: {
+    await navigator.clipboard.writeText(content);
+    dispatch(
+      Alerts.create({
         content: 'Copied to clipboard!',
         subject: AlertSubjects.Form,
         severity: AlertSeverity.Success,
         autoClose: 3
-      }
-    });
+      })
+    );
   };
 
   return (
-    <IconButton onClick={() => copyToClipboard({ value: props.content })}>
+    <IconButton onClick={copyToClipboard}>
       <ContentCopyIcon />
     </IconButton>
   );

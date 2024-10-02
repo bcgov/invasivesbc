@@ -1,8 +1,9 @@
-import { createNextState } from '@reduxjs/toolkit';
+import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { AppConfig } from '../config';
-import { CLEAR_ALERT, CLEAR_ALERTS, CLEAR_PROMPT, CLEAR_PROMPTS, NEW_ALERT, NEW_PROMPT } from 'state/actions';
-import { getUuid } from './userSettings';
 import AlertMessage from 'interfaces/AlertMessage';
+import Alerts from 'state/actions/alerts/Alerts';
+import Prompt from 'state/actions/prompts/Prompt';
+import { PromptAction } from 'interfaces/prompt-interfaces';
 
 interface AlertsAndPromptsState {
   alerts: AlertMessage[];
@@ -19,41 +20,26 @@ export function createAlertsAndPromptsReducer(
 ): (AlertsAndPromptsState, AnyAction) => AlertsAndPromptsState {
   return (state: AlertsAndPromptsState = initialState, action) => {
     return createNextState(state, (draftState) => {
-      switch (action.type) {
-        case NEW_ALERT: {
-          const newID = getUuid();
-          const newAlertIsDuplicate = state.alerts.some(
-            (item: AlertMessage) => action.payload.content === item.content && action.payload.severity === item.severity
-          );
-          if (!newAlertIsDuplicate) {
-            draftState.alerts = [...state.alerts, { ...action.payload, id: newID }];
-          }
-          break;
+      if (Alerts.create.match(action)) {
+        const newID = nanoid();
+        const newAlertIsDuplicate = state.alerts.some(
+          (item) => action.payload.content === item.content && action.payload.severity === item.severity
+        );
+        if (!newAlertIsDuplicate) {
+          draftState.alerts = [...state.alerts, { ...action.payload, id: newID }];
         }
-        case NEW_PROMPT: {
-          const newID = getUuid();
-          draftState.prompts = [...state.prompts, { ...action.payload, id: newID }];
-          break;
-        }
-        case CLEAR_ALERTS: {
-          draftState.alerts = [];
-          break;
-        }
-        case CLEAR_PROMPTS: {
-          draftState.prompts = [];
-          break;
-        }
-        case CLEAR_ALERT: {
-          draftState.alerts = state.alerts.filter((alert) => alert.id !== action.payload.id);
-          break;
-        }
-        case CLEAR_PROMPT: {
-          draftState.prompts = state.prompts.filter((prompt) => prompt.id !== action.payload.id);
-          break;
-        }
-        default: {
-          break;
-        }
+      } else if (Alerts.deleteOne.match(action)) {
+        draftState.alerts = state.alerts.filter((alert) => alert.id !== action.payload.id);
+      } else if (Alerts.deleteAll.match(action)) {
+        draftState.alerts = [];
+      } else if (Prompt.closeOne.match(action)) {
+        draftState.prompts = state.prompts.filter((prompt) => prompt.id !== action.payload.id);
+      } else if (Prompt.closeAll.match(action)) {
+        draftState.prompts = [];
+      } else if (RegExp(Prompt.NEW_PROMPT).exec(action.type)) {
+        const newPrompt: PromptAction = action.payload;
+        const newID = nanoid();
+        draftState.prompts = [...state.prompts, { ...newPrompt, id: newID }];
       }
     });
   };

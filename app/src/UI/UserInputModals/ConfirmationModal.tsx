@@ -1,9 +1,9 @@
 import { Box, Button, DialogActions, DialogContent, DialogTitle, Divider, Modal, Typography } from '@mui/material';
 import './UserInputModals.css';
 import { ConfirmationModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'utils/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
+import Prompt from 'state/actions/prompts/Prompt';
 
 /**
  * @desc Customizable Input Modal for collecting boolean responses from a user.
@@ -25,11 +25,11 @@ const ConfirmationModal = ({
   };
   const handleConfirmation = () => {
     handleRedux(callback(true) ?? []);
-    dispatch(closeModal(id!));
+    dispatch(Prompt.closeOne(id!));
   };
   const handleClose = () => {
     handleRedux(callback(false) ?? []);
-    dispatch(closeModal(id!));
+    dispatch(Prompt.closeOne(id!));
   };
   return (
     <Modal open={true} aria-labelledby="modal-modal-title" aria-describedby="modal-modal-description">

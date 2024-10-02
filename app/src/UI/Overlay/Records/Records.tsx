@@ -25,8 +25,8 @@ import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
 import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
-import { promptConfirmationInput } from 'utils/userPrompts';
 import { useSelector } from 'utils/use_selector';
+import Prompt from 'state/actions/prompts/Prompt';
 
 export const Records = () => {
   const DEFAULT_RECORD_TYPES = ['All InvasivesBC Activities', 'All IAPP Records', 'My Drafts'];
@@ -131,7 +131,7 @@ export const Records = () => {
       }
     };
     dispatch(
-      promptConfirmationInput({
+      Prompt.confirmation({
         title: 'Deleting Record Set',
         prompt: [
           'Are you sure you want to remove this record set?',

@@ -17,9 +17,9 @@ import { useState } from 'react';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider/LocalizationProvider';
 import dayjs, { Dayjs } from 'dayjs';
 import { DateModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'utils/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
+import Prompt from 'state/actions/prompts/Prompt';
 
 const DateModal = ({
   callback,
@@ -36,7 +36,7 @@ const DateModal = ({
   const [userDate, setUserDate] = useState<Dayjs>(dayjs());
   const [validationError, setValidationError] = useState<string>('');
   const dispatch = useDispatch();
-  const handleClose = () => dispatch(closeModal(id!));
+  const handleClose = () => dispatch(Prompt.closeOne(id!));
   /**
    * @desc change handler for select menu
    */

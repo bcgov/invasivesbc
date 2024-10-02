@@ -6,15 +6,11 @@ import './Form.css';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
-import {
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP,
-  MAP_TOGGLE_TRACKING_ON
-} from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACKING_ON } from 'state/actions';
 import GeoShapes from 'constants/geoShapes';
-import { promptRadioInput, promptUtmInput } from 'utils/userPrompts';
 import { UtmInputObj } from 'interfaces/prompt-interfaces';
+import GeoTracking from 'state/actions/geotracking/Geotracking';
+import Prompt from 'state/actions/prompts/Prompt';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -61,7 +57,7 @@ export const ActivityForm = (props) => {
     };
 
     dispatch(
-      promptUtmInput({
+      Prompt.utm({
         title: 'Enter a manual UTM',
         prompt: 'Fill in the fields below to create your own UTM Coordinates',
         callback: utmCallback
@@ -70,14 +66,14 @@ export const ActivityForm = (props) => {
   };
   const clickHandler = () => {
     if (drawGeometryTracking.isTracking) {
-      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
+      dispatch(GeoTracking.stop());
     } else {
       const callback = (input: string | number) => {
         dispatch({ type: MAP_TOGGLE_TRACKING_ON });
-        dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: { type: input } });
+        dispatch(GeoTracking.start(input as GeoShapes));
       };
       dispatch(
-        promptRadioInput({
+        Prompt.radio({
           callback,
           options: [GeoShapes.LineString, GeoShapes.Polygon],
           prompt: [

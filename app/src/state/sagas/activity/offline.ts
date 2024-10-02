@@ -10,25 +10,24 @@ import {
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
-  ACTIVITY_UPDATE_SYNC_STATE,
-  NEW_ALERT
+  ACTIVITY_UPDATE_SYNC_STATE
 } from 'state/actions';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
+import Alerts from 'state/actions/alerts/Alerts';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   //const shortId = action.payload.
   // all logic handled in the reducer
-  yield put({
-    type: NEW_ALERT,
-    payload: {
+  yield put(
+    Alerts.create({
       content: 'Saved locally',
       severity: AlertSeverity.Info,
       subject: AlertSubjects.Form
-    }
-  });
+    })
+  );
 
   // reload the activity in case the reducer modified it (create time, etc.)
   yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.id } });

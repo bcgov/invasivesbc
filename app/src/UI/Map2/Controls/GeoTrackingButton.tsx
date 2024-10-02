@@ -4,9 +4,10 @@ import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import GeoShapes from 'constants/geoShapes';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP } from 'state/actions';
 import { useSelector } from 'utils/use_selector';
-import { promptRadioInput } from 'utils/userPrompts';
+import GeoTracking from 'state/actions/geotracking/Geotracking';
+import Prompt from 'state/actions/prompts/Prompt';
+
 /**
  * TrackMeButton
  * @description Component to handle the functionality of the find me button
@@ -19,15 +20,15 @@ export const GeoTrackingButton = (props) => {
   const divRef = useRef();
 
   const promptHandler = (input: string | number) => {
-    dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_START, payload: { type: input } });
+    dispatch(GeoTracking.start(input as GeoShapes));
   };
   const clickHandler = () => {
     setShow(false);
     if (isTracking) {
-      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP });
+      dispatch(GeoTracking.stop());
     } else {
       dispatch(
-        promptRadioInput({
+        Prompt.radio({
           callback: promptHandler,
           options: [GeoShapes.LineString, GeoShapes.Polygon],
           prompt: [

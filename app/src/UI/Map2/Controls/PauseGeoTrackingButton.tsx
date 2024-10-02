@@ -2,7 +2,7 @@ import { Pause, PlayArrow } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE, MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME } from 'state/actions';
+import GeoTracking from 'state/actions/geotracking/Geotracking';
 import { useSelector } from 'utils/use_selector';
 
 const PauseGeoTrackingButton = () => {
@@ -13,9 +13,9 @@ const PauseGeoTrackingButton = () => {
 
   const handleClick = () => {
     if (drawingShape) {
-      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE });
+      dispatch(GeoTracking.pause());
     } else {
-      dispatch({ type: MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME });
+      dispatch(GeoTracking.resume());
     }
   };
   return (

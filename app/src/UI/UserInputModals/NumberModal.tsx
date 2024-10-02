@@ -14,9 +14,9 @@ import {
 import './UserInputModals.css';
 import { useState } from 'react';
 import { NumberModalInterface, ReduxPayload } from 'interfaces/prompt-interfaces';
-import { closeModal } from 'utils/userPrompts';
 import { useDispatch } from 'react-redux';
 import { UnknownAction } from 'redux';
+import Prompt from 'state/actions/prompts/Prompt';
 
 const NumberModal = ({
   callback,
@@ -64,7 +64,7 @@ const NumberModal = ({
   };
 
   const handleClose = () => {
-    dispatch(closeModal(id!));
+    dispatch(Prompt.closeOne(id!));
   };
   /**
    * @desc Validate number input against supplied props.
