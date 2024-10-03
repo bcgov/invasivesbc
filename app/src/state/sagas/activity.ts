@@ -101,7 +101,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Prompt from 'state/actions/prompts/Prompt';
 import Alerts from 'state/actions/alerts/Alerts';
-import GeoTracking from 'state/actions/geotracking/Geotracking';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
