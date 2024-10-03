@@ -17,8 +17,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ACTIVITY_ADD_PHOTO_REQUEST, ACTIVITY_DELETE_PHOTO_REQUEST, ACTIVITY_EDIT_PHOTO_REQUEST } from 'state/actions';
-import { selectActivity } from 'state/reducers/activity';
+import Activity from 'state/actions/activity/Activity';
+import UploadedPhoto from 'interfaces/UploadedPhoto';
 
 export interface IPhoto {
   file_name: string;
@@ -49,20 +49,14 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       });
 
       const fileName = new Date().getTime() + '.' + cameraPhoto.format;
-      const photo = {
+      const photo: UploadedPhoto = {
         file_name: fileName,
         encoded_file: cameraPhoto.dataUrl,
         description: 'untitled',
         editing: false
       };
 
-      dispatch({
-        type: ACTIVITY_ADD_PHOTO_REQUEST,
-        payload: {
-          photo: photo
-        }
-      });
-
+      dispatch(Activity.Photo.add(photo));
       // props.photoState.setPhotos([...props.photoState.photos, photo]);
     } catch (e) {
       console.error('user cancelled or other camera problem', e);
@@ -80,13 +74,8 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   //   props.photoState.setPhotos([]);
   // };
 
-  const deletePhoto = async (photo: any) => {
-    dispatch({
-      type: ACTIVITY_DELETE_PHOTO_REQUEST,
-      payload: {
-        photo: photo
-      }
-    });
+  const deletePhoto = async (photo: UploadedPhoto) => {
+    dispatch(Activity.Photo.delete(photo));
   };
 
   // const [editing, setEditing] = useState(false);
@@ -121,15 +110,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                       <IconButton
                         disabled={photo.editing}
                         onClick={() => {
-                          dispatch({
-                            type: ACTIVITY_EDIT_PHOTO_REQUEST,
-                            payload: {
-                              photo: {
-                                ...photo,
-                                editing: true
-                              }
-                            }
-                          });
+                          dispatch(Activity.Photo.edit({ ...photo, editing: true }));
                         }}
                       >
                         <EditIcon />
@@ -145,22 +126,10 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                           onChange={(e) => {
                             setNewPhotoDesc(e.target.value);
                           }}
-                          // onBlur={(e) => changePhotoDescription(photo.filepath, { description: e.target.value })}
                         />
                         <Button
                           onClick={() => {
-                            // changePhotoDescription(photo.filepath, { description: newPhotoDesc });
-                            dispatch({
-                              type: ACTIVITY_EDIT_PHOTO_REQUEST,
-                              payload: {
-                                photo: {
-                                  ...photo,
-                                  description: newPhotoDesc,
-                                  editing: false
-                                }
-                              }
-                            });
-                            // setEditing(false);
+                            dispatch(Activity.Photo.edit({ ...photo, description: newPhotoDesc, editing: false }));
                             setNewPhotoDesc('untitled');
                           }}
                         >

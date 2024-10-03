@@ -1,7 +1,6 @@
 import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { buffer } from '@turf/turf';
 import {
-  ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -12,10 +11,8 @@ import {
   ACTIVITY_DEBUG,
   ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_NETWORK_REQUEST,
-  ACTIVITY_DELETE_PHOTO_REQUEST,
   ACTIVITY_DELETE_REQUEST,
   ACTIVITY_DELETE_SUCCESS,
-  ACTIVITY_EDIT_PHOTO_REQUEST,
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
@@ -43,7 +40,6 @@ import {
   ACTIVITY_UPDATE_AUTOFILL_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
-  ACTIVITY_UPDATE_PHOTO_REQUEST,
   MAP_INIT_REQUEST,
   MAP_SET_COORDS,
   PAN_AND_ZOOM_TO_ACTIVITY,
@@ -102,6 +98,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import Prompt from 'state/actions/prompts/Prompt';
 import Alerts from 'state/actions/alerts/Alerts';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import Activity from 'state/actions/activity/Activity';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -510,9 +507,9 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_SUBMIT_REQUEST, handle_ACTIVITY_SUBMIT_REQUEST),
     takeEvery(ACTIVITY_DEBUG, handle_ACTIVITY_DEBUG),
     takeEvery(ACTIVITY_GET_SUCCESS, handle_ACTIVITY_GET_SUCCESS),
-    takeEvery(ACTIVITY_DELETE_PHOTO_REQUEST, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
-    takeEvery(ACTIVITY_ADD_PHOTO_REQUEST, handle_ACTIVITY_ADD_PHOTO_REQUEST),
-    takeEvery(ACTIVITY_EDIT_PHOTO_REQUEST, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
+    takeEvery(Activity.Photo.delete, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
+    takeEvery(Activity.Photo.add, handle_ACTIVITY_ADD_PHOTO_REQUEST),
+    takeEvery(Activity.Photo.edit, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
     takeEvery(ACTIVITY_DELETE_SUCCESS, handle_ACTIVITY_DELETE_SUCESS),
     takeEvery(ACTIVITY_DELETE_FAILURE, handle_ACTIVITY_DELETE_FAILURE),
     takeEvery(ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
@@ -521,7 +518,7 @@ function* activityPageSaga() {
       handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST
     ),
     takeEvery(ACTIVITY_UPDATE_AUTOFILL_REQUEST, () => console.log('ACTIVITY_UPDATE_AUTOFILL_REQUEST')),
-    takeEvery(ACTIVITY_UPDATE_PHOTO_REQUEST, () => console.log('ACTIVITY_UPDATE_PHOTO_REQUEST')),
+    takeEvery(Activity.Photo.update, () => console.log('Activity.Photo.update')),
     takeEvery(ACTIVITY_LINK_RECORD_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST')),
     takeEvery(ACTIVITY_PERSIST_REQUEST, () => console.log('ACTIVITY_PERSIST_REQUEST')),
     takeEvery(ACTIVITY_SAVE_REQUEST, () => console.log('ACTIVITY_SAVE_REQUEST')),

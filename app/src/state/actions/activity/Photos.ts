@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import Photo from 'interfaces/UploadedPhoto';
+import UploadedPhoto from 'interfaces/UploadedPhoto';
 import {
   ACTIVITY_ADD_PHOTO_REQUEST,
   ACTIVITY_ADD_PHOTO_SUCCESS,
@@ -14,18 +14,25 @@ import {
   ACTIVITY_UPDATE_PHOTO_SUCCESS,
   ACTIVITY_UPDATE_PHOTO_FAILURE
 } from '../../actions';
+import { ActivityState } from 'state/reducers/activity';
+
+interface DeleteSuccess extends ActivityState {
+  media: UploadedPhoto[];
+  media_keys: string[];
+  media_delete_keys: string[];
+}
 
 class Photos {
-  static readonly add = createAction<Photo>(ACTIVITY_ADD_PHOTO_REQUEST);
+  static readonly add = createAction<UploadedPhoto>(ACTIVITY_ADD_PHOTO_REQUEST);
   static readonly addSuccess = createAction(ACTIVITY_ADD_PHOTO_SUCCESS);
   static readonly addFailure = createAction(ACTIVITY_ADD_PHOTO_FAILURE);
 
   static readonly edit = createAction(ACTIVITY_EDIT_PHOTO_REQUEST);
-  static readonly editSuccess = createAction(ACTIVITY_EDIT_PHOTO_SUCCESS);
+  static readonly editSuccess = createAction<UploadedPhoto[]>(ACTIVITY_EDIT_PHOTO_SUCCESS);
   static readonly editFailure = createAction(ACTIVITY_EDIT_PHOTO_FAILURE);
 
-  static readonly delete = createAction(ACTIVITY_DELETE_PHOTO_REQUEST);
-  static readonly deleteSuccess = createAction(ACTIVITY_DELETE_PHOTO_SUCCESS);
+  static readonly delete = createAction<UploadedPhoto>(ACTIVITY_DELETE_PHOTO_REQUEST);
+  static readonly deleteSuccess = createAction<DeleteSuccess>(ACTIVITY_DELETE_PHOTO_SUCCESS);
   static readonly deleteFailure = createAction(ACTIVITY_DELETE_PHOTO_FAILURE);
 
   static readonly update = createAction(ACTIVITY_UPDATE_PHOTO_REQUEST);
