@@ -1,0 +1,9 @@
+import {
+  ACTIVITIES_GEOJSON_GET_REQUEST,
+  ACTIVITIES_GEOJSON_GET_ONLINE,
+  ACTIVITIES_GEOJSON_GET_SUCCESS,
+  ACTIVITIES_GEOJSON_REFETCH_ONLINE
+} from '../../actions';
+
+class GeoJson {}
+export default GeoJson;
