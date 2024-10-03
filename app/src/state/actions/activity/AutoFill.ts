@@ -6,9 +6,9 @@ import {
 } from '../../actions';
 
 class AutoFill {
-  static readonly ACTIVITY_UPDATE_AUTOFILL_REQUEST = createAction(ACTIVITY_UPDATE_AUTOFILL_REQUEST);
-  static readonly ACTIVITY_UPDATE_AUTOFILL_SUCCESS = createAction(ACTIVITY_UPDATE_AUTOFILL_SUCCESS);
-  static readonly ACTIVITY_UPDATE_AUTOFILL_FAILURE = createAction(ACTIVITY_UPDATE_AUTOFILL_FAILURE);
+  static readonly update = createAction(ACTIVITY_UPDATE_AUTOFILL_REQUEST);
+  static readonly updateSuccess = createAction(ACTIVITY_UPDATE_AUTOFILL_SUCCESS);
+  static readonly updateFailure = createAction(ACTIVITY_UPDATE_AUTOFILL_FAILURE);
 }
 
 export default AutoFill;

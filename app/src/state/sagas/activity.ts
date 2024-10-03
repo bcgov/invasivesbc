@@ -37,7 +37,6 @@ import {
   ACTIVITY_SET_SAVED_HASH_FAILURE,
   ACTIVITY_SET_SAVED_HASH_SUCCESS,
   ACTIVITY_SUBMIT_REQUEST,
-  ACTIVITY_UPDATE_AUTOFILL_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAP_INIT_REQUEST,
@@ -517,7 +516,7 @@ function* activityPageSaga() {
       ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
       handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST
     ),
-    takeEvery(ACTIVITY_UPDATE_AUTOFILL_REQUEST, () => console.log('ACTIVITY_UPDATE_AUTOFILL_REQUEST')),
+    takeEvery(Activity.Autofill.update, () => console.log('Activity.Autofill.update')),
     takeEvery(Activity.Photo.update, () => console.log('Activity.Photo.update')),
     takeEvery(ACTIVITY_LINK_RECORD_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST')),
     takeEvery(ACTIVITY_PERSIST_REQUEST, () => console.log('ACTIVITY_PERSIST_REQUEST')),

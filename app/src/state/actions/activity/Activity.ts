@@ -70,11 +70,13 @@ import {
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_GET_FAILURE
 } from '../../actions';
+import AutoFill from './AutoFill';
 
 class Activity {
   static readonly Offline = Offline;
   static readonly Photo = Photos;
   static readonly Suggestions = Suggestions;
+  static readonly Autofill = AutoFill;
 
   static readonly createReq = createAction(ACTIVITY_CREATE_REQUEST);
   static readonly createNetwork = createAction(ACTIVITY_CREATE_NETWORK);
