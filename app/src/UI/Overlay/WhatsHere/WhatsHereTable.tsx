@@ -2,7 +2,6 @@ import { ChangeEvent } from 'react';
 import { useDispatch } from 'react-redux';
 import center from '@turf/center';
 import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
-import { MAP_SET_WHATS_HERE_SECTION } from 'state/actions';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import { useHistory } from 'react-router';
@@ -14,6 +13,7 @@ import { useSelector } from 'utils/use_selector';
 import { calc_utm } from 'utils/utm';
 import './WhatsHereTable.css';
 import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 export const createDataUTM = (name: string, value: any) => {
   return { name, value };
@@ -34,12 +34,7 @@ export const WhatsHereTable = () => {
   ];
 
   const handleChange = (_event: ChangeEvent<{}>, newSection: string) => {
-    dispatch({
-      type: MAP_SET_WHATS_HERE_SECTION,
-      payload: {
-        section: newSection
-      }
-    });
+    dispatch(WhatsHere.map_set_section(newSection));
   };
 
   const goToRecord = () => {

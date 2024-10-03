@@ -25,8 +25,6 @@ import {
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_MODE_SET,
   MAP_SET_COORDS,
-  MAP_SET_WHATS_HERE_PAGE_LIMIT,
-  MAP_SET_WHATS_HERE_SECTION,
   MAP_TOGGLE_ACCURACY,
   MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_LEGENDS,
@@ -39,8 +37,6 @@ import {
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACKING_ON,
   MAP_UPDATE_AVAILABLE_BASEMAPS,
-  MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
-  MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
   OVERLAY_MENU_TOGGLE,
   PAGE_OR_LIMIT_UPDATE,
   PAN_AND_ZOOM_TO_ACTIVITY,
@@ -63,13 +59,7 @@ import {
   URL_CHANGE,
   USER_CLICKED_RECORD,
   USER_HOVERED_RECORD,
-  USER_TOUCHED_RECORD,
-  WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-  WHATS_HERE_IAPP_ROWS_SUCCESS,
-  WHATS_HERE_ID_CLICKED,
-  WHATS_HERE_PAGE_ACTIVITY,
-  WHATS_HERE_PAGE_POI,
-  WHATS_HERE_SORT_FILTER_UPDATE
+  USER_TOUCHED_RECORD
 } from '../actions';
 import { AppConfig } from '../config';
 import { getUuid } from './userSettings';
@@ -78,6 +68,7 @@ import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import { SortFilter } from 'interfaces/filterParams';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -460,7 +451,7 @@ const initialState: MapState = {
     ActivityPage: 0,
     ActivityLimit: 5,
     ActivitySortField: 'created',
-    ActivitySortDirection: 'desc',
+    ActivitySortDirection: SortFilter.Desc,
 
     loadingIAPP: false,
     iappRows: [],
@@ -468,7 +459,7 @@ const initialState: MapState = {
     IAPPPage: 0,
     IAPPLimit: 5,
     IAPPSortField: 'earliest_survey',
-    IAPPSortDirection: 'desc',
+    IAPPSortDirection: SortFilter.Desc,
 
     serverActivityIDs: [],
     serverIAPPIDs: []
@@ -588,6 +579,81 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
         draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
         draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
+      } else if (WhatsHere.sort_filter_update.match(action)) {
+        if (action.payload.type === RecordSetType.IAPP) {
+          draftState.whatsHere.IAPPPage = 0;
+          draftState.whatsHere.IAPPSortField = action.payload.field;
+          draftState.whatsHere.IAPPSortDirection = action.payload.direction;
+        } else {
+          draftState.whatsHere.ActivityPage = 0;
+          draftState.whatsHere.ActivitySortField = action.payload.field;
+          draftState.whatsHere.ActivitySortDirection = action.payload.direction;
+        }
+      } else if (WhatsHere.map_set_section.match(action)) {
+        draftState.whatsHere.section = action.payload;
+        draftState.whatsHere.page = 0;
+        draftState.whatsHere.limit = 5;
+      } else if (WhatsHere.set_highlighted_iapp.match(action)) {
+        // moving to one place for this stuff:
+        draftState.userRecordOnHoverRecordRow = {
+          id: action.payload,
+          geometry: state?.whatsHere?.iappRows.filter((row) => {
+            return row.site_id === action.payload;
+          })[0].geometry
+        };
+        draftState.userRecordOnHoverRecordType = RecordSetType.IAPP;
+        // to delete:
+        draftState.whatsHere.highlightedType = RecordSetType.IAPP;
+        draftState.whatsHere.highlightedURLID = action.payload;
+        draftState.whatsHere.highlightedIAPP = action.payload;
+        draftState.whatsHere.highlightedACTIVITY = null;
+        draftState.whatsHere.highlightedGeo = state?.whatsHere?.iappRows.filter((row) => {
+          return row.site_id === action.payload;
+        })[0];
+      } else if (WhatsHere.set_highlighted_activity.match(action)) {
+        // moving to one place for this stuff:
+        draftState.userRecordOnHoverRecordRow = {
+          id: action.payload.id,
+          short_id: action.payload.short_id,
+          geometry: [
+            state?.whatsHere?.activityRows.filter((row) => {
+              return row.short_id === action.payload.short_id;
+            })[0].geometry
+          ]
+        };
+        draftState.userRecordOnHoverRecordType = RecordSetType.Activity;
+
+        // to delete:
+        draftState.whatsHere.highlightedType = RecordSetType.Activity;
+        draftState.whatsHere.highlightedURLID = action.payload.id;
+        draftState.whatsHere.highlightedIAPP = null;
+        draftState.whatsHere.highlightedACTIVITY = action.payload.short_id;
+        draftState.whatsHere.highlightedGeo = state?.whatsHere?.activityRows.filter((row) => {
+          return row.short_id === action.payload.short_id;
+        })[0];
+      } else if (WhatsHere.iapp_rows_success.match(action)) {
+        draftState.whatsHere.loadingIAPP = false;
+        draftState.whatsHere.iappRows = [...action.payload];
+      } else if (WhatsHere.activity_rows_success.match(action)) {
+        draftState.whatsHere.loadingActivities = false;
+        draftState.whatsHere.activityRows = [...action.payload];
+      } else if (WhatsHere.id_clicked.match(action)) {
+        if (action.payload.type === RecordSetType.Activity) {
+          draftState.whatsHere.clickedActivity = action.payload.id;
+          draftState.whatsHere.clickedActivityDescription = action.payload.description ?? null;
+        } else if (action.payload.type === RecordSetType.IAPP) {
+          draftState.whatsHere.clickedIAPP = action.payload.id;
+          draftState.whatsHere.clickedIAPPDescription = action.payload.description ?? null;
+        }
+      } else if (WhatsHere.page_activity.match(action)) {
+        draftState.whatsHere.ActivityPage = action.payload.page;
+        draftState.whatsHere.ActivityLimit = action.payload.limit;
+      } else if (WhatsHere.page_poi.match(action)) {
+        draftState.whatsHere.IAPPPage = action.payload.page;
+        draftState.whatsHere.IAPPLimit = action.payload.limit;
+      } else if (WhatsHere.map_page_limit.match(action)) {
+        draftState.whatsHere.page = action.payload.page;
+        draftState.whatsHere.limit = action.payload.limit;
       } else {
         switch (action.type) {
           case TOGGLE_LAYER_PICKER_OPEN:
@@ -606,16 +672,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
             break;
           }
-          case WHATS_HERE_ID_CLICKED:
-            if (action.payload.type === RecordSetType.Activity) {
-              draftState.whatsHere.clickedActivity = action.payload.id;
-              draftState.whatsHere.clickedActivityDescription = action.payload.description;
-            } else if (action.payload.type === RecordSetType.IAPP) {
-              draftState.whatsHere.clickedIAPP = action.payload.id;
-              draftState.whatsHere.clickedIAPPDescription = action.payload.description;
-            }
-            break;
-
           case IAPP_TABLE_ROWS_GET_REQUEST:
           case ACTIVITIES_TABLE_ROWS_GET_REQUEST: {
             if (!draftState.recordTables?.[action.payload.recordSetID]) {
@@ -680,12 +736,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
                 mapToggle: false
               };
             }
-            /*draftState.layers[index].layerState = {
-            color: '#000000',
-            mapToggle: false,
-            drawOrder: 0
-          };
-          */
             break;
           }
           case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
@@ -922,17 +972,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.userHeading = userCoords.heading;
             break;
           }
-          case MAP_SET_WHATS_HERE_PAGE_LIMIT: {
-            draftState.whatsHere.page = action.payload.page;
-            draftState.whatsHere.limit = action.payload.limit;
-            break;
-          }
-          case MAP_SET_WHATS_HERE_SECTION: {
-            draftState.whatsHere.section = action.payload.section;
-            draftState.whatsHere.page = 0;
-            draftState.whatsHere.limit = 5;
-            break;
-          }
           case MAP_TOGGLE_ACCURACY: {
             draftState.accuracyToggle = !state.accuracyToggle;
             break;
@@ -1004,49 +1043,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME: {
             draftState.track_me_draw_geo.drawingShape = true;
-            break;
-          }
-          case MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY: {
-            // moving to one place for this stuff:
-            draftState.userRecordOnHoverRecordRow = {
-              id: action.payload.id,
-              short_id: action.payload.short_id,
-              geometry: [
-                state?.whatsHere?.activityRows.filter((row) => {
-                  return row.short_id === action.payload.short_id;
-                })[0].geometry
-              ]
-            };
-            draftState.userRecordOnHoverRecordType = RecordSetType.Activity;
-
-            // to delete:
-            draftState.whatsHere.highlightedType = RecordSetType.Activity;
-            draftState.whatsHere.highlightedURLID = action.payload.id;
-            draftState.whatsHere.highlightedIAPP = null;
-            draftState.whatsHere.highlightedACTIVITY = action.payload.short_id;
-            draftState.whatsHere.highlightedGeo = state?.whatsHere?.activityRows.filter((row) => {
-              return row.short_id === action.payload.short_id;
-            })[0];
-            break;
-          }
-          case MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP: {
-            // moving to one place for this stuff:
-            draftState.userRecordOnHoverRecordRow = {
-              id: action.payload.id,
-              geometry: state?.whatsHere?.iappRows.filter((row) => {
-                return row.site_id === action.payload.id;
-              })[0].geometry
-            };
-            draftState.userRecordOnHoverRecordType = RecordSetType.IAPP;
-
-            // to delete:
-            draftState.whatsHere.highlightedType = RecordSetType.IAPP;
-            draftState.whatsHere.highlightedURLID = action.payload.id;
-            draftState.whatsHere.highlightedIAPP = action.payload.id;
-            draftState.whatsHere.highlightedACTIVITY = null;
-            draftState.whatsHere.highlightedGeo = state?.whatsHere?.iappRows.filter((row) => {
-              return row.site_id === action.payload.id;
-            })[0];
             break;
           }
           case OVERLAY_MENU_TOGGLE: {
@@ -1148,38 +1144,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.userRecordOnHoverRecordID = action.payload.id;
             draftState.userRecordOnHoverRecordRow = action.payload.row;
             // draftState.touchTime = Date.now();
-            break;
-          }
-          case WHATS_HERE_ACTIVITY_ROWS_SUCCESS: {
-            draftState.whatsHere.loadingActivities = false;
-            draftState.whatsHere.activityRows = [...action.payload.data];
-            break;
-          }
-          case WHATS_HERE_IAPP_ROWS_SUCCESS: {
-            draftState.whatsHere.loadingIAPP = false;
-            draftState.whatsHere.iappRows = [...action.payload.data];
-            break;
-          }
-          case WHATS_HERE_PAGE_ACTIVITY: {
-            draftState.whatsHere.ActivityPage = action.payload.page;
-            draftState.whatsHere.ActivityLimit = action.payload.limit;
-            break;
-          }
-          case WHATS_HERE_PAGE_POI: {
-            draftState.whatsHere.IAPPPage = action.payload.page;
-            draftState.whatsHere.IAPPLimit = action.payload.limit;
-            break;
-          }
-          case WHATS_HERE_SORT_FILTER_UPDATE: {
-            if (action.payload.recordType === RecordSetType.IAPP) {
-              draftState.whatsHere.IAPPPage = 0;
-              draftState.whatsHere.IAPPSortField = action.payload.field;
-              draftState.whatsHere.IAPPSortDirection = action.payload.direction;
-            } else {
-              draftState.whatsHere.ActivityPage = 0;
-              draftState.whatsHere.ActivitySortField = action.payload.field;
-              draftState.whatsHere.ActivitySortDirection = action.payload.direction;
-            }
             break;
           }
           default:

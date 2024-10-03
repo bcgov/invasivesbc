@@ -1,9 +1,4 @@
 import { DataGrid, GridRowParams, MuiEvent } from '@mui/x-data-grid';
-import {
-  MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
-  WHATS_HERE_ID_CLICKED,
-  WHATS_HERE_SORT_FILTER_UPDATE
-} from 'state/actions';
 import WhatsHerePagination from './WhatsHerePagination';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
@@ -18,10 +13,7 @@ const RenderTableActivity = () => {
 
   const dispatchUpdatedID = (params) => {
     const { id, short_id } = params.row;
-    dispatch({
-      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
-      payload: { id, short_id }
-    });
+    dispatch(WhatsHere.set_highlighted_activity(id, short_id));
   };
 
   const columns = [
@@ -78,18 +70,8 @@ const RenderTableActivity = () => {
 
   const highlightActivity = async (params) => {
     const { id, short_id } = params.row;
-    dispatch({
-      type: WHATS_HERE_ID_CLICKED,
-      payload: {
-        type: 'Activity',
-        description: 'Activity-' + short_id,
-        id
-      }
-    });
-    dispatch({
-      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_ACTIVITY,
-      payload: { id, short_id }
-    });
+    dispatch(WhatsHere.id_clicked({ type: RecordSetType.Activity, description: 'Activity-' + short_id, id }));
+    dispatch(WhatsHere.set_highlighted_activity(id, short_id));
   };
 
   return (
@@ -106,10 +88,6 @@ const RenderTableActivity = () => {
             disableColumnFilter
             onColumnHeaderClick={(c) => {
               dispatch(WhatsHere.sort_filter_update(RecordSetType.Activity, c.field));
-              dispatch({
-                type: WHATS_HERE_SORT_FILTER_UPDATE,
-                payload: { recordType: 'Activity', field: c.field }
-              });
             }}
             onRowClick={(params: GridRowParams, _event: MuiEvent<React.MouseEvent>) => {
               if (authenticated && roles.length > 0) {
@@ -117,7 +95,7 @@ const RenderTableActivity = () => {
               }
             }}
           />
-          <WhatsHerePagination type="activity" />
+          <WhatsHerePagination type={RecordSetType.Activity} />
         </>
       ) : (
         <NoRowsInSearch />
