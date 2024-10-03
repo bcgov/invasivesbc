@@ -807,6 +807,8 @@ export const ApplicationMethodValidator = (row): RowValidationResult => {
   const rowData = row.data;
   const tank_mix_application = rowData?.['Chemical Treatment (If Tank Mix) - Application Method']?.parsedValue;
   const no_tank_mix_application = rowData?.['Chemical Treatment (No Tank Mix) - Application Method']?.parsedValue;
+  const herbicide_two = rowData?.['Herbicide - 2 - Herbicide']?.parsedValue;
+  const herbicide_three = rowData?.['Herbicide - 3 - Herbicide']?.parsedValue;
   const validationMessages = [];
 
   if (!tank_mix_application && !no_tank_mix_application) {
@@ -825,6 +827,24 @@ export const ApplicationMethodValidator = (row): RowValidationResult => {
       severity: 'error',
       messageTitle: 'Invalid value',
       messageDetail: 'Only 1 application method is required.'
+    });
+  }
+
+  if ((no_tank_mix_application && herbicide_two) || (no_tank_mix_application && herbicide_three)) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'If record is not a Tank Mix, only Herbicide 1 info should be entered.'
+    });
+  }
+
+  if (tank_mix_application && !herbicide_two) {
+    valid = false;
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: 'If record is a Tank Mix, Herbicide 2 info should be entered.'
     });
   }
 
