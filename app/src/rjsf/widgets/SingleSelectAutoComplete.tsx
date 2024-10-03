@@ -56,7 +56,6 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
  */
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
-  // console.dir(props)
   const suggestedJurisdictionsInState = useSelector((state: any) => state.ActivityPage.suggestedJurisdictions);
   const isenums = props.options.enumOptions?.length > 0 ? true : false;
   let enumOptions;

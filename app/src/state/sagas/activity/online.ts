@@ -28,7 +28,6 @@ export function* handle_ACTIVITY_CREATE_NETWORK(action) {
 export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
-    console.dir(activityState);
     const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/activities`, {
       ids: [activityState.activity.activity_id]
     });
@@ -215,7 +214,6 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
     const result = networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result;
     if (result && result.length > 0) {
       treatments = result.map((treatment, i) => {
-        console.dir(treatment);
         //const shortActID = getShortActivityID(treatment);
         return {
           label: treatment.short_id, //shortActID,

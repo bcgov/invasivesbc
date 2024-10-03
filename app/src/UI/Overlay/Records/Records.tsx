@@ -73,7 +73,6 @@ export const Records = () => {
 
   //Record set on click handlers:
   const onClickToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
-    console.dir(e);
     e.stopPropagation();
     dispatch(UserSettings.RecordSet.set({ labelToggle: !recordSets?.[set]?.labelToggle }, set));
   };
