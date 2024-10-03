@@ -1,11 +1,13 @@
 import { IconButton } from '@mui/material';
 import { ArrowLeftIcon, ArrowRightIcon } from '@mui/x-date-pickers/icons';
 import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
-import { WHATS_HERE_PAGE_ACTIVITY, WHATS_HERE_PAGE_POI } from 'state/actions';
 import { useDispatch, useSelector } from 'react-redux';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSet } from 'UI/Overlay/Records/RecordSet';
 
 type PropTypes = {
-  type: string;
+  type: RecordSetType;
 };
 
 const WhatsHerePagination = ({ type }: PropTypes) => {
@@ -15,21 +17,27 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
   let pageNumber = 0;
   let pageLimit = 5;
   let setLength = 1;
-  let actionType = '';
   if (whatsHere) {
-    if (type === 'activity' && whatsHere?.activityRows && whatsHere?.activityRows.length > 0) {
-      setLength = whatsHere?.ActivityIDs.length;
-      actionType = WHATS_HERE_PAGE_ACTIVITY;
-      pageNumber = whatsHere?.ActivityPage;
-      pageLimit = whatsHere?.ActivityLimit;
-    } else if (type === 'iapp' && whatsHere?.IAPPIDs && whatsHere?.IAPPIDs.length > 0) {
-      setLength = whatsHere?.IAPPIDs.length;
-      actionType = WHATS_HERE_PAGE_POI;
-      pageNumber = whatsHere?.IAPPPage;
-      pageLimit = whatsHere?.IAPPLimit;
+    if (type === RecordSetType.Activity && whatsHere?.activityRows && whatsHere?.activityRows.length > 0) {
+      setLength = whatsHere.ActivityIDs.length;
+      pageNumber = whatsHere.ActivityPage;
+      pageLimit = whatsHere.ActivityLimit;
+    } else if (RecordSetType.IAPP && whatsHere?.IAPPIDs && whatsHere?.IAPPIDs.length > 0) {
+      setLength = whatsHere.IAPPIDs.length;
+      pageNumber = whatsHere.IAPPPage;
+      pageLimit = whatsHere.IAPPLimit;
     }
   }
-
+  const handleClick = (page: number) => {
+    switch (type) {
+      case RecordSetType.Activity:
+        dispatch(WhatsHere.page_activity({ page, limit: pageLimit }));
+        break;
+      case RecordSetType.IAPP:
+        dispatch(WhatsHere.page_poi({ page, limit: pageLimit }));
+        break;
+    }
+  };
   return (
     <div key={'pagination'} className={'whatsHere-pagination'}>
       <div key={'paginationControls'}>
@@ -37,13 +45,7 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
           disabled={pageNumber <= 0}
           onClick={(e) => {
             e.stopPropagation();
-            dispatch({
-              type: actionType,
-              payload: {
-                page: 0,
-                limit: pageLimit
-              }
-            });
+            handleClick(0);
           }}
         >
           <DoubleArrowLeftIcon />
@@ -52,13 +54,7 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
           disabled={pageNumber <= 0}
           onClick={(e) => {
             e.stopPropagation();
-            dispatch({
-              type: actionType,
-              payload: {
-                page: pageNumber - 1,
-                limit: pageLimit
-              }
-            });
+            handleClick(pageNumber - 1);
           }}
         >
           <ArrowLeftIcon />
@@ -70,13 +66,7 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
           disabled={(pageNumber + 1) * pageLimit >= setLength}
           onClick={(e) => {
             e.stopPropagation();
-            dispatch({
-              type: actionType,
-              payload: {
-                page: pageNumber + 1,
-                limit: pageLimit
-              }
-            });
+            handleClick(pageNumber + 1);
           }}
         >
           <ArrowRightIcon />

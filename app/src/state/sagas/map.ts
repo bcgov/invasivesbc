@@ -47,13 +47,7 @@ import {
   REMOVE_SERVER_BOUNDARY,
   SET_CURRENT_OPEN_SET,
   TOGGLE_PANEL,
-  URL_CHANGE,
-  WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-  WHATS_HERE_IAPP_ROWS_SUCCESS,
-  WHATS_HERE_PAGE_ACTIVITY,
-  WHATS_HERE_PAGE_POI,
-  WHATS_HERE_SERVER_FILTERED_IDS_FETCHED,
-  WHATS_HERE_SORT_FILTER_UPDATE
+  URL_CHANGE
 } from '../actions';
 import {
   getRecordFilterObjectFromStateForAPI,
@@ -86,6 +80,7 @@ import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import { SortFilter } from 'interfaces/filterParams';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -277,10 +272,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
     };
 
     if (slicedIDs.length === 0) {
-      yield put({
-        type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-        payload: { data: [] }
-      });
+      yield put(WhatsHere.iapp_rows_success([]));
       return;
     }
 
@@ -298,11 +290,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
         geometry: iappRecord.geojson
       };
     });
-
-    yield put({
-      type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-      payload: { data: mappedToWhatsHereColumns }
-    });
+    yield put(WhatsHere.iapp_rows_success(mappedToWhatsHereColumns));
   }
   if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
     try {
@@ -310,7 +298,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
         mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
       const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
       const sorted = mapState?.whatsHere?.IAPPIDs.map((site_id) => mapState?.IAPPGeoJSONDict[site_id]).sort((a, b) => {
-        if (mapState?.whatsHere?.IAPPSortDirection === 'desc') {
+        if (mapState?.whatsHere?.IAPPSortDirection === SortFilter.Desc) {
           return a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField]
             ? 1
             : -1;
@@ -336,10 +324,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
         };
       });
 
-      yield put({
-        type: WHATS_HERE_IAPP_ROWS_SUCCESS,
-        payload: { data: mappedToWhatsHereColumns }
-      });
+      yield put(WhatsHere.iapp_rows_success(mappedToWhatsHereColumns));
     } catch (e) {
       console.error(e);
     }
@@ -371,10 +356,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
       ids_to_filter: slicedIDs
     };
     if (slicedIDs.length === 0) {
-      yield put({
-        type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-        payload: { data: [] }
-      });
+      yield put(WhatsHere.activity_rows_success([]));
       return;
     }
 
@@ -394,11 +376,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
         created: new Date(activityRecord.activity_payload.form_data.activity_data.activity_date_time).toDateString()
       };
     });
-
-    yield put({
-      type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-      payload: { data: mappedToWhatsHereColumns }
-    });
+    yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
   }
 
   if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
@@ -419,7 +397,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
         }
         return null;
       }).sort((a, b) => {
-        if (mapState?.whatsHere?.ActivitySortDirection === 'desc') {
+        if (mapState?.whatsHere?.ActivitySortDirection === SortFilter.Desc) {
           return a?.properties[mapState?.whatsHere?.ActivitySortField] >
             b?.properties[mapState?.whatsHere?.ActivitySortField]
             ? 1
@@ -492,11 +470,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
           geometry: activityRecord?.geometry
         };
       });
-
-      yield put({
-        type: WHATS_HERE_ACTIVITY_ROWS_SUCCESS,
-        payload: { data: mappedToWhatsHereColumns }
-      });
+      yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
     } catch (e) {
       console.error(e);
     }
@@ -504,7 +478,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
 }
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
-  yield put(WhatsHere.activity_rows_request);
+  yield put(WhatsHere.activity_rows_request());
 }
 
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
@@ -571,7 +545,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
 
 function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
   switch (action.payload.recordType) {
-    case 'IAPP':
+    case RecordSetType.IAPP:
       yield put(WhatsHere.iapp_rows_request());
       break;
     default:
@@ -952,9 +926,9 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(WhatsHere.iapp_rows_request, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
-    takeEvery(WHATS_HERE_PAGE_POI, handle_WHATS_HERE_PAGE_POI),
-    takeEvery(WHATS_HERE_SORT_FILTER_UPDATE, handle_WHATS_HERE_SORT_FILTER_UPDATE),
-    takeEvery(WHATS_HERE_PAGE_ACTIVITY, handle_WHATS_HERE_PAGE_ACTIVITY),
+    takeEvery(WhatsHere.page_poi, handle_WHATS_HERE_PAGE_POI),
+    takeEvery(WhatsHere.sort_filter_update, handle_WHATS_HERE_SORT_FILTER_UPDATE),
+    takeEvery(WhatsHere.page_activity, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),

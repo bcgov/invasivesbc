@@ -2,12 +2,9 @@ import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import { DataGrid, GridCellParams, MuiEvent } from '@mui/x-data-grid';
 import WhatsHerePagination from './WhatsHerePagination';
-import {
-  MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-  WHATS_HERE_ID_CLICKED,
-  WHATS_HERE_SORT_FILTER_UPDATE
-} from 'state/actions';
 import NoRowsInSearch from './NoRowsInSearch';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 const RenderTablePOI = (props: any) => {
   const dispatch = useDispatch();
@@ -15,12 +12,7 @@ const RenderTablePOI = (props: any) => {
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
 
   const dispatchUpdatedID = (params) => {
-    dispatch({
-      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-      payload: {
-        id: params.row.site_id
-      }
-    });
+    dispatch(WhatsHere.set_highlighted_iapp(params.row.site_id));
   };
 
   // don't use the tables sort or paging - there can be too many records for table to handle, control state externally via store
@@ -64,20 +56,8 @@ const RenderTablePOI = (props: any) => {
   ];
 
   const highlightPOI = async (params) => {
-    dispatch({
-      type: WHATS_HERE_ID_CLICKED,
-      payload: {
-        type: 'IAPP',
-        description: 'IAPP-' + params.id,
-        id: params.row.id
-      }
-    });
-    dispatch({
-      type: MAP_WHATS_HERE_SET_HIGHLIGHTED_IAPP,
-      payload: {
-        id: params?.id
-      }
-    });
+    dispatch(WhatsHere.id_clicked({ type: RecordSetType.IAPP, description: 'IAPP-' + params.id, id: params.row.id }));
+    dispatch(WhatsHere.set_highlighted_iapp(params?.id));
   };
 
   return (
@@ -92,7 +72,7 @@ const RenderTablePOI = (props: any) => {
             hideFooter
             disableColumnMenu
             onColumnHeaderClick={(c) => {
-              dispatch({ type: WHATS_HERE_SORT_FILTER_UPDATE, payload: { recordType: 'IAPP', field: c.field } });
+              dispatch(WhatsHere.sort_filter_update(RecordSetType.IAPP, c.field));
             }}
             onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
               if (authenticated && roles.length > 0) {
@@ -100,7 +80,7 @@ const RenderTablePOI = (props: any) => {
               }
             }}
           />
-          <WhatsHerePagination type="iapp" />
+          <WhatsHerePagination type={RecordSetType.IAPP} />
         </div>
       ) : (
         <NoRowsInSearch />

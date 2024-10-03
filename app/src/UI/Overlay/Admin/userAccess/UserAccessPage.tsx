@@ -26,6 +26,7 @@ import AccessRequestModal from '../modals/AccessRequestModal';
 import ApproveDeclineModal from '../modals/ApproveDeclineModal';
 import GrantRevokeRoleModal from '../modals/GrantRevokeRoleModal';
 import DetailsModal from '../modals/DetailsModal';
+import { SortFilter } from 'interfaces/filterParams';
 
 interface IAccessRequestPage {
   classes?: any;
@@ -577,7 +578,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                         clearSearch: () => requestSearch('')
                       }
                     }}
-                    sortModel={[{ field: 'id', sort: 'asc' }]}
+                    sortModel={[{ field: 'id', sort: SortFilter.Asc }]}
                     onRowSelectionModelChange={handleRowSelection}
                     rows={searchedRows}
                     columns={columns}
@@ -652,7 +653,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
                     onRowSelectionModelChange={handleAccessRequestRowSelection}
                     rows={requestRows}
                     columns={requestColumns}
-                    sortModel={[{ field: 'dateRequested', sort: 'desc' }]}
+                    sortModel={[{ field: 'dateRequested', sort: SortFilter.Desc }]}
                     checkboxSelection
                     onCellClick={handleRowClick}
                     onRowClick={handleRowClick}
