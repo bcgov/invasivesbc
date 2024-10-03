@@ -37,7 +37,6 @@ const FormContainer = () => {
   const formDataState = useSelector(
     (state) => state.ActivityPage.activity.form_data,
     (a, b) => {
-      console.dir(a);
       if (a == null || b == null) {
         return a == b;
       }

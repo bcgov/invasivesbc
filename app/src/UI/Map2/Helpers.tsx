@@ -116,7 +116,6 @@ export const mapInit = (
         }
         return bytes.buffer;
       };
-      //console.dir(request.url);
       try {
         const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
 
@@ -659,16 +658,10 @@ const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_t
 
 const customDrawListenerUpdate = (drawInstance: MapboxDraw) => (e) => {
   const feature = e.features[0];
-  console.dir(feature);
 };
 
 const customDrawListenerSelectionChange = (drawInstance: MapboxDraw, dispatch) => (e) => {
-  console.dir(e);
-
   const editedGeo = drawInstance.getAll().features[0];
-
-  console.dir(e);
-  console.dir(editedGeo);
   if (editedGeo?.id !== e?.features?.[0]?.id) {
     dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
   }
@@ -808,7 +801,6 @@ export const initDrawModes = (
     map.addControl(localDraw, 'top-left');
   }
   if (activityGeo) {
-    console.dir(activityGeo);
     localDraw.add({ type: 'FeatureCollection', features: activityGeo });
   }
   drawSetter(localDraw);
@@ -1024,7 +1016,6 @@ export const refreshCurrentRecMakers = (map, options: any) => {
     options.whatsHereMarker &&
     (options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry)
   ) {
-    console.dir(options);
     options.whatsHereMarker.setLngLat(
       centroid(options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry)
         .geometry?.coordinates
@@ -1194,7 +1185,6 @@ export const addClientBoundariesIfNotExists = (clientBoundaries, map) => {
       const layerID = 'clientBoundaries' + layer.id;
 
       if (!map.getSource(layerID)) {
-        console.dir(layer);
         map
           .addSource(layerID, {
             type: 'geojson',

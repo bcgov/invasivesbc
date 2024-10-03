@@ -586,7 +586,6 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
       target = acentroid.geometry;
     }
 
-    console.dir(target);
     yield put({
       type: MAIN_MAP_MOVE,
       payload: { center: { lat: target.coordinates[1], lng: target.coordinates[0] }, zoom: 16 }

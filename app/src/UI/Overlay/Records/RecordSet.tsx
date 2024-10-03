@@ -304,8 +304,6 @@ const Filter = (props) => {
           key={'filterType' + props.name}
           value={valueInState}
           onChange={(e) => {
-            console.dir(e.target);
-
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
               payload: {
@@ -334,8 +332,6 @@ const Filter = (props) => {
           key={'filterType' + props.name}
           value={valueInState}
           onChange={(e) => {
-            console.dir(e.target);
-
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
               payload: {
@@ -369,8 +365,6 @@ const Filter = (props) => {
           key={'operand2' + props.name}
           value={operator2InState}
           onChange={(e) => {
-            console.dir(e.target.value);
-
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
               payload: {
@@ -424,8 +418,6 @@ const Filter = (props) => {
           key={'operand' + props.name}
           value={operatorInState}
           onChange={(e) => {
-            console.dir(e.target.value);
-
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
               payload: {
@@ -527,8 +519,6 @@ const Filter = (props) => {
           key={'filterType' + props.name}
           value={typeInState}
           onChange={(e) => {
-            console.dir(e.target);
-
             dispatch({
               type: RECORDSET_UPDATE_FILTER,
               payload: {

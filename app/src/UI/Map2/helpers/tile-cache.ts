@@ -41,12 +41,6 @@ class TileCacheService {
     } catch (err) {
       console.error(err);
     }
-
-    console.dir(
-      await this.db.query(`SELECT name
-                           FROM sqlite_master
-                           WHERE type = 'table'`)
-    );
   }
 
   async getTile(repository: string, z: number, x: number, y: number) {
