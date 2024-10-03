@@ -71,12 +71,14 @@ import {
   ACTIVITY_GET_FAILURE
 } from '../../actions';
 import AutoFill from './AutoFill';
+import GeoJson from './GeoJson';
 
 class Activity {
   static readonly Offline = Offline;
   static readonly Photo = Photos;
   static readonly Suggestions = Suggestions;
   static readonly Autofill = AutoFill;
+  static readonly GeoJson = GeoJson;
 
   static readonly createReq = createAction(ACTIVITY_CREATE_REQUEST);
   static readonly createNetwork = createAction(ACTIVITY_CREATE_NETWORK);
