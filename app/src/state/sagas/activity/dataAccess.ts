@@ -31,10 +31,6 @@ import {
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
@@ -465,11 +461,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
     const reportedAreaLessThanMaxArea =
       currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-        payload: { search_feature: currentActivity.geometry }
-      });
-
+      yield put(Activity.Suggestions.jurisdictions(currentActivity.geometry));
       if (isLinkedTreatmentSubtype(currentActivity.activity_subtype)) {
         yield put({
           type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
@@ -490,10 +482,7 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
 
   try {
     if (connected) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-        payload: { search_feature: action.payload.search_feature }
-      });
+      yield put(Activity.Suggestions.jurisdictionsOnline(action.payload ?? null));
     }
   } catch (e) {
     console.error(e);
@@ -506,10 +495,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
 
   try {
     if (connected) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-        payload: {}
-      });
+      yield put(Activity.Suggestions.personsOnline());
     }
   } catch (e) {
     console.error(e);
@@ -522,7 +508,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
   const AuthState = yield select(selectAuth);
   try {
     // filter Treatments and/or Biocontrol
-    let linkedActivitySubtypes = [];
+    let linkedActivitySubtypes: ActivitySubtype[] = [];
 
     switch (payloadActivity.activity_subtype) {
       case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
@@ -595,14 +581,8 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     const activityState = yield select(selectActivity);
     const type = activityState?.activity?.activity_subtype;
 
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-      payload: {}
-    });
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-      payload: { search_feature: activityState.activity.geometry }
-    });
+    yield put(Activity.Suggestions.persons());
+    yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
 
     // needs to be latlng expression
     const isGeo = action.payload.activity?.geometry?.[0]?.geometry?.coordinates ? true : false;

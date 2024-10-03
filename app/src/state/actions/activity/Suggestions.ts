@@ -17,10 +17,11 @@ import {
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_OFFLINE,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS
 } from '../../actions';
+import { Geometry } from '@turf/helpers';
 
 class Suggestions {
-  static readonly jurisdictions = createAction(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST);
-  static readonly jurisdictionsOnline = createAction(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE);
+  static readonly jurisdictions = createAction<Geometry>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST);
+  static readonly jurisdictionsOnline = createAction<Geometry>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE);
   static readonly jurisdictionsOffline = createAction(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_OFFLINE);
   static readonly jurisdictionsSuccess = createAction(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS);
 
@@ -29,9 +30,9 @@ class Suggestions {
   static readonly biocontrolOnlineSuccess = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS);
   static readonly biocontrolAgentsSuccess = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS);
 
-  static readonly personsRequest = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST);
-  static readonly personsRequestOnline = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE);
-  static readonly personsRequestOffline = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_OFFLINE);
+  static readonly persons = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST);
+  static readonly personsOnline = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE);
+  static readonly personsOffline = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_OFFLINE);
   static readonly personsSuccess = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS);
 
   static readonly treatmentIdsRequest = createAction(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST);
