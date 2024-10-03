@@ -515,18 +515,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           if (action.payload.recordSets[setID].drawOrder)
             draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
         });
-      } else if (WhatsHere.toggle.match(action)) {
-        if (draftState.whatsHere.toggle) {
-          draftState.whatsHere.loadingActivities = false;
-          draftState.whatsHere.loadingIAPP = false;
-        } else {
-          draftState.whatsHere.toggle = !state.whatsHere.toggle;
-          draftState.whatsHere.feature = null;
-          draftState.whatsHere.iappRows = [];
-          draftState.whatsHere.activityRows = [];
-          draftState.whatsHere.limit = 5;
-          draftState.whatsHere.page = 0;
-        }
       } else if (WhatsHere.map_init_get_poi_ids_fetched.match(action)) {
         draftState.whatsHere.IAPPIDs = action.payload ?? [];
         draftState.whatsHere.iappRows = [];
@@ -589,12 +577,23 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.whatsHere.ActivitySortField = action.payload.field;
           draftState.whatsHere.ActivitySortDirection = action.payload.direction;
         }
+      } else if (WhatsHere.toggle.match(action)) {
+        if (draftState.whatsHere.toggle) {
+          draftState.whatsHere.loadingActivities = false;
+          draftState.whatsHere.loadingIAPP = false;
+        } else {
+          draftState.whatsHere.toggle = !state.whatsHere.toggle;
+          draftState.whatsHere.feature = null;
+          draftState.whatsHere.iappRows = [];
+          draftState.whatsHere.activityRows = [];
+          draftState.whatsHere.limit = 5;
+          draftState.whatsHere.page = 0;
+        }
       } else if (WhatsHere.map_set_section.match(action)) {
         draftState.whatsHere.section = action.payload;
         draftState.whatsHere.page = 0;
         draftState.whatsHere.limit = 5;
       } else if (WhatsHere.set_highlighted_iapp.match(action)) {
-        // moving to one place for this stuff:
         draftState.userRecordOnHoverRecordRow = {
           id: action.payload,
           geometry: state?.whatsHere?.iappRows.filter((row) => {
@@ -611,7 +610,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           return row.site_id === action.payload;
         })[0];
       } else if (WhatsHere.set_highlighted_activity.match(action)) {
-        // moving to one place for this stuff:
         draftState.userRecordOnHoverRecordRow = {
           id: action.payload.id,
           short_id: action.payload.short_id,
@@ -622,8 +620,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ]
         };
         draftState.userRecordOnHoverRecordType = RecordSetType.Activity;
-
-        // to delete:
         draftState.whatsHere.highlightedType = RecordSetType.Activity;
         draftState.whatsHere.highlightedURLID = action.payload.id;
         draftState.whatsHere.highlightedIAPP = null;
@@ -645,15 +641,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.whatsHere.clickedIAPP = action.payload.id;
           draftState.whatsHere.clickedIAPPDescription = action.payload.description ?? null;
         }
+      } else if (WhatsHere.map_page_limit.match(action)) {
+        draftState.whatsHere.page = action.payload.page;
+        draftState.whatsHere.limit = action.payload.limit;
       } else if (WhatsHere.page_activity.match(action)) {
         draftState.whatsHere.ActivityPage = action.payload.page;
         draftState.whatsHere.ActivityLimit = action.payload.limit;
       } else if (WhatsHere.page_poi.match(action)) {
         draftState.whatsHere.IAPPPage = action.payload.page;
         draftState.whatsHere.IAPPLimit = action.payload.limit;
-      } else if (WhatsHere.map_page_limit.match(action)) {
-        draftState.whatsHere.page = action.payload.page;
-        draftState.whatsHere.limit = action.payload.limit;
       } else {
         switch (action.type) {
           case TOGGLE_LAYER_PICKER_OPEN:
