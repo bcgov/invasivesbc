@@ -80,23 +80,11 @@ const initialState: UserSettingsState = {
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
     return createNextState(state, (draftState) => {
-      if (UserSettings.RecordSet.add.match(action)) {
-        draftState.recordSets[Date.now()] = action.payload;
-      } else if (UserSettings.RecordSet.remove.match(action)) {
-        delete draftState.recordSets[action.payload];
-      } else if (UserSettings.RecordSet.set.match(action)) {
-        Object.keys(action.payload.updatedSet).forEach((key) => {
-          draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
-        });
-      } else if (UserSettings.Map.setCenterSuccess.match(action)) {
-        draftState.mapCenter = action.payload;
+      if (UserSettings.toggleRecordExpandSuccess.match(action)) {
+        draftState.recordsExpanded = !draftState.recordsExpanded;
       } else if (UserSettings.Activity.setActiveActivityIdSuccess.match(action)) {
         draftState.activeActivity = action.payload;
         draftState.activeActivityDescription = action.payload;
-      } else if (UserSettings.IAPP.setActiveSuccess.match(action)) {
-        draftState.activeIAPP = action.payload;
-      } else if (UserSettings.InitState.getSuccess.match(action)) {
-        draftState.recordSets = { ...action.payload.recordSets };
       } else if (UserSettings.Boundaries.setSuccess.match(action)) {
         draftState.boundaries = action.payload;
       } else if (UserSettings.Boundaries.deleteSuccess.match(action)) {
@@ -105,12 +93,24 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         );
       } else if (UserSettings.Boundaries.removeFromSetSuccess.match(action)) {
         draftState.recordSets = { ...action.payload };
-      } else if (UserSettings.toggleRecordExpandSuccess.match(action)) {
-        draftState.recordsExpanded = !draftState.recordsExpanded;
       } else if (UserSettings.Boundaries.addToSetSuccess.match(action)) {
         draftState.recordSets = { ...action.payload };
       } else if (UserSettings.Boundaries.deleteSuccess.match(action)) {
         draftState.boundaries = draftState.boundaries.filter((boundary: Boundary) => boundary.id !== action.payload.id);
+      } else if (UserSettings.IAPP.setActiveSuccess.match(action)) {
+        draftState.activeIAPP = action.payload;
+      } else if (UserSettings.InitState.getSuccess.match(action)) {
+        draftState.recordSets = { ...action.payload.recordSets };
+      } else if (UserSettings.Map.setCenterSuccess.match(action)) {
+        draftState.mapCenter = action.payload;
+      } else if (UserSettings.RecordSet.add.match(action)) {
+        draftState.recordSets[Date.now()] = action.payload;
+      } else if (UserSettings.RecordSet.remove.match(action)) {
+        delete draftState.recordSets[action.payload];
+      } else if (UserSettings.RecordSet.set.match(action)) {
+        Object.keys(action.payload.updatedSet).forEach((key) => {
+          draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
+        });
       } else if (UserSettings.Theme.setDark.match(action)) {
         draftState.darkTheme = !draftState.darkTheme;
       } else if (WhatsHere.toggle.match(action)) {
