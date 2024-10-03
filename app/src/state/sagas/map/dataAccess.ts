@@ -15,8 +15,7 @@ import {
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  IAPP_TABLE_ROWS_GET_ONLINE,
-  MAP_WHATS_HERE_INIT_GET_ACTIVITY_IDS_FETCHED
+  IAPP_TABLE_ROWS_GET_ONLINE
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';

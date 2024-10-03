@@ -87,9 +87,9 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.activeActivityDescription = action.payload;
       } else if (UserSettings.Boundaries.setSuccess.match(action)) {
         draftState.boundaries = action.payload;
-      } else if (UserSettings.Boundaries.deleteSuccess.match(action)) {
+      } else if (UserSettings.KML.deleteSuccess.match(action)) {
         draftState.boundaries = draftState.boundaries?.filter(
-          (boundary: Boundary) => boundary.server_id !== action.payload.server_id
+          (boundary: Boundary) => boundary.server_id !== action.payload
         );
       } else if (UserSettings.Boundaries.removeFromSetSuccess.match(action)) {
         draftState.recordSets = { ...action.payload };

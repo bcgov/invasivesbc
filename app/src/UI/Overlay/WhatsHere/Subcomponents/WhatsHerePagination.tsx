@@ -4,7 +4,6 @@ import DoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import { useDispatch, useSelector } from 'react-redux';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { RecordSet } from 'UI/Overlay/Records/RecordSet';
 
 type PropTypes = {
   type: RecordSetType;
