@@ -97,6 +97,7 @@ import Prompt from 'state/actions/prompts/Prompt';
 import Alerts from 'state/actions/alerts/Alerts';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
+import { selectMap } from 'state/reducers/map';
 
 function* handle_USER_SETTINGS_READY(action) {
   // if (action.payload.activeActivity) {
@@ -227,7 +228,9 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
  */
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
   let message: AlertMessage;
-  const shape = (yield select(selectActivity))?.track_me_draw_geo?.type;
+  const shape = (yield select(selectActivity)).track_me_draw_geo.type;
+  const coords = (yield select(selectMap))?.userCoords;
+
   switch (shape) {
     case GeoShapes.LineString:
       message = mappingAlertMessages.trackingStartedLineString;
@@ -238,7 +241,17 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
     default:
       message = mappingAlertMessages.trackingStarted;
   }
-  yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+
+  const initCoords = coords.hasOwnProperty('long') ? [[coords.long, coords.lat]] : [];
+  const initGeo = {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: GeoShapes.LineString,
+      coordinates: initCoords
+    }
+  };
+  yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [initGeo] } });
   yield put(Alerts.create(message));
 }
 
