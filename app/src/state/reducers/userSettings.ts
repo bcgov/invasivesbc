@@ -131,12 +131,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
             break;
           }
-          case CLOSE_NEW_RECORD_MENU: {
-            draftState.newRecordDialogueOpen = false;
-            break;
-          }
           case OPEN_NEW_RECORD_MENU: {
             draftState.newRecordDialogueOpen = true;
+            break;
+          }
+          case CLOSE_NEW_RECORD_MENU: {
+            draftState.newRecordDialogueOpen = false;
             break;
           }
           case IAPP_GET_SUCCESS: {
