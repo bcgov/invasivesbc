@@ -91,6 +91,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.boundaries = draftState.boundaries?.filter(
           (boundary: Boundary) => boundary.server_id !== action.payload
         );
+      } else if (UserSettings.setNewRecordDialogueStateSuccess.match(action)) {
+        draftState.newRecordDialogState = action.payload;
       } else if (UserSettings.Boundaries.removeFromSetSuccess.match(action)) {
         draftState.recordSets = { ...action.payload };
       } else if (UserSettings.Boundaries.addToSetSuccess.match(action)) {
@@ -129,12 +131,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
             break;
           }
-          case OPEN_NEW_RECORD_MENU: {
-            draftState.newRecordDialogueOpen = true;
-            break;
-          }
           case CLOSE_NEW_RECORD_MENU: {
             draftState.newRecordDialogueOpen = false;
+            break;
+          }
+          case OPEN_NEW_RECORD_MENU: {
+            draftState.newRecordDialogueOpen = true;
             break;
           }
           case IAPP_GET_SUCCESS: {

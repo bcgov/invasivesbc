@@ -142,7 +142,9 @@ class UserSettings {
   static readonly setNewRecordDialogueState = createAction<INewRecordDialogState>(
     USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
   );
-  static readonly setNewRecordDialogueStateSuccess = createAction(USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS);
+  static readonly setNewRecordDialogueStateSuccess = createAction<INewRecordDialogState>(
+    USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS
+  );
 }
 
 export default UserSettings;
