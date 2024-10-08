@@ -10,6 +10,12 @@ services:
       - POSTGRES_DB=${DB_DATABASE}
       - PORT=${DB_PORT}
       - TZ=America/Vancouver
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready', '-U', '${DB_USER}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
     networks:
       - local-network
     volumes:
@@ -39,11 +45,11 @@ services:
       - db
     restart: on-failure
     depends_on:
-      - db
+      db:
+        condition: service_healthy
       # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully
       # started before the setup runs. Possible better solutions:
       # https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
-
 
   ## Build the api docker image
   api:
@@ -70,9 +76,6 @@ services:
       - OBJECT_STORE_ACCESS_KEY_ID=${OBJECT_STORE_ACCESS_KEY_ID}
       - OBJECT_STORE_SECRET_KEY_ID=${OBJECT_STORE_SECRET_KEY_ID}
       - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
-    volumes:
-      - ./api:/opt/app-root/src
-      - npmcache_api:/opt/app-root/src/node_modules
     networks:
       - local-network
     links:
@@ -96,6 +99,16 @@ services:
       - api
     networks:
       - local-network
+  pgadmin:
+    container_name: invasives-pgadmin
+    image: dpage/pgadmin4
+    ports:
+      - 5050:80
+    environment:
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: admin@invasives.com
+    networks:
+      - local-network
 
 networks:
   local-network:
@@ -104,7 +117,5 @@ networks:
 volumes:
   postgres:
     name: ${PROJECT_NAME}-${TAG}-vol-postgres
-  npmcache_api:
-    name: ${PROJECT_NAME}-${TAG}-vol-npmcache-api
   npmcache_app:
     name: ${PROJECT_NAME}-${TAG}-vol-npmcache-app
