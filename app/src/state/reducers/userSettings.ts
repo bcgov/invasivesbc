@@ -91,6 +91,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.boundaries = draftState.boundaries?.filter(
           (boundary: Boundary) => boundary.server_id !== action.payload
         );
+      } else if (UserSettings.setNewRecordDialogueStateSuccess.match(action)) {
+        draftState.newRecordDialogState = action.payload;
       } else if (UserSettings.Boundaries.removeFromSetSuccess.match(action)) {
         draftState.recordSets = { ...action.payload };
       } else if (UserSettings.Boundaries.addToSetSuccess.match(action)) {

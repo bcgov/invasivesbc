@@ -140,7 +140,7 @@ function* handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST(action) {
 }
 
 function* handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST(action) {
-  yield put(UserSettings.setNewRecordDialogueStateSuccess());
+  yield put(UserSettings.setNewRecordDialogueStateSuccess(action.payload));
 }
 
 function* handle_APP_AUTH_READY(action) {
