@@ -23,7 +23,7 @@ class Suggestions {
   static readonly jurisdictions = createAction<Geometry>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST);
   static readonly jurisdictionsOnline = createAction<Geometry>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE);
   static readonly jurisdictionsOffline = createAction(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_OFFLINE);
-  static readonly jurisdictionsSuccess = createAction(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS);
+  static readonly jurisdictionsSuccess = createAction<Geometry[]>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS);
 
   static readonly biocontrolAgents = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS);
   static readonly biocontrolOnline = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE);

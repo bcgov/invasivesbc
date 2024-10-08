@@ -9,7 +9,6 @@ import {
   ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
@@ -19,6 +18,7 @@ import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
+import Activity from 'state/actions/activity/Activity';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
@@ -143,15 +143,25 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {
-  if (action.payload?.[0]) {
-    const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
-      search_feature: { ...action.payload[0], properties: {} }
-    });
-
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
-      payload: { jurisdictions: networkReturn.data.result }
-    });
+  try {
+    const userOnline = !(yield select(selectAuth)).workingOffline;
+    const searchFeature = action.payload?.[0] ?? null;
+    if (searchFeature && userOnline) {
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
+        search_feature: { ...searchFeature, properties: {} }
+      });
+      yield put(Activity.Suggestions.jurisdictionsSuccess(networkReturn.data.result ?? []));
+    }
+  } catch (err) {
+    console.error(err);
+    yield put(
+      Alerts.create({
+        content: 'An error occured while fetching suggested Jurisdictions. Suggestions will not be displayed',
+        severity: AlertSeverity.Error,
+        subject: AlertSubjects.Form,
+        autoClose: 8
+      })
+    );
   }
 }
 
