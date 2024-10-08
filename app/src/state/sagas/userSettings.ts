@@ -147,8 +147,6 @@ function* handle_APP_AUTH_READY(action) {
   if (action.payload.authenticated) yield put(UserSettings.InitState.get());
 }
 
-function* handle_USER_SETTINGS_SET_DARK_THEME(action) {}
-
 function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
   try {
     yield put(UserSettings.Map.setCenterSuccess(action.payload));
@@ -198,7 +196,6 @@ function* userSettingsSaga() {
     takeEvery(UserSettings.Boundaries.delete, handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST),
     takeEvery(UserSettings.KML.delete, handle_USER_SETTINGS_DELETE_KML_REQUEST),
     takeEvery(UserSettings.toggleRecordExpand, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
-    takeEvery(UserSettings.Theme.setDark, handle_USER_SETTINGS_SET_DARK_THEME),
     takeEvery(UserSettings.Map.setCenter, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST)
   ]);
 }
