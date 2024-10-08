@@ -19,7 +19,9 @@ function* fetchEmailSettings() {
   });
 
   const data = yield res.json();
-
+  if (data.result.length === 0) {
+    return;
+  }
   yield put({
     type: EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
     payload: {
