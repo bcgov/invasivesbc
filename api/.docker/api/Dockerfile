@@ -1,23 +1,22 @@
 FROM node:20-alpine
 
-RUN apk update && apk add curl
-
 # set variables
-ENV HOME_ROOT=/opt/app-root
-ENV HOME=/opt/app-root/src
+ENV HOME=/opt/app-root
 
 # create source directory
 RUN mkdir -p $HOME
 
-WORKDIR $HOME_ROOT
 WORKDIR $HOME
 
-# Bundle app source
-COPY ./ .
+ADD ./api api
+ADD ./sharedAPI sharedAPI
 
-VOLUME ${HOME}
+WORKDIR $HOME/sharedAPI
 
-ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
+RUN [ "npm", "ci"]
 
-# start api in reload mode (will reload on file changes)
-CMD [ "npm", "run", "start:reload" ]
+WORKDIR $HOME/api
+
+RUN [ "npm", "ci"]
+
+CMD [ "npm", "run", "start" ]
