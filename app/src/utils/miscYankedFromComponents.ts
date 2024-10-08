@@ -1,3 +1,4 @@
+import Filter from 'interfaces/Filter';
 import { ActivityStatus } from 'sharedAPI/src/constants';
 
 export const getSearchCriteriaFromFilters = (
@@ -9,7 +10,7 @@ export const getSearchCriteriaFromFilters = (
   page: number,
   limit: number,
   sortColumns?: any[]
-) => {
+): Filter => {
   const created_by_filter = advancedFilterRows?.filter((x) => x.filterField === 'created_by');
   const form_status_filter = advancedFilterRows?.filter((x) => x.filterField === 'record_status');
   const created_by = created_by_filter?.length === 1 ? created_by_filter[0].filterValue : null;
@@ -21,12 +22,6 @@ export const getSearchCriteriaFromFilters = (
   if (form_status) {
     filter.form_status = [form_status];
   }
-  /*if (props.subType) {
-    filter.activity_subtype = [props.subType];
-  } else if (props.formType) {
-    filter.activity_type = [props.formType];
-  }
-  */
   filter.grid_filters = gridFilters;
 
   //search_feature
@@ -42,9 +37,9 @@ export const getSearchCriteriaFromFilters = (
 
   if (recordSets[setName]?.advancedFilters) {
     const currentAdvFilters = recordSets[setName]?.advancedFilters;
-    const jurisdictions = [];
-    const speciesPositive = [];
-    const speciesNegative = [];
+    const jurisdictions: string[] = [];
+    const speciesPositive: string[] = [];
+    const speciesNegative: string[] = [];
     currentAdvFilters.forEach((filter) => {
       switch (filter.filterField) {
         case 'Jurisdiction': {

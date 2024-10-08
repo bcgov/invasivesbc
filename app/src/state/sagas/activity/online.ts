@@ -143,9 +143,9 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {
-  if (action.payload.search_feature?.[0]) {
+  if (action.payload?.[0]) {
     const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
-      search_feature: { ...action.payload.search_feature[0], properties: {} }
+      search_feature: { ...action.payload[0], properties: {} }
     });
 
     yield put({

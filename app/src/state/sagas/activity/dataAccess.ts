@@ -18,8 +18,6 @@ import {
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
 import {
-  ACTIVITY_ADD_PHOTO_FAILURE,
-  ACTIVITY_ADD_PHOTO_SUCCESS,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_COPY_FAILURE,
   ACTIVITY_COPY_SUCCESS,
@@ -28,19 +26,11 @@ import {
   ACTIVITY_CREATE_NETWORK,
   ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_NETWORK_REQUEST,
-  ACTIVITY_DELETE_PHOTO_FAILURE,
-  ACTIVITY_DELETE_PHOTO_SUCCESS,
-  ACTIVITY_EDIT_PHOTO_FAILURE,
-  ACTIVITY_EDIT_PHOTO_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
@@ -73,6 +63,8 @@ import { MOBILE } from 'state/build-time-config';
 import Alerts from 'state/actions/alerts/Alerts';
 import Prompt from 'state/actions/prompts/Prompt';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import Activity from 'state/actions/activity/Activity';
+import UploadedPhoto from 'interfaces/UploadedPhoto';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
@@ -469,11 +461,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
     const reportedAreaLessThanMaxArea =
       currentActivity?.geometry && currentActivity?.form_data?.activity_data?.reported_area < MAX_AREA;
     if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-        payload: { search_feature: currentActivity.geometry }
-      });
-
+      yield put(Activity.Suggestions.jurisdictions(currentActivity.geometry));
       if (isLinkedTreatmentSubtype(currentActivity.activity_subtype)) {
         yield put({
           type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
@@ -494,10 +482,7 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
 
   try {
     if (connected) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-        payload: { search_feature: action.payload.search_feature }
-      });
+      yield put(Activity.Suggestions.jurisdictionsOnline(action.payload ?? null));
     }
   } catch (e) {
     console.error(e);
@@ -510,10 +495,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
 
   try {
     if (connected) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-        payload: {}
-      });
+      yield put(Activity.Suggestions.personsOnline());
     }
   } catch (e) {
     console.error(e);
@@ -526,7 +508,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
   const AuthState = yield select(selectAuth);
   try {
     // filter Treatments and/or Biocontrol
-    let linkedActivitySubtypes = [];
+    let linkedActivitySubtypes: ActivitySubtype[] = [];
 
     switch (payloadActivity.activity_subtype) {
       case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
@@ -599,14 +581,8 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     const activityState = yield select(selectActivity);
     const type = activityState?.activity?.activity_subtype;
 
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-      payload: {}
-    });
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-      payload: { search_feature: activityState.activity.geometry }
-    });
+    yield put(Activity.Suggestions.persons());
+    yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
 
     // needs to be latlng expression
     const isGeo = action.payload.activity?.geometry?.[0]?.geometry?.coordinates ? true : false;
@@ -665,82 +641,72 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(a
 
 export function* handle_ACTIVITY_ADD_PHOTO_REQUEST(action) {
   try {
-    if (action.payload.photo) {
-      yield put({ type: ACTIVITY_ADD_PHOTO_SUCCESS, payload: { ...action.payload } });
+    if (action.payload) {
+      yield put(Activity.Photo.addSuccess(action.payload));
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_ADD_PHOTO_FAILURE });
+    yield put(Activity.Photo.addFailure());
   }
 }
 
 export function* handle_ACTIVITY_DELETE_PHOTO_REQUEST(action) {
   try {
-    if (action.payload.photo) {
+    if (action.payload) {
       const beforeState = yield select(selectActivity);
       const beforeActivity = beforeState.activity;
 
-      const media = beforeActivity.media.filter((photo) => {
+      const media = beforeActivity.media.filter((photo: UploadedPhoto) => {
         if (photo.media_key) {
-          return photo.media_key !== action.payload.photo.media_key;
+          return photo.media_key !== action.payload.media_key;
         } else {
-          return photo.file_name !== action.payload.photo.file_name;
+          return photo.file_name !== action.payload.file_name;
         }
       });
 
       let media_keys = [];
       if (beforeActivity.media_keys) {
         media_keys = beforeActivity.media_keys.filter((key) => {
-          if (action.payload.photo.media_key) {
-            return key !== action.payload.photo.media_key;
+          if (action.payload.media_key) {
+            return key !== action.payload.media_key;
           }
         });
       }
 
-      let delete_keys = [];
+      let delete_keys: string[] = [];
       if (beforeActivity.media_delete_keys?.length) {
         delete_keys = [...beforeActivity.media_delete_keys];
       }
-      if (action.payload.photo.media_key) {
-        delete_keys.push(action.payload.photo.media_key);
+      if (action.payload.media_key) {
+        delete_keys.push(action.payload.media_key);
       }
-
-      yield put({
-        type: ACTIVITY_DELETE_PHOTO_SUCCESS,
-        payload: {
-          activity: {
-            ...beforeActivity,
-            media: media.length ? media : [],
-            media_keys: media_keys.length ? media_keys : [],
-            media_delete_keys: delete_keys
-          }
-        }
-      });
+      yield put(
+        Activity.Photo.deleteSuccess({
+          ...beforeActivity,
+          media: media ?? [],
+          media_keys: media_keys ?? [],
+          media_delete_keys: delete_keys
+        })
+      );
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_DELETE_PHOTO_FAILURE });
+    yield put(Activity.Photo.deleteFailure());
   }
 }
 
 export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
   try {
     const beforeState = yield select(selectActivity);
-    const beforeActivityMedia = JSON.parse(JSON.stringify(beforeState.activity.media));
-    const photoIndex = beforeActivityMedia.findIndex((photo) => photo.file_name === action.payload.photo.file_name);
+    const beforeActivityMedia: UploadedPhoto[] = JSON.parse(JSON.stringify(beforeState.activity.media));
+    const photoIndex = beforeActivityMedia.findIndex((photo) => photo.file_name === action.payload.file_name);
 
     if (photoIndex >= 0) {
-      beforeActivityMedia[photoIndex] = action.payload.photo;
+      beforeActivityMedia[photoIndex] = action.payload;
     }
-
-    yield put({
-      type: ACTIVITY_EDIT_PHOTO_SUCCESS,
-      payload: {
-        media: beforeActivityMedia
-      }
-    });
+    yield put(Activity.Photo.editSuccess(beforeActivityMedia));
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_EDIT_PHOTO_FAILURE });
+    yield put(Activity.Photo.editFailure);
   }
 }
