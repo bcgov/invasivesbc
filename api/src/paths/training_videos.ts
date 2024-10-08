@@ -53,7 +53,7 @@ if (TRAINING_VIDEOS_JSON_FILE === null) {
 function getTrainingVideos(): RequestHandler {
   return async (req, res, next) => {
     return res.status(200).json({
-      message: 'Successfully retrieved training videos.',
+      message: 'Successfully retrieved training videos. Hopefully',
       request: req.body,
       result: TRAINING_VIDEOS_JSON,
       count: TRAINING_VIDEOS_JSON.length,
