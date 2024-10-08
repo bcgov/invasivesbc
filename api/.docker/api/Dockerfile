@@ -19,4 +19,4 @@ WORKDIR $HOME/api
 
 RUN [ "npm", "ci"]
 
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "dev" ]
