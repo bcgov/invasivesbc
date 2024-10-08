@@ -14,6 +14,14 @@ const newsItems: NewsArticle[] = [
   },
   */
   {
+    title: '"PMBC Parcel Cadastre - Private" Data Layer Added',
+    date: new Date('October 7, 2024'),
+    content: [
+      "The 'PMBC Parcel Cadastre - Private' layer has been added to InvasivesBC. Users can now select this option from the layer picker on the main map."
+    ],
+    subject: NewsSubject.New
+  },
+  {
     title: 'Recordsets Overriding',
     date: new Date('September 20, 2024'),
     content: [
