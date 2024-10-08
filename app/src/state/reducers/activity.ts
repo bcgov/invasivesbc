@@ -1,14 +1,11 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
-  ACTIVITY_ADD_PHOTO_SUCCESS,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_COPY_SUCCESS,
   ACTIVITY_CREATE_REQUEST,
   ACTIVITY_CREATE_SUCCESS,
-  ACTIVITY_DELETE_PHOTO_SUCCESS,
   ACTIVITY_DELETE_SUCCESS,
-  ACTIVITY_EDIT_PHOTO_SUCCESS,
   ACTIVITY_ERRORS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_REQUEST,
@@ -29,6 +26,7 @@ import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransf
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import Activity from 'state/actions/activity/Activity';
 
 export interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -103,6 +101,12 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
         draftState.track_me_draw_geo.drawingShape = false;
       } else if (GeoTracking.resume.match(action)) {
         draftState.track_me_draw_geo.drawingShape = true;
+      } else if (Activity.Photo.addSuccess.match(action)) {
+        draftState.activity.media.push(action.payload);
+      } else if (Activity.Photo.editSuccess.match(action)) {
+        draftState.activity.media = action.payload;
+      } else if (Activity.Photo.deleteSuccess.match(action)) {
+        draftState.activity = action.payload;
       } else {
         switch (action.type) {
           case ACTIVITY_ERRORS: {
@@ -257,18 +261,6 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
           case ACTIVITY_PASTE_SUCCESS: {
             draftState.pasteCount = draftState.pasteCount + 1;
             draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer.form_data));
-            break;
-          }
-          case ACTIVITY_ADD_PHOTO_SUCCESS: {
-            draftState.activity.media.push(action.payload.photo);
-            break;
-          }
-          case ACTIVITY_DELETE_PHOTO_SUCCESS: {
-            draftState.activity = action.payload.activity;
-            break;
-          }
-          case ACTIVITY_EDIT_PHOTO_SUCCESS: {
-            draftState.activity.media = action.payload.media;
             break;
           }
           case ACTIVITY_SET_CURRENT_HASH_SUCCESS: {
