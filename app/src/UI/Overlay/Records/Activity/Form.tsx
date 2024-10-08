@@ -139,7 +139,7 @@ export const ActivityForm = (props) => {
                   </td>{' '}
                 </tr>
                 <tr>
-                  <td className={'rightHeaderCol'}>Audit Info:</td>
+                  <td className={'rightHeaderCol'}>Record History:</td>
                   <td className={'rightValueCol'}>
                     <Button
                       onClick={() => {
