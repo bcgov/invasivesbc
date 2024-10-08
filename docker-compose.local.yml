@@ -1,4 +1,7 @@
 services:
+  ########################
+  #   Postgis DB
+  ########################
   db:
     image: postgis/postgis:16-3.5-alpine
     container_name: ${PROJECT_NAME}-${TAG}-db
@@ -22,7 +25,9 @@ services:
       - postgres:/var/lib/postgresql/data
       - ./database/.docker/db/entrypoint:/docker-entrypoint-initdb.d
 
-  ## Run the database migrations and seeding
+  ########################
+  #   Knex Migrator
+  ########################
   db_setup:
     image: ${PROJECT_NAME}-${TAG}-postgres-setup-img
     container_name: ${PROJECT_NAME}-${TAG}-db-setup
@@ -47,11 +52,9 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      # Doesn't actually depend on api_dependency, but we need a way to delay this from running so the database is fully
-      # started before the setup runs. Possible better solutions:
-      # https://stackoverflow.com/questions/35069027/docker-wait-for-postgresql-to-be-running
-
-  ## Build the api docker image
+  ########################
+  #   API
+  ########################
   api:
     image: ${PROJECT_NAME}-${TAG}-api-img
     container_name: ${PROJECT_NAME}-${TAG}-api
@@ -61,21 +64,21 @@ services:
     ports:
       - ${API_PORT}:${API_PORT}
     environment:
-      - API_HOST=${API_HOST}
-      - API_PORT=${API_PORT}
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASS=${DB_PASS}
-      - DB_PORT=${DB_PORT}
-      - DB_DATABASE=${DB_DATABASE}
-      - APP_CERTIFICATE_URL=${APP_CERTIFICATE_URL}
-      - APP_CERTIFICATE_URL_TEST=${APP_CERTIFICATE_URL_TEST}
-      - ENVIRONMENT=local
-      - NODE_ENV=local
-      - OBJECT_STORE_URL=${OBJECT_STORE_URL}
-      - OBJECT_STORE_ACCESS_KEY_ID=${OBJECT_STORE_ACCESS_KEY_ID}
-      - OBJECT_STORE_SECRET_KEY_ID=${OBJECT_STORE_SECRET_KEY_ID}
-      - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
+      API_HOST: ${API_HOST:-localhost}
+      API_PORT: ${API_PORT:-3002}
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_DATABASE: ${DB_DATABASE}
+      APP_CERTIFICATE_URL: ${APP_CERTIFICATE_URL}
+      APP_CERTIFICATE_URL_TEST: ${APP_CERTIFICATE_URL_TEST}
+      OBJECT_STORE_URL: ${OBJECT_STORE_URL}
+      OBJECT_STORE_ACCESS_KEY_ID: ${OBJECT_STORE_ACCESS_KEY_ID}
+      OBJECT_STORE_SECRET_KEY_ID: ${OBJECT_STORE_SECRET_KEY_ID}
+      OBJECT_STORE_BUCKET_NAME: ${OBJECT_STORE_BUCKET_NAME}
+      ENVIRONMENT: local
+      NODE_ENV: local
     networks:
       - local-network
     links:
@@ -89,28 +92,64 @@ services:
           path: ./api
           target: /opt/app-root/api
           ignore:
-            - .api/node_modules/
+            - ./api/node_modules/
         - action: rebuild
           path: ./sharedapi
           target: /opt/app-root/sharedAPI
           ignore:
             - ./sharedapi/node_modules/
-
+  ########################
+  #   Frontend
+  ########################
   # Build the nginx web-server docker image
-  nginx:
-    image: ${PROJECT_NAME}-${TAG}-nginx-img
-    container_name: ${PROJECT_NAME}-${TAG}-nginx
+  frontend:
+    container_name: invasives-frontend
     build:
-      context: ./.docker/nginx
-      dockerfile: Dockerfile
-    restart: always
+      context: ./
+      dockerfile: ./app/.docker/Dockerfile
     ports:
-      - 80:80
+      - 3000:3000
+    environment:
+      REACT_APP_API_HOST: ${REACT_APP_API_HOST:-http://${API_HOST:-localhost}:${API_PORT:-3002}}
+      SSO_CLIENT_ID: ${SSO_CLIENT_ID}
+      SSO_REALM: standard
+      SSO_URL: ${SSO_URL:-https://dev.loginproxy.gov.bc.ca/auth/}
+      REDIRECT_URI: ${REDIRECT_URI:-http://localhost:3000/home/landing}
+      PUBLIC_MAP_URL: ${PUBLIC_MAP_URL}
+      IAPP_GEOJSON_URL: ${IAPP_GEOJSON_URL}
+      SILENT_CHECK_URI: ${SILENT_CHECK_URI}
+    healthcheck:
+      test: curl--fail http://localhost:3000 || exit 1
+      interval: 20s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    develop:
+      watch:
+        - action: sync
+          path: .git
+          target: /opt/app-root/.git
+        - action: sync
+          path: ./app
+          target: /opt/app-root/app
+          ignore:
+            - ./app/node_modules/
+        - action: rebuild
+          path: ./sharedapi
+          target: /opt/app-root/sharedAPI
+          ignore:
+            - ./sharedapi/node_modules/
     depends_on:
-      - db
-      - api
+      db:
+        condition: service_healthy
+      # api:
+      #   condition: service_healthy
     networks:
       - local-network
+
+  ########################
+  #   PGAdmin
+  ########################
   pgadmin:
     container_name: invasives-pgadmin
     image: dpage/pgadmin4
@@ -122,10 +161,16 @@ services:
     networks:
       - local-network
 
+########################
+#   Networks
+########################
 networks:
   local-network:
     driver: bridge
 
+########################
+#   Volumes
+########################
 volumes:
   postgres:
     name: ${PROJECT_NAME}-${TAG}-vol-postgres
