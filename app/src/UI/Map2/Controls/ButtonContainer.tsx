@@ -11,10 +11,10 @@ import { MapModeToggle } from './MapToggleCacheGeoJSON';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import TrackingButtonsContainer from './TrackingButtonsContainer';
 import { BaseMapSelect } from 'UI/Map2/Controls/BaseMapSelect';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export const ButtonContainer = () => {
   const { authenticated, workingOffline } = useSelector((state) => state.Auth);
-
   const { positionTracking } = useSelector((state) => state.Map);
 
   return (
@@ -35,8 +35,8 @@ export const ButtonContainer = () => {
       {(authenticated || workingOffline) && <NewRecord />}
 
       <WebOnly>
-        {authenticated && <CenterCurrentRecord type="Activity" />}
-        {authenticated && <CenterCurrentRecord type="IAPP" />}
+        {authenticated && <CenterCurrentRecord type={RecordSetType.Activity} />}
+        {authenticated && <CenterCurrentRecord type={RecordSetType.IAPP} />}
         <QuickPanToRecordToggle />
         {authenticated && <MapModeToggle />}
       </WebOnly>
