@@ -162,6 +162,7 @@
     "check-types": "tsc --noEmit --skipLibCheck",
     "lint:fix": "npm run lint -- --fix",
     "start": "CONFIGURATION_SOURCE=Provided ENABLE_WDYR=TRUE  VITE_DEBUG=TRUE  VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=web vite serve --port 3000 --strictPort",
+    "docker": "CONFIGURATION_SOURCE=Provided ENABLE_WDYR=TRUE  VITE_DEBUG=TRUE  VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=web vite serve --port 3000 --host=0.0.0.0 --strictPort",
     "start:mobileMode": "CONFIGURATION_SOURCE=Provided ENABLE_WDYR=TRUE VITE_DEBUG=TRUE VITE_MOBILE=TRUE VITE_TARGET_PLATFORM=web vite serve --port 3000 --strictPort",
     "build": "NODE_OPTIONS='--max-old-space-size=8000' ENABLE_STATS=TRUE CONFIGURATION_SOURCE=Provided VITE_DEBUG=FALSE VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=web vite build",
     "build-prod": "NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Caddy VITE_DEBUG=FALSE VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=web vite build -l error",
