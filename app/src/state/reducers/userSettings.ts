@@ -111,8 +111,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         Object.keys(action.payload.updatedSet).forEach((key) => {
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
         });
-      } else if (UserSettings.Theme.setDark.match(action)) {
-        draftState.darkTheme = !draftState.darkTheme;
       } else if (WhatsHere.toggle.match(action)) {
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
       } else {

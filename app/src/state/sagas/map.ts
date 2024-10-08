@@ -3,7 +3,6 @@ import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } f
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
-  ACTIVITIES_GEOJSON_GET_REQUEST,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
@@ -81,6 +80,7 @@ import Prompt from 'state/actions/prompts/Prompt';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
+import Activity from 'state/actions/activity/Activity';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -91,27 +91,13 @@ function* handle_MAP_INIT_REQUEST(action) {
   const mapState = yield select(selectMap);
   const sets = {};
   const filterCriteria = yield getSearchCriteriaFromFilters([], sets, '2', false, [], 0, 100000);
-
   const IAPP_filter = yield getSearchCriteriaFromFilters([], sets, '3', true, [], 0, 100);
-
   if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
-    yield put({
-      type: ACTIVITIES_GEOJSON_GET_REQUEST,
-      payload: {
-        // recordSetID: '2',
-        activitiesFilterCriteria: filterCriteria
-        // layerState: layerState
-      }
-    });
-
-    //  yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
-
+    yield put(Activity.GeoJson.get(filterCriteria));
     yield put({
       type: IAPP_GEOJSON_GET_REQUEST,
       payload: {
-        //   recordSetID: '3',
         IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
-        //   layerState: IAPPlayerState
       }
     });
   }
@@ -911,7 +897,7 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
     takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
-    takeEvery(ACTIVITIES_GEOJSON_GET_REQUEST, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
+    takeEvery(Activity.GeoJson.get, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
     takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
