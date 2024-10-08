@@ -81,8 +81,20 @@ services:
     links:
       - db
     depends_on:
-      - db
-      - db_setup
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./api
+          target: /opt/app-root/api
+          ignore:
+            - .api/node_modules/
+        - action: rebuild
+          path: ./sharedapi
+          target: /opt/app-root/sharedAPI
+          ignore:
+            - ./sharedapi/node_modules/
 
   # Build the nginx web-server docker image
   nginx:
