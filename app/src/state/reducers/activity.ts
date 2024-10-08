@@ -12,7 +12,6 @@ import {
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
@@ -107,6 +106,8 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
         draftState.activity.media = action.payload;
       } else if (Activity.Photo.deleteSuccess.match(action)) {
         draftState.activity = action.payload;
+      } else if (Activity.Suggestions.jurisdictionsSuccess.match(action)) {
+        draftState.suggestedJurisdictions = [...action.payload];
       } else {
         switch (action.type) {
           case ACTIVITY_ERRORS: {
@@ -198,10 +199,6 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
             draftState.activity.species_negative = action.payload.activity.species_negative;
             draftState.activity.species_treated = action.payload.activity.species_treated;
             draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
-            break;
-          }
-          case ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS: {
-            draftState.suggestedJurisdictions = [...action.payload.jurisdictions];
             break;
           }
           case ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS: {
