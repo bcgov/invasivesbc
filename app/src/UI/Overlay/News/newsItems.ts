@@ -14,6 +14,14 @@ const newsItems: NewsArticle[] = [
   },
   */
   {
+    title: 'Feature: "Record History"',
+    date: new Date('October 8, 2024'),
+    content: [
+      'Users can view a record\'s update history by selecting the "Record History" button at the top of the form. This button is visible only if the record has updates.'
+    ],
+    subject: NewsSubject.New
+  },
+  {
     title: '"PMBC Parcel Cadastre - Private" Data Layer Added',
     date: new Date('October 7, 2024'),
     content: [
