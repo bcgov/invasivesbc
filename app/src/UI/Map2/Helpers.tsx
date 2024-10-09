@@ -81,7 +81,7 @@ export const mapInit = (
     updateCoordinatesContainer(clientX, clientY);
   });
   mapContainer.current.addEventListener('touchstart', (e: TouchEvent) => {
-    const { clientX, clientY } = e.targetTouches?.[0];
+    const { clientX, clientY } = e.targetTouches[0];
     updateCoordinatesContainer(clientX, clientY);
   });
 
