@@ -1,4 +1,4 @@
-import maplibregl, { NavigationControl, ScaleControl } from 'maplibre-gl';
+import maplibregl, { LngLatBoundsLike, NavigationControl, ScaleControl } from 'maplibre-gl';
 import centroid from '@turf/centroid';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { PMTiles, Protocol } from 'pmtiles';
@@ -130,13 +130,24 @@ export const mapInit = (
       }
     });
   }
+
+  /* map can have platform-specific options */
+  const platformOptions = (() => {
+    if (MOBILE) {
+      return {
+        maxBounds: [-141.7761, 46.41459, -114.049, 60.00678] as LngLatBoundsLike
+      };
+    }
+    return {};
+  })();
+
   //now get the most current auth token from auth provider
   map.current = new maplibregl.Map({
+    ...platformOptions,
     container: mapContainer.current,
     maxZoom: 24,
     zoom: 3,
     minZoom: 0,
-    maxBounds: [-141.7761, 46.41459, -114.049, 60.00678],
     transformRequest: (url, resourceType) => {
       if (url.includes(api_base)) {
         return {
