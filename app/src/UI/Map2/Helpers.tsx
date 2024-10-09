@@ -53,16 +53,12 @@ export const mapInit = (
   coordinatesContainer.style.zIndex = '99';
   mapContainer.current.appendChild(coordinatesContainer);
 
-  mapContainer.current.addEventListener('mousemove', (e) => {
-    if (!map.current) {
+  const updateCoordinatesContainer = (x: number, y: number) => {
+    if (!map.current || !x || !y) {
       return;
     }
 
-    if (!e?.clientX || !e?.clientY) {
-      return;
-    }
-
-    const { lng, lat } = map.current.unproject([e.clientX, e.clientY]);
+    const { lng, lat } = map.current.unproject([x, y]);
 
     const utmZone = Math.floor((lng + 180) / 6) + 1;
 
@@ -82,6 +78,14 @@ export const mapInit = (
       <div>${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
       <div>Zone ${utmZone}, E: ${utm[0].toFixed(0)}, N: ${utm[1].toFixed(0)}</div>
     `;
+  };
+  mapContainer.current.addEventListener('mousemove', (e: MouseEvent) => {
+    const { clientX, clientY } = e;
+    updateCoordinatesContainer(clientX, clientY);
+  });
+  mapContainer.current.addEventListener('touchstart', (e: TouchEvent) => {
+    const { clientX, clientY } = e.targetTouches?.[0];
+    updateCoordinatesContainer(clientX, clientY);
   });
 
   const pmtilesProtocol = new Protocol();
