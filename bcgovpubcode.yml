@@ -1,0 +1,54 @@
+---
+data_management_roles:
+  data_custodian: Crystal Chadburn
+  product_owner: Crystal Chadburn
+product_external_dependencies:
+  identity_authorization:
+    - IDIR
+    - Business-BceId
+  notification_standard: []
+product_information:
+  api_specifications:
+    - https://api-invasivesbci.apps.silver.devops.gov.bc.ca
+  business_capabilities_standard:
+    - Environmental Protection
+  ministry:
+    - Water, Land and Resource Stewardship
+  product_acronym: InvBC
+  product_description: >-
+    InvasivesBC is British Columbia's province-wide mapping and data collection
+    system for invasive species
+  product_name: InvasivesBC
+  product_status: maturing
+  product_urls:
+    - https://invasivesbc.gov.bc.ca/home/landing
+    - https://prod-invasivesbci-appv2.apps.silver.devops.gov.bc.ca/
+  program_area: Development and Digital Services
+product_technology_information:
+  backend_frameworks:
+    - name: Node.js
+      version: '>= 12.0.0'
+    - name: Express
+      version: ~4.17.3
+  backend_languages_version:
+    - name: TypeScript
+      version: ^5.3.3
+  ci_cd_tools:
+    - OpenShift-Templates
+    - GitHub-Actions
+  data_storage_platforms:
+    - Postgresql
+  frontend_frameworks:
+    - name: React
+      version: ^18.2.0
+    - name: Other
+      version: ^5.0.1
+  frontend_languages:
+    - name: TypeScript
+      version: 5.3.3
+  hosting_platforms:
+    - Private-Cloud-Openshift
+  spatial_mapping_technologies:
+    - Leaflet
+    - MapLibre
+version: 1
