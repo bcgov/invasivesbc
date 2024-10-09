@@ -844,7 +844,8 @@ export const handlePositionTracking = (
     }
     // Start the animation.
     requestAnimationFrame(animateMarker);
-    if (!map.getSource('accuracyCircle') && accuracyCircle) {
+    const currAccuracyCircle = map.getSource('accuracyCircle');
+    if (!currAccuracyCircle && accuracyCircle) {
       map
         .addSource('accuracyCircle', {
           type: 'geojson',
@@ -868,6 +869,8 @@ export const handlePositionTracking = (
           },
           LAYER_Z_FOREGROUND
         );
+    } else if (accuracyCircle) {
+      currAccuracyCircle.setData(accuracyCircle);
     }
   }
   toggleLayerOnBool(map, 'accuracyCircle', accuracyToggle && positionTracking);
