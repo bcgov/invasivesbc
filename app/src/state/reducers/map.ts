@@ -897,15 +897,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           case INIT_SERVER_BOUNDARIES_GET: {
-            const withLocalToggles = action.payload.data?.map((incomingItem) => {
-              const returnVal = { ...incomingItem };
-              const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
-                oldItem.id === incomingItem;
-              })?.toggle;
-              returnVal.toggle =
-                existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
-              return returnVal;
-            });
+            const withLocalToggles =
+              action.payload.data?.map((incomingItem) => {
+                const returnVal = { ...incomingItem };
+                const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
+                  oldItem.id === incomingItem;
+                })?.toggle;
+                returnVal.toggle =
+                  existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
+                return returnVal;
+              }) ?? [];
             draftState.serverBoundaries = withLocalToggles;
             const strippedOfShapes = draftState.serverBoundaries.map((item) => {
               const returnVal = { ...item };
