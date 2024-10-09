@@ -30,7 +30,6 @@ import {
   ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
@@ -355,7 +354,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       // Fire handlers to filter the agents list based on the selected plant code, only fire when value has changed
       if (plantCode && plantCode !== prevPlantCode) {
         // Reset the biological_agent_code, since list has been updated
-        yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS, payload: { plantCode, agentListTarget } });
+        yield put(Activity.Suggestions.biocontrolAgents(plantCode, agentListTarget));
       }
       //auto fills total release quantity (only on biocontrol release activity)
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);

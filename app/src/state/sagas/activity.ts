@@ -39,11 +39,7 @@ import {
   MAP_INIT_REQUEST,
   MAP_SET_COORDS,
   PAN_AND_ZOOM_TO_ACTIVITY,
-  URL_CHANGE,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS
+  URL_CHANGE
 } from '../actions';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
@@ -432,10 +428,7 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
   try {
     if (connected) {
       const networkReturn = yield InvasivesAPI_Call('GET', '/api/biocontrol-treatments');
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
-        payload: { suggestedBiocontrolTreatments: networkReturn?.data?.result ?? [] }
-      });
+      yield put(Activity.Suggestions.biocontrolOnlineSuccess(networkReturn?.data?.result ?? []));
     }
   } catch (ex) {
     console.error(ex);
@@ -445,14 +438,12 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
 function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS(action) {
   const activityState = yield select(selectActivity);
   const { agentListTarget, plantCode } = action.payload;
-
   // Get the complete list of Biocontrol agents
   const biocontrolState =
     activityState?.biocontrol?.listOfAgents ??
     activityState?.schema?.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
       ?.biological_agent_code.options ??
     null;
-
   if (plantCode && biocontrolState) {
     const treatmentsBasedOnPlant = activityState.biocontrol.plantToAgentMap.map(
       (item: Record<string, any>) => item.plant_code_name === plantCode && item.agent_code_name
@@ -460,15 +451,9 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS(action) {
     const filteredAgents = biocontrolState.filter((item: Record<string, any>) =>
       treatmentsBasedOnPlant.includes(item.value)
     );
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
-      payload: { suggestedBiocontrolTreatments: filteredAgents, agentListTarget }
-    });
+    yield put(Activity.Suggestions.biocontrolAgentsSuccess(filteredAgents, agentListTarget));
   } else if (biocontrolState) {
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
-      payload: { suggestedBiocontrolTreatments: biocontrolState, agentListTarget }
-    });
+    yield put(Activity.Suggestions.biocontrolAgentsSuccess(biocontrolState, agentListTarget));
   }
 }
 
@@ -493,11 +478,8 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
     takeEvery(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
-    takeEvery(
-      ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
-      handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE
-    ),
-    takeEvery(ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS, handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS),
+    takeEvery(Activity.Suggestions.biocontrolOnline, handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE),
+    takeEvery(Activity.Suggestions.biocontrolAgents, handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS),
     takeEvery(
       ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
       handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE

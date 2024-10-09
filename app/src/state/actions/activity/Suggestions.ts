@@ -25,10 +25,22 @@ class Suggestions {
   static readonly jurisdictionsOffline = createAction(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_OFFLINE);
   static readonly jurisdictionsSuccess = createAction<Geometry[]>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS);
 
-  static readonly biocontrolAgents = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS);
+  static readonly biocontrolAgents = createAction(
+    ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
+    (plantCode: string, agentListTarget: string) => ({
+      payload: { plantCode, agentListTarget }
+    })
+  );
   static readonly biocontrolOnline = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE);
-  static readonly biocontrolOnlineSuccess = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS);
-  static readonly biocontrolAgentsSuccess = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS);
+  static readonly biocontrolOnlineSuccess = createAction<Record<string, any>[]>(
+    ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS
+  );
+  static readonly biocontrolAgentsSuccess = createAction(
+    ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
+    (suggestedBiocontrolTreatments: Record<string, any>[], agentListTarget: string) => ({
+      payload: { suggestedBiocontrolTreatments, agentListTarget }
+    })
+  );
 
   static readonly persons = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST);
   static readonly personsOnline = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE);
