@@ -1,16 +1,11 @@
 import { all, put, select, take, takeEvery } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
-import {
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
-  AUTH_INITIALIZE_COMPLETE,
-  GET_API_DOC_ONLINE,
-  GET_API_DOC_REQUEST,
-  GET_API_DOC_SUCCESS
-} from '../actions';
+import { AUTH_INITIALIZE_COMPLETE, GET_API_DOC_ONLINE, GET_API_DOC_REQUEST, GET_API_DOC_SUCCESS } from '../actions';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import Activity from 'state/actions/activity/Activity';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -127,7 +122,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   yield put({ type: GET_API_DOC_REQUEST });
   yield take(GET_API_DOC_SUCCESS);
-  yield put({ type: ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE });
+  yield put(Activity.Suggestions.biocontrolOnline());
   yield put(UserSettings.InitState.getSuccess({ ...defaultRecordSet, ...recordSets }));
 }
 

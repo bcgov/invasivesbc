@@ -10,8 +10,6 @@ import {
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
@@ -108,6 +106,23 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
         draftState.activity = action.payload;
       } else if (Activity.Suggestions.jurisdictionsSuccess.match(action)) {
         draftState.suggestedJurisdictions = [...action.payload];
+      } else if (Activity.Suggestions.biocontrolAgentsSuccess.match(action)) {
+        const { agentListTarget, suggestedBiocontrolTreatments } = action.payload;
+        const biocontrolAgentOptionsAvailable =
+          draftState?.schema.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
+            ?.biological_agent_code?.options;
+        if (biocontrolAgentOptionsAvailable) {
+          if (!draftState.biocontrol.listOfAgents) {
+            // This sets a list of agents in state that we can run subsequent filters on.
+            draftState.biocontrol.listOfAgents = JSON.parse(JSON.stringify(biocontrolAgentOptionsAvailable));
+          }
+          // Override the options for the agent select menu using the filtered properties
+          draftState.schema.properties.activity_subtype_data.properties[
+            agentListTarget
+          ].items.properties.biological_agent_code.options = [...suggestedBiocontrolTreatments];
+        }
+      } else if (Activity.Suggestions.biocontrolOnlineSuccess.match(action)) {
+        draftState.biocontrol.plantToAgentMap = [...action.payload];
       } else {
         switch (action.type) {
           case ACTIVITY_ERRORS: {
@@ -126,7 +141,7 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
               loading: false,
               saved_activity_hash: null,
               biocontrol: {
-                plantToAgentMap: draftState.biocontrol.plantsToAgentMap ?? [],
+                plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? [],
                 listOfAgents: null
               },
               suggestedJurisdictions: [],
@@ -147,7 +162,7 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
               loading: false,
               saved_activity_hash: null,
               biocontrol: {
-                plantToAgentMap: draftState.biocontrol.plantsToAgentMap ?? [],
+                plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? [],
                 listOfAgents: null
               },
               suggestedJurisdictions: [],
@@ -209,27 +224,6 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
               draftState.suggestedPersons = [...action.payload.suggestedPersons];
             }
             draftState.suggestedPersons = [...action.payload.suggestedPersons];
-            break;
-          }
-          case ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS: {
-            draftState.biocontrol.plantToAgentMap = [...action.payload.suggestedBiocontrolTreatments];
-            break;
-          }
-          case ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS: {
-            const { agentListTarget } = action.payload;
-            const biocontrolAgentOptionsAvailable =
-              draftState?.schema.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
-                ?.biological_agent_code?.options;
-            if (biocontrolAgentOptionsAvailable) {
-              if (!draftState.biocontrol.listOfAgents) {
-                // This sets a list of agents in state that we can run subsequent filters on.
-                draftState.biocontrol.listOfAgents = JSON.parse(JSON.stringify(biocontrolAgentOptionsAvailable));
-              }
-              // Override the options for the agent select menu using the filtered properties
-              draftState.schema.properties.activity_subtype_data.properties[
-                agentListTarget
-              ].items.properties.biological_agent_code.options = [...action.payload.suggestedBiocontrolTreatments];
-            }
             break;
           }
           case ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS: {
