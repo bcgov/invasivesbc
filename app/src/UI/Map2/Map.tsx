@@ -90,9 +90,8 @@ export const Map = (props: any) => {
         steps: 64,
         units: 'meters'
       });
-    } else {
-      return null;
     }
+    return null;
   });
 
   // Draw tools - determing who needs edit and where the geos get dispatched, what tools to display etc
