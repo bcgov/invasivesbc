@@ -54,19 +54,16 @@ export const mapInit = (
   mapContainer.current.appendChild(coordinatesContainer);
 
   const updateCoordinatesContainer = (x: number, y: number) => {
+    const proj4_setdef = (utmZone: number): string => {
+      const zdef = `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
+      return zdef;
+    };
     if (!map.current || !x || !y) {
       return;
     }
 
     const { lng, lat } = map.current.unproject([x, y]);
-
     const utmZone = Math.floor((lng + 180) / 6) + 1;
-
-    function proj4_setdef(utmZone: number): string {
-      const zdef = `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
-      return zdef;
-    }
-
     proj4.defs([
       ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs'],
       ['EPSG:AUTO', proj4_setdef(utmZone)]
