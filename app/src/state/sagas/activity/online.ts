@@ -9,8 +9,6 @@ import {
   ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
   AUTH_INITIALIZE_COMPLETE
 } from 'state/actions';
@@ -19,6 +17,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Activity from 'state/actions/activity/Activity';
+import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
@@ -167,14 +166,21 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
 
 export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE() {
   try {
-    const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
-
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-      payload: { suggestedPersons: networkReturn.data.result }
-    });
+    const userOnline = !(yield select(selectAuth)).workingOffline;
+    if (userOnline) {
+      const networkReturn = yield InvasivesAPI_Call('GET', `/api/application-user/`);
+      yield put(Activity.Suggestions.personsSuccess(networkReturn.data.result ?? []));
+    }
   } catch (e) {
     console.error(e);
+    yield put(
+      Alerts.create({
+        content: 'An error occured while fetching suggested persons. Suggestions will not be displayed',
+        severity: AlertSeverity.Error,
+        subject: AlertSubjects.Form,
+        autoClose: 8
+      })
+    );
   }
 }
 
@@ -215,16 +221,13 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
         geojson: search_feature?.features?.[0]
       });
     }
-
     const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
       filterObjects: [filterObject]
     });
-
-    let treatments = [];
+    let treatments: SuggestedTreatmentId[] = [];
     const result = networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result;
     if (result && result.length > 0) {
       treatments = result.map((treatment, i) => {
-        //const shortActID = getShortActivityID(treatment);
         return {
           label: treatment.short_id, //shortActID,
           title: treatment.short_id, //shortActID,
@@ -233,12 +236,16 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
         };
       });
     }
-
-    yield put({
-      type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
-      payload: { suggestedTreatmentIDs: treatments }
-    });
+    yield put(Activity.Suggestions.treatmentIdsSuccess(treatments));
   } catch (e) {
     console.error(e);
+    yield put(
+      Alerts.create({
+        content: 'An error occured while fetching suggested persons. Suggestions will not be displayed',
+        severity: AlertSeverity.Error,
+        subject: AlertSubjects.Form,
+        autoClose: 8
+      })
+    );
   }
 }

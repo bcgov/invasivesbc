@@ -9,7 +9,7 @@ import {
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
-import { kinks } from '@turf/turf';
+import { FeatureCollection, kinks } from '@turf/turf';
 
 import {
   autoFillNameByPAC,
@@ -30,8 +30,6 @@ import {
   ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
-  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_PASTE_FAILURE,
@@ -462,12 +460,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
     if (reportedAreaLessThanMaxArea && !wipLinestring && !hasSelfIntersections) {
       yield put(Activity.Suggestions.jurisdictions(currentActivity.geometry));
       if (isLinkedTreatmentSubtype(currentActivity.activity_subtype)) {
-        yield put({
-          type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
-          payload: {
-            activity: currentActivity
-          }
-        });
+        yield put(Activity.Suggestions.treatmentIdsRequest(currentActivity));
       }
     }
   } catch (e) {
@@ -503,48 +496,37 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
-  const payloadActivity = action.payload.activity;
+  const payloadActivity = action.payload;
   const AuthState = yield select(selectAuth);
   try {
     // filter Treatments and/or Biocontrol
-    let linkedActivitySubtypes: ActivitySubtype[] = [];
-
-    switch (payloadActivity.activity_subtype) {
-      case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
-        linkedActivitySubtypes = [
-          ActivitySubtype.Treatment_MechanicalPlant,
-          ActivitySubtype.Treatment_MechanicalPlantAquatic
-        ];
-        break;
-      case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-        linkedActivitySubtypes = [
-          ActivitySubtype.Treatment_ChemicalPlant,
-          ActivitySubtype.Treatment_ChemicalPlantAquatic
-        ];
-        break;
-      case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
-        linkedActivitySubtypes = [ActivitySubtype.Treatment_BiologicalPlant];
-        break;
-      default:
-        break;
-    }
-
+    const linkedActivitySubtypes: ActivitySubtype[] = (() => {
+      switch (payloadActivity.activity_subtype) {
+        case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
+          return [ActivitySubtype.Treatment_MechanicalPlant, ActivitySubtype.Treatment_MechanicalPlantAquatic];
+        case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
+          return [ActivitySubtype.Treatment_ChemicalPlant, ActivitySubtype.Treatment_ChemicalPlantAquatic];
+        case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
+          return [ActivitySubtype.Treatment_BiologicalPlant];
+        default:
+          return [];
+      }
+    })();
     const search_feature = payloadActivity.geometry?.[0]
-      ? {
+      ? ({
           type: 'FeatureCollection',
           features: payloadActivity.geometry
-        }
+        } as FeatureCollection)
       : false;
 
     if (linkedActivitySubtypes.length > 0) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
-        payload: {
+      yield put(
+        Activity.Suggestions.treatmentIdsRequestOnline({
           activity_subtype: linkedActivitySubtypes,
           user_roles: AuthState.accessRoles,
           search_feature
-        }
-      });
+        })
+      );
     }
   } catch (e) {
     console.error(e);
@@ -595,12 +577,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
       yield put(UserSettings.Map.setCenter(centerPoint.geometry.coordinates));
     }
     if (isLinkedTreatmentSubtype(type)) {
-      yield put({
-        type: ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
-        payload: {
-          ...action.payload
-        }
-      });
+      yield put(Activity.Suggestions.treatmentIdsRequest(action.payload.activity));
     }
     let isViewing = true;
     const authState = yield select(selectAuth);
