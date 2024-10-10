@@ -10,8 +10,6 @@ import {
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_PASTE_SUCCESS,
   ACTIVITY_SAVE_SUCCESS,
@@ -24,10 +22,13 @@ import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
+import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 
 export interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
   activity: any;
+  activeActivity: string | null;
+  activityErrors: any[];
   current_activity_hash: string | null;
   error: boolean;
   pasteCount: number;
@@ -35,19 +36,19 @@ export interface ActivityState {
   initialized: boolean;
   loading: boolean;
   saved_activity_hash: string | null;
-  suggestedJurisdictions: [];
+  suggestedJurisdictions: Record<string, any>[];
   biocontrol: {
     plantToAgentMap: Record<string, any>[];
     listOfAgents: Record<string, any>[] | null;
   };
-  suggestedPersons: [];
-  suggestedTreatmentIDs: [];
+  suggestedPersons: Record<string, any>[];
+  suggestedTreatmentIDs: SuggestedTreatmentId[];
   track_me_draw_geo: {
     isTracking: boolean;
     type: GeoShapes | null;
     drawingShape: boolean;
   };
-  activity_copy_buffer: object | null;
+  activity_copy_buffer: Record<string, any> | null;
   uiSchema: UiSchema | undefined;
   schema: RJSFSchema | undefined;
 }
@@ -55,6 +56,8 @@ export interface ActivityState {
 const initialState: ActivityState = {
   [MIGRATION_VERSION_KEY]: CURRENT_MIGRATION_VERSION,
   activity: null,
+  activeActivity: null,
+  activityErrors: [],
   current_activity_hash: null,
   error: false,
   pasteCount: 0,
@@ -79,9 +82,9 @@ const initialState: ActivityState = {
   uiSchema: undefined
 };
 
-function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
+function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => ActivityState {
   return (state = initialState, action) => {
-    return createNextState(state, (draftState) => {
+    return createNextState(state, (draftState: ActivityState) => {
       if (GeoTracking.start.match(action)) {
         draftState.track_me_draw_geo = {
           isTracking: true,
@@ -123,6 +126,12 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
         }
       } else if (Activity.Suggestions.biocontrolOnlineSuccess.match(action)) {
         draftState.biocontrol.plantToAgentMap = [...action.payload];
+      } else if (Activity.Suggestions.personsSuccess.match(action)) {
+        draftState.suggestedPersons = [...action.payload];
+      } else if (Activity.Suggestions.treatmentIdsSuccess.match(action)) {
+        draftState.suggestedTreatmentIDs = [...action.payload];
+        if (draftState?.schema?.properties?.activity_type_data?.properties?.linked_id)
+          draftState.schema.properties.activity_type_data.properties.linked_id.options = action.payload;
       } else {
         switch (action.type) {
           case ACTIVITY_ERRORS: {
@@ -216,23 +225,6 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
             draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
             break;
           }
-          case ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS: {
-            if (draftState.activity.activity_subtype === 'Observation' && !draftState.activity.initial_autofill_done) {
-              draftState.suggestedPersons = [...action.payload.suggestedPersons];
-            }
-            if (draftState.activity.activity_subtype === 'Treatment' && !draftState.activity.initial_autofill_done) {
-              draftState.suggestedPersons = [...action.payload.suggestedPersons];
-            }
-            draftState.suggestedPersons = [...action.payload.suggestedPersons];
-            break;
-          }
-          case ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS: {
-            draftState.suggestedTreatmentIDs = [...action.payload.suggestedTreatmentIDs];
-            if (draftState?.schema?.properties?.activity_type_data?.properties?.linked_id)
-              draftState.schema.properties.activity_type_data.properties.linked_id.options =
-                action.payload.suggestedTreatmentIDs;
-            break;
-          }
           case ACTIVITY_CREATE_SUCCESS: {
             draftState.activeActivity = action.payload.activity_id;
             draftState.current_activity_hash = null;
@@ -251,7 +243,7 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
           }
           case ACTIVITY_PASTE_SUCCESS: {
             draftState.pasteCount = draftState.pasteCount + 1;
-            draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer.form_data));
+            draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer?.form_data));
             break;
           }
           case ACTIVITY_SET_CURRENT_HASH_SUCCESS: {
@@ -266,7 +258,7 @@ function createActivityReducer(): (ActivityState, AnyAction) => ActivityState {
             return state;
         }
       }
-    }) as unknown as ActivityState;
+    }) as ActivityState;
   };
 }
 
