@@ -2,20 +2,61 @@ import { createFilterOptions } from '@mui/material/Autocomplete';
 import StarIcon from '@mui/icons-material/Star';
 import { Typography, Box, TextField, Autocomplete } from '@mui/material';
 import { SelectAutoCompleteContext } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { WidgetProps } from '@rjsf/utils';
-import { useSelector } from 'react-redux';
+import { useSelector } from 'utils/use_selector';
+import { nanoid } from '@reduxjs/toolkit';
 // Custom type to support this widget
-export type AutoCompleteSelectOption = { label: string; value: any; title: any };
+export type AutoCompleteSelectOption = { label: string; value: any; title: any; suggested?: boolean };
 
 /**
- * A widget that supports a single-select dropdown field with search filtering.
- *
- * Example schemas:
- *
- * JSON-Schema:
- *
- * ```JSON
+ * @desc Helper used on jurisdictions keys. Iterates the SuggestedJurisdictions state and flags matching keys as suggested, sorting them to the top.
+ * @param suggestedJurisdictionsInState Jurisdictions suggested given a particular area.
+ * @param enumOptions Select Options list.
+ */
+const handleSuggestedJurisdictions = (
+  suggestedJurisdictionsInState: Record<string, any>[],
+  enumOptions: AutoCompleteSelectOption[]
+) => {
+  const suggestedJurisdictions = suggestedJurisdictionsInState ? [...suggestedJurisdictionsInState] : [];
+  const additionalEnumOptions: AutoCompleteSelectOption[] = [];
+  suggestedJurisdictions.forEach((jurisdiction) => {
+    if (jurisdiction.geojson) {
+      additionalEnumOptions.push({
+        label: jurisdiction.geojson.properties.type ?? null,
+        value: jurisdiction.geojson.properties.code_name ?? null,
+        title: jurisdiction.geojson.properties.name ?? null,
+        suggested: true
+      } as AutoCompleteSelectOption);
+    } else if (jurisdiction.properties) {
+      additionalEnumOptions.push({
+        label: jurisdiction.properties.type ?? null,
+        value: jurisdiction.properties.code_name ?? null,
+        title: jurisdiction.properties.name ?? null,
+        suggested: true
+      } as AutoCompleteSelectOption);
+    }
+  });
+  enumOptions.forEach((option, index) => {
+    additionalEnumOptions.forEach((additionalOption) => {
+      if (option.value === additionalOption.value) {
+        enumOptions[index].suggested = true;
+      }
+    });
+  });
+  enumOptions.sort((left, right) => {
+    if (left.hasOwnProperty('suggested')) {
+      return -1;
+    } else if (right.hasOwnProperty('suggested')) {
+      return 1;
+    }
+    return 0;
+  });
+};
+
+/**
+ * @desc A widget that supports a single-select dropdown field with search filtering.
+ * @example JSON-Schema example
  * {
  *   type: 'array',
  *   title: 'Single Select Field Title',
@@ -32,88 +73,45 @@ export type AutoCompleteSelectOption = { label: string; value: any; title: any }
  *         title: 'Option 2',
  *         enum: [2]
  *       },
- *       {
- *         type: 'number',
- *         title: 'Option 3',
- *         enum: [3]
- *       }
  *     ]
  *   },
  *   uniqueItems: true
  * }
- * ```
- *
- * uiSchema (assuming you register the widget as `single-select-autocomplete`:
- *
- * ```JSON
- * {
- *   'ui:widget': 'single-select-autocomplete'
- * }
- * ```
- *
+ * @example uiSchema (assuming you register the widget as `single-select-autocomplete`:
+ * { 'ui:widget': 'single-select-autocomplete' }
  * @param {WidgetProps} props standard RJSF widget props
- * @return {*}
  */
 
 const SingleSelectAutoComplete = (props: WidgetProps) => {
-  const suggestedJurisdictionsInState = useSelector((state: any) => state.ActivityPage.suggestedJurisdictions);
-  const isenums = props.options.enumOptions?.length > 0 ? true : false;
-  let enumOptions;
-  if (isenums) {
-    enumOptions = JSON.parse(JSON.stringify(props.options.enumOptions || []));
-  } else {
-    enumOptions = JSON.parse(JSON.stringify(props?.schema?.options || []));
+  const suggestedJurisdictionsInState = useSelector((state) => state.ActivityPage.suggestedJurisdictions);
+  const selectAutoCompleteContext = useContext(SelectAutoCompleteContext);
+  if (!selectAutoCompleteContext) {
+    throw new Error('Context not provided to SingleSelectAutoComplete.tsx');
+  }
+  const { setLastFieldChanged, lastFieldChanged } = selectAutoCompleteContext;
+
+  const optionValueLabels: Record<string, any> = {};
+  const optionValueSuggested: Record<string, any> = {};
+
+  const isEnums = props.options?.enumOptions && props.options.enumOptions.length > 0;
+  const enumOptions: AutoCompleteSelectOption[] = isEnums
+    ? JSON.parse(JSON.stringify(props.options.enumOptions ?? []))
+    : (JSON.parse(JSON.stringify(props?.schema?.options ?? [])) ?? []);
+
+  if (props.id.includes('jurisdiction_code')) {
+    handleSuggestedJurisdictions(suggestedJurisdictionsInState, enumOptions);
   }
 
-  if (!enumOptions) enumOptions = [];
-  if (props.id.toString().includes('jurisdiction_code')) {
-    const suggestedJurisdictions = suggestedJurisdictionsInState
-      ? JSON.parse(JSON.stringify(suggestedJurisdictionsInState))
-      : [];
-    const additionalEnumOptions = [];
-    suggestedJurisdictions.forEach((jurisdiction) => {
-      if (jurisdiction.geojson) {
-        additionalEnumOptions.push({
-          label: jurisdiction?.geojson?.properties?.type?.toString() || null,
-          value: jurisdiction?.geojson?.properties?.code_name?.toString() || null,
-          title: jurisdiction?.geojson?.properties?.name?.toString() || null,
-          suggested: true
-        } as AutoCompleteSelectOption);
-      } else if (jurisdiction.properties) {
-        additionalEnumOptions.push({
-          label: jurisdiction?.properties?.type?.toString() || null,
-          value: jurisdiction?.properties?.code_name?.toString() || null,
-          title: jurisdiction?.properties?.name?.toString() || null,
-          suggested: true
-        } as AutoCompleteSelectOption);
-      }
-    });
-    let enumOptionsIndex = 0;
-    enumOptions.forEach((option) => {
-      additionalEnumOptions.forEach((addOption) => {
-        if (option.value === addOption.value) {
-          enumOptions[enumOptionsIndex] = addOption;
-        }
-        return option;
-      });
-      enumOptionsIndex++;
-    });
-    enumOptions.sort(function (left, right) {
-      return left.hasOwnProperty('suggested') ? -1 : right.hasOwnProperty('suggested') ? 1 : 0;
-    });
-  }
-  const selectAutoCompleteContext = useContext(SelectAutoCompleteContext);
-  const { setLastFieldChanged, lastFieldChanged } = selectAutoCompleteContext;
-  const optionValueLabels = {};
-  const optionValueSuggested = {};
   const optionValues = Object.values(enumOptions).map((option) => {
-    optionValueLabels[option.value] = option.label || option.title || option.value;
-    optionValueSuggested[option.value] = (option as any).suggested || false;
+    optionValueLabels[option.value] = option.label ?? option.title ?? option.value;
+    optionValueSuggested[option.value] = option.suggested ?? false;
     return option.value;
   });
-  const startingValue = props.value || '';
+
+  const startingValue = props.value ?? null;
   const [value, setValue] = useState(startingValue);
   const [inputValue, setInputValue] = useState(startingValue ? optionValueLabels[startingValue] : '');
+  const [renderKey, setRenderKey] = useState(props.id + nanoid());
 
   useEffect(() => {
     if (!lastFieldChanged['id']) {
@@ -139,11 +137,9 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     setLastFieldChanged({ id: props.id, option: value });
   }, []);
 
-  const [renderKey, setRenderKey] = useState(props.id.toString() + Math.random());
-
   useEffect(() => {
-    if (props.id.toString().includes('jurisdiction_code')) {
-      setRenderKey(props.id.toString() + Math.random());
+    if (props.id.includes('jurisdiction_code')) {
+      setRenderKey(props.id + nanoid());
     }
   }, [JSON.stringify(suggestedJurisdictionsInState)]);
 
@@ -158,7 +154,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         renderOption={(props, option) => {
           return (
             //@ts-ignore
-            <Box {...props} key={`rjsfSingleSelect${Math.random()}`} style={{ display: 'flex', flexDirection: 'row' }}>
+            <Box {...props} key={`rjsfSingleSelect${nanoid()}`} style={{ display: 'flex', flexDirection: 'row' }}>
               {optionValueSuggested[option] && <StarIcon style={{ fontSize: 15, marginRight: 7 }} color="warning" />}
               <Typography>
                 {option ? optionValueLabels[option] : ''}
@@ -168,16 +164,8 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
           );
         }}
         selectOnFocus
-        onFocus={(event) => {
-          props.onFocus(event.target.id, event.target.nodeValue);
-        }}
-        isOptionEqualToValue={(option) => {
-          if (option === value) {
-            return true;
-          } else if (value === '') {
-            return true;
-          }
-        }}
+        onFocus={(event) => props.onFocus(event.target.id, event.target.nodeValue)}
+        isOptionEqualToValue={(option) => option === value || value === ''}
         clearOnEscape={!props.required}
         disableClearable={props.required}
         id={props.id}
