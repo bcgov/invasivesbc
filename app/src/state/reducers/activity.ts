@@ -1,3 +1,4 @@
+import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
@@ -84,7 +85,7 @@ const initialState: ActivityState = {
 
 function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => ActivityState {
   return (state = initialState, action) => {
-    return createNextState(state, (draftState: ActivityState) => {
+    return createNextState(state, (draftState: Draft<ActivityState>) => {
       if (GeoTracking.start.match(action)) {
         draftState.track_me_draw_geo = {
           isTracking: true,
@@ -255,7 +256,7 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
             break;
           }
           default:
-            return state;
+            break;
         }
       }
     }) as ActivityState;
