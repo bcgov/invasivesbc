@@ -55,7 +55,6 @@ const AgentSelectAutoComplete = (props: WidgetProps) => {
   useEffect(() => {
     const agentString = 'biological_agent_code';
     const plantRegex = /invasive_plant_code$/;
-    console.log(lastFieldChanged.id, props.id);
     const plantValueIsSameEntryAsAgent =
       lastFieldChanged?.id && new RegExp(lastFieldChanged.id.replace(plantRegex, agentString)).test(props.id);
 
