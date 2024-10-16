@@ -17,6 +17,7 @@ import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import proj4 from 'proj4';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import { TileCacheService } from 'utils/tile-cache';
 
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -109,25 +110,13 @@ export const mapInit = (
 
   if (MOBILE) {
     maplibregl.addProtocol('baked', async (request) => {
-      const base64tobuffer = (s) => {
-        const binaryString = atob(s);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        return bytes.buffer;
-      };
       try {
         const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
 
         return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
       } catch (e) {
         // this is a blank 256x256 image
-        return {
-          data: base64tobuffer(
-            'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg=='
-          )
-        };
+        return TileCacheService.generateFallbackTile();
       }
     });
   }
@@ -932,7 +921,7 @@ export const refreshDrawControls = (
   drawingCustomLayer
 ) => {
   /*
-    We fully tear down map box draw and readd depending on app state / route, to have conditionally rendered controls:
+    We fully tear down map box draw and re-add depending on app state / route, to have conditionally rendered controls:
     Because mapbox draw doesn't clean up its old sources properly we need to do it manually
    */
   try {

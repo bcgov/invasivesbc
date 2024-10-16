@@ -1,16 +1,12 @@
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 import { MOBILE } from 'state/build-time-config';
 
-// base64-encoded blank tile image 256x256
-export const FALLBACK_IMAGE =
-  'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg==';
-
 // these layers are used as placeholders so the others can be placed relative to them
 const LAYER_Z_BACKGROUND = 'LAYER_Z_BACKGROUND';
 const LAYER_Z_MID = 'LAYER_Z_MID';
 const LAYER_Z_FOREGROUND = 'LAYER_Z_FOREGROUND';
 
-type MapDefinitionEligibilityPredicates = {
+export type MapDefinitionEligibilityPredicates = {
   directlySelectable: boolean;
   mobileOnly: boolean;
   webOnly: boolean;
@@ -19,7 +15,7 @@ type MapDefinitionEligibilityPredicates = {
   requiresAnonymous: boolean;
 };
 
-class MapDefinitionEligibilityPredicatesBuilder {
+export class MapDefinitionEligibilityPredicatesBuilder {
   state: MapDefinitionEligibilityPredicates = {
     directlySelectable: true,
     mobileOnly: false,
@@ -95,7 +91,7 @@ if (MOBILE) {
   VECTOR_MAP_FONT_FACE = 'Noto Sans Bold';
 }
 
-type MapSourceAndLayerDefinition = {
+export type MapSourceAndLayerDefinition = {
   name: string;
 
   displayName: string;
@@ -1925,8 +1921,8 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
 }) as MapSourceAndLayerDefinition[];
 
 // used to determine which layers we should turn on for a given group definition
-function allLayerIdsInDefinition(definitionName: string): string[] {
-  const group = MAP_DEFINITIONS.find((m) => m.name === definitionName);
+function allLayerIdsInDefinition(definitionList: MapSourceAndLayerDefinition[], definitionName: string): string[] {
+  const group = definitionList.find((m) => m.name === definitionName);
   if (!group) {
     console.error(`invalid definition name ${definitionName}`);
     throw Error(`invalid definition name ${definitionName}`);
@@ -1934,8 +1930,11 @@ function allLayerIdsInDefinition(definitionName: string): string[] {
   return group.layers.map((l) => l.id);
 }
 
-function layersForDefinition(definitionName: string): LayerSpecification[] {
-  const group = MAP_DEFINITIONS.find((m) => m.name === definitionName);
+function layersForDefinition(
+  definitionList: MapSourceAndLayerDefinition[],
+  definitionName: string
+): LayerSpecification[] {
+  const group = definitionList.find((m) => m.name === definitionName);
   if (!group) {
     console.error(`invalid definition name ${definitionName}`);
     throw Error(`invalid definition name ${definitionName}`);
@@ -1944,19 +1943,20 @@ function layersForDefinition(definitionName: string): LayerSpecification[] {
 }
 
 // ...and those we should turn off when it is deactivated
-function allLayerIdsNotInDefinition(definitionName: string): string[] {
-  const group = MAP_DEFINITIONS.find((m) => m.name === definitionName);
+function allLayerIdsNotInDefinition(definitionList: MapSourceAndLayerDefinition[], definitionName: string): string[] {
+  const group = definitionList.find((m) => m.name === definitionName);
   if (!group) {
     console.error(`invalid definition name ${definitionName}`);
     throw Error(`invalid definition name ${definitionName}`);
   }
-  return MAP_DEFINITIONS.flatMap((m) => m.layers)
+  return definitionList
+    .flatMap((m) => m.layers)
     .filter((x) => !group.layers.map((l) => l.id).includes(x.id))
     .map((l) => l.id);
 }
 
-function allSourceIDsRequiredForDefinition(definitionName: string) {
-  const group = MAP_DEFINITIONS.find((m) => m.name === definitionName);
+function allSourceIDsRequiredForDefinition(definitionList: MapSourceAndLayerDefinition[], definitionName: string) {
+  const group = definitionList.find((m) => m.name === definitionName);
   if (!group) {
     console.error(`invalid definition name ${definitionName}`);
     throw Error(`invalid definition name ${definitionName}`);

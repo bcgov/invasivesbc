@@ -37,8 +37,9 @@ import {
   layersForDefinition,
   MAP_DEFINITIONS
 } from 'UI/Map2/helpers/layer-definitions';
-import { TileCacheContext } from 'utils/TileCacheContext';
+import { Context } from 'utils/tile-cache/context';
 import { MOBILE } from 'state/build-time-config';
+import { DomEvent } from 'leaflet';
 
 /*
 
@@ -48,7 +49,7 @@ import { MOBILE } from 'state/build-time-config';
  */
 export const Map = (props: any) => {
   const { API_BASE } = useSelector((state) => state.Configuration.current);
-  const tileCache = useContext(TileCacheContext);
+  const tileCache = useContext(Context);
 
   const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
@@ -94,7 +95,7 @@ export const Map = (props: any) => {
     return null;
   });
 
-  // Draw tools - determing who needs edit and where the geos get dispatched, what tools to display etc
+  // Draw tools - determine who needs edit and where the geos get dispatched, what tools to display etc
   const whatsHereFeature = useSelector((state) => state.Map.whatsHere?.feature);
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere?.toggle);
   const whatsHereMarker = new maplibregl.Marker({ element: whatsHereMarkerEl });
@@ -116,6 +117,7 @@ export const Map = (props: any) => {
   const quickPanToRecord = useSelector((state) => state.Map.quickPanToRecord);
 
   const { baseMapLayer } = useSelector((state) => state.Map);
+  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications);
 
   const PUBLIC_MAP_URL = useSelector((state) => state.Configuration.current.PUBLIC_MAP_URL);
 
@@ -261,18 +263,38 @@ export const Map = (props: any) => {
       return;
     }
 
-    const deactivateLayers = allLayerIdsNotInDefinition(baseMapLayer);
+    const deactivateLayers = allLayerIdsNotInDefinition(
+      [...MAP_DEFINITIONS, ...(offlineDefinitions || [])],
+      baseMapLayer
+    );
 
-    const allSources = MAP_DEFINITIONS.map((m) => {
+    const staticSources = MAP_DEFINITIONS.map((m) => {
       return {
         id: m.name,
         source: m.source
       };
     });
 
-    const sourcesRequired = allSources.filter((s) => allSourceIDsRequiredForDefinition(baseMapLayer).includes(s.id));
+    /* cached layers */
+    const cachedSources = (offlineDefinitions || []).map((m) => {
+      return {
+        id: m.name,
+        source: m.source
+      };
+    });
+
+    const allSources = [...staticSources, ...cachedSources];
+
+    const sourcesRequired = allSources.filter((s) =>
+      allSourceIDsRequiredForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], baseMapLayer).includes(
+        s.id
+      )
+    );
     const sourcesNotRequired = allSources.filter(
-      (s) => !allSourceIDsRequiredForDefinition(baseMapLayer).includes(s.id)
+      (s) =>
+        !allSourceIDsRequiredForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], baseMapLayer).includes(
+          s.id
+        )
     );
 
     // first remove the unneeded layers
@@ -297,7 +319,7 @@ export const Map = (props: any) => {
     }
 
     // finally add the layers (which depend on the sources)
-    for (const layerSpec of layersForDefinition(baseMapLayer)) {
+    for (const layerSpec of layersForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], baseMapLayer)) {
       if (!map.current.getLayer(layerSpec.id)) {
         map.current.addLayer(layerSpec, LAYER_Z_BACKGROUND);
       }
