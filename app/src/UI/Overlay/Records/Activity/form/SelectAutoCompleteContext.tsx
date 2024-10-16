@@ -5,7 +5,14 @@ export const initialValues = {
   setLastFieldChanged: (data) => {}
 };
 
-export const SelectAutoCompleteContext = createContext(initialValues);
+type ISelectAutoCompleteContext = {
+  lastFieldChanged: {
+    id?: string;
+    option?: string;
+  };
+  setLastFieldChanged: (data) => void;
+};
+export const SelectAutoCompleteContext = createContext<ISelectAutoCompleteContext>(initialValues);
 
 type State = {
   lastFieldChanged: {};

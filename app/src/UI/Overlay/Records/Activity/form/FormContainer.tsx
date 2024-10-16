@@ -23,6 +23,7 @@ import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import debounce from 'lodash.debounce';
 import { RENDER_DEBUG } from 'UI/App';
+import AgentSelectAutoComplete from 'rjsf/widgets/AgentSelectAutoComplete';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -135,7 +136,8 @@ const FormContainer = () => {
             }}
             widgets={{
               'multi-select-autocomplete': MultiSelectAutoComplete,
-              'single-select-autocomplete': SingleSelectAutoComplete
+              'single-select-autocomplete': SingleSelectAutoComplete,
+              'agent-select-autocomplete': AgentSelectAutoComplete
             }}
             readonly={isDisabled}
             key={activity_ID + pasteCount + reported_area}

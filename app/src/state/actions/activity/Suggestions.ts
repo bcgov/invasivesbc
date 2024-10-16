@@ -35,8 +35,8 @@ class Suggestions {
   // Biocontrol Suggestions
   static readonly biocontrolAgents = createAction(
     ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
-    (plantCode: string, agentListTarget: string) => ({
-      payload: { plantCode, agentListTarget }
+    (plantCodes: { prev: string; curr: string }[], agentListTarget: string) => ({
+      payload: { plantCodes, agentListTarget }
     })
   );
   static readonly biocontrolOnline = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE);
