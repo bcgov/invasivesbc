@@ -12,12 +12,13 @@ import {
 import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { ACTIVITY_CREATE_REQUEST, CLOSE_NEW_RECORD_MENU } from 'state/actions';
 import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 import './NewRecordDialog.css';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import { useSelector } from 'utils/use_selector';
 
 export interface INewRecordDialog {}
 
@@ -32,26 +33,21 @@ const NewRecordDialog = (props: INewRecordDialog) => {
 
   const history = useHistory();
 
-  const [activityCategorySelectOptions, setActivityCategorySelectOptions] = useState([]);
+  const [activityCategorySelectOptions, setActivityCategorySelectOptions] = useState<string[]>([]);
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
   const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
 
   const accessRoles = useSelector((state: any) => state.Auth.accessRoles);
   const { newRecordDialogState } = useSelector((state: any) => state.UserSettings);
   const dialogueOpen = useSelector((state: any) => state.UserSettings.newRecordDialogueOpen);
-
+  useSelector((state) => state.Configuration);
   useEffect(() => {
-    const categories = [];
+    const categories: string[] = [];
     categories.push('Plant');
-    if (accessRoles.some((role: Record<string, any>) => role.role_name === 'frep')) {
+    if (accessRoles.some((role: Record<string, any>) => ['frep'].includes(role.role_name))) {
       categories.push('FREP');
     }
-    if (
-      accessRoles.some(
-        (role: Record<string, any>) =>
-          role.role_name === 'mussel_inspection_officer' || role.role_name === 'master_administrator'
-      )
-    ) {
+    if (accessRoles.some((role: Record<string, any>) => ['mussel_inspection_officer'].includes(role.role_name))) {
       categories.push('Mussels');
     }
     setActivityCategorySelectOptions(categories);
