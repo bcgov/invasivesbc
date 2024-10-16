@@ -112,21 +112,20 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   const [value, setValue] = useState(startingValue);
   const [inputValue, setInputValue] = useState(startingValue ? optionValueLabels[startingValue] : '');
   const [renderKey, setRenderKey] = useState(props.id + nanoid());
-
   useEffect(() => {
-    if (!lastFieldChanged['id']) {
+    if (!lastFieldChanged?.id) {
       return;
     }
     if (
-      lastFieldChanged['id'].includes('slope_code') &&
-      lastFieldChanged['option'].includes('FL') &&
+      lastFieldChanged?.id?.includes('slope_code') &&
+      lastFieldChanged?.option?.includes('FL') &&
       props.id.includes('aspect_code')
     ) {
       setValue('FL');
     }
     if (
-      lastFieldChanged['id'].includes('aspect_code') &&
-      lastFieldChanged['option'].includes('FL') &&
+      lastFieldChanged?.id?.includes('aspect_code') &&
+      lastFieldChanged?.option?.includes('FL') &&
       props.id.includes('slope_code')
     ) {
       setValue('FL');
@@ -135,7 +134,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
 
   useEffect(() => {
     setLastFieldChanged({ id: props.id, option: value });
-  }, []);
+  }, [value]);
 
   useEffect(() => {
     if (props.id.includes('jurisdiction_code')) {
