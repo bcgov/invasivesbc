@@ -16,8 +16,10 @@ function* recomputeEligibleBaseLayers() {
 
   const UPDATED_DEFINITION_LIST: string[] = [];
 
+  const offlineDefinitions = (yield select((state) => (state as RootState).TileCache?.mapSpecifications)) || [];
+
   // evaluate each potential map definition and remove those not eligible at this moment
-  for (const l of MAP_DEFINITIONS) {
+  for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions]) {
     let pass = true;
 
     if (!l.predicates.directlySelectable) {

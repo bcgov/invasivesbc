@@ -11,6 +11,7 @@ export const BaseMapSelect = () => {
   const dispatch = useDispatch();
 
   const { baseMapLayer, availableBaseMapLayers } = useSelector((state) => state.Map);
+  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications) || [];
 
   const [toolTip, setToolTip] = useState('');
 
@@ -39,7 +40,7 @@ export const BaseMapSelect = () => {
   return (
     <div className={'basemap-btn-group'}>
       {availableBaseMapLayers.map((l) => {
-        const found = MAP_DEFINITIONS.find((d) => d.name == l);
+        const found = [...MAP_DEFINITIONS, ...offlineDefinitions].find((d) => d.name == l);
         if (!found) {
           return;
         }

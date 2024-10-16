@@ -1,10 +1,5 @@
 import { FormValidation } from '@rjsf/utils';
-import { useDispatch } from 'react-redux';
 import { ActivitySubtype, lookupAreaLimit, MAX_TEMP, MIN_TEMP } from 'sharedAPI';
-import validator from '@rjsf/validator-ajv8';
-import { ACTIVITY_ERRORS } from 'state/actions';
-
-import { globalStore } from 'state/store';
 
 type rjsfValidator = (formData: any, errors: FormValidation) => FormValidation;
 
@@ -101,6 +96,7 @@ export function getPosAndNegObservationValidatorAquatic(): rjsfValidator {
     return errors;
   };
 }
+
 /*
   Function to validate that in case 'slope' field has 'flat' option
   selected, 'aspect' field option has to be 'flat' as well (and vice versa)
