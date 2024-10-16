@@ -40,7 +40,6 @@ export interface ActivityState {
   suggestedJurisdictions: Record<string, any>[];
   biocontrol: {
     plantToAgentMap: Record<string, any>[];
-    listOfAgents: Record<string, any>[] | null;
   };
   suggestedPersons: Record<string, any>[];
   suggestedTreatmentIDs: SuggestedTreatmentId[];
@@ -72,8 +71,7 @@ const initialState: ActivityState = {
   },
   saved_activity_hash: null,
   biocontrol: {
-    plantToAgentMap: [],
-    listOfAgents: null
+    plantToAgentMap: []
   },
   suggestedJurisdictions: [],
   suggestedPersons: [],
@@ -136,8 +134,7 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
               loading: false,
               saved_activity_hash: null,
               biocontrol: {
-                plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? [],
-                listOfAgents: null
+                plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
               },
               suggestedJurisdictions: [],
               suggestedPersons: [],
@@ -157,8 +154,7 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
               loading: false,
               saved_activity_hash: null,
               biocontrol: {
-                plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? [],
-                listOfAgents: null
+                plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
               },
               suggestedJurisdictions: [],
               suggestedPersons: [],
