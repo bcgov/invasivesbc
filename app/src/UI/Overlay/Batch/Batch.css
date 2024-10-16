@@ -33,6 +33,32 @@ div.template-description {
   }
 }
 
+.batchUploadWarning {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  & > div {
+    max-width: 500pt;
+    width: 100%;
+  }
+}
+
+.batchUploader {
+  margin-bottom: 5pt;
+  max-width: 500pt;
+  width: 100%;
+}
+
+.batchCreate {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1rem;
+  width: 100%;
+}
+
 table.template-preview {
   width: 100%;
   border-collapse: collapse;
