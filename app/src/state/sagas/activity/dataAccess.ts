@@ -55,7 +55,6 @@ import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alertMessages';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import getPlantCodesFromPayload from 'rjsf/business-rules/getPlantCodesFromPayload';
 import { MOBILE } from 'state/build-time-config';
 import Alerts from 'state/actions/alerts/Alerts';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -348,12 +347,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal ||
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
     ) {
-      const { plantCode, prevPlantCode, agentListTarget } = getPlantCodesFromPayload(beforeActivity, updatedFormData);
-      // Fire handlers to filter the agents list based on the selected plant code, only fire when value has changed
-      if (plantCode && plantCode !== prevPlantCode) {
-        // Reset the biological_agent_code, since list has been updated
-        yield put(Activity.Suggestions.biocontrolAgents(plantCode, agentListTarget));
-      }
       //auto fills total release quantity (only on biocontrol release activity)
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
       //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
