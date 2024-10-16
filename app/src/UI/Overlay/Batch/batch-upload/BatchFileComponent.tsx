@@ -12,7 +12,7 @@ const dropzoneStyle = {
   cursor: 'pointer'
 } as React.CSSProperties;
 
-const BatchFileComponent = ({ setData, ready, disabled }) => {
+const BatchFileComponent = ({ setData, ready, disabled = false }) => {
   const [filename, setFilename] = useState(null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
@@ -52,7 +52,9 @@ const BatchFileComponent = ({ setData, ready, disabled }) => {
   return (
     <>
       {ready ? (
-        <span>{filename} ready to upload</span>
+        <span>
+          <b>{filename}</b> is ready to upload
+        </span>
       ) : (
         <div style={dropzoneStyle} {...getRootProps()}>
           <input {...getInputProps()} />
