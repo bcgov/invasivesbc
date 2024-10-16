@@ -47,9 +47,6 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     if (accessRoles.some((role: Record<string, any>) => ['frep'].includes(role.role_name))) {
       categories.push('FREP');
     }
-    // if (accessRoles.some((role: Record<string, any>) => ['mussel_inspection_officer'].includes(role.role_name))) {
-    //   categories.push('Mussels');
-    // }
     setActivityCategorySelectOptions(categories);
   }, [accessRoles]);
 
