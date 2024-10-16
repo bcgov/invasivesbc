@@ -6,8 +6,6 @@ import {
   ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
   ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
   ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
@@ -33,21 +31,9 @@ class Suggestions {
   static readonly jurisdictionsSuccess = createAction<Geometry[]>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS);
 
   // Biocontrol Suggestions
-  static readonly biocontrolAgents = createAction(
-    ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS,
-    (plantCodes: { prev: string; curr: string }[], agentListTarget: string) => ({
-      payload: { plantCodes, agentListTarget }
-    })
-  );
   static readonly biocontrolOnline = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE);
   static readonly biocontrolOnlineSuccess = createAction<Record<string, any>[]>(
     ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS
-  );
-  static readonly biocontrolAgentsSuccess = createAction(
-    ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS_SUCCESS,
-    (suggestedBiocontrolTreatments: Record<string, any>[], agentListTarget: string) => ({
-      payload: { suggestedBiocontrolTreatments, agentListTarget }
-    })
   );
 
   // Persons Suggestions

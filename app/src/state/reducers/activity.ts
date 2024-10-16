@@ -110,21 +110,6 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
         draftState.activity = action.payload;
       } else if (Activity.Suggestions.jurisdictionsSuccess.match(action)) {
         draftState.suggestedJurisdictions = [...action.payload];
-      } else if (Activity.Suggestions.biocontrolAgentsSuccess.match(action)) {
-        const { agentListTarget, suggestedBiocontrolTreatments } = action.payload;
-        const biocontrolAgentOptionsAvailable =
-          draftState?.schema.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
-            ?.biological_agent_code?.options;
-        if (biocontrolAgentOptionsAvailable) {
-          if (!draftState.biocontrol.listOfAgents) {
-            // This sets a list of agents in state that we can run subsequent filters on.
-            draftState.biocontrol.listOfAgents = JSON.parse(JSON.stringify(biocontrolAgentOptionsAvailable));
-          }
-          // Override the options for the agent select menu using the filtered properties
-          draftState.schema.properties.activity_subtype_data.properties[
-            agentListTarget
-          ].items.properties.biological_agent_code.options = [...suggestedBiocontrolTreatments];
-        }
       } else if (Activity.Suggestions.biocontrolOnlineSuccess.match(action)) {
         draftState.biocontrol.plantToAgentMap = [...action.payload];
       } else if (Activity.Suggestions.personsSuccess.match(action)) {

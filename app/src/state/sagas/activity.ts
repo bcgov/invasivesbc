@@ -431,28 +431,6 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
   }
 }
 
-function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS(action) {
-  const activityState = yield select(selectActivity);
-  const { agentListTarget, plantCode } = action.payload;
-  // Get the complete list of Biocontrol agents
-  const biocontrolState =
-    activityState?.biocontrol?.listOfAgents ??
-    activityState?.schema?.properties?.activity_subtype_data?.properties?.[agentListTarget]?.items?.properties
-      ?.biological_agent_code.options ??
-    null;
-  if (plantCode && biocontrolState) {
-    const treatmentsBasedOnPlant = activityState.biocontrol.plantToAgentMap.map(
-      (item: Record<string, any>) => item.plant_code_name === plantCode && item.agent_code_name
-    );
-    const filteredAgents = biocontrolState.filter((item: Record<string, any>) =>
-      treatmentsBasedOnPlant.includes(item.value)
-    );
-    yield put(Activity.Suggestions.biocontrolAgentsSuccess(filteredAgents, agentListTarget));
-  } else if (biocontrolState) {
-    yield put(Activity.Suggestions.biocontrolAgentsSuccess(biocontrolState, agentListTarget));
-  }
-}
-
 function* activityPageSaga() {
   yield all([
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
@@ -475,7 +453,6 @@ function* activityPageSaga() {
     takeEvery(Activity.Suggestions.personsOnline, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(Activity.Suggestions.treatmentIdsRequest, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
     takeEvery(Activity.Suggestions.biocontrolOnline, handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE),
-    takeEvery(Activity.Suggestions.biocontrolAgents, handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_AGENTS),
     takeEvery(
       Activity.Suggestions.treatmentIdsRequestOnline,
       handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE
