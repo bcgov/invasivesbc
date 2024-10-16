@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Button } from '@mui/material';
 import BatchFileComponent from './BatchFileComponent';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
@@ -15,9 +15,8 @@ const BatchCreate = () => {
   const history = useHistory();
 
   const [data, setData] = useState(null);
-  const [selectedTemplate, setSelectedTemplate] = useState(undefined);
-  const [ready, setReady] = useState(false);
-  const [disabled, setDisabled] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>();
+  const [ready, setReady] = useState<boolean>(false);
 
   const { working, templates, item } = useSelector(selectBatch);
   const authState = useSelector(selectAuth);
@@ -59,9 +58,8 @@ const BatchCreate = () => {
   }
 
   return (
-    <Box mx={3} my={3} py={3}>
-      <Typography variant={'h4'}>Start New Batch Upload</Typography>
-
+    <div className="batchCreate">
+      <h2>Start New Batch Upload</h2>
       <p>Which template are you uploading?</p>
       <select onChange={(e) => setSelectedTemplate(e.target.value)} value={selectedTemplate}>
         <option>Select a template</option>
@@ -73,15 +71,25 @@ const BatchCreate = () => {
       </select>
 
       <p>File</p>
-
-      <BatchFileComponent disabled={disabled} ready={ready} setData={acceptData} />
-
+      <div className="batchUploader">
+        <BatchFileComponent disabled={!ready} ready={ready} setData={acceptData} />
+      </div>
       {working && <Spinner />}
 
-      <Button variant={'contained'} disabled={!ready || disabled} onClick={() => doUpload()}>
+      <Button variant={'contained'} disabled={!ready} onClick={doUpload}>
         Upload CSV
       </Button>
-    </Box>
+      <div className="batchUploadWarning">
+        <div>
+          <p>Users might see the error message "Contains system files" when trying to upload a file in batch.</p>
+          <p>
+            This usually happens because the file is being uploaded from your H:// Drive, which has certain permissions
+            set by your system and network policy. To fix this, please move the file to your local storage and try
+            uploading it again.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 export default BatchCreate;

@@ -51,8 +51,9 @@ const BatchFileComponent = ({ setData, ready, disabled }) => {
 
   return (
     <>
-      {ready && <span>{filename} ready to upload</span>}
-      {!ready && (
+      {ready ? (
+        <span>{filename} ready to upload</span>
+      ) : (
         <div style={dropzoneStyle} {...getRootProps()}>
           <input {...getInputProps()} />
           {isDragActive ? <p>Drop here</p> : <p>Click to select a file to upload</p>}
