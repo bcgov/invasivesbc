@@ -22,7 +22,7 @@ const BatchCreate = () => {
   const authState = useSelector(selectAuth);
 
   useEffect(() => {
-    setReady(data !== null && selectedTemplate !== undefined);
+    setReady(data !== null && !!selectedTemplate);
   }, [data, selectedTemplate]);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ const BatchCreate = () => {
       <h2>Start New Batch Upload</h2>
       <p>Which template are you uploading?</p>
       <select onChange={(e) => setSelectedTemplate(e.target.value)} value={selectedTemplate}>
-        <option>Select a template</option>
+        <option value={''}>Select a template</option>
         {templates.map((t) => (
           <option value={t.key} key={t.key}>
             {t.name}
@@ -70,9 +70,9 @@ const BatchCreate = () => {
         ))}
       </select>
 
-      <p>File</p>
+      <h3>File</h3>
       <div className="batchUploader">
-        <BatchFileComponent disabled={!ready} ready={ready} setData={acceptData} />
+        <BatchFileComponent ready={!!data} setData={acceptData} />
       </div>
       {working && <Spinner />}
 
