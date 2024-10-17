@@ -76,9 +76,6 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   const [inputValue, setInputValue] = useState(getLabelFromValue(props.value ?? null));
   const [renderKey, setRenderKey] = useState(props.id + nanoid());
 
-  if (props.id.includes('jurisdiction_code')) {
-    handleSuggestedJurisdictions(suggestedJurisdictionsInState, listOptions);
-  }
   useEffect(() => {
     if (!lastFieldChanged?.id) {
       return;
@@ -109,6 +106,9 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
     }
   }, [JSON.stringify(suggestedJurisdictionsInState)]);
 
+  if (props.id.includes('jurisdiction_code')) {
+    handleSuggestedJurisdictions(suggestedJurisdictionsInState, listOptions);
+  }
   return (
     <Autocomplete
       autoHighlight
