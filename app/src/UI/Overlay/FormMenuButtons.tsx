@@ -18,11 +18,11 @@ export const FormMenuButtons = (props) => {
   const [draftDisabled, setDraftDisabled] = useState(false);
 
   const { connected } = useSelector((state) => state.Network);
-  const activityCreatedBy = useSelector((state: any) => state.ActivityPage?.activity?.created_by);
-  const activityErrors = useSelector((state: any) => state.ActivityPage?.activityErrors);
-  const status = useSelector((state: any) => state.ActivityPage?.activity?.form_status);
-  const username = useSelector((state: any) => state.Auth?.username);
-  const accessRoles = useSelector((state: any) => state.Auth?.accessRoles);
+  const activityCreatedBy = useSelector((state) => state.ActivityPage?.activity?.created_by);
+  const activityErrors = useSelector((state) => state.ActivityPage?.activityErrors);
+  const status = useSelector((state) => state.ActivityPage?.activity?.form_status);
+  const username = useSelector((state) => state.Auth?.username);
+  const accessRoles = useSelector((state) => state.Auth?.accessRoles);
 
   useEffect(() => {
     if (!activityCreatedBy || !username || !accessRoles) return;
