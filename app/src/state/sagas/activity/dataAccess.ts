@@ -572,23 +572,16 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     if (isLinkedTreatmentSubtype(type)) {
       yield put(Activity.Suggestions.treatmentIdsRequest(action.payload.activity));
     }
-    let isViewing = true;
     const authState = yield select(selectAuth);
     const userName = authState.username;
     const created_by = action.payload.activity.created_by;
-    const accessRoles = authState.accessRoles;
     const createdByUser = userName === created_by;
-    const userIsAdmin = accessRoles?.some((role: Record<string, any>) => [1, 18].includes(role.role_id));
 
-    if (userIsAdmin || createdByUser) {
-      isViewing = false;
-    }
+    const isViewing = !createdByUser;
 
     yield put({
       type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-      payload: {
-        isViewing: isViewing
-      }
+      payload: { isViewing }
     });
   } catch (e) {
     console.error(e);

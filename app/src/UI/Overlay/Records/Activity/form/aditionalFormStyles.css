@@ -10,3 +10,7 @@
 div[class*='indicatorContainer'] {
   color: black;
 }
+
+.editFormButtonCont {
+  margin: 1rem;
+}
