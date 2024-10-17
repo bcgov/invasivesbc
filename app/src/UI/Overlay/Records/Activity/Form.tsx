@@ -112,7 +112,7 @@ export const ActivityForm = (props) => {
               <td className={'leftHeaderCol'}>Activity Date:</td>
               <td className={'leftValueCol'}>
                 {new Date(form_data.activity_data.activity_date_time).toLocaleDateString()}
-              </td>{' '}
+              </td>
             </tr>
           </tbody>
         </table>
@@ -179,16 +179,14 @@ export const ActivityForm = (props) => {
         <ul>
           {activity_history?.map((item, index) => {
             return (
-              <>
-                <li key={index}>
-                  <ul className={'inner_audit_list'}>
-                    <li>Version : {item?.version + (item?.iscurrent ? ' (Current) ' : '')}</li>
-                    <li>Updated By: {item?.updated_by}</li>
-                    <li>Activity Status: {item?.form_status}</li>
-                    <li>Created at: {item?.created_timestamp}</li>
-                  </ul>
-                </li>
-              </>
+              <li key={index}>
+                <ul className={'inner_audit_list'}>
+                  <li>Version : {item?.version + (item?.iscurrent ? ' (Current) ' : '')}</li>
+                  <li>Updated By: {item?.updated_by}</li>
+                  <li>Activity Status: {item?.form_status}</li>
+                  <li>Created at: {item?.created_timestamp}</li>
+                </ul>
+              </li>
             );
           })}
         </ul>
