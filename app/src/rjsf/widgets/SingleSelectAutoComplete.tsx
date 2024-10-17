@@ -125,7 +125,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
       getOptionLabel={(option) => option.label ?? getLabelFromValue(option) ?? ''}
       id={props.id}
       inputValue={inputValue ?? ''}
-      isOptionEqualToValue={(option) => [option.value, ''].includes(value)}
+      isOptionEqualToValue={(option) => !value || option.value === value || option.value === value.value}
       key={renderKey}
       onChange={(event: any, option: AutoCompleteSelectOption, reason: string) => {
         if (reason === 'clear') {
