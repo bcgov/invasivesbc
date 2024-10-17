@@ -1,4 +1,4 @@
-import { Box, CircularProgress, createTheme, ThemeOptions, ThemeProvider, Typography } from '@mui/material';
+import { Box, Button, CircularProgress, createTheme, ThemeOptions, ThemeProvider, Typography } from '@mui/material';
 import { Form } from '@rjsf/mui';
 import CoreForm from '@rjsf/core';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -109,16 +109,9 @@ const FormContainer = () => {
     );
   };
 
-  const [isDisabled, setIsDisabled] = useState(false);
-  useEffect(() => {
-    const createdByUser = username === created_by;
-    const userIsAdmin = accessRoles?.some((role) => role.role_id === 18);
-    if (createdByUser || userIsAdmin) {
-      setIsDisabled(false);
-    } else {
-      setIsDisabled(true);
-    }
-  }, [JSON.stringify(accessRoles), JSON.stringify(username)]);
+  const [createdByUser] = useState<boolean>(username === created_by);
+  const [userIsAdmin] = useState<boolean>(accessRoles?.some((role) => role.role_id === 18));
+  const [isDisabled, setIsDisabled] = useState(!createdByUser);
 
   if (!activitySchema || !activityUISchema) {
     return <CircularProgress />;
@@ -127,6 +120,13 @@ const FormContainer = () => {
     <Box sx={{ pl: '15%', pr: '15%' }}>
       <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
         <SelectAutoCompleteContextProvider>
+          {!createdByUser && userIsAdmin && (
+            <div className="editFormButtonCont">
+              <Button variant="contained" color="warning" onClick={() => setIsDisabled((prev) => !prev)}>
+                {isDisabled ? 'Enable Editing' : 'Disable Editing'}
+              </Button>
+            </div>
+          )}
           <Form
             templates={{
               ObjectFieldTemplate: ObjectFieldTemplate,
