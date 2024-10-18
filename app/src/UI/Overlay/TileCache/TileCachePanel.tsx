@@ -18,6 +18,7 @@ const TileCachePanel = () => {
 
   useEffect(() => {
     dispatch(TileCache.repositoryList());
+    dispatch(TileCache.clearTileCacheShape());
   }, []);
 
   return (

@@ -8,6 +8,7 @@ class TileCache {
   static readonly setMapTileCacheMode = createAction<boolean>('SET_MAP_TILE_CACHE_MODE');
 
   static readonly setTileCacheShape = createAction<{ geometry: GeoJSON }>('SET_TILE_CACHE_SHAPE');
+  static readonly clearTileCacheShape = createAction('CLEAR_TILE_CACHE_SHAPE');
 
   static readonly downloadProgressEvent = createAction<ProgressCallbackParameters>(
     'TILE_CACHE_DOWNLOAD_PROGRESS_EVENT'

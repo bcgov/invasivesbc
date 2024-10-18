@@ -83,7 +83,7 @@ function buildMapSpecificationFromRepositoryMetadata(spec: RepositoryMetadata): 
           source: spec.id,
           minzoom: 0,
           layout: {
-            visibility: 'none'
+            visibility: 'visible'
           }
         },
         {
@@ -179,6 +179,8 @@ function createTileCacheReducer() {
           console.error(e);
           draft.drawnShapeBounds = null;
         }
+      } else if (TileCache.clearTileCacheShape.match(action)) {
+        draft.drawnShapeBounds = null;
       }
     });
   };
