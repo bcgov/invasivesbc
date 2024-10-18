@@ -2,15 +2,17 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
-import { MAP_CHOOSE_BASEMAP } from 'state/actions';
+import { MAP_CHOOSE_BASEMAP, MAP_TOGGLE_OVERLAY } from 'state/actions';
 import 'UI/Global.css';
 import { MAP_DEFINITIONS } from 'UI/Map2/helpers/layer-definitions';
-import { DeviceUnknown, Hd, Landscape, Map, Sd, SignalCellularNodata } from '@mui/icons-material';
+import { DeviceUnknown, Hd, Landscape, Map, SaveAlt, Sd, SignalCellularNodata } from '@mui/icons-material';
 
-export const BaseMapSelect = () => {
+export const PrimaryLayerSelect = () => {
   const dispatch = useDispatch();
 
-  const { baseMapLayer, availableBaseMapLayers } = useSelector((state) => state.Map);
+  const { baseMapLayer, availableBaseMapLayers, enabledOverlayLayers, availableOverlayLayers } = useSelector(
+    (state) => state.Map
+  );
   const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications) || [];
 
   const [toolTip, setToolTip] = useState('');
@@ -31,6 +33,8 @@ export const BaseMapSelect = () => {
         return <Landscape />;
       case 'OfflineSatellite':
         return <Sd />;
+      case 'Cached':
+        return <SaveAlt />;
       case 'N/A':
       default:
         return <DeviceUnknown />;
@@ -59,6 +63,35 @@ export const BaseMapSelect = () => {
                 className={'basemap-btn'}
                 onClick={() => {
                   dispatch({ type: MAP_CHOOSE_BASEMAP, payload: l });
+                }}
+              >
+                {renderIcon(found)}
+              </IconButton>
+            </Tooltip>
+          </div>
+        );
+      })}
+
+      {availableOverlayLayers.map((l) => {
+        const found = [...MAP_DEFINITIONS, ...offlineDefinitions].find((d) => d.name == l);
+        if (!found) {
+          return;
+        }
+
+        return (
+          <div className={enabledOverlayLayers.includes(l) ? 'selected' : ''} key={l}>
+            <Tooltip
+              open={toolTip == l}
+              onMouseEnter={() => setToolTip(l)}
+              onMouseLeave={() => setToolTip('')}
+              classes={{ tooltip: 'toolTip' }}
+              title={found.tooltip}
+              placement="top-end"
+            >
+              <IconButton
+                className={'basemap-btn'}
+                onClick={() => {
+                  dispatch({ type: MAP_TOGGLE_OVERLAY, payload: l });
                 }}
               >
                 {renderIcon(found)}
