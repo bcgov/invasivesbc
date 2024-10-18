@@ -1,5 +1,5 @@
 import circle from '@turf/circle';
-import maplibregl, { LngLatLike, Map as MapLibre } from 'maplibre-gl';
+import maplibregl, { LngLatLike, Map as MapLibre, validateStyleMin } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -31,14 +31,17 @@ import {
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import {
-  allLayerIdsNotInDefinition,
+  allBaseMapLayerIdsNotInDefinition,
+  allOverlayLayerIdsNotInDefinitions,
   allSourceIDsRequiredForDefinition,
   LAYER_Z_BACKGROUND,
+  LAYER_Z_FOREGROUND,
   layersForDefinition,
   MAP_DEFINITIONS
 } from 'UI/Map2/helpers/layer-definitions';
-import { TileCacheContext } from 'utils/TileCacheContext';
+import { Context } from 'utils/tile-cache/context';
 import { MOBILE } from 'state/build-time-config';
+import source = validateStyleMin.source;
 
 /*
 
@@ -48,7 +51,7 @@ import { MOBILE } from 'state/build-time-config';
  */
 export const Map = (props: any) => {
   const { API_BASE } = useSelector((state) => state.Configuration.current);
-  const tileCache = useContext(TileCacheContext);
+  const tileCache = useContext(Context);
 
   const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
@@ -94,10 +97,13 @@ export const Map = (props: any) => {
     return null;
   });
 
-  // Draw tools - determing who needs edit and where the geos get dispatched, what tools to display etc
+  // Draw tools - determine who needs edit and where the geos get dispatched, what tools to display etc
   const whatsHereFeature = useSelector((state) => state.Map.whatsHere?.feature);
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere?.toggle);
   const whatsHereMarker = new maplibregl.Marker({ element: whatsHereMarkerEl });
+
+  const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
+
   const appModeUrl = useSelector((state) => state.AppMode.url);
   // also used with current marker below:
   const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry);
@@ -115,7 +121,10 @@ export const Map = (props: any) => {
   const userRecordOnHoverRecordType = useSelector((state) => state.Map.userRecordOnHoverRecordType);
   const quickPanToRecord = useSelector((state) => state.Map.quickPanToRecord);
 
-  const { baseMapLayer } = useSelector((state) => state.Map);
+  const baseMapLayer = useSelector((state) => state.Map.baseMapLayer);
+  const enabledOverlayLayers = useSelector((state) => state.Map.enabledOverlayLayers);
+
+  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications);
 
   const PUBLIC_MAP_URL = useSelector((state) => state.Configuration.current.PUBLIC_MAP_URL);
 
@@ -261,22 +270,50 @@ export const Map = (props: any) => {
       return;
     }
 
-    const deactivateLayers = allLayerIdsNotInDefinition(baseMapLayer);
+    const deactivateBaseLayers = allBaseMapLayerIdsNotInDefinition(
+      [...MAP_DEFINITIONS, ...(offlineDefinitions || [])],
+      baseMapLayer
+    );
 
-    const allSources = MAP_DEFINITIONS.map((m) => {
+    const deactivateOverlayLayers = allOverlayLayerIdsNotInDefinitions(
+      [...MAP_DEFINITIONS, ...(offlineDefinitions || [])],
+      enabledOverlayLayers
+    );
+
+    const staticSources = MAP_DEFINITIONS.map((m) => {
       return {
         id: m.name,
         source: m.source
       };
     });
 
-    const sourcesRequired = allSources.filter((s) => allSourceIDsRequiredForDefinition(baseMapLayer).includes(s.id));
-    const sourcesNotRequired = allSources.filter(
-      (s) => !allSourceIDsRequiredForDefinition(baseMapLayer).includes(s.id)
-    );
+    /* cached layers */
+    const cachedSources = (offlineDefinitions || []).map((m) => {
+      return {
+        id: m.name,
+        source: m.source
+      };
+    });
+
+    const allSources = [...staticSources, ...cachedSources];
+
+    const sourcesRequired = allSources.filter((s) => {
+      for (const layerToCheck of [baseMapLayer, ...enabledOverlayLayers]) {
+        if (
+          allSourceIDsRequiredForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], layerToCheck).includes(
+            s.id
+          )
+        ) {
+          return true;
+        }
+      }
+      return false;
+    });
+
+    const sourcesNotRequired = allSources.filter((s) => !sourcesRequired.some((r) => r.id == s.id));
 
     // first remove the unneeded layers
-    for (const layerId of deactivateLayers) {
+    for (const layerId of [...deactivateBaseLayers, ...deactivateOverlayLayers]) {
       if (map.current.getLayer(layerId)) {
         map.current.removeLayer(layerId);
       }
@@ -296,13 +333,22 @@ export const Map = (props: any) => {
       }
     }
 
-    // finally add the layers (which depend on the sources)
-    for (const layerSpec of layersForDefinition(baseMapLayer)) {
+    //  add the base map layers (which depend on the sources)
+    for (const layerSpec of layersForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], baseMapLayer)) {
       if (!map.current.getLayer(layerSpec.id)) {
         map.current.addLayer(layerSpec, LAYER_Z_BACKGROUND);
       }
     }
-  }, [baseMapLayer, map.current, mapReady]);
+
+    // finally add the overlay layers (which can also depend on the sources)
+    for (const overlayLayer of enabledOverlayLayers) {
+      for (const layerSpec of layersForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], overlayLayer)) {
+        if (!map.current.getLayer(layerSpec.id)) {
+          map.current.addLayer(layerSpec, LAYER_Z_FOREGROUND);
+        }
+      }
+    }
+  }, [baseMapLayer, enabledOverlayLayers, map.current, mapReady]);
 
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
@@ -314,11 +360,12 @@ export const Map = (props: any) => {
       dispatch,
       uHistory,
       whatsHereToggle,
+      tileCacheMode,
       appModeUrl,
       activityGeo,
       drawingCustomLayer
     );
-  }, [whatsHereToggle, appModeUrl, dispatch, map.current, activityGeo, drawingCustomLayer, mapReady]);
+  }, [whatsHereToggle, tileCacheMode, appModeUrl, dispatch, map.current, activityGeo, drawingCustomLayer, mapReady]);
 
   //Current Activity & IAPP Markers
   useEffect(() => {

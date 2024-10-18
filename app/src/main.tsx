@@ -8,9 +8,10 @@ import App from './UI/App';
 import './main.css';
 import { defineCustomElements as pwaLoader } from '@ionic/pwa-elements/loader';
 import { PersistorContext } from 'utils/PersistorContext';
-import { TileCacheService } from 'UI/Map2/helpers/tile-cache';
-import { TileCacheContext } from 'utils/TileCacheContext';
-import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
+import { TileCacheService } from 'utils/tile-cache';
+import { Context, TileCacheServiceFactory } from 'utils/tile-cache/context';
+import { MOBILE } from 'state/build-time-config';
+import TileCache from 'state/actions/cache/TileCache';
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(import.meta.env.MODE === 'production' ? '/worker.js' : '/dev-sw.js?dev-sw', {
@@ -23,13 +24,9 @@ async function mountApp(CONFIG) {
 
   let tileCache: TileCacheService | null = null;
   if (MOBILE) {
-    switch (PLATFORM) {
-      case Platform.ANDROID:
-      case Platform.IOS:
-        tileCache = new TileCacheService();
-        await tileCache.initializeTileCache();
-        break;
-    }
+    tileCache = await TileCacheServiceFactory.getPlatformInstance();
+    // load any caches present
+    store.dispatch(TileCache.repositoryList());
   }
 
   exportStore = store;
@@ -41,13 +38,13 @@ async function mountApp(CONFIG) {
       root.render(
         <PersistGate loading={null} persistor={persistor}>
           <PersistorContext.Provider value={persistor}>
-            <TileCacheContext.Provider value={tileCache}>
+            <Context.Provider value={tileCache}>
               <Router history={historySingleton}>
                 <Provider store={store}>
                   <App />
                 </Provider>
               </Router>
-            </TileCacheContext.Provider>
+            </Context.Provider>
           </PersistorContext.Provider>
         </PersistGate>
       );

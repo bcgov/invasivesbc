@@ -1,8 +1,9 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, ThunkDispatch } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
 import { createBrowserHistory } from 'history';
 import { persistStore } from 'redux-persist';
+import { Store } from 'redux';
 import { createRootReducer } from './reducers/rootReducer';
 import { AUTH_INITIALIZE_REQUEST, URL_CHANGE } from './actions';
 import activityPageSaga from './sagas/activity';
@@ -20,10 +21,8 @@ import { DEBUG } from './build-time-config';
 
 const historySingleton = createBrowserHistory();
 
-export let globalStore;
-
 export function setupStore(configuration: AppConfig) {
-  const storeRef = {
+  const storeRef: { store: Store | null } = {
     store: null
   };
   const sagaMiddleware = createSagaMiddleware({
@@ -37,41 +36,39 @@ export function setupStore(configuration: AppConfig) {
     timestamp: true,
     logErrors: true,
     diff: true,
-    diffPredicate: (getState, action) => (
-      ([
-        'MAP_TOGGLE_TRACK_ME_DRAW_GEO',
-        'ACTIVITY_UPDATE_GEO',
-        'GET_SUGGESTED_JURISDICTIONS'
-      ].filter((item) => (
+    diffPredicate: (getState, action) =>
+      ['MAP_TOGGLE_TRACK_ME_DRAW_GEO', 'ACTIVITY_UPDATE_GEO', 'GET_SUGGESTED_JURISDICTIONS'].filter((item) =>
         action.type.includes(item)
-      )).length > 0))
+      ).length > 0
   });
 
-  if (DEBUG) {
-    globalStore = configureStore({
-      reducer: createRootReducer(configuration),
-      middleware: (getDefaultMiddleware) => {
-        // these checks are useful but very slow
-        return getDefaultMiddleware({
-          actionCreatorCheck: false,
-          serializableCheck: false,
-          immutableCheck: false
-        }).concat([sagaMiddleware, logger]);
-      }
-    });
-  } else {
-    globalStore = configureStore({
-      reducer: createRootReducer(configuration),
-      middleware: (getDefaultMiddleware) => {
-        // these checks are useful but very slow
-        return getDefaultMiddleware({
-          actionCreatorCheck: false,
-          serializableCheck: false,
-          immutableCheck: false
-        }).concat([sagaMiddleware]);
-      }
-    });
-  }
+  const store = (() => {
+    if (DEBUG) {
+      return configureStore({
+        reducer: createRootReducer(configuration),
+        middleware: (getDefaultMiddleware) => {
+          // these checks are useful but very slow
+          return getDefaultMiddleware({
+            actionCreatorCheck: false,
+            serializableCheck: false,
+            immutableCheck: false
+          }).concat([sagaMiddleware, logger]);
+        }
+      });
+    } else {
+      return configureStore({
+        reducer: createRootReducer(configuration),
+        middleware: (getDefaultMiddleware) => {
+          // these checks are useful but very slow
+          return getDefaultMiddleware({
+            actionCreatorCheck: false,
+            serializableCheck: false,
+            immutableCheck: false
+          }).concat([sagaMiddleware]);
+        }
+      });
+    }
+  })();
 
   sagaMiddleware.run(authenticationSaga);
   sagaMiddleware.run(activityPageSaga);
@@ -83,10 +80,10 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(emailSettingsSaga);
   sagaMiddleware.run(emailTemplatesSaga);
 
-  globalStore.dispatch({ type: AUTH_INITIALIZE_REQUEST });
+  store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 
   historySingleton.listen((location) => {
-    globalStore.dispatch({
+    store.dispatch({
       type: URL_CHANGE,
       payload: {
         url: location.pathname
@@ -94,9 +91,9 @@ export function setupStore(configuration: AppConfig) {
     });
   });
 
-  storeRef.store = globalStore;
+  storeRef.store = store;
 
-  return { store: globalStore, persistor: persistStore(globalStore) };
+  return { store, persistor: persistStore(store) };
 }
 
 export { historySingleton };

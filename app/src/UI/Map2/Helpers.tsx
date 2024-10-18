@@ -11,12 +11,14 @@ import {
 import './map.css';
 
 // Draw tools:
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import MapboxDraw, { DrawCustomMode } from '@mapbox/mapbox-gl-draw';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import proj4 from 'proj4';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import { TileCacheService } from 'utils/tile-cache';
+import TileCache from 'state/actions/cache/TileCache';
 
 // @ts-ignore
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -109,25 +111,13 @@ export const mapInit = (
 
   if (MOBILE) {
     maplibregl.addProtocol('baked', async (request) => {
-      const base64tobuffer = (s) => {
-        const binaryString = atob(s);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
-        }
-        return bytes.buffer;
-      };
       try {
         const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
 
         return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
       } catch (e) {
         // this is a blank 256x256 image
-        return {
-          data: base64tobuffer(
-            'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg=='
-          )
-        };
+        return TileCacheService.generateFallbackTile();
       }
     });
   }
@@ -647,7 +637,7 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
   }
 };
 
-const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_toggle) => (e) => {
+const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_toggle, tileCacheMode) => (e) => {
   //enforce one at a time everywhere
   const feature = e.features[0];
   try {
@@ -663,6 +653,8 @@ const customDrawListenerCreate = (drawInstance, dispatch, uHistory, whats_here_t
   if (whats_here_toggle) {
     dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
     uHistory.push('/WhatsHere');
+  } else if (tileCacheMode) {
+    dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
   } else {
     dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
   }
@@ -689,6 +681,7 @@ export const initDrawModes = (
   hideControls,
   activityGeo,
   whats_here_toggle,
+  tileCacheMode,
   drawingCustomLayer,
   draw
 ) => {
@@ -777,6 +770,31 @@ export const initDrawModes = (
     display(geojson);
   };
 
+  const mode = (() => {
+    if (whats_here_toggle) {
+      return 'whats_here_box_mode';
+    }
+    return 'simple_select';
+  })();
+
+  const modes = (() => {
+    if (tileCacheMode) {
+      return {
+        ...MapboxDraw.modes
+      };
+    } else {
+      return Object.assign(
+        {
+          draw_rectangle: DrawRectangle,
+          do_nothing: DoNothing,
+          lots_of_points: LotsOfPointsMode,
+          whats_here_box_mode: WhatsHereBoxMode
+        },
+        MapboxDraw.modes
+      );
+    }
+  })();
+
   // Add the new draw mode to the MapboxDraw object
   const localDraw = new MapboxDraw({
     displayControlsDefault: !hideControls,
@@ -784,20 +802,12 @@ export const initDrawModes = (
       combine_features: false,
       uncombine_features: false
     },
-    defaultMode: whats_here_toggle ? 'whats_here_box_mode' : 'simple_select',
+    defaultMode: mode,
     // Adds the LotsOfPointsMode to the built-in set of modes
-    modes: Object.assign(
-      {
-        draw_rectangle: DrawRectangle,
-        do_nothing: DoNothing,
-        lots_of_points: LotsOfPointsMode,
-        whats_here_box_mode: WhatsHereBoxMode
-      },
-      MapboxDraw.modes
-    )
+    modes: modes as { [modeKey: string]: DrawCustomMode }
   });
 
-  const drawCreateListener = customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle);
+  const drawCreateListener = customDrawListenerCreate(localDraw, dispatch, uHistory, whats_here_toggle, tileCacheMode);
   const drawUpdatelistener = customDrawListenerUpdate(localDraw);
   const drawSelectionchangeListener = customDrawListenerSelectionChange(localDraw, dispatch);
 
@@ -927,12 +937,13 @@ export const refreshDrawControls = (
   dispatch,
   uHistory,
   whatsHereToggle,
+  tileCacheMode,
   appModeUrl,
   activityGeo,
   drawingCustomLayer
 ) => {
   /*
-    We fully tear down map box draw and readd depending on app state / route, to have conditionally rendered controls:
+    We fully tear down map box draw and re-add depending on app state / route, to have conditionally rendered controls:
     Because mapbox draw doesn't clean up its old sources properly we need to do it manually
    */
   try {
@@ -947,7 +958,11 @@ export const refreshDrawControls = (
   if (!map.hasControl(draw)) {
     const noMapVisible = /Report|Batch|Landing|WhatsHere/.test(appModeUrl);
     const userInActivity = /Activity/.test(appModeUrl);
-    const hideControls = (noMapVisible || !userInActivity) && !drawingCustomLayer;
+    let hideControls = (noMapVisible || !userInActivity) && !drawingCustomLayer;
+    if (tileCacheMode) {
+      hideControls = false;
+    }
+
     initDrawModes(
       map,
       drawSetter,
@@ -956,6 +971,7 @@ export const refreshDrawControls = (
       hideControls,
       userInActivity ? activityGeo : null,
       whatsHereToggle,
+      tileCacheMode,
       drawingCustomLayer ?? null,
       draw
     );

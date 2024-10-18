@@ -11,7 +11,6 @@ import { OverlayMenu } from './Overlay/OverlayMenu';
 import { Activity } from './Overlay/Records/Record';
 import { Records } from './Overlay/Records/Records';
 import { RecordSet } from './Overlay/Records/RecordSet';
-import { WhatsHereTable } from './Overlay/WhatsHere/WhatsHereTable';
 import { IAPPRecord } from './Overlay/IAPP/IAPPRecord';
 import { FormMenuButtons } from './Overlay/FormMenuButtons';
 import { selectGlobalErrorState } from 'state/reducers/error_handler';
@@ -33,6 +32,7 @@ import { MobileBetaAccessMessage } from 'UI/Overlay/MobileBetaAccess/MobileBetaA
 import AlertsContainer from './AlertsContainer/AlertsContainer';
 import UserInputModalController from './UserInputModals/UserInputModalController';
 import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
+import { WhatsHereTable } from 'UI/Overlay/WhatsHere/WhatsHereTable';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -47,6 +47,8 @@ const TrainingPage = React.lazy(() => import('./Overlay/Training/Training'));
 const NewsPage = React.lazy(() => import('./Overlay/News/NewsPage'));
 
 const LegendsPopup = React.lazy(() => import('./Overlay/Legend/LegendsPopup'));
+
+const TileCachePanel = React.lazy(() => import('./Overlay/TileCache/TileCachePanel'));
 
 export const RENDER_DEBUG = false;
 
@@ -207,6 +209,14 @@ const OverlayContentMemo = () => {
         render={() => (
           <Suspense fallback={<Spinner />}>
             <UserAccessPage />
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/OfflineTiles"
+        render={() => (
+          <Suspense fallback={<Spinner />}>
+            <TileCachePanel />
           </Suspense>
         )}
       />

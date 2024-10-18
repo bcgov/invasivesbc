@@ -18,9 +18,11 @@ import { createNetworkReducer } from './network';
 import { createUserInfoReducer } from './userInfo';
 import { errorHandlerReducer } from './error_handler';
 import { createOfflineActivityReducer, OfflineActivityState } from './offlineActivity';
+import { createAlertsAndPromptsReducer } from './alertsAndPrompts';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-import { createAlertsAndPromptsReducer } from './alertsAndPrompts';
+import { createTileCacheReducer } from 'state/reducers/tile_cache';
+import { MOBILE } from 'state/build-time-config';
 
 // it will try indexdb first, then fall back to localstorage if not available.
 
@@ -72,7 +74,7 @@ function createRootReducer(config: AppConfig) {
         migrate: purgeOldStateOnVersionUpgrade,
         whitelist: [MIGRATION_VERSION_KEY, 'biocontrol']
       },
-      createActivityReducer(config)
+      createActivityReducer()
     ),
     IAPPSitePage: createIAPPSiteReducer(config),
     UserSettings: persistReducer<UserSettingsState>(
@@ -127,7 +129,13 @@ function createRootReducer(config: AppConfig) {
         stateReconciler: autoMergeLevel1
       },
       createOfflineActivityReducer(config)
-    )
+    ),
+    ...(() => {
+      if (MOBILE) {
+        return { TileCache: createTileCacheReducer() };
+      }
+      return {};
+    })()
   });
 }
 

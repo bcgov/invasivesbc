@@ -33,6 +33,7 @@ import {
   Home,
   Map,
   Newspaper,
+  OfflineBolt,
   School,
   SignalWifi4Bar,
   SignalWifiOff
@@ -460,6 +461,18 @@ export const Header: React.FC = () => {
         <ActivityTabMemo />
 
         <IAPPTabMemo />
+
+        <Tab
+          key={'tileCache'}
+          path="/OfflineTiles"
+          label={'Tile Cache Status'}
+          predicate={'always'}
+          platform={'mobile'}
+          panelOpen={true}
+          panelFullScreen={false}
+        >
+          <OfflineBolt />
+        </Tab>
 
         <Tab
           key={'tab5'}
