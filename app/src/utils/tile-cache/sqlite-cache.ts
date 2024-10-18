@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import {
   RepositoryMetadata,
@@ -11,30 +12,27 @@ const BAKED_DB_NAME = 'tile_store.db';
 const CACHE_DB_NAME = 'cached_tiles.db';
 
 //language=SQLite
-const CACHE_CREATE_DDL = `
-
-  CREATE TABLE CACHE_METADATA
-  (
-    TILESET       VARCHAR NOT NULL UNIQUE PRIMARY KEY,
-    DESCRIPTION   TEXT,
-    STATUS        VARCHAR(32),
-    MAX_ZOOM      INTEGER,
-    MIN_LATITUDE  NUMERIC(10, 7),
-    MAX_LATITUDE  NUMERIC(10, 7),
-    MIN_LONGITUDE NUMERIC(10, 7),
-    MAX_LONGITUDE NUMERIC(10, 7)
-  );
-
-  CREATE TABLE CACHED_TILES
-  (
-    TILESET VARCHAR NOT NULL REFERENCES CACHE_METADATA (TILESET) ON UPDATE CASCADE ON DELETE CASCADE,
-    Z       INTEGER NOT NULL,
-    X       INTEGER NOT NULL,
-    Y       INTEGER NOT NULL,
-    DATA    BLOB    NOT NULL
-  );
-
-`;
+const CACHE_DB_MIGRATIONS_1 = [
+  `CREATE TABLE CACHE_METADATA
+   (
+     TILESET       VARCHAR NOT NULL UNIQUE PRIMARY KEY,
+     DESCRIPTION   TEXT,
+     STATUS        VARCHAR(32),
+     MAX_ZOOM      INTEGER,
+     MIN_LATITUDE  NUMERIC(10, 7),
+     MAX_LATITUDE  NUMERIC(10, 7),
+     MIN_LONGITUDE NUMERIC(10, 7),
+     MAX_LONGITUDE NUMERIC(10, 7)
+   );`,
+  `CREATE TABLE CACHED_TILES
+   (
+     TILESET VARCHAR NOT NULL REFERENCES CACHE_METADATA (TILESET) ON UPDATE CASCADE ON DELETE CASCADE,
+     Z       INTEGER NOT NULL,
+     X       INTEGER NOT NULL,
+     Y       INTEGER NOT NULL,
+     DATA    BLOB    NOT NULL
+   );`
+];
 
 class SQLiteTileCacheService extends TileCacheService {
   private static _instance: SQLiteTileCacheService;
@@ -74,7 +72,7 @@ class SQLiteTileCacheService extends TileCacheService {
       throw new Error('cache not available');
     }
 
-    const encodedTileData = Buffer.from(tileData).toString('base64');
+    const encodedTileData = Buffer.from(tileData);
 
     try {
       await this.cacheDB.query(
@@ -91,7 +89,7 @@ class SQLiteTileCacheService extends TileCacheService {
 
   async getTile(repository: string, z: number, x: number, y: number): Promise<TileData> {
     switch (repository) {
-      case 'baked':
+      case 'offline':
         return this.getBakedTile(repository, z, x, y);
       default:
         return this.getCachedTile(repository, z, x, y);
@@ -148,7 +146,7 @@ class SQLiteTileCacheService extends TileCacheService {
       //language=SQLite
       `SELECT *
        FROM CACHE_METADATA
-       order by id`
+       order by TILESET ASC`
     );
 
     if (!result || !result.values) {
@@ -170,6 +168,10 @@ class SQLiteTileCacheService extends TileCacheService {
        WHERE TILESET = ?`,
       [status.toString(), repository]
     );
+  }
+
+  async getRepositoryStatistics(id: string): Promise<RepositoryStatistics> {
+    throw new Error('unimplemented');
   }
 
   protected async addRepository(spec: RepositoryMetadata): Promise<void> {
@@ -231,7 +233,7 @@ class SQLiteTileCacheService extends TileCacheService {
       }
 
       return {
-        data: result.values[0]['DATA']
+        data: Buffer.from(result.values[0]['DATA'], 'base64')
       };
     } catch (e) {
       console.error(e);
@@ -270,13 +272,9 @@ class SQLiteTileCacheService extends TileCacheService {
     }
   }
 
-  private async initializeBakedTileDatabase() {
-    const sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite);
-
-    await sqlite.copyFromAssets(true);
-
-    const ret = await sqlite.checkConnectionsConsistency();
+  private async initializeBakedTileDatabase(sqlite: SQLiteConnection) {
     const isConn = (await sqlite.isConnection(BAKED_DB_NAME, false)).result;
+    const ret = await sqlite.checkConnectionsConsistency();
 
     if (ret.result && isConn) {
       this.bakedDB = await sqlite.retrieveConnection(BAKED_DB_NAME, false);
@@ -293,8 +291,13 @@ class SQLiteTileCacheService extends TileCacheService {
     }
   }
 
-  private async initializeDynamicCacheTileDatabase() {
-    const sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite);
+  private async initializeDynamicCacheTileDatabase(sqlite: SQLiteConnection) {
+    await sqlite.addUpgradeStatement(CACHE_DB_NAME, [
+      {
+        toVersion: 1,
+        statements: CACHE_DB_MIGRATIONS_1
+      }
+    ]);
 
     const ret = await sqlite.checkConnectionsConsistency();
     const isConn = (await sqlite.isConnection(CACHE_DB_NAME, false)).result;
@@ -309,23 +312,17 @@ class SQLiteTileCacheService extends TileCacheService {
       await this.cacheDB.open().catch((e) => {
         console.error(e);
       });
-
-      if (!(await this.cacheDB.isTable('CACHE_METADATA'))) {
-        console.debug('initializing db');
-        await this.cacheDB.run(CACHE_CREATE_DDL);
-      }
     } catch (err) {
       console.error(err);
     }
   }
 
   private async initializeTileCache() {
-    await this.initializeBakedTileDatabase();
-    await this.initializeDynamicCacheTileDatabase();
-  }
+    const sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite);
+    await sqlite.copyFromAssets(true);
 
-  async getRepositoryStatistics(id: string): Promise<RepositoryStatistics> {
-    throw new Error('unimplemented');
+    await this.initializeBakedTileDatabase(sqlite);
+    await this.initializeDynamicCacheTileDatabase(sqlite);
   }
 }
 
