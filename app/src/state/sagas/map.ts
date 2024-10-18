@@ -74,13 +74,15 @@ import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
-import { BASE_LAYER_HANDLERS } from 'state/sagas/map/base-layers';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
+import { RootState } from 'state/reducers/rootReducer';
+import TileCache from 'state/actions/cache/TileCache';
+import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -836,12 +838,14 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
 
 function* handle_MAP_ON_SHAPE_UPDATE(action) {
   const { url } = yield select((state) => state.AppMode);
-  const { drawingCustomLayer, whatsHere } = yield select((state) => state.Map);
+  const { drawingCustomLayer, whatsHere, tileCacheMode } = yield select((state: RootState) => state.Map);
 
   if (drawingCustomLayer) {
     yield put({ type: CUSTOM_LAYER_DRAWN, payload: action.payload });
   } else if (url && /Activity/.test(url) && !whatsHere.toggle) {
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload] } });
+  } else if (tileCacheMode) {
+    yield put(TileCache.setTileCacheShape({ geometry: action.payload.geometry }));
   }
 }
 
@@ -923,7 +927,7 @@ function* activitiesPageSaga() {
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
     ...TRACKING_SAGA_HANDLERS,
-    ...BASE_LAYER_HANDLERS
+    ...LAYER_ELIGIBILITY_UPDATE
   ]);
 }
 

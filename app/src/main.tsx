@@ -11,6 +11,7 @@ import { PersistorContext } from 'utils/PersistorContext';
 import { TileCacheService } from 'utils/tile-cache';
 import { Context, TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { MOBILE } from 'state/build-time-config';
+import TileCache from 'state/actions/cache/TileCache';
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(import.meta.env.MODE === 'production' ? '/worker.js' : '/dev-sw.js?dev-sw', {
@@ -24,6 +25,8 @@ async function mountApp(CONFIG) {
   let tileCache: TileCacheService | null = null;
   if (MOBILE) {
     tileCache = await TileCacheServiceFactory.getPlatformInstance();
+    // load any caches present
+    store.dispatch(TileCache.repositoryList());
   }
 
   exportStore = store;

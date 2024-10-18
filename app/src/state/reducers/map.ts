@@ -28,6 +28,7 @@ import {
   MAP_TOGGLE_ACCURACY,
   MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_LEGENDS,
+  MAP_TOGGLE_OVERLAY,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
@@ -37,6 +38,7 @@ import {
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACKING_ON,
   MAP_UPDATE_AVAILABLE_BASEMAPS,
+  MAP_UPDATE_AVAILABLE_OVERLAYS,
   OVERLAY_MENU_TOGGLE,
   PAGE_OR_LIMIT_UPDATE,
   PAN_AND_ZOOM_TO_ACTIVITY,
@@ -69,6 +71,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { SortFilter } from 'interfaces/filterParams';
+import TileCache from 'state/actions/cache/TileCache';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -207,6 +210,8 @@ export interface MapState {
   [MIGRATION_VERSION_KEY]: number;
   baseMapLayer: string | null;
   availableBaseMapLayers: string[];
+  availableOverlayLayers: string[];
+  enabledOverlayLayers: string[];
   MapMode: string;
   CanTriggerCSV: boolean;
   IAPPBoundsPolygon: any;
@@ -297,6 +302,9 @@ export interface MapState {
 
   workingLayerName: string;
   layerPickerOpen: boolean;
+
+  tileCacheMode: boolean;
+
   //
   //   constructor()
   //
@@ -391,6 +399,9 @@ const initialState: MapState = {
   baseMapLayer: null,
   availableBaseMapLayers: [],
 
+  availableOverlayLayers: [],
+  enabledOverlayLayers: [],
+
   clientBoundaries: [],
   currentOpenSet: null,
   customizeLayersToggle: false,
@@ -419,6 +430,8 @@ const initialState: MapState = {
   simplePickerLayers: undefined,
   simplePickerLayers2: DEFAULT_LOCAL_LAYERS,
   tooManyLabelsDialog: null,
+
+  tileCacheMode: false,
 
   userCoords: null,
   userHeading: 0,
@@ -650,6 +663,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       } else if (WhatsHere.page_poi.match(action)) {
         draftState.whatsHere.IAPPPage = action.payload.page;
         draftState.whatsHere.IAPPLimit = action.payload.limit;
+      } else if (TileCache.setMapTileCacheMode.match(action)) {
+        draftState.tileCacheMode = action.payload;
       } else {
         switch (action.type) {
           case TOGGLE_LAYER_PICKER_OPEN:
@@ -961,6 +976,14 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.baseMapLayer = action.payload;
             break;
           }
+          case MAP_TOGGLE_OVERLAY: {
+            if (draftState.enabledOverlayLayers.includes(action.payload)) {
+              draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(action.payload), 1);
+            } else {
+              draftState.enabledOverlayLayers.push(action.payload);
+            }
+            break;
+          }
           case MAP_UPDATE_AVAILABLE_BASEMAPS: {
             draftState.availableBaseMapLayers = action.payload;
 
@@ -971,6 +994,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
                 draftState.baseMapLayer = draftState.availableBaseMapLayers[0];
               }
             }
+            break;
+          }
+          case MAP_UPDATE_AVAILABLE_OVERLAYS: {
+            draftState.availableOverlayLayers = action.payload;
+
+            // if a currently-enabled layer was removed, disable it
+            const removalList: string[] = [];
+
+            for (const f of draftState.enabledOverlayLayers) {
+              if (!action.payload.includes(f)) {
+                removalList.push(f);
+              }
+            }
+
+            for (const r of removalList) {
+              draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
+            }
+
             break;
           }
           case MAP_TOGGLE_LEGENDS: {

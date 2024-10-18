@@ -1,5 +1,11 @@
 import localForage from 'localforage';
-import { RepositoryMetadata, RepositoryStatus, TileCacheService, TileData } from 'utils/tile-cache/index';
+import {
+  RepositoryMetadata,
+  RepositoryStatistics,
+  RepositoryStatus,
+  TileCacheService,
+  TileData
+} from 'utils/tile-cache/index';
 
 interface SerializedTileData {
   data: Uint8Array;
@@ -56,7 +62,7 @@ class LocalForageCacheService extends TileCacheService {
 
   async getTile(repository: string, z: number, x: number, y: number): Promise<TileData> {
     if (this.store == null) {
-      return TileCacheService.generateFallbackTile();
+      return TileCacheService.generateTransparentFallbackTile();
     }
 
     const key = LocalForageCacheService.serializeTileKey({ repository, z, x, y });
@@ -68,7 +74,7 @@ class LocalForageCacheService extends TileCacheService {
       };
     }
 
-    return TileCacheService.generateFallbackTile();
+    return TileCacheService.generateTransparentFallbackTile();
   }
 
   async getRepository(id: string): Promise<RepositoryMetadata | null> {
@@ -136,6 +142,38 @@ class LocalForageCacheService extends TileCacheService {
     }
   }
 
+  async getRepositoryStatistics(id: string): Promise<RepositoryStatistics> {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+
+    const metadata = await this.getRepository(id);
+    if (!metadata) {
+      throw new Error('repository not available');
+    }
+
+    let sizeInBytes = 0;
+    let numberOfTiles = 0;
+
+    await this.store.iterate((value, key, i) => {
+      if (key == LocalForageCacheService.REPOSITORY_METADATA_KEY) return;
+      try {
+        const tileMetadata = LocalForageCacheService.deserializeTileKey(key);
+        if (tileMetadata.repository == metadata.id) {
+          numberOfTiles++;
+          sizeInBytes += (value as SerializedTileData).data.length;
+        }
+      } catch (e) {
+        // it might not be parseable if it's not a tile record
+        return;
+      }
+    });
+    return {
+      sizeInBytes,
+      tileCount: numberOfTiles
+    };
+  }
+
   protected async cleanupOrphanTiles(): Promise<void> {
     if (this.store == null) {
       return;
@@ -143,7 +181,7 @@ class LocalForageCacheService extends TileCacheService {
 
     const validRepositories = (await this.listRepositories())
       .filter((r) => {
-        return r.status in [RepositoryStatus.READY, RepositoryStatus.DOWNLOADING];
+        return [RepositoryStatus.READY, RepositoryStatus.DOWNLOADING].includes(r.status);
       })
       .map((r) => r.id);
 

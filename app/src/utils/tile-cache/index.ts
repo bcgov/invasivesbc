@@ -1,8 +1,12 @@
 import { base64toBuffer, lat2tile, long2tile } from 'utils/tile-cache/helpers';
 
-// base64-encoded blank tile image 256x256
+// base64-encoded blank tile image 256x256 (opaque, light blue)
 const FALLBACK_IMAGE =
   'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg==';
+
+// base64 encoded transparent image (for overlays)
+const TRANSPARENT_FALLBACK_IMAGE =
+  'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAQAAAD2e2DtAAABu0lEQVR42u3SQREAAAzCsOHf9F6oIJXQS07TxQIABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAgAACwAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAAsAEAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAKg9kK0BATSHu+YAAAAASUVORK5CYII=';
 
 export type TileData = {
   data: ArrayBufferLike;
@@ -48,12 +52,23 @@ export interface ProgressCallbackParameters {
   processedTiles: number;
 }
 
+export interface RepositoryStatistics {
+  sizeInBytes: number;
+  tileCount: number;
+}
+
 abstract class TileCacheService {
   protected constructor() {}
 
   static generateFallbackTile(): TileData {
     return {
       data: base64toBuffer(FALLBACK_IMAGE)
+    };
+  }
+
+  static generateTransparentFallbackTile(): TileData {
+    return {
+      data: base64toBuffer(TRANSPARENT_FALLBACK_IMAGE)
     };
   }
 
@@ -79,8 +94,6 @@ abstract class TileCacheService {
 
     return totalTiles;
   }
-
-  protected abstract cleanupOrphanTiles(): Promise<void>;
 
   abstract getTile(repository: string, z: number, x: number, y: number): Promise<TileData>;
 
@@ -131,24 +144,25 @@ abstract class TileCacheService {
             await this.setTile(spec.id, z, x, y, new Uint8Array(data));
             processedTiles++;
 
-            if (progressCallback) {
-              const currentProgress = processedTiles / totalTiles;
-              // trigger a callback on the first run, on the last run, every 1%, and every 200ms
-              if (
-                lastProgressCallback == null ||
-                lastProgressCallbackTimestamp == null ||
-                currentProgress - lastProgressCallback > 0.01 ||
-                processedTiles == totalTiles ||
-                Date.now() - lastProgressCallbackTimestamp > 200
-              ) {
-                // take advantage of the periodic callback to check if we should abort (because the repo was concurrently deleted)
-                const updatedRepositoryState = await this.getRepository(spec.id);
-                if (updatedRepositoryState == null || updatedRepositoryState.status == RepositoryStatus.DELETING) {
-                  abort = true;
-                }
+            const currentProgress = processedTiles / totalTiles;
+            // trigger a callback on the first run, on the last run, every 1%, and every 200ms
+            if (
+              lastProgressCallback == null ||
+              lastProgressCallbackTimestamp == null ||
+              currentProgress - lastProgressCallback > 0.01 ||
+              processedTiles == totalTiles ||
+              Date.now() - lastProgressCallbackTimestamp > 200
+            ) {
+              // take advantage of the periodic callback to check if we should abort (because the repo was concurrently deleted)
+              const updatedRepositoryState = await this.getRepository(spec.id);
+              if (updatedRepositoryState == null || updatedRepositoryState.status == RepositoryStatus.DELETING) {
+                abort = true;
+              }
 
-                lastProgressCallback = currentProgress;
-                lastProgressCallbackTimestamp = Date.now();
+              lastProgressCallback = currentProgress;
+              lastProgressCallbackTimestamp = Date.now();
+
+              if (progressCallback) {
                 progressCallback({
                   repository: spec.id,
                   message: abort
@@ -178,6 +192,10 @@ abstract class TileCacheService {
       await this.cleanupOrphanTiles();
     }
   }
+
+  public abstract getRepositoryStatistics(id: string): Promise<RepositoryStatistics>;
+
+  protected abstract cleanupOrphanTiles(): Promise<void>;
 
   protected abstract addRepository(spec: RepositoryMetadata): Promise<void>;
 }

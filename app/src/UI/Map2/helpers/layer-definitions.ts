@@ -7,6 +7,7 @@ const LAYER_Z_MID = 'LAYER_Z_MID';
 const LAYER_Z_FOREGROUND = 'LAYER_Z_FOREGROUND';
 
 export type MapDefinitionEligibilityPredicates = {
+  // not directly selectable means there won't be a button for it (but it can still be enabled by another definition requiring it)
   directlySelectable: boolean;
   mobileOnly: boolean;
   webOnly: boolean;
@@ -15,6 +16,7 @@ export type MapDefinitionEligibilityPredicates = {
   requiresAnonymous: boolean;
 };
 
+// fluent convenience object builder
 export class MapDefinitionEligibilityPredicatesBuilder {
   state: MapDefinitionEligibilityPredicates = {
     directlySelectable: true,
@@ -91,13 +93,21 @@ if (MOBILE) {
   VECTOR_MAP_FONT_FACE = 'Noto Sans Bold';
 }
 
+// determines layer stacking and whether the layer is individually toggle-able (eg only one basemap can be active at once)
+export enum MapSourceAndLayerDefinitionMode {
+  BASEMAP = 'BASEMAP',
+  OVERLAY = 'OVERLAY'
+}
+
 export type MapSourceAndLayerDefinition = {
   name: string;
 
   displayName: string;
 
+  mode: MapSourceAndLayerDefinitionMode;
+
   // this is an optimization to prevent having to bundle all icons. you can add others here and corresponding lookup in BaseMapSelect.tsx
-  icon: 'N/A' | 'Hd' | 'Sd' | 'Landscape' | 'Map' | 'Offline' | 'OfflineSatellite' | 'OfflineVector';
+  icon: 'N/A' | 'Hd' | 'Sd' | 'Landscape' | 'Map' | 'Offline' | 'OfflineSatellite' | 'OfflineVector' | 'Cached';
   tooltip: string;
 
   source: SourceSpecification;
@@ -115,6 +125,9 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     tooltip: 'N/A',
 
     predicates: new MapDefinitionEligibilityPredicatesBuilder().directlySelectable(false).build(),
+
+    mode: MapSourceAndLayerDefinitionMode.OVERLAY,
+
     source: {
       type: 'raster',
       tiles: [
@@ -132,6 +145,8 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     displayName: 'HD',
     icon: 'Hd',
     tooltip: 'High-resolution Aerial Imagery',
+
+    mode: MapSourceAndLayerDefinitionMode.BASEMAP,
 
     predicates: new MapDefinitionEligibilityPredicatesBuilder().build(),
     source: {
@@ -163,6 +178,8 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     icon: 'Sd',
     tooltip: 'Standard-resolution Aerial Imagery',
 
+    mode: MapSourceAndLayerDefinitionMode.BASEMAP,
+
     predicates: new MapDefinitionEligibilityPredicatesBuilder().build(),
     source: {
       type: 'raster',
@@ -193,6 +210,8 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     icon: 'Landscape',
     tooltip: 'Topographic Raster Map',
 
+    mode: MapSourceAndLayerDefinitionMode.BASEMAP,
+
     predicates: new MapDefinitionEligibilityPredicatesBuilder().build(),
     source: {
       type: 'raster',
@@ -220,18 +239,14 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     icon: 'Map',
     tooltip: 'Publicly Available Invasives Species Sites',
 
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresAnonymous(true).build(),
+    mode: MapSourceAndLayerDefinitionMode.OVERLAY,
+
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresAnonymous(false).build(),
     source: {
       type: 'vector',
       url: 'pmtiles://https://nrs.objectstore.gov.bc.ca/rzivsz/invasives-prod.pmtiles'
     },
     layers: [
-      {
-        id: `Esri-Topo-Public`,
-        type: 'raster',
-        source: 'Esri-Topo',
-        minzoom: 0
-      },
       {
         id: 'invasivesbc-pmtile-vector',
         source: 'public_layer',
@@ -320,6 +335,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     name: 'offline_base_map',
     icon: 'OfflineSatellite',
     tooltip: 'Locally-stored low-resolution base map',
+    mode: MapSourceAndLayerDefinitionMode.BASEMAP,
     predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).build(),
     source: {
       type: 'raster',
@@ -874,6 +890,9 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     icon: 'OfflineVector',
     tooltip: 'Locally-stored high-resolution vector base map',
     predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).build(),
+
+    mode: MapSourceAndLayerDefinitionMode.BASEMAP,
+
     source: {
       type: 'vector',
       url: 'pmtiles:///assets/tiles/tiles14.pmtiles',
@@ -1943,13 +1962,33 @@ function layersForDefinition(
 }
 
 // ...and those we should turn off when it is deactivated
-function allLayerIdsNotInDefinition(definitionList: MapSourceAndLayerDefinition[], definitionName: string): string[] {
+function allOverlayLayerIdsNotInDefinitions(
+  definitionList: MapSourceAndLayerDefinition[],
+  definitionNames: string[]
+): string[] {
+  const groups = definitionList.filter((m) => definitionNames.includes(m.name));
+
+  return definitionList
+    .filter((m) => m.mode == MapSourceAndLayerDefinitionMode.OVERLAY)
+    .flatMap((m) => m.layers)
+    .filter((x) => {
+      return !groups.some((group) => group.layers.some((groupLayer) => groupLayer.id == x.id));
+    })
+    .map((l) => l.id);
+}
+
+// ...and those we should turn off when it is deactivated
+function allBaseMapLayerIdsNotInDefinition(
+  definitionList: MapSourceAndLayerDefinition[],
+  definitionName: string
+): string[] {
   const group = definitionList.find((m) => m.name === definitionName);
   if (!group) {
     console.error(`invalid definition name ${definitionName}`);
     throw Error(`invalid definition name ${definitionName}`);
   }
   return definitionList
+    .filter((m) => m.mode == MapSourceAndLayerDefinitionMode.BASEMAP)
     .flatMap((m) => m.layers)
     .filter((x) => !group.layers.map((l) => l.id).includes(x.id))
     .map((l) => l.id);
@@ -1967,8 +2006,9 @@ function allSourceIDsRequiredForDefinition(definitionList: MapSourceAndLayerDefi
 export {
   MAP_DEFINITIONS,
   allLayerIdsInDefinition,
-  allLayerIdsNotInDefinition,
+  allBaseMapLayerIdsNotInDefinition,
   layersForDefinition,
+  allOverlayLayerIdsNotInDefinitions,
   allSourceIDsRequiredForDefinition,
   LAYER_Z_BACKGROUND,
   LAYER_Z_MID,

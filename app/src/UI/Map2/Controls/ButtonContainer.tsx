@@ -10,7 +10,7 @@ import { WhatsHereButton } from './WhatsHereButton';
 import { MapModeToggle } from './MapToggleCacheGeoJSON';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import TrackingButtonsContainer from './TrackingButtonsContainer';
-import { BaseMapSelect } from 'UI/Map2/Controls/BaseMapSelect';
+import { PrimaryLayerSelect } from 'UI/Map2/Controls/PrimaryLayerSelect';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export const ButtonContainer = () => {
@@ -19,7 +19,7 @@ export const ButtonContainer = () => {
 
   return (
     <div id="map-btn-container">
-      <BaseMapSelect />
+      <PrimaryLayerSelect />
 
       {(authenticated || workingOffline) && <FindMeToggle />}
       {positionTracking && <TrackingButtonsContainer />}
