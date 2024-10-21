@@ -229,6 +229,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       } catch (err) {
         yield put(Alerts.create(mappingAlertMessages.cannotValidateRegion));
         console.error(err);
+        return;
       }
     }
 
