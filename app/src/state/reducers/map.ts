@@ -251,7 +251,6 @@ export interface MapState {
   simplePickerLayers: object;
   tooManyLabelsDialog: any;
   userCoords: any;
-  userHeading: number;
   userRecordOnClickMenuOpen: boolean;
   userRecordOnClickRecordID: string | null;
   userRecordOnClickRecordRow: any;
@@ -434,7 +433,6 @@ const initialState: MapState = {
   tileCacheMode: false,
 
   userCoords: null,
-  userHeading: 0,
   userRecordOnHoverMenuOpen: false,
   userRecordOnHoverRecordID: undefined,
   userRecordOnHoverRecordRow: undefined,
@@ -965,7 +963,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               accuracy: userCoords.accuracy,
               heading: userCoords.heading
             };
-            draftState.userHeading = userCoords.heading;
             break;
           }
           case MAP_TOGGLE_ACCURACY: {
