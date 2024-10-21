@@ -221,8 +221,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       }
     }
 
-    const geoToTest =
-      sanitizedGeo.geometry.type === GeoShapes.MultiPolygon ? centroid(sanitizedGeo.geometry) : sanitizedGeo;
     let isWithinBC = false;
 
     if (sanitizedGeo) {
