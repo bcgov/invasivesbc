@@ -466,9 +466,7 @@ export const Map = (props: any) => {
 
 const positionMarkerEl = document.createElement('div');
 positionMarkerEl.className = 'userTrackingMarker';
-positionMarkerEl.style.backgroundImage = 'url(/assets/icon/circle.png)';
-positionMarkerEl.style.width = `32px`;
-positionMarkerEl.style.height = `32px`;
+positionMarkerEl.innerHTML = `<img src='/assets/icon/circle.svg' />`;
 
 const activityMarkerEl = document.createElement('div');
 activityMarkerEl.className = 'activityMarkerEl';

@@ -869,8 +869,8 @@ export const handlePositionTracking = (
             source: 'accuracyCircle',
             type: 'fill',
             paint: {
-              'fill-color': 'green',
-              'fill-opacity': 0.5
+              'fill-color': '#00b0ff',
+              'fill-opacity': 0.15
             },
             layout: {
               visibility: accuracyToggle ? 'visible' : 'none'
