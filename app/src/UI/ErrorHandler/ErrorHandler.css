@@ -9,7 +9,7 @@ div.errorHandler {
   background-color: #fff;
   font-size: 14pt;
   span {
-    color: #f44336;
+    color: var(--error-red);
   }
 }
 
