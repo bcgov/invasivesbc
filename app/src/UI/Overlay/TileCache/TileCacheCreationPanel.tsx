@@ -59,10 +59,10 @@ const TileCacheCreationPanel = () => {
   return (
     <>
       <p>
-        {drawnShape.minLatitude}° - {drawnShape.maxLatitude}°
+        {drawnShape.minLatitude}° , {drawnShape.maxLatitude}°
       </p>
       <p>
-        {drawnShape.minLongitude}° - {drawnShape.maxLongitude}°
+        {drawnShape.minLongitude}° , {drawnShape.maxLongitude}°
       </p>
 
       <Slider
