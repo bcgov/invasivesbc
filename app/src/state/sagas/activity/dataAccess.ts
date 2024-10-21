@@ -226,7 +226,12 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     let isWithinBC = false;
 
     if (sanitizedGeo) {
-      isWithinBC = yield call(geomWithinBC, sanitizedGeo);
+      try {
+        isWithinBC = yield call(geomWithinBC, sanitizedGeo);
+      } catch (err) {
+        yield put(Alerts.create(mappingAlertMessages.cannotValidateRegion));
+        console.error(err);
+      }
     }
 
     if (areWellsInside && activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial') {

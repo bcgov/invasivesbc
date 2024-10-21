@@ -292,13 +292,18 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
 
   // Validation Checks
 
-  const geometryIsWithinBC = yield call(geomWithinBC, newGeo);
   const geographyWillContainIntersections = kinks(newGeo.geometry).features?.length > 0;
   const geometryHasPositiveArea = Math.floor(calculateGeometryArea(newGeo.geometry)) >= 0;
 
   // Error Alerts
-  if (!geometryIsWithinBC) {
-    validationErrors.push(mappingAlertMessages.notWithinBC);
+  try {
+    const geometryIsWithinBC = yield call(geomWithinBC, newGeo);
+    if (!geometryIsWithinBC) {
+      validationErrors.push(mappingAlertMessages.notWithinBC);
+    }
+  } catch (err) {
+    validationErrors.push(mappingAlertMessages.cannotValidateRegion);
+    console.error(err);
   }
   if (geographyWillContainIntersections) {
     validationErrors.push(mappingAlertMessages.willContainIntersections);
