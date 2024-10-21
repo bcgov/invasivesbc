@@ -16,6 +16,8 @@
   justify-content: center;
   align-items: center;
   & > img {
+    height: 32px;
+    width: 32px;
     filter: drop-shadow(1px 1px 1px black);
   }
 }
