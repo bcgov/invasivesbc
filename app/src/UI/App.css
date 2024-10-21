@@ -110,6 +110,7 @@ body {
   --extra-top-padding: 0px;
   --extra-bottom-padding: 0px;
   --bc-blue: #003366;
+  --error-red: #f44336;
   --bc-yellow: #fcba19;
   --eigengrau: #16161d;
 }
