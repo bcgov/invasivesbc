@@ -4,9 +4,13 @@ div.connectivityError {
 }
 
 div.errorHandler {
+  box-sizing: border-box;
+  padding: 1.5rem;
   background-color: #fff;
-  font-size: 1.5rem;
-  margin: 4rem 2em;
+  font-size: 14pt;
+  span {
+    color: #f44336;
+  }
 }
 
 div.errorHandler .detail {
@@ -17,7 +21,19 @@ div.errorHandler .detail {
   border-radius: 8px;
   padding: 0.75rem;
   box-shadow: #444 6px 6px;
-  max-height: 70vh;
-  overflow-y: scroll;
+  max-height: 425px;
+  overflow-y: auto;
   white-space: pre-wrap;
+}
+
+div.errorHandler .controls {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
+
+@media screen and (min-width: 600px) {
+  div.errorHandler {
+    margin: 4rem 2em;
+  }
 }
