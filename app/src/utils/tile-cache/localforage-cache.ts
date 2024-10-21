@@ -185,8 +185,6 @@ class LocalForageCacheService extends TileCacheService {
       })
       .map((r) => r.id);
 
-    console.debug(`Deleting tiles not matching repository: [${validRepositories.join(',')}]`);
-
     const deletionQueue: string[] = (await this.store.keys()).filter((k) => {
       if (k == LocalForageCacheService.REPOSITORY_METADATA_KEY) return false;
 
@@ -198,8 +196,6 @@ class LocalForageCacheService extends TileCacheService {
         return false;
       }
     });
-
-    console.debug(`${deletionQueue.length} orphaned tiles to purge`);
 
     for (const toDelete of deletionQueue) {
       try {

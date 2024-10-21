@@ -40,7 +40,6 @@ const TileCacheListRow = ({ metadata }) => {
           Delete
         </Button>
       </td>
-      <td>f</td>
       <td>{stats?.tileCount}</td>
       <td>{stats && convertBytesToReadableString(stats.sizeInBytes)}</td>
     </tr>
@@ -49,7 +48,6 @@ const TileCacheListRow = ({ metadata }) => {
 
 const TileCacheList = () => {
   const repositories = useSelector((state) => state.TileCache?.repositories);
-  const loading = useSelector((state) => state.TileCache?.loading);
 
   const dispatch = useDispatch();
 
@@ -60,7 +58,6 @@ const TileCacheList = () => {
   return (
     <>
       <table>
-        <thead></thead>
         <tbody>
           {repositories.map((r) => (
             <TileCacheListRow key={r.id} metadata={r} />
