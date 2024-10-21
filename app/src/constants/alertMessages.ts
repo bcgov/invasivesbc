@@ -23,6 +23,12 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
     subject: AlertSubjects.Map,
     content: 'Activity geometry intersects itself'
   },
+  cannotValidateRegion: {
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Map,
+    content: 'An error occured while validating the GeoTracking shape, please try again.',
+    autoClose: 10
+  },
   trackMyPathStoppedEarly: {
     content: '"Track my path" stopped.',
     severity: AlertSeverity.Info,

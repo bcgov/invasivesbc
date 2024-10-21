@@ -7,11 +7,7 @@ import booleanContains from '@turf/boolean-contains';
  */
 function* geomWithinBC(geometry) {
   let BC_AREA: Record<string, any> | null = null;
-  try {
-    BC_AREA = (yield import('../state/sagas/activity/_bcArea')).default;
-  } catch (e) {
-    console.error('Could not load BC geometry file, unable to validate bounds');
-  }
+  BC_AREA = (yield import('../state/sagas/activity/_bcArea')).default;
   if (BC_AREA !== null) {
     return booleanContains(BC_AREA.features[0] as any, geometry as any);
   }
