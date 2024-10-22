@@ -1,14 +1,29 @@
-import { Button } from '@mui/material';
+import { Button, IconButton } from '@mui/material';
 import TileCache from 'state/actions/cache/TileCache';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { RepositoryStatistics, TileCacheService } from 'utils/tile-cache';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
-import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
+import { Delete } from '@mui/icons-material';
+import Prompt from 'state/actions/prompts/Prompt';
+import CacheFileSize from './CacheFileSize';
 
 const TileCacheListRow = ({ metadata }) => {
+  const handleDelete = (id: string) => {
+    const callback = (confirmation: boolean) => {
+      if (confirmation) {
+        dispatch(TileCache.deleteRepository(id));
+      }
+    };
+    dispatch(
+      Prompt.confirmation({
+        title: 'Delete Cached Map tiles?',
+        prompt: ['Do you want to delete this set of Map tiles?', 'They will no longer be available to use offline'],
+        callback
+      })
+    );
+  };
   const dispatch = useDispatch();
-
   const serviceRef = useRef<TileCacheService | null>(null);
   const [stats, setStats] = useState<RepositoryStatistics | null>(null);
 
@@ -31,43 +46,46 @@ const TileCacheListRow = ({ metadata }) => {
     <tr>
       <td>{metadata.id}</td>
       <td>{metadata.status}</td>
-      <td>
-        <Button
-          variant={'contained'}
-          color={'warning'}
-          onClick={() => dispatch(TileCache.deleteRepository(metadata.id))}
-        >
-          Delete
-        </Button>
-      </td>
       <td>{stats?.tileCount}</td>
-      <td>{stats && convertBytesToReadableString(stats.sizeInBytes)}</td>
+      <td>{stats && <CacheFileSize downloadSizeInBytes={stats.sizeInBytes} />}</td>
+      <td>
+        <IconButton color={'error'} onClick={() => handleDelete(metadata.id)}>
+          <Delete />
+        </IconButton>
+      </td>
     </tr>
   );
 };
 
 const TileCacheList = () => {
   const repositories = useSelector((state) => state.TileCache?.repositories);
-
   const dispatch = useDispatch();
 
   if (!repositories) {
     return null;
   }
-
   return (
-    <>
+    <section>
       <table>
+        <thead>
+          <th>Cache ID</th>
+          <th>Status</th>
+          <th>Tile Count</th>
+          <th>Cache Size</th>
+          <th>Delete</th>
+        </thead>
         <tbody>
           {repositories.map((r) => (
             <TileCacheListRow key={r.id} metadata={r} />
           ))}
         </tbody>
       </table>
-      <Button variant={'contained'} onClick={() => dispatch(TileCache.repositoryList())}>
-        Update
-      </Button>
-    </>
+      <div className="control">
+        <Button variant={'contained'} onClick={() => dispatch(TileCache.repositoryList())}>
+          Refresh Table
+        </Button>
+      </div>
+    </section>
   );
 };
 

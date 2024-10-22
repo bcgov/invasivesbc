@@ -1,24 +1,53 @@
-import { LinearProgress } from '@mui/material';
-import React from 'react';
+import { IconButton, LinearProgress } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
-import { shallowEqual } from 'react-redux';
+import { shallowEqual, useDispatch } from 'react-redux';
+import { StopCircleOutlined } from '@mui/icons-material';
+import TileCache from 'state/actions/cache/TileCache';
 
 const TileCacheDownloadProgress = () => {
+  const handleStopDownload = (repository: string) => {
+    // @ts-ignore
+    dispatch(TileCache.deleteRepository(repository));
+  };
+  const dispatch = useDispatch();
   const downloadProgress = useSelector((state) => state.TileCache?.downloadProgress, shallowEqual);
+  const activeDownloads = Object.keys(downloadProgress ?? {}).length > 0;
 
-  if (!downloadProgress) {
-    return null;
+  if (!downloadProgress || !activeDownloads) {
+    return (
+      <section>
+        <p className="Emphasis">There are no downloads in progress</p>
+      </section>
+    );
   }
-  
+
   return (
-    <ul>
-      {Object.keys(downloadProgress).map((k) => (
-        <li key={k}>
-          <p>{downloadProgress[k].message}</p>
-          <LinearProgress variant={'determinate'} value={downloadProgress[k].normalizedProgress * 100} />
-        </li>
-      ))}
-    </ul>
+    <section>
+      <table>
+        <thead>
+          <th>Cache Name</th>
+          <th>Download Status</th>
+          <th>Progress</th>
+          <th>Cancel</th>
+        </thead>
+        <tbody>
+          {Object.keys(downloadProgress).map((k) => (
+            <tr key={k}>
+              <td>{downloadProgress[k].repository}</td>
+              <td>{downloadProgress[k].message}</td>
+              <td>
+                <LinearProgress variant={'determinate'} value={downloadProgress[k].normalizedProgress * 100} />
+              </td>
+              <td>
+                <IconButton color="error" onClick={() => handleStopDownload(downloadProgress[k].repository)}>
+                  <StopCircleOutlined />
+                </IconButton>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </section>
   );
 };
 
