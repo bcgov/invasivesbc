@@ -1,5 +1,5 @@
 import circle from '@turf/circle';
-import maplibregl, { LngLatLike, Map as MapLibre, validateStyleMin } from 'maplibre-gl';
+import maplibregl, { LngLatLike, Map as MapLibre } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
@@ -35,13 +35,12 @@ import {
   allOverlayLayerIdsNotInDefinitions,
   allSourceIDsRequiredForDefinition,
   LAYER_Z_BACKGROUND,
-  LAYER_Z_FOREGROUND,
+  LAYER_Z_MID,
   layersForDefinition,
   MAP_DEFINITIONS
 } from 'UI/Map2/helpers/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
 import { MOBILE } from 'state/build-time-config';
-import source = validateStyleMin.source;
 
 /*
 
@@ -344,7 +343,7 @@ export const Map = (props: any) => {
     for (const overlayLayer of enabledOverlayLayers) {
       for (const layerSpec of layersForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], overlayLayer)) {
         if (!map.current.getLayer(layerSpec.id)) {
-          map.current.addLayer(layerSpec, LAYER_Z_FOREGROUND);
+          map.current.addLayer(layerSpec, LAYER_Z_MID);
         }
       }
     }
