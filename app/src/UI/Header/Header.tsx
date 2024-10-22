@@ -466,7 +466,7 @@ export const Header: React.FC = () => {
           key={'tileCache'}
           path="/OfflineTiles"
           label={'Tile Cache Status'}
-          predicate={'always'}
+          predicate={'authenticated_any'}
           platform={'mobile'}
           panelOpen={true}
           panelFullScreen={false}
