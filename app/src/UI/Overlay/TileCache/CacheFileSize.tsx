@@ -1,9 +1,14 @@
-import DataSizeUnits from 'constants/DataSizeUnit';
+import DataSizeUnits from 'constants/dataSizeUnits';
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
 
 type PropTypes = {
   downloadSizeInBytes: number;
 };
+/**
+ * The general use case is for displaying file sizes given bytes, and programmatically assigning a class to add colour coding
+ * It takes advantage of fall-through statements to avoid having to create multiple if-else statements that return the same colour value.
+ * Given this is a sliding scale, the switch works appropriately.
+ */
 const CacheFileSize = ({ downloadSizeInBytes }: PropTypes) => {
   const [size, unit] = convertBytesToReadableString(downloadSizeInBytes).split(' ');
   const parsedSize = parseFloat(size) ?? 0;
