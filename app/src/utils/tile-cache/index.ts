@@ -165,9 +165,7 @@ abstract class TileCacheService {
               if (progressCallback) {
                 progressCallback({
                   repository: spec.id,
-                  message: abort
-                    ? `Aborting`
-                    : `Downloading Zoom ${z}/${spec.maxZoom}, ${processedTiles}/${totalTiles} Tiles`,
+                  message: abort ? `Aborting` : `Zoom ${z}/${spec.maxZoom}, ${processedTiles}/${totalTiles} Tiles`,
                   aborted: abort,
                   normalizedProgress: processedTiles / totalTiles,
                   processedTiles,
