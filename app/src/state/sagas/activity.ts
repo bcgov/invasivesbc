@@ -231,7 +231,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
       message = mappingAlertMessages.trackingStarted;
   }
 
-  const initCoords = coords.hasOwnProperty('long') ? [[coords.long, coords.lat]] : [];
+  const initCoords = coords?.hasOwnProperty('long') ? [[coords.long, coords.lat]] : [];
   const initGeo = {
     type: 'Feature',
     properties: {},
