@@ -26,17 +26,15 @@ const TileCachePanel = () => {
     <>
       <OverlayHeader />
       <div id={`offline-map-overlay`}>
-        <h2>Offline Map</h2>
+        <h2>Offline Maps</h2>
         <p className="subheader">Manage your map data for offline access</p>
         <h3>Create Cached Maps</h3>
         <TileCacheCreationPanel />
-        <p>
-          <i>TileCacheDownloadProgress</i>
-        </p>
+        <h3>Download Progress</h3>
+        <p className="subheader">Monitor caches currently being downloaded for use offline.</p>
         <TileCacheDownloadProgress />
-        <p>
-          <i>TileCacheList</i>
-        </p>
+        <h3>Downloaded Maps</h3>
+        <p className="subheader">These caches are currently stored on your device</p>
         <TileCacheList />
       </div>
     </>
