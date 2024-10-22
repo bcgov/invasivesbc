@@ -16,7 +16,7 @@ const TileCacheDownloadProgress = () => {
   if (!downloadProgress || !activeDownloads) {
     return (
       <section>
-        <p className="Emphasis">There are no downloads in progress</p>
+        <p className="Emphasis">There are currently no downloads in progress</p>
       </section>
     );
   }
