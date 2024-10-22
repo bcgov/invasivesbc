@@ -111,6 +111,9 @@ body {
   --extra-bottom-padding: 0px;
   --bc-blue: #003366;
   --error-red: #f44336;
+  --deep-red: #b2102f;
+  --success-green: #357a38;
+  --warning-orange: #ffc107;
   --bc-yellow: #fcba19;
   --eigengrau: #16161d;
 }
