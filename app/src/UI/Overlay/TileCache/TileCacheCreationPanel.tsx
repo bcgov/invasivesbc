@@ -1,12 +1,10 @@
 import { TileCacheService } from 'utils/tile-cache';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { Button, Slider, Tooltip } from '@mui/material';
+import { Button, Slider } from '@mui/material';
 import TileCache from 'state/actions/cache/TileCache';
-import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
-import { setUseStrictShallowCopy } from 'immer';
-import { QuestionAnswer } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
+import CacheFileSize from './CacheFileSize';
 
 // seems to be about right for this dataset
 const APPROX_SIZE_PER_TILE = 15 * 1024;
@@ -54,27 +52,25 @@ const TileCacheCreationPanel = () => {
       setTileCount(null);
       return;
     }
-
     const updatedCount = TileCacheService.computeTileCount(drawnShape, zoom);
-
     setTileCount(updatedCount);
     setApproximateDownloadSize(updatedCount * APPROX_SIZE_PER_TILE);
   }, [drawnShape, zoom]);
 
   if (!drawnShape) {
     return (
-      <section className="tile-cache-creation-panel">
+      <section>
         <p className="emphasis">No area defined</p>
-        <p>You can get started by drawing a shape on the map</p>
+        <p>You can get started by drawing a shape on the map using the provided draw tools.</p>
       </section>
     );
   }
 
   return (
-    <section className="tile-cache-creation-panel">
+    <section>
       <p className="shapeDetails">
-        <b>Southwest:</b> {drawnShape.minLatitude.toFixed(5)}°, {drawnShape.minLongitude.toFixed(5)}° <b>Northeast:</b>{' '}
-        {drawnShape.maxLatitude.toFixed(5)}°, {drawnShape.maxLongitude.toFixed(5)}°{' '}
+        <b>Southwest:</b> {drawnShape.minLatitude.toFixed(5)}°, {drawnShape.minLongitude.toFixed(5)}° &nbsp;&nbsp;
+        <b>Northeast:</b> {drawnShape.maxLatitude.toFixed(5)}°, {drawnShape.maxLongitude.toFixed(5)}°{' '}
         <TooltipWithIcon tooltipText={boundingBoxToolTipText} />
       </p>
 
@@ -95,27 +91,33 @@ const TileCacheCreationPanel = () => {
       />
       <div className="shapeDetails">
         <p>
-          <b>Scale:</b> {scale}, <b>Map Tiles:</b> {tileCount}{' '}
-          {approximateDownloadSize && `(approximately ${convertBytesToReadableString(approximateDownloadSize)})`}
+          <b>Scale:</b> {scale}, <b>Map Tiles:</b> {tileCount?.toLocaleString()}{' '}
+          {approximateDownloadSize && (
+            <>
+              (approx. <CacheFileSize downloadSizeInBytes={approximateDownloadSize} />)
+            </>
+          )}
         </p>
       </div>
-      <Button
-        variant={'contained'}
-        onClick={() => {
-          if (!drawnShape) {
-            return;
-          }
-          dispatch(
-            TileCache.requestCaching({
-              description: '',
-              bounds: drawnShape,
-              maxZoom: zoom
-            })
-          );
-        }}
-      >
-        Start Download
-      </Button>
+      <div className="control">
+        <Button
+          variant={'contained'}
+          onClick={() => {
+            if (!drawnShape) {
+              return;
+            }
+            dispatch(
+              TileCache.requestCaching({
+                description: '',
+                bounds: drawnShape,
+                maxZoom: zoom
+              })
+            );
+          }}
+        >
+          Start Download
+        </Button>
+      </div>
     </section>
   );
 };

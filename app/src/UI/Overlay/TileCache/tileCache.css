@@ -28,7 +28,12 @@
   }
 }
 
-.tile-cache-creation-panel {
+/* Generic for each sub-section in Offline Maps */
+#offline-map-overlay section {
+  padding: 1rem;
+  border: 1pt solid lightgray;
+  border-radius: 4pt;
+  min-height: 100pt;
   width: 100%;
   box-sizing: border-box;
   display: flex;
@@ -38,17 +43,37 @@
   justify-content: center;
 }
 
-section {
-  padding: 1rem;
+table {
   border: 1pt solid lightgray;
-  border-radius: 4pt;
-  min-height: 100pt;
+}
+section table {
+  border-collapse: collapse;
+}
+section tbody tr:nth-child(odd) {
+  background-color: #f5f5f5;
 }
 
 .subheader {
   margin-top: 0;
 }
 
+section table {
+  border-radius: 5pt;
+}
+section table th {
+  height: 3rem;
+}
+section table td:first-child,
+section table th:first-child {
+  padding-left: 1rem;
+  width: 30%;
+}
+
+section table td:last-child,
+section table th:last-child {
+  text-align: right;
+  padding-right: 1rem;
+}
 .shapeDetails {
   text-align: left;
   margin: 10px 0;
@@ -60,4 +85,24 @@ section {
     margin-top: 0;
     padding: 0;
   }
+}
+
+section .control {
+  margin-top: 10pt;
+  display: flex;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.deep-red {
+  color: var(--deep-red);
+}
+.red {
+  color: var(--error-red);
+}
+.green {
+  color: var(--success-green);
+}
+.orange {
+  color: var(--warning-orange);
 }
