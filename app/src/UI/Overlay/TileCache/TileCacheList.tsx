@@ -60,9 +60,13 @@ const TileCacheListRow = ({ metadata }) => {
 const TileCacheList = () => {
   const repositories = useSelector((state) => state.TileCache?.repositories);
   const dispatch = useDispatch();
-
-  if (!repositories) {
-    return null;
+  console.log(repositories);
+  if (!repositories || repositories.length === 0) {
+    return (
+      <section>
+        <p>You don't have any map tiles saved on your device right now.</p>
+      </section>
+    );
   }
   return (
     <section>
