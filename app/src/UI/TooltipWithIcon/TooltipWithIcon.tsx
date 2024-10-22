@@ -18,7 +18,7 @@ const TooltipWithIcon = ({ tooltipText }: PropTypes) => {
       title={tooltipText}
       placement="top-end"
     >
-      <HelpOutline />
+      <HelpOutline color="info" />
     </Tooltip>
   );
 };
