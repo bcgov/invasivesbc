@@ -18,7 +18,7 @@ const TileCacheListRow = ({ metadata }) => {
     dispatch(
       Prompt.confirmation({
         title: 'Delete Cached Map tiles?',
-        prompt: ['Do you want to delete this set of Map tiles?', 'They will no longer be available to use offline'],
+        prompt: ['Do you want to delete this set of map tiles?', 'They will no longer be available for offline use.'],
         callback
       })
     );

@@ -60,14 +60,18 @@ const TileCacheCreationPanel = () => {
   if (!drawnShape) {
     return (
       <section>
-        <p className="emphasis">No area defined</p>
-        <p>You can get started by drawing a shape on the map using the provided draw tools.</p>
+        <p className="emphasis">No area has been defined.</p>
+        <p>To get started, use the drawing tools to create a shape on the map.</p>
       </section>
     );
   }
 
   return (
     <section>
+      <p>
+        Choose the zoom level you want to use for saving map tiles. A higher zoom level allows you to see more detail
+        when you zoom in, but it will also take up more space on your device.
+      </p>
       <p className="shapeDetails">
         <b>Southwest:</b> {drawnShape.minLatitude.toFixed(5)}°, {drawnShape.minLongitude.toFixed(5)}° &nbsp;&nbsp;
         <b>Northeast:</b> {drawnShape.maxLatitude.toFixed(5)}°, {drawnShape.maxLongitude.toFixed(5)}°{' '}

@@ -31,10 +31,10 @@ const TileCachePanel = () => {
         <h3>Create Cached Maps</h3>
         <TileCacheCreationPanel />
         <h3>Download Progress</h3>
-        <p className="subheader">Monitor caches currently being downloaded for use offline.</p>
+        <p className="subheader">Check the status of caches being downloaded for offline access.</p>
         <TileCacheDownloadProgress />
         <h3>Downloaded Maps</h3>
-        <p className="subheader">These caches are currently stored on your device</p>
+        <p className="subheader">These caches are currently saved on your device</p>
         <TileCacheList />
       </div>
     </>
