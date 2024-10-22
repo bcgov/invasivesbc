@@ -1,0 +1,63 @@
+#offline-map-overlay {
+  padding: 1.25rem;
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  h2,
+  h3,
+  h4 {
+    margin-top: 1rem;
+  }
+  h2 {
+    font-size: 24pt;
+    margin-bottom: 0.5rem;
+  }
+  h3 {
+    font-size: 20pt;
+  }
+  h4 {
+    font-size: 18pt;
+  }
+  .emphasis {
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin: 3pt;
+  }
+}
+
+.tile-cache-creation-panel {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  padding: 1rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+section {
+  padding: 1rem;
+  border: 1pt solid lightgray;
+  border-radius: 4pt;
+  min-height: 100pt;
+}
+
+.subheader {
+  margin-top: 0;
+}
+
+.shapeDetails {
+  text-align: left;
+  margin: 10px 0;
+  padding: 1rem;
+  b {
+    font-size: 1.1rem;
+  }
+  p {
+    margin-top: 0;
+    padding: 0;
+  }
+}
