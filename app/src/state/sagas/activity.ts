@@ -215,33 +215,37 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
 /**
  * @desc Handler for starting GPS drawn shapes. Sets geometry to empty array, alerts user feature live.
  */
-function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START(action) {
-  let message: AlertMessage;
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
   const shape = (yield select(selectActivity)).track_me_draw_geo.type;
   const coords = (yield select(selectMap))?.userCoords;
 
-  switch (shape) {
-    case GeoShapes.LineString:
-      message = mappingAlertMessages.trackingStartedLineString;
-      break;
-    case GeoShapes.Polygon:
-      message = mappingAlertMessages.trackingStartedPolygon;
-      break;
-    default:
-      message = mappingAlertMessages.trackingStarted;
-  }
-
-  const initCoords = coords?.hasOwnProperty('long') ? [[coords.long, coords.lat]] : [];
-  const initGeo = {
-    type: 'Feature',
-    properties: {},
-    geometry: {
-      type: GeoShapes.LineString,
-      coordinates: initCoords
+  const message = (() => {
+    switch (shape) {
+      case GeoShapes.LineString:
+        return mappingAlertMessages.trackingStartedLineString;
+      case GeoShapes.Polygon:
+        return mappingAlertMessages.trackingStartedPolygon;
+      default:
+        return mappingAlertMessages.trackingStarted;
     }
-  };
-  yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [initGeo] } });
-  yield put(Alerts.create(message));
+  })();
+
+  const userHasTrackingEnabled = coords?.hasOwnProperty('long');
+  if (userHasTrackingEnabled) {
+    const initGeo = {
+      type: 'Feature',
+      properties: {},
+      geometry: {
+        type: GeoShapes.LineString,
+        coordinates: [[coords.long, coords.lat]]
+      }
+    };
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [initGeo] } });
+    yield put(Alerts.create(message));
+  } else {
+    yield put(GeoTracking.stop());
+    yield put(Alerts.create(mappingAlertMessages.cannotGetUsersCoordinates));
+  }
 }
 
 /**

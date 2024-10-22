@@ -3,6 +3,12 @@ import { AlertSeverity, AlertSubjects } from './alertEnums';
 
 const mappingAlertMessages: Record<string, AlertMessage> = {
   // Errors
+  cannotGetUsersCoordinates: {
+    content: "We couldn't access your location. Please check your location settings and try again!",
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Map,
+    autoClose: 15
+  },
   notWithinBC: {
     content: 'Activity is not within BC',
     severity: AlertSeverity.Error,
