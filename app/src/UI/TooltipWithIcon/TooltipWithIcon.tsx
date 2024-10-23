@@ -16,7 +16,6 @@ const TooltipWithIcon = ({ tooltipText }: PropTypes) => {
       onFocus={setShowTooltip.bind(this, true)}
       onBlur={setShowTooltip.bind(this, false)}
       title={tooltipText}
-      placement="top-end"
     >
       <HelpOutline color="info" />
     </Tooltip>
