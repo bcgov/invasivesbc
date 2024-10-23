@@ -36,15 +36,10 @@
   border-radius: 8pt;
   overflow-y: auto;
   scrollbar-width: none;
-  transition: 5s scrollbar-width;
 
   &:hover,
-  *:hover,
-  &:focus,
-  *:focus,
-  &:active,
-  *:active {
-    scrollbar-width: auto;
+  *:hover {
+    scrollbar-width: thin;
   }
 }
 
