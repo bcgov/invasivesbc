@@ -49,7 +49,7 @@ const LpLayers = ({}: PropTypes) => {
           <ul className="layerList">
             {WmsLayers.map((layer, index) => (
               <LpLayersOption
-                key={layer.id ?? nanoid}
+                key={layer.id ?? nanoid()}
                 onClick={handleWmsClick}
                 layer={layer}
                 lastEntry={index === WmsLayers.length - 1}
@@ -68,7 +68,7 @@ const LpLayers = ({}: PropTypes) => {
           <ul className="layerList">
             {KmlLayers?.map((layer, index) => (
               <LpLayersOption
-                key={layer.id ?? nanoid}
+                key={layer.id ?? nanoid()}
                 onClick={handleKmlClick}
                 layer={layer}
                 lastEntry={index === KmlLayers.length - 1}
@@ -94,7 +94,7 @@ const LpLayers = ({}: PropTypes) => {
           <ul className="layersList">
             {drawnLayers.map((layer, index) => (
               <LpLayersOption
-                key={layer.id ?? nanoid}
+                key={layer.id ?? nanoid()}
                 onClick={handleCustomClick}
                 layer={layer}
                 lastEntry={index === drawnLayers.length - 1}
