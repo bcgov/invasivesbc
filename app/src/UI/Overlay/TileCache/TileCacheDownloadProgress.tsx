@@ -1,12 +1,11 @@
 import { IconButton, LinearProgress } from '@mui/material';
-import { useSelector } from 'utils/use_selector';
-import { shallowEqual, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'utils/use_selector';
+import { shallowEqual } from 'react-redux';
 import { StopCircleOutlined } from '@mui/icons-material';
 import TileCache from 'state/actions/cache/TileCache';
 
 const TileCacheDownloadProgress = () => {
   const handleStopDownload = (repository: string) => {
-    // @ts-ignore
     dispatch(TileCache.deleteRepository(repository));
   };
   const dispatch = useDispatch();
