@@ -1,11 +1,10 @@
 import { useDispatch, useSelector } from 'utils/use_selector';
 import './LpLayers.css';
 import { TOGGLE_CUSTOMIZE_LAYERS, TOGGLE_DRAWN_LAYER, TOGGLE_KML_LAYER, TOGGLE_WMS_LAYER } from 'state/actions';
-import { Layers, LayersOutlined, Settings, SettingsOutlined } from '@mui/icons-material';
+import { Layers, Settings } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
 import LayerPickerItem from '../LayerPickerOptionRow';
 import { nanoid } from '@reduxjs/toolkit';
-import { stringify } from 'querystring';
 
 type PropTypes = {};
 
