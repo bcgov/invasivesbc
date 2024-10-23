@@ -4,30 +4,12 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import './map.css';
+
 import centroid from '@turf/centroid';
 
 // Draw tools:
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { useHistory } from 'react-router-dom';
-import {
-  addClientBoundariesIfNotExists,
-  addServerBoundariesIfNotExists,
-  addWMSLayersIfNotExist,
-  handlePositionTracking,
-  mapInit,
-  rebuildLayersOnTableHashUpdate,
-  refreshClientBoundariesOnToggle,
-  refreshColoursOnColourUpdate,
-  refreshCurrentRecMakers,
-  refreshDrawControls,
-  refreshHighlightedRecord,
-  refreshServerBoundariesOnToggle,
-  refreshVisibilityOnToggleUpdate,
-  refreshWhatsHereFeature,
-  refreshWMSOnToggle,
-  removeDeletedRecordSetLayersOnRecordSetDelete,
-  toggleLayerOnBool
-} from './Helpers';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import {
@@ -40,7 +22,21 @@ import {
   MAP_DEFINITIONS
 } from 'UI/Map2/helpers/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
-import { MOBILE } from 'state/build-time-config';
+import { mapInit } from 'UI/Map2/helpers/map-init';
+import {
+  rebuildLayersOnTableHashUpdate,
+  refreshColoursOnColourUpdate,
+  refreshVisibilityOnToggleUpdate,
+  removeDeletedRecordSetLayersOnRecordSetDelete
+} from 'UI/Map2/helpers/recordset-layers';
+import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/Map2/helpers/wms-layers';
+import { addServerBoundariesIfNotExists, refreshServerBoundariesOnToggle } from 'UI/Map2/helpers/server-boundaries';
+import { addClientBoundariesIfNotExists, refreshClientBoundariesOnToggle } from 'UI/Map2/helpers/client-boundaries';
+import { handlePositionTracking } from 'UI/Map2/helpers/position-tracking';
+import { refreshDrawControls } from 'UI/Map2/helpers/draw-tools';
+import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/Map2/helpers/current-record';
+import { toggleLayerOnBool } from 'UI/Map2/helpers/utility-functions';
+import { refreshWhatsHereFeature } from 'UI/Map2/helpers/whats-here';
 
 /*
 
@@ -48,16 +44,16 @@ import { MOBILE } from 'state/build-time-config';
   I've tried to make it so the handlers can safely run more than once, and no destructing and recreating when not necessary.
 
  */
-export const Map = (props: any) => {
+export const Map = ({ children }) => {
   const { API_BASE } = useSelector((state) => state.Configuration.current);
   const tileCache = useContext(Context);
 
   const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
 
-  const mapContainer = useRef(null);
-  const map: React.MutableRefObject<MapLibre | null> = useRef(null);
-  const MapMode = useSelector((state: any) => state.Map?.MapMode);
+  const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
+  const map: React.MutableRefObject<MapLibre | null> = useRef<MapLibre>(null);
+  const MapMode = useSelector((state) => state.Map.MapMode);
   const dispatch = useDispatch();
   const uHistory = useHistory();
 
@@ -130,13 +126,11 @@ export const Map = (props: any) => {
   useEffect(() => {
     if (!map.current || mapReady) return;
 
-    if (map.current !== null) {
-      map.current.once('idle', function () {
-        if (map.current !== null) {
-          map.current.resize();
-        }
-      });
-    }
+    map.current.once('idle', function () {
+      if (map.current !== null) {
+        map.current.resize();
+      }
+    });
 
     if (map.current.isStyleLoaded()) {
       setMapReady(true);
@@ -172,28 +166,23 @@ export const Map = (props: any) => {
   // Map Init
   useEffect(() => {
     if (map.current || !authInitiated || !map_center) return;
-    mapInit(
-      map,
-      mapContainer,
-      setDraw,
-      dispatch,
-      uHistory,
-      appModeUrl,
-      activityGeo,
-      null,
-      API_BASE,
-      () => {
+
+    mapInit({
+      map: map,
+      mapContainer: mapContainer,
+      api_base: API_BASE,
+      map_center: map_center,
+      PUBLIC_MAP_URL: PUBLIC_MAP_URL,
+      dispatch: dispatch,
+      tileCache: tileCache,
+      getAuthHeaderCallback: () => {
         if (authHeaderRef.current === undefined) {
           console.error('requested access before header received');
           return '';
         }
         return authHeaderRef.current;
-      },
-      PUBLIC_MAP_URL,
-      MOBILE,
-      map_center,
-      tileCache
-    );
+      }
+    });
   }, [authInitiated, map_center]);
 
   // RecordSet Layers:
@@ -352,10 +341,13 @@ export const Map = (props: any) => {
   // Handle draw mode changes, controls, and action dispatching:
   useEffect(() => {
     if (!mapReady) return;
-    refreshDrawControls(
-      map.current,
+    if (!map.current) return;
+    if (!appModeUrl) return;
+
+    refreshDrawControls({
+      map: map.current,
       draw,
-      setDraw,
+      drawSetter: setDraw,
       dispatch,
       uHistory,
       whatsHereToggle,
@@ -363,7 +355,7 @@ export const Map = (props: any) => {
       appModeUrl,
       activityGeo,
       drawingCustomLayer
-    );
+    });
   }, [whatsHereToggle, tileCacheMode, appModeUrl, dispatch, map.current, activityGeo, drawingCustomLayer, mapReady]);
 
   //Current Activity & IAPP Markers
@@ -458,7 +450,7 @@ export const Map = (props: any) => {
         <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
           Loading tiles...
         </div>
-        {props.children}
+        {children}
       </div>
     </div>
   );
