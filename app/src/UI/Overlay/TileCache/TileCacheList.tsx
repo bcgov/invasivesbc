@@ -6,7 +6,7 @@ import { RepositoryStatistics, TileCacheService } from 'utils/tile-cache';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { Delete } from '@mui/icons-material';
 import Prompt from 'state/actions/prompts/Prompt';
-import CacheFileSize from './CacheFileSize';
+import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
 
 const TileCacheListRow = ({ metadata }) => {
   const handleDelete = (id: string) => {
@@ -47,7 +47,7 @@ const TileCacheListRow = ({ metadata }) => {
       <td>{metadata.id}</td>
       <td>{metadata.status}</td>
       <td>{stats?.tileCount}</td>
-      <td>{stats && <CacheFileSize downloadSizeInBytes={stats.sizeInBytes} />}</td>
+      <td>{stats && convertBytesToReadableString(stats.sizeInBytes)}</td>
       <td>
         <IconButton color={'error'} onClick={() => handleDelete(metadata.id)}>
           <Delete />
