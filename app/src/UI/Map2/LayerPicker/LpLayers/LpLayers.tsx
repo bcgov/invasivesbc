@@ -3,7 +3,7 @@ import './LpLayers.css';
 import { TOGGLE_CUSTOMIZE_LAYERS, TOGGLE_DRAWN_LAYER, TOGGLE_KML_LAYER, TOGGLE_WMS_LAYER } from 'state/actions';
 import { Layers, Settings } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
-import LayerPickerItem from '../LayerPickerOptionRow';
+import LpLayersOption from './LpLayersOption';
 import { nanoid } from '@reduxjs/toolkit';
 
 type PropTypes = {};
@@ -48,7 +48,7 @@ const LpLayers = ({}: PropTypes) => {
         {WmsLayers?.length > 0 ? (
           <ul className="layerList">
             {WmsLayers.map((layer, index) => (
-              <LayerPickerItem
+              <LpLayersOption
                 key={layer.id ?? nanoid}
                 onClick={handleWmsClick}
                 layer={layer}
@@ -67,7 +67,7 @@ const LpLayers = ({}: PropTypes) => {
         {KmlLayers?.length > 0 ? (
           <ul className="layerList">
             {KmlLayers?.map((layer, index) => (
-              <LayerPickerItem
+              <LpLayersOption
                 key={layer.id ?? nanoid}
                 onClick={handleKmlClick}
                 layer={layer}
@@ -93,7 +93,7 @@ const LpLayers = ({}: PropTypes) => {
         {drawnLayers?.length > 0 ? (
           <ul className="layersList">
             {drawnLayers.map((layer, index) => (
-              <LayerPickerItem
+              <LpLayersOption
                 key={layer.id ?? nanoid}
                 onClick={handleCustomClick}
                 layer={layer}

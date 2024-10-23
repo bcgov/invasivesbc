@@ -10,7 +10,7 @@ type PropTypes = {
   layer: Layer;
   lastEntry: boolean;
 };
-const LayerPickerItem = ({ onClick, layer, lastEntry }: PropTypes) => {
+const LpLayersOption = ({ onClick, layer, lastEntry }: PropTypes) => {
   return (
     <>
       <li className="lp-layers-item">
@@ -25,4 +25,4 @@ const LayerPickerItem = ({ onClick, layer, lastEntry }: PropTypes) => {
     </>
   );
 };
-export default LayerPickerItem;
+export default LpLayersOption;

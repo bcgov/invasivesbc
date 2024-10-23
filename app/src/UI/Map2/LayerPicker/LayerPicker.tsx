@@ -15,17 +15,16 @@ import LpModules from 'constants/LpModules';
 import LayerPickerPathOption from './LayerPickerPathRow';
 import { ArrowBackIos } from '@mui/icons-material';
 import LpLayers from './LpLayers/LpLayers';
+import LpRecordSet from './LpRecordSet/LpRecordSet';
 
 export const LayerPicker = () => {
   const closeLayerPicker = () => {
     setShowLayerPicker(false);
     setPickerPath(LpModules.Init);
   };
-  const handlePathChange = (val: LpModules) => setPickerPath(val);
   const [pickerPath, setPickerPath] = useState<LpModules>(LpModules.Init);
   const [showAsAccordion, setShowAsAccordion] = useState<boolean>(false);
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
-  const dispatch = useDispatch();
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
 
   if (!isAuth) {
@@ -75,7 +74,7 @@ export const LayerPicker = () => {
             </>
           ),
           [LpModules.DataBcLayers]: <LpLayers />,
-          [LpModules.Recordsets]: <></>,
+          [LpModules.Recordsets]: <LpRecordSet closePicker={closeLayerPicker} />,
           [LpModules.MapTiles]: <></>
         }[pickerPath]
       }
