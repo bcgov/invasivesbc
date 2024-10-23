@@ -34,30 +34,45 @@ export const OfflineDataSyncTable = () => {
         <tbody>
           {Object.entries(serializedActivities).map(([key, value]) => {
             return (
-              <tr key={`${key}`}>
-                <td>
-                  <Button
-                    onClick={() => {
-                      dispatch({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: key } });
-                    }}
-                  >
-                    <FileOpen></FileOpen>
-                  </Button>
-                </td>
-                <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
-                <td>{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
-                <td>{`${moment((value as OfflineActivityRecord).saved_at)}`}</td>
-                <td>{`${(value as OfflineActivityRecord).sync_state}`}</td>
-                <td>
-                  <Button>
-                    <Delete
+              <React.Fragment key={`${key}`}>
+                <tr>
+                  <td>
+                    <Button
                       onClick={() => {
-                        dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: key } });
+                        dispatch({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: key } });
                       }}
-                    />
-                  </Button>
-                </td>
-              </tr>
+                    >
+                      <FileOpen></FileOpen>
+                    </Button>
+                  </td>
+                  <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
+                  <td>{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
+                  <td>{`${moment((value as OfflineActivityRecord).saved_at)}`}</td>
+                  <td>{`${(value as OfflineActivityRecord).sync_state}`}</td>
+                  <td>
+                    <Button>
+                      <Delete
+                        onClick={() => {
+                          dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: key } });
+                        }}
+                      />
+                    </Button>
+                  </td>
+                </tr>
+                {(value as OfflineActivityRecord).sync_state == 'Error' && (
+                  <tr>
+                    <td></td>
+                    <td>
+                      {(value as OfflineActivityRecord).error_detail
+                        ? (value as OfflineActivityRecord).error_detail
+                        : 'Error'}
+                    </td>
+                    <td colSpan={3}>
+                      <pre>{JSON.stringify((value as OfflineActivityRecord).error_object, null, 2)}</pre>
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
             );
           })}
         </tbody>

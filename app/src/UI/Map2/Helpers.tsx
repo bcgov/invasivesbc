@@ -326,8 +326,6 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
   map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
   map.addLayer(circleMarkerZoomedOutLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
-
-  console.dir(map.getLayersOrder());
 };
 
 export const deleteStaleActivityLayer = (map: any, layer: any) => {
