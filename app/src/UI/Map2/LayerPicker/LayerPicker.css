@@ -44,11 +44,12 @@ li > hr {
   top: 0;
   right: 0;
   width: 100%;
-  max-width: 400pt;
+  max-width: 400px;
   height: 100%;
   overflow-y: auto;
-  z-index: 999;
+  z-index: 400;
   box-sizing: border-box;
+  border-left: 1pt solid var(--eigengrau);
 }
 
 #layer-picker-container .path-ul {
