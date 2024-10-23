@@ -1,0 +1,30 @@
+#lp-layers {
+  background-color: var(--bg);
+  text-align: left;
+  padding: 10pt 5pt;
+}
+
+#lp-layers ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  max-height: 275pt;
+  overflow-y: scroll;
+}
+#lp-layers .lp-layers-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  background-color: red;
+  padding: 5pt;
+  &:nth-child(odd) {
+    background-color: green;
+  }
+  & > button {
+    margin-right: 1rem;
+  }
+  p {
+    margin: 0;
+  }
+}
