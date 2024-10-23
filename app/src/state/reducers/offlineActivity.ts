@@ -25,6 +25,8 @@ export interface OfflineActivityRecord {
   short_id: string;
   record_type: string;
   sync_state: OfflineActivitySyncState;
+  error_detail?: string;
+  error_object?: unknown;
 }
 
 export interface OfflineActivityState {
@@ -82,11 +84,24 @@ function createOfflineActivityReducer(
         }
         case ACTIVITY_UPDATE_SYNC_STATE: {
           const found = draftState.serializedActivities[payload.id];
-          if (found)
+          if (found) {
             draftState.serializedActivities[payload.id] = {
               ...found,
               sync_state: payload.sync_state
             };
+
+            if (payload.error_detail) {
+              draftState.serializedActivities[payload.id].error_detail = payload.error_detail;
+            } else {
+              delete draftState.serializedActivities[payload.id].error_detail;
+            }
+            if (payload.error_object) {
+              draftState.serializedActivities[payload.id].error_object = payload.error_object;
+            } else {
+              delete draftState.serializedActivities[payload.id].error_object;
+            }
+          }
+
           draftState.serial = moment.now();
           break;
         }

@@ -1,4 +1,3 @@
-//import { CameraResultType, CameraSource } from '@capacitor/core';
 import { CameraResultType, CameraSource, Camera } from '@capacitor/camera';
 import {
   Box,
@@ -16,9 +15,9 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { AddAPhoto, DeleteForever } from '@mui/icons-material';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Activity from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
+import { useDispatch, useSelector } from 'utils/use_selector';
 
 export interface IPhoto {
   file_name: string;
@@ -37,7 +36,7 @@ export interface IPhotoContainerProps {
 
 const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const dispatch = useDispatch();
-  const media = useSelector((state: any) => state.ActivityPage?.activity?.media);
+  const media = useSelector((state) => state.ActivityPage.activity?.media || []);
 
   const takePhoto = async () => {
     try {

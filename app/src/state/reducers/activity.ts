@@ -101,6 +101,9 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
       } else if (GeoTracking.resume.match(action)) {
         draftState.track_me_draw_geo.drawingShape = true;
       } else if (Activity.Photo.addSuccess.match(action)) {
+        if (draftState.activity.media == undefined) {
+          draftState.activity.media = [];
+        }
         draftState.activity.media.push(action.payload);
       } else if (Activity.Photo.editSuccess.match(action)) {
         draftState.activity.media = action.payload;

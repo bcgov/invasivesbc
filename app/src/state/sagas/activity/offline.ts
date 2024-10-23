@@ -119,7 +119,9 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
           type: ACTIVITY_UPDATE_SYNC_STATE,
           payload: {
             id: hydrated.activity_id,
-            sync_state: OfflineActivitySyncState.ERROR
+            sync_state: OfflineActivitySyncState.ERROR,
+            error_detail: `HTTP response code ${networkReturn.status}`,
+            error_object: networkReturn.data
           }
         });
       }
@@ -128,7 +130,9 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
         type: ACTIVITY_UPDATE_SYNC_STATE,
         payload: {
           id: hydrated.activity_id,
-          sync_state: OfflineActivitySyncState.ERROR
+          sync_state: OfflineActivitySyncState.ERROR,
+          error_detail: 'Caught error when synchronizing',
+          error_object: e
         }
       });
     }
