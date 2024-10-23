@@ -8,16 +8,16 @@ type Layer = {
 type PropTypes = {
   onClick: (val: Layer) => void;
   layer: Layer;
-  lastEntry: boolean;
+  lastChild: boolean;
 };
-const LpLayersOption = ({ onClick, layer, lastEntry }: PropTypes) => {
+const LpLayersOption = ({ onClick, layer, lastChild }: PropTypes) => {
   return (
     <>
       <li className="lp-layers-item">
         <button onClick={() => onClick(layer)}>{layer?.toggle ? <Visibility /> : <VisibilityOff />}</button>
         <p>{layer.title ?? 'Layer name is null'}</p>
       </li>
-      {!lastEntry && (
+      {!lastChild && (
         <li>
           <hr />
         </li>
