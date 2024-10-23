@@ -60,6 +60,7 @@ li > hr {
   border-radius: 18pt;
   overflow: hidden;
 }
+
 #layer-picker-container .path-option {
   display: flex;
   align-items: center;
