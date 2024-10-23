@@ -1,40 +1,47 @@
-import DataSizeUnits from 'constants/dataSizeUnits';
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
+import { useEffect, useState } from 'react';
 
 type PropTypes = {
   downloadSizeInBytes: number;
 };
 /**
- * The general use case is for displaying file sizes given bytes, and programmatically assigning a class to add colour coding
- * It takes advantage of fall-through statements to avoid having to create multiple if-else statements that return the same colour value.
- * Given this is a sliding scale, the switch works appropriately.
+ * The general use case is for displaying file sizes given bytes, and programmatically assigning a class to add colour coding.
  */
 const CacheFileSize = ({ downloadSizeInBytes }: PropTypes) => {
-  const [size, unit] = convertBytesToReadableString(downloadSizeInBytes).split(' ');
-  const parsedSize = parseFloat(size) ?? 0;
-  const className = (() => {
-    switch (true) {
-      case unit === DataSizeUnits.Bytes:
-      case unit === DataSizeUnits.Kibibytes:
-      case unit === DataSizeUnits.Mebibytes && parsedSize < 100:
-        return 'green';
-      case unit === DataSizeUnits.Mebibytes:
-      case unit === DataSizeUnits.Gibibytes && parsedSize <= 2:
-        return 'orange';
-      case unit === DataSizeUnits.Gibibytes && parsedSize <= 10:
-        return 'red';
-      case unit === DataSizeUnits.Gibibytes:
-      case unit === DataSizeUnits.Tebibytes:
-      case unit === DataSizeUnits.Pebibytes:
-        return 'deep-red';
-      default:
-        return '';
+  const readable = convertBytesToReadableString(downloadSizeInBytes);
+
+  const [className, setClassName] = useState('green');
+  const [tooLargeWarning, setTooLargeWarning] = useState(false);
+
+  enum thresholds {
+    GREEN = 400 * 1024 * 1024, // 400 MiB
+    ORANGE = 1536 * 1024 * 1024, // 1.5 GiB
+    RED = 5120 * 1024 * 1024 // 5 GiB
+  }
+
+  useEffect(() => {
+    if (downloadSizeInBytes < thresholds.GREEN) {
+      setClassName('green');
+      setTooLargeWarning(false);
+    } else if (downloadSizeInBytes < thresholds.ORANGE) {
+      setClassName('orange');
+      setTooLargeWarning(false);
+    } else if (downloadSizeInBytes < thresholds.RED) {
+      setClassName('red');
+      setTooLargeWarning(false);
+    } else {
+      setClassName('deep-red');
+      setTooLargeWarning(true);
     }
-  })();
+  }, [downloadSizeInBytes]);
+
   return (
-    <span className={className}>
-      {size} {unit}
-    </span>
+    <>
+      <span className={className}>{readable}</span>
+      {tooLargeWarning && (
+        <span className={'too-large-warning'}> Chosen size is likely to exceed device limitations.</span>
+      )}
+    </>
   );
 };
 
