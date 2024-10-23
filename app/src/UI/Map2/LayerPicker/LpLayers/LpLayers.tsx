@@ -52,7 +52,7 @@ const LpLayers = ({}: PropTypes) => {
                 key={layer.id ?? nanoid()}
                 onClick={handleWmsClick}
                 layer={layer}
-                lastEntry={index === WmsLayers.length - 1}
+                lastChild={index === WmsLayers.length - 1}
               />
             ))}
           </ul>
