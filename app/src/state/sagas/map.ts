@@ -83,6 +83,8 @@ import Activity from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
+import { RECORD_COLOURS } from 'constants/colors';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -858,11 +860,31 @@ function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
   yield put(WhatsHere.activity_rows_request());
 }
 
+function* handle_RECORDSET_ROTATE_COLOUR(action: PayloadAction<string>) {
+  const userSettingsState = yield select(selectUserSettings);
+  const recordSet = userSettingsState.recordSets[action.payload];
+  const currentIndex = RECORD_COLOURS.indexOf(recordSet?.color);
+  const nextIndex = (currentIndex + 1) % RECORD_COLOURS.length;
+  yield put(UserSettings.RecordSet.set({ color: RECORD_COLOURS[nextIndex] }, action.payload));
+}
+
+function* handle_RECORDSET_TOGGLE_LABEL_VISIBILITY(action: PayloadAction<string>) {
+  const userSettingsState = yield select(selectUserSettings);
+  const recordSet = userSettingsState.recordSets[action.payload];
+  yield put(UserSettings.RecordSet.set({ labelToggle: !recordSet?.labelToggle }, action.payload));
+}
+
+function* handle_RECORDSET_TOGGLE_VISIBILITY(action: PayloadAction<string>) {
+  const userSettingsState = yield select(selectUserSettings);
+  const recordSet = userSettingsState.recordSets[action.payload];
+  yield put(UserSettings.RecordSet.set({ mapToggle: !recordSet?.mapToggle }, action.payload));
+}
+
 function* handle_RECORDSET_SET_SORT(action) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSetType = userSettingsState.recordSets?.[action.payload.setID]?.recordSetType;
   const tableFiltersHash = userSettingsState.recordSets?.[action.payload.setID]?.tableFiltersHash;
-  if (recordSetType === 'Activity') {
+  if (recordSetType === RecordSetType.Activity) {
     yield put({
       type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
       payload: { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash }
@@ -895,6 +917,9 @@ function* activitiesPageSaga() {
     takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
 
     takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(UserSettings.RecordSet.cycleColourById, handle_RECORDSET_ROTATE_COLOUR),
+    takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),
+    takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),

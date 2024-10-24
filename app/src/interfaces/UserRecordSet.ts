@@ -4,11 +4,13 @@ export enum RecordSetType {
 }
 export interface UserRecordSet {
   tableFilters?: any;
+  id?: string;
   color: string;
   drawOrder: number;
   expanded: boolean;
   isSelected: boolean;
   mapToggle: boolean;
+  labelToggle: boolean;
   recordSetName: string;
   cached: false;
   cachedTime: '';

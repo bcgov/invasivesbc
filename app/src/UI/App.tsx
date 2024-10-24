@@ -15,7 +15,7 @@ import { IAPPRecord } from './Overlay/IAPP/IAPPRecord';
 import { FormMenuButtons } from './Overlay/FormMenuButtons';
 import { selectGlobalErrorState } from 'state/reducers/error_handler';
 import { ErrorHandler } from './ErrorHandler/ErrorHandler';
-import { LayerPicker } from './Map2/LayerPicker';
+import { LayerPicker } from './Map2/LayerPicker/LayerPicker';
 import NewRecordDialog from './Overlay/Records/NewRecordDialog';
 import { ButtonContainer } from './Map2/Controls/ButtonContainer';
 import CustomizeLayerMenu from './Map2/Controls/CustomizeLayerDialog';

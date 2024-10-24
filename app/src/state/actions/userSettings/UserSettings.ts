@@ -1,4 +1,5 @@
-import { createAction } from '@reduxjs/toolkit';
+import { createAction, nanoid } from '@reduxjs/toolkit';
+import { RECORD_COLOURS } from 'constants/colors';
 import Boundary from 'interfaces/Boundary';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import {
@@ -85,7 +86,8 @@ class Activity {
 class RecordSet {
   private static readonly createDefaultRecordset = (type: RecordSetType): UserRecordSet => ({
     tableFilters: null,
-    color: '#FFFFFF',
+    id: nanoid(),
+    color: RECORD_COLOURS[0],
     drawOrder: 0,
     expanded: false,
     isSelected: false,
@@ -93,6 +95,7 @@ class RecordSet {
     recordSetName: 'New Recordset - ' + type,
     recordSetType: type,
     cached: false,
+    labelToggle: false,
     cachedTime: '',
     offlineMode: false,
     isDeletingCache: false,
@@ -111,7 +114,7 @@ class RecordSet {
   static readonly remove = createAction<string>(USER_SETTINGS_REMOVE_RECORD_SET);
   static readonly set = createAction(
     USER_SETTINGS_SET_RECORDSET,
-    (updatedSet: Record<string, any>, setName: string) => ({
+    <K extends keyof UserRecordSet>(updatedSet: Partial<Record<K, UserRecordSet[K]>>, setName: string) => ({
       payload: {
         updatedSet,
         setName
@@ -119,6 +122,9 @@ class RecordSet {
     })
   );
   static readonly setSelected = createAction<string | null>(USER_SETTINGS_SET_SELECTED_RECORD_REQUEST);
+  static readonly cycleColourById = createAction<string>('UserSettings/RecordSet/rotateColour');
+  static readonly toggleVisibility = createAction<string>('UserSettings/RecordSet/toggleVisibility');
+  static readonly toggleLabelVisibility = createAction<string>('UserSettings/RecordSet/toggleLabelVisibility');
 }
 
 class Map {

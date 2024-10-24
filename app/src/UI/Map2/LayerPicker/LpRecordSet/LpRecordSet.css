@@ -1,0 +1,61 @@
+#lp-record-set {
+  background-color: var(--bg);
+  text-align: left;
+  padding: 0pt 5pt 10pt 5pt;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  h3 {
+    font-size: 14pt;
+    margin-left: 8pt;
+  }
+  h3:first-child {
+    margin-top: 0;
+  }
+}
+#lp-record-set ul {
+  max-height: 265pt;
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  background-color: var(--list-option);
+  border-radius: 8pt;
+  overflow-y: auto;
+  scrollbar-width: none;
+
+  &:hover,
+  *:hover {
+    scrollbar-width: thin;
+  }
+}
+
+#lp-record-set .lp-record-set-option {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  box-sizing: border-box;
+  div {
+    margin-right: 10px;
+  }
+  button {
+    background-color: transparent;
+    border: none;
+    height: 100%;
+    padding: 10px;
+  }
+  button:hover {
+    cursor: pointer;
+  }
+}
+
+.lp-record-set-option > hr {
+  width: 89%;
+  color: var(--bg);
+  background-color: var(--bg);
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  height: 1px;
+  border: none;
+}
