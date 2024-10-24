@@ -17,7 +17,7 @@ export const LayerPicker = () => {
     setPickerPath(LpModules.Init);
   };
   const [pickerPath, setPickerPath] = useState<LpModules>(LpModules.Init);
-  const [showAsAccordion, setShowAsAccordion] = useState<boolean>(false);
+  const [showAsAccordion] = useState<boolean>(false);
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
   const isAuth = useSelector((state: any) => state.Auth?.authenticated);
 
