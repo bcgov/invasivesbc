@@ -340,38 +340,42 @@ export const refreshColoursOnColourUpdate = (storeLayers, map) => {
 
     matchingLayers?.map((mapLayer) => {
       let currentColor = '';
-      switch (true) {
-        case /^recordset-layer-/.test(mapLayer):
-          const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-          if (layer.type === 'Activity') {
-            currentColor = fillPolygonLayerStyle.paint['fill-color'];
-            if (currentColor !== layer.layerState.color && !layer.layerState?.colorScheme) {
-              map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color || FALLBACK_COLOR);
-              map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color || FALLBACK_COLOR);
+      try {
+        switch (true) {
+          case /^recordset-layer-/.test(mapLayer):
+            const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
+            if (layer.type === 'Activity') {
+              currentColor = fillPolygonLayerStyle.paint['fill-color'];
+              if (currentColor !== layer.layerState.color && !layer.layerState?.colorScheme) {
+                map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color || FALLBACK_COLOR);
+                map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color || FALLBACK_COLOR);
+              }
+            } else {
+              currentColor = fillPolygonLayerStyle.paint['circle-color'];
+              if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
+                map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
+              }
             }
-          } else {
-            currentColor = fillPolygonLayerStyle.paint['circle-color'];
+            break;
+          case /polygon-border-/.test(mapLayer):
+            const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
+            currentColor = polyGonBorderLayerStyle.paint['line-color'];
+            if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
+              map.setPaintProperty(mapLayer, 'line-color', layer.layerState.color || FALLBACK_COLOR);
+            }
+            break;
+          case /polygon-circle-/.test(mapLayer):
+            const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
+            currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
             if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
               map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
             }
-          }
-          break;
-        case /polygon-border-/.test(mapLayer):
-          const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-          currentColor = polyGonBorderLayerStyle.paint['line-color'];
-          if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
-            map.setPaintProperty(mapLayer, 'line-color', layer.layerState.color || FALLBACK_COLOR);
-          }
-          break;
-        case /polygon-circle-/.test(mapLayer):
-          const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-          currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
-          if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
-            map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
-          }
-          break;
-        default:
-          'polygon';
+            break;
+          default:
+            'polygon';
+        }
+      } catch (err) {
+        console.error(err);
       }
     });
   });
