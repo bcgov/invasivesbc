@@ -1,7 +1,7 @@
 enum LpModules {
   Init = 'Init',
   DataBcLayers = 'Map Layers',
-  Recordsets = 'Recordsets',
+  Recordsets = 'Recordset Layers',
   MapTiles = 'Offline Map Tiles'
 }
 
