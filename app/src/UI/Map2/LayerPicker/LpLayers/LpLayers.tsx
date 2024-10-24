@@ -6,8 +6,6 @@ import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
 import LpLayersOption from './LpLayersOption';
 import { nanoid } from '@reduxjs/toolkit';
 
-type PropTypes = {};
-
 type EmptyListProps = {
   text: string;
 };
@@ -16,7 +14,7 @@ const EmptyCollection = ({ text }: EmptyListProps) => (
     <p>{text}</p>
   </div>
 );
-const LpLayers = ({}: PropTypes) => {
+const LpLayers = () => {
   const handleWmsClick = (layer) => {
     dispatch({ type: TOGGLE_WMS_LAYER, payload: { layer } });
   };
@@ -71,7 +69,7 @@ const LpLayers = ({}: PropTypes) => {
                 key={layer.id ?? nanoid()}
                 onClick={handleKmlClick}
                 layer={layer}
-                lastEntry={index === KmlLayers.length - 1}
+                lastChild={index === KmlLayers.length - 1}
               />
             ))}
           </ul>
@@ -97,7 +95,7 @@ const LpLayers = ({}: PropTypes) => {
                 key={layer.id ?? nanoid()}
                 onClick={handleCustomClick}
                 layer={layer}
-                lastEntry={index === drawnLayers.length - 1}
+                lastChild={index === drawnLayers.length - 1}
               />
             ))}
           </ul>
