@@ -14,6 +14,14 @@ const newsItems: NewsArticle[] = [
   },
   */
   {
+    title: 'Layer Picker Update',
+    date: new Date('October 24, 2024'),
+    content: [
+      'The LayerPicker in InvasivesBC has been updated. Along with a new look, users can now enable Recordset layers directly from it. These are some of the initial changes for upcoming features.'
+    ],
+    subject: NewsSubject.Update
+  },
+  {
     title: 'Feature: "Record History"',
     date: new Date('October 8, 2024'),
     content: [
