@@ -871,8 +871,7 @@ function* handle_RECORDSET_ROTATE_COLOUR(action: PayloadAction<string>) {
 function* handle_RECORDSET_TOGGLE_LABEL_VISIBILITY(action: PayloadAction<string>) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSet = userSettingsState.recordSets[action.payload];
-  // @ts-ignore
-  yield put(UserSettings.RecordSet.set({ labelToggle: !recordSet?.labelToggle ?? false }, action.payload));
+  yield put(UserSettings.RecordSet.set({ labelToggle: !recordSet?.labelToggle }, action.payload));
 }
 
 function* handle_RECORDSET_TOGGLE_VISIBILITY(action: PayloadAction<string>) {

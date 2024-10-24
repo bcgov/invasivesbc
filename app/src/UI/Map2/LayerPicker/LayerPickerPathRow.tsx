@@ -17,11 +17,13 @@ const LayerPickerPathOption = ({ clickHandler, pathVal }: PropTypes) => {
     }
   })();
   return (
-    <li className="path-option" onClick={() => clickHandler(pathVal)}>
-      <div>
-        {icon} {pathVal}
-      </div>
-      <ArrowForwardIos color="disabled" />
+    <li className="path-option">
+      <button onClick={() => clickHandler(pathVal)}>
+        <div>
+          {icon} {pathVal}
+        </div>
+        <ArrowForwardIos color="disabled" />
+      </button>
     </li>
   );
 };
