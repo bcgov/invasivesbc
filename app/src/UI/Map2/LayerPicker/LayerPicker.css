@@ -104,3 +104,13 @@ li > hr {
     align-items: center;
   }
 }
+
+#layer-picker-container .guide {
+  display: flex;
+  flex-direction: column;
+  padding: 0 5%;
+  font-size: 12pt;
+  justify-content: flex-start;
+  align-items: left;
+  text-align: left;
+}
