@@ -27,18 +27,6 @@ import Prompt from 'state/actions/prompts/Prompt';
 
 export const Records = () => {
   const DEFAULT_RECORD_TYPES = ['All InvasivesBC Activities', 'All IAPP Records', 'My Drafts'];
-  const RECORD_COLOURS = [
-    '#FFFFFF',
-    '#2A81CB',
-    '#FFD326',
-    '#CB2B3E',
-    '#2AAD27',
-    '#CB8427',
-    '#CAC428',
-    '#9C2BCB',
-    '#7B7B7B',
-    '#3D3D3D'
-  ];
   const activitiesGeoJSONState = useSelector((state) => state.Map?.activitiesGeoJSONDict);
   const CONFIGURATION_IS_MOBILE = useSelector((state) => state.Configuration?.current?.MOBILE);
   const isIAPPGeoJSONLoaded = useSelector((state) => state.Map?.IAPPGeoJSONDict !== undefined);
@@ -74,19 +62,17 @@ export const Records = () => {
   //Record set on click handlers:
   const onClickToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    dispatch(UserSettings.RecordSet.set({ labelToggle: !recordSets?.[set]?.labelToggle }, set));
+    dispatch(UserSettings.RecordSet.toggleLabelVisibility(set));
   };
 
   const onClickToggleLayer = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    dispatch(UserSettings.RecordSet.set({ mapToggle: !recordSets?.[set]?.mapToggle }, set));
+    dispatch(UserSettings.RecordSet.toggleVisibility(set));
   };
 
   const onClickCycleColour = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    const currentIndex = RECORD_COLOURS.indexOf(recordSets?.[set]?.color);
-    const nextIndex = (currentIndex + 1) % RECORD_COLOURS.length;
-    dispatch(UserSettings.RecordSet.set({ color: RECORD_COLOURS[nextIndex] }, set));
+    dispatch(UserSettings.RecordSet.cycleColourById(set));
   };
 
   const onClickDeleteRecordSet = (set: string, e: MouseEvent<HTMLButtonElement>) => {
