@@ -1,5 +1,4 @@
-import { ArrowForwardIos, Folder, Map, Save } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { ArrowForwardIos, ManageSearch, Map, Save } from '@mui/icons-material';
 import LpModules from 'constants/LpModules';
 
 type PropTypes = {
@@ -12,7 +11,7 @@ const LayerPickerPathOption = ({ clickHandler, pathVal }: PropTypes) => {
       case LpModules.DataBcLayers:
         return <Map />;
       case LpModules.Recordsets:
-        return <Folder />;
+        return <ManageSearch />;
       case LpModules.MapTiles:
         return <Save />;
     }
