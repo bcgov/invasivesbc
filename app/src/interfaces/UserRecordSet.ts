@@ -10,6 +10,7 @@ export interface UserRecordSet {
   expanded: boolean;
   isSelected: boolean;
   mapToggle: boolean;
+  labelToggle: boolean;
   recordSetName: string;
   cached: false;
   cachedTime: '';
