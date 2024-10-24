@@ -1,11 +1,5 @@
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  TOGGLE_CUSTOMIZE_LAYERS,
-  TOGGLE_DRAWN_LAYER,
-  TOGGLE_KML_LAYER,
-  TOGGLE_LAYER_PICKER_OPEN,
-  TOGGLE_WMS_LAYER
-} from 'state/actions';
+import { useSelector } from 'react-redux';
+import { MOBILE } from 'state/build-time-config';
 import LayersIcon from '@mui/icons-material/Layers';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton } from '@mui/material';
@@ -64,10 +58,14 @@ export const LayerPicker = () => {
                   <li>
                     <hr />
                   </li>
-                  <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.MapTiles} />
-                  <li>
-                    <hr />
-                  </li>
+                  {MOBILE && (
+                    <>
+                      <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.MapTiles} />
+                      <li>
+                        <hr />
+                      </li>
+                    </>
+                  )}
                   <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.Recordsets} />
                 </ul>
               )}
