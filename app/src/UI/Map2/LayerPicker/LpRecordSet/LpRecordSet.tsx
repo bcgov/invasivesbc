@@ -1,56 +1,72 @@
 import { Link } from 'react-router-dom';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import './LpRecordSet.css';
 import LpRecordSetOption from './LpRecordSetOption';
 import { nanoid } from '@reduxjs/toolkit';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import { UserRecordSet } from 'interfaces/UserRecordSet';
 
 type PropTypes = {
   closePicker: () => void;
 };
 
 const LpRecordSet = ({ closePicker }: PropTypes) => {
-  const DEFAULT_RECORD_SETS = ['1', '2', '3'];
+  const DEFAULT_RECORD_TYPES = ['1', '2', '3'];
   const handleGoToRecords = () => {
     closePicker();
   };
+  const handleToggleVisibility = (id: string) => dispatch(UserSettings.RecordSet.toggleVisibility(id));
+  const handleCycleColour = (id: string) => dispatch(UserSettings.RecordSet.cycleColourById(id));
+  const handleToggleLabels = (id: string) => dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
-  const defaultRecordSets: Record<string, any>[] = [];
-  const customRecordSets: Record<string, any>[] = [];
+  const defaultRecordSets: UserRecordSet[] = [];
+  const customRecordSets: UserRecordSet[] = [];
+
+  const dispatch = useDispatch();
   Object.keys(recordSets).forEach((recordSet) => {
-    if (DEFAULT_RECORD_SETS.includes(recordSet)) {
-      defaultRecordSets.push(recordSets[recordSet]);
+    if (DEFAULT_RECORD_TYPES.includes(recordSet)) {
+      defaultRecordSets.push({ ...recordSets[recordSet], id: recordSet });
     } else {
-      customRecordSets.push(recordSets[recordSet]);
+      customRecordSets.push({ ...recordSets[recordSet], id: recordSet });
     }
   });
-  console.log(customRecordSets);
+
   return (
     <div id="lp-record-set">
       <h3>Default Recordsets</h3>
-      <ul className="">
+      <ul>
         {defaultRecordSets.map((recordSet, index) => (
           <LpRecordSetOption
             canColour={false}
+            cycleColour={handleCycleColour}
             key={nanoid()}
+            lastChild={index === defaultRecordSets.length - 1}
             recordSet={recordSet}
-            lastChild={Object.keys(recordSets).length - 1 === index}
+            toggleLabelVisibility={handleToggleLabels}
+            toggleVisibility={handleToggleVisibility}
           />
         ))}
       </ul>
       <h3>Custom Recordsets</h3>
-      <ul className="">
+      <ul>
         {customRecordSets.map((recordSet, index) => (
           <LpRecordSetOption
-            canColour={false}
+            canColour={true}
+            cycleColour={handleCycleColour}
             key={nanoid()}
+            lastChild={index === customRecordSets.length - 1}
             recordSet={recordSet}
-            lastChild={Object.keys(recordSets).length - 1 === index}
+            toggleLabelVisibility={handleToggleLabels}
+            toggleVisibility={handleToggleVisibility}
           />
         ))}
       </ul>
-      <Link to="/Records" onClick={handleGoToRecords}>
-        Go To Records
-      </Link>
+      <div className="guide">
+        <p>You can modify or create new Recordsets from the Records page. </p>
+        <Link to="/Records" onClick={handleGoToRecords}>
+          Go To Records
+        </Link>
+      </div>
     </div>
   );
 };
