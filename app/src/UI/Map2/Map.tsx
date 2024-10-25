@@ -53,6 +53,7 @@ export const Map = ({ children }) => {
 
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
   const map: React.MutableRefObject<MapLibre | null> = useRef<MapLibre>(null);
+
   const MapMode = useSelector((state) => state.Map.MapMode);
   const dispatch = useDispatch();
   const uHistory = useHistory();
