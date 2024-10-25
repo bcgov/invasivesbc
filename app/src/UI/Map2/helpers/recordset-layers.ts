@@ -1,6 +1,7 @@
 import maplibregl from 'maplibre-gl';
 import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Map2/helpers/layer-definitions';
 import { FALLBACK_COLOR } from 'UI/Map2/helpers/constants';
+import { safelySetPaintProperty } from 'UI/Map2/helpers/utility-functions';
 
 export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
@@ -103,7 +104,7 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
   });
 };
 
-export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
+export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
 
   if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
@@ -111,7 +112,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
   }
 
   const getPaintBySchemeOrColor = (layer: any) => {
-    if (layer.layerState.colorScheme) {
+    if (layer?.layerState?.colorScheme) {
       return [
         'match',
         ['get', 'type'],
@@ -128,7 +129,7 @@ export const createActivityLayer = (map: any, layer: any, mode, API_BASE) => {
         layer.layerState.color || FALLBACK_COLOR
       ];
     } else {
-      return layer.layerState.color || FALLBACK_COLOR;
+      return layer?.layerState?.color || FALLBACK_COLOR;
     }
   };
 
@@ -272,7 +273,7 @@ export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: unknown) =>
   });
 };
 
-export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE) => {
+export const rebuildLayersOnTableHashUpdate = (storeLayers, map: maplibregl.Map, mode, API_BASE) => {
   /*
       First need to delete the layers who's record set was deleted altogether:
 
@@ -331,53 +332,57 @@ export const rebuildLayersOnTableHashUpdate = (storeLayers, map, mode, API_BASE)
   });
 };
 
-export const refreshColoursOnColourUpdate = (storeLayers, map) => {
-  storeLayers.map((layer) => {
+export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) => {
+  for (const layer of storeLayers) {
     const layerSearchString = layer.recordSetID + '-hash-' + layer.tableFiltersHash;
     const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => {
       return mapLayer.includes(layerSearchString);
     });
 
-    matchingLayers?.map((mapLayer) => {
+    for (const mapLayer of matchingLayers) {
       let currentColor = '';
-      switch (true) {
-        case /^recordset-layer-/.test(mapLayer):
-          const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-          if (layer.type === 'Activity') {
+
+      if (/^recordset-layer-/.test(mapLayer)) {
+        const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
+        if (layer.type === 'Activity') {
+          if (fillPolygonLayerStyle && fillPolygonLayerStyle.paint) {
             currentColor = fillPolygonLayerStyle.paint['fill-color'];
-            if (currentColor !== layer.layerState.color && !layer.layerState?.colorScheme) {
-              map.setPaintProperty(mapLayer, 'fill-color', layer.layerState.color || FALLBACK_COLOR);
-              map.setPaintProperty(mapLayer, 'fill-outline-color', layer.layerState.color || FALLBACK_COLOR);
-            }
-          } else {
+          }
+
+          if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
+            safelySetPaintProperty(map, mapLayer, 'fill-color', layer.layerState?.color || FALLBACK_COLOR);
+            safelySetPaintProperty(map, mapLayer, 'fill-outline-color', layer.layerState?.color || FALLBACK_COLOR);
+          }
+        } else {
+          if (fillPolygonLayerStyle && fillPolygonLayerStyle.paint) {
             currentColor = fillPolygonLayerStyle.paint['circle-color'];
-            if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
-              map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
-            }
           }
-          break;
-        case /polygon-border-/.test(mapLayer):
-          const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-          currentColor = polyGonBorderLayerStyle.paint['line-color'];
-          if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
-            map.setPaintProperty(mapLayer, 'line-color', layer.layerState.color || FALLBACK_COLOR);
+          if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
+            safelySetPaintProperty(map, mapLayer, 'circle-color', layer.layerState?.color || FALLBACK_COLOR);
           }
-          break;
-        case /polygon-circle-/.test(mapLayer):
-          const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
+        }
+      } else if (/polygon-border-/.test(mapLayer)) {
+        const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
+        if (polyGonBorderLayerStyle && polyGonBorderLayerStyle.paint) {
+          currentColor = polyGonBorderLayerStyle.paint['circle-color'];
+        }
+        if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
+          safelySetPaintProperty(map, mapLayer, 'line-color', layer.layerState?.color || FALLBACK_COLOR);
+        }
+      } else if (/polygon-circle-/.test(mapLayer)) {
+        const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
+        if (activityCircleMarkerLayerStyle && activityCircleMarkerLayerStyle.paint) {
           currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
-          if (currentColor !== layer.layerState.color && !layer.layerState.colorScheme) {
-            map.setPaintProperty(mapLayer, 'circle-color', layer.layerState.color || FALLBACK_COLOR);
-          }
-          break;
-        default:
-          'polygon';
+        }
+        if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
+          safelySetPaintProperty(map, mapLayer, 'circle-color', layer.layerState?.color || FALLBACK_COLOR);
+        }
       }
-    });
-  });
+    }
+  }
 };
 
-export const refreshVisibilityOnToggleUpdate = (storeLayers, map) => {
+export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map) => {
   storeLayers.map((layer) => {
     const layerSearchString = layer.recordSetID + '-hash-' + layer.tableFiltersHash;
     const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => {

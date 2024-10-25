@@ -1,3 +1,5 @@
+import maplibregl from 'maplibre-gl';
+
 export const toggleLayerOnBool = (map, layer, boolToggle) => {
   if (!map) return;
 
@@ -12,3 +14,15 @@ export const toggleLayerOnBool = (map, layer, boolToggle) => {
     map.setLayoutProperty(layer, 'visibility', 'none');
   }
 };
+
+export function safelySetPaintProperty(map: maplibregl.Map, mapLayer: string, propertyName: string, value: string) {
+  if (map.getPaintProperty(mapLayer, propertyName)) {
+    try {
+      map.setPaintProperty(mapLayer, propertyName, value);
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    console.error(`map layer ${mapLayer} does not have paint property ${propertyName}`);
+  }
+}
