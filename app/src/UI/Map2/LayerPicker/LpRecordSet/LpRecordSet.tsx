@@ -2,7 +2,6 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import './LpRecordSet.css';
 import LpRecordSetOption from './LpRecordSetOption';
-import { nanoid } from '@reduxjs/toolkit';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 
@@ -39,7 +38,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
           <LpRecordSetOption
             canColour={false}
             cycleColour={handleCycleColour}
-            key={nanoid()}
+            key={recordSet.id}
             lastChild={index === defaultRecordSets.length - 1}
             recordSet={recordSet}
             toggleLabelVisibility={handleToggleLabels}
@@ -53,7 +52,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
           <LpRecordSetOption
             canColour={true}
             cycleColour={handleCycleColour}
-            key={nanoid()}
+            key={recordSet.id}
             lastChild={index === customRecordSets.length - 1}
             recordSet={recordSet}
             toggleLabelVisibility={handleToggleLabels}
