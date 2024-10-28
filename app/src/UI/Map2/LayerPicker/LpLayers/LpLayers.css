@@ -26,6 +26,7 @@
     font-weight: normal;
   }
 }
+
 #lp-layers ul {
   max-height: 265pt;
   list-style-type: none;
@@ -67,6 +68,7 @@
     text-wrap: wrap;
   }
 }
+
 #lp-layers .control {
   display: flex;
   width: 100%;
@@ -74,6 +76,7 @@
   margin-bottom: 10px;
   justify-content: flex-end;
 }
+
 .create-custom-layers {
   border: 1pt solid var(--bc-blue);
   padding: 5pt 10pt;
