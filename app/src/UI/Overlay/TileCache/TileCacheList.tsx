@@ -4,11 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { RepositoryStatistics, TileCacheService } from 'utils/tile-cache';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
-import { Delete } from '@mui/icons-material';
+import { Delete, Visibility, VisibilityOff } from '@mui/icons-material';
 import Prompt from 'state/actions/prompts/Prompt';
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
-const TileCacheListRow = ({ metadata }) => {
+const TileCacheListRow = ({ metadata, visible }) => {
+  const handleToggleVisibility = (id: string) => dispatch(UserSettings.Map.toggleOverlay(id));
   const handleDelete = (id: string) => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
@@ -44,6 +46,13 @@ const TileCacheListRow = ({ metadata }) => {
 
   return (
     <tr>
+      <td>
+        {metadata.status === 'READY' && (
+          <button className="visibility-button" onClick={handleToggleVisibility.bind(this, metadata.id)}>
+            {visible ? <Visibility /> : <VisibilityOff />}
+          </button>
+        )}
+      </td>
       <td>{metadata.id}</td>
       <td>{metadata.status}</td>
       <td>{stats?.tileCount}</td>
@@ -59,8 +68,8 @@ const TileCacheListRow = ({ metadata }) => {
 
 const TileCacheList = () => {
   const repositories = useSelector((state) => state.TileCache?.repositories);
+  const visibleLayers = useSelector((state) => state.Map.enabledOverlayLayers) ?? [];
   const dispatch = useDispatch();
-  console.log(repositories);
   if (!repositories || repositories.length === 0) {
     return (
       <section>
@@ -72,6 +81,7 @@ const TileCacheList = () => {
     <section>
       <table>
         <thead>
+          <th></th>
           <th>Cache ID</th>
           <th>Status</th>
           <th>Tile Count</th>
@@ -80,10 +90,13 @@ const TileCacheList = () => {
         </thead>
         <tbody>
           {repositories.map((r) => (
-            <TileCacheListRow key={r.id} metadata={r} />
+            <TileCacheListRow key={r.id} metadata={r} visible={visibleLayers.includes(r?.id)} />
           ))}
         </tbody>
       </table>
+      <p>
+        You can toggle the visibility of cached map tiles here, or from the <b>Layer Picker</b>
+      </p>
       <div className="control">
         <Button variant={'contained'} onClick={() => dispatch(TileCache.repositoryList())}>
           Refresh Table

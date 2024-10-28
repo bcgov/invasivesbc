@@ -69,6 +69,7 @@ section table {
   td:first-child,
   th:first-child {
     padding-left: 1rem;
+    width: 40pt;
   }
 
   td:last-child,
@@ -130,6 +131,13 @@ section .control {
   padding: 0;
 }
 
+#offline-map-overlay .visibility-button {
+  border: none;
+  background-color: transparent;
+  &:hover {
+    cursor: pointer;
+  }
+}
 @media screen and (width >= 768px) {
   #offline-map-overlay,
   #offline-map-overlay section,
