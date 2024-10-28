@@ -18,7 +18,6 @@ const LpOfflineMaps = ({ closePicker }: PropTypes) => {
   const visibleLayers = useSelector((state) => state.Map.enabledOverlayLayers) ?? [];
   const repositories = useSelector((state) => state.TileCache?.repositories) ?? [];
   const dispatch = useDispatch();
-
   return (
     <div id="lp-offline-maps">
       <h3>
@@ -31,15 +30,17 @@ const LpOfflineMaps = ({ closePicker }: PropTypes) => {
         </div>
       ) : (
         <ul>
-          {repositories.map((item, index) => (
-            <LpOfflineMapsOptions
-              id={item?.id ?? 'No Id provided'}
-              key={item.id}
-              lastChild={index === repositories.length - 1}
-              layerVisible={visibleLayers.includes(item?.id)}
-              onClick={onCacheClick}
-            />
-          ))}
+          {repositories
+            .filter((item) => item.status === 'READY')
+            .map((item, index) => (
+              <LpOfflineMapsOptions
+                id={item?.id ?? 'No Id provided'}
+                key={item.id}
+                lastChild={index === repositories.length - 1}
+                layerVisible={visibleLayers.includes(item?.id)}
+                onClick={onCacheClick}
+              />
+            ))}
         </ul>
       )}
       <div className="guide">
