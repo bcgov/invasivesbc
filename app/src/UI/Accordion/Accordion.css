@@ -1,0 +1,28 @@
+.accordion-control {
+  height: 48px;
+  width: 100%;
+  font-size: 16pt;
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  box-sizing: border-box;
+  border: none;
+  border-bottom: 1pt solid lightgray;
+  background-color: white;
+  padding: 10pt;
+
+  span {
+    margin-right: 1rem;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+  svg:last-child {
+    margin-left: auto;
+  }
+}
+
+.accordion-panel {
+  margin-top: 10pt;
+}
