@@ -10,6 +10,7 @@ import CacheFileSize from './CacheFileSize';
 const APPROX_SIZE_PER_TILE = 15 * 1024;
 
 const TileCacheCreationPanel = () => {
+  const DOWNLOAD_LIMIT = 5 * 1024 * 1024 * 1024; // 5 GiB
   const boundingBoxToolTipText =
     'The latitude and longitude values for a bounding box represent the corners of a rectangular area on a map. The two pairs of coordinates show the southwest and northeast corners, defining the space that contains the object or area of interest.';
   const drawnShape = useSelector((state) => state.TileCache?.drawnShapeBounds);
@@ -45,7 +46,7 @@ const TileCacheCreationPanel = () => {
   const [zoom, setZoom] = useState<number>(availableZooms[0].value);
   const [scale, setScale] = useState<string>(availableZooms[0].scale);
   const [tileCount, setTileCount] = useState<number | null>(null);
-  const [approximateDownloadSize, setApproximateDownloadSize] = useState<number | null>(null);
+  const [approximateDownloadSize, setApproximateDownloadSize] = useState<number>();
 
   useEffect(() => {
     if (!drawnShape) {
@@ -106,10 +107,8 @@ const TileCacheCreationPanel = () => {
       <div className="control">
         <Button
           variant={'contained'}
+          disabled={!drawnShape || !approximateDownloadSize || approximateDownloadSize > DOWNLOAD_LIMIT}
           onClick={() => {
-            if (!drawnShape) {
-              return;
-            }
             dispatch(
               TileCache.requestCaching({
                 description: '',
