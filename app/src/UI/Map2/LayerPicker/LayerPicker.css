@@ -40,16 +40,21 @@ li > hr {
   position: absolute;
   display: flex;
   flex-direction: column;
+  justify-content: flex-start;
+  margin-bottom: auto;
   background-color: var(--bg);
   top: 0;
   right: 0;
   width: 100%;
   max-width: 400px;
   height: 100%;
-  overflow-y: auto;
   z-index: 400;
   box-sizing: border-box;
   border-left: 1pt solid var(--eigengrau);
+  .lp-content {
+    height: 100%;
+    overflow-y: auto;
+  }
 }
 
 #layer-picker-container .path-ul {
