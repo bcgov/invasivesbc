@@ -49,9 +49,6 @@
   justify-content: flex-start;
   box-sizing: border-box;
   padding: 5pt;
-  &:nth-child(odd) {
-    background-color: var(--list-option);
-  }
   button {
     margin-right: 1rem;
     border: none;
@@ -67,6 +64,7 @@
   }
   p {
     margin: 0;
+    text-wrap: wrap;
   }
 }
 #lp-layers .control {
