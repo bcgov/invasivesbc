@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux';
 import { MOBILE } from 'state/build-time-config';
 import LayersIcon from '@mui/icons-material/Layers';
 import CloseIcon from '@mui/icons-material/Close';
@@ -12,16 +11,20 @@ import LpLayers from './LpLayers/LpLayers';
 import LpRecordSet from './LpRecordSet/LpRecordSet';
 import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
 import Accordion from 'UI/Accordion/Accordion';
+import { useDispatch, useSelector } from 'utils/use_selector';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 export const LayerPicker = () => {
   const closeLayerPicker = () => {
     setShowLayerPicker(false);
     setPickerPath(LpModules.Init);
   };
+  const toggleLayerPickerAccordion = () => dispatch(UserSettings.toggleLayerPickerAccordion());
   const [pickerPath, setPickerPath] = useState<LpModules>(LpModules.Init);
-  const [showAsAccordion, setShowAsAccordion] = useState<boolean>(false);
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
-  const isAuth = useSelector((state: any) => state.Auth?.authenticated);
+  const isAuth = useSelector((state) => state.Auth.authenticated);
+  const accordionMode = useSelector((state) => state.UserSettings.layerPickerIsAccordion);
+  const dispatch = useDispatch();
 
   if (!isAuth) {
     return;
@@ -47,7 +50,7 @@ export const LayerPicker = () => {
           ) : (
             <>
               <Menu />
-              <Switch checked={showAsAccordion} onChange={() => setShowAsAccordion((prev) => !prev)} />
+              <Switch checked={accordionMode} onChange={toggleLayerPickerAccordion} />
               <Expand />
             </>
           )}
@@ -61,7 +64,7 @@ export const LayerPicker = () => {
           {
             [LpModules.Init]: (
               <>
-                {showAsAccordion ? (
+                {accordionMode ? (
                   <>
                     <Accordion icon={'map'} title={LpModules.DataBcLayers}>
                       <LpLayers />
