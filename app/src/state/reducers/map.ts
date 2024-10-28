@@ -28,7 +28,6 @@ import {
   MAP_TOGGLE_ACCURACY,
   MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_LEGENDS,
-  MAP_TOGGLE_OVERLAY,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
@@ -507,6 +506,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       } else if (UserSettings.KML.deleteSuccess.match(action)) {
         const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload);
         draftState.serverBoundaries.splice(index, 1);
+      } else if (UserSettings.Map.toggleOverlay.match(action)) {
+        if (draftState.enabledOverlayLayers.includes(action.payload)) {
+          draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(action.payload), 1);
+        } else {
+          draftState.enabledOverlayLayers.push(action.payload);
+        }
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         Object.keys(action.payload.recordSets).map((setID) => {
           let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
@@ -971,14 +976,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case MAP_CHOOSE_BASEMAP: {
             draftState.baseMapLayer = action.payload;
-            break;
-          }
-          case MAP_TOGGLE_OVERLAY: {
-            if (draftState.enabledOverlayLayers.includes(action.payload)) {
-              draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(action.payload), 1);
-            } else {
-              draftState.enabledOverlayLayers.push(action.payload);
-            }
             break;
           }
           case MAP_UPDATE_AVAILABLE_BASEMAPS: {
