@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'utils/use_selector';
 import './LpOfflineMaps.css';
 import LpOfflineMapsOptions from './LpOfflineMapsOption';
-import UserSettings from 'state/actions/userSettings/UserSettings';
 import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
+import MapActions from 'state/actions/map';
 
 type PropTypes = {
   closePicker: () => void;
@@ -13,7 +13,7 @@ const LpOfflineMaps = ({ closePicker }: PropTypes) => {
   const cachedToolTipText =
     'Use this option to show or hide the map tiles you’ve previously downloaded to your device.';
   const onCacheClick = (id: string) => {
-    dispatch(UserSettings.Map.toggleOverlay(id));
+    dispatch(MapActions.toggleOverlay(id));
   };
   const visibleLayers = useSelector((state) => state.Map.enabledOverlayLayers) ?? [];
   const repositories = useSelector((state) => state.TileCache?.repositories) ?? [];
