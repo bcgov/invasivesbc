@@ -69,11 +69,11 @@ export const LayerPicker = () => {
                     <Accordion icon={'map'} title={LpModules.DataBcLayers}>
                       <LpLayers />
                     </Accordion>
-                    <Accordion icon={'manage_search'} title={LpModules.Recordsets}>
+                    <Accordion icon={'save'} title={LpModules.Recordsets}>
                       <LpRecordSet closePicker={closeLayerPicker} />
                     </Accordion>
                     {MOBILE && (
-                      <Accordion icon="save" title={LpModules.MapTiles}>
+                      <Accordion icon="manage_search" title={LpModules.MapTiles}>
                         <LpOfflineMaps closePicker={closeLayerPicker} />
                       </Accordion>
                     )}
