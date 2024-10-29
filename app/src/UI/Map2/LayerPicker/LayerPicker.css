@@ -57,6 +57,9 @@ li > hr {
   }
 }
 
+#layer-picker-container .small {
+  font-size: 12pt;
+}
 #layer-picker-container .path-ul {
   list-style-type: none;
   padding: 0;

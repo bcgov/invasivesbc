@@ -49,9 +49,8 @@ export const LayerPicker = () => {
             </>
           ) : (
             <>
-              <Menu />
               <Switch checked={accordionMode} onChange={toggleLayerPickerAccordion} />
-              <Expand />
+              <span className="small">Expand</span>
             </>
           )}
         </div>
