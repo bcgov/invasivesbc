@@ -6,7 +6,7 @@ import './LayerPicker.css';
 import { useState } from 'react';
 import LpModules from 'constants/LpModules';
 import LayerPickerPathOption from './LayerPickerPathRow';
-import { ArrowBackIos, Expand, Menu } from '@mui/icons-material';
+import { ArrowBackIos } from '@mui/icons-material';
 import LpLayers from './LpLayers/LpLayers';
 import LpRecordSet from './LpRecordSet/LpRecordSet';
 import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
