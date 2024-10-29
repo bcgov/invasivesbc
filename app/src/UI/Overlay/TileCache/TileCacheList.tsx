@@ -73,7 +73,7 @@ const TileCacheList = () => {
   if (!repositories || repositories.length === 0) {
     return (
       <section>
-        <p>You don't have any map tiles saved on your device right now.</p>
+        <p>You don't have any map areas saved on your device right now.</p>
       </section>
     );
   }

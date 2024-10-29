@@ -26,7 +26,7 @@ const LpOfflineMaps = ({ closePicker }: PropTypes) => {
       <p className="lp-subheader"></p>
       {repositories.length === 0 ? (
         <div className="lp-offline-maps-empty-collection">
-          <p>You don't have any Maptiles Cached</p>
+          <p>You don't have any map areas cached</p>
         </div>
       ) : (
         <ul>
