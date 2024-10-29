@@ -115,9 +115,26 @@ body {
   --success-green: #357a38;
   --warning-orange: #ffc107;
   --bc-yellow: #fcba19;
+  --blue-primary: #2196f3;
   --eigengrau: #16161d;
 }
 
+/* Color Classes */
+.deep-red {
+  color: var(--deep-red);
+}
+
+.red {
+  color: var(--error-red);
+}
+
+.green {
+  color: var(--success-green);
+}
+
+.orange {
+  color: var(--warning-orange);
+}
 @media only screen and (width <= 800px) {
   :root {
     .App {
