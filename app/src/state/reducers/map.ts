@@ -28,10 +28,6 @@ import {
   MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_LEGENDS,
   MAP_TOGGLE_PANNED,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME,
-  MAP_TOGGLE_TRACK_ME_DRAW_GEO_START,
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACKING_ON,
@@ -69,6 +65,7 @@ import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
 import MapActions from 'state/actions/map';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -693,6 +690,22 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.whatsHere.IAPPLimit = action.payload.limit;
       } else if (TileCache.setMapTileCacheMode.match(action)) {
         draftState.tileCacheMode = action.payload;
+      } else if (GeoTracking.start.match(action)) {
+        draftState.track_me_draw_geo = {
+          isTracking: true,
+          type: action.payload.type ?? null,
+          drawingShape: true
+        };
+      } else if (GeoTracking.stop.match(action)) {
+        draftState.track_me_draw_geo = {
+          isTracking: false,
+          type: null,
+          drawingShape: false
+        };
+      } else if (GeoTracking.pause.match(action)) {
+        draftState.track_me_draw_geo.drawingShape = false;
+      } else if (GeoTracking.resume.match(action)) {
+        draftState.track_me_draw_geo.drawingShape = true;
       } else {
         switch (action.type) {
           case TOGGLE_LAYER_PICKER_OPEN:
@@ -1026,30 +1039,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case MAP_TOGGLE_TRACKING_OFF: {
             draftState.positionTracking = false;
-            break;
-          }
-          case MAP_TOGGLE_TRACK_ME_DRAW_GEO_START: {
-            draftState.track_me_draw_geo = {
-              isTracking: true,
-              type: action.payload.type ?? null,
-              drawingShape: true
-            };
-            break;
-          }
-          case MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE: {
-            draftState.track_me_draw_geo = {
-              isTracking: false,
-              type: null,
-              drawingShape: false
-            };
-            break;
-          }
-          case MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE: {
-            draftState.track_me_draw_geo.drawingShape = false;
-            break;
-          }
-          case MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME: {
-            draftState.track_me_draw_geo.drawingShape = true;
             break;
           }
           case OVERLAY_MENU_TOGGLE: {

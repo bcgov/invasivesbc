@@ -1,18 +1,4 @@
 import { createAction } from '@reduxjs/toolkit';
-import {
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_OFFLINE,
-  ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS,
-  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
-  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
-  ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS
-} from '../../actions';
 import { FeatureCollection, Geometry } from '@turf/helpers';
 import { ActivitySubtype } from 'sharedAPI';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
@@ -24,30 +10,29 @@ interface TreatmentIdsRequestOnline {
 }
 
 class Suggestions {
+  private static readonly PREFIX = 'Activity/Suggestions';
   // Jurisdiction Suggestions
-  static readonly jurisdictions = createAction<Geometry>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST);
-  static readonly jurisdictionsOnline = createAction<Geometry>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE);
-  static readonly jurisdictionsOffline = createAction(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_OFFLINE);
-  static readonly jurisdictionsSuccess = createAction<Geometry[]>(ACTIVITY_GET_SUGGESTED_JURISDICTIONS_SUCCESS);
+  static readonly jurisdictions = createAction<Geometry>(`${this.PREFIX}/jurisdictions`);
+  static readonly jurisdictionsOnline = createAction<Geometry>(`${this.PREFIX}/jurisdictionsOnline`);
+  static readonly jurisdictionsOffline = createAction(`${this.PREFIX}/jurisdictionsOffline`);
+  static readonly jurisdictionsSuccess = createAction<Geometry[]>(`${this.PREFIX}/jurisdictionsSuccess`);
 
   // Biocontrol Suggestions
-  static readonly biocontrolOnline = createAction(ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE);
+  static readonly biocontrolOnline = createAction(`${this.PREFIX}/biocontrolOnline`);
   static readonly biocontrolOnlineSuccess = createAction<Record<string, any>[]>(
-    ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE_SUCCESS
+    `${this.PREFIX}/biocontrolOnlineSuccess`
   );
 
   // Persons Suggestions
-  static readonly persons = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST);
-  static readonly personsOnline = createAction(ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE);
-  static readonly personsSuccess = createAction<Record<string, any>[]>(ACTIVITY_GET_SUGGESTED_PERSONS_SUCCESS);
+  static readonly persons = createAction(`${this.PREFIX}/persons`);
+  static readonly personsOnline = createAction(`${this.PREFIX}/personsOnline`);
+  static readonly personsSuccess = createAction<Record<string, any>[]>(`${this.PREFIX}/personsSuccess`);
 
   // Treatment ID Suggestions
-  static readonly treatmentIdsRequest = createAction<Record<string, any>>(ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST);
+  static readonly treatmentIdsRequest = createAction<Record<string, any>>(`${this.PREFIX}/treatmentIdsRequest`);
   static readonly treatmentIdsRequestOnline = createAction<TreatmentIdsRequestOnline>(
-    ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE
+    `${this.PREFIX}/treatmentIdsRequestOnline`
   );
-  static readonly treatmentIdsSuccess = createAction<SuggestedTreatmentId[]>(
-    ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_SUCCESS
-  );
+  static readonly treatmentIdsSuccess = createAction<SuggestedTreatmentId[]>(`${this.PREFIX}/treatmentIdsSuccess`);
 }
 export default Suggestions;

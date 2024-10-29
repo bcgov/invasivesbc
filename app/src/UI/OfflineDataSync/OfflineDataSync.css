@@ -11,3 +11,8 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.syncDisabledMessage {
+  padding: 0 1rem;
+  color: var(--deep-red);
+}

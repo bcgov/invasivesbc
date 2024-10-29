@@ -32,7 +32,6 @@ import {
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
   MAP_TOGGLE_GEOJSON_CACHE,
-  MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   PAGE_OR_LIMIT_UPDATE,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
@@ -242,7 +241,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
 function* whatsHereSaga() {
   yield all([
     takeEvery(WhatsHere.map_init_get_poi, handle_MAP_WHATS_HERE_INIT_GET_POI),
-    takeEvery(MAP_WHATS_HERE_INIT_GET_ACTIVITY, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY),
+    takeEvery(WhatsHere.init_get_activities, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY),
     takeEvery(WhatsHere.map_feature, handle_WHATS_HERE_FEATURE)
   ]);
 }

@@ -12,13 +12,12 @@ import {
 } from 'interfaces/prompt-interfaces';
 import { createAction } from '@reduxjs/toolkit';
 import { PromptTypes } from 'constants/promptEnums';
-import { CLEAR_PROMPT, CLEAR_PROMPTS, NEW_PROMPT } from 'state/actions';
 
 class Prompt {
   /**
    * @desc Action type for creating new prompts.
    */
-  static readonly NEW_PROMPT = NEW_PROMPT;
+  private static readonly NEW_PROMPT = 'Prompt/NewPrompt';
   /**
    * @desc Helper function for creating modals to gather a 'boolean' input
    * @param {ConfirmationModalInterface} prompt component props
@@ -71,12 +70,12 @@ class Prompt {
    * @desc DRY handler for closing input modal
    * @param id ID for the Payload object in the prompts array
    */
-  static readonly closeOne = createAction(CLEAR_PROMPT, (id: string) => ({ payload: { id } }));
+  static readonly closeOne = createAction('Prompt/closeOne', (id: string) => ({ payload: { id } }));
 
   /**
    * @desc Clear all input modals in the queue
    */
-  static readonly closeAll = createAction(CLEAR_PROMPTS);
+  static readonly closeAll = createAction('Prompt/closeAll');
 }
 
 export default Prompt;
