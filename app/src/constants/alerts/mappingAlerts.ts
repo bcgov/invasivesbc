@@ -1,5 +1,5 @@
 import AlertMessage from 'interfaces/AlertMessage';
-import { AlertSeverity, AlertSubjects } from './alertEnums';
+import { AlertSeverity, AlertSubjects } from '../alertEnums';
 
 const mappingAlertMessages: Record<string, AlertMessage> = {
   // Errors
@@ -102,18 +102,4 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
   }
 };
 
-export const networkAlertMessages: Record<string, AlertMessage> = {
-  userWentOffline: {
-    content: 'You are now offline, Some functionality may be limited',
-    severity: AlertSeverity.Warning,
-    subject: AlertSubjects.Network,
-    autoClose: 6
-  },
-  userWentOnline: {
-    content: 'You are back online. Functionality is restored',
-    severity: AlertSeverity.Info,
-    subject: AlertSubjects.Network,
-    autoClose: 6
-  }
-};
 export default mappingAlertMessages;

@@ -48,7 +48,7 @@ import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 import RefreshButton from './RefreshButton';
 import { MOBILE } from 'state/build-time-config';
 import Alerts from 'state/actions/alerts/Alerts';
-import { networkAlertMessages } from 'constants/alertMessages';
+import networkAlertMessages from 'constants/alerts/networkAlerts';
 
 type TabPredicate =
   | 'authenticated_any'

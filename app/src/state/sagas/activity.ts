@@ -78,7 +78,7 @@ import { distance, kinks, lineToPolygon } from '@turf/turf';
 import GeoShapes from 'constants/geoShapes';
 import { calculateGeometryArea } from 'utils/geometryHelpers';
 import geomWithinBC from 'utils/geomWithinBC';
-import mappingAlertMessages from 'constants/alertMessages';
+import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import AlertMessage from 'interfaces/AlertMessage';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
