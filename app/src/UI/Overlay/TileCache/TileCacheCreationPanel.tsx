@@ -5,7 +5,7 @@ import { Button, Slider } from '@mui/material';
 import TileCache from 'state/actions/cache/TileCache';
 import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
 import CacheFileSize from './CacheFileSize';
-import { useTileSizeThresholds } from 'UI/Overlay/TileCache/tileSizeHook';
+import { useTileSizeThresholds } from './tileSizeHook';
 import { APPROX_SIZE_PER_TILE, AVAILABLE_ZOOMS } from './constants';
 
 const TileCacheCreationPanel = () => {

@@ -1,6 +1,6 @@
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
 import { useEffect, useState } from 'react';
-import { thresholds, useTileSizeThresholds } from 'UI/Overlay/TileCache/tileSizeHook';
+import { thresholds, useTileSizeThresholds } from './tileSizeHook';
 
 type PropTypes = {
   downloadSizeInBytes: number;
