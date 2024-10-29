@@ -2,71 +2,39 @@ import { createAction, nanoid } from '@reduxjs/toolkit';
 import { RECORD_COLOURS } from 'constants/colors';
 import Boundary from 'interfaces/Boundary';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
-import {
-  USER_SETTINGS_SET_RECORDSET,
-  USER_SETTINGS_ADD_RECORD_SET,
-  USER_SETTINGS_REMOVE_RECORD_SET,
-  USER_SETTINGS_SET_SELECTED_RECORD_REQUEST,
-  USER_SETTINGS_SET_BOUNDARIES_REQUEST,
-  USER_SETTINGS_SET_BOUNDARIES_SUCCESS,
-  USER_SETTINGS_SET_BOUNDARIES_FAILURE,
-  USER_SETTINGS_DELETE_BOUNDARY_REQUEST,
-  USER_SETTINGS_DELETE_BOUNDARY_SUCCESS,
-  USER_SETTINGS_DELETE_KML_REQUEST,
-  USER_SETTINGS_DELETE_KML_SUCCESS,
-  USER_SETTINGS_DELETE_KML_FAILURE,
-  USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST,
-  USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS,
-  USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE,
-  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST,
-  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS,
-  USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_FAILURE,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST,
-  USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS,
-  USER_SETTINGS_SET_MAP_CENTER_REQUEST,
-  USER_SETTINGS_SET_MAP_CENTER_SUCCESS,
-  USER_SETTINGS_SET_MAP_CENTER_FAILURE,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST,
-  USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS,
-  USER_SETTINGS_GET_INITIAL_STATE_REQUEST,
-  USER_SETTINGS_GET_INITIAL_STATE_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS,
-  USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST,
-  USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS
-} from 'state/actions';
 import { INewRecordDialogState } from 'UI/Overlay/Records/NewRecordDialog';
 
 class Boundaries {
-  static readonly set = createAction(USER_SETTINGS_SET_BOUNDARIES_REQUEST);
-  static readonly setSuccess = createAction<Boundary[]>(USER_SETTINGS_SET_BOUNDARIES_SUCCESS);
-  static readonly setFailure = createAction(USER_SETTINGS_SET_BOUNDARIES_FAILURE);
+  private static readonly PREFIX = `UserSettings/Boundaries`;
+  static readonly set = createAction(`${this.PREFIX}/set`);
+  static readonly setSuccess = createAction<Boundary[]>(`${this.PREFIX}/setSuccess`);
+  static readonly setFailure = createAction(`${this.PREFIX}/setFailure`);
 
-  static readonly delete = createAction(USER_SETTINGS_DELETE_BOUNDARY_REQUEST);
-  static readonly deleteSuccess = createAction<Boundary>(USER_SETTINGS_DELETE_BOUNDARY_SUCCESS);
+  static readonly delete = createAction(`${this.PREFIX}/delete`);
+  static readonly deleteSuccess = createAction<Boundary>(`${this.PREFIX}/deleteSuccess`);
 
-  static readonly addToSet = createAction<RecordSet>(USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST);
-  static readonly addToSetSuccess = createAction<{ [key: string]: RecordSet }>(
-    USER_SETTINGS_ADD_BOUNDARY_TO_SET_SUCCESS
-  );
-  static readonly addToSetFailure = createAction(USER_SETTINGS_ADD_BOUNDARY_TO_SET_FAILURE);
+  static readonly addToSet = createAction<RecordSet>(`${this.PREFIX}/addToSet`);
+  static readonly addToSetSuccess = createAction<{ [key: string]: RecordSet }>(`${this.PREFIX}/addToSetSuccess`);
+  static readonly addToSetFailure = createAction(`${this.PREFIX}/addToSetFailure`);
 
-  static readonly removeFromSet = createAction(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST);
+  static readonly removeFromSet = createAction(`${this.PREFIX}/removeFromSet`);
   static readonly removeFromSetSuccess = createAction<{ [key: string]: RecordSet }>(
-    USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_SUCCESS
+    `${this.PREFIX}/removeFromSetSuccess`
   );
-  static readonly removeFromSetFailure = createAction(USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_FAILURE);
+  static readonly removeFromSetFailure = createAction(`${this.PREFIX}/removeFromSetFailure`);
 }
 
 class KML {
-  static readonly delete = createAction<string>(USER_SETTINGS_DELETE_KML_REQUEST);
-  static readonly deleteSuccess = createAction<string>(USER_SETTINGS_DELETE_KML_SUCCESS);
-  static readonly deleteFailure = createAction<string>(USER_SETTINGS_DELETE_KML_FAILURE);
+  private static readonly PREFIX = `UserSettings/Kml`;
+  static readonly delete = createAction<string>(`${this.PREFIX}/delete`);
+  static readonly deleteSuccess = createAction<string>(`${this.PREFIX}/deleteSuccess`);
+  static readonly deleteFailure = createAction<string>(`${this.PREFIX}/deleteFailure`);
 }
 
 class InitState {
-  static readonly get = createAction(USER_SETTINGS_GET_INITIAL_STATE_REQUEST);
-  static readonly getSuccess = createAction(USER_SETTINGS_GET_INITIAL_STATE_SUCCESS, (recordSets: UserRecordSet) => ({
+  private static readonly PREFIX = `UserSettings/InitState`;
+  static readonly get = createAction(`${this.PREFIX}/get`);
+  static readonly getSuccess = createAction(`${this.PREFIX}/getSuccess`, (recordSets: UserRecordSet) => ({
     payload: {
       recordSets
     }
@@ -74,16 +42,19 @@ class InitState {
 }
 
 class IAPP {
-  static readonly setActive = createAction<string>(USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST);
-  static readonly setActiveSuccess = createAction<string | null>(USER_SETTINGS_SET_ACTIVE_IAPP_SUCCESS);
+  private static readonly PREFIX = `UserSettings/IAPP`;
+  static readonly setActive = createAction<string>(`${this.PREFIX}/setActive`);
+  static readonly setActiveSuccess = createAction<string | null>(`${this.PREFIX}/setActiveSuccess`);
 }
 
 class Activity {
-  static readonly setActiveActivityId = createAction<string>(USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST);
-  static readonly setActiveActivityIdSuccess = createAction<string>(USER_SETTINGS_SET_ACTIVE_ACTIVITY_SUCCESS);
+  private static readonly PREFIX = 'UserSettings/Activity';
+  static readonly setActiveActivityId = createAction<string>(`${this.PREFIX}/setActiveActivityId`);
+  static readonly setActiveActivityIdSuccess = createAction<string>(`${this.PREFIX}/setActiveActivityIdSuccess`);
 }
 
 class RecordSet {
+  private static readonly PREFIX = `UserSettings/RecordSet`;
   private static readonly createDefaultRecordset = (type: RecordSetType): UserRecordSet => ({
     tableFilters: null,
     id: nanoid(),
@@ -92,28 +63,28 @@ class RecordSet {
     expanded: false,
     isSelected: false,
     mapToggle: false,
-    recordSetName: 'New Recordset - ' + type,
+    recordSetName: `New Recordset - ` + type,
     recordSetType: type,
     cached: false,
     labelToggle: false,
-    cachedTime: '',
+    cachedTime: ``,
     offlineMode: false,
     isDeletingCache: false,
     isCaching: false,
     searchBoundary: {
       geos: [],
       id: 0,
-      name: '',
+      name: ``,
       server_id: 0
     }
   });
 
-  static readonly add = createAction(USER_SETTINGS_ADD_RECORD_SET, (type: RecordSetType) => ({
+  static readonly add = createAction(`${this.PREFIX}/add`, (type: RecordSetType) => ({
     payload: this.createDefaultRecordset(type)
   }));
-  static readonly remove = createAction<string>(USER_SETTINGS_REMOVE_RECORD_SET);
+  static readonly remove = createAction<string>(`${this.PREFIX}/remove`);
   static readonly set = createAction(
-    USER_SETTINGS_SET_RECORDSET,
+    `${this.PREFIX}/set`,
     <K extends keyof UserRecordSet>(updatedSet: Partial<Record<K, UserRecordSet[K]>>, setName: string) => ({
       payload: {
         updatedSet,
@@ -121,19 +92,21 @@ class RecordSet {
       }
     })
   );
-  static readonly setSelected = createAction<string | null>(USER_SETTINGS_SET_SELECTED_RECORD_REQUEST);
-  static readonly cycleColourById = createAction<string>('UserSettings/RecordSet/rotateColour');
-  static readonly toggleVisibility = createAction<string>('UserSettings/RecordSet/toggleVisibility');
-  static readonly toggleLabelVisibility = createAction<string>('UserSettings/RecordSet/toggleLabelVisibility');
+  static readonly setSelected = createAction<string | null>(`${this.PREFIX}/setSelected`);
+  static readonly cycleColourById = createAction<string>(`${this.PREFIX}/rotateColour`);
+  static readonly toggleVisibility = createAction<string>(`${this.PREFIX}/toggleVisibility`);
+  static readonly toggleLabelVisibility = createAction<string>(`${this.PREFIX}/toggleLabelVisibility`);
 }
 
 class Map {
-  static readonly setCenter = createAction<number[]>(USER_SETTINGS_SET_MAP_CENTER_REQUEST);
-  static readonly setCenterSuccess = createAction<number[]>(USER_SETTINGS_SET_MAP_CENTER_SUCCESS);
-  static readonly setCenterFailure = createAction(USER_SETTINGS_SET_MAP_CENTER_FAILURE);
+  private static readonly PREFIX = `UserSettings/Map`;
+  static readonly setCenter = createAction<number[]>(`${this.PREFIX}/setCenter`);
+  static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
+  static readonly setCenterFailure = createAction(`${this.PREFIX}/setCenterFailure`);
 }
 
 class UserSettings {
+  private static readonly PREFIX = `UserSettings`;
   static readonly Boundaries = Boundaries;
   static readonly KML = KML;
   static readonly InitState = InitState;
@@ -142,16 +115,16 @@ class UserSettings {
   static readonly RecordSet = RecordSet;
   static readonly Map = Map;
 
-  static readonly toggleRecordExpand = createAction(USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST);
-  static readonly toggleRecordExpandSuccess = createAction(USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_SUCCESS);
+  static readonly toggleRecordExpand = createAction(`${this.PREFIX}/toggleRecordExpand`);
+  static readonly toggleRecordExpandSuccess = createAction(`${this.PREFIX}/toggleRecordExpandSuccess`);
 
   static readonly setNewRecordDialogueState = createAction<INewRecordDialogState>(
-    USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST
+    `${this.PREFIX}/setNewRecordDialogueState`
   );
   static readonly setNewRecordDialogueStateSuccess = createAction<INewRecordDialogState>(
-    USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS
+    `${this.PREFIX}/setNewRecordDialogueStateSuccess`
   );
-  static readonly toggleLayerPickerAccordion = createAction('UserSettings/toggleLayerPickerAccordion');
+  static readonly toggleLayerPickerAccordion = createAction(`${this.PREFIX}/toggleLayerPickerAccordion`);
 }
 
 export default UserSettings;

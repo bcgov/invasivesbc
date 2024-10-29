@@ -36,10 +36,7 @@ export function setupStore(configuration: AppConfig) {
     timestamp: true,
     logErrors: true,
     diff: true,
-    diffPredicate: (getState, action) =>
-      ['MAP_TOGGLE_TRACK_ME_DRAW_GEO', 'ACTIVITY_UPDATE_GEO', 'GET_SUGGESTED_JURISDICTIONS'].filter((item) =>
-        action.type.includes(item)
-      ).length > 0
+    diffPredicate: (getState, action) => ['ACTIVITY_UPDATE_GEO'].filter((item) => action.type.includes(item)).length > 0
   });
 
   const store = (() => {
