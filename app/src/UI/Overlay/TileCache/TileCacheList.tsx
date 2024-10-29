@@ -7,10 +7,10 @@ import { TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { Delete, Visibility, VisibilityOff } from '@mui/icons-material';
 import Prompt from 'state/actions/prompts/Prompt';
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
-import UserSettings from 'state/actions/userSettings/UserSettings';
+import MapActions from 'state/actions/map';
 
 const TileCacheListRow = ({ metadata, visible }) => {
-  const handleToggleVisibility = (id: string) => dispatch(UserSettings.Map.toggleOverlay(id));
+  const handleToggleVisibility = (id: string) => dispatch(MapActions.toggleOverlay(id));
   const handleDelete = (id: string) => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
