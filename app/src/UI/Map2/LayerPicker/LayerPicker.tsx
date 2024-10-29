@@ -10,6 +10,7 @@ import LayerPickerPathOption from './LayerPickerPathRow';
 import { ArrowBackIos } from '@mui/icons-material';
 import LpLayers from './LpLayers/LpLayers';
 import LpRecordSet from './LpRecordSet/LpRecordSet';
+import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
 
 export const LayerPicker = () => {
   const closeLayerPicker = () => {
@@ -73,7 +74,7 @@ export const LayerPicker = () => {
           ),
           [LpModules.DataBcLayers]: <LpLayers />,
           [LpModules.Recordsets]: <LpRecordSet closePicker={closeLayerPicker} />,
-          [LpModules.MapTiles]: <></>
+          [LpModules.MapTiles]: <LpOfflineMaps closePicker={closeLayerPicker} />
         }[pickerPath]
       }
     </div>

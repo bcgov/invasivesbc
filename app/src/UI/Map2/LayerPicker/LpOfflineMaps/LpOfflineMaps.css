@@ -1,4 +1,4 @@
-#lp-layers {
+#lp-offline-maps {
   background-color: var(--bg);
   text-align: left;
   padding: 0pt 5pt 10pt 5pt;
@@ -14,7 +14,7 @@
   }
 }
 
-#lp-layers .lp-layers-empty-collection {
+#lp-offline-maps .lp-offline-maps-empty-collection {
   border: 1pt solid lightgray;
   border-radius: 10pt;
   display: flex;
@@ -26,8 +26,7 @@
     font-weight: normal;
   }
 }
-
-#lp-layers ul {
+#lp-offline-maps ul {
   max-height: 265pt;
   list-style-type: none;
   padding: 0;
@@ -44,7 +43,7 @@
   }
 }
 
-#lp-layers .lp-layers-item {
+#lp-offline-maps .lp-offline-map-option {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -69,26 +68,13 @@
   }
 }
 
-#lp-layers .control {
-  display: flex;
-  width: 100%;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  justify-content: flex-end;
-}
-
-.create-custom-layers {
-  border: 1pt solid var(--bc-blue);
-  padding: 5pt 10pt;
-  display: flex;
-  align-items: center;
-  font-size: 14pt;
-  color: var(--bc-blue);
-  background-color: white;
-  border-radius: 10pt;
-  transition: 0.5s background-color;
-  &:hover {
-    cursor: pointer;
-    background-color: var(--focus);
-  }
+.lp-offline-map-option > hr {
+  width: 89%;
+  color: var(--bg);
+  background-color: var(--bg);
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  height: 1px;
+  border: none;
 }

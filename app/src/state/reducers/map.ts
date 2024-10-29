@@ -20,7 +20,6 @@ import {
   IAPP_TABLE_ROWS_GET_SUCCESS,
   INIT_SERVER_BOUNDARIES_GET,
   MAIN_MAP_MOVE,
-  MAP_CHOOSE_BASEMAP,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_MODE_SET,
@@ -28,7 +27,6 @@ import {
   MAP_TOGGLE_ACCURACY,
   MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_LEGENDS,
-  MAP_TOGGLE_OVERLAY,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_CLOSE,
   MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE,
@@ -37,8 +35,6 @@ import {
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACKING_ON,
-  MAP_UPDATE_AVAILABLE_BASEMAPS,
-  MAP_UPDATE_AVAILABLE_OVERLAYS,
   OVERLAY_MENU_TOGGLE,
   PAGE_OR_LIMIT_UPDATE,
   PAN_AND_ZOOM_TO_ACTIVITY,
@@ -72,6 +68,7 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
+import MapActions from 'state/actions/map';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -507,6 +504,39 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       } else if (UserSettings.KML.deleteSuccess.match(action)) {
         const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload);
         draftState.serverBoundaries.splice(index, 1);
+      } else if (MapActions.toggleOverlay.match(action)) {
+        if (draftState.enabledOverlayLayers.includes(action.payload)) {
+          draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(action.payload), 1);
+        } else {
+          draftState.enabledOverlayLayers.push(action.payload);
+        }
+      } else if (MapActions.chooseBaseMap.match(action)) {
+        draftState.baseMapLayer = action.payload;
+      } else if (MapActions.updateAvailableBaseMaps.match(action)) {
+        draftState.availableBaseMapLayers = action.payload;
+
+        // if there was no previously-selected base map layer or if the currently-selected layer became unavailable,
+        // then select another
+        if (draftState.availableBaseMapLayers.length > 0) {
+          if (!draftState.baseMapLayer || !draftState.availableBaseMapLayers.includes(draftState.baseMapLayer)) {
+            draftState.baseMapLayer = draftState.availableBaseMapLayers[0];
+          }
+        }
+      } else if (MapActions.updateAvailableOverlays.match(action)) {
+        draftState.availableOverlayLayers = action.payload;
+
+        // if a currently-enabled layer was removed, disable it
+        const removalList: string[] = [];
+
+        for (const f of draftState.enabledOverlayLayers) {
+          if (!action.payload.includes(f)) {
+            removalList.push(f);
+          }
+        }
+
+        for (const r of removalList) {
+          draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
+        }
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         Object.keys(action.payload.recordSets).map((setID) => {
           let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
@@ -967,48 +997,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case MAP_TOGGLE_ACCURACY: {
             draftState.accuracyToggle = !state.accuracyToggle;
-            break;
-          }
-          case MAP_CHOOSE_BASEMAP: {
-            draftState.baseMapLayer = action.payload;
-            break;
-          }
-          case MAP_TOGGLE_OVERLAY: {
-            if (draftState.enabledOverlayLayers.includes(action.payload)) {
-              draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(action.payload), 1);
-            } else {
-              draftState.enabledOverlayLayers.push(action.payload);
-            }
-            break;
-          }
-          case MAP_UPDATE_AVAILABLE_BASEMAPS: {
-            draftState.availableBaseMapLayers = action.payload;
-
-            // if there was no previously-selected base map layer or if the currently-selected layer became unavailable,
-            // then select another
-            if (draftState.availableBaseMapLayers.length > 0) {
-              if (!draftState.baseMapLayer || !draftState.availableBaseMapLayers.includes(draftState.baseMapLayer)) {
-                draftState.baseMapLayer = draftState.availableBaseMapLayers[0];
-              }
-            }
-            break;
-          }
-          case MAP_UPDATE_AVAILABLE_OVERLAYS: {
-            draftState.availableOverlayLayers = action.payload;
-
-            // if a currently-enabled layer was removed, disable it
-            const removalList: string[] = [];
-
-            for (const f of draftState.enabledOverlayLayers) {
-              if (!action.payload.includes(f)) {
-                removalList.push(f);
-              }
-            }
-
-            for (const r of removalList) {
-              draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
-            }
-
             break;
           }
           case MAP_TOGGLE_LEGENDS: {
