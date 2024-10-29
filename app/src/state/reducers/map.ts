@@ -76,7 +76,7 @@ export enum LeafletWhosEditingEnum {
 
 export const ACTIVITY_GEOJSON_SOURCE_KEYS = ['s3', 'draft', 'supplemental'];
 
-const DEFAULT_LOCAL_LAYERS = [
+export const DEFAULT_LOCAL_LAYERS = [
   {
     title: 'Regional Districts',
     type: 'wms',
