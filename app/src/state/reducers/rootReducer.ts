@@ -93,7 +93,6 @@ function createRootReducer(config: AppConfig) {
           'newRecordDialogState',
           'darkTheme',
           'boundaries',
-          'layerPickerIsAccordion',
           'mapCenter'
         ]
       },

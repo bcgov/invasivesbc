@@ -49,7 +49,7 @@ export interface UserSettingsState {
   recordsExpanded: boolean;
 
   boundaries: Boundary[];
-  layerPickerIsAccordion: boolean;
+
   darkTheme: boolean;
 }
 
@@ -62,7 +62,7 @@ const initialState: UserSettingsState = {
 
   apiDocsWithSelectOptions: null,
   apiDocsWithViewOptions: null,
-  layerPickerIsAccordion: false,
+
   boundaries: [],
   error: false,
   recordSets: {},
@@ -113,8 +113,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         Object.keys(action.payload.updatedSet).forEach((key) => {
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
         });
-      } else if (UserSettings.toggleLayerPickerAccordion.match(action)) {
-        draftState.layerPickerIsAccordion = !draftState.layerPickerIsAccordion;
       } else if (WhatsHere.toggle.match(action)) {
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
       } else {

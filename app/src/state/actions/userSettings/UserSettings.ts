@@ -152,7 +152,6 @@ class UserSettings {
   static readonly setNewRecordDialogueStateSuccess = createAction<INewRecordDialogState>(
     USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_SUCCESS
   );
-  static readonly toggleLayerPickerAccordion = createAction('UserSettings/toggleLayerPickerAccordion');
 }
 
 export default UserSettings;

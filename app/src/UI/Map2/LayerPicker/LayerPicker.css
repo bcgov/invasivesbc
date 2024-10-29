@@ -60,7 +60,7 @@ li > hr {
 #layer-picker-container .path-ul {
   list-style-type: none;
   padding: 0;
-  margin: 0 5pt;
+  margin: 0 1rem;
   box-sizing: border-box;
   background-color: var(--list-option);
   border-radius: 18pt;
