@@ -5,12 +5,12 @@ import {
   MapSourceAndLayerDefinitionMode
 } from 'UI/Map2/helpers/layer-definitions';
 import { RootState } from 'state/reducers/rootReducer';
-import { MAP_UPDATE_AVAILABLE_BASEMAPS, MAP_UPDATE_AVAILABLE_OVERLAYS } from 'state/actions';
 import { MOBILE } from 'state/build-time-config';
+import MapActions from 'state/actions/map';
 
 function* recomputeEligibleMapLayers(action) {
   // don't loop
-  const FILTERED_ACTIONS = [MAP_UPDATE_AVAILABLE_BASEMAPS, MAP_UPDATE_AVAILABLE_OVERLAYS];
+  const FILTERED_ACTIONS = [MapActions.updateAvailableOverlays.type, MapActions.updateAvailableBaseMaps.type];
   if (FILTERED_ACTIONS.includes(action.type)) {
     return;
   }
@@ -73,8 +73,8 @@ function* recomputeEligibleMapLayers(action) {
     UPDATED_BASEMAP_LIST.length !== CURRENT_ELIGIBLE_BASEMAP_LIST.length ||
     !UPDATED_BASEMAP_LIST.every((e) => CURRENT_ELIGIBLE_BASEMAP_LIST.includes(e))
   ) {
-    yield put({ type: MAP_UPDATE_AVAILABLE_BASEMAPS, payload: UPDATED_BASEMAP_LIST });
-    yield put({ type: MAP_UPDATE_AVAILABLE_OVERLAYS, payload: UPDATED_OVERLAY_LIST });
+    yield put(MapActions.updateAvailableBaseMaps(UPDATED_BASEMAP_LIST));
+    yield put(MapActions.updateAvailableOverlays(UPDATED_OVERLAY_LIST));
   }
 }
 
