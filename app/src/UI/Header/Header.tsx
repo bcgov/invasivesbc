@@ -47,6 +47,8 @@ import { selectAuth } from 'state/reducers/auth';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 import RefreshButton from './RefreshButton';
 import { MOBILE } from 'state/build-time-config';
+import Alerts from 'state/actions/alerts/Alerts';
+import { networkAlertMessages } from 'constants/alertMessages';
 
 type TabPredicate =
   | 'authenticated_any'
@@ -377,6 +379,15 @@ const LoginOrOutMemo = React.memo(() => {
 });
 
 const NetworkStateControl: React.FC = () => {
+  const handleNetworkStateChange = () => {
+    if (connected) {
+      dispatch({ type: NETWORK_GO_OFFLINE });
+      dispatch(Alerts.create(networkAlertMessages.userWentOffline));
+    } else {
+      dispatch({ type: NETWORK_GO_ONLINE });
+      dispatch(Alerts.create(networkAlertMessages.userWentOnline));
+    }
+  };
   const { connected } = useSelector((state) => state.Network);
   const dispatch = useDispatch();
   return (
@@ -389,9 +400,7 @@ const NetworkStateControl: React.FC = () => {
                 checked={connected}
                 color={'primary'}
                 size={'medium'}
-                onChange={() => {
-                  dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
-                }}
+                onChange={handleNetworkStateChange}
                 inputProps={{ 'aria-label': 'controlled' }}
               />
             }
