@@ -37,6 +37,7 @@ import { refreshDrawControls } from 'UI/Map2/helpers/draw-tools';
 import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/Map2/helpers/current-record';
 import { toggleLayerOnBool } from 'UI/Map2/helpers/utility-functions';
 import { refreshWhatsHereFeature } from 'UI/Map2/helpers/whats-here';
+import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 
 /*
 
@@ -61,6 +62,7 @@ export const Map = ({ children }) => {
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const authInitiated = useSelector((state) => state.Auth.initialized);
   const loggedIn = useSelector((state) => state.Auth.authenticated);
+  const connectedToNetwork = useSelector((state) => state.Network.connected);
 
   // RecordSet Layers
   const storeLayers = useSelector((state) => state.Map.layers);
@@ -201,9 +203,10 @@ export const Map = ({ children }) => {
   useEffect(() => {
     if (!mapReady) return;
     if (!map.current) return;
-    addWMSLayersIfNotExist(simplePickerLayers2, map.current);
-    refreshWMSOnToggle(simplePickerLayers2, map.current);
-  }, [simplePickerLayers2, map.current, mapReady, baseMapLayer]);
+    const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
+    addWMSLayersIfNotExist(layers, map.current);
+    refreshWMSOnToggle(layers, map.current);
+  }, [simplePickerLayers2, map.current, mapReady, baseMapLayer, connectedToNetwork]);
 
   useEffect(() => {
     if (!mapReady) return;
