@@ -8,49 +8,62 @@ import CacheFileSize from './CacheFileSize';
 
 // seems to be about right for this dataset
 const APPROX_SIZE_PER_TILE = 15 * 1024;
+const DOWNLOAD_LIMIT = 5 * 1024 * 1024 * 1024; // 5 GiB
+const AVAILABLE_ZOOMS = [
+  {
+    value: 12,
+    label: 'Zoom 12',
+    scale: '1:150,000'
+  },
+  {
+    value: 14,
+    label: 'Zoom 14',
+    scale: '1:35,000'
+  },
+  {
+    value: 16,
+    label: 'Zoom 16',
+    scale: '1:8,000'
+  },
+  {
+    value: 18,
+    label: 'Zoom 18',
+    scale: '1:2,000'
+  },
+  {
+    value: 20,
+    label: 'Zoom 20',
+    scale: '1:500'
+  }
+];
 
 const TileCacheCreationPanel = () => {
-  const DOWNLOAD_LIMIT = 5 * 1024 * 1024 * 1024; // 5 GiB
   const boundingBoxToolTipText =
     'The latitude and longitude values for a bounding box represent the corners of a rectangular area on a map. The two pairs of coordinates show the southwest and northeast corners, defining the space that contains the object or area of interest.';
   const drawnShape = useSelector((state) => state.TileCache?.drawnShapeBounds);
   const dispatch = useDispatch();
 
-  const availableZooms = [
-    {
-      value: 12,
-      label: 'Zoom 12',
-      scale: '1:150,000'
-    },
-    {
-      value: 14,
-      label: 'Zoom 14',
-      scale: '1:35,000'
-    },
-    {
-      value: 16,
-      label: 'Zoom 16',
-      scale: '1:8,000'
-    },
-    {
-      value: 18,
-      label: 'Zoom 18',
-      scale: '1:2,000'
-    },
-    {
-      value: 20,
-      label: 'Zoom 20',
-      scale: '1:500'
-    }
-  ];
-  const [zoom, setZoom] = useState<number>(availableZooms[0].value);
-  const [scale, setScale] = useState<string>(availableZooms[0].scale);
+  const [zoom, setZoom] = useState<number>(AVAILABLE_ZOOMS[0].value);
+  const [scale, setScale] = useState<string>(AVAILABLE_ZOOMS[0].scale);
+
   const [tileCount, setTileCount] = useState<number | null>(null);
-  const [approximateDownloadSize, setApproximateDownloadSize] = useState<number>();
+  const [approximateDownloadSize, setApproximateDownloadSize] = useState<number | null>(null);
+
+  const [downloadDisabled, setDownloadDisabled] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!drawnShape || approximateDownloadSize == null) {
+      setDownloadDisabled(true);
+      return;
+    }
+
+    setDownloadDisabled(approximateDownloadSize > DOWNLOAD_LIMIT);
+  }, [drawnShape, approximateDownloadSize]);
 
   useEffect(() => {
     if (!drawnShape) {
       setTileCount(null);
+      setApproximateDownloadSize(null);
       return;
     }
     const updatedCount = TileCacheService.computeTileCount(drawnShape, zoom);
@@ -83,14 +96,14 @@ const TileCacheCreationPanel = () => {
         value={zoom}
         step={null}
         aria-label={'Zoom Level'}
-        marks={availableZooms}
+        marks={AVAILABLE_ZOOMS}
         sx={{ width: '80%' }}
-        min={availableZooms[0].value}
-        max={availableZooms[availableZooms.length - 1].value}
+        min={AVAILABLE_ZOOMS[0].value}
+        max={AVAILABLE_ZOOMS[AVAILABLE_ZOOMS.length - 1].value}
         onChange={(e, value) => {
           if (typeof value === 'number') {
             setZoom(value);
-            setScale(availableZooms.find((item) => item.value === value)?.scale ?? '');
+            setScale(AVAILABLE_ZOOMS.find((item) => item.value === value)?.scale ?? '');
           }
         }}
       />
@@ -107,7 +120,7 @@ const TileCacheCreationPanel = () => {
       <div className="control">
         <Button
           variant={'contained'}
-          disabled={!drawnShape || !approximateDownloadSize || approximateDownloadSize > DOWNLOAD_LIMIT}
+          disabled={downloadDisabled}
           onClick={() => {
             dispatch(
               TileCache.requestCaching({
