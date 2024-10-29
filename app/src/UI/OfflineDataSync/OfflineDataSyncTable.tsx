@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, LinearProgress } from '@mui/material';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
@@ -9,10 +9,30 @@ import './OfflineDataSync.css';
 import moment from 'moment';
 import { FileOpen } from '@mui/icons-material';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import { useHistory } from 'react-router-dom';
 
 export const OfflineDataSyncTable = () => {
   const { working, serializedActivities } = useSelector(selectOfflineActivity);
+  const { authenticated, workingOffline } = useSelector((state) => state.Auth);
+  const connected = useSelector((state) => state.Network.connected);
+
+  const [syncDisabled, setSyncDisabled] = useState(false);
+
+  const history = useHistory();
+
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (working) {
+      setSyncDisabled(true);
+    } else if (workingOffline || !authenticated) {
+      setSyncDisabled(true);
+    } else if (!connected) {
+      setSyncDisabled(true);
+    } else {
+      setSyncDisabled(false);
+    }
+  }, [working, workingOffline, authenticated, connected]);
 
   if (Object.values(serializedActivities).length === 0) {
     return <p>There are no locally-stored activities to synchronize.</p>;
@@ -38,8 +58,10 @@ export const OfflineDataSyncTable = () => {
                 <tr>
                   <td>
                     <Button
+                      disabled={!(workingOffline || authenticated)}
                       onClick={() => {
                         dispatch({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: key } });
+                        history.push(`/Records/Activity:${key}/form`);
                       }}
                     >
                       <FileOpen></FileOpen>
@@ -78,7 +100,7 @@ export const OfflineDataSyncTable = () => {
         </tbody>
       </table>
       <Button
-        disabled={working}
+        disabled={syncDisabled}
         variant={'contained'}
         onClick={() => {
           dispatch({ type: ACTIVITY_RUN_OFFLINE_SYNC });
@@ -86,6 +108,9 @@ export const OfflineDataSyncTable = () => {
       >
         Run Sync
       </Button>
+      {syncDisabled && (
+        <span className="syncDisabledMessage">Synchronization requires that you be online and authenticated.</span>
+      )}
       {working && <LinearProgress className={'progressBar'} />}
     </>
   );
