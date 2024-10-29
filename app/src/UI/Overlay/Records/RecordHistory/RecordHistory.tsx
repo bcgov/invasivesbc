@@ -22,8 +22,8 @@ const RecordHistory = ({ activityHistory, show, handleClick }: PropTypes) => {
       </div>
       <div className="history-content">
         <ul className="outer-record-history">
-          {activityHistory.map((item, index) => (
-            <li key={index}>
+          {activityHistory.toReversed().map((item) => (
+            <li key={`${item.updated_by}-${item.version}`}>
               <ul className="inner-record-history">
                 <li>
                   <p>Version:</p>
