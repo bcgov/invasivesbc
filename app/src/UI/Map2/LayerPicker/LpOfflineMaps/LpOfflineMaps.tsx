@@ -35,6 +35,7 @@ const LpOfflineMaps = ({ closePicker }: PropTypes) => {
             .map((item, index) => (
               <LpOfflineMapsOptions
                 id={item?.id ?? 'No Id provided'}
+                description={item.description}
                 key={item.id}
                 lastChild={index === repositories.length - 1}
                 layerVisible={visibleLayers.includes(item?.id)}
