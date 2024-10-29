@@ -131,7 +131,6 @@ class Map {
   static readonly setCenter = createAction<number[]>(USER_SETTINGS_SET_MAP_CENTER_REQUEST);
   static readonly setCenterSuccess = createAction<number[]>(USER_SETTINGS_SET_MAP_CENTER_SUCCESS);
   static readonly setCenterFailure = createAction(USER_SETTINGS_SET_MAP_CENTER_FAILURE);
-  static readonly toggleOverlay = createAction<string>('UserSettings/Maps/toggleLayer');
 }
 
 class UserSettings {
