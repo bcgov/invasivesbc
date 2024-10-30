@@ -2,28 +2,6 @@
   height: 100%;
 }
 
-#auditInfoDialog {
-  position: fixed;
-  background-color: white;
-  left: 25%;
-  top: 25%;
-  z-index: 990000;
-  width: 50%;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  display: none;
-}
-
-.inner_audit_list {
-  display: flex;
-  flex-direction: column;
-  justify-content: left !important;
-  text-align: left !important;
-  align-items: left !important;
-  width: 100%;
-}
-
 .showAuditInfoDialog {
   display: flex !important;
 }
@@ -49,7 +27,6 @@ label {
 }
 table {
   width: 100%;
-  /*border: 1px solid black;*/
   background-color: white !important;
   border-style: hidden;
   text-align: left;

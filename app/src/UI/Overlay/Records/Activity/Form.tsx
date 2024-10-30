@@ -11,6 +11,7 @@ import GeoShapes from 'constants/geoShapes';
 import { UtmInputObj } from 'interfaces/prompt-interfaces';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';
+import RecordHistory from '../RecordHistory/RecordHistory';
 
 export const ActivityForm = (props) => {
   const ref = useRef(0);
@@ -18,8 +19,8 @@ export const ActivityForm = (props) => {
   if (RENDER_DEBUG) {
     console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
   }
-
-  const [showAuditDialogue, setShowAuditDialogue] = useState(false);
+  const closeRecordHistoryModal = () => setShowRecordHistory(false);
+  const [showRecordHistory, setShowRecordHistory] = useState(false);
 
   const dispatch = useDispatch();
 
@@ -135,19 +136,13 @@ export const ActivityForm = (props) => {
                 <tr>
                   <td className={'rightHeaderCol'}>Updated At:</td>
                   <td className={'rightValueCol'}>
-                    {new Date(received_timestamp ? received_timestamp : date_created).toLocaleDateString()}
-                  </td>{' '}
+                    {new Date(received_timestamp ?? date_created).toLocaleDateString()}
+                  </td>
                 </tr>
                 <tr>
                   <td className={'rightHeaderCol'}>Record History:</td>
                   <td className={'rightValueCol'}>
-                    <Button
-                      onClick={() => {
-                        setShowAuditDialogue(true);
-                      }}
-                      variant="outlined"
-                      sx={{ backgroundColor: 'white', color: '#003366', fontSize: 12, fontWeight: 'medium' }}
-                    >
+                    <Button onClick={setShowRecordHistory.bind(this, true)} variant="outlined">
                       Click to view
                     </Button>
                   </td>
@@ -174,23 +169,11 @@ export const ActivityForm = (props) => {
       >
         Click to enter UTM manually
       </Button>
-      <div id="auditInfoDialog" className={showAuditDialogue ? 'showAuditInfoDialog' : 'hideAuditInfoDialog'}>
-        <Button onClick={() => setShowAuditDialogue(false)}>Close</Button>
-        <ul>
-          {activity_history?.map((item, index) => {
-            return (
-              <li key={index}>
-                <ul className={'inner_audit_list'}>
-                  <li>Version : {item?.version + (item?.iscurrent ? ' (Current) ' : '')}</li>
-                  <li>Updated By: {item?.updated_by}</li>
-                  <li>Activity Status: {item?.form_status}</li>
-                  <li>Created at: {item?.created_timestamp}</li>
-                </ul>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+      <RecordHistory
+        show={showRecordHistory}
+        handleClick={closeRecordHistoryModal}
+        activityHistory={activity_history}
+      />
       <Button
         onClick={clickHandler}
         variant="outlined"
