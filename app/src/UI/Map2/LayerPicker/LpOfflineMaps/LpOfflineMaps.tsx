@@ -26,7 +26,7 @@ const LpOfflineMaps = ({ closePicker }: PropTypes) => {
       <p className="lp-subheader"></p>
       {repositories.length === 0 ? (
         <div className="lp-offline-maps-empty-collection">
-          <p>You don't have any Maptiles Cached</p>
+          <p>You don't have any map areas cached</p>
         </div>
       ) : (
         <ul>
@@ -35,6 +35,7 @@ const LpOfflineMaps = ({ closePicker }: PropTypes) => {
             .map((item, index) => (
               <LpOfflineMapsOptions
                 id={item?.id ?? 'No Id provided'}
+                description={item.description}
                 key={item.id}
                 lastChild={index === repositories.length - 1}
                 layerVisible={visibleLayers.includes(item?.id)}

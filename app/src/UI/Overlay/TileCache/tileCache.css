@@ -98,27 +98,46 @@ section table {
 section .control {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   margin-top: 10pt;
   width: 100%;
   box-sizing: border-box;
   padding: 1.25rem;
-}
+  flex-direction: column;
+  button,
+  input {
+    height: 30pt;
+    font-size: 12pt;
+    border-radius: 8pt;
+  }
+  button {
+    width: 110pt;
+    border: 1pt solid var(--blue-primary);
+    color: var(--blue-primary);
+    background-color: transparent;
+    transition:
+      0.7s color,
+      0.7s background-color,
+      0.7s border;
+    &:disabled {
+      border: 1pt solid lightgray;
+      color: lightgray;
+      cursor: not-allowed;
+    }
+    &:hover:not(:disabled) {
+      background-color: var(--blue-primary);
+      color: white;
+      cursor: pointer;
+    }
+  }
+  input {
+    padding: 0 0 0 10pt;
+    border: 1pt solid black;
+  }
 
-/* Color Classes */
-.deep-red {
-  color: var(--deep-red);
-}
-
-.red {
-  color: var(--error-red);
-}
-
-.green {
-  color: var(--success-green);
-}
-
-.orange {
-  color: var(--warning-orange);
+  & > *:not(:first-child) {
+    margin: 10pt 0 0 0;
+  }
 }
 
 .too-large-warning {
@@ -138,6 +157,16 @@ section .control {
     cursor: pointer;
   }
 }
+
+@media screen and (width >= 425px) {
+  section .control {
+    flex-direction: row;
+    & > *:not(:first-child) {
+      margin: 0 0 0 10pt;
+    }
+  }
+}
+
 @media screen and (width >= 768px) {
   #offline-map-overlay,
   #offline-map-overlay section,

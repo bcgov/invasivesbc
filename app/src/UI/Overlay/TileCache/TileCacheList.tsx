@@ -1,4 +1,4 @@
-import { Button, IconButton } from '@mui/material';
+import { IconButton } from '@mui/material';
 import TileCache from 'state/actions/cache/TileCache';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -53,7 +53,7 @@ const TileCacheListRow = ({ metadata, visible }) => {
           </button>
         )}
       </td>
-      <td>{metadata.id}</td>
+      <td>{metadata.description || metadata.id}</td>
       <td>{metadata.status}</td>
       <td>{stats?.tileCount}</td>
       <td>{stats && convertBytesToReadableString(stats.sizeInBytes)}</td>
@@ -73,7 +73,7 @@ const TileCacheList = () => {
   if (!repositories || repositories.length === 0) {
     return (
       <section>
-        <p>You don't have any map tiles saved on your device right now.</p>
+        <p>You don't have any map areas saved on your device right now.</p>
       </section>
     );
   }
@@ -82,7 +82,7 @@ const TileCacheList = () => {
       <table>
         <thead>
           <th></th>
-          <th>Cache ID</th>
+          <th>Name</th>
           <th>Status</th>
           <th>Tile Count</th>
           <th>Cache Size</th>
@@ -98,9 +98,7 @@ const TileCacheList = () => {
         You can toggle the visibility of cached map tiles here, or from the <b>Layer Picker</b>
       </p>
       <div className="control">
-        <Button variant={'contained'} onClick={() => dispatch(TileCache.repositoryList())}>
-          Refresh Table
-        </Button>
+        <button onClick={() => dispatch(TileCache.repositoryList())}>Refresh Table</button>
       </div>
     </section>
   );
