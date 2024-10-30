@@ -34,16 +34,18 @@ const LpLayers = () => {
   const customTooltip =
     "Turn your custom shapes on and off in the application. This allows you to easily manage the visibility of the shapes you've created, helping you focus on the map elements that matter most to you.";
   const dispatch = useDispatch();
+  const connectedToNetwork = useSelector((state) => state.Network.connected);
   const WmsLayers = useSelector((state) => state.Map?.simplePickerLayers2);
   const KmlLayers = useSelector((state) => state.Map?.serverBoundaries);
   const drawnLayers = useSelector((state) => state.Map?.clientBoundaries);
+
   return (
     <div id="lp-layers">
       <h3>
         DataBC Layers <TooltipWithIcon tooltipText={WmsTooltip} />
       </h3>
       <div>
-        {WmsLayers?.length > 0 ? (
+        {WmsLayers?.length > 0 && connectedToNetwork ? (
           <ul className="layerList">
             {WmsLayers.map((layer, index) => (
               <LpLayersOption
@@ -55,7 +57,11 @@ const LpLayers = () => {
             ))}
           </ul>
         ) : (
-          <EmptyCollection text={'There are no DataBC layers available.'} />
+          <EmptyCollection
+            text={
+              connectedToNetwork ? 'There are no DataBC layers available.' : 'DataBC layers unavailable when offline'
+            }
+          />
         )}
       </div>
       <h3>

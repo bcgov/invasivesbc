@@ -19,8 +19,6 @@ import {
   AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
   AUTH_SIGNIN_REQUEST,
   AUTH_SIGNOUT_REQUEST,
-  NETWORK_GO_OFFLINE,
-  NETWORK_GO_ONLINE,
   TOGGLE_PANEL
 } from 'state/actions';
 import { useHistory } from 'react-router-dom';
@@ -47,6 +45,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 import RefreshButton from './RefreshButton';
 import { MOBILE } from 'state/build-time-config';
+import NetworkActions from 'state/actions/network/NetworkActions';
 
 type TabPredicate =
   | 'authenticated_any'
@@ -377,6 +376,9 @@ const LoginOrOutMemo = React.memo(() => {
 });
 
 const NetworkStateControl: React.FC = () => {
+  const handleNetworkStateChange = () => {
+    dispatch(connected ? NetworkActions.offline() : NetworkActions.online());
+  };
   const { connected } = useSelector((state) => state.Network);
   const dispatch = useDispatch();
   return (
@@ -389,9 +391,7 @@ const NetworkStateControl: React.FC = () => {
                 checked={connected}
                 color={'primary'}
                 size={'medium'}
-                onChange={() => {
-                  dispatch({ type: connected ? NETWORK_GO_OFFLINE : NETWORK_GO_ONLINE });
-                }}
+                onChange={handleNetworkStateChange}
                 inputProps={{ 'aria-label': 'controlled' }}
               />
             }

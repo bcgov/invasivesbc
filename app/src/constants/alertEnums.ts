@@ -1,7 +1,8 @@
 export enum AlertSubjects {
   Map = 'map',
   Form = 'form',
-  Photo = 'photo'
+  Photo = 'photo',
+  Network = 'network'
 }
 
 export enum AlertSeverity {

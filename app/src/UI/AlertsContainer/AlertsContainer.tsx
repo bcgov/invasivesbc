@@ -3,7 +3,7 @@
  * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Alert-System }
  */
 import { Alert, AlertTitle, Button, Icon } from '@mui/material';
-import { MapOutlined, Assignment, InsertPhoto } from '@mui/icons-material';
+import { MapOutlined, Assignment, InsertPhoto, Wifi } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import './AlertsContainer.css';
 import AlertMessage from 'interfaces/AlertMessage';
@@ -28,6 +28,8 @@ const AlertsContainer = () => {
         return <Assignment />;
       case AlertSubjects.Photo:
         return <InsertPhoto />;
+      case AlertSubjects.Network:
+        return <Wifi />;
       default:
         break;
     }

@@ -13,6 +13,7 @@ import emailSettingsSaga from './sagas/email-setup/emailSettings';
 import emailTemplatesSaga from './sagas/email-setup/emailTemplates';
 import iappPageSaga from './sagas/iappsite';
 import activitiesPageSaga from './sagas/map';
+import networkSaga from './sagas/network';
 import trainingVideosSaga from './sagas/training_videos';
 import userSettingsSaga from './sagas/userSettings';
 import { createSagaCrashHandler } from './sagas/error_handler';
@@ -76,6 +77,7 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(trainingVideosSaga);
   sagaMiddleware.run(emailSettingsSaga);
   sagaMiddleware.run(emailTemplatesSaga);
+  sagaMiddleware.run(networkSaga);
 
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 

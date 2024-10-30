@@ -53,7 +53,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectNetworkConnected } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
-import mappingAlertMessages from 'constants/alertMessages';
+import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import { MOBILE } from 'state/build-time-config';
 import Alerts from 'state/actions/alerts/Alerts';
