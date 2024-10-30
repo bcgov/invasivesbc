@@ -4,26 +4,36 @@ import { TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { ProgressCallbackParameters, RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 class TileCache {
-  // used to tell the map we are on a page where we might want to draw a rectangle
-  static readonly setMapTileCacheMode = createAction<boolean>('SET_MAP_TILE_CACHE_MODE');
+  static readonly PREFIX = 'TileCache';
 
-  static readonly setTileCacheShape = createAction<{ geometry: GeoJSON }>('SET_TILE_CACHE_SHAPE');
-  static readonly clearTileCacheShape = createAction('CLEAR_TILE_CACHE_SHAPE');
+  // used to tell the map we are on a page where we might want to draw a rectangle
+  static readonly setMapTileCacheMode = createAction<boolean>(`${this.PREFIX}/setDrawMode`);
+
+  static readonly setTileCacheShape = createAction<{ geometry: GeoJSON }>(`${this.PREFIX}/setShape`);
+  static readonly clearTileCacheShape = createAction(`${this.PREFIX}/clearShape`);
 
   static readonly downloadProgressEvent = createAction<ProgressCallbackParameters>(
     'TILE_CACHE_DOWNLOAD_PROGRESS_EVENT'
   );
 
-  static readonly repositoryList = createAsyncThunk('TILE_CACHE_REPOSITORY_LIST', async () => {
+  static readonly repositoryList = createAsyncThunk(`${this.PREFIX}/repoList`, async () => {
     return await (await TileCacheServiceFactory.getPlatformInstance()).listRepositories();
   });
-  static readonly deleteRepository = createAsyncThunk('TILE_CACHE_REPOSITORY_DELETE', async (repository: string) => {
+  static readonly deleteRepository = createAsyncThunk(`${this.PREFIX}/repoDelete`, async (repository: string) => {
     const service = await TileCacheServiceFactory.getPlatformInstance();
     await service.deleteRepository(repository);
     return await service.listRepositories();
   });
+  static readonly updateDescription = createAsyncThunk(
+    `${this.PREFIX}/repoUpdateDescription`,
+    async (spec: { repository: string; newDescription: string }) => {
+      const service = await TileCacheServiceFactory.getPlatformInstance();
+      await service.updateDescription(spec.repository, spec.newDescription);
+      return await service.listRepositories();
+    }
+  );
   static readonly requestCaching = createAsyncThunk(
-    'TILE_CACHE_NEW_REQUEST',
+    `${this.PREFIX}/requestCaching`,
     async (
       spec: {
         description: string;

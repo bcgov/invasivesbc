@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { RepositoryStatistics, TileCacheService } from 'utils/tile-cache';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
-import { Delete, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Delete, EditAttributes, Visibility, VisibilityOff } from '@mui/icons-material';
 import Prompt from 'state/actions/prompts/Prompt';
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
 import MapActions from 'state/actions/map';
@@ -25,6 +25,11 @@ const TileCacheListRow = ({ metadata, visible }) => {
       })
     );
   };
+
+  const handleRename = (id: string) => {
+    dispatch(TileCache.updateDescription({ repository: id, newDescription: `renamed at ${new Date().toISOString()}` }));
+  };
+
   const dispatch = useDispatch();
   const serviceRef = useRef<TileCacheService | null>(null);
   const [stats, setStats] = useState<RepositoryStatistics | null>(null);
@@ -58,6 +63,9 @@ const TileCacheListRow = ({ metadata, visible }) => {
       <td>{stats?.tileCount}</td>
       <td>{stats && convertBytesToReadableString(stats.sizeInBytes)}</td>
       <td>
+        <IconButton color={'primary'} onClick={() => handleRename(metadata.id)}>
+          <EditAttributes />
+        </IconButton>
         <IconButton color={'error'} onClick={() => handleDelete(metadata.id)}>
           <Delete />
         </IconButton>
@@ -81,12 +89,14 @@ const TileCacheList = () => {
     <section>
       <table>
         <thead>
-          <th></th>
-          <th>Name</th>
-          <th>Status</th>
-          <th>Tile Count</th>
-          <th>Cache Size</th>
-          <th>Delete</th>
+          <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Status</th>
+            <th>Tile Count</th>
+            <th>Cache Size</th>
+            <th>Actions</th>
+          </tr>
         </thead>
         <tbody>
           {repositories.map((r) => (

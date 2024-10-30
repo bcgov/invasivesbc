@@ -174,6 +174,22 @@ class LocalForageCacheService extends TileCacheService {
     };
   }
 
+  public async updateDescription(repository: string, newDescription: string) {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+
+    const repositories = await this.listRepositories();
+    const foundIndex = repositories.findIndex((p) => p.id == repository);
+    if (foundIndex == -1) {
+      throw new Error('repository does not exist');
+    }
+
+    repositories[foundIndex].description = newDescription;
+
+    await this.store.setItem(LocalForageCacheService.REPOSITORY_METADATA_KEY, repositories);
+  }
+
   protected async cleanupOrphanTiles(): Promise<void> {
     if (this.store == null) {
       return;

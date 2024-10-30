@@ -166,6 +166,21 @@ function createTileCacheReducer() {
         draft.loading = false;
       }
 
+      if (TileCache.updateDescription.pending.match(action)) {
+        draft.loading = true;
+      } else if (TileCache.updateDescription.fulfilled.match(action)) {
+        draft.loading = false;
+        draft.repositories = action.payload;
+        // @ts-ignore
+        draft.mapSpecifications = action.payload
+          .filter((m) => m.status == RepositoryStatus.READY)
+          .flatMap((m) => {
+            return buildMapSpecificationFromRepositoryMetadata(m);
+          });
+      } else if (TileCache.updateDescription.rejected.match(action)) {
+        draft.loading = false;
+      }
+
       if (TileCache.setTileCacheShape.match(action)) {
         try {
           const [minX, minY, maxX, maxY] = bbox(action.payload.geometry);
