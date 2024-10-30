@@ -142,11 +142,7 @@ export const ActivityForm = (props) => {
                 <tr>
                   <td className={'rightHeaderCol'}>Record History:</td>
                   <td className={'rightValueCol'}>
-                    <Button
-                      onClick={setShowRecordHistory.bind(this, true)}
-                      variant="outlined"
-                      sx={{ color: '#003366', fontSize: 12 }}
-                    >
+                    <Button onClick={setShowRecordHistory.bind(this, true)} variant="outlined">
                       Click to view
                     </Button>
                   </td>
