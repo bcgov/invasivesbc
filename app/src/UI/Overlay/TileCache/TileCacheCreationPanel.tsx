@@ -9,6 +9,20 @@ import { useTileSizeThresholds } from './tileSizeHook';
 import { APPROX_SIZE_PER_TILE, AVAILABLE_ZOOMS } from './constants';
 
 const TileCacheCreationPanel = () => {
+  const handleDownload = () => {
+    if (!drawnShape) return;
+    dispatch(
+      TileCache.requestCaching({
+        description: cacheName ?? '',
+        bounds: drawnShape,
+        maxZoom: zoom
+      })
+    );
+    setCacheName('');
+    setTimeout(() => {
+      dispatch(TileCache.clearTileCacheShape());
+    }, 2000);
+  };
   const boundingBoxToolTipText =
     'The latitude and longitude values for a bounding box represent the corners of a rectangular area on a map. The two pairs of coordinates show the southwest and northeast corners, defining the space that contains the object or area of interest.';
   const handleNameChange = (evt: ChangeEvent<HTMLInputElement>) => {
@@ -87,9 +101,10 @@ const TileCacheCreationPanel = () => {
         />
         <div className="shapeDetails">
           <p>
-            <b>Scale:</b> {scale}, <b>Map Tiles:</b> {tileCount?.toLocaleString()}{' '}
+            <b>Scale:</b> {scale}, <b>Map Tiles:</b> {tileCount?.toLocaleString()}
             {approximateDownloadSize && (
               <>
+                {' '}
                 (approx. <CacheFileSize downloadSizeInBytes={approximateDownloadSize} />)
               </>
             )}
@@ -102,13 +117,7 @@ const TileCacheCreationPanel = () => {
             disabled={downloadDisabled}
             onClick={(e) => {
               e.preventDefault();
-              dispatch(
-                TileCache.requestCaching({
-                  description: cacheName ?? '',
-                  bounds: drawnShape,
-                  maxZoom: zoom
-                })
-              );
+              handleDownload();
             }}
           >
             Start Download
