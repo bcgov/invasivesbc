@@ -1,78 +1,6 @@
-import { IconButton } from '@mui/material';
 import TileCache from 'state/actions/cache/TileCache';
-import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { RepositoryStatistics, TileCacheService } from 'utils/tile-cache';
-import { TileCacheServiceFactory } from 'utils/tile-cache/context';
-import { Delete, EditAttributes, Visibility, VisibilityOff } from '@mui/icons-material';
-import Prompt from 'state/actions/prompts/Prompt';
-import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
-import MapActions from 'state/actions/map';
-
-const TileCacheListRow = ({ metadata, visible }) => {
-  const handleToggleVisibility = (id: string) => dispatch(MapActions.toggleOverlay(id));
-  const handleDelete = (id: string) => {
-    const callback = (confirmation: boolean) => {
-      if (confirmation) {
-        dispatch(TileCache.deleteRepository(id));
-      }
-    };
-    dispatch(
-      Prompt.confirmation({
-        title: 'Delete Cached Map tiles?',
-        prompt: ['Do you want to delete this set of map tiles?', 'They will no longer be available for offline use.'],
-        callback
-      })
-    );
-  };
-
-  const handleRename = (id: string) => {
-    dispatch(TileCache.updateDescription({ repository: id, newDescription: `renamed at ${new Date().toISOString()}` }));
-  };
-
-  const dispatch = useDispatch();
-  const serviceRef = useRef<TileCacheService | null>(null);
-  const [stats, setStats] = useState<RepositoryStatistics | null>(null);
-
-  useEffect(() => {
-    if (!serviceRef.current) {
-      return;
-    }
-    serviceRef.current.getRepositoryStatistics(metadata.id).then((value) => {
-      setStats(value);
-    });
-  }, [metadata.id, serviceRef.current]);
-
-  useEffect(() => {
-    TileCacheServiceFactory.getPlatformInstance().then((value) => {
-      serviceRef.current = value;
-    });
-  }, []);
-
-  return (
-    <tr>
-      <td>
-        {metadata.status === 'READY' && (
-          <button className="visibility-button" onClick={handleToggleVisibility.bind(this, metadata.id)}>
-            {visible ? <Visibility /> : <VisibilityOff />}
-          </button>
-        )}
-      </td>
-      <td>{metadata.description || metadata.id}</td>
-      <td>{metadata.status}</td>
-      <td>{stats?.tileCount}</td>
-      <td>{stats && convertBytesToReadableString(stats.sizeInBytes)}</td>
-      <td>
-        <IconButton color={'primary'} onClick={() => handleRename(metadata.id)}>
-          <EditAttributes />
-        </IconButton>
-        <IconButton color={'error'} onClick={() => handleDelete(metadata.id)}>
-          <Delete />
-        </IconButton>
-      </td>
-    </tr>
-  );
-};
+import TileCacheListRow from './TileCacheListRow';
 
 const TileCacheList = () => {
   const repositories = useSelector((state) => state.TileCache?.repositories);
@@ -90,7 +18,7 @@ const TileCacheList = () => {
       <table>
         <thead>
           <tr>
-            <th></th>
+            <th>Show</th>
             <th>Name</th>
             <th>Status</th>
             <th>Tile Count</th>
