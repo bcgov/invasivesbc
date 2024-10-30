@@ -174,6 +174,21 @@ class SQLiteTileCacheService extends TileCacheService {
     throw new Error('unimplemented');
   }
 
+  public async updateDescription(repository: string, newDescription: string) {
+    if (this.cacheDB == null) {
+      throw new Error('cache not available');
+    }
+
+    await this.cacheDB.query(
+      //language=SQLite
+
+      `UPDATE CACHE_METADATA
+       SET DESCRIPTION = ?
+       WHERE TILESET = ?;`,
+      [newDescription, repository]
+    );
+  }
+
   protected async addRepository(spec: RepositoryMetadata): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error('cache not available');

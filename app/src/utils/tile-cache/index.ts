@@ -193,6 +193,8 @@ abstract class TileCacheService {
 
   public abstract getRepositoryStatistics(id: string): Promise<RepositoryStatistics>;
 
+  public abstract updateDescription(repository: string, newDescription: string): Promise<void>;
+
   protected abstract cleanupOrphanTiles(): Promise<void>;
 
   protected abstract addRepository(spec: RepositoryMetadata): Promise<void>;
