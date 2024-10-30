@@ -1,0 +1,111 @@
+#record-history {
+  position: fixed;
+  background-color: white;
+  left: 50%;
+  top: 50%;
+  height: 350pt;
+  transform: translate(-50%, -50%);
+  z-index: 100000;
+  width: 100%;
+  max-width: 450pt;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+  box-sizing: border-box;
+  border: 1pt solid black;
+
+  .history-header {
+    height: 45pt;
+    display: flex;
+    width: 100%;
+    padding: 5pt 10pt;
+    box-sizing: border-box;
+    align-items: center;
+    background-color: var(--bc-blue);
+    justify-content: flex-start;
+    border-bottom: 2pt solid var(--bc-yellow);
+    h2 {
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+  }
+  .history-content {
+    width: 100%;
+    display: flex;
+    overflow-y: auto;
+    justify-content: flex-start;
+    height: 100%;
+    box-sizing: border-box;
+
+    .outer-record-history {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      li:nth-child(odd):not(.inner-record-history > li) {
+        background-color: #eee;
+      }
+      li:nth-child(even):not(.inner-record-history > li) {
+        background-color: white;
+      }
+    }
+    .inner-record-history {
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      li {
+        display: flex;
+        width: 100%;
+        padding: 3pt 10pt;
+        box-sizing: border-box;
+      }
+      li p:first-child {
+        margin-right: auto;
+        font-weight: bold;
+      }
+      li > p {
+        padding: 0;
+        margin: 0;
+      }
+      li:hover {
+        background-color: #c9f2ef95;
+      }
+    }
+  }
+  .record-control {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 5pt 10pt;
+    border-top: 1pt solid lightgray;
+    button {
+      border: none;
+      border: 1pt solid var(--bc-blue);
+      color: var(--bc-blue);
+      font-size: 12pt;
+      background-color: transparent;
+      height: 30pt;
+      width: 60pt;
+      border-radius: 12pt;
+      transition: 0.5s color;
+    }
+    button:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+@media screen and (width > 450pt) {
+  #record-history {
+    border-radius: 8pt;
+  }
+}
