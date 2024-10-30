@@ -1,6 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { NETWORK_GO_OFFLINE, NETWORK_GO_ONLINE } from '../actions';
+import NetworkActions from 'state/actions/network/NetworkActions';
 
 interface Network {
   connected: boolean;
@@ -13,17 +13,10 @@ function createNetworkReducer(initialStatus: Network) {
 
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<Network>) => {
-      switch (action.type) {
-        case NETWORK_GO_ONLINE: {
-          draftState.connected = true;
-          break;
-        }
-        case NETWORK_GO_OFFLINE: {
-          draftState.connected = false;
-          break;
-        }
-        default:
-          break;
+      if (NetworkActions.online.match(action)) {
+        draftState.connected = true;
+      } else if (NetworkActions.offline.match(action)) {
+        draftState.connected = false;
       }
     });
   };

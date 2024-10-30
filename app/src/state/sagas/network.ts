@@ -1,0 +1,21 @@
+import networkAlertMessages from 'constants/alerts/networkAlerts';
+import { all, put, takeEvery } from 'redux-saga/effects';
+import Alerts from 'state/actions/alerts/Alerts';
+import NetworkActions from 'state/actions/network/NetworkActions';
+
+function* handle_NETWORK_GO_OFFLINE() {
+  yield put(Alerts.create(networkAlertMessages.userWentOffline));
+}
+
+function* handle_NETWORK_GO_ONLINE() {
+  yield put(Alerts.create(networkAlertMessages.userWentOnline));
+}
+
+function* networkSaga() {
+  yield all([
+    takeEvery(NetworkActions.offline, handle_NETWORK_GO_OFFLINE),
+    takeEvery(NetworkActions.online, handle_NETWORK_GO_ONLINE)
+  ]);
+}
+
+export default networkSaga;
