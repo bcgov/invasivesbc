@@ -10,9 +10,26 @@ const networkAlertMessages: Record<string, AlertMessage> = {
   },
   userWentOnline: {
     content: 'You are back online. Functionality is restored',
-    severity: AlertSeverity.Info,
+    severity: AlertSeverity.Success,
     subject: AlertSubjects.Network,
     autoClose: 6
+  },
+  userWentOnlineWithUnsyncedActivities: {
+    content: 'You are back online. Functionality is restored, you have unsynchronized activities.',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Network
+  },
+  userLostConnection: {
+    content: 'You have been disconnected from the service, please check your internet connection.',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Network,
+    autoClose: 10
+  },
+  attemptToReconnectFailed: {
+    content: 'Unable to return online. Please check your internet connection and try again',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Network,
+    autoClose: 10
   }
 };
 
