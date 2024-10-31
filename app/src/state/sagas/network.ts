@@ -1,14 +1,23 @@
 import networkAlertMessages from 'constants/alerts/networkAlerts';
-import { all, put, takeEvery } from 'redux-saga/effects';
+import { all, put, select, takeEvery } from 'redux-saga/effects';
 import Alerts from 'state/actions/alerts/Alerts';
 import NetworkActions from 'state/actions/network/NetworkActions';
+import { OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 
 function* handle_NETWORK_GO_OFFLINE() {
   yield put(Alerts.create(networkAlertMessages.userWentOffline));
 }
 
 function* handle_NETWORK_GO_ONLINE() {
-  yield put(Alerts.create(networkAlertMessages.userWentOnline));
+  const { serializedActivities } = yield select(selectOfflineActivity);
+  const userHasUnsynchronizedActivities = Object.keys(serializedActivities).some(
+    (entry) => serializedActivities[entry].sync_state !== OfflineActivitySyncState.SYNCHRONIZED
+  );
+  if (userHasUnsynchronizedActivities) {
+    yield put(Alerts.create(networkAlertMessages.userWentOnlineWithUnsyncedActivities));
+  } else {
+    yield put(Alerts.create(networkAlertMessages.userWentOnline));
+  }
 }
 
 function* networkSaga() {
