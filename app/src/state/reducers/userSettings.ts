@@ -2,7 +2,6 @@ import { createNextState } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 
 import {
-  ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_REQUEST,
   CLOSE_NEW_RECORD_MENU,
   GET_API_DOC_SUCCESS,
@@ -117,15 +116,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.layerPickerIsAccordion = !draftState.layerPickerIsAccordion;
       } else if (WhatsHere.toggle.match(action)) {
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
+      } else if (Activity.deleteSuccess.match(action)) {
+        draftState.activeActivity = null;
+        draftState.activeActivityDescription = null;
       } else {
         switch (action.type) {
           case ACTIVITY_GET_REQUEST: {
             draftState.activeActivity = action.payload.activityID;
-            break;
-          }
-          case ACTIVITY_DELETE_SUCCESS: {
-            draftState.activeActivity = null;
-            draftState.activeActivityDescription = null;
             break;
           }
           case GET_API_DOC_SUCCESS: {

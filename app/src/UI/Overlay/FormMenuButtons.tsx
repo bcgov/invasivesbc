@@ -4,7 +4,6 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import {
   ACTIVITY_COPY_REQUEST,
-  ACTIVITY_DELETE_REQUEST,
   ACTIVITY_PASTE_REQUEST,
   ACTIVITY_SUBMIT_REQUEST,
   OVERLAY_MENU_TOGGLE
@@ -55,7 +54,7 @@ export const FormMenuButtons = (props) => {
     dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handleDelete = () => {
-    dispatch({ type: ACTIVITY_DELETE_REQUEST });
+    dispatch(Activity.deleteReq());
     dispatch({ type: OVERLAY_MENU_TOGGLE });
     setTimeout(() => history.back(), 5000);
   };
