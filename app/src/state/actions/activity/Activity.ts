@@ -39,15 +39,6 @@ import {
   ACTIVITY_SET_ACTIVE_REQUEST,
   ACTIVITY_SET_ACTIVE_SUCCESS,
   ACTIVITY_SET_ACTIVE_FAILURE,
-  ACTIVITY_SUBMIT_REQUEST,
-  ACTIVITY_SUBMIT_SUCCESS,
-  ACTIVITY_SUBMIT_FAILURE,
-  ACTIVITY_PASTE_REQUEST,
-  ACTIVITY_PASTE_SUCCESS,
-  ACTIVITY_PASTE_FAILURE,
-  ACTIVITY_COPY_REQUEST,
-  ACTIVITY_COPY_SUCCESS,
-  ACTIVITY_COPY_FAILURE,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_SUCCESS,
@@ -97,17 +88,12 @@ class Activity {
   static readonly deleteSuccess = createAction(`${this.PREFIX}/deleteSuccess`);
   static readonly deleteFailure = createAction(`${this.PREFIX}/deleteFailure`);
 
-  static readonly submit = createAction(ACTIVITY_SUBMIT_REQUEST);
-  static readonly submitSuccess = createAction(ACTIVITY_SUBMIT_SUCCESS);
-  static readonly submitFailure = createAction(ACTIVITY_SUBMIT_FAILURE);
+  static readonly submit = createAction(`${this.PREFIX}/submit`);
 
-  static readonly paste = createAction(ACTIVITY_PASTE_REQUEST);
-  static readonly pasteSuccess = createAction(ACTIVITY_PASTE_SUCCESS);
-  static readonly pasteFailure = createAction(ACTIVITY_PASTE_FAILURE);
+  static readonly paste = createAction(`${this.PREFIX}/paste`);
 
-  static readonly copy = createAction(ACTIVITY_COPY_REQUEST);
-  static readonly copySuccess = createAction(ACTIVITY_COPY_SUCCESS);
-  static readonly copyFailure = createAction(ACTIVITY_COPY_FAILURE);
+  static readonly copy = createAction(`${this.PREFIX}/copy`);
+  static readonly copySuccess = createAction<Record<string, any>>(`${this.PREFIX}/copySuccess`);
 
   static readonly get = createAction(ACTIVITY_GET_REQUEST);
   static readonly getLocal = createAction(ACTIVITY_GET_LOCAL_REQUEST);

@@ -2,12 +2,7 @@ import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
-import {
-  ACTIVITY_COPY_REQUEST,
-  ACTIVITY_PASTE_REQUEST,
-  ACTIVITY_SUBMIT_REQUEST,
-  OVERLAY_MENU_TOGGLE
-} from 'state/actions';
+import { OVERLAY_MENU_TOGGLE } from 'state/actions';
 import Activity from 'state/actions/activity/Activity';
 
 export const FormMenuButtons = (props) => {
@@ -42,15 +37,15 @@ export const FormMenuButtons = (props) => {
     dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handlePublish = () => {
-    dispatch({ type: ACTIVITY_SUBMIT_REQUEST });
+    dispatch(Activity.submit());
     dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handleCopy = () => {
-    dispatch({ type: ACTIVITY_COPY_REQUEST });
+    dispatch(Activity.copy());
     dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handlePaste = () => {
-    dispatch({ type: ACTIVITY_PASTE_REQUEST });
+    dispatch(Activity.paste());
     dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handleDelete = () => {
