@@ -3,13 +3,11 @@ import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
-  ACTIVITY_COPY_SUCCESS,
   ACTIVITY_ERRORS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_PASTE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS
 } from '../actions';
@@ -158,6 +156,13 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
           suggestedPersons: [],
           suggestedTreatmentIDs: []
         });
+      } else if (Activity.paste.match(action)) {
+        draftState.pasteCount = draftState.pasteCount + 1;
+        draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer?.form_data));
+      } else if (Activity.copySuccess.match(action)) {
+        draftState.activity_copy_buffer = {
+          form_data: action.payload
+        };
       } else {
         switch (action.type) {
           case ACTIVITY_ERRORS: {
@@ -207,17 +212,6 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
             draftState.activity.species_negative = action.payload.activity.species_negative;
             draftState.activity.species_treated = action.payload.activity.species_treated;
             draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
-            break;
-          }
-          case ACTIVITY_COPY_SUCCESS: {
-            draftState.activity_copy_buffer = {
-              form_data: action.payload.form_data
-            };
-            break;
-          }
-          case ACTIVITY_PASTE_SUCCESS: {
-            draftState.pasteCount = draftState.pasteCount + 1;
-            draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer?.form_data));
             break;
           }
           case ACTIVITY_SET_CURRENT_HASH_SUCCESS: {

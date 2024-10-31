@@ -19,15 +19,11 @@ import {
 } from 'rjsf/business-rules/populateCalculatedFields';
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-  ACTIVITY_COPY_FAILURE,
-  ACTIVITY_COPY_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_PASTE_FAILURE,
-  ACTIVITY_PASTE_SUCCESS,
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
@@ -69,7 +65,7 @@ export function* handle_ACTIVITY_GET_REQUEST(action) {
   }
 }
 
-export function* handle_ACTIVITY_COPY_REQUEST(action) {
+export function* handle_ACTIVITY_COPY_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
     const activityData = { ...activityState.activity.form_data.activity_data };
@@ -82,22 +78,9 @@ export function* handle_ACTIVITY_COPY_REQUEST(action) {
       ...activityState.activity.form_data,
       activity_data: activityDataToCopy
     };
-    yield put({
-      type: ACTIVITY_COPY_SUCCESS,
-      payload: {
-        form_data: formDataToCopy
-      }
-    });
+    yield put(Activity.copySuccess(formDataToCopy));
   } catch (e) {
-    yield put({ type: ACTIVITY_COPY_FAILURE, payload: {} });
-  }
-}
-
-export function* handle_ACTIVITY_PASTE_REQUEST(action) {
-  try {
-    yield put({ type: ACTIVITY_PASTE_SUCCESS, payload: {} });
-  } catch (e) {
-    yield put({ type: ACTIVITY_PASTE_FAILURE, payload: {} });
+    console.error(e);
   }
 }
 

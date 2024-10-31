@@ -4,19 +4,16 @@ import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
-  ACTIVITY_COPY_REQUEST,
   ACTIVITY_DEBUG,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_LINK_RECORD_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_PASTE_REQUEST,
   ACTIVITY_PERSIST_REQUEST,
   ACTIVITY_RESTORE_OFFLINE,
   ACTIVITY_SET_CURRENT_HASH_FAILURE,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAP_INIT_REQUEST,
@@ -149,12 +146,6 @@ function* handle_URL_CHANGE(action) {
     }
     if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id)
       yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
-
-    /*    else if (userSettingsState.activeActivity) {
-      id = userSettingsState.activeActivity;
-      yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
-    }
-    */
   }
 }
 
@@ -424,8 +415,7 @@ function* activityPageSaga() {
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(ACTIVITY_GET_REQUEST, handle_ACTIVITY_GET_REQUEST),
-    takeEvery(ACTIVITY_COPY_REQUEST, handle_ACTIVITY_COPY_REQUEST),
-    takeEvery(ACTIVITY_PASTE_REQUEST, handle_ACTIVITY_PASTE_REQUEST),
+    takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
     takeEvery(MAP_SET_COORDS, handle_MAP_SET_COORDS),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_READY),
@@ -452,7 +442,7 @@ function* activityPageSaga() {
     takeEvery(Activity.createReq, handle_ACTIVITY_CREATE_REQUEST),
     takeEvery(Activity.createNetwork, handle_ACTIVITY_CREATE_NETWORK),
     takeEvery(Activity.createSuccess, handle_ACTIVITY_CREATE_SUCCESS),
-    takeEvery(ACTIVITY_SUBMIT_REQUEST, handle_ACTIVITY_SUBMIT_REQUEST),
+    takeEvery(Activity.submit, handle_ACTIVITY_SUBMIT_REQUEST),
     takeEvery(ACTIVITY_DEBUG, handle_ACTIVITY_DEBUG),
     takeEvery(ACTIVITY_GET_SUCCESS, handle_ACTIVITY_GET_SUCCESS),
     takeEvery(Activity.Photo.delete, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
@@ -469,7 +459,6 @@ function* activityPageSaga() {
     takeEvery(Activity.Photo.update, () => console.log('Activity.Photo.update')),
     takeEvery(ACTIVITY_LINK_RECORD_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST')),
     takeEvery(ACTIVITY_PERSIST_REQUEST, () => console.log('ACTIVITY_PERSIST_REQUEST')),
-    takeEvery(ACTIVITY_SUBMIT_REQUEST, () => console.log('ACTIVITY_SUBMIT_REQUEST')),
     takeEvery(Activity.deleteReq, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(Activity.deleteNetwork, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
     takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
