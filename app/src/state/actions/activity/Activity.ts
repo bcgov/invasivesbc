@@ -35,14 +35,10 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+  //
   ACTIVITY_SET_ACTIVE_REQUEST,
   ACTIVITY_SET_ACTIVE_SUCCESS,
   ACTIVITY_SET_ACTIVE_FAILURE,
-  ACTIVITY_CREATE_REQUEST,
-  ACTIVITY_CREATE_NETWORK,
-  ACTIVITY_CREATE_LOCAL,
-  ACTIVITY_CREATE_SUCCESS,
-  ACTIVITY_CREATE_FAILURE,
   ACTIVITY_DELETE_REQUEST,
   ACTIVITY_DELETE_NETWORK_REQUEST,
   ACTIVITY_DELETE_SUCCESS,
@@ -50,15 +46,6 @@ import {
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_SUBMIT_SUCCESS,
   ACTIVITY_SUBMIT_FAILURE,
-  ACTIVITY_SAVE_NETWORK_REQUEST,
-  ACTIVITY_SAVE_NETWORK_SUCCESS,
-  ACTIVITY_SAVE_NETWORK_FAILURE,
-  ACTIVITY_SAVE_REQUEST,
-  ACTIVITY_SAVE_SUCCESS,
-  ACTIVITY_SET_SAVED_HASH_REQUEST,
-  ACTIVITY_SET_SAVED_HASH_SUCCESS,
-  ACTIVITY_SET_SAVED_HASH_FAILURE,
-  ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_PASTE_REQUEST,
   ACTIVITY_PASTE_SUCCESS,
   ACTIVITY_PASTE_FAILURE,
@@ -72,32 +59,42 @@ import {
 } from '../../actions';
 import AutoFill from './AutoFill';
 import GeoJson from './GeoJson';
+import { ActivityStatus } from 'sharedAPI';
 
+export interface INewActivity {
+  type: string;
+  subType: string;
+}
+interface ISaveNetwork {
+  activity_id: string;
+  updatedFormData?: Record<string, any>;
+  form_status?: ActivityStatus;
+}
+export interface ICreateLocal {
+  id: string;
+  data: Record<string, any>;
+}
 class Activity {
+  private static readonly PREFIX = 'Activity';
   static readonly Offline = Offline;
   static readonly Photo = Photos;
   static readonly Suggestions = Suggestions;
   static readonly Autofill = AutoFill;
   static readonly GeoJson = GeoJson;
 
-  static readonly createReq = createAction(ACTIVITY_CREATE_REQUEST);
-  static readonly createNetwork = createAction(ACTIVITY_CREATE_NETWORK);
+  static readonly createReq = createAction<INewActivity>(`${this.PREFIX}/createReq`);
+  static readonly createNetwork = createAction<Record<string, any>>(`${this.PREFIX}/createNetwork`);
 
-  static readonly saveNetworkRequest = createAction(ACTIVITY_SAVE_NETWORK_REQUEST);
-  static readonly saveNetworkSuccess = createAction(ACTIVITY_SAVE_NETWORK_SUCCESS);
-  static readonly saveNetworkFailure = createAction(ACTIVITY_SAVE_NETWORK_FAILURE);
-  static readonly getNetworkRequest = createAction(ACTIVITY_GET_NETWORK_REQUEST);
+  static readonly saveNetworkRequest = createAction<ISaveNetwork>(`${this.PREFIX}/saveNetworkRequest`);
+  static readonly getNetworkRequest = createAction<string>(`${this.PREFIX}/getNetworkRequest`);
 
-  static readonly save = createAction(ACTIVITY_SAVE_REQUEST);
-  static readonly saveSuccess = createAction(ACTIVITY_SAVE_SUCCESS);
+  static readonly save = createAction(`${this.PREFIX}/save`);
+  static readonly saveSuccess = createAction<Record<string, any>>(`${this.PREFIX}/saveSuccess`);
 
-  static readonly setSavedHash = createAction(ACTIVITY_SET_SAVED_HASH_REQUEST);
-  static readonly setSavedHashSuccess = createAction(ACTIVITY_SET_SAVED_HASH_SUCCESS);
-  static readonly setSavedHashFailure = createAction(ACTIVITY_SET_SAVED_HASH_FAILURE);
+  static readonly setSavedHashSuccess = createAction<string>(`${this.PREFIX}/setSavedHashSuccess`);
 
-  static readonly createLocal = createAction(ACTIVITY_CREATE_LOCAL);
-  static readonly createSuccess = createAction(ACTIVITY_CREATE_SUCCESS);
-  static readonly createFailure = createAction(ACTIVITY_CREATE_FAILURE);
+  static readonly createLocal = createAction<ICreateLocal>(`${this.PREFIX}/createLocal`);
+  static readonly createSuccess = createAction<string>(`${this.PREFIX}/createSuccess`);
 
   static readonly deleteReq = createAction(ACTIVITY_DELETE_REQUEST);
   static readonly deleteNetwork = createAction(ACTIVITY_DELETE_NETWORK_REQUEST);

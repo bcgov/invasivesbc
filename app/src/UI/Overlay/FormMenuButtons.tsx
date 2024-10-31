@@ -6,10 +6,10 @@ import {
   ACTIVITY_COPY_REQUEST,
   ACTIVITY_DELETE_REQUEST,
   ACTIVITY_PASTE_REQUEST,
-  ACTIVITY_SAVE_REQUEST,
   ACTIVITY_SUBMIT_REQUEST,
   OVERLAY_MENU_TOGGLE
 } from 'state/actions';
+import Activity from 'state/actions/activity/Activity';
 
 export const FormMenuButtons = (props) => {
   const dispatch = useDispatch();
@@ -39,7 +39,7 @@ export const FormMenuButtons = (props) => {
   }, [accessRoles, username, activityCreatedBy]);
 
   const handleSaveDraft = () => {
-    dispatch({ type: ACTIVITY_SAVE_REQUEST });
+    dispatch(Activity.save());
     dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handlePublish = () => {

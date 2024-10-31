@@ -4,12 +4,10 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 import {
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-  ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_SUCCESS,
-  ACTIVITY_SAVE_SUCCESS,
   AUTH_INITIALIZE_COMPLETE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
@@ -18,10 +16,11 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
+import { PayloadAction } from '@reduxjs/toolkit';
 
-export function* handle_ACTIVITY_CREATE_NETWORK(action) {
-  yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload.activity);
-  yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.activity.activity_id } });
+export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
+  yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
+  yield put(Activity.createSuccess(action.payload.activity_id));
 }
 
 export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
@@ -45,7 +44,7 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
   if (!authState.authenticated) {
     yield take(AUTH_INITIALIZE_COMPLETE);
   }
-  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload.activityID}`);
+  const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
 
   if (!(networkReturn.status === 200)) {
     yield put({ type: ACTIVITY_GET_FAILURE, payload: { failNetworkObj: networkReturn } });
@@ -60,10 +59,6 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
     media: networkReturn.data.media || [],
     media_delete_keys: networkReturn.data.media_delete_keys || []
   };
-
-  //const validatedReturn = yield checkForErrors(networkReturn)
-
-  // const remappedBlob = yield mapDBActivityToDoc(networkReturn.data)
 
   yield put({ type: ACTIVITY_GET_SUCCESS, payload: { activity: datav2 } });
 }
@@ -122,15 +117,12 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
       })
     );
   } else {
-    yield put({
-      type: ACTIVITY_SAVE_SUCCESS,
-      payload: {
-        activity: {
-          ...newActivity,
-          media_delete_keys: filtered_media_delete_keys
-        }
-      }
-    });
+    yield put(
+      Activity.saveSuccess({
+        ...newActivity,
+        media_delete_keys: filtered_media_delete_keys
+      })
+    );
   }
   yield put({
     type: ACTIVITIES_GEOJSON_REFETCH_ONLINE,

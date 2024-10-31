@@ -2,7 +2,6 @@ import { createNextState } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 
 import {
-  ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_REQUEST,
   CLOSE_NEW_RECORD_MENU,
@@ -23,6 +22,7 @@ import { UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import Activity from 'state/actions/activity/Activity';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
@@ -143,10 +143,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           }
           case IAPP_GET_SUCCESS: {
             draftState.activeIAPP = action.payload.iapp?.site_id;
-            break;
-          }
-          case ACTIVITY_CREATE_SUCCESS: {
-            draftState.newRecordDialogueOpen = false;
             break;
           }
           case RECORDSET_ADD_FILTER: {

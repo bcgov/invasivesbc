@@ -5,15 +5,11 @@ import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
   ACTIVITY_COPY_REQUEST,
-  ACTIVITY_CREATE_NETWORK,
-  ACTIVITY_CREATE_REQUEST,
-  ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_DEBUG,
   ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_NETWORK_REQUEST,
   ACTIVITY_DELETE_REQUEST,
   ACTIVITY_DELETE_SUCCESS,
-  ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_LINK_RECORD_REQUEST,
@@ -22,13 +18,8 @@ import {
   ACTIVITY_PASTE_REQUEST,
   ACTIVITY_PERSIST_REQUEST,
   ACTIVITY_RESTORE_OFFLINE,
-  ACTIVITY_SAVE_NETWORK_REQUEST,
-  ACTIVITY_SAVE_REQUEST,
-  ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_FAILURE,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_SET_SAVED_HASH_FAILURE,
-  ACTIVITY_SET_SAVED_HASH_SUCCESS,
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
@@ -112,17 +103,9 @@ function* handle_ACTIVITY_DELETE_SUCESS(action) {
 function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {
   try {
     const activityState = yield select(selectActivity);
-    yield put({
-      type: ACTIVITY_SET_SAVED_HASH_SUCCESS,
-      payload: {
-        saved: activityState?.current_activity_hash
-      }
-    });
+    yield put(Activity.setSavedHashSuccess(activityState?.current_activity_hash));
   } catch (e) {
     console.error(e);
-    yield put({
-      type: ACTIVITY_SET_SAVED_HASH_FAILURE
-    });
   }
 }
 
@@ -447,7 +430,7 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_GET_REQUEST, handle_ACTIVITY_GET_REQUEST),
     takeEvery(ACTIVITY_COPY_REQUEST, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(ACTIVITY_PASTE_REQUEST, handle_ACTIVITY_PASTE_REQUEST),
-    takeEvery(ACTIVITY_GET_NETWORK_REQUEST, handle_ACTIVITY_GET_NETWORK_REQUEST),
+    takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
     takeEvery(MAP_SET_COORDS, handle_MAP_SET_COORDS),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_READY),
     takeEvery(UserSettings.Activity.setActiveActivityIdSuccess, handle_USER_SETTINGS_READY),
@@ -457,7 +440,7 @@ function* activityPageSaga() {
     takeEvery(Activity.Suggestions.jurisdictionsOnline, handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE),
     takeLatest(Activity.Suggestions.jurisdictionsSuccess, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
     takeLatest(ACTIVITY_ON_FORM_CHANGE_SUCCESS, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
-    takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SET_SAVED_HASH_REQUEST),
+    takeEvery(Activity.saveSuccess, handle_ACTIVITY_SET_SAVED_HASH_REQUEST),
     takeEvery(Activity.Suggestions.persons, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
     takeEvery(Activity.Suggestions.personsOnline, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(Activity.Suggestions.treatmentIdsRequest, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
@@ -466,13 +449,13 @@ function* activityPageSaga() {
       Activity.Suggestions.treatmentIdsRequestOnline,
       handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE
     ),
-    takeEvery(ACTIVITY_SAVE_REQUEST, handle_ACTIVITY_SAVE_REQUEST),
-    takeEvery(ACTIVITY_SAVE_SUCCESS, handle_ACTIVITY_SAVE_SUCCESS),
-    takeEvery(ACTIVITY_SAVE_NETWORK_REQUEST, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
+    takeEvery(Activity.save, handle_ACTIVITY_SAVE_REQUEST),
+    takeEvery(Activity.saveSuccess, handle_ACTIVITY_SAVE_SUCCESS),
+    takeEvery(Activity.saveNetworkRequest, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
     takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
-    takeEvery(ACTIVITY_CREATE_REQUEST, handle_ACTIVITY_CREATE_REQUEST),
-    takeEvery(ACTIVITY_CREATE_NETWORK, handle_ACTIVITY_CREATE_NETWORK),
-    takeEvery(ACTIVITY_CREATE_SUCCESS, handle_ACTIVITY_CREATE_SUCCESS),
+    takeEvery(Activity.createReq, handle_ACTIVITY_CREATE_REQUEST),
+    takeEvery(Activity.createNetwork, handle_ACTIVITY_CREATE_NETWORK),
+    takeEvery(Activity.createSuccess, handle_ACTIVITY_CREATE_SUCCESS),
     takeEvery(ACTIVITY_SUBMIT_REQUEST, handle_ACTIVITY_SUBMIT_REQUEST),
     takeEvery(ACTIVITY_DEBUG, handle_ACTIVITY_DEBUG),
     takeEvery(ACTIVITY_GET_SUCCESS, handle_ACTIVITY_GET_SUCCESS),
@@ -490,7 +473,6 @@ function* activityPageSaga() {
     takeEvery(Activity.Photo.update, () => console.log('Activity.Photo.update')),
     takeEvery(ACTIVITY_LINK_RECORD_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST')),
     takeEvery(ACTIVITY_PERSIST_REQUEST, () => console.log('ACTIVITY_PERSIST_REQUEST')),
-    takeEvery(ACTIVITY_SAVE_REQUEST, () => console.log('ACTIVITY_SAVE_REQUEST')),
     takeEvery(ACTIVITY_SUBMIT_REQUEST, () => console.log('ACTIVITY_SUBMIT_REQUEST')),
     takeEvery(ACTIVITY_DELETE_REQUEST, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(ACTIVITY_DELETE_NETWORK_REQUEST, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
