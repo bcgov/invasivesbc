@@ -4,7 +4,6 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_COPY_SUCCESS,
-  ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_ERRORS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_REQUEST,
@@ -142,30 +141,28 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
         draftState.activeActivity = action.payload;
         draftState.current_activity_hash = null;
         draftState.saved_activity_hash = null;
+      } else if (Activity.deleteSuccess.match(action)) {
+        Object.assign(draftState, {
+          activity: null,
+          current_activity_hash: null,
+          error: false,
+          pasteCount: 0,
+          failCode: null,
+          initialized: false,
+          loading: false,
+          saved_activity_hash: null,
+          biocontrol: {
+            plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
+          },
+          suggestedJurisdictions: [],
+          suggestedPersons: [],
+          suggestedTreatmentIDs: []
+        });
       } else {
         switch (action.type) {
           case ACTIVITY_ERRORS: {
             if (action.payload.errors !== undefined)
               draftState.activityErrors = getCustomErrorTransformer()(action.payload.errors);
-            break;
-          }
-          case ACTIVITY_DELETE_SUCCESS: {
-            Object.assign(draftState, {
-              activity: null,
-              current_activity_hash: null,
-              error: false,
-              pasteCount: 0,
-              failCode: null,
-              initialized: false,
-              loading: false,
-              saved_activity_hash: null,
-              biocontrol: {
-                plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
-              },
-              suggestedJurisdictions: [],
-              suggestedPersons: [],
-              suggestedTreatmentIDs: []
-            });
             break;
           }
           case ACTIVITY_GET_FAILURE: {

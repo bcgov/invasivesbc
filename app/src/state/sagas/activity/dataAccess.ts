@@ -21,8 +21,6 @@ import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_COPY_FAILURE,
   ACTIVITY_COPY_SUCCESS,
-  ACTIVITY_DELETE_FAILURE,
-  ACTIVITY_DELETE_NETWORK_REQUEST,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_REQUEST,
@@ -421,16 +419,12 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   }
 }
 
-export function* handle_ACTIVITY_DELETE_REQUEST(action) {
-  const activityState = yield select(selectActivity);
+export function* handle_ACTIVITY_DELETE_REQUEST() {
   try {
-    yield put({
-      type: ACTIVITY_DELETE_NETWORK_REQUEST,
-      payload: { activity_id: activityState.activity_id }
-    });
+    yield put(Activity.deleteNetwork());
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_DELETE_FAILURE });
+    yield put(Activity.deleteFailure());
   }
 }
 

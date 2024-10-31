@@ -4,8 +4,6 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 import {
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-  ACTIVITY_DELETE_FAILURE,
-  ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_SUCCESS,
   AUTH_INITIALIZE_COMPLETE
@@ -30,12 +28,12 @@ export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
       ids: [activityState.activity.activity_id]
     });
     if (networkReturn?.status == 200) {
-      yield put({ type: ACTIVITY_DELETE_SUCCESS });
+      yield put(Activity.deleteSuccess());
     } else {
-      yield put({ type: ACTIVITY_DELETE_FAILURE });
+      yield put(Activity.deleteFailure());
     }
   } catch (e) {
-    yield put({ type: ACTIVITY_DELETE_FAILURE });
+    yield put(Activity.deleteFailure());
   }
 }
 

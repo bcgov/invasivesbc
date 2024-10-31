@@ -39,10 +39,6 @@ import {
   ACTIVITY_SET_ACTIVE_REQUEST,
   ACTIVITY_SET_ACTIVE_SUCCESS,
   ACTIVITY_SET_ACTIVE_FAILURE,
-  ACTIVITY_DELETE_REQUEST,
-  ACTIVITY_DELETE_NETWORK_REQUEST,
-  ACTIVITY_DELETE_SUCCESS,
-  ACTIVITY_DELETE_FAILURE,
   ACTIVITY_SUBMIT_REQUEST,
   ACTIVITY_SUBMIT_SUCCESS,
   ACTIVITY_SUBMIT_FAILURE,
@@ -96,10 +92,10 @@ class Activity {
   static readonly createLocal = createAction<ICreateLocal>(`${this.PREFIX}/createLocal`);
   static readonly createSuccess = createAction<string>(`${this.PREFIX}/createSuccess`);
 
-  static readonly deleteReq = createAction(ACTIVITY_DELETE_REQUEST);
-  static readonly deleteNetwork = createAction(ACTIVITY_DELETE_NETWORK_REQUEST);
-  static readonly deleteSuccess = createAction(ACTIVITY_DELETE_SUCCESS);
-  static readonly deleteFailure = createAction(ACTIVITY_DELETE_FAILURE);
+  static readonly deleteReq = createAction(`${this.PREFIX}/deleteReq`);
+  static readonly deleteNetwork = createAction(`${this.PREFIX}/deleteNetwork`);
+  static readonly deleteSuccess = createAction(`${this.PREFIX}/deleteSuccess`);
+  static readonly deleteFailure = createAction(`${this.PREFIX}/deleteFailure`);
 
   static readonly submit = createAction(ACTIVITY_SUBMIT_REQUEST);
   static readonly submitSuccess = createAction(ACTIVITY_SUBMIT_SUCCESS);
