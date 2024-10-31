@@ -1,8 +1,6 @@
 import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
 import {
-  ACTIVITY_CREATE_LOCAL,
-  ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_GET_FAILURE,
   ACTIVITY_GET_LOCAL_REQUEST,
   ACTIVITY_GET_REQUEST,
@@ -17,6 +15,8 @@ import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
+import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   //const shortId = action.payload.
@@ -40,8 +40,8 @@ export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   }
 }
 
-export function* handle_ACTIVITY_CREATE_LOCAL(action) {
-  yield put({ type: ACTIVITY_CREATE_SUCCESS, payload: { activity_id: action.payload.data.activity_id } });
+export function* handle_ACTIVITY_CREATE_LOCAL(action: PayloadAction<ICreateLocal>) {
+  yield put(Activity.createSuccess(action.payload.data.activity_id));
 }
 
 export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action) {
@@ -146,6 +146,6 @@ export function* handle_ACTIVITY_RESTORE_OFFLINE() {}
 export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
   takeEvery(ACTIVITY_GET_LOCAL_REQUEST, handle_ACTIVITY_GET_LOCAL_REQUEST),
   takeEvery(ACTIVITY_SAVE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE),
-  takeEvery(ACTIVITY_CREATE_LOCAL, handle_ACTIVITY_CREATE_LOCAL),
+  takeEvery(Activity.createLocal, handle_ACTIVITY_CREATE_LOCAL),
   takeLeading(ACTIVITY_RUN_OFFLINE_SYNC, handle_ACTIVITY_RUN_OFFLINE_SYNC)
 ];

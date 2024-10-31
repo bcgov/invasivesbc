@@ -4,8 +4,6 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_COPY_SUCCESS,
-  ACTIVITY_CREATE_REQUEST,
-  ACTIVITY_CREATE_SUCCESS,
   ACTIVITY_DELETE_SUCCESS,
   ACTIVITY_ERRORS,
   ACTIVITY_GET_FAILURE,
@@ -13,9 +11,7 @@ import {
   ACTIVITY_GET_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_PASTE_SUCCESS,
-  ACTIVITY_SAVE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_SET_SAVED_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS
 } from '../actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
@@ -119,6 +115,33 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
         draftState.suggestedTreatmentIDs = [...action.payload];
         if (draftState?.schema?.properties?.activity_type_data?.properties?.linked_id)
           draftState.schema.properties.activity_type_data.properties.linked_id.options = action.payload;
+      } else if (Activity.createReq.match(action)) {
+        const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
+        Object.assign(draftState, {
+          activity: null,
+          current_activity_hash: null,
+          error: false,
+          pasteCount: 0,
+          failCode: null,
+          initialized: false,
+          loading: false,
+          saved_activity_hash: null,
+          biocontrol: {
+            plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
+          },
+          suggestedJurisdictions: [],
+          suggestedPersons: [],
+          suggestedTreatmentIDs: [],
+          activity_copy_buffer
+        });
+      } else if (Activity.saveSuccess.match(action)) {
+        draftState.activity = { ...action.payload };
+      } else if (Activity.setSavedHashSuccess.match(action)) {
+        draftState.saved_activity_hash = action.payload;
+      } else if (Activity.createSuccess.match(action)) {
+        draftState.activeActivity = action.payload;
+        draftState.current_activity_hash = null;
+        draftState.saved_activity_hash = null;
       } else {
         switch (action.type) {
           case ACTIVITY_ERRORS: {
@@ -142,27 +165,6 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
               suggestedJurisdictions: [],
               suggestedPersons: [],
               suggestedTreatmentIDs: []
-            });
-            break;
-          }
-          case ACTIVITY_CREATE_REQUEST: {
-            const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
-            Object.assign(draftState, {
-              activity: null,
-              current_activity_hash: null,
-              error: false,
-              pasteCount: 0,
-              failCode: null,
-              initialized: false,
-              loading: false,
-              saved_activity_hash: null,
-              biocontrol: {
-                plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
-              },
-              suggestedJurisdictions: [],
-              suggestedPersons: [],
-              suggestedTreatmentIDs: [],
-              activity_copy_buffer
             });
             break;
           }
@@ -210,16 +212,6 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
             draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
             break;
           }
-          case ACTIVITY_CREATE_SUCCESS: {
-            draftState.activeActivity = action.payload.activity_id;
-            draftState.current_activity_hash = null;
-            draftState.saved_activity_hash = null;
-            break;
-          }
-          case ACTIVITY_SAVE_SUCCESS: {
-            draftState.activity = { ...action.payload.activity };
-            break;
-          }
           case ACTIVITY_COPY_SUCCESS: {
             draftState.activity_copy_buffer = {
               form_data: action.payload.form_data
@@ -235,10 +227,7 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
             draftState.current_activity_hash = action.payload.current;
             break;
           }
-          case ACTIVITY_SET_SAVED_HASH_SUCCESS: {
-            draftState.saved_activity_hash = action.payload.saved;
-            break;
-          }
+
           default:
             break;
         }

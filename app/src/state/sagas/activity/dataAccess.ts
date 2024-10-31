@@ -21,24 +21,19 @@ import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_COPY_FAILURE,
   ACTIVITY_COPY_SUCCESS,
-  ACTIVITY_CREATE_FAILURE,
-  ACTIVITY_CREATE_LOCAL,
-  ACTIVITY_CREATE_NETWORK,
   ACTIVITY_DELETE_FAILURE,
   ACTIVITY_DELETE_NETWORK_REQUEST,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   ACTIVITY_GET_LOCAL_REQUEST,
-  ACTIVITY_GET_NETWORK_REQUEST,
   ACTIVITY_GET_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_PASTE_FAILURE,
   ACTIVITY_PASTE_SUCCESS,
-  ACTIVITY_SAVE_NETWORK_FAILURE,
-  ACTIVITY_SAVE_NETWORK_REQUEST,
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
+  CLOSE_NEW_RECORD_MENU,
   MAIN_MAP_MOVE,
   MAP_INIT_REQUEST
 } from 'state/actions';
@@ -59,15 +54,16 @@ import { MOBILE } from 'state/build-time-config';
 import Alerts from 'state/actions/alerts/Alerts';
 import Prompt from 'state/actions/prompts/Prompt';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import Activity from 'state/actions/activity/Activity';
+import Activity, { INewActivity } from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 export function* handle_ACTIVITY_GET_REQUEST(action) {
   try {
     if (MOBILE) {
       yield put({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: action.payload.activityID } });
     } else {
-      yield put({ type: ACTIVITY_GET_NETWORK_REQUEST, payload: { activityID: action.payload.activityID } });
+      yield put(Activity.getNetworkRequest(action.payload.activityID));
     }
   } catch (e) {
     console.error(e);
@@ -287,18 +283,19 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
     });
   } else {
     try {
-      yield put({
-        type: ACTIVITY_SAVE_NETWORK_REQUEST,
-        payload: { activity_id: activityState.activity_id, updatedFormData: action.payload?.updatedFormData }
-      });
+      yield put(
+        Activity.saveNetworkRequest({
+          activity_id: activityState.activity_id,
+          updatedFormData: action.payload?.updatedFormData
+        })
+      );
     } catch (e) {
       console.error(e);
-      yield put({ type: ACTIVITY_SAVE_NETWORK_FAILURE });
     }
   }
 }
 
-export function* handle_ACTIVITY_CREATE_REQUEST(action) {
+export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivity>) {
   try {
     const authState = yield select(selectAuth);
 
@@ -312,28 +309,27 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action) {
     );
 
     if (MOBILE) {
-      yield put({ type: ACTIVITY_CREATE_LOCAL, payload: { id: newActivity.activity_id, data: newActivity } });
+      yield put(Activity.createLocal({ id: newActivity.activity_id, data: newActivity }));
     } else {
-      yield put({ type: ACTIVITY_CREATE_NETWORK, payload: { activity: newActivity } });
+      yield put(Activity.createNetwork(newActivity));
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_CREATE_FAILURE });
   }
 }
 
-export function* handle_ACTIVITY_CREATE_SUCCESS(action) {
+export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
   try {
-    yield put(UserSettings.Activity.setActiveActivityId(action.payload.activity_id));
+    yield put(UserSettings.Activity.setActiveActivityId(action.payload));
+    yield put({ type: CLOSE_NEW_RECORD_MENU });
     yield put({
       type: ACTIVITY_GET_REQUEST,
       payload: {
-        activityID: action.payload.activity_id
+        activityID: action.payload
       }
     });
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_CREATE_FAILURE });
   }
 }
 
@@ -399,7 +395,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     //call autofill events
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_CREATE_FAILURE });
   }
 }
 
@@ -416,10 +411,9 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST() {
     });
   } else {
     try {
-      yield put({
-        type: ACTIVITY_SAVE_NETWORK_REQUEST,
-        payload: { activity_id: activityState.activity_id, form_status: ActivityStatus.SUBMITTED }
-      });
+      yield put(
+        Activity.saveNetworkRequest({ activity_id: activityState.activity_id, form_status: ActivityStatus.SUBMITTED })
+      );
     } catch (e) {
       console.error(e);
       yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });

@@ -13,12 +13,13 @@ import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_CREATE_REQUEST, CLOSE_NEW_RECORD_MENU } from 'state/actions';
+import { CLOSE_NEW_RECORD_MENU } from 'state/actions';
 import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 import './NewRecordDialog.css';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useSelector } from 'utils/use_selector';
+import Activity from 'state/actions/activity/Activity';
 
 export interface INewRecordDialog {}
 
@@ -72,10 +73,9 @@ const NewRecordDialog = (props: INewRecordDialog) => {
   }, [newRecordDialogState.recordType]);
 
   const insert_record = async () => {
-    dispatch({
-      type: ACTIVITY_CREATE_REQUEST,
-      payload: { type: newRecordDialogState.recordType, subType: newRecordDialogState.recordSubtype }
-    });
+    dispatch(
+      Activity.createReq({ type: newRecordDialogState.recordType, subType: newRecordDialogState.recordSubtype })
+    );
     history.push('/Records/Activity:/form');
   };
 
