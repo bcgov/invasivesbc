@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from 'database/db';
-import { getWell } from 'paths/context/well';
 import { getLogger } from 'utils/logger';
 import { insertWellDistanceSQL } from 'queries/context-queries';
+import { getWell } from 'utils/well';
 
 const defaultLog = getLogger('context-queries');
 
@@ -92,74 +92,6 @@ const saveBCGW = async (id: any, req: any) => {
     });
 
   connection.release();
-};
-
-/**
- * ## saveInternal
- * Insert contextual data for the new activity record from
- * local datasets housed in the PostGres database.
- *
- * @param id {integer} The record ID for the activity recently
- *   entered in the database.
- * @param req {object} The express request object
- */
-const saveInternal = (id: any, req: any) => {
-  const lat = req.body.form_data.activity_data.latitude;
-  const lon = req.body.form_data.activity_data.longitude;
-  const api = `${req.protocol}://${req.get('host')}/api`;
-  const config = {
-    headers: {
-      authorization: req.headers.authorization
-    }
-  };
-
-  /* All the layers to get queried */
-  const layers = [
-    {
-      targetAttribute: 'ipma', // The attribute to collect
-      targetColumn: 'invasive_plant_management_areas' // The column in our database table
-    },
-    {
-      targetAttribute: 'riso',
-      targetColumn: 'regional_invasive_species_organization_areas'
-    },
-    {
-      targetAttribute: 'utm',
-      targetColumn: 'utm_zone'
-    }
-  ];
-
-  /* For each layer run an asynchronous request */
-  for (const layer of layers) {
-    const url = `${api}/context/internal/${layer.targetAttribute}?lon=${lon}&lat=${lat}`;
-
-    axios
-      .get(url, config)
-      .then(async (response) => {
-        const attribute = response.data.target;
-        const column = layer.targetColumn;
-        const connection = await getDBConnection();
-        const sql = `
-          update activity_incoming_data
-          set ${column} = '${attribute}'
-          where activity_id = '${id}'
-        `;
-
-        await connection
-          .query(sql)
-          .then(() => {
-            defaultLog.info({ message: `Successfully entered ${attribute} into column ${column}` });
-          })
-          .catch((err) => {
-            defaultLog.error({ message: 'Error inserting into the database', error: err });
-          });
-
-        connection.release();
-      })
-      .catch((error) => {
-        defaultLog.debug({ label: 'addingContext', message: 'error', error });
-      });
-  }
 };
 
 /**

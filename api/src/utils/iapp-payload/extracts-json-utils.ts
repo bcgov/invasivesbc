@@ -1,19 +1,5 @@
 import { mapTankMix } from './iapp-function-utils';
 
-const mapEfficacyCode = (percent) => {
-  percent = Number(percent);
-  if (percent < 10) return 10;
-  if (percent < 20) return 9;
-  if (percent < 30) return 8;
-  if (percent < 40) return 7;
-  if (percent < 50) return 6;
-  if (percent < 60) return 5;
-  if (percent < 70) return 4;
-  if (percent < 80) return 3;
-  if (percent < 90) return 2;
-  if (percent <= 100) return 1;
-};
-
 export const chemicalTreatmentJSON = (treatment: any, all_monitoring: any[]) => {
   const common_name = treatment.invasive_plant.substring(0, treatment.invasive_plant.indexOf('(') - 1);
   const monitoring = [];

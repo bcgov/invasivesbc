@@ -53,18 +53,6 @@ export const ALL_ROLES = [
 ];
 
 /**
- * Caching keys, for use with `memory-cache`.
- *
- * @export
- * @enum {number}
- */
-export enum CacheKeys {
-  ALL_CODE_CATEGORIES = 'all-code-categories',
-  ALL_CODE_HEADERS = 'all-code-headers',
-  ALL_CODES = 'all-codes'
-}
-
-/**
  * Supported activity types.
  *
  * @export
@@ -74,21 +62,6 @@ export enum ActivityType {
   OBSERVATION = 'Observation',
   MONITOR = 'Monitor',
   TREATMENT = 'Treatment'
-}
-
-/**
- * Supported activity sub types.
- *
- * @export
- * @enum {number}
- */
-export enum ActivitySubType {
-  TERRESTRIAL_PLANT = 'Terrestrial Plant',
-  AQUATIC_PLANT = 'Aquatic Plant',
-  AQUATIC_TERRESTRIAL_PLANT = 'Aquatic Terrestrial Plant',
-  TERRESTRIAL_ANIMAL = 'Terrestrial Animal',
-  AQUATIC_ANIMAL = 'Aquatic Animal',
-  AQUATIC_TERRESTRIAL_ANIMAL = 'Aquatic Terrestrial Animal'
 }
 
 /**
@@ -159,14 +132,3 @@ export const SEARCH_LIMIT_DEFAULT = 1000;
  * @type {number}
  */
 export const SEARCH_LIMIT_MAX = 999999;
-
-/**
- * Supported PSQL `ORDER BY` directions.
- *
- * @export
- * @enum {number}
- */
-export enum SORT_DIRECTION {
-  ASC = 'ASC',
-  DESC = 'DESC'
-}
