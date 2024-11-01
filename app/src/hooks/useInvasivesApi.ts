@@ -1,39 +1,10 @@
 import { select } from 'redux-saga/effects';
-import {
-  IActivitySearchCriteria,
-  ICreateOrUpdateActivity,
-  IPointOfInterestSearchCriteria
-} from 'interfaces/useInvasivesApi-interfaces';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 export const useInvasivesApi = () => {
   const { API_BASE } = useSelector(selectConfiguration);
-  const getActivities = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
-    const url = new URL(API_BASE + `/api/activities/`);
-    url.searchParams.set('query', JSON.stringify(activitiesSearchCriteria));
-    const res = await fetch(url, {
-      headers: {
-        Authorization: await getCurrentJWT()
-      }
-    });
-    const data = await res.json();
-    return { rows: data.result, count: data.count };
-  };
-
-  const getActivitiesLean = async (activitiesSearchCriteria: IActivitySearchCriteria): Promise<any> => {
-    const res = await fetch(API_BASE + `/api/activities-lean/`, {
-      method: 'POST',
-      headers: {
-        Authorization: await getCurrentJWT(),
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(activitiesSearchCriteria)
-    });
-    const data = await res.json();
-    return data.result;
-  };
 
   const deleteActivities = async (activityIds: string[]): Promise<any> => {
     const url = new URL(API_BASE + `/api/activities`);
@@ -45,31 +16,8 @@ export const useInvasivesApi = () => {
     const data = await res.json();
     return data.result;
   };
-  const undeleteActivities = async (activityIds: string[]): Promise<any> => {
-    const url = new URL(API_BASE + `/api/deleted/activities`);
-    url.searchParams.set('id', JSON.stringify(activityIds));
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: await getCurrentJWT(),
-        'Content-Type': 'application/json'
-      }
-    });
-    const data = await res.json();
-    return data.result;
-  };
-
   const getRoles = async (): Promise<any> => {
     const res = await fetch(API_BASE + `/api/roles/`, {
-      headers: { Authorization: await getCurrentJWT() }
-    });
-    const data = await res.json();
-    return data.result;
-  };
-  const getPointsOfInterest = async (pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria): Promise<any> => {
-    const url = new URL(API_BASE + `/api/points-of-interest/`);
-    url.searchParams.set('query', JSON.stringify(pointsOfInterestSearchCriteria));
-    const res = await fetch(url, {
       headers: { Authorization: await getCurrentJWT() }
     });
     const data = await res.json();
@@ -126,13 +74,7 @@ export const useInvasivesApi = () => {
     const data = await res.json();
     return data.result;
   };
-  const getUsersForRole = async (roleId: string): Promise<any> => {
-    const res = await fetch(API_BASE + `/api/user-access?roleId=${roleId}`, {
-      headers: { Authorization: await getCurrentJWT() }
-    });
-    const data = await res.json();
-    return data.result;
-  };
+
   const batchGrantRoleToUser = async (userIds: number[], roleId: number): Promise<any> => {
     const res = await fetch(API_BASE + `/api/user-access`, {
       method: 'POST',
@@ -162,13 +104,7 @@ export const useInvasivesApi = () => {
     const data = await res.json();
     return data.result;
   };
-  const getUpdateRequests = async (): Promise<any> => {
-    const res = await fetch(API_BASE + `/api/update-request/`, {
-      headers: { Authorization: await getCurrentJWT() }
-    });
-    const data = await res.json();
-    return data.result;
-  };
+
   const declineUpdateRequest = async (updateRequest) => {
     const res = await fetch(API_BASE + `/api/update-request`, {
       method: 'POST',
@@ -204,20 +140,6 @@ export const useInvasivesApi = () => {
     return data.result;
   };
 
-  const getPointsOfInterestLean = async (
-    pointsOfInterestSearchCriteria: IPointOfInterestSearchCriteria
-  ): Promise<any> => {
-    const url = new URL(API_BASE + `/api/points-of-interest-lean/`);
-    url.searchParams.set('query', JSON.stringify(pointsOfInterestSearchCriteria));
-
-    const res = await fetch(url, {
-      headers: { Authorization: await getCurrentJWT() }
-    });
-    const data = await res.json();
-
-    return data.result;
-  };
-
   const getMedia = async (media_keys: string[]): Promise<any> => {
     const url = new URL(API_BASE + `/api/media`);
     for (const key of media_keys) {
@@ -242,36 +164,6 @@ export const useInvasivesApi = () => {
     const res = await fetch(API_BASE + `/api/application-user/renew?userId=${id}`, {
       headers: { Authorization: await getCurrentJWT() },
       method: 'POST'
-    });
-    const data = await res.json();
-
-    return data.result;
-  };
-  const createActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
-    const res = await fetch(API_BASE + '/api/activity', {
-      method: 'POST',
-      headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
-      body: JSON.stringify(activity)
-    });
-    const data = await res.json();
-
-    return data.result;
-  };
-  const updateActivity = async (activity: ICreateOrUpdateActivity): Promise<any> => {
-    // Not sure who is using this... But its smelling
-    // const oldActivity = await getActivityById(activity.activity_id);
-    const res = await fetch(API_BASE + '/api/activity', {
-      method: 'PUT',
-      headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
-      body: JSON.stringify(activity)
-    });
-    const data = await res.json();
-
-    return data.result;
-  };
-  const getSimplifiedGeoJSON = async (url_geo: string, percentage: string): Promise<any> => {
-    const res = await fetch(API_BASE + `/api/map-shaper?url=${url_geo}&percentage=${percentage}`, {
-      headers: { Authorization: await getCurrentJWT() }
     });
     const data = await res.json();
 
@@ -322,15 +214,7 @@ export const useInvasivesApi = () => {
   };
   return {
     getMedia,
-    getActivities,
-    getActivitiesLean,
     deleteActivities,
-    undeleteActivities,
-    createActivity,
-    updateActivity,
-    getPointsOfInterest,
-    getPointsOfInterestLean,
-    getSimplifiedGeoJSON,
     getAccessRequestData,
     listCodeTables,
     fetchCodeTable,
@@ -339,7 +223,6 @@ export const useInvasivesApi = () => {
     getEmployers,
     getFundingAgencies,
     getRolesForUser,
-    getUsersForRole,
     batchGrantRoleToUser,
     revokeRoleFromUser,
     getRoles,
@@ -349,7 +232,6 @@ export const useInvasivesApi = () => {
     renewUser,
     postAdminUploadShape,
     submitUpdateRequest,
-    getUpdateRequests,
     declineUpdateRequest,
     approveUpdateRequests,
     listEmbeddedMetabaseReports,
