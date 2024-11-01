@@ -1,8 +1,9 @@
-import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
-import { getDBConnection } from 'database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import SQL, { SQLStatement } from 'sql-template-strings';
+
+import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
+import { getDBConnection } from 'database/db';
 import { getLogger } from 'utils/logger';
 
 const defaultLog = getLogger('biocontrol-treatments');
@@ -48,7 +49,8 @@ function getBiocontrolTreatments(): RequestHandler {
       });
     }
     try {
-      const sqlStatement: SQLStatement = SQL`SELECT plant_code_name, agent_code_name FROM plant_agent_treatment;`;
+      const sqlStatement: SQLStatement = SQL`SELECT plant_code_name, agent_code_name
+                                             FROM plant_agent_treatment;`;
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
       const result = response?.rows ?? null;
 

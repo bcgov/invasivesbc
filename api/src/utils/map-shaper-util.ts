@@ -12,15 +12,6 @@ proj4.defs(
   '+proj=aea +lat_1=50 +lat_2=58.5 +lat_0=45 +lon_0=-126 +x_0=1000000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
 );
 
-const albersToGeog = (featureCollection) => {
-  try {
-    const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
-    return reprojected;
-  } catch (e) {
-    defaultLog.warn({ message: 'error converting back to geog from albers', error: e });
-  }
-};
-
 async function simplifyGeojson(data, percentage, returnCallback) {
   try {
     await applyCommands(

@@ -34,20 +34,6 @@ export const mapSlope = (slope) => {
   return 'NA';
 };
 
-export const mapAspect = (aspect) => {
-  aspect = Number(aspect);
-  if (!aspect) return '';
-  if ((aspect > 333.5 && aspect <= 360) || aspect <= 22.5) return 'N';
-  if (aspect <= 67.5) return 'NE';
-  if (aspect <= 112.5) return 'E';
-  if (aspect <= 157.5) return 'SE';
-  if (aspect <= 202.5) return 'S';
-  if (aspect <= 247.5) return 'SW';
-  if (aspect <= 292.5) return 'W';
-  if (aspect <= 333.5) return 'NW';
-  return 'NA';
-};
-
 export const mapTankMix = (mix) => {
   if (mix === 'Y') return 'Yes';
   if (!mix) return 'No';

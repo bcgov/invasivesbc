@@ -4,7 +4,6 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getEmployerCodesSQL } from 'queries/code-queries';
-// import { getEmployers, getFundingAgencies } from '../utils/code-utils';
 
 export const GET: Operation = [getEmployerCodes()];
 

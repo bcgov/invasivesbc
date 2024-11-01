@@ -3,19 +3,6 @@ import _ from 'lodash';
 import YAML from 'js-yaml';
 import { MDCAsyncLocal } from 'mdc';
 
-/**
- * Logger input.
- *
- * @export
- * @interface ILoggerMessage
- * @extends {winston.Logform.TransformableInfo}
- */
-interface ILoggerMessage extends winston.Logform.TransformableInfo {
-  timestamp?: string; // Optionally overwrite the default timestamp
-  label?: string; // Add a label to this message (generally the name of the parent function)
-  error?: Error; // An optional error to display
-}
-
 class LoggerWithContext {
   _instance: winston.Logger;
 

@@ -774,13 +774,13 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
 
 export const getActivityHistorySQL = (activityId: string): SQLStatement => {
   return SQL`
-  
-  
+
+
 ;with activity_version_history as (
    select updated_by, created_timestamp, form_status, iscurrent, ROW_NUMBER() OVER (ORDER BY activity_incoming_data_id asc) AS Version
    from activity_incoming_data
 	where activity_id = ${activityId}
-     
+
   )
     SELECT a.*
     FROM activity_version_history a;
@@ -788,60 +788,6 @@ export const getActivityHistorySQL = (activityId: string): SQLStatement => {
   `;
 };
 
-/**
- * SQL query to fetch a grid cells that overlap with given geometry from either large grid or small grid;
- *
- * @param {string} geometry
- * @param {string} largeGrid
- * @returns {SQLStatement} sql query object
- */
-export const getOverlappingBCGridCellsSQL = (
-  geometry: string,
-  isGridLarge: string,
-  grid_item_ids: number[]
-): SQLStatement => {
-  switch (isGridLarge) {
-    case '1':
-      return SQL`
-        SELECT id, public.st_asGeoJSON(geo) as geo
-        FROM invasivesbc.bc_large_grid
-        WHERE public.ST_INTERSECTS(
-                geo,
-                public.geography(
-                  public.ST_Force2D(
-                    public.ST_SetSRID(
-                      public.ST_GeomFromGeoJSON(${geometry}),
-                      4326
-                    )
-                  )
-                )
-              );
-      `;
-      break;
-    case '0':
-      if (grid_item_ids.length < 1) {
-        throw "Error: looking for small grid items but the large grid item id array wasn't provided";
-      } else {
-        return SQL`
-          SELECT id, public.st_asGeoJSON(geo) as geo, large_grid_item_id
-          FROM invasivesbc.bc_small_grid
-          WHERE large_grid_item_id = ANY (${grid_item_ids})
-            AND public.ST_INTERSECTS(
-            geo,
-            public.geography(
-              public.ST_Force2D(
-                public.ST_SetSRID(
-                  public.ST_GeomFromGeoJSON(${geometry}),
-                  4326
-                )
-              )
-            )
-                );
-        `;
-      }
-      break;
-  }
-};
 /**
  * SQL queries to soft-delete activity records, marking them as `deleted`.
  *
@@ -882,8 +828,8 @@ export const getLinkedMonitoringRecordsFromTreatmentSQL = (treatmentRecordID: st
     SELECT activity_id
     FROM activity_incoming_data
     WHERE activity_type = 'Monitoring'
-    AND iscurrent = True
-    AND activity_payload->'form_data'->'activity_type_data'->>'linked_id' = ${treatmentRecordID};
+      AND iscurrent = True
+      AND activity_payload -> 'form_data' -> 'activity_type_data' ->> 'linked_id' = ${treatmentRecordID};
   `;
 
 /**
