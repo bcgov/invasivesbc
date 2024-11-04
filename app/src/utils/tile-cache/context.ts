@@ -6,7 +6,7 @@ import { LocalForageCacheService } from 'utils/tile-cache/localforage-cache';
 
 class TileCacheServiceFactory {
   static async getPlatformInstance() {
-    if (PLATFORM == Platform.IOS) {
+    if ([Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
       return SQLiteTileCacheService.getInstance();
     }
     return LocalForageCacheService.getInstance();
