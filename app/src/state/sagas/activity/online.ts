@@ -2,12 +2,7 @@ import { put, select, take } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
-import {
-  ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-  ACTIVITY_GET_FAILURE,
-  ACTIVITY_GET_SUCCESS,
-  AUTH_INITIALIZE_COMPLETE
-} from 'state/actions';
+import { ACTIVITIES_GEOJSON_REFETCH_ONLINE, AUTH_INITIALIZE_COMPLETE } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
@@ -44,8 +39,8 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
   }
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
 
-  if (!(networkReturn.status === 200)) {
-    yield put({ type: ACTIVITY_GET_FAILURE, payload: { failNetworkObj: networkReturn } });
+  if (networkReturn.status !== 200) {
+    yield put(Activity.getFailure(networkReturn));
     return;
   }
 
@@ -58,7 +53,7 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
     media_delete_keys: networkReturn.data.media_delete_keys || []
   };
 
-  yield put({ type: ACTIVITY_GET_SUCCESS, payload: { activity: datav2 } });
+  yield put(Activity.getSuccess(datav2));
 }
 
 export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {

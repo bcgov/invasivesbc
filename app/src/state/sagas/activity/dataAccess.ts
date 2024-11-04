@@ -20,8 +20,6 @@ import {
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
-  ACTIVITY_GET_LOCAL_REQUEST,
-  ACTIVITY_GET_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SAVE_OFFLINE,
@@ -52,12 +50,12 @@ import Activity, { INewActivity } from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { PayloadAction } from '@reduxjs/toolkit';
 
-export function* handle_ACTIVITY_GET_REQUEST(action) {
+export function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
     if (MOBILE) {
-      yield put({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: action.payload.activityID } });
+      yield put(Activity.getLocal(action.payload));
     } else {
-      yield put(Activity.getNetworkRequest(action.payload.activityID));
+      yield put(Activity.getNetworkRequest(action.payload));
     }
   } catch (e) {
     console.error(e);
@@ -238,7 +236,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
 export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
   const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
   try {
-    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: activity_id } });
+    yield put(Activity.get(activity_id));
     yield put(
       Alerts.create({
         autoClose: 5,
@@ -303,12 +301,7 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
   try {
     yield put(UserSettings.Activity.setActiveActivityId(action.payload));
     yield put({ type: CLOSE_NEW_RECORD_MENU });
-    yield put({
-      type: ACTIVITY_GET_REQUEST,
-      payload: {
-        activityID: action.payload
-      }
-    });
+    yield put(Activity.get(action.payload));
   } catch (e) {
     console.error(e);
   }
@@ -525,7 +518,7 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
 }
 
 // some form autofill on create stuff will likely need to go here
-export function* handle_ACTIVITY_GET_SUCCESS(action) {
+export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string, any>>) {
   try {
     const activityState = yield select(selectActivity);
     const type = activityState?.activity?.activity_subtype;
@@ -534,22 +527,21 @@ export function* handle_ACTIVITY_GET_SUCCESS(action) {
     yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
 
     // needs to be latlng expression
-    const isGeo = action.payload.activity?.geometry?.[0]?.geometry?.coordinates ? true : false;
-    //const centerPoint = center(action.payload.activity?.geometry[0]?.geometry?.coordinates);
+    const isGeo = action.payload?.geometry?.[0]?.geometry?.coordinates ? true : false;
 
     let centerPoint;
     if (isGeo) {
-      centerPoint = center(action.payload.activity?.geometry[0]?.geometry);
+      centerPoint = center(action.payload?.geometry[0]?.geometry);
     }
     if (centerPoint && isGeo) {
       yield put(UserSettings.Map.setCenter(centerPoint.geometry.coordinates));
     }
     if (isLinkedTreatmentSubtype(type)) {
-      yield put(Activity.Suggestions.treatmentIdsRequest(action.payload.activity));
+      yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));
     }
     const authState = yield select(selectAuth);
     const userName = authState.username;
-    const created_by = action.payload.activity.created_by;
+    const created_by = action.payload.created_by;
     const createdByUser = userName === created_by;
 
     const isViewing = !createdByUser;
