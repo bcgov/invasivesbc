@@ -15,25 +15,33 @@
 }
 
 #map-btn-container {
+  z-index: 999;
+  max-width: 100%;
   display: flex;
-  flex-flow: row nowrap;
-  place-content: space-evenly center;
-  gap: 16px;
   overflow-x: auto;
+  background: none;
+  gap: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
   -webkit-overflow-scrolling: touch;
   -ms-overflow-style: -ms-autohiding-scrollbar;
   position: absolute;
-  left: 0;
-  right: 0;
   height: var(--map-button-bar-height);
   transition: bottom 0.1s ease 0.3s;
+
+  /* Enable clickthrough on div, but keep children clickable */
+  pointer-events: none;
+  & > * {
+    pointer-events: auto;
+  }
 
   .button {
     height: 100%;
     aspect-ratio: 1;
     font-weight: bold;
     border-radius: 50%;
-    color: #036;
+    color: var(--bc-blue);
 
     &:hover {
       background-color: white;
@@ -41,35 +49,23 @@
   }
 
   .basemap-btn-group {
-    padding: 0;
-    margin: 0;
     display: flex;
-    flex-flow: row nowrap;
-    gap: 0;
-
     div {
-      padding: 0;
-      margin: 0;
       border-right: 1px solid darkgrey;
-      aspect-ratio: 1;
-      flex-shrink: 0;
 
       &.selected {
         .basemap-btn {
-          background-color: #036;
-          color: #fcba19;
+          background-color: var(--bc-blue);
+          color: var(--bc-yellow);
         }
       }
 
       .basemap-btn {
         height: 100%;
         width: var(--map-button-bar-height);
-        font-weight: bold;
         border-radius: 0;
-        font-size: 14px;
         background-color: white;
-        color: #036;
-        flex-shrink: 0;
+        color: var(--bc-blue);
       }
 
       &:first-child:not(:only-child) {
@@ -82,41 +78,30 @@
         .basemap-btn {
           border-radius: 0 20% 20% 0;
         }
-
         border-right: none;
       }
 
       &:only-child {
         /* the special case when there's only one button */
-
         .basemap-btn {
           border-radius: 20%;
-
         }
-
         border: none;
-
       }
-
     }
-
   }
 
   .map-btn {
     .button {
       background-color: white;
-      color: #036;
+      color: var(--bc-blue);
     }
   }
 
   .map-btn-selected {
     .button {
-      background-color: #036;
-      color: #fcba19;
+      background-color: var(--bc-blue);
+      color: var(--bc-yellow);
     }
   }
-
-  /* background: rgb(255 255 255); */
-
-  /* background: linear-gradient(90deg, rgb(255 255 255 / 0%) 0%, rgb(255 255 255 / 50%) 50%, rgb(255 255 255 / 0%) 100%); */
 }
