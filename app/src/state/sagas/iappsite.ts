@@ -16,8 +16,8 @@ function* iappPageSaga() {
     takeEvery(IAPP_GET_NETWORK_REQUEST, handle_IAPP_GET_NETWORK_REQUEST),
     takeEvery(IAPP_GET_SUCCESS, handle_IAPP_GET_SUCCESS),
     takeEvery(IAPP_PAN_AND_ZOOM, handle_IAPP_PAN_AND_ZOOM),
-    takeEvery(UserSettings.InitState.getSuccess.type, handle_USER_SETTINGS_READY),
-    takeEvery(UserSettings.IAPP.setActiveSuccess.type, handle_USER_SETTINGS_READY)
+    takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_READY),
+    takeEvery(UserSettings.IAPP.setActiveSuccess, handle_USER_SETTINGS_READY)
   ]);
 }
 
