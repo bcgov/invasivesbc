@@ -4,9 +4,6 @@ import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_ERRORS,
-  ACTIVITY_GET_FAILURE,
-  ACTIVITY_GET_REQUEST,
-  ACTIVITY_GET_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS
@@ -163,27 +160,21 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
         draftState.activity_copy_buffer = {
           form_data: action.payload
         };
+      } else if (Activity.get.match(action)) {
+        draftState.failCode = null;
+        draftState.loading = true;
+      } else if (Activity.getSuccess.match(action)) {
+        draftState.activity = { ...action.payload };
+        draftState.suggestedTreatmentIDs = [];
+        draftState.loading = false;
+      } else if (Activity.getFailure.match(action)) {
+        draftState.loading = false;
+        draftState.failCode = action.payload?.status ?? null;
       } else {
         switch (action.type) {
           case ACTIVITY_ERRORS: {
             if (action.payload.errors !== undefined)
               draftState.activityErrors = getCustomErrorTransformer()(action.payload.errors);
-            break;
-          }
-          case ACTIVITY_GET_FAILURE: {
-            draftState.loading = false;
-            draftState.failCode = action.payload?.failNetworkObj?.status;
-            break;
-          }
-          case ACTIVITY_GET_REQUEST: {
-            draftState.failCode = null;
-            draftState.loading = true;
-            break;
-          }
-          case ACTIVITY_GET_SUCCESS: {
-            draftState.activity = { ...action.payload.activity };
-            draftState.suggestedTreatmentIDs = [];
-            draftState.loading = false;
             break;
           }
           case ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS: {
@@ -218,7 +209,6 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
             draftState.current_activity_hash = action.payload.current;
             break;
           }
-
           default:
             break;
         }

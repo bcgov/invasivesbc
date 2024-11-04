@@ -3,13 +3,14 @@ import { Button, LinearProgress } from '@mui/material';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_GET_LOCAL_REQUEST, ACTIVITY_OFFLINE_DELETE_ITEM, ACTIVITY_RUN_OFFLINE_SYNC } from 'state/actions';
+import { ACTIVITY_OFFLINE_DELETE_ITEM, ACTIVITY_RUN_OFFLINE_SYNC } from 'state/actions';
 import Delete from '@mui/icons-material/Delete';
 import './OfflineDataSync.css';
 import moment from 'moment';
 import { FileOpen } from '@mui/icons-material';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { useHistory } from 'react-router-dom';
+import Activity from 'state/actions/activity/Activity';
 
 export const OfflineDataSyncTable = () => {
   const { working, serializedActivities } = useSelector(selectOfflineActivity);
@@ -60,7 +61,7 @@ export const OfflineDataSyncTable = () => {
                     <Button
                       disabled={!(workingOffline || authenticated)}
                       onClick={() => {
-                        dispatch({ type: ACTIVITY_GET_LOCAL_REQUEST, payload: { activityID: key } });
+                        dispatch(Activity.getLocal(key));
                         history.push(`/Records/Activity:${key}/form`);
                       }}
                     >

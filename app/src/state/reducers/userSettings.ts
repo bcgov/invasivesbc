@@ -2,7 +2,6 @@ import { createNextState } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 
 import {
-  ACTIVITY_GET_REQUEST,
   CLOSE_NEW_RECORD_MENU,
   GET_API_DOC_SUCCESS,
   IAPP_GET_SUCCESS,
@@ -119,12 +118,10 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (Activity.deleteSuccess.match(action)) {
         draftState.activeActivity = null;
         draftState.activeActivityDescription = null;
+      } else if (Activity.get.match(action)) {
+        draftState.activeActivity = action.payload;
       } else {
         switch (action.type) {
-          case ACTIVITY_GET_REQUEST: {
-            draftState.activeActivity = action.payload.activityID;
-            break;
-          }
           case GET_API_DOC_SUCCESS: {
             draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
             draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;

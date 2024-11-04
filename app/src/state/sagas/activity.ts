@@ -5,8 +5,6 @@ import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
   ACTIVITY_DEBUG,
-  ACTIVITY_GET_REQUEST,
-  ACTIVITY_GET_SUCCESS,
   ACTIVITY_LINK_RECORD_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
@@ -73,11 +71,7 @@ import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import { selectMap } from 'state/reducers/map';
 
-function* handle_USER_SETTINGS_READY(action) {
-  // if (action.payload.activeActivity) {
-  //    yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: action.payload.activeActivity } });
-  // }
-}
+function* handle_USER_SETTINGS_READY(action) {}
 
 function* handle_ACTIVITY_DEBUG(action) {}
 
@@ -144,8 +138,7 @@ function* handle_URL_CHANGE(action) {
     if (afterColon) {
       id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
     }
-    if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id)
-      yield put({ type: ACTIVITY_GET_REQUEST, payload: { activityID: id } });
+    if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(Activity.get(id));
   }
 }
 
@@ -414,7 +407,7 @@ function* activityPageSaga() {
   yield all([
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
-    takeEvery(ACTIVITY_GET_REQUEST, handle_ACTIVITY_GET_REQUEST),
+    takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
     takeEvery(MAP_SET_COORDS, handle_MAP_SET_COORDS),
@@ -444,7 +437,7 @@ function* activityPageSaga() {
     takeEvery(Activity.createSuccess, handle_ACTIVITY_CREATE_SUCCESS),
     takeEvery(Activity.submit, handle_ACTIVITY_SUBMIT_REQUEST),
     takeEvery(ACTIVITY_DEBUG, handle_ACTIVITY_DEBUG),
-    takeEvery(ACTIVITY_GET_SUCCESS, handle_ACTIVITY_GET_SUCCESS),
+    takeEvery(Activity.getSuccess, handle_ACTIVITY_GET_SUCCESS),
     takeEvery(Activity.Photo.delete, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
     takeEvery(Activity.Photo.add, handle_ACTIVITY_ADD_PHOTO_REQUEST),
     takeEvery(Activity.Photo.edit, handle_ACTIVITY_EDIT_PHOTO_REQUEST),

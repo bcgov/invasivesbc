@@ -38,11 +38,7 @@ import {
   //
   ACTIVITY_SET_ACTIVE_REQUEST,
   ACTIVITY_SET_ACTIVE_SUCCESS,
-  ACTIVITY_SET_ACTIVE_FAILURE,
-  ACTIVITY_GET_REQUEST,
-  ACTIVITY_GET_LOCAL_REQUEST,
-  ACTIVITY_GET_SUCCESS,
-  ACTIVITY_GET_FAILURE
+  ACTIVITY_SET_ACTIVE_FAILURE
 } from '../../actions';
 import AutoFill from './AutoFill';
 import GeoJson from './GeoJson';
@@ -95,10 +91,12 @@ class Activity {
   static readonly copy = createAction(`${this.PREFIX}/copy`);
   static readonly copySuccess = createAction<Record<string, any>>(`${this.PREFIX}/copySuccess`);
 
-  static readonly get = createAction(ACTIVITY_GET_REQUEST);
-  static readonly getLocal = createAction(ACTIVITY_GET_LOCAL_REQUEST);
-  static readonly getSuccess = createAction(ACTIVITY_GET_SUCCESS);
-  static readonly getFailure = createAction(ACTIVITY_GET_FAILURE);
+  static readonly get = createAction<string>(`${this.PREFIX}/get`);
+  static readonly getLocal = createAction<string>(`${this.PREFIX}/getLocal`);
+  static readonly getSuccess = createAction<Record<string, any>>(`${this.PREFIX}/getSuccess`);
+  static readonly getFailure = createAction(`${this.PREFIX}/getFailure`, (arg?: Response) => ({
+    payload: arg
+  }));
 
   static readonly setActive = createAction(ACTIVITY_SET_ACTIVE_REQUEST);
   static readonly setActiveSuccess = createAction(ACTIVITY_SET_ACTIVE_SUCCESS);
