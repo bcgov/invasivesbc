@@ -96,7 +96,7 @@ function* refreshRoles() {
 }
 
 function* authenticationSaga() {
-  if (MOBILE && PLATFORM == Platform.IOS) {
+  if (MOBILE && [Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
     // use native authentication bridge for better user experience
     yield all([takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles), ...nativeAuthEffects]);
   } else {
