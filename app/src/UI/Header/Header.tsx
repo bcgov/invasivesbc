@@ -116,12 +116,15 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
       }, 100);
 
       scrollContainer.addEventListener('scroll', () => {
-        if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5) {
-          rightIconContainer.style.visibility = 'hidden';
-          leftIconContainer.style.visibility = 'visible';
-        } else if (scrollContainer.scrollLeft <= 5) {
+        const enableVisibleLeft = scrollContainer.scrollLeft <= 5;
+        const enableVisibleRight =
+          scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5;
+        if (enableVisibleRight) {
           rightIconContainer.style.visibility = 'visible';
           leftIconContainer.style.visibility = 'hidden';
+        } else if (enableVisibleLeft) {
+          rightIconContainer.style.visibility = 'hidden';
+          leftIconContainer.style.visibility = 'visible';
         } else {
           rightIconContainer.style.visibility = 'visible';
           leftIconContainer.style.visibility = 'visible';
@@ -132,8 +135,8 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
 
   return (
     <>
-      {canDisplayCallBack() ? (
-        <div
+      {canDisplayCallBack() && (
+        <button
           className={'Tab' + (urlFromAppModeState === path ? ' Tab__Indicator' : '')}
           onClick={() => {
             history.push(path);
@@ -145,9 +148,7 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
         >
           <div className="Tab__Content">{children}</div>
           <div className="Tab__Label">{label}</div>
-        </div>
-      ) : (
-        <></>
+        </button>
       )}
     </>
   );
@@ -319,7 +320,7 @@ const LoginOrOutMemo = React.memo(() => {
   return (
     <div className={'avatar-menu'}>
       <IconButton onClick={handleClick}>
-        <Avatar></Avatar>
+        <Avatar />
       </IconButton>
       <Menu
         id="menu-appbar"
@@ -383,32 +384,29 @@ const NetworkStateControl: React.FC = () => {
   const dispatch = useDispatch();
   return (
     <div className={'network-state-control'}>
-      <FormControl>
-        <FormGroup>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={connected}
-                color={'primary'}
-                size={'medium'}
-                onChange={handleNetworkStateChange}
-                inputProps={{ 'aria-label': 'controlled' }}
-              />
-            }
-            label={'Network'}
-            labelPlacement="bottom"
-          />
-        </FormGroup>
+      <FormControl className="network-status-display">
+        <FormControlLabel
+          control={
+            <Switch
+              checked={connected}
+              color={'primary'}
+              size={'medium'}
+              onChange={handleNetworkStateChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          }
+          label={'Network'}
+          labelPlacement="end"
+        />
       </FormControl>
+      <div className="network-status-display"></div>
       {connected && (
-        <>
-          <div className={'network-status-display'}>
-            <Grow in={true} appear={true}>
-              <SignalWifi4Bar fontSize={'medium'} aria-label={'Online'} />
-            </Grow>
-            <span className={'network-status-label'}>Online</span>
-          </div>
-        </>
+        <div className={'network-status-display'}>
+          <Grow in={true} appear={true}>
+            <SignalWifi4Bar fontSize={'medium'} aria-label={'Online'} />
+          </Grow>
+          <span className={'network-status-label'}>&nbsp;Online</span>
+        </div>
       )}
       {connected || (
         <div className={'network-status-display'}>
@@ -430,7 +428,7 @@ export const Header: React.FC = () => {
   }
 
   return (
-    <div className="HeaderBar">
+    <header className="HeaderBar">
       <InvIcon />
 
       <ButtonWrapper>
@@ -540,8 +538,7 @@ export const Header: React.FC = () => {
 
         {MOBILE && <NetworkStateControl />}
       </ButtonWrapper>
-
       <LoginOrOutMemo />
-    </div>
+    </header>
   );
 };
