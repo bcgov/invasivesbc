@@ -1,10 +1,8 @@
 import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
-import { buffer } from '@turf/turf';
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
-  ACTIVITY_DEBUG,
   ACTIVITY_LINK_RECORD_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
@@ -33,7 +31,6 @@ import {
   handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST,
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST,
   handle_ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  handle_ACTIVITY_PASTE_REQUEST,
   handle_ACTIVITY_SAVE_REQUEST,
   handle_ACTIVITY_SAVE_SUCCESS,
   handle_ACTIVITY_SUBMIT_REQUEST,
@@ -56,7 +53,7 @@ import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from 
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { distance, kinks, lineToPolygon } from '@turf/turf';
+import { buffer, distance, kinks, lineToPolygon } from '@turf/turf';
 import GeoShapes from 'constants/geoShapes';
 import { calculateGeometryArea } from 'utils/geometryHelpers';
 import geomWithinBC from 'utils/geomWithinBC';
@@ -70,10 +67,6 @@ import Alerts from 'state/actions/alerts/Alerts';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import { selectMap } from 'state/reducers/map';
-
-function* handle_USER_SETTINGS_READY(action) {}
-
-function* handle_ACTIVITY_DEBUG(action) {}
 
 function* handle_ACTIVITY_DELETE_SUCESS(action) {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -411,8 +404,6 @@ function* activityPageSaga() {
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
     takeEvery(MAP_SET_COORDS, handle_MAP_SET_COORDS),
-    takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_READY),
-    takeEvery(UserSettings.Activity.setActiveActivityIdSuccess, handle_USER_SETTINGS_READY),
     takeEvery(ACTIVITY_UPDATE_GEO_REQUEST, handle_ACTIVITY_UPDATE_GEO_REQUEST),
     takeEvery(ACTIVITY_UPDATE_GEO_SUCCESS, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
     takeEvery(Activity.Suggestions.jurisdictions, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),
@@ -436,7 +427,6 @@ function* activityPageSaga() {
     takeEvery(Activity.createNetwork, handle_ACTIVITY_CREATE_NETWORK),
     takeEvery(Activity.createSuccess, handle_ACTIVITY_CREATE_SUCCESS),
     takeEvery(Activity.submit, handle_ACTIVITY_SUBMIT_REQUEST),
-    takeEvery(ACTIVITY_DEBUG, handle_ACTIVITY_DEBUG),
     takeEvery(Activity.getSuccess, handle_ACTIVITY_GET_SUCCESS),
     takeEvery(Activity.Photo.delete, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
     takeEvery(Activity.Photo.add, handle_ACTIVITY_ADD_PHOTO_REQUEST),
