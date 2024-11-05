@@ -1,62 +1,39 @@
 .form_wrapper {
   height: 100%;
 }
-
-.showAuditInfoDialog {
-  display: flex !important;
-}
-
-.hideAuditInfoDialog {
-  display: none !important;
-}
-
-.recordHeaderInfo {
-  border-color: black;
-  text-align: left;
+#record-header-info {
+  padding: 10pt;
   display: flex;
-  justify-content: left;
-  overflow: scroll;
-  display: flex;
-  max-width: 80%;
-  margin-top: 1em;
-  padding-left: 15%;
-  padding-right: 15%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .content {
+    width: 100%;
+    max-width: 600pt;
+    display: flex;
+    flex-direction: column;
+
+    table {
+      width: 100%;
+      text-align: left;
+      tr {
+        height: 30pt;
+        border-bottom: 1pt solid lightgray;
+        td:first-child {
+          width: 40%;
+        }
+      }
+    }
+  }
 }
+
 label {
   text-align: left;
-}
-table {
-  width: 100%;
-  background-color: white !important;
-  border-style: hidden;
-  text-align: left;
-  justify-content: left;
-  overflow: scroll;
 }
 
 td {
   padding: 3px;
-}
-
-/*tr {
-    color: black !important;
-    background-color: white !important; 
-}
-*/
-
-.leftHeaderCol {
-  width: 30%;
-}
-
-.leftValueCol {
-  width: 100%;
-}
-.rightValueCol {
-  width: 100%;
-}
-
-.rightHeaderCol {
-  width: 30%;
 }
 
 #invasive_plants_section {
@@ -71,7 +48,6 @@ td {
 
 .invasive_plant {
   padding: 10px;
-  /*width: 50px*/
 }
 
 .removeInvasivePlantButton {
@@ -116,6 +92,16 @@ td {
 
 #amount_of_mix_tank_mix {
   display: flex;
-
   width: 100%;
+}
+
+@media screen and (width > 500px) {
+  #record-header-info {
+    .content {
+      flex-direction: row;
+      table {
+        width: 50%;
+      }
+    }
+  }
 }

@@ -90,78 +90,76 @@ export const ActivityForm = (props) => {
 
   return (
     <>
-      <div className={'recordHeaderInfo'}>
-        <table id="leftTable">
-          <tbody>
-            <tr>
-              <td className={'leftHeaderCol'}>Activity ID:</td>
-              <td className={'leftValueCol'}>{short_id}</td>
-            </tr>
-            <tr>
-              <td className={'leftHeaderCol'}>Form Status:</td>
-              <td className={'leftValueCol'}>{form_status}</td>
-            </tr>
-            <tr>
-              <td className={'leftHeaderCol'}>Activity Type:</td>
-              <td className={'leftValueCol'}>{activity_type}</td>
-            </tr>
-            <tr>
-              <td className={'leftHeaderCol'}>Activity Sub-type:</td>
-              <td className={'leftValueCol'}>{ActivitySubtypeShortLabels[activity_subtype]}</td>
-            </tr>
-            <tr>
-              <td className={'leftHeaderCol'}>Activity Date:</td>
-              <td className={'leftValueCol'}>
-                {new Date(form_data.activity_data.activity_date_time).toLocaleDateString()}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        <table id="rightTable">
-          <tbody>
-            <tr>
-              <td className={'rightHeaderCol'}>Created By:</td>
-              <td className={'rightValueCol'}>{created_by}</td>
-            </tr>
-            <tr>
-              <td className={'rightHeaderCol'}>Created At:</td>
-              <td className={'rightValueCol'}>{new Date(date_created).toLocaleDateString()}</td>
-            </tr>
-            {activity_history?.length > 1 && (
-              <>
-                <tr>
-                  <td className={'rightHeaderCol'}>Updated By:</td>
-                  <td className={'rightValueCol'}>{updated_by}</td>
-                </tr>
-                <tr>
-                  <td className={'rightHeaderCol'}>Updated At:</td>
-                  <td className={'rightValueCol'}>
-                    {new Date(received_timestamp ?? date_created).toLocaleDateString()}
-                  </td>
-                </tr>
-                <tr>
-                  <td className={'rightHeaderCol'}>Record History:</td>
-                  <td className={'rightValueCol'}>
-                    <Button onClick={setShowRecordHistory.bind(this, true)} variant="outlined">
-                      Click to view
-                    </Button>
-                  </td>
-                </tr>
-              </>
-            )}
-            <tr>
-              <td className={'rightHeaderCol'}>Batch ID</td>
-              <td className={'rightValueCol'}>{batch_id}</td>
-            </tr>
-            {invasive_plant && invasive_plant != '' && (
+      <section id={'record-header-info'}>
+        <div className="content">
+          <table>
+            <tbody>
               <tr>
-                <td className={'rightHeaderCol'}>Invasive Plant</td>
-                <td className={'rightValueCol'}>{invasive_plant}</td>
+                <td>Activity ID:</td>
+                <td>{short_id}</td>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              <tr>
+                <td>Form Status:</td>
+                <td>{form_status}</td>
+              </tr>
+              <tr>
+                <td>Activity Type:</td>
+                <td>{activity_type}</td>
+              </tr>
+              <tr>
+                <td>Activity Sub-type:</td>
+                <td>{ActivitySubtypeShortLabels[activity_subtype]}</td>
+              </tr>
+              <tr>
+                <td>Activity Date:</td>
+                <td>{new Date(form_data.activity_data.activity_date_time).toLocaleDateString()}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table>
+            <tbody>
+              <tr>
+                <td>Created By:</td>
+                <td>{created_by}</td>
+              </tr>
+              <tr>
+                <td>Created At:</td>
+                <td>{new Date(date_created).toLocaleDateString()}</td>
+              </tr>
+              {activity_history?.length > 1 && (
+                <>
+                  <tr>
+                    <td>Updated By:</td>
+                    <td>{updated_by}</td>
+                  </tr>
+                  <tr>
+                    <td>Updated At:</td>
+                    <td>{new Date(received_timestamp ?? date_created).toLocaleDateString()}</td>
+                  </tr>
+                  <tr>
+                    <td>Record History:</td>
+                    <td>
+                      <Button onClick={setShowRecordHistory.bind(this, true)} variant="outlined">
+                        Click to view
+                      </Button>
+                    </td>
+                  </tr>
+                </>
+              )}
+              <tr>
+                <td>Batch ID</td>
+                <td>{batch_id}</td>
+              </tr>
+              {invasive_plant && invasive_plant != '' && (
+                <tr>
+                  <td>Invasive Plant</td>
+                  <td>{invasive_plant}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
       <Button
         onClick={manualUTMEntry}
         variant="outlined"
