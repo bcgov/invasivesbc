@@ -36,7 +36,9 @@ const RecordSetDetails = ({ name, isDefaultRecordset, handleNameChange, recordse
       ) : (
         <p>{name}</p>
       )}
-      <IconButton onClick={toggleEdit}>{isEditing ? <Check /> : <Edit />}</IconButton>
+      <IconButton color="primary" onClick={toggleEdit}>
+        {isEditing ? <Check /> : <Edit />}
+      </IconButton>
     </div>
   );
 };
