@@ -2,13 +2,17 @@
   position: absolute;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  max-width: 100%;
   z-index: 50000000;
   top: 9%;
   right: 4%;
 }
 
 .alertsContainerAlert {
-  width: 375px;
+  width: 100%;
+  max-width: 375px;
+  box-sizing: border-box;
   text-align: left;
   align-items: center;
   margin: 2pt;
