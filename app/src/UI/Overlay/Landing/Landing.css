@@ -7,29 +7,43 @@ body {
   flex-direction: 'row';
 }
 
-.cardListItemGrid {
-  display: 'flex';
-  flex-direction: 'row';
-  justify-content: 'space-between';
+.h-divider {
+  padding: 5pt;
+  display: none;
 }
 
-.cardWidth {
-  margin-bottom: 2em;
-}
-
-.container {
+#landing {
   font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
   text-align: left;
-  margin: 1rem;
-  padding: 4rem;
+  width: 100%;
+  padding: 30pt 0;
+  display: flex;
+  justify-content: center;
+
+  h2 {
+    font-size: 24pt;
+    font-weight: 100;
+  }
+  h3 {
+    font-size: 18pt;
+    font-weight: 100;
+    margin-bottom: 0;
+  }
+  .content {
+    width: 100%;
+    max-width: 1000px;
+    padding: 1rem;
+  }
 }
+
 .bottomAccess {
   font-size: 16pt;
   font-weight: bold;
 }
-@media (device-width >= 600px) {
-  .cardWidth {
-    width: 600;
+
+@media screen and (width >= 500px) {
+  .h-divider {
+    display: flex;
   }
 }
 

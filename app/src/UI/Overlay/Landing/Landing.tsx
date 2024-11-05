@@ -1,6 +1,5 @@
-import React from 'react';
 import './Landing.css';
-import { Box, Button, Container, Divider, Grid, Typography } from '@mui/material';
+import { Box, Button, Divider, Grid } from '@mui/material';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserInfo } from 'state/reducers/userInfo';
@@ -49,39 +48,37 @@ export const LandingComponent = (props) => {
   const { authenticated, workingOffline, username, displayName, email, roles } = useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
   return (
-    <>
-      <Container className="container">
-        <Box display="flex" justifyContent="space-between">
-          <Typography variant="h4">Welcome to the InvasivesBC Application!</Typography>
-        </Box>
+    <section id="landing">
+      <div className="content">
+        <h2>Welcome to the InvasivesBC Application!</h2>
         {(userInfoLoaded || workingOffline) && (
           <>
             <Box mt={2}>
-              <Typography variant="h5">User Information</Typography>
+              <h3>User Information</h3>
               <Grid className="userInfoItemGrid" container spacing={2} sx={{ mt: 2 }}>
                 <Grid item md={3}>
                   <Box overflow="hidden" textOverflow="ellipsis">
-                    <Typography>
-                      <strong>Name</strong>
-                    </Typography>
+                    <p>
+                      <strong>Name:</strong>
+                    </p>
                     {displayName}
                   </Box>
                 </Grid>
-                <Divider flexItem={true} orientation="vertical" />
+                <Divider className="h-divider" flexItem={true} orientation="vertical" />
                 <Grid item md={3}>
                   <Box overflow="hidden" textOverflow="ellipsis">
-                    <Typography>
-                      <strong>Email</strong>
-                    </Typography>
+                    <p>
+                      <strong>Email:</strong>
+                    </p>
                     {email}
                   </Box>
                 </Grid>
-                <Divider flexItem={true} orientation="vertical" />
+                <Divider className="h-divider" flexItem={true} orientation="vertical" />
                 <Grid item md={3}>
                   <Box overflow="hidden" textOverflow="ellipsis">
-                    <Typography>
-                      <strong>Username</strong>
-                    </Typography>
+                    <p>
+                      <strong>Username:</strong>
+                    </p>
                     {username}
                   </Box>
                 </Grid>
@@ -93,21 +90,21 @@ export const LandingComponent = (props) => {
                   <>
                     <Grid item md={3}>
                       <Box overflow="hidden" textOverflow="ellipsis">
-                        <Typography>
-                          <strong>Activation Status</strong>
-                        </Typography>
+                        <p>
+                          <strong>Activation Status:</strong>
+                        </p>
                         {activated ? 'Activated' : 'Not Activated'}
                       </Box>
                     </Grid>
-                    <Divider flexItem={true} orientation="vertical" />
+                    <Divider className="h-divider" flexItem={true} orientation="vertical" />
                   </>
                 )}
                 {roles.length > 0 && (
                   <Grid item md={3}>
                     <Box overflow="hidden" textOverflow="ellipsis">
-                      <Typography>
-                        <strong>Roles</strong>
-                      </Typography>
+                      <p>
+                        <strong>Roles:</strong>
+                      </p>
                       {roles.map((role: any) => {
                         return <span key={role.role_id}>{role.role_description + '\n'}</span>;
                       })}
@@ -239,7 +236,7 @@ export const LandingComponent = (props) => {
             <InformationalLinkBox />
           </>
         )}
-      </Container>
-    </>
+      </div>
+    </section>
   );
 };
