@@ -1,5 +1,5 @@
-import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
-import { Button, Tooltip } from '@mui/material';
+import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { Button, IconButton, Tooltip } from '@mui/material';
 import EjectIcon from '@mui/icons-material/Eject';
 import SaveIcon from '@mui/icons-material/Save';
 import { MouseEvent, useEffect, useState } from 'react';
@@ -24,7 +24,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
     );
     setSaveEnabled(
       (!recordSet.cacheMetadata || [UserRecordCacheStatus.NOT_CACHED].includes(recordSet.cacheMetadata?.status)) &&
-        recordSet.recordSetType == 'Activity' &&
+        recordSet.recordSetType == RecordSetType.Activity &&
         connected
     );
   }, [recordSet.cacheMetadata?.status, connected]);
@@ -50,25 +50,23 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
             variant="outlined"
           >
             {recordSet.cacheMetadata?.status ?? 'UNKNOWN'}
-            <>
-              <SaveIcon />
-            </>
+            <SaveIcon />
           </Button>
         </span>
       </Tooltip>
 
       <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to clear cached data for this layer of records">
-        <span>
+        <>
           {recordSet.cacheMetadata?.status == UserRecordCacheStatus.DELETING && 'Deleting Cache'}
-          <Button
+          <IconButton
             className="records__set__layer_cache"
             disabled={!deleteEnabled}
             onClick={(e) => onClickInitClearCache(e)}
-            variant="outlined"
+            color="primary"
           >
             <EjectIcon />
-          </Button>
-        </span>
+          </IconButton>
+        </>
       </Tooltip>
     </>
   );

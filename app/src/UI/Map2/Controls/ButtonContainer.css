@@ -15,7 +15,7 @@
 }
 
 #map-btn-container {
-  z-index: 999;
+  z-index: 2;
   max-width: 100%;
   display: flex;
   overflow-x: auto;
