@@ -1,7 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { bbox } from '@turf/turf';
-import { ProgressCallbackParameters, RepositoryMetadata, RepositoryStatus } from 'utils/tile-cache';
+import { TileCacheProgressCallbackParameters, RepositoryMetadata, RepositoryStatus } from 'utils/tile-cache';
 import TileCache from 'state/actions/cache/TileCache';
 import {
   MapDefinitionEligibilityPredicatesBuilder,
@@ -12,7 +12,7 @@ import {
 interface TileCacheState {
   mapSpecifications: MapSourceAndLayerDefinition[];
   repositories: RepositoryMetadata[];
-  downloadProgress: Record<string, ProgressCallbackParameters>;
+  downloadProgress: Record<string, TileCacheProgressCallbackParameters>;
   drawnShapeBounds: {
     minLatitude: number;
     minLongitude: number;

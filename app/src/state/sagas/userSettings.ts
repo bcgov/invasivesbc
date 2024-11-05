@@ -4,7 +4,7 @@ import { AUTH_INITIALIZE_COMPLETE, GET_API_DOC_ONLINE, GET_API_DOC_REQUEST, GET_
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
@@ -98,6 +98,9 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         Observation: '#399c3e',
         Treatment: '#c6c617'
       },
+      cacheMetadata: {
+        status: UserRecordCacheStatus.NOT_CACHED
+      },
       drawOrder: 1
     },
     '2': {
@@ -110,13 +113,19 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         Observation: '#399c3e',
         Treatment: '#c6c617'
       },
+      cacheMetadata: {
+        status: UserRecordCacheStatus.NOT_ELIGIBLE
+      },
       drawOrder: 2
     },
     '3': {
       recordSetType: RecordSetType.IAPP,
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
-      drawOrder: 3
+      drawOrder: 3,
+      cacheMetadata: {
+        status: UserRecordCacheStatus.NOT_ELIGIBLE
+      }
     }
   };
 

@@ -1,7 +1,7 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { GeoJSON } from 'geojson';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
-import { ProgressCallbackParameters, RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import { TileCacheProgressCallbackParameters, RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 class TileCache {
   static readonly PREFIX = 'TileCache';
@@ -12,7 +12,7 @@ class TileCache {
   static readonly setTileCacheShape = createAction<{ geometry: GeoJSON }>(`${this.PREFIX}/setShape`);
   static readonly clearTileCacheShape = createAction(`${this.PREFIX}/clearShape`);
 
-  static readonly downloadProgressEvent = createAction<ProgressCallbackParameters>(
+  static readonly downloadProgressEvent = createAction<TileCacheProgressCallbackParameters>(
     'TILE_CACHE_DOWNLOAD_PROGRESS_EVENT'
   );
 

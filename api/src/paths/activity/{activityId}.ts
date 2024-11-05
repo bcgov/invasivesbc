@@ -137,15 +137,18 @@ function getMedia(): RequestHandler {
 
     const s3GetPromises: Promise<GetObjectOutput>[] = [];
 
-    activity['media_keys'].forEach((key: string) => {
-      s3GetPromises.push(getFileFromS3(key));
-    });
+    try {
+      activity['media_keys'].forEach((key: string) => {
+        s3GetPromises.push(getFileFromS3(key));
+      });
 
-    const response = await Promise.all(s3GetPromises);
+      const response = await Promise.all(s3GetPromises);
 
-    // Add encoded media to activity
-    req['activity'].media = getMediaItemsList(response, activity['media_keys']);
-
+      // Add encoded media to activity
+      req['activity'].media = getMediaItemsList(response, activity['media_keys']);
+    } catch (e) {
+      defaultLog.error('error while retrieving media keys from s3');
+    }
     return next();
   };
 }

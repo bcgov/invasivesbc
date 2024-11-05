@@ -1,5 +1,5 @@
 import { Buffer } from 'buffer';
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import {
   RepositoryMetadata,
   RepositoryStatistics,
@@ -7,6 +7,7 @@ import {
   TileCacheService,
   TileData
 } from 'utils/tile-cache/index';
+import { sqlite } from 'utils/sharedSQLiteInstance';
 
 const BAKED_DB_NAME = 'tile_store.db';
 const CACHE_DB_NAME = 'cached_tiles.db';
@@ -47,7 +48,7 @@ class SQLiteTileCacheService extends TileCacheService {
   static async getInstance(): Promise<SQLiteTileCacheService> {
     if (SQLiteTileCacheService._instance == null) {
       SQLiteTileCacheService._instance = new SQLiteTileCacheService();
-      await SQLiteTileCacheService._instance.initializeTileCache();
+      await SQLiteTileCacheService._instance.initializeTileCache(sqlite);
     }
     return SQLiteTileCacheService._instance;
   }
@@ -332,8 +333,7 @@ class SQLiteTileCacheService extends TileCacheService {
     }
   }
 
-  private async initializeTileCache() {
-    const sqlite: SQLiteConnection = new SQLiteConnection(CapacitorSQLite);
+  private async initializeTileCache(sqlite: SQLiteConnection) {
     await sqlite.copyFromAssets(true);
 
     await this.initializeBakedTileDatabase(sqlite);

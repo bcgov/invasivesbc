@@ -1,11 +1,11 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 
+import { Draft } from 'immer';
 import {
   CLOSE_NEW_RECORD_MENU,
   GET_API_DOC_SUCCESS,
   IAPP_GET_SUCCESS,
-  INIT_CACHE_RECORDSET,
   OPEN_NEW_RECORD_MENU,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
@@ -16,11 +16,12 @@ import {
 
 import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-import { UserRecordSet } from 'interfaces/UserRecordSet';
+import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Activity from 'state/actions/activity/Activity';
+import RecordCache from 'state/actions/cache/RecordCache';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
@@ -42,7 +43,7 @@ export interface UserSettingsState {
   newRecordDialogState: any;
 
   recordSets: {
-    [key: number]: UserRecordSet;
+    [key: number | string]: UserRecordSet;
   };
   recordsExpanded: boolean;
 
@@ -77,7 +78,7 @@ const initialState: UserSettingsState = {
 
 function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
   return (state = initialState, action) => {
-    return createNextState(state, (draftState) => {
+    return createNextState(state, (draftState: Draft<UserSettingsState>) => {
       if (UserSettings.toggleRecordExpandSuccess.match(action)) {
         draftState.recordsExpanded = !draftState.recordsExpanded;
       } else if (UserSettings.Activity.setActiveActivityIdSuccess.match(action)) {
@@ -115,6 +116,39 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.layerPickerIsAccordion = !draftState.layerPickerIsAccordion;
       } else if (WhatsHere.toggle.match(action)) {
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
+      } else if (RecordCache.requestCaching.pending.match(action)) {
+        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+          status: UserRecordCacheStatus.DOWNLOADING
+        };
+      } else if (RecordCache.requestCaching.rejected.match(action)) {
+        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+          status: UserRecordCacheStatus.ERROR
+        };
+      } else if (RecordCache.requestCaching.fulfilled.match(action)) {
+        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+          status: UserRecordCacheStatus.CACHED
+        };
+      } else if (RecordCache.deleteCache.pending.match(action)) {
+        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+          status: UserRecordCacheStatus.DELETING
+        };
+      } else if (RecordCache.deleteCache.rejected.match(action)) {
+        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+          status: UserRecordCacheStatus.ERROR
+        };
+      } else if (RecordCache.deleteCache.fulfilled.match(action)) {
+        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+          status: UserRecordCacheStatus.NOT_CACHED
+        };
+      } else if (UserSettings.RecordSet.syncCacheStatusWithCacheService.fulfilled.match(action)) {
+        const cacheStatus = action.payload;
+        for (const cachedSet of cacheStatus) {
+          if (draftState.recordSets[cachedSet.setId]) {
+            draftState.recordSets[cachedSet.setId].cacheMetadata = {
+              status: UserRecordCacheStatus.CACHED
+            };
+          }
+        }
       } else if (Activity.deleteSuccess.match(action)) {
         draftState.activeActivity = null;
         draftState.activeActivityDescription = null;
@@ -186,10 +220,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               delete draftState.recordSets[action.payload.setID].sortColumn;
             }
 
-            break;
-          }
-          case INIT_CACHE_RECORDSET: {
-            draftState.recordSets[action.payload.setID].isCaching = true;
             break;
           }
           case RECORDSET_REMOVE_FILTER: {
