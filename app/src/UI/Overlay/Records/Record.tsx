@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-import './Records.css';
+import './Record.css';
 import { Route, useHistory } from 'react-router';
 import { useSelector } from 'react-redux';
 import { ActivityForm } from './Activity/Form';

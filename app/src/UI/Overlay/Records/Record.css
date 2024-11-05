@@ -1,0 +1,36 @@
+.selectedFormTab {
+  border-bottom-style: solid !important;
+  border-width: 0.5vh !important;
+  border-color: var(--bc-yellow) !important;
+}
+
+.records__activity__photos_button {
+  height: 5vh;
+  border-color: black;
+  border-radius: 0px !important;
+  background-color: var(--bc-blue) !important;
+}
+
+.records__activity__form_button {
+  height: 5vh;
+  border-color: black;
+  border-radius: 0px !important;
+  background-color: var(--bc-blue) !important;
+}
+
+.records__activity__map_button {
+  height: 5vh;
+  border-color: black;
+  border-radius: 0px !important;
+  background-color: var(--bc-blue) !important;
+}
+
+.records__activity_buttons {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  & > button {
+    height: 20pt;
+  }
+}
