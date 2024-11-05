@@ -1,0 +1,21 @@
+#email-setup {
+  display: flex;
+  flex-direction: column;
+  & > * {
+    margin-top: 25pt;
+  }
+}
+
+@media screen and (width > 650px) {
+  #email-setup {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: stretch;
+    & > * {
+      width: 50%;
+    }
+    & > *:not(:last-child) {
+      margin-right: 10pt;
+    }
+  }
+}
