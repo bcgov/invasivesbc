@@ -1,11 +1,9 @@
-import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router-dom';
 import setupStore, { historySingleton } from 'state/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import App from './UI/App';
-import './main.css';
 import { defineCustomElements as pwaLoader } from '@ionic/pwa-elements/loader';
 import { PersistorContext } from 'utils/PersistorContext';
 import { TileCacheService } from 'utils/tile-cache';
