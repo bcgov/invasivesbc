@@ -1,6 +1,5 @@
-import React from 'react';
 import PhotoContainer from './PhotoContainer';
 
-export const ActivityPhotos = (props) => {
+export const ActivityPhotos = () => {
   return <PhotoContainer />;
 };

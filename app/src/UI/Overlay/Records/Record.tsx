@@ -68,8 +68,11 @@ export const Activity = (props) => {
       <Route
         path="/Records/Activity:id/photos"
         render={() => {
-          if (activity_ID) return <ActivityPhotos />;
-          else return <div>loading</div>;
+          if (activity_ID) {
+            return <ActivityPhotos />;
+          } else {
+            return <div>loading</div>;
+          }
         }}
       />
     </div>
