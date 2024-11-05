@@ -29,7 +29,7 @@ export const Records = () => {
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
 
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
-  const [isActivitiesGeoJSONLoaded, setActivitiesGeoJSONLoaded] = useState(false);
+  const [isActivitiesGeoJSONLoaded, setIsActivitiesGeoJSONLoaded] = useState(false);
   const [isEditingName, setIsEditingName] = useState(false);
   const [loadMap, setLoadMap] = useState({});
 
@@ -42,7 +42,7 @@ export const Records = () => {
   }, []);
 
   useEffect(() => {
-    setActivitiesGeoJSONLoaded(activitiesGeoJSONState.hasOwnProperty('s3'));
+    setIsActivitiesGeoJSONLoaded(activitiesGeoJSONState.hasOwnProperty('s3'));
   }, [activitiesGeoJSONState]);
 
   useEffect(() => {
