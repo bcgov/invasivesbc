@@ -1,116 +1,66 @@
-.records__container {
+#records-container {
   height: 100%;
   width: 100%;
+  ul {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+  }
 }
 
-.addRecordSet {
+.new-recordset-button {
   height: 100px;
   width: 100px;
 }
 
-.records_set {
-  height: 50px;
-  width: 100%;
+.record-set-option {
   display: flex;
-  flex-direction: row;
-  padding-left: 1rem;
-  border: 1pt solid black;
+  flex-direction: column;
+  width: 100%;
+  min-height: 40pt;
+  padding: 5pt 1rem;
   box-sizing: border-box;
-  color: black;
-  overflow: hidden;
-}
-
-.records_set:hover {
-  cursor: pointer;
-}
-.records_set_left_hand_items {
-  height: 100%;
-
-  width: 25%;
-  display: flex;
-  flex-direction: row;
-  justify-content: left;
-}
-.records_set_name {
-  height: 100%;
-  font-size: small;
-  display: flex;
-  align-items: center;
-  overflow-y: hidden;
-  /*  text-shadow: 1px 0 0 #000, 0 -1px 0 #000, 0 1px 0 #000, -1px 0 0 #000;*/
-}
-
-.records_set_name_edit {
-  padding-left: 5px;
-
-  height: 50px;
-}
-
-.records_set_right_hand_items {
-  height: 100%;
-  display: flex;
-  width: 75%;
-  flex-direction: row;
-  justify-content: right;
-  overflow-x: hidden;
-  overflow-y: hidden;
-}
-
-.record {
-  height: 100px;
-  width: 100%;
-}
-
-.records_activity {
-  color: white;
-}
-
-.records__activity__header {
-  /* same height as the apps header and footer */
-  width: 100%;
-  border-color: black;
-  display: flex;
-  justify-content: center;
-}
-
-.records__activity_buttons {
-  width: 100%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  & > button {
-    height: 20pt;
+  border-bottom: 1pt solid black;
+  p {
+    margin: 0;
+    padding: 0;
   }
 }
 
-.records__activity_buttons > * {
-  flex-grow: 1;
+.record-set-details,
+.record-set-control {
+  width: 100%;
+  display: flex;
+  /* height: 30pt; */
+  align-items: center;
+}
+.record-set-details {
+  flex-direction: flex-start;
+  margin-bottom: 5pt;
+  input {
+    height: 30pt;
+    border: 1pt solid lightgray;
+    font-size: 12pt;
+    border-radius: 8pt;
+    padding-left: 1rem;
+  }
+}
+.record-set-control {
+  justify-content: flex-start;
 }
 
-.selectedFormTab {
-  border-bottom-style: solid !important;
-  /*border-radius: 2vh;*/
-  border-width: 0.5vh !important;
-  border-color: #fcba19 !important;
-}
-
-.records__activity__photos_button {
-  height: 5vh;
-  border-color: black;
-  border-radius: 0px !important;
-  background-color: #003366 !important;
-}
-
-.records__activity__form_button {
-  height: 5vh;
-  border-color: black;
-  border-radius: 0px !important;
-  background-color: #003366 !important;
-}
-
-.records__activity__map_button {
-  height: 5vh;
-  border-color: black;
-  border-radius: 0px !important;
-  background-color: #003366 !important;
+@media screen and (width > 500px) {
+  .record-set-option {
+    flex-direction: row;
+  }
+  .record-set-details,
+  .record-set-control {
+    width: 50%;
+  }
+  .record-set-details {
+    margin-bottom: 0;
+  }
+  .record-set-control {
+    justify-content: flex-end;
+  }
 }
