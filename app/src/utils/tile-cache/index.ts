@@ -43,7 +43,7 @@ enum RepositoryStatus {
   UNKNOWN = 'UNKNOWN'
 }
 
-export interface ProgressCallbackParameters {
+export interface TileCacheProgressCallbackParameters {
   repository: string;
   message: string;
   aborted: boolean;
@@ -109,7 +109,7 @@ abstract class TileCacheService {
 
   async download(
     spec: RepositoryDownloadRequestSpec,
-    progressCallback?: (currentProgress: ProgressCallbackParameters) => void
+    progressCallback?: (currentProgress: TileCacheProgressCallbackParameters) => void
   ): Promise<void> {
     await this.addRepository({
       id: spec.id,

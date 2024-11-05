@@ -13,6 +13,8 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { RecordCacheService } from 'utils/record-cache';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
@@ -71,8 +73,26 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
       return;
     }
   } else {
-    yield put(Activity.getFailure());
-    return;
+    try {
+      const service: RecordCacheService = yield RecordCacheServiceFactory.getPlatformInstance();
+      const result = yield service.loadActivity(activityID);
+
+      console.dir(result);
+
+      const datav2 = {
+        ...result,
+        species_positive: result.species_positive || [],
+        species_negative: result.species_negative || [],
+        species_treated: result.species_treated || [],
+        media: result.media || [],
+        media_delete_keys: result.media_delete_keys || []
+      };
+
+      yield put(Activity.getSuccess(datav2));
+    } catch (e) {
+      console.error(e);
+      yield put(Activity.getFailure());
+    }    return;
   }
 }
 
