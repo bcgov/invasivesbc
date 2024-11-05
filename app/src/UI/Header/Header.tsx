@@ -6,7 +6,6 @@ import {
   Avatar,
   FormControl,
   FormControlLabel,
-  FormGroup,
   Grow,
   IconButton,
   ListItemIcon,
