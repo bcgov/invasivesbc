@@ -18,7 +18,7 @@ import React, { useState } from 'react';
 import Activity from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { useDispatch, useSelector } from 'utils/use_selector';
-
+import './PhotoContainer.css';
 export interface IPhoto {
   file_name: string;
   webviewPath?: string;
@@ -30,7 +30,6 @@ export interface IPhoto {
 
 export interface IPhotoContainerProps {
   classes?: any;
-  //  photoState: { photos: IPhoto[]; setPhotos: (photo: IPhoto[]) => void };
   isDisabled?: boolean;
 }
 
@@ -56,34 +55,16 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       };
 
       dispatch(Activity.Photo.add(photo));
-      // props.photoState.setPhotos([...props.photoState.photos, photo]);
     } catch (e) {
       console.error('user cancelled or other camera problem', e);
     }
   };
 
-  // const changePhotoDescription = (file_name: any, fieldsToUpdate: Object) => {
-  //   const oldPhoto = props.photoState.photos.find((photo) => photo.file_name === file_name);
-  //   const otherPhotos = props.photoState.photos.filter((photo) => photo.file_name !== file_name);
-  //   const updatedPhoto = { ...oldPhoto, ...fieldsToUpdate };
-  //   props.photoState.setPhotos([...otherPhotos, updatedPhoto] as any);
-  // };
-
-  // const deletePhotos = async () => {
-  //   props.photoState.setPhotos([]);
-  // };
-
   const deletePhoto = async (photo: UploadedPhoto) => {
     dispatch(Activity.Photo.delete(photo));
   };
 
-  // const [editing, setEditing] = useState(false);
   const [newPhotoDesc, setNewPhotoDesc] = useState('untitled');
-  // const editPhotoDesc = () => {
-  //   if (editing === false) {
-  //     setEditing(true);
-  //   }
-  // };
 
   if (!media) {
     return <CircularProgress />;
@@ -148,15 +129,10 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
           <Grid container>
             <Grid container item spacing={3} justifyContent="center">
               <Grid item>
-                <Button variant="contained" color="primary" startIcon={<AddAPhoto />} onClick={() => takePhoto()}>
+                <Button variant="contained" color="primary" startIcon={<AddAPhoto />} onClick={takePhoto}>
                   Add A Photo
                 </Button>
               </Grid>
-              {/* <Grid item>
-                <Button variant="contained" startIcon={<DeleteForever />} onClick={() => deletePhotos()}>
-                  Remove All Photos
-                </Button>
-              </Grid> */}
             </Grid>
           </Grid>
         </Box>
