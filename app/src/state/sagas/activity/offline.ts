@@ -1,5 +1,6 @@
 import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
+import { PayloadAction } from '@reduxjs/toolkit';
 import {
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
@@ -12,7 +13,6 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
-import { PayloadAction } from '@reduxjs/toolkit';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RecordCacheService } from 'utils/record-cache';
 
@@ -77,8 +77,6 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
       const service: RecordCacheService = yield RecordCacheServiceFactory.getPlatformInstance();
       const result = yield service.loadActivity(activityID);
 
-      console.dir(result);
-
       const datav2 = {
         ...result,
         species_positive: result.species_positive || [],
@@ -92,7 +90,8 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
     } catch (e) {
       console.error(e);
       yield put(Activity.getFailure());
-    }    return;
+    }
+    return;
   }
 }
 
