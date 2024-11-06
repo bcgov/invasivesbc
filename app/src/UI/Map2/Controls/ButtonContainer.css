@@ -20,12 +20,11 @@
   display: flex;
   overflow-x: auto;
   background: none;
+  scrollbar-width: none;
   gap: 16px;
   left: 50%;
   transform: translateX(-50%);
   box-sizing: border-box;
-  -webkit-overflow-scrolling: touch;
-  -ms-overflow-style: -ms-autohiding-scrollbar;
   position: absolute;
   height: var(--map-button-bar-height);
   transition: bottom 0.1s ease 0.3s;

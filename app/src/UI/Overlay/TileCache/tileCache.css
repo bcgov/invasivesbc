@@ -45,40 +45,40 @@
   min-height: 100pt;
   width: 100%;
   padding: 0;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1pt solid lightgray;
+    border-radius: 5pt;
+    table-layout: fixed;
+    word-wrap: break-word;
+
+    tbody tr:nth-child(odd) {
+      background-color: #f5f5f5;
+    }
+
+    tbody tr:hover {
+      background-color: #c9f2ef95;
+    }
+
+    th {
+      height: 3rem;
+    }
+
+    td:first-child,
+    th:first-child {
+      padding-left: 1rem;
+      width: 40pt;
+    }
+
+    td:last-child,
+    th:last-child {
+      text-align: right;
+      padding-right: 1rem;
+    }
+  }
 }
-
-section table {
-  border-collapse: collapse;
-  border: 1pt solid lightgray;
-  border-radius: 5pt;
-  table-layout: fixed;
-  word-wrap: break-word;
-
-  tbody tr:nth-child(odd) {
-    background-color: #f5f5f5;
-  }
-
-  tbody tr:hover {
-    background-color: #c9f2ef95;
-  }
-
-  th {
-    height: 3rem;
-  }
-
-  td:first-child,
-  th:first-child {
-    padding-left: 1rem;
-    width: 40pt;
-  }
-
-  td:last-child,
-  th:last-child {
-    text-align: right;
-    padding-right: 1rem;
-  }
-}
-
 .shapeDetails {
   margin: 10px 0;
   padding: 1rem;
@@ -95,15 +95,15 @@ section table {
 }
 
 /* Bottom Button containers */
-section .control {
+#offline-map-overlay section .control {
   display: flex;
+  flex-direction: row;
   justify-content: flex-end;
   align-items: center;
   margin-top: 10pt;
   width: 100%;
   box-sizing: border-box;
   padding: 1.25rem;
-  flex-direction: column;
   button,
   input {
     height: 30pt;
@@ -159,7 +159,7 @@ section .control {
 }
 
 @media screen and (width >= 425px) {
-  section .control {
+  #offline-map-overlay section .control {
     flex-direction: row;
     & > *:not(:first-child) {
       margin: 0 0 0 10pt;
