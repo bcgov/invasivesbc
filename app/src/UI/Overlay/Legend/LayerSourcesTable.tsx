@@ -12,7 +12,7 @@ const LayerSourcesTable = () => {
         </thead>
         <tbody>
           {mapLayers.map((layer) => (
-            <tr>
+            <tr key={layer.objectName}>
               <td>{layer.layerPickerLabel}</td>
               <td>{layer.objectName}</td>
             </tr>
