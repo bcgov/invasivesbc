@@ -1,5 +1,5 @@
 .accordion-control {
-  height: 48px;
+  min-height: 48px;
   width: 100%;
   font-size: 16pt;
   display: flex;
@@ -25,4 +25,5 @@
 
 .accordion-panel {
   margin-top: 10pt;
+  width: 100%;
 }
