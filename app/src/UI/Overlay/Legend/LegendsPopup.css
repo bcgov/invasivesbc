@@ -1,12 +1,136 @@
-.table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: #d7e2f5;
-}
+#map-legends {
+  box-sizing: border-box;
+  display: flex;
+  font-family: BCSans, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif;
+  justify-content: center;
+  min-height: 100%;
+  overflow-y: auto;
+  width: 100%;
+  h1,
+  h2,
+  h3 {
+    font-weight: 100;
+  }
+  h1 {
+    font-size: 24pt;
+  }
+  section {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    margin-bottom: 10pt;
+    text-align: left;
+    width: 100%;
+    h2 {
+      text-align: left;
+      width: 100%;
+    }
+  }
+  .content {
+    align-items: center;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    max-width: 700pt;
+    padding: 10pt;
+    width: 100%;
 
-.table-striped > tbody > tr:nth-of-type(even) {
-  background-color: #ffffff;
-}
+    .control {
+      display: flex;
+      justify-content: flex-start;
+      width: 100%;
+      button {
+        background-color: transparent;
+        border: 1pt solid var(--bc-blue);
+        border-radius: 5pt;
+        color: var(--bc-blue);
+        font-size: 14pt;
+        height: 30pt;
+        padding: 0 10pt;
+        transition: 0.5s background-color;
+        &:hover {
+          background-color: lightgray;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .intro {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    img {
+      height: 75pt;
+      width: 75pt;
+    }
+  }
+  .activity-colors {
+    .color-options {
+      align-items: flex-start;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: left;
+      & > * {
+        align-items: center;
+        border: 1pt solid lightgray;
+        border-radius: 8pt;
+        display: flex;
+        flex-direction: column;
+        margin: 5pt;
+        padding: 10pt;
+        width: 275px;
+        h3 {
+          margin: 5pt 0;
+        }
+      }
+    }
+  }
 
-.table-blue-header > thead > tr {
-  background-color: #3373ca;
-  color: #ffffff;
+  #invasive-plant-table,
+  #layer-source-table {
+    display: flex;
+    max-height: 300pt;
+    overflow-x: scroll;
+    position: relative;
+    width: 100%;
+    table {
+      border-collapse: collapse;
+      box-sizing: border-box;
+      overflow-x: auto;
+      width: 100%;
+
+      th:first-child,
+      td:first-child {
+        padding-left: 1rem;
+      }
+      thead {
+        color: white;
+        th {
+          background-color: var(--bc-blue);
+          position: sticky;
+          text-align: left;
+          text-wrap: wrap;
+          top: 0;
+          z-index: 2;
+        }
+      }
+      tbody {
+        td {
+          min-width: 2rem;
+        }
+        tr:nth-child(odd) {
+          background-color: #eee;
+        }
+        tr:hover {
+          background-color: #c9f2ef95;
+        }
+      }
+    }
+  }
+  .subheader {
+    margin-top: 0;
+  }
 }
