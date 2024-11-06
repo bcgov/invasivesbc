@@ -20,6 +20,9 @@ body {
   display: flex;
   justify-content: center;
 
+  p {
+    margin: 0;
+  }
   h2 {
     font-size: 24pt;
     font-weight: 100;
