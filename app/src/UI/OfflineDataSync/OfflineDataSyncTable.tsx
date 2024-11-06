@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, LinearProgress } from '@mui/material';
+import { Button, IconButton, LinearProgress } from '@mui/material';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
@@ -41,78 +41,84 @@ export const OfflineDataSyncTable = () => {
 
   return (
     <>
-      <table className={'offlineDataSyncTable'}>
-        <thead>
-          <tr>
-            <th>Load</th>
-            <th>Activity</th>
-            <th>Record Type</th>
-            <th>Locally Modified</th>
-            <th>Status</th>
-            <th>Delete Local</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.entries(serializedActivities).map(([key, value]) => {
-            return (
-              <React.Fragment key={`${key}`}>
-                <tr>
-                  <td>
-                    <Button
-                      disabled={!(workingOffline || authenticated)}
-                      onClick={() => {
-                        dispatch(Activity.getLocal(key));
-                        history.push(`/Records/Activity:${key}/form`);
-                      }}
-                    >
-                      <FileOpen></FileOpen>
-                    </Button>
-                  </td>
-                  <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
-                  <td>{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
-                  <td>{`${moment((value as OfflineActivityRecord).saved_at)}`}</td>
-                  <td>{`${(value as OfflineActivityRecord).sync_state}`}</td>
-                  <td>
-                    <Button>
-                      <Delete
+      <div className="dialog-table">
+        <table className={'offlineDataSyncTable'}>
+          <thead>
+            <tr>
+              <th>Load</th>
+              <th>Activity</th>
+              <th>Record Type</th>
+              <th>Locally Modified</th>
+              <th>Status</th>
+              <th>Delete Local</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.entries(serializedActivities).map(([key, value]) => {
+              return (
+                <React.Fragment key={`${key}`}>
+                  <tr>
+                    <td>
+                      <IconButton
+                        disabled={!(workingOffline || authenticated)}
+                        color="primary"
+                        onClick={() => {
+                          dispatch(Activity.getLocal(key));
+                          history.push(`/Records/Activity:${key}/form`);
+                        }}
+                      >
+                        <FileOpen></FileOpen>
+                      </IconButton>
+                    </td>
+                    <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
+                    <td>{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
+                    <td>{`${moment((value as OfflineActivityRecord).saved_at)}`}</td>
+                    <td>{`${(value as OfflineActivityRecord).sync_state}`}</td>
+                    <td>
+                      <IconButton
                         onClick={() => {
                           dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: key } });
                         }}
-                      />
-                    </Button>
-                  </td>
-                </tr>
-                {(value as OfflineActivityRecord).sync_state == 'Error' && (
-                  <tr>
-                    <td></td>
-                    <td>
-                      {(value as OfflineActivityRecord).error_detail
-                        ? (value as OfflineActivityRecord).error_detail
-                        : 'Error'}
-                    </td>
-                    <td colSpan={3}>
-                      <pre>{JSON.stringify((value as OfflineActivityRecord).error_object, null, 2)}</pre>
+                        color="primary"
+                      >
+                        <Delete />
+                      </IconButton>
                     </td>
                   </tr>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </tbody>
-      </table>
-      <Button
-        disabled={syncDisabled}
-        variant={'contained'}
-        onClick={() => {
-          dispatch({ type: ACTIVITY_RUN_OFFLINE_SYNC });
-        }}
-      >
-        Run Sync
-      </Button>
+                  {(value as OfflineActivityRecord).sync_state == 'Error' && (
+                    <tr>
+                      <td></td>
+                      <td>
+                        {(value as OfflineActivityRecord).error_detail
+                          ? (value as OfflineActivityRecord).error_detail
+                          : 'Error'}
+                      </td>
+                      <td colSpan={3}>
+                        <pre>{JSON.stringify((value as OfflineActivityRecord).error_object, null, 2)}</pre>
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
       {syncDisabled && (
         <span className="syncDisabledMessage">Synchronization requires that you be online and authenticated.</span>
       )}
       {working && <LinearProgress className={'progressBar'} />}
+      <div className="control">
+        <Button
+          disabled={syncDisabled}
+          variant={'contained'}
+          onClick={() => {
+            dispatch({ type: ACTIVITY_RUN_OFFLINE_SYNC });
+          }}
+        >
+          Run Sync
+        </Button>
+      </div>
     </>
   );
 };

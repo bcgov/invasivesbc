@@ -1,18 +1,71 @@
-.offlineDataSyncTable {
-  min-width: 70svw;
+#offline-data-sync-dialog {
+  .dialog-header {
+    align-items: center;
+    background-color: var(--bc-blue);
+    border-bottom: 3pt solid var(--bc-yellow);
+    display: flex;
+    height: 40pt;
+    justify-content: space-between;
+    padding-left: 10pt;
 
+    button {
+      color: white;
+    }
+  }
+  .dialog-table {
+    display: flex;
+    height: auto;
+    margin: 10pt;
+    max-height: 375pt;
+    overflow-x: scroll;
+  }
+  h2 {
+    color: white;
+    padding: 0;
+  }
+  .control {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
+    padding: 10pt;
+    position: relative;
+    width: 100%;
+  }
+}
+
+.offlineDataSyncTable {
+  border-collapse: collapse;
+  overflow-y: auto;
+  position: relative;
+
+  th {
+    background-color: white;
+    position: sticky;
+    text-align: left;
+    top: 0;
+    z-index: 2;
+  }
+  tbody > tr:hover {
+    background-color: #c9f2ef95;
+  }
   td {
     width: auto;
     min-width: 2em;
   }
+  tbody > tr > td:last-child {
+    text-align: right;
+  }
+  tbody > tr:nth-child(odd):not(:hover) {
+    background-color: #eeeeee;
+  }
 }
 
 .progressBar {
-  margin-top: 10px;
   margin-bottom: 10px;
+  margin-top: 10px;
 }
 
 .syncDisabledMessage {
-  padding: 0 1rem;
   color: var(--deep-red);
+  padding: 0 1rem;
 }
