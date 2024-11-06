@@ -14,7 +14,7 @@ const LegendsPopup = () => {
           <button onClick={() => history.goBack()}>Go Back</button>
         </div>
         <div className="intro">
-          <img src={invbclogo} />
+          <img src={invbclogo} alt="InvasivesBC Logo" />
           <h1>InvasivesBC Map Legend</h1>
         </div>
         <Accordion title="InvasivesBC Activity Map Colors">
