@@ -17,7 +17,7 @@ class Prompt {
   /**
    * @desc Action type for creating new prompts.
    */
-  private static readonly NEW_PROMPT = 'Prompt/NewPrompt';
+  static readonly NEW_PROMPT = 'Prompt/NewPrompt';
   /**
    * @desc Helper function for creating modals to gather a 'boolean' input
    * @param {ConfirmationModalInterface} prompt component props
