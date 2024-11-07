@@ -1,21 +1,20 @@
-import chroma from 'chroma-js';
-import React, { useState } from 'react';
-import { MultipleSelect } from 'react-select-material-ui';
-import { useSelector } from 'utils/use_selector';
+import { useState } from 'react';
+import { MultipleSelect, SelectOption } from 'react-select-material-ui';
 import { WidgetProps } from '@rjsf/utils';
 
 const MultiSelectAutoComplete = (props: WidgetProps) => {
-  // @ts-ignore
-  const enumOptions = (props.schema.options as any[]) || (props.options.enumOptions as any[]);
-  const [focused, setFocused] = useState(false);
-  const [hasValues, setHasValues] = useState(false);
-  const { darkTheme } = useSelector((state: any) => state.UserSettings || ({} as any));
-
+  enum Color {
+    DarkGray = '#575757',
+    MediumGray = '#DDD',
+    SilverGray = '#C4C4C4',
+    LightGray = '#EEEEEE50',
+    Black = '#000',
+    White = '#FFF',
+    Yellow = '#FFF000'
+  }
   /**
    * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
    * widget.
-   *
-   * @param {React.ChangeEvent<{}>} event
    * @param {AutoCompleteMultiSelectOption[]} value
    */
   const handleOnChange = (value: any[]): void => {
@@ -32,33 +31,35 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
     }
   };
 
-  const optionArr: any[] = [];
-
-  if (enumOptions) {
-    enumOptions.forEach(({ value, label }) => {
-      optionArr.push({ label: label, value: value, color: darkTheme ? '#FFF' : '#000' });
-    });
-  }
+  const enumOptions: SelectOption[] = props.schema.options ?? props.options.enumOptions ?? [];
+  const hasErrors = props.rawErrors && props.rawErrors?.length > 0;
+  const [focused, setFocused] = useState<boolean>(props.value ?? false);
+  const [hasValues, setHasValues] = useState<boolean>(props.value ?? false);
 
   const colourStyles = {
-    container: (styles) => ({
-      ...styles,
-      borderStyle: 'solid',
-      borderWidth: !hasValues && focused ? '2px' : '1px',
-      boxSizing: 'border-box',
-      borderRadius: '4px',
-
-      borderColor: props.rawErrors?.length > 0 ? 'red' : props.disabled ? '#575757' : '#C4C4C4',
-      marginTop: '0px',
-      ':hover': {
-        ...styles[':hover'],
-        boxShadow: 'none'
-      },
-      ':active': {
-        ...styles[':active'],
-        boxShadow: props.rawErrors?.length > 0 ? '0px 0px 3px #ff000' : '0px 0px 3px #C4C4C4'
-      }
-    }),
+    container: (styles) => {
+      return {
+        ...styles,
+        borderStyle: 'solid',
+        borderWidth: focused && !props.disabled ? '2px' : '1px',
+        boxSizing: 'border-box',
+        padding: '0 5pt',
+        borderRadius: '4px',
+        borderColor: (() => {
+          if (hasErrors) {
+            return 'var(--error-red)';
+          } else if (props.disabled) {
+            return Color.MediumGray;
+          }
+          return Color.SilverGray;
+        })(),
+        marginTop: '0px',
+        ':active': {
+          ...styles[':active'],
+          boxShadow: `0px 0px 3px ${hasErrors ? Color.Yellow : Color.SilverGray}`
+        }
+      };
+    },
     indicatorSeparator: (styles) => ({
       ...styles,
       display: 'none'
@@ -72,81 +73,76 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
     }),
     menu: (styles) => ({
       ...styles,
+      textAlign: 'left',
       zIndex: 2
     }),
     valueContainer: (styles) => ({
       ...styles,
       padding: '12px 4px',
-
       fontSize: '1.2rem',
       lineHeight: '1.2rem'
     }),
-    option: (styles, { data, isDisabled, isFocused, isSelected }) => {
-      const color = chroma(data.color);
-      return {
-        ...styles,
-        backgroundColor: darkTheme ? '#424242' : '#FFF',
-        color: isDisabled ? '#ccc' : isSelected && data.color,
-        cursor: isDisabled ? 'not-allowed' : 'default',
-        ':active': {
-          ...styles[':active'],
-          backgroundColor: !isDisabled ? (isSelected ? data.color : color.alpha(0.3).css()) : undefined
-        }
-      };
-    },
-    multiValue: (styles, { data }) => {
-      return {
-        ...styles,
-        backgroundColor: darkTheme ? '#1C1C1C' : '#FFF'
-      };
-    },
-    multiValueLabel: (styles, { data }) => ({
+    option: (styles, { isDisabled, isSelected }) => ({
       ...styles,
-      color: props.disabled ? '#A1A1A1' : darkTheme ? '#FFF' : '#000'
+      backgroundColor: Color.White,
+      ':hover': {
+        backgroundColor: Color.MediumGray
+      },
+      color: isDisabled ? Color.SilverGray : Color.Black,
+      cursor: isDisabled ? 'not-allowed' : 'default',
+      ':active': {
+        ...styles[':active'],
+        backgroundColor: isSelected ? Color.White : Color.Black
+      }
     }),
-    multiValueRemove: (styles, { data }) => {
-      return {
-        ...styles,
-        color: darkTheme ? '#FFF' : '#000',
-        ':hover': {
-          backgroundColor: darkTheme ? '#FFF' : '#003366',
-          color: darkTheme ? '#424242' : '#FFF'
-        }
-      };
-    }
+    multiValue: (styles, { isDisabled }) => ({
+      ...styles,
+      border: `1pt solid ${Color.SilverGray}`,
+      color: isDisabled ? Color.MediumGray : Color.Black,
+      borderRadius: '5pt',
+      backgroundColor: Color.White
+    }),
+    multiValueLabel: (styles, { isDisabled }) => ({
+      ...styles,
+      color: isDisabled ? Color.SilverGray : Color.Black
+    }),
+    multiValueRemove: (styles) => ({
+      ...styles,
+      transition: '0.5s background-color',
+      ':hover': {
+        backgroundColor: 'var(--bc-blue)',
+        color: 'var(--bc-yellow)',
+        cursor: 'pointer'
+      }
+    })
   };
 
   return (
-    <div id="custom-multi-select" key={props.label + 'key'}>
-      <MultipleSelect
-        id="custom-multi-select-field"
-        SelectProps={{ styles: colourStyles }}
-        InputLabelProps={{
-          style: {
-            transform: focused === true ? 'translate(12px, -5px) scale(0.7)' : 'translate(12px, 20px) scale(1)',
-            backgroundColor: darkTheme ? '#424242' : 'white',
-            paddingInline: focused === true ? '5px' : '0px',
-            zIndex: focused === true ? 1 : 0,
-            position: 'absolute'
-          }
-        }}
-        onChange={handleOnChange}
-        values={props.value ? props.value?.split(',') : undefined}
-        //error={props.rawErrors?.length > 0 && props.rawErrors[0] !== 'should be equal to one of the allowed values' }
-        error={props.rawErrors?.length > 0 && props.rawErrors?.[0] !== 'should be equal to one of the allowed values'}
-        disabled={props.disabled}
-        label={props.label}
-        onFocus={() => {
-          setFocused(true);
-        }}
-        onBlur={() => {
-          if (hasValues === false) {
-            setFocused(false);
-          }
-        }}
-        options={optionArr}
-      />
-    </div>
+    <MultipleSelect
+      id="custom-multi-select-field"
+      SelectProps={{ styles: colourStyles }}
+      InputLabelProps={{
+        style: {
+          transform: focused ? 'translate(12px, -5px) scale(0.7)' : 'translate(12px, 20px) scale(1)',
+          backgroundColor: Color.White,
+          paddingInline: focused ? '5px' : '0',
+          zIndex: focused ? 1 : 0,
+          position: 'absolute'
+        }
+      }}
+      onChange={handleOnChange}
+      values={props?.value?.split(',') ?? []}
+      error={hasErrors && props.rawErrors?.[0] !== 'should be equal to one of the allowed values'}
+      disabled={props.disabled}
+      label={props.label}
+      onFocus={setFocused.bind(this, true)}
+      onBlur={() => {
+        if (!hasValues) {
+          setFocused(false);
+        }
+      }}
+      options={enumOptions}
+    />
   );
 };
 
