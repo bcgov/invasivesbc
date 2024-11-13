@@ -1,7 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
-  BATCH_CREATE_REQUEST,
   BATCH_CREATE_REQUEST_WITH_CALLBACK,
   BATCH_CREATE_SUCCESS,
   BATCH_DELETE_ERROR,
@@ -46,21 +45,6 @@ function* getBatch(action: PayloadAction<string>) {
 
   const data = yield res.json();
   yield put(BatchActions.retrieveSuccess(data.result));
-}
-
-function* createBatch(action) {
-  const configuration = yield select(selectConfiguration);
-
-  const res = yield fetch(configuration.API_BASE + `/api/batch`, {
-    method: 'POST',
-    headers: {
-      Authorization: yield getCurrentJWT(),
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(action.payload)
-  });
-
-  yield put({ type: BATCH_CREATE_SUCCESS, payload: yield res.json() });
 }
 
 function* createBatchWithCallback(action) {
@@ -196,7 +180,6 @@ function* batchSaga() {
   yield all([
     takeEvery(BatchActions.list, listBatches),
     takeLatest(BatchActions.retrieve, getBatch),
-    takeEvery(BATCH_CREATE_REQUEST, createBatch),
     takeEvery(BATCH_UPDATE_REQUEST, updateBatch),
     takeEvery(BATCH_DELETE_REQUEST, deleteBatch),
     takeEvery(BATCH_DELETE_SUCCESS, listBatches),
