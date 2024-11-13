@@ -1,3 +1,4 @@
+import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   BATCH_CREATE_REQUEST,
@@ -9,7 +10,6 @@ import {
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
-  BATCH_LIST_SUCCESS,
   BATCH_RETRIEVE_REQUEST,
   BATCH_RETRIEVE_SUCCESS,
   BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
@@ -24,7 +24,7 @@ import BatchActions from 'state/actions/batch/BatchActions';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
-function* listBatches(action) {
+function* listBatches(action: PayloadAction) {
   yield call(listTemplates, action);
   const configuration = yield select(selectConfiguration);
 
@@ -34,7 +34,7 @@ function* listBatches(action) {
     }
   });
 
-  yield put({ type: BATCH_LIST_SUCCESS, payload: (yield res.json())?.result });
+  yield put(BatchActions.listSuccess((yield res.json())?.result));
 }
 
 function* getBatch(action) {
