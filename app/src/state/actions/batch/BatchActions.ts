@@ -1,8 +1,15 @@
 import { createAction } from '@reduxjs/toolkit';
 import { DeepBatch, ShallowBatch } from 'state/reducers/batch';
 
-interface IBatchCreate extends DeepBatch {
-  createdBatchId: string;
+interface IBatchCreateWithCallback {
+  csvData: Record<string, any> | null;
+  template?: string;
+  resolve: Function;
+  reject: Function;
+}
+
+export interface IBatchSuccess extends DeepBatch {
+  batchId: string;
 }
 class BatchActions {
   private static readonly PREFIX = 'Batch';
@@ -13,8 +20,8 @@ class BatchActions {
   static readonly retrieve = createAction<string>(`${this.PREFIX}/retrieve`);
   static readonly retrieveSuccess = createAction<DeepBatch>(`${this.PREFIX}/retrieveSuccess`);
 
-  static readonly createWithCallback = createAction(`${this.PREFIX}/createWithCallback`);
-  static readonly createSuccess = createAction<IBatchCreate>(`${this.PREFIX}/create`);
+  static readonly createWithCallback = createAction<IBatchCreateWithCallback>(`${this.PREFIX}/createWithCallback`);
+  static readonly createSuccess = createAction<IBatchSuccess>(`${this.PREFIX}/create`);
   static readonly createError = createAction(`${this.PREFIX}/createError`);
 
   static readonly update = createAction(`${this.PREFIX}/update`);

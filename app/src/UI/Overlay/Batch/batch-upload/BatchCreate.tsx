@@ -5,20 +5,20 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
-import { BATCH_CREATE_REQUEST_WITH_CALLBACK, BATCH_TEMPLATE_LIST_REQUEST } from 'state/actions';
+import { BATCH_TEMPLATE_LIST_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
 import { selectAuth } from 'state/reducers/auth';
+import BatchActions from 'state/actions/batch/BatchActions';
 
 const BatchCreate = () => {
   const dispatch = useDispatch();
-
   const history = useHistory();
 
   const [data, setData] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string>();
   const [ready, setReady] = useState<boolean>(false);
 
-  const { working, templates, item } = useSelector(selectBatch);
+  const { working, templates } = useSelector(selectBatch);
   const authState = useSelector(selectAuth);
 
   useEffect(() => {
@@ -39,15 +39,14 @@ const BatchCreate = () => {
 
   const doUpload = () => {
     new Promise((resolve, reject) => {
-      dispatch({
-        type: BATCH_CREATE_REQUEST_WITH_CALLBACK,
-        payload: {
+      dispatch(
+        BatchActions.createWithCallback({
           csvData: data,
           template: selectedTemplate,
           resolve,
           reject
-        }
-      });
+        })
+      );
     }).then((batchId) => {
       history.push(`/Batch/list/${batchId}`);
     });
