@@ -10,7 +10,6 @@ import {
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
-  BATCH_RETRIEVE_SUCCESS,
   BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
@@ -46,7 +45,7 @@ function* getBatch(action: PayloadAction<string>) {
   });
 
   const data = yield res.json();
-  yield put({ type: BATCH_RETRIEVE_SUCCESS, payload: data.result });
+  yield put(BatchActions.retrieveSuccess(data.result));
 }
 
 function* createBatch(action) {
