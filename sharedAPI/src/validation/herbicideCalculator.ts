@@ -616,7 +616,7 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
  * ------------------------Helper Functions-----------------------------------
  */
 export const parseToRightFormat = (value: number) => {
-  return Number(value.toFixed(4));
+  return Number(value.toFixed(10));
 };
 export interface IGeneralFields {
   application_start_time?: Date;
