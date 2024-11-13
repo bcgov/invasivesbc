@@ -1,5 +1,5 @@
 import { Box, Paper, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Error } from '@mui/icons-material';
 import { Link } from 'react-router-dom';

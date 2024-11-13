@@ -10,7 +10,6 @@ import {
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
-  BATCH_LIST_ERROR,
   BATCH_RETRIEVE_ERROR,
   BATCH_RETRIEVE_REQUEST,
   BATCH_RETRIEVE_SUCCESS,
@@ -91,11 +90,6 @@ function createBatchReducer() {
         draftState.list = action.payload;
       } else {
         switch (action.type) {
-          case BATCH_LIST_ERROR:
-            draftState.working = false;
-            draftState.error = true;
-            draftState.list = [];
-            break;
           case BATCH_RETRIEVE_REQUEST:
             draftState.working = true;
             draftState.error = false;
