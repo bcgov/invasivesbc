@@ -11,7 +11,6 @@ import {
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
   BATCH_RETRIEVE_ERROR,
-  BATCH_RETRIEVE_REQUEST,
   BATCH_RETRIEVE_SUCCESS,
   BATCH_TEMPLATE_DOWNLOAD_ERROR,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
@@ -88,13 +87,12 @@ function createBatchReducer() {
         draftState.working = false;
         draftState.error = false;
         draftState.list = action.payload;
+      } else if (BatchActions.retrieve.match(action)) {
+        draftState.working = true;
+        draftState.error = false;
+        draftState.item = null;
       } else {
         switch (action.type) {
-          case BATCH_RETRIEVE_REQUEST:
-            draftState.working = true;
-            draftState.error = false;
-            draftState.item = null;
-            break;
           case BATCH_RETRIEVE_SUCCESS:
             draftState.working = false;
             draftState.error = false;

@@ -7,7 +7,8 @@ import BatchFileComponent from './BatchFileComponent';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Spinner/Spinner';
-import { BATCH_EXECUTE_REQUEST, BATCH_RETRIEVE_REQUEST, BATCH_UPDATE_REQUEST } from 'state/actions';
+import { BATCH_EXECUTE_REQUEST, BATCH_UPDATE_REQUEST } from 'state/actions';
+import BatchActions from 'state/actions/batch/BatchActions';
 
 const StyledSelect = {
   width: '70pt',
@@ -164,7 +165,7 @@ const BatchDetail = ({ id }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+    dispatch(BatchActions.retrieve(id));
   }, [id]);
 
   function renderContent() {

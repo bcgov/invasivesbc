@@ -10,7 +10,6 @@ import {
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
-  BATCH_RETRIEVE_REQUEST,
   BATCH_RETRIEVE_SUCCESS,
   BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
@@ -37,11 +36,10 @@ function* listBatches(action: PayloadAction) {
   yield put(BatchActions.listSuccess((yield res.json())?.result));
 }
 
-function* getBatch(action) {
+function* getBatch(action: PayloadAction<string>) {
   const configuration = yield select(selectConfiguration);
-  const { id } = action.payload;
 
-  const res = yield fetch(configuration.API_BASE + `/api/batch/` + encodeURIComponent(id), {
+  const res = yield fetch(configuration.API_BASE + `/api/batch/` + encodeURIComponent(action.payload), {
     headers: {
       Authorization: yield getCurrentJWT()
     }
@@ -98,7 +96,7 @@ function* updateBatch(action) {
   });
 
   yield put({ type: BATCH_UPDATE_SUCCESS, payload: res?.json() });
-  yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+  yield put(BatchActions.retrieve(id));
 }
 
 function* deleteBatch(action: any) {
@@ -189,7 +187,7 @@ function* executeBatch(action) {
 
   if (data.code === 200) {
     yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
-    yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+    yield put(BatchActions.retrieve(id));
   } else {
     yield put({ type: BATCH_EXECUTE_ERROR, payload: data });
   }
@@ -198,7 +196,7 @@ function* executeBatch(action) {
 function* batchSaga() {
   yield all([
     takeEvery(BatchActions.list, listBatches),
-    takeLatest(BATCH_RETRIEVE_REQUEST, getBatch),
+    takeLatest(BatchActions.retrieve, getBatch),
     takeEvery(BATCH_CREATE_REQUEST, createBatch),
     takeEvery(BATCH_UPDATE_REQUEST, updateBatch),
     takeEvery(BATCH_DELETE_REQUEST, deleteBatch),
