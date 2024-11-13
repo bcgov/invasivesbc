@@ -11,7 +11,6 @@ import {
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
   BATCH_LIST_ERROR,
-  BATCH_LIST_REQUEST,
   BATCH_LIST_SUCCESS,
   BATCH_RETRIEVE_ERROR,
   BATCH_RETRIEVE_REQUEST,
@@ -26,25 +25,26 @@ import {
   BATCH_UPDATE_REQUEST,
   BATCH_UPDATE_SUCCESS
 } from '../actions';
+import BatchActions from 'state/actions/batch/BatchActions';
 
-interface DeepBatch {
+export interface DeepBatch {
   created_at: string;
   id: string | number;
 }
 
-interface ShallowBatch {
+export interface ShallowBatch {
   created_at: string;
   template: string;
   status: string;
   id: string | number;
 }
 
-interface ShallowTemplate {
+export interface ShallowTemplate {
   name: string;
   key: string;
 }
 
-interface DeepTemplate {
+export interface DeepTemplate {
   name: string;
   key: string;
 }
@@ -82,6 +82,11 @@ function createBatchReducer() {
 
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<Batch>) => {
+      if (BatchActions.list.match(action)) {
+        draftState.working = true;
+        draftState.error = false;
+        draftState.list = [];
+      }
       switch (action.type) {
         case BATCH_LIST_SUCCESS:
           draftState.working = false;
@@ -91,11 +96,6 @@ function createBatchReducer() {
         case BATCH_LIST_ERROR:
           draftState.working = false;
           draftState.error = true;
-          draftState.list = [];
-          break;
-        case BATCH_LIST_REQUEST:
-          draftState.working = true;
-          draftState.error = false;
           draftState.list = [];
           break;
         case BATCH_RETRIEVE_REQUEST:
@@ -210,7 +210,7 @@ function createBatchReducer() {
               'monitoring_chemical_treatment',
               'monitoring_chemical_treatment_temp',
               'monitoring_mechanical_treatment',
-              'monitoring_mechanical_treatment_temp',
+              'monitoring_mechanical_treatment_temp'
             ].includes(template.key)
           );
           break;
