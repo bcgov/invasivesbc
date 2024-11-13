@@ -6,9 +6,10 @@ import { Link } from 'react-router-dom';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
-import { BATCH_DELETE_REQUEST, BATCH_LIST_REQUEST } from 'state/actions';
+import { BATCH_DELETE_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
 import { selectAuth } from 'state/reducers/auth';
+import BatchActions from 'state/actions/batch/BatchActions';
 
 const BatchUploadList = () => {
   const { working, error, list, templates, errorMessage } = useSelector(selectBatch);
@@ -22,7 +23,7 @@ const BatchUploadList = () => {
       return;
     }
 
-    dispatch({ type: BATCH_LIST_REQUEST });
+    dispatch(BatchActions.list());
   }, [serial, authState?.authenticated]);
 
   function deleteBatch(batchId) {

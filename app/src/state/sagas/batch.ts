@@ -9,7 +9,6 @@ import {
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
-  BATCH_LIST_REQUEST,
   BATCH_LIST_SUCCESS,
   BATCH_RETRIEVE_REQUEST,
   BATCH_RETRIEVE_SUCCESS,
@@ -21,6 +20,7 @@ import {
   BATCH_UPDATE_REQUEST,
   BATCH_UPDATE_SUCCESS
 } from 'state/actions';
+import BatchActions from 'state/actions/batch/BatchActions';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
@@ -197,7 +197,7 @@ function* executeBatch(action) {
 
 function* batchSaga() {
   yield all([
-    takeEvery(BATCH_LIST_REQUEST, listBatches),
+    takeEvery(BatchActions.list, listBatches),
     takeLatest(BATCH_RETRIEVE_REQUEST, getBatch),
     takeEvery(BATCH_CREATE_REQUEST, createBatch),
     takeEvery(BATCH_UPDATE_REQUEST, updateBatch),
