@@ -1,10 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import {
-  BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
-  BATCH_TEMPLATE_DOWNLOAD_REQUEST,
-  BATCH_TEMPLATE_DOWNLOAD_SUCCESS
-} from 'state/actions';
+import { BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, BATCH_TEMPLATE_DOWNLOAD_SUCCESS } from 'state/actions';
 
 import BatchActions, { IBatchExecute, IBatchUpdate } from 'state/actions/batch/BatchActions';
 import { selectConfiguration } from 'state/reducers/configuration';
@@ -117,10 +113,10 @@ function* templateCSV(action) {
   yield call(resolve, yield res.text());
 }
 
-function* templateDetail(action) {
+function* templateDetail(action: PayloadAction<string>) {
   const configuration = yield select(selectConfiguration);
-
-  const res = yield fetch(configuration.API_BASE + `/api/batch/templates/${action.payload.key}`, {
+  const key = action.payload;
+  const res = yield fetch(configuration.API_BASE + `/api/batch/templates/${key}`, {
     headers: {
       Authorization: yield getCurrentJWT(),
       Accept: 'application/json'
@@ -130,7 +126,7 @@ function* templateDetail(action) {
   yield put({
     type: BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
     payload: {
-      key: action.payload.key,
+      key: key,
       data: yield res.json()
     }
   });
@@ -170,7 +166,7 @@ function* batchSaga() {
     takeEvery(BatchActions.delete, deleteBatch),
     takeEvery(BatchActions.deleteSuccess, listBatches),
     takeLatest(BatchActions.templateList, listTemplates),
-    takeEvery(BATCH_TEMPLATE_DOWNLOAD_REQUEST, templateDetail),
+    takeEvery(BatchActions.downloadTemplate, templateDetail),
     takeLatest(BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, templateCSV),
     takeLatest(BatchActions.createWithCallback, createBatchWithCallback),
     takeLatest(BatchActions.execute, executeBatch)
