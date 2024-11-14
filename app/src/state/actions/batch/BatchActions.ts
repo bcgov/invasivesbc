@@ -30,7 +30,7 @@ class BatchActions {
   static readonly update = createAction<IBatchUpdate>(`${this.PREFIX}/update`);
   static readonly updateSuccess = createAction<IBatchSuccess>(`${this.PREFIX}/updateSuccess`);
 
-  static readonly delete = createAction(`${this.PREFIX}/delete`);
+  static readonly delete = createAction<string>(`${this.PREFIX}/delete`);
   static readonly deleteSuccess = createAction(`${this.PREFIX}/deleteSuccess`);
   static readonly deleteError = createAction(`${this.PREFIX}/deleteError`);
 

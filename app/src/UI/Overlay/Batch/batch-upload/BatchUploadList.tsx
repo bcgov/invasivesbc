@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
-import { BATCH_DELETE_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
 import { selectAuth } from 'state/reducers/auth';
 import BatchActions from 'state/actions/batch/BatchActions';
@@ -27,7 +26,7 @@ const BatchUploadList = () => {
   }, [serial, authState?.authenticated]);
 
   function deleteBatch(batchId) {
-    dispatch({ type: BATCH_DELETE_REQUEST, payload: { id: batchId } });
+    dispatch(BatchActions.delete(batchId));
   }
 
   function renderError() {
