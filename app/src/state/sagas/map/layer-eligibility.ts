@@ -75,6 +75,22 @@ function* recomputeEligibleMapLayers(action) {
   ) {
     yield put(MapActions.updateAvailableBaseMaps(UPDATED_BASEMAP_LIST));
     yield put(MapActions.updateAvailableOverlays(UPDATED_OVERLAY_LIST));
+
+    // if (!AUTHENTICATED){
+    //   yield put(MapActions.toggleOverlay('public_layer'));
+    //   console.log("after toggle map");
+    // }
+    
+  }
+  
+  const { enabledOverlayLayers } = yield select((state) => state.Map);
+  
+  if (
+    !AUTHENTICATED &&
+    UPDATED_OVERLAY_LIST.includes('public_layer') &&
+    !enabledOverlayLayers.includes('public_layer')
+  ) {
+    yield put(MapActions.toggleOverlay('public_layer'));
   }
 }
 
