@@ -480,7 +480,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
         } as FeatureCollection)
       : false;
 
-    if (linkedActivitySubtypes.length > 0) {
+    if (linkedActivitySubtypes.length > 0 && search_feature) {
       yield put(
         Activity.Suggestions.treatmentIdsRequestOnline({
           activity_subtype: linkedActivitySubtypes,
