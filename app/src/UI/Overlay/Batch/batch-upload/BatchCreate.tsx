@@ -5,7 +5,6 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
-import { BATCH_TEMPLATE_LIST_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
 import { selectAuth } from 'state/reducers/auth';
 import BatchActions from 'state/actions/batch/BatchActions';
@@ -29,8 +28,7 @@ const BatchCreate = () => {
     if (!authState?.authenticated) {
       return;
     }
-
-    dispatch({ type: BATCH_TEMPLATE_LIST_REQUEST });
+    dispatch(BatchActions.templateList());
   }, [authState?.authenticated]);
 
   const acceptData = (d) => {
