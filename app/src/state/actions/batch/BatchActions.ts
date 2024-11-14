@@ -30,6 +30,11 @@ export interface IBatchDownloadTemplate {
   key: string;
   data: DeepTemplate;
 }
+
+export interface IBatchDownloadTemplateCsv {
+  key: string;
+  resolve: any;
+}
 class BatchActions {
   private static readonly PREFIX = 'Batch';
 
@@ -60,7 +65,7 @@ class BatchActions {
   static readonly downloadTemplateSuccess = createAction<IBatchDownloadTemplate>(
     `${this.PREFIX}/downloadTemplateSuccess`
   );
-  static readonly downloadTemplateCsv = createAction(`${this.PREFIX}/downloadTemplateCsv`);
+  static readonly downloadTemplateCsv = createAction<IBatchDownloadTemplateCsv>(`${this.PREFIX}/downloadTemplateCsv`);
 }
 
 export default BatchActions;

@@ -8,7 +8,6 @@ import { Download } from '@mui/icons-material';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
-import { BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
 import BatchActions from 'state/actions/batch/BatchActions';
 
@@ -40,13 +39,12 @@ const TemplatePreview = ({ name, id }) => {
 
   const downloadTemplate = (key: string) => {
     new Promise((resolve, reject) => {
-      dispatch({
-        type: BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
-        payload: {
+      dispatch(
+        BatchActions.downloadTemplateCsv({
           key: id,
           resolve
-        }
-      });
+        })
+      );
     }).then((data) => {
       const dataUrl = `data:text/csv;base64,${btoa(data as string)}`;
       const downloadLink = document.createElement('a');
