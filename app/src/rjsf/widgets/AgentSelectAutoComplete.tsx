@@ -86,6 +86,11 @@ const AgentSelectAutoComplete = (props: WidgetProps) => {
       onLoad={() => {
         props.onChange(value);
       }}
+      SelectProps={{
+        MenuProps: {
+          sx: { height: '300px' }
+        }
+      }}
     >
       {filteredOptions.map((entry) => (
         <MenuItem key={entry.value} value={entry.value}>
