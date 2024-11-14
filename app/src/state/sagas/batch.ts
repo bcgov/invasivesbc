@@ -2,7 +2,6 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   BATCH_DELETE_ERROR,
-  BATCH_DELETE_REQUEST,
   BATCH_DELETE_SUCCESS,
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
@@ -77,9 +76,9 @@ function* updateBatch(action: PayloadAction<IBatchUpdate>) {
   yield put(BatchActions.retrieve(id));
 }
 
-function* deleteBatch(action: any) {
+function* deleteBatch(action: PayloadAction<string>) {
   const configuration = yield select(selectConfiguration);
-  const { id } = action.payload;
+  const id = action.payload;
 
   const res = yield fetch(configuration.API_BASE + `/api/batch/${id}`, {
     method: 'DELETE',
@@ -87,7 +86,7 @@ function* deleteBatch(action: any) {
       Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(action.payload)
+    body: JSON.stringify({ id })
   });
 
   const data = yield res.json();
@@ -176,7 +175,7 @@ function* batchSaga() {
     takeEvery(BatchActions.list, listBatches),
     takeLatest(BatchActions.retrieve, getBatch),
     takeEvery(BatchActions.update, updateBatch),
-    takeEvery(BATCH_DELETE_REQUEST, deleteBatch),
+    takeEvery(BatchActions.delete, deleteBatch),
     takeEvery(BATCH_DELETE_SUCCESS, listBatches),
     takeLatest(BATCH_TEMPLATE_LIST_REQUEST, listTemplates),
     takeEvery(BATCH_TEMPLATE_DOWNLOAD_REQUEST, templateDetail),
