@@ -1,10 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import {
-  BATCH_TEMPLATE_DOWNLOAD_ERROR,
-  BATCH_TEMPLATE_DOWNLOAD_REQUEST,
-  BATCH_TEMPLATE_DOWNLOAD_SUCCESS
-} from '../actions';
+import { BATCH_TEMPLATE_DOWNLOAD_ERROR, BATCH_TEMPLATE_DOWNLOAD_SUCCESS } from '../actions';
 import BatchActions from 'state/actions/batch/BatchActions';
 
 export interface DeepBatch {
@@ -40,7 +36,7 @@ interface Batch {
   templates: ShallowTemplate[];
   templateDetail: {
     [name: string]: {
-      data: DeepTemplate;
+      data: DeepTemplate | null;
       error: boolean;
       working: boolean;
     };
@@ -125,18 +121,17 @@ function createBatchReducer() {
         draftState.working = false;
         draftState.error = false;
         draftState.templates = action.payload;
+      } else if (BatchActions.downloadTemplate.match(action)) {
+        draftState.templateDetail = {
+          ...state.templateDetail,
+          [action.payload]: {
+            working: true,
+            error: false,
+            data: null
+          }
+        };
       } else {
         switch (action.type) {
-          case BATCH_TEMPLATE_DOWNLOAD_REQUEST:
-            draftState.templateDetail = {
-              ...state.templateDetail,
-              [action.payload.key]: {
-                working: true,
-                error: false,
-                data: null
-              }
-            };
-            break;
           case BATCH_TEMPLATE_DOWNLOAD_SUCCESS:
             draftState.templateDetail = {
               ...state.templateDetail,

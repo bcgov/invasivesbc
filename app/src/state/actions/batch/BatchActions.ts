@@ -25,6 +25,7 @@ export interface IBatchListTemplate {
   name: string;
   key: string;
 }
+
 class BatchActions {
   private static readonly PREFIX = 'Batch';
 
@@ -51,7 +52,7 @@ class BatchActions {
   static readonly templateList = createAction(`${this.PREFIX}/templateList`);
   static readonly templateListSuccess = createAction<IBatchListTemplate[]>(`${this.PREFIX}/templateListSuccess`);
 
-  static readonly downloadTemplate = createAction(`${this.PREFIX}/downloadTemplate`);
+  static readonly downloadTemplate = createAction<string>(`${this.PREFIX}/downloadTemplate`);
   static readonly downloadTemplateSuccess = createAction(`${this.PREFIX}/downloadTemplateSuccess`);
   static readonly downloadTemplateError = createAction(`${this.PREFIX}/downloadTemplateError`);
   static readonly downloadTemplateCsv = createAction(`${this.PREFIX}/downloadTemplateCsv`);
