@@ -40,7 +40,7 @@ class BatchActions {
   static readonly deleteError = createAction(`${this.PREFIX}/deleteError`);
 
   static readonly execute = createAction<IBatchExecute>(`${this.PREFIX}/execute`);
-  static readonly executeSuccess = createAction(`${this.PREFIX}/executeSuccess`);
+  static readonly executeSuccess = createAction<DeepBatch>(`${this.PREFIX}/executeSuccess`);
   static readonly executeError = createAction(`${this.PREFIX}/executeError`);
 
   static readonly templateList = createAction(`${this.PREFIX}/templateList`);
