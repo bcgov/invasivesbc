@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import TemplatePreview from './TemplatePreview';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';

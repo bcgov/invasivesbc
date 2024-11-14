@@ -4,8 +4,7 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_ERROR,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
-  BATCH_TEMPLATE_LIST_ERROR,
-  BATCH_TEMPLATE_LIST_SUCCESS
+  BATCH_TEMPLATE_LIST_ERROR
 } from '../actions';
 import BatchActions from 'state/actions/batch/BatchActions';
 
@@ -123,39 +122,12 @@ function createBatchReducer() {
         draftState.working = true;
         draftState.error = false;
         draftState.templates = [];
+      } else if (BatchActions.templateListSuccess.match(action)) {
+        draftState.working = false;
+        draftState.error = false;
+        draftState.templates = action.payload;
       } else {
         switch (action.type) {
-          case BATCH_TEMPLATE_LIST_SUCCESS:
-            draftState.working = false;
-            draftState.error = false;
-            draftState.templates = action.payload.filter((template) =>
-              [
-                'observation_aquatic_plant',
-                'observation_aquatic_plant_temp',
-                'observation_terrestrial_plant',
-                'observation_terrestrial_plant_temp',
-                'treatment_mechanical_terrestrial_plant',
-                'treatment_mechanical_terrestrial_plant_temp',
-                'treatment_mechanical_aquatic_plant',
-                'treatment_mechanical_aquatic_plant_temp',
-                'treatment_chemical_terrestrial_plant',
-                'treatment_chemical_terrestrial_plant_temp',
-                'treatment_chemical_aquatic_plant',
-                'treatment_chemical_aquatic_plant_temp',
-                'biocontrol_release',
-                'biocontrol_release_temp',
-                'biocontrol_collection',
-                'biocontrol_collection_temp',
-                'monitoring_biocontrol_dispersal_terrestrial_plant',
-                'monitoring_biocontrol_dispersal_terrestrial_plant_temp',
-                'monitoring_biocontrol_release_terrestrial_plant',
-                'monitoring_chemical_treatment',
-                'monitoring_chemical_treatment_temp',
-                'monitoring_mechanical_treatment',
-                'monitoring_mechanical_treatment_temp'
-              ].includes(template.key)
-            );
-            break;
           case BATCH_TEMPLATE_LIST_ERROR:
             draftState.working = false;
             draftState.error = true;

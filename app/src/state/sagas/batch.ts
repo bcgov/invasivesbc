@@ -3,8 +3,7 @@ import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effect
 import {
   BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
-  BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
-  BATCH_TEMPLATE_LIST_SUCCESS
+  BATCH_TEMPLATE_DOWNLOAD_SUCCESS
 } from 'state/actions';
 
 import BatchActions, { IBatchExecute, IBatchUpdate } from 'state/actions/batch/BatchActions';
@@ -100,8 +99,7 @@ function* listTemplates(action: PayloadAction) {
       Authorization: yield getCurrentJWT()
     }
   });
-
-  yield put({ type: BATCH_TEMPLATE_LIST_SUCCESS, payload: yield res.json() });
+  yield put(BatchActions.templateListSuccess(yield res.json()));
 }
 
 function* templateCSV(action) {

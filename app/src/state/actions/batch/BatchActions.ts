@@ -20,6 +20,11 @@ export interface IBatchExecute {
   desiredActivityState: string;
   treatmentOfErrorRows: string;
 }
+
+export interface IBatchListTemplate {
+  name: string;
+  key: string;
+}
 class BatchActions {
   private static readonly PREFIX = 'Batch';
 
@@ -44,7 +49,7 @@ class BatchActions {
   static readonly executeError = createAction<string>(`${this.PREFIX}/executeError`);
 
   static readonly templateList = createAction(`${this.PREFIX}/templateList`);
-  static readonly templateListSuccess = createAction(`${this.PREFIX}/templateListSuccess`);
+  static readonly templateListSuccess = createAction<IBatchListTemplate[]>(`${this.PREFIX}/templateListSuccess`);
   static readonly templateListError = createAction(`${this.PREFIX}/templateListError`);
 
   static readonly downloadTemplate = createAction(`${this.PREFIX}/downloadTemplate`);
