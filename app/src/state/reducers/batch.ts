@@ -1,7 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import {
-  BATCH_EXECUTE_ERROR,
   BATCH_TEMPLATE_DOWNLOAD_ERROR,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
@@ -116,15 +115,13 @@ function createBatchReducer() {
         draftState.working = false;
         draftState.error = false;
         draftState.item = action.payload;
+      } else if (BatchActions.executeError.match(action)) {
+        draftState.working = false;
+        draftState.error = true;
+        draftState.errorMessage = `Could not execute batch: ${action.payload}`;
+        draftState.item = null;
       } else {
         switch (action.type) {
-          case BATCH_EXECUTE_ERROR:
-            draftState.working = false;
-            draftState.error = true;
-            draftState.errorMessage = `Could not execute batch ${JSON.stringify(action.payload?.message, null, 2)}`;
-            draftState.item = null;
-            break;
-
           case BATCH_TEMPLATE_LIST_REQUEST:
             draftState.working = true;
             draftState.error = false;
