@@ -1,8 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import {
-  BATCH_DELETE_ERROR,
-  BATCH_DELETE_SUCCESS,
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
@@ -103,6 +101,15 @@ function createBatchReducer() {
         draftState.working = true;
         draftState.error = false;
         draftState.item = null;
+      } else if (BatchActions.deleteSuccess.match(action)) {
+        draftState.working = false;
+        draftState.error = false;
+        draftState.item = null;
+      } else if (BatchActions.deleteError.match(action)) {
+        draftState.working = false;
+        draftState.error = true;
+        draftState.errorMessage = 'Could not delete batch';
+        draftState.item = null;
       } else {
         switch (action.type) {
           case BATCH_EXECUTE_SUCCESS:
@@ -119,17 +126,6 @@ function createBatchReducer() {
           case BATCH_EXECUTE_REQUEST:
             draftState.working = true;
             draftState.error = false;
-            draftState.item = null;
-            break;
-          case BATCH_DELETE_SUCCESS:
-            draftState.working = false;
-            draftState.error = false;
-            draftState.item = null;
-            break;
-          case BATCH_DELETE_ERROR:
-            draftState.working = false;
-            draftState.error = true;
-            draftState.errorMessage = 'Could not delete batch';
             draftState.item = null;
             break;
           case BATCH_TEMPLATE_LIST_REQUEST:
