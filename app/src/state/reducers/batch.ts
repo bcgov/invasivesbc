@@ -1,7 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import {
-  BATCH_CREATE_ERROR,
   BATCH_DELETE_ERROR,
   BATCH_DELETE_REQUEST,
   BATCH_DELETE_SUCCESS,
@@ -98,12 +97,6 @@ function createBatchReducer() {
         draftState.createdBatchId = action.payload.batchId;
       } else {
         switch (action.type) {
-          case BATCH_CREATE_ERROR:
-            draftState.working = false;
-            draftState.error = true;
-            draftState.item = null;
-            draftState.createdBatchId = null;
-            break;
           case BATCH_EXECUTE_SUCCESS:
             draftState.working = false;
             draftState.error = false;
