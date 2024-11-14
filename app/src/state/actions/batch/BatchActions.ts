@@ -28,7 +28,7 @@ class BatchActions {
   static readonly createSuccess = createAction<IBatchSuccess>(`${this.PREFIX}/create`);
 
   static readonly update = createAction<IBatchUpdate>(`${this.PREFIX}/update`);
-  static readonly updateSuccess = createAction(`${this.PREFIX}/updateSuccess`);
+  static readonly updateSuccess = createAction<IBatchSuccess>(`${this.PREFIX}/updateSuccess`);
   static readonly updateError = createAction(`${this.PREFIX}/updateError`);
 
   static readonly delete = createAction(`${this.PREFIX}/delete`);

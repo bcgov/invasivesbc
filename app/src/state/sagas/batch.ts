@@ -11,11 +11,10 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_REQUEST,
-  BATCH_TEMPLATE_LIST_SUCCESS,
-  BATCH_UPDATE_SUCCESS
+  BATCH_TEMPLATE_LIST_SUCCESS
 } from 'state/actions';
 
-import BatchActions from 'state/actions/batch/BatchActions';
+import BatchActions, { IBatchUpdate } from 'state/actions/batch/BatchActions';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
@@ -63,10 +62,9 @@ function* createBatchWithCallback(action) {
   yield call(resolve, resultBody?.batchId);
 }
 
-function* updateBatch(action: PayloadAction<string>) {
+function* updateBatch(action: PayloadAction<IBatchUpdate>) {
   const configuration = yield select(selectConfiguration);
-  const id = action.payload;
-
+  const { id } = action.payload;
   const res = yield fetch(configuration.API_BASE + `/api/batch/${id}`, {
     method: 'PUT',
     headers: {
@@ -75,8 +73,7 @@ function* updateBatch(action: PayloadAction<string>) {
     },
     body: JSON.stringify(action.payload)
   });
-
-  yield put({ type: BATCH_UPDATE_SUCCESS, payload: res?.json() });
+  yield put(BatchActions.updateSuccess(res?.json()));
   yield put(BatchActions.retrieve(id));
 }
 
