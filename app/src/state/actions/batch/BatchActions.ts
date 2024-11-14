@@ -60,7 +60,6 @@ class BatchActions {
   static readonly downloadTemplateSuccess = createAction<IBatchDownloadTemplate>(
     `${this.PREFIX}/downloadTemplateSuccess`
   );
-  static readonly downloadTemplateError = createAction(`${this.PREFIX}/downloadTemplateError`);
   static readonly downloadTemplateCsv = createAction(`${this.PREFIX}/downloadTemplateCsv`);
 }
 
