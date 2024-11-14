@@ -1,7 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
-  BATCH_EXECUTE_ERROR,
   BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
@@ -162,7 +161,7 @@ function* executeBatch(action: PayloadAction<IBatchExecute>) {
     yield put(BatchActions.executeSuccess(data.result));
     yield put(BatchActions.retrieve(id));
   } else {
-    yield put({ type: BATCH_EXECUTE_ERROR, payload: data });
+    yield put(BatchActions.executeError(data.message ?? ''));
   }
 }
 
