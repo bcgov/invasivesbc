@@ -12,8 +12,7 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_ERROR,
   BATCH_TEMPLATE_LIST_REQUEST,
-  BATCH_TEMPLATE_LIST_SUCCESS,
-  BATCH_UPDATE_ERROR
+  BATCH_TEMPLATE_LIST_SUCCESS
 } from '../actions';
 import BatchActions from 'state/actions/batch/BatchActions';
 
@@ -117,11 +116,6 @@ function createBatchReducer() {
           case BATCH_EXECUTE_REQUEST:
             draftState.working = true;
             draftState.error = false;
-            draftState.item = null;
-            break;
-          case BATCH_UPDATE_ERROR:
-            draftState.working = false;
-            draftState.error = true;
             draftState.item = null;
             break;
           case BATCH_DELETE_REQUEST:
