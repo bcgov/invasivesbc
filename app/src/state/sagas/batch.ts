@@ -1,8 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
-  BATCH_DELETE_ERROR,
-  BATCH_DELETE_SUCCESS,
   BATCH_EXECUTE_ERROR,
   BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
@@ -92,10 +90,10 @@ function* deleteBatch(action: PayloadAction<string>) {
   const data = yield res.json();
 
   if (!res.ok) {
-    yield put({ type: BATCH_DELETE_ERROR, payload: data });
+    yield put(BatchActions.deleteError());
     return;
   }
-  yield put({ type: BATCH_DELETE_SUCCESS, payload: data });
+  yield put(BatchActions.deleteSuccess());
 }
 
 function* listTemplates(action) {
@@ -176,7 +174,7 @@ function* batchSaga() {
     takeLatest(BatchActions.retrieve, getBatch),
     takeEvery(BatchActions.update, updateBatch),
     takeEvery(BatchActions.delete, deleteBatch),
-    takeEvery(BATCH_DELETE_SUCCESS, listBatches),
+    takeEvery(BatchActions.deleteSuccess, listBatches),
     takeLatest(BATCH_TEMPLATE_LIST_REQUEST, listTemplates),
     takeEvery(BATCH_TEMPLATE_DOWNLOAD_REQUEST, templateDetail),
     takeLatest(BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, templateCSV),
