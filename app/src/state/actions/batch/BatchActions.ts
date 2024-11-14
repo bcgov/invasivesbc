@@ -50,7 +50,6 @@ class BatchActions {
 
   static readonly templateList = createAction(`${this.PREFIX}/templateList`);
   static readonly templateListSuccess = createAction<IBatchListTemplate[]>(`${this.PREFIX}/templateListSuccess`);
-  static readonly templateListError = createAction(`${this.PREFIX}/templateListError`);
 
   static readonly downloadTemplate = createAction(`${this.PREFIX}/downloadTemplate`);
   static readonly downloadTemplateSuccess = createAction(`${this.PREFIX}/downloadTemplateSuccess`);

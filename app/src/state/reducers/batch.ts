@@ -3,8 +3,7 @@ import { Draft } from 'immer';
 import {
   BATCH_TEMPLATE_DOWNLOAD_ERROR,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
-  BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
-  BATCH_TEMPLATE_LIST_ERROR
+  BATCH_TEMPLATE_DOWNLOAD_SUCCESS
 } from '../actions';
 import BatchActions from 'state/actions/batch/BatchActions';
 
@@ -128,11 +127,6 @@ function createBatchReducer() {
         draftState.templates = action.payload;
       } else {
         switch (action.type) {
-          case BATCH_TEMPLATE_LIST_ERROR:
-            draftState.working = false;
-            draftState.error = true;
-            draftState.templates = [];
-            break;
           case BATCH_TEMPLATE_DOWNLOAD_REQUEST:
             draftState.templateDetail = {
               ...state.templateDetail,
