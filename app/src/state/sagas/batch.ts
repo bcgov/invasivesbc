@@ -1,8 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import { BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST } from 'state/actions';
-
-import BatchActions, { IBatchExecute, IBatchUpdate } from 'state/actions/batch/BatchActions';
+import BatchActions, { IBatchDownloadTemplateCsv, IBatchExecute, IBatchUpdate } from 'state/actions/batch/BatchActions';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
@@ -98,7 +96,7 @@ function* listTemplates(action: PayloadAction) {
   yield put(BatchActions.templateListSuccess(yield res.json()));
 }
 
-function* templateCSV(action) {
+function* templateCSV(action: PayloadAction<IBatchDownloadTemplateCsv>) {
   const configuration = yield select(selectConfiguration);
 
   const { key, resolve } = action.payload;
@@ -166,7 +164,7 @@ function* batchSaga() {
     takeEvery(BatchActions.deleteSuccess, listBatches),
     takeLatest(BatchActions.templateList, listTemplates),
     takeEvery(BatchActions.downloadTemplate, templateDetail),
-    takeLatest(BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, templateCSV),
+    takeLatest(BatchActions.downloadTemplateCsv, templateCSV),
     takeLatest(BatchActions.createWithCallback, createBatchWithCallback),
     takeLatest(BatchActions.execute, executeBatch)
   ]);
