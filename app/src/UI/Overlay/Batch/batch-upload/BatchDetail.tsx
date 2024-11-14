@@ -57,7 +57,7 @@ const BatchMetadata = ({ batch }) => {
   const [execErrorRowsTreatment, setExecErrorRowsTreatment] = useState('');
 
   useEffect(() => {
-    setUploadReady(fileData !== null);
+    setUploadReady(fileData != null);
   }, [fileData]);
 
   const acceptFileData = (d) => {

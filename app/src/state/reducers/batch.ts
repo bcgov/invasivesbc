@@ -13,8 +13,7 @@ import {
   BATCH_TEMPLATE_LIST_ERROR,
   BATCH_TEMPLATE_LIST_REQUEST,
   BATCH_TEMPLATE_LIST_SUCCESS,
-  BATCH_UPDATE_ERROR,
-  BATCH_UPDATE_SUCCESS
+  BATCH_UPDATE_ERROR
 } from '../actions';
 import BatchActions from 'state/actions/batch/BatchActions';
 
@@ -98,6 +97,10 @@ function createBatchReducer() {
         draftState.working = true;
         draftState.error = false;
         draftState.item = null;
+      } else if (BatchActions.updateSuccess.match(action)) {
+        draftState.working = false;
+        draftState.error = false;
+        draftState.item = null;
       } else {
         switch (action.type) {
           case BATCH_EXECUTE_SUCCESS:
@@ -113,11 +116,6 @@ function createBatchReducer() {
             break;
           case BATCH_EXECUTE_REQUEST:
             draftState.working = true;
-            draftState.error = false;
-            draftState.item = null;
-            break;
-          case BATCH_UPDATE_SUCCESS:
-            draftState.working = false;
             draftState.error = false;
             draftState.item = null;
             break;
