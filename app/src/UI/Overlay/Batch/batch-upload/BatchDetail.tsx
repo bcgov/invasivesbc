@@ -7,7 +7,7 @@ import BatchFileComponent from './BatchFileComponent';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Spinner/Spinner';
-import { BATCH_EXECUTE_REQUEST, BATCH_UPDATE_REQUEST } from 'state/actions';
+import { BATCH_EXECUTE_REQUEST } from 'state/actions';
 import BatchActions from 'state/actions/batch/BatchActions';
 
 const StyledSelect = {
@@ -31,13 +31,12 @@ const BatchMetadata = ({ batch }) => {
   }
 
   function uploadRevisedData() {
-    dispatch({
-      type: BATCH_UPDATE_REQUEST,
-      payload: {
+    dispatch(
+      BatchActions.update({
         id: batch.id,
-        csvData: fileData
-      }
-    });
+        csvData: fileData ?? ''
+      })
+    );
   }
 
   function doBatchExec() {
@@ -51,7 +50,7 @@ const BatchMetadata = ({ batch }) => {
     });
   }
 
-  const [fileData, setFileData] = useState(null);
+  const [fileData, setFileData] = useState<string>();
   const [uploadReady, setUploadReady] = useState(false);
 
   const [execFinalState, setExecFinalState] = useState('');

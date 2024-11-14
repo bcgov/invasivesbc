@@ -12,7 +12,6 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_REQUEST,
   BATCH_TEMPLATE_LIST_SUCCESS,
-  BATCH_UPDATE_REQUEST,
   BATCH_UPDATE_SUCCESS
 } from 'state/actions';
 
@@ -64,9 +63,9 @@ function* createBatchWithCallback(action) {
   yield call(resolve, resultBody?.batchId);
 }
 
-function* updateBatch(action) {
+function* updateBatch(action: PayloadAction<string>) {
   const configuration = yield select(selectConfiguration);
-  const { id } = action.payload;
+  const id = action.payload;
 
   const res = yield fetch(configuration.API_BASE + `/api/batch/${id}`, {
     method: 'PUT',
@@ -179,7 +178,7 @@ function* batchSaga() {
   yield all([
     takeEvery(BatchActions.list, listBatches),
     takeLatest(BatchActions.retrieve, getBatch),
-    takeEvery(BATCH_UPDATE_REQUEST, updateBatch),
+    takeEvery(BatchActions.update, updateBatch),
     takeEvery(BATCH_DELETE_REQUEST, deleteBatch),
     takeEvery(BATCH_DELETE_SUCCESS, listBatches),
     takeLatest(BATCH_TEMPLATE_LIST_REQUEST, listTemplates),
