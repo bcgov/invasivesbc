@@ -1,6 +1,6 @@
 import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import { BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, BATCH_TEMPLATE_DOWNLOAD_SUCCESS } from 'state/actions';
+import { BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST } from 'state/actions';
 
 import BatchActions, { IBatchExecute, IBatchUpdate } from 'state/actions/batch/BatchActions';
 import { selectConfiguration } from 'state/reducers/configuration';
@@ -123,13 +123,12 @@ function* templateDetail(action: PayloadAction<string>) {
     }
   });
 
-  yield put({
-    type: BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
-    payload: {
+  yield put(
+    BatchActions.downloadTemplateSuccess({
       key: key,
       data: yield res.json()
-    }
-  });
+    })
+  );
 }
 
 function* executeBatch(action: PayloadAction<IBatchExecute>) {

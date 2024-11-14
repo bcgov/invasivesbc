@@ -1,6 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { BATCH_TEMPLATE_DOWNLOAD_ERROR, BATCH_TEMPLATE_DOWNLOAD_SUCCESS } from '../actions';
+import { BATCH_TEMPLATE_DOWNLOAD_ERROR } from '../actions';
 import BatchActions from 'state/actions/batch/BatchActions';
 
 export interface DeepBatch {
@@ -130,18 +130,17 @@ function createBatchReducer() {
             data: null
           }
         };
+      } else if (BatchActions.downloadTemplateSuccess.match(action)) {
+        draftState.templateDetail = {
+          ...state.templateDetail,
+          [action.payload.key]: {
+            working: false,
+            error: false,
+            data: action.payload.data
+          }
+        };
       } else {
         switch (action.type) {
-          case BATCH_TEMPLATE_DOWNLOAD_SUCCESS:
-            draftState.templateDetail = {
-              ...state.templateDetail,
-              [action.payload.key]: {
-                working: false,
-                error: false,
-                data: action.payload.data
-              }
-            };
-            break;
           case BATCH_TEMPLATE_DOWNLOAD_ERROR:
             draftState.templateDetail = {
               ...state.templateDetail,
