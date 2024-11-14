@@ -11,6 +11,10 @@ interface IBatchCreateWithCallback {
 export interface IBatchSuccess extends DeepBatch {
   batchId: string;
 }
+export interface IBatchUpdate {
+  id: string;
+  csvData: string;
+}
 class BatchActions {
   private static readonly PREFIX = 'Batch';
 
@@ -23,7 +27,7 @@ class BatchActions {
   static readonly createWithCallback = createAction<IBatchCreateWithCallback>(`${this.PREFIX}/createWithCallback`);
   static readonly createSuccess = createAction<IBatchSuccess>(`${this.PREFIX}/create`);
 
-  static readonly update = createAction(`${this.PREFIX}/update`);
+  static readonly update = createAction<IBatchUpdate>(`${this.PREFIX}/update`);
   static readonly updateSuccess = createAction(`${this.PREFIX}/updateSuccess`);
   static readonly updateError = createAction(`${this.PREFIX}/updateError`);
 
