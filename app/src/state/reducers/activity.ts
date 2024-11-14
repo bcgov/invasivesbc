@@ -107,8 +107,6 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
         draftState.suggestedPersons = [...action.payload];
       } else if (Activity.Suggestions.treatmentIdsSuccess.match(action)) {
         draftState.suggestedTreatmentIDs = [...action.payload];
-        if (draftState?.schema?.properties?.activity_type_data?.properties?.linked_id)
-          draftState.schema.properties.activity_type_data.properties.linked_id.options = action.payload;
       } else if (Activity.createReq.match(action)) {
         const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
         Object.assign(draftState, {
@@ -213,7 +211,7 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
             break;
         }
       }
-    }) as ActivityState;
+    });
   };
 }
 
