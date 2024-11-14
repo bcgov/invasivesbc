@@ -22,7 +22,6 @@ class BatchActions {
 
   static readonly createWithCallback = createAction<IBatchCreateWithCallback>(`${this.PREFIX}/createWithCallback`);
   static readonly createSuccess = createAction<IBatchSuccess>(`${this.PREFIX}/create`);
-  static readonly createError = createAction(`${this.PREFIX}/createError`);
 
   static readonly update = createAction(`${this.PREFIX}/update`);
   static readonly updateSuccess = createAction(`${this.PREFIX}/updateSuccess`);
