@@ -5,7 +5,6 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
   BATCH_TEMPLATE_LIST_ERROR,
-  BATCH_TEMPLATE_LIST_REQUEST,
   BATCH_TEMPLATE_LIST_SUCCESS
 } from '../actions';
 import BatchActions from 'state/actions/batch/BatchActions';
@@ -120,13 +119,12 @@ function createBatchReducer() {
         draftState.error = true;
         draftState.errorMessage = `Could not execute batch: ${action.payload}`;
         draftState.item = null;
+      } else if (BatchActions.templateList.match(action)) {
+        draftState.working = true;
+        draftState.error = false;
+        draftState.templates = [];
       } else {
         switch (action.type) {
-          case BATCH_TEMPLATE_LIST_REQUEST:
-            draftState.working = true;
-            draftState.error = false;
-            draftState.templates = [];
-            break;
           case BATCH_TEMPLATE_LIST_SUCCESS:
             draftState.working = false;
             draftState.error = false;

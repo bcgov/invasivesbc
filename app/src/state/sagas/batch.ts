@@ -4,7 +4,6 @@ import {
   BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
-  BATCH_TEMPLATE_LIST_REQUEST,
   BATCH_TEMPLATE_LIST_SUCCESS
 } from 'state/actions';
 
@@ -93,7 +92,7 @@ function* deleteBatch(action: PayloadAction<string>) {
   yield put(BatchActions.deleteSuccess());
 }
 
-function* listTemplates(action) {
+function* listTemplates(action: PayloadAction) {
   const configuration = yield select(selectConfiguration);
 
   const res = yield fetch(configuration.API_BASE + `/api/batch/templates`, {
@@ -172,7 +171,7 @@ function* batchSaga() {
     takeEvery(BatchActions.update, updateBatch),
     takeEvery(BatchActions.delete, deleteBatch),
     takeEvery(BatchActions.deleteSuccess, listBatches),
-    takeLatest(BATCH_TEMPLATE_LIST_REQUEST, listTemplates),
+    takeLatest(BatchActions.templateList, listTemplates),
     takeEvery(BATCH_TEMPLATE_DOWNLOAD_REQUEST, templateDetail),
     takeLatest(BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, templateCSV),
     takeLatest(BatchActions.createWithCallback, createBatchWithCallback),
