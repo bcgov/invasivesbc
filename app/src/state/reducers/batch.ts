@@ -138,11 +138,6 @@ function createBatchReducer() {
             data: action.payload.data
           }
         };
-      } else {
-        switch (action.type) {
-          default:
-            break;
-        }
       }
     });
   };

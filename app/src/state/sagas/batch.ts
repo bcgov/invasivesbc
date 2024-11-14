@@ -76,8 +76,6 @@ function* deleteBatch(action: PayloadAction<string>) {
     body: JSON.stringify({ id })
   });
 
-  const data = yield res.json();
-
   if (!res.ok) {
     yield put(BatchActions.deleteError());
     return;
