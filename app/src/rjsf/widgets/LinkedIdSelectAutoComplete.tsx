@@ -47,11 +47,15 @@ const LinkedIdSelectAutoComplete = (props: WidgetProps) => {
         }
       }}
     >
-      {suggestedTreatmentIDs.map((entry) => (
-        <MenuItem key={entry.value} value={entry.value}>
-          {entry.label}
-        </MenuItem>
-      ))}
+      {suggestedTreatmentIDs.length > 0 ? (
+        suggestedTreatmentIDs.map((entry) => (
+          <MenuItem key={entry.value} value={entry.value}>
+            {entry.label}
+          </MenuItem>
+        ))
+      ) : (
+        <MenuItem disabled>No treatment records found in selected area.</MenuItem>
+      )}
     </TextField>
   );
 };
