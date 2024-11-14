@@ -15,6 +15,11 @@ export interface IBatchUpdate {
   id: string;
   csvData: string;
 }
+export interface IBatchExecute {
+  id: string;
+  desiredActivityState: string;
+  treatmentOfErrorRows: string;
+}
 class BatchActions {
   private static readonly PREFIX = 'Batch';
 
@@ -34,7 +39,7 @@ class BatchActions {
   static readonly deleteSuccess = createAction(`${this.PREFIX}/deleteSuccess`);
   static readonly deleteError = createAction(`${this.PREFIX}/deleteError`);
 
-  static readonly execute = createAction(`${this.PREFIX}/execute`);
+  static readonly execute = createAction<IBatchExecute>(`${this.PREFIX}/execute`);
   static readonly executeSuccess = createAction(`${this.PREFIX}/executeSuccess`);
   static readonly executeError = createAction(`${this.PREFIX}/executeError`);
 

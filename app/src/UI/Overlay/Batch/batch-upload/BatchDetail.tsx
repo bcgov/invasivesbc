@@ -7,7 +7,6 @@ import BatchFileComponent from './BatchFileComponent';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Spinner/Spinner';
-import { BATCH_EXECUTE_REQUEST } from 'state/actions';
 import BatchActions from 'state/actions/batch/BatchActions';
 
 const StyledSelect = {
@@ -40,14 +39,13 @@ const BatchMetadata = ({ batch }) => {
   }
 
   function doBatchExec() {
-    dispatch({
-      type: BATCH_EXECUTE_REQUEST,
-      payload: {
+    dispatch(
+      BatchActions.execute({
         id: batch.id,
         desiredActivityState: execFinalState,
         treatmentOfErrorRows: execErrorRowsTreatment
-      }
-    });
+      })
+    );
   }
 
   const [fileData, setFileData] = useState<string>();

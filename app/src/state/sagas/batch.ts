@@ -2,7 +2,6 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import {
   BATCH_EXECUTE_ERROR,
-  BATCH_EXECUTE_REQUEST,
   BATCH_EXECUTE_SUCCESS,
   BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
   BATCH_TEMPLATE_DOWNLOAD_REQUEST,
@@ -11,7 +10,7 @@ import {
   BATCH_TEMPLATE_LIST_SUCCESS
 } from 'state/actions';
 
-import BatchActions, { IBatchUpdate } from 'state/actions/batch/BatchActions';
+import BatchActions, { IBatchExecute, IBatchUpdate } from 'state/actions/batch/BatchActions';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
@@ -142,9 +141,9 @@ function* templateDetail(action) {
   });
 }
 
-function* executeBatch(action) {
+function* executeBatch(action: PayloadAction<IBatchExecute>) {
   const configuration = yield select(selectConfiguration);
-  const { id } = action.payload;
+  const { id, desiredActivityState, treatmentOfErrorRows } = action.payload;
 
   const res = yield fetch(configuration.API_BASE + `/api/batch/${id}/execute`, {
     method: 'POST',
@@ -153,8 +152,8 @@ function* executeBatch(action) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      desiredActivityState: action.payload.desiredActivityState,
-      treatmentOfErrorRows: action.payload.treatmentOfErrorRows
+      desiredActivityState: desiredActivityState,
+      treatmentOfErrorRows: treatmentOfErrorRows
     })
   });
 
@@ -179,7 +178,7 @@ function* batchSaga() {
     takeEvery(BATCH_TEMPLATE_DOWNLOAD_REQUEST, templateDetail),
     takeLatest(BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, templateCSV),
     takeLatest(BatchActions.createWithCallback, createBatchWithCallback),
-    takeLatest(BATCH_EXECUTE_REQUEST, executeBatch)
+    takeLatest(BatchActions.execute, executeBatch)
   ]);
 }
 
