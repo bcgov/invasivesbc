@@ -113,6 +113,9 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
 
   const getPaintBySchemeOrColor = (layer: any) => {
     if (layer?.layerState?.colorScheme) {
+      console.log('**layer')
+      console.dir(layer)
+      let FALLBACK_COLOR = 'blue'
       return [
         'match',
         ['get', 'activity_subtype'],

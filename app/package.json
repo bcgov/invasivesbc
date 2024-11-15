@@ -65,7 +65,7 @@
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
     "mapbox-gl-draw-rectangle-mode": "^1.0.4",
-    "maplibre-gl": "^4.6.0",
+    "maplibre-gl": "^4.7.1",
     "moment": "^2.30.1",
     "mui-file-dropzone": "^4.0.2",
     "pmtiles": "3.0.7",
