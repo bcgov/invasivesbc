@@ -2,6 +2,7 @@ import { MapLibreMap, MlVectorTileLayer, useAddProtocol } from '@mapcomponents/r
 import './map.css';
 import { PMTiles, Protocol } from 'pmtiles';
 import { useSelector } from 'react-redux';
+import { RecordSetLayers } from './RecordSetLayers';
 
 let protocol = new Protocol();
 export const Map = ({ children }) => {
@@ -23,9 +24,14 @@ export const Map = ({ children }) => {
             zoom: 6,
             style: 'https://wms.wheregroup.com/tileserver/style/osm-bright.json',
             attributionControl: false,
-            minZoom: 6
+            minZoom: 1
           }}
         />
+
+
+        <RecordSetLayers/>
+
+
         <MlVectorTileLayer
           layerId="pmtiles"
           layers={[
