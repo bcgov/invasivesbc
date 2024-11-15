@@ -1,10 +1,9 @@
-import { MlVectorTileLayer } from '@mapcomponents/react-maplibre';
+import { MlVectorTileLayer, useAddProtocol } from '@mapcomponents/react-maplibre';
 import { useSelector } from 'react-redux';
 
 export const RecordSetLayers = (props) => {
   const layersInStore = useSelector((state: any) => state.Map.layers);
   const  API_BASE  = useSelector((state: any) => state.Configuration.current.API_BASE);
-
 
   return (
     <>
@@ -19,9 +18,8 @@ export const RecordSetLayers = (props) => {
 
         return (
             <>
-          {/*<MlVectorTileLayer
+          <MlVectorTileLayer
             mapId='map'
-            
             layerId={layerIDName + 'points'}
             layers={[
               {
@@ -38,31 +36,37 @@ export const RecordSetLayers = (props) => {
             ]}
               sourceOptions={{
                 type: 'vector',
-                minzoom: 0
+                minzoom: 0,
+                tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`]
               }}
-            url={`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
-          />*/}
+            
+
+            //url={`mbtiles://${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
+            //url={`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
+          />
           <MlVectorTileLayer
             mapId='map'
-            
             layerId={layerIDName + 'poly'}
             layers={[
              {
                 id: layerIDName + 'poly',
-                type: 'fill',
+                type: 'line',
                 source: layerIDName + 'poly',
                 'source-layer': 'data',
-                layout: {
+                /*layout: {
                   visibility: 'visible'
-                },
-                paint: { 'fill-outline-color': 'red', 'fill-color': 'red', 'fill-opacity': 1.0 },
+                },*/
+                //paint: { 'fill-outline-color': '#0905f5', 'fill-color': '#0905f5', 'fill-opacity': 1.0 },
+                paint: { 'line-color': '#0905f5', "line-opacity": 1.0, "line-width": 10},
               },
             ]}
               sourceOptions={{
                 type: 'vector',
+                tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
                 minzoom: 0 
               }}
-            url={`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
+            ///url={`mbtiles://${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
+            //url={`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
           />
           </>
         );
