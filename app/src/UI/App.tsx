@@ -4,7 +4,7 @@ import { Redirect, Route, useHistory } from 'react-router-dom';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
-import { Map } from './Map2/Map';
+import { Map } from './Map2/Map2';
 import { LandingComponent } from './Overlay/Landing/Landing';
 import Overlay from './Overlay/Overlay';
 import { OverlayMenu } from './Overlay/OverlayMenu';
@@ -33,6 +33,7 @@ import AlertsContainer from './AlertsContainer/AlertsContainer';
 import UserInputModalController from './UserInputModals/UserInputModalController';
 import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 import { WhatsHereTable } from 'UI/Overlay/WhatsHere/WhatsHereTable';
+import { MapComponentsProvider } from '@mapcomponents/react-maplibre';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -269,6 +270,8 @@ const App: React.FC = () => {
 
   return (
     <div id="app" className={appClasses}>
+          <MapComponentsProvider>
+
       <AlertsContainer />
       <UserInputModalController />
       <Header />
@@ -293,6 +296,7 @@ const App: React.FC = () => {
         <OfflineUserMenu />
       </MobileOnly>
       <CustomizeLayerMenu />
+      </MapComponentsProvider>
     </div>
   );
 };
