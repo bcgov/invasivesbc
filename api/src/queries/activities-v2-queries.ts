@@ -455,7 +455,7 @@ function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.vt_request) {
     sqlStatement.append(`
     , mvtgeom AS
-    (  select case when ${filterObject.z} < 15 then ST_AsMVTGeom(ST_Transform(centroid, 3857),
+    (  select case when ${filterObject.z} < 12 then ST_AsMVTGeom(ST_Transform(centroid, 3857),
                                             ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}), extent => 4096,
                                             buffer => 64)
               else ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
