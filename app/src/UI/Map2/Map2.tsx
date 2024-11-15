@@ -88,7 +88,7 @@ export const Map = ({ children }) => {
 
         <RecordSetLayers />
 
-        <MlVectorTileLayer
+        {/*<MlVectorTileLayer
           layerId="pmtiles"
           layers={[
             {
@@ -100,11 +100,11 @@ export const Map = ({ children }) => {
                 visibility: !authenticated ? 'visible' : 'none'
               },
               paint: { 'circle-color': '#0905f5', 'circle-opacity': 1.0 },
-              maxzoom: 30
+              //maxzoom: 30
             }
           ]}
           url="pmtiles://https://nrs.objectstore.gov.bc.ca/rzivsz/invasives-prod.pmtiles/{z}/{x}/{y}"
-        />
+        />*/}
         <div id="LoadingMap" className={!true ? 'loadingMap' : 'loadedMap'}>
           Loading tiles...
         </div>
