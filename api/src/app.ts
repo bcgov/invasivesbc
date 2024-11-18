@@ -5,9 +5,8 @@ import compression from 'compression';
 import { initialize } from 'express-openapi';
 import { api_doc } from 'sharedAPI/src/openapi/api-doc/api-doc';
 import { applyApiDocSecurityFilters } from 'utils/api-doc-security-filter';
-import { authenticate, InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from 'utils/logger';
-import { MDC, MDCAsyncLocal } from 'mdc';
+import * as middleware from './middleware';
 
 const defaultLog = getLogger('app');
 
@@ -30,30 +29,7 @@ function shouldCompress(req, res) {
 }
 
 // Enable CORS
-app.use(function (req: any, res: any, next: any) {
-  //
-  // if (req.url !== '/api/misc/version') {
-  //   // filter out health check for log brevity
-  //   MDC
-  // }
-
-  res.setHeader('Access-Control-Allow-Credentials', true);
-  res.setHeader(
-    'Access-Control-Allow-Headers',
-    'X-Requested-With, Content-Type, Authorization, responseType, Access-Control-Allow-Origin, If-None-Match, filterForSelectable'
-  );
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE, HEAD');
-  res.setHeader('Access-Control-Allow-Origin', '*');
-
-  // create a context if there isn't one
-  let mdc = MDCAsyncLocal.getStore();
-  if (!mdc) {
-    mdc = new MDC();
-    MDCAsyncLocal.run(mdc, next);
-  } else {
-    next();
-  }
-});
+app.use(middleware.cors);
 
 // Initialize express-openapi framework
 initialize({
@@ -69,43 +45,13 @@ initialize({
     'application/x-www-form-urlencoded': bodyParser.urlencoded({ limit: '50mb', extended: true })
   },
   securityHandlers: {
-    Bearer: async function (req) {
-      try {
-        let mdc = MDCAsyncLocal.getStore();
-        if (!mdc) {
-          mdc = new MDC();
-          await MDCAsyncLocal.run(mdc, authenticate, <InvasivesRequest>req);
-        } else {
-          await authenticate(<InvasivesRequest>req);
-        }
-      } catch (e) {
-        defaultLog.error({ error: e });
-        return false;
-      }
-      //  await applyApiDocSecurityFilters(<InvasivesRequest>(<unknown>req));
-      return true;
-    }
+    Bearer: middleware.bearerHandler
   },
-
   securityFilter: applyApiDocSecurityFilters,
+  errorMiddleware: middleware.globalErrorHandler,
   errorTransformer: function (openapiError: object, ajvError: object): object {
-    // Transform openapi-request-validator and openapi-response-validator errors
     defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
-  },
-  // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  errorMiddleware: function (error, req, res, next) {
-    defaultLog.error({
-      label: 'errorHandler',
-      message: 'unexpected error',
-      error: error?.message + error?.stack || error
-    });
-    if (!res.headersSent) {
-      // streaming responses cannot alter headers after dispatch
-      res.status(error.status || error.code || 500).json(error);
-    } else {
-    }
   }
 });
 
