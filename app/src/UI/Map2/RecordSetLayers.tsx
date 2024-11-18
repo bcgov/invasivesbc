@@ -32,11 +32,12 @@ export const RecordSetLayers = (props) => {
                   visibility: 'visible'
                 },
                 paint: { 'circle-color': 'white', 'circle-opacity': 1.0 },
+                maxzoom: 12,
+                minzoom: 0
               },
             ]}
               sourceOptions={{
                 type: 'vector',
-                minzoom: 0,
                 tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`]
               }}
             
@@ -50,20 +51,21 @@ export const RecordSetLayers = (props) => {
             layers={[
              {
                 id: layerIDName + 'poly',
-                type: 'line',
+                type: 'fill',
                 source: layerIDName + 'poly',
                 'source-layer': 'data',
-                /*layout: {
+                layout: {
                   visibility: 'visible'
-                },*/
-                //paint: { 'fill-outline-color': '#0905f5', 'fill-color': '#0905f5', 'fill-opacity': 1.0 },
-                paint: { 'line-color': '#0905f5', "line-opacity": 1.0, "line-width": 10},
+                },
+                paint: { 'fill-outline-color': '#0905f5', 'fill-color': '#0905f5', 'fill-opacity': 1.0 },
+                minzoom: 12,
+                maxzoom: 24
+                // paint: { 'line-color': '#0905f5', "line-opacity": 1.0, "line-width": 10},
               },
             ]}
               sourceOptions={{
                 type: 'vector',
                 tiles: [`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
-                minzoom: 0 
               }}
             ///url={`mbtiles://${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
             //url={`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
