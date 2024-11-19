@@ -51,8 +51,8 @@ export const Map = ({ children }) => {
   });
 
 
-  if(!authenticated)
-    return null;
+  //if(!authenticated)
+   // return null;
 
   return (
     <div className="map-containing-block">
@@ -62,7 +62,7 @@ export const Map = ({ children }) => {
           options={{
             center: [-123.333959, 48.4229865],
             zoom: 12,
-           // style: 'https://wms.wheregroup.com/tileserver/style/osm-bright.json',
+            //style: 'https://wms.wheregroup.com/tileserver/style/osm-bright.json',
             attributionControl: false,
             minZoom: 1,
             transformRequest: (url) => {
@@ -80,15 +80,18 @@ export const Map = ({ children }) => {
             }
           }}
         />
+        
                 <MlWmsLayer
                 layerId='banana'
           mapId="map"
           url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
         />
+       
 
         <RecordSetLayers />
 
-        {/*<MlVectorTileLayer
+        <MlVectorTileLayer
+          mapId='map'
           layerId="pmtiles"
           layers={[
             {
@@ -101,10 +104,21 @@ export const Map = ({ children }) => {
               },
               paint: { 'circle-color': '#0905f5', 'circle-opacity': 1.0 },
               //maxzoom: 30
+            },
+            {
+              id: 'iapp-pmtile-vector',
+              type: 'circle',
+              source: 'pmtiles',
+              'source-layer': 'iapp',
+              layout: {
+                visibility: !authenticated ? 'visible' : 'none'
+              },
+              paint: { 'circle-color': '#0905f5', 'circle-opacity': 1.0 },
+              //maxzoom: 30
             }
           ]}
           url="pmtiles://https://nrs.objectstore.gov.bc.ca/rzivsz/invasives-prod.pmtiles/{z}/{x}/{y}"
-        />*/}
+        />
         <div id="LoadingMap" className={!true ? 'loadingMap' : 'loadedMap'}>
           Loading tiles...
         </div>
