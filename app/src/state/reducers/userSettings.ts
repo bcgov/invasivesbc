@@ -1,6 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
-
 import { Draft } from 'immer';
 import {
   CLOSE_NEW_RECORD_MENU,
@@ -9,9 +8,7 @@ import {
   OPEN_NEW_RECORD_MENU,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
-  RECORDSET_REMOVE_FILTER,
-  RECORDSET_SET_SORT,
-  RECORDSET_UPDATE_FILTER
+  RECORDSET_SET_SORT
 } from '../actions';
 
 import { AppConfig } from '../config';
@@ -112,6 +109,92 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         Object.keys(action.payload.updatedSet).forEach((key) => {
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
         });
+      } else if (UserSettings.RecordSet.updateFilter.match(action)) {
+        if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
+          draftState.recordSets[action.payload.setID].tableFilters = [];
+        }
+        draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+          (filter) => filter.id !== action.payload.filterID
+        );
+
+        const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+          (filter) => filter.id === action.payload.filterID
+        );
+        if (index !== -1)
+          if (action.payload.filterType) {
+            draftState.recordSets[action.payload.setID].tableFilters[index].filterType = action.payload.filterType;
+          }
+
+        if (
+          action.payload.filterType === 'spatialFilterDrawn' ||
+          action.payload.filterType === 'spatialFilterUploaded'
+        ) {
+          delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
+          if (!action.payload.operator) {
+            draftState.recordSets[action.payload.setID].tableFilters[index].operator = 'CONTAINED IN';
+          }
+          if (!action.payload.filter) {
+            delete draftState.recordSets[action.payload.setID].tableFilters[index].filter;
+          }
+        }
+
+        if (action.payload.field) {
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
+          );
+          if (index !== -1)
+            draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
+        }
+
+        if (action.payload.operator) {
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
+          );
+          if (index !== -1)
+            draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
+        }
+        if (action.payload.operator2) {
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
+          );
+          if (index !== -1)
+            draftState.recordSets[action.payload.setID].tableFilters[index].operator2 = action.payload.operator2;
+        }
+
+        //re used for spatial filters
+        if (action.payload.filter !== undefined) {
+          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+            (filter) => filter.id === action.payload.filterID
+          );
+          if (index !== -1)
+            draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
+        }
+
+        const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+          (filter) => filter.filter !== ''
+        );
+
+        draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
+          draftState.recordSets[action.payload.setID]?.tableFiltersHash;
+        draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
+          JSON.stringify(tableFiltersNotBlank)
+        );
+      } else if (UserSettings.RecordSet.removeFilter.match(action)) {
+        const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
+          (filter) => filter.id === action.payload.filterID
+        );
+        draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
+
+        draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
+          draftState.recordSets[action.payload.setID]?.tableFiltersHash;
+
+        const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
+          (filter) => filter.filter !== ''
+        );
+
+        draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
+          JSON.stringify(tableFiltersNotBlank)
+        );
       } else if (UserSettings.toggleLayerPickerAccordion.match(action)) {
         draftState.layerPickerIsAccordion = !draftState.layerPickerIsAccordion;
       } else if (WhatsHere.toggle.match(action)) {
@@ -220,96 +303,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               delete draftState.recordSets[action.payload.setID].sortColumn;
             }
 
-            break;
-          }
-          case RECORDSET_REMOVE_FILTER: {
-            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-              (filter) => filter.id === action.payload.filterID
-            );
-            draftState.recordSets[action.payload.setID]?.tableFilters.splice(index, 1);
-
-            draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
-              draftState.recordSets[action.payload.setID]?.tableFiltersHash;
-
-            const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-              (filter) => filter.filter !== ''
-            );
-
-            draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
-              JSON.stringify(tableFiltersNotBlank)
-            );
-            break;
-          }
-          case RECORDSET_UPDATE_FILTER: {
-            if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
-              draftState.recordSets[action.payload.setID].tableFilters = [];
-            }
-            draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-              (filter) => filter.id !== action.payload.filterID
-            );
-
-            const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-              (filter) => filter.id === action.payload.filterID
-            );
-            if (index !== -1)
-              if (action.payload.filterType) {
-                draftState.recordSets[action.payload.setID].tableFilters[index].filterType = action.payload.filterType;
-              }
-
-            if (
-              action.payload.filterType === 'spatialFilterDrawn' ||
-              action.payload.filterType === 'spatialFilterUploaded'
-            ) {
-              delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
-              if (!action.payload.operator) {
-                draftState.recordSets[action.payload.setID].tableFilters[index].operator = 'CONTAINED IN';
-              }
-              if (!action.payload.filter) {
-                delete draftState.recordSets[action.payload.setID].tableFilters[index].filter;
-              }
-            }
-
-            if (action.payload.field) {
-              const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                (filter) => filter.id === action.payload.filterID
-              );
-              if (index !== -1)
-                draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
-            }
-
-            if (action.payload.operator) {
-              const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                (filter) => filter.id === action.payload.filterID
-              );
-              if (index !== -1)
-                draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
-            }
-            if (action.payload.operator2) {
-              const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                (filter) => filter.id === action.payload.filterID
-              );
-              if (index !== -1)
-                draftState.recordSets[action.payload.setID].tableFilters[index].operator2 = action.payload.operator2;
-            }
-
-            //re used for spatial filters
-            if (action.payload.filter !== undefined) {
-              const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-                (filter) => filter.id === action.payload.filterID
-              );
-              if (index !== -1)
-                draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
-            }
-
-            const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-              (filter) => filter.filter !== ''
-            );
-
-            draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
-              draftState.recordSets[action.payload.setID]?.tableFiltersHash;
-            draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
-              JSON.stringify(tableFiltersNotBlank)
-            );
             break;
           }
           case RECORDSET_CLEAR_FILTERS: {

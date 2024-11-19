@@ -37,9 +37,7 @@ import {
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
   RECORDSET_CLEAR_FILTERS,
-  RECORDSET_REMOVE_FILTER,
   RECORDSET_SET_SORT,
-  RECORDSET_UPDATE_FILTER,
   REFETCH_SERVER_BOUNDARIES,
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
@@ -84,6 +82,7 @@ import TileCache from 'state/actions/cache/TileCache';
 import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 import { RECORD_COLOURS } from 'constants/colors';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -614,7 +613,7 @@ function* handle_URL_CHANGE(action) {
   }
 }
 
-function* handle_UserFilterChange(action) {
+function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateFilter>) {
   const recordSetsState = yield select(selectUserSettings);
   const map = yield select(selectMap);
   const currentSet = map?.currentOpenSet;
@@ -633,7 +632,7 @@ function* handle_UserFilterChange(action) {
         }
       });
     }
-  if (recordSetType === 'Activity') {
+  if (recordSetType === RecordSetType.Activity) {
     if (currentSet === action.payload.setID)
       yield put({
         type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
@@ -776,14 +775,11 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
     const filter = filteredSet?.tableFilters.filter((filter) => {
       return filter.filter === action.payload.id;
     })?.[0];
-    const actionObject = {
-      type: RECORDSET_REMOVE_FILTER,
-      payload: {
-        filterID: filter?.id,
-        filterType: 'tableFilter',
-        setID: filteredSet.recordSetID
-      }
-    };
+    const actionObject = UserSettings.RecordSet.removeFilter({
+      filterID: filter?.id,
+      filterType: 'tableFilter',
+      setID: filteredSet.recordSetID
+    });
     return actionObject;
   });
 
@@ -904,9 +900,9 @@ function* activitiesPageSaga() {
   //  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
-    debounce(500, RECORDSET_UPDATE_FILTER, handle_UserFilterChange),
+    debounce(500, UserSettings.RecordSet.updateFilter, handle_UserFilterChange),
     takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
-    takeEvery(RECORDSET_REMOVE_FILTER, handle_UserFilterChange),
+    takeEvery(UserSettings.RecordSet.removeFilter, handle_UserFilterChange),
 
     takeEvery(REMOVE_CLIENT_BOUNDARY, handle_REMOVE_CLIENT_BOUNDARY),
 

@@ -3,6 +3,20 @@ import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
+export interface IUpdateFilter {
+  setID: string | number;
+  filterID: string | number;
+  filterType?: string;
+  filter?: string | number;
+  operator?: string;
+  operator2?: string;
+}
+
+export interface IRemoveFilter {
+  filterType: string;
+  setID: string | number;
+  filterID: string | number;
+}
 class RecordSet {
   private static readonly PREFIX = `UserSettings/RecordSet`;
 
@@ -40,6 +54,9 @@ class RecordSet {
       });
     }
   );
+
+  static readonly updateFilter = createAction<IUpdateFilter>(`${this.PREFIX}/updateFilter`);
+  static readonly removeFilter = createAction<IRemoveFilter>(`${this.PREFIX}/removeFilter`);
 
   private static readonly createDefaultRecordset = (type: RecordSetType): UserRecordSet => ({
     tableFilters: null,
