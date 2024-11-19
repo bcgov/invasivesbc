@@ -110,21 +110,16 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
         });
       } else if (UserSettings.RecordSet.updateFilter.match(action)) {
-        if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
-          draftState.recordSets[action.payload.setID].tableFilters = [];
-        }
-        draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-          (filter) => filter.id !== action.payload.filterID
-        );
+        draftState.recordSets[action.payload.setID].tableFilters ??= [];
 
         const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
           (filter) => filter.id === action.payload.filterID
         );
-        if (index !== -1)
+        if (index !== -1) {
           if (action.payload.filterType) {
             draftState.recordSets[action.payload.setID].tableFilters[index].filterType = action.payload.filterType;
           }
-
+        }
         if (
           action.payload.filterType === 'spatialFilterDrawn' ||
           action.payload.filterType === 'spatialFilterUploaded'
@@ -166,8 +161,9 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
             (filter) => filter.id === action.payload.filterID
           );
-          if (index !== -1)
+          if (index !== -1) {
             draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
+          }
         }
 
         const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
