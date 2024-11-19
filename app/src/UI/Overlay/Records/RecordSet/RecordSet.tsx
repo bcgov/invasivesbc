@@ -1,11 +1,11 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router';
 import { Tooltip } from '@mui/material';
-import { RecordTable } from './RecordTable';
-import { activityColumnsToDisplay, iappColumnsToDisplay } from './RecordTableHelpers';
+import { RecordTable } from '../RecordTable';
+import { activityColumnsToDisplay, iappColumnsToDisplay } from '../RecordTableHelpers';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -19,17 +19,16 @@ import {
   RECORDSET_UPDATE_FILTER,
   RECORDSETS_TOGGLE_VIEW_FILTER
 } from 'state/actions';
-import { OverlayHeader } from '../OverlayHeader';
+
+import { OverlayHeader } from '../../OverlayHeader';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
-import ExcelExporter from './ExcelExporter';
+import ExcelExporter from '../ExcelExporter';
 
 export const RecordSet = (props) => {
   const viewFilters = useSelector((state: any) => state.Map.viewFilters);
   const history = useHistory();
   const dispatch = useDispatch();
-
-  const [filterTypeChooserOpen, setFilterTypeChooserOpen] = React.useState(false);
 
   const onClickBackButton = () => {
     history.push('/Records');
@@ -40,132 +39,129 @@ export const RecordSet = (props) => {
 
   const onlyFilterIsForDrafts =
     recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
-
-  switch (recordSet) {
-    case undefined:
-      return <></>;
-    default:
-      return (
-        <div className="recordSet_container">
-          <OverlayHeader />
-          <div className="stickyHeader">
-            <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
-              <div className="recordSet_back_button">
-                <Button onClick={onClickBackButton} variant="contained">
-                  {'< Back'}
-                </Button>{' '}
-              </div>
-              <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
-            </div>
-          </div>
-          <div className="recordSet_filter_buttons_container">
-            <div className="recordSet_clear_filter_button">
-              <Tooltip classes={{ tooltip: 'toolTip' }} title="Clear all filters and refetch all data for this layer.">
-                <Button
-                  size={'small'}
-                  onClick={() => {
-                    dispatch({
-                      type: RECORDSET_CLEAR_FILTERS,
-                      payload: {
-                        setID: props.setID
-                      }
-                    });
-                  }}
-                  variant="contained"
-                >
-                  Clear Filters
-                  <FilterAltOffIcon />
-                </Button>
-              </Tooltip>
-            </div>
-            <div className="recordSet_toggleView_filter_button">
-              <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle hiding filters - does not toggle applying them.">
-                <Button
-                  size={'small'}
-                  onClick={() => {
-                    dispatch({
-                      type: RECORDSETS_TOGGLE_VIEW_FILTER
-                    });
-                  }}
-                  variant="contained"
-                >
-                  {viewFilters ? (
-                    <>
-                      Hide Filters
-                      <VisibilityOffIcon />
-                      <FilterAltIcon />
-                    </>
-                  ) : (
-                    <>
-                      Show Filters{' '}
-                      {(recordSet?.tableFilters?.length || 0) > 0 &&
-                        !onlyFilterIsForDrafts &&
-                        `(${recordSet?.tableFilters?.length})`}
-                      <VisibilityIcon />
-                      <FilterAltIcon />
-                    </>
-                  )}
-                </Button>
-              </Tooltip>
-            </div>
-            <div className="recordSet_new_filter_button">
-              <Tooltip
-                classes={{ tooltip: 'toolTip' }}
-                title="Add a new filter, drawn, uploaded KML, or just text search on a field."
-              >
-                <Button
-                  size={'small'}
-                  onClick={() => {
-                    dispatch({
-                      type: RECORDSET_ADD_FILTER,
-                      payload: {
-                        filterType: 'tableFilter',
-                        // short id if activity record set otherwise site_ID
-                        field: tableType === 'Activity' ? 'short_id' : 'site_id',
-                        setID: props.setID,
-                        operator: 'CONTAINS',
-                        operator2: 'AND',
-                        blockFetchForNow: true
-                      }
-                    });
-                  }}
-                  variant="contained"
-                >
-                  Add Filter + <FilterAltIcon />
-                </Button>
-              </Tooltip>
-            </div>
-          </div>
-          <div className="recordSet_filters_container">
-            <div className="recordSet_filters">
-              {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters ? (
-                <table className="recordSetFilterTable">
-                  <tbody>
-                    <tr>
-                      <th>Operator 1</th>
-                      <th>Operator 2</th>
-                      <th>Filter type</th>
-                      <th>Filter On</th>
-                      <th>Value</th>
-                      <th></th>
-                    </tr>
-                    {recordSet?.tableFilters.map((filter: any, i) => {
-                      if (filter.field !== 'form_status')
-                        return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
-                    })}
-                  </tbody>
-                </table>
-              ) : (
-                <></>
-              )}
-              <ExcelExporter setName={props.setID} />
-            </div>
-          </div>
-          <RecordTable setID={props.setID} />
-          <RecordSetFooter setID={props.setID} />
-        </div>
-      );
+  if (!recordSet) {
+    return;
   }
+  return (
+    <div className="recordSet_container">
+      <OverlayHeader />
+      <div className="stickyHeader">
+        <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
+          <div className="recordSet_back_button">
+            <Button onClick={onClickBackButton} variant="contained">
+              {'< Back'}
+            </Button>
+          </div>
+          <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
+        </div>
+      </div>
+      <div className="recordSet_filter_buttons_container">
+        <div className="recordSet_clear_filter_button">
+          <Tooltip classes={{ tooltip: 'toolTip' }} title="Clear all filters and refetch all data for this layer.">
+            <Button
+              size={'small'}
+              onClick={() => {
+                dispatch({
+                  type: RECORDSET_CLEAR_FILTERS,
+                  payload: {
+                    setID: props.setID
+                  }
+                });
+              }}
+              variant="contained"
+            >
+              Clear Filters
+              <FilterAltOffIcon />
+            </Button>
+          </Tooltip>
+        </div>
+        <div className="recordSet_toggleView_filter_button">
+          <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle hiding filters - does not toggle applying them.">
+            <Button
+              size={'small'}
+              onClick={() => {
+                dispatch({
+                  type: RECORDSETS_TOGGLE_VIEW_FILTER
+                });
+              }}
+              variant="contained"
+            >
+              {viewFilters ? (
+                <>
+                  Hide Filters
+                  <VisibilityOffIcon />
+                  <FilterAltIcon />
+                </>
+              ) : (
+                <>
+                  Show Filters{' '}
+                  {(recordSet?.tableFilters?.length || 0) > 0 &&
+                    !onlyFilterIsForDrafts &&
+                    `(${recordSet?.tableFilters?.length})`}
+                  <VisibilityIcon />
+                  <FilterAltIcon />
+                </>
+              )}
+            </Button>
+          </Tooltip>
+        </div>
+        <div className="recordSet_new_filter_button">
+          <Tooltip
+            classes={{ tooltip: 'toolTip' }}
+            title="Add a new filter, drawn, uploaded KML, or just text search on a field."
+          >
+            <Button
+              size={'small'}
+              onClick={() => {
+                dispatch({
+                  type: RECORDSET_ADD_FILTER,
+                  payload: {
+                    filterType: 'tableFilter',
+                    // short id if activity record set otherwise site_ID
+                    field: tableType === 'Activity' ? 'short_id' : 'site_id',
+                    setID: props.setID,
+                    operator: 'CONTAINS',
+                    operator2: 'AND',
+                    blockFetchForNow: true
+                  }
+                });
+              }}
+              variant="contained"
+            >
+              Add Filter + <FilterAltIcon />
+            </Button>
+          </Tooltip>
+        </div>
+      </div>
+      <div className="recordSet_filters_container">
+        <div className="recordSet_filters">
+          {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters ? (
+            <table className="recordSetFilterTable">
+              <tbody>
+                <tr>
+                  <th>Operator 1</th>
+                  <th>Operator 2</th>
+                  <th>Filter type</th>
+                  <th>Filter On</th>
+                  <th>Value</th>
+                  <th> </th>
+                </tr>
+                {recordSet?.tableFilters.map((filter: any, i) => {
+                  if (filter.field !== 'form_status')
+                    return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
+                })}
+              </tbody>
+            </table>
+          ) : (
+            <></>
+          )}
+          <ExcelExporter setName={props.setID} />
+        </div>
+      </div>
+      <RecordTable setID={props.setID} />
+      <RecordSetFooter setID={props.setID} />
+    </div>
+  );
 };
 
 const RecordSetFooter = (props) => {

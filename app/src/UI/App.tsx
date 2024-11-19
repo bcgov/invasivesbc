@@ -10,7 +10,7 @@ import Overlay from './Overlay/Overlay';
 import { OverlayMenu } from './Overlay/OverlayMenu';
 import { Activity } from './Overlay/Records/Record';
 import { Records } from './Overlay/Records/Records';
-import { RecordSet } from './Overlay/Records/RecordSet';
+import { RecordSet } from './Overlay/Records/RecordSet/RecordSet';
 import { IAPPRecord } from './Overlay/IAPP/IAPPRecord';
 import { FormMenuButtons } from './Overlay/FormMenuButtons';
 import { selectGlobalErrorState } from 'state/reducers/error_handler';
