@@ -750,7 +750,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               const activityLayersToRegen = draftState.layers?.filter(
                 (layer) => layer.type === RecordSetType.Activity && layer.IDList?.length !== undefined
               );
-              activityLayersToRegen.map((layer) => {
+              activityLayersToRegen.forEach((layer) => {
                 GeoJSONFilterSetForLayer(draftState, state, RecordSetType.Activity, layer.recordSetID, layer.IDList);
               });
             }
@@ -773,7 +773,23 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             break;
           }
-          case IAPP_GET_IDS_FOR_RECORDSET_REQUEST:
+          case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
+            let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+            if (!draftState.layers[index]) {
+              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+              index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+            }
+            draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
+            draftState.layers[index].loading = true;
+            if (!draftState.layers[index].layerState) {
+              draftState.layers[index].layerState = {
+                color: 'blue',
+                drawOrder: 0,
+                mapToggle: false
+              };
+            }
+            break;
+          }
           case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             if (!draftState.layers[index])
