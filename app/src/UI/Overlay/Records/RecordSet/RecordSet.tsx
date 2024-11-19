@@ -128,15 +128,16 @@ export const RecordSet = (props) => {
         <div className="recordSet_filters">
           {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters ? (
             <table className="recordSetFilterTable">
-              <tbody>
+              <thead>
                 <tr>
                   <th>Operator 1</th>
                   <th>Operator 2</th>
                   <th>Filter type</th>
                   <th>Filter On</th>
                   <th>Value</th>
-                  <th> </th>
                 </tr>
+              </thead>
+              <tbody>
                 {recordSet?.tableFilters.map((filter: any, i) => {
                   if (filter.field !== 'form_status')
                     return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
