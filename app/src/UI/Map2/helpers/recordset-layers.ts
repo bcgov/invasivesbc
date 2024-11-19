@@ -398,7 +398,6 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
 
 export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map) => {
   storeLayers.map((layer) => {
-    console.log(layer);
     const layerSearchString = layer.recordSetID + '-hash-' + layer.tableFiltersHash;
     const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => {
       return mapLayer.includes(layerSearchString) && !mapLayer.includes('label');
