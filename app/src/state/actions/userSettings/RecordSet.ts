@@ -6,8 +6,9 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 export interface IUpdateFilter {
   setID: string | number;
   filterID: string | number;
+  field?: string;
   filterType?: string;
-  filter?: string | number;
+  filter?: string;
   operator?: string;
   operator2?: string;
 }
