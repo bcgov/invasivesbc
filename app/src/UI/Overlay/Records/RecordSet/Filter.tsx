@@ -1,48 +1,80 @@
 import { Button, Tooltip } from '@mui/material';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from './RecordTableHelpers';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 
-const Filter = (props) => {
+type PropTypes = {
+  setID: string;
+  id: string;
+};
+
+const Filter = ({ setID, id }: PropTypes) => {
+  const TIME_TO_AUTO_UPDATE_IN_SECONDS = 0.75;
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const debouncedUpdate = (value) => {
+    if (value !== valueInState) {
+      dispatch(
+        UserSettings.RecordSet.updateFilter({
+          filterType: 'tableFilter',
+          setID: setID,
+          filterID: id,
+          filter: value
+        })
+      );
+    }
+  };
+
+  /**
+   * @desc Change Handler for text input filter.
+   *       Sets/refreshes timeouts so updates won't fire until user finishes typing.
+   */
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
+    clearTimeout(timeoutRef.current as NodeJS.Timeout);
+    timeoutRef.current = setTimeout(() => {
+      debouncedUpdate(event.target.value);
+    }, TIME_TO_AUTO_UPDATE_IN_SECONDS * 1000);
+  };
+
+  /**
+   * Update the Recordsets filters
+   * @param newVal additional object keys
+   */
   const updateFilter = (newVal: Record<string, any>) => {
-    // setID: string | number, propId: string | number,
     dispatch(
       UserSettings.RecordSet.updateFilter({
-        setID: props.setID,
-        filterID: props.id,
+        setID: setID,
+        filterID: id,
         ...newVal
       })
     );
   };
+  /**
+   * Remove a Filter parameter from the RecordSet
+   * @param filterType
+   */
   const removeFilter = (filterType: string) => {
     dispatch(
       UserSettings.RecordSet.removeFilter({
-        setID: props.setID,
-        filterID: props.id,
+        setID: setID,
+        filterID: id,
         filterType: filterType
       })
     );
   };
+
   const getFilterType = (filterTypeInState: string) => {
     switch (filterTypeInState) {
       case 'tableFilter':
-        return (
-          <input
-            key={props.id}
-            ref={value}
-            className="filterSelect"
-            onChange={(e) => debouncedUpdate(e.target.value)}
-            type="text"
-            value={valueInState}
-          />
-        );
+        return <input key={id} className="filterSelect" onChange={handleInputChange} type="text" value={inputValue} />;
       case 'spatialFilterUploaded':
         return (
           <select
             className="filterSelect"
-            key={'filterType' + props.name}
+            key={'filterType' + name}
             value={valueInState}
             onChange={(e) => updateFilter({ filter: e.target.value })}
           >
@@ -57,7 +89,7 @@ const Filter = (props) => {
         return (
           <select
             className="filterSelect"
-            key={'filterType' + props.name}
+            key={'filterType' + name}
             value={valueInState}
             onChange={(e) => updateFilter({ filter: e.target.value })}
           >
@@ -72,6 +104,7 @@ const Filter = (props) => {
         return null;
     }
   };
+
   const dispatch = useDispatch();
   const userSettingsState = useSelector((state) => state.UserSettings);
   const serverBoundariesToDisplay = useSelector((state) => state.Map.serverBoundaries)?.map((boundary) => ({
@@ -84,39 +117,26 @@ const Filter = (props) => {
   }));
 
   const filterColumns =
-    userSettingsState?.recordSets?.[props.setID].recordSetType === RecordSetType.Activity
+    userSettingsState?.recordSets?.[setID].recordSetType === RecordSetType.Activity
       ? activityColumnsToDisplay
       : iappColumnsToDisplay;
   const filterOptions = filterColumns.map((option) => ({ label: option.name, value: option.key }));
 
-  const filterByPropId = userSettingsState?.recordSets?.[props.setID]?.tableFilters.find(
-    (filter) => filter.id === props.id
-  );
+  const filterByPropId = userSettingsState?.recordSets?.[setID]?.tableFilters.find((filter) => filter.id === id);
   const filterTypeInState = filterByPropId?.filterType;
   const valueInState = filterByPropId?.filter;
   const typeInState = filterByPropId?.field;
   const operatorInState = filterByPropId?.operator;
   const operator2InState = filterByPropId?.operator2;
-
-  const value = useRef();
-
-  const debouncedUpdate = (value) =>
-    dispatch(
-      UserSettings.RecordSet.updateFilter({
-        filterType: 'tableFilter',
-        setID: props.setID,
-        filterID: props.id,
-        filter: value
-      })
-    );
-  let input = getFilterType(filterTypeInState);
+  const [inputValue, setInputValue] = useState<string>(valueInState);
+  const input = getFilterType(filterTypeInState);
 
   return (
     <tr>
       <td>
         <select
           className="filterSelect"
-          key={'operand2' + props.name}
+          key={'operand2' + name}
           value={operator2InState}
           onChange={(e) => updateFilter({ operator2: e.target.value })}
         >
@@ -159,7 +179,7 @@ const Filter = (props) => {
       <td>
         <select
           className="filterSelect"
-          key={'operand' + props.name}
+          key={'operand' + name}
           value={operatorInState}
           onChange={(e) => updateFilter({ operator: e.target.value })}
         >
@@ -202,13 +222,13 @@ const Filter = (props) => {
       <td>
         <select
           className="filterTypeSelect"
-          key={'filterTypeSelect' + props.name}
+          key={'filterTypeSelect' + name}
           value={filterTypeInState}
           onChange={(e) => {
             const payload = {
               filterType: e.target.value,
-              setID: props.setID,
-              filterID: props.id
+              setID: setID,
+              filterID: id
             } as any;
 
             if (e.target.value === 'spatialFilterUploaded') {
@@ -243,9 +263,9 @@ const Filter = (props) => {
       <td>
         <select
           className="filterSelect"
-          key={'filterType' + props.name}
+          key={'filterType' + name}
           value={typeInState}
-          onChange={(e) => updateFilter({ filterID: props.id, field: e.target.value, filterType: 'tableFilter' })}
+          onChange={(e) => updateFilter({ filterID: id, field: e.target.value, filterType: 'tableFilter' })}
         >
           {filterTypeInState === 'tableFilter' ? (
             filterOptions.map((option) => (
@@ -254,7 +274,7 @@ const Filter = (props) => {
               </option>
             ))
           ) : (
-            <option key={props.id + 'SHAPEOPTION'} value={'SHAPE'}>
+            <option key={id + 'SHAPEOPTION'} value={'SHAPE'}>
               SHAPE
             </option>
           )}
