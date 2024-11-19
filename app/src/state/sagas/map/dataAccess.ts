@@ -6,7 +6,6 @@ import {
   ACTIVITIES_GEOJSON_GET_OFFLINE,
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
@@ -24,18 +23,13 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
     // if mobile or web
-    if (true) {
-      yield put({
-        type: ACTIVITIES_GEOJSON_GET_ONLINE,
-        payload: {
-          recordSetID: action.payload.recordSetID,
-          activitiesFilterCriteria: action.payload.activitiesFilterCriteria
-        }
-      });
-    }
-    if (false) {
-      yield put({ type: ACTIVITIES_GEOJSON_GET_OFFLINE, payload: { activityID: action.payload.activityID } });
-    }
+    yield put({
+      type: ACTIVITIES_GEOJSON_GET_ONLINE,
+      payload: {
+        recordSetID: action.payload.recordSetID,
+        activitiesFilterCriteria: action.payload.activitiesFilterCriteria
+      }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -45,17 +39,12 @@ export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
 export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
   try {
     // if mobile or web
-    if (true) {
-      yield put({
-        type: IAPP_GEOJSON_GET_ONLINE,
-        payload: {
-          ...action.payload
-        }
-      });
-    }
-    if (false) {
-      yield put({ type: ACTIVITIES_GEOJSON_GET_OFFLINE, payload: { activityID: action.payload.activityID } });
-    }
+    yield put({
+      type: IAPP_GEOJSON_GET_ONLINE,
+      payload: {
+        ...action.payload
+      }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -111,19 +100,14 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
 
   try {
     // if mobile or web
-    if (true) {
-      yield put({
-        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-        payload: {
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        }
-      });
-    }
-    if (false) {
-      yield put({ type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE, payload: { activityID: action.payload.activityID } });
-    }
+    yield put({
+      type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+      payload: {
+        filterObj: filterObject,
+        recordSetID: action.payload.recordSetID,
+        tableFiltersHash: action.payload.tableFiltersHash
+      }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -144,19 +128,14 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     filterObject.selectColumns = ['site_id'];
 
     // if mobile or web
-    if (true) {
-      yield put({
-        type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-        payload: {
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        }
-      });
-    }
-    if (false) {
-      yield put({ type: ACTIVITIES_GEOJSON_GET_OFFLINE, payload: { activityID: action.payload.activityID } });
-    }
+    yield put({
+      type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+      payload: {
+        filterObj: filterObject,
+        recordSetID: action.payload.recordSetID,
+        tableFiltersHash: action.payload.tableFiltersHash
+      }
+    });
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
