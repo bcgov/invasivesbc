@@ -567,10 +567,6 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
     where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
   }
-
-  if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
-    where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
-  }
   if (filterObject.serverSideNamedFilters.hideMusselsInspections) {
     where.append(
       `and ${tableAlias}.activity_subtype not in ('Activity_Observation_Mussels', 'Activity_Officer_Shift')`
@@ -578,12 +574,10 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   }
 
   // check if there is a filter for drafts:
-  let isDraftFilter = false;
-  filterObject.clientReqTableFilters.forEach((filter) => {
-    if (filter.field === 'form_status' && filter.filter === 'Draft') {
-      isDraftFilter = true;
-    }
-  });
+  const isDraftFilter = filterObject.clientReqTableFilters.some(
+    (filter) => filter.field === 'form_status' && filter.filter === 'Draft'
+  );
+
   if (filterObject.preferredUsername && isDraftFilter) {
     where.append(
       `and (${tableAlias}.created_by=${escapeLiteral(
@@ -770,9 +764,9 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'elevation':
         where.append(
-          `${filter.operator2} LOWER(${tableAlias}.elevation) ${
+          `${filter.operator2} LOWER(${tableAlias}.elevation::text) ${
             filter.operator === 'CONTAINS' ? 'like' : 'not like'
-          }  LOWER('%${filter.filter}%') `
+          }  LOWER('%${filter.filter}%')`
         );
         break;
       case 'batch_id':
