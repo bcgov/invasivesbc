@@ -103,7 +103,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         draftState.recordSets = { ...action.payload.recordSets };
       } else if (UserSettings.Map.setCenterSuccess.match(action)) {
-        draftState.mapCenter = action.payload;
+        draftState.mapCenter = action.payload as [number, number];
       } else if (UserSettings.RecordSet.add.match(action)) {
         draftState.recordSets[Date.now()] = action.payload;
       } else if (UserSettings.RecordSet.remove.match(action)) {

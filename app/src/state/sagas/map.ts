@@ -75,7 +75,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -705,7 +705,11 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   }
 }
 
-function* handle_MAP_INIT_FOR_RECORDSETS(action) {
+function* handle_MAP_INIT_FOR_RECORDSETS(action: PayloadAction<UserRecordSet>) {
+  interface ActionType {
+    type: string;
+    payload: any;
+  }
   const userSettingsState = yield select(selectUserSettings);
   const recordSets = Object.keys(userSettingsState.recordSets);
   const mapMode = yield select((state) => state.Map.MapMode);
@@ -730,20 +734,20 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action) {
   // combined:
   const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
 
-  const actionsToPut = [];
-  allUninitializedLayers.map((layer) => {
+  const actionsToPut: ActionType[] = [];
+  allUninitializedLayers.forEach((layer) => {
     if (mapMode === 'VECTOR_ENDPOINT') {
       actionsToPut.push({
         type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
       });
     }
-    if (layer.recordSetType === 'Activity') {
+    if (layer.recordSetType === RecordSetType.Activity) {
       actionsToPut.push({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
       });
-    } else {
+    } else if (layer.recordSetType === RecordSetType.IAPP) {
       actionsToPut.push({
         type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }

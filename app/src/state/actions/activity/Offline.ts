@@ -1,7 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import {
   ACTIVITIES_GEOJSON_GET_OFFLINE,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   ACTIVITIES_TABLE_ROWS_GET_OFFLINE,
   ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
   ACTIVITY_RUN_OFFLINE_SYNC,
@@ -13,7 +12,6 @@ import {
 
 class Offline {
   static readonly getGeojson = createAction(ACTIVITIES_GEOJSON_GET_OFFLINE);
-  static readonly getRecordsetIds = createAction(ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE);
   static readonly getTableRows = createAction(ACTIVITIES_TABLE_ROWS_GET_OFFLINE);
 
   static readonly setSyncDialogue = createAction(ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE);
