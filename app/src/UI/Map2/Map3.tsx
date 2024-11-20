@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
-import Map, {Source, Layer} from '@vis.gl/react-maplibre';
+import Map, {Source, Layer} from 'react-map-gl/maplibre';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';

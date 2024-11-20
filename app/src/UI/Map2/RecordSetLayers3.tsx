@@ -1,4 +1,4 @@
-import {Source, Layer} from '@vis.gl/react-maplibre';
+import {Source, Layer} from 'react-map-gl/maplibre';
 import { useSelector } from 'react-redux';
 
 export const RecordSetLayers = () => {
@@ -35,20 +35,23 @@ export const RecordSetLayers = () => {
                 console.log(layer.filterObject);
                 
                 const source = layer.recordSetID + 'source' + 'points';
+                const layerIDName ='recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
+
                 const url = `${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`;
                 <Source
                     id={source}
-                    key={layer.recordSetID + 'source' + 'points'}
+                    key={layerIDName+ 'points'} 
                     type='vector'
-                    // url={url}
+                    url={`mbtiles://${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
                     
-                    tiles={[
-                        url
-                    ]}
+                    // tiles={[
+                    //     url
+                    // ]}
                  
                 >
                     <Layer
                         id={layer.recordSetID + 'layer' + 'points'}
+                        key={layerIDName+ 'points'+'layer'} 
                         type='circle'
                         source={source}
                         source-layer='data'
