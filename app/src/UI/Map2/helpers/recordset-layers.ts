@@ -359,7 +359,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
       if (/^recordset-layer-/.test(mapLayer)) {
         const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
         if (layer.type === 'Activity') {
-          if (fillPolygonLayerStyle && fillPolygonLayerStyle.paint) {
+          if (fillPolygonLayerStyle?.paint) {
             currentColor = fillPolygonLayerStyle.paint['fill-color'];
           }
 
@@ -368,7 +368,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
             safelySetPaintProperty(map, mapLayer, 'fill-outline-color', layer.layerState?.color || FALLBACK_COLOR);
           }
         } else {
-          if (fillPolygonLayerStyle && fillPolygonLayerStyle.paint) {
+          if (fillPolygonLayerStyle?.paint) {
             currentColor = fillPolygonLayerStyle.paint['circle-color'];
           }
           if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
@@ -377,7 +377,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
         }
       } else if (/polygon-border-/.test(mapLayer)) {
         const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-        if (polyGonBorderLayerStyle && polyGonBorderLayerStyle.paint) {
+        if (polyGonBorderLayerStyle?.paint) {
           currentColor = polyGonBorderLayerStyle.paint['circle-color'];
         }
         if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
@@ -385,7 +385,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
         }
       } else if (/polygon-circle-/.test(mapLayer)) {
         const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-        if (activityCircleMarkerLayerStyle && activityCircleMarkerLayerStyle.paint) {
+        if (activityCircleMarkerLayerStyle?.paint) {
           currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
         }
         if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
