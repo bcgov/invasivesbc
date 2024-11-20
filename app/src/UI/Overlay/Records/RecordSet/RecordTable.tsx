@@ -64,37 +64,33 @@ export const RecordTable = (props) => {
                   return (
                     <th
                       className={'record_table_header_column'}
-                      key={i}
+                      key={col.key}
                       onClick={() => {
                         if (validActivitySortColumns.includes(col.key))
                           dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
                       }}
                     >
                       {col.name}{' '}
-                      {validActivitySortColumns.includes(sortColumn) && sortColumn === col.key
-                        ? sortOrder === 'ASC'
-                          ? '▲'
-                          : '▼'
-                        : ''}
+                      {validActivitySortColumns.includes(sortColumn) &&
+                        sortColumn === col.key &&
+                        (sortOrder === 'ASC' ? '▲' : '▼')}
                     </th>
                   );
                 })
-              : iappColumnsToDisplay.map((col: any, i) => {
+              : iappColumnsToDisplay.map((col: any) => {
                   return (
                     <th
                       className="record_table_header_column"
-                      key={i}
+                      key={col.key}
                       onClick={() => {
                         if (validIAPPSortColumns.includes(col.key))
                           dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
                       }}
                     >
                       {col.name}{' '}
-                      {validIAPPSortColumns.includes(sortColumn) && sortColumn === col.key
-                        ? sortOrder === 'ASC'
-                          ? '▲'
-                          : '▼'
-                        : ''}
+                      {validIAPPSortColumns.includes(sortColumn) &&
+                        sortColumn === col.key &&
+                        (sortOrder === 'ASC' ? '▲' : '▼')}
                     </th>
                   );
                 })}
