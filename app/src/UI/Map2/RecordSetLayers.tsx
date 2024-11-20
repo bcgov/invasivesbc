@@ -48,17 +48,17 @@ export const RecordSetLayers = (props) => {
         if (layer.type !== 'Activity') return;
 
         if (!layer.filterObject) return;
-
-        const layerIDName = 'recordSetLayer' + layer.recordSetID;
+        
+        const layerIDName ='recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
 
         const colour = getPaintBySchemeOrColor(layer)
         console.log('*** color', colour)
 
-
         return (
           <>
             <MlVectorTileLayer
-              key={JSON.stringify(layer.filterObject)+ 'points'}
+              // key={JSON.stringify(layer.filterObject)+ 'points'}
+              key={layerIDName+ 'points'} 
               mapId="map"
               layerId={layerIDName + 'points'}
               layers={[
@@ -87,7 +87,8 @@ export const RecordSetLayers = (props) => {
               //url={`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
             />
             <MlVectorTileLayer
-              key={JSON.stringify(layer.filterObject)+ 'poly'}
+              // key={JSON.stringify(layer.filterObject)+ 'poly'}
+              key={layerIDName+ 'poly'}
               mapId="map"
               layerId={layerIDName + 'poly'}
               layers={[
