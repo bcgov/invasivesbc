@@ -1,30 +1,10 @@
+import { PayloadAction } from '@reduxjs/toolkit';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import {
-  BATCH_CREATE_REQUEST,
-  BATCH_CREATE_REQUEST_WITH_CALLBACK,
-  BATCH_CREATE_SUCCESS,
-  BATCH_DELETE_ERROR,
-  BATCH_DELETE_REQUEST,
-  BATCH_DELETE_SUCCESS,
-  BATCH_EXECUTE_ERROR,
-  BATCH_EXECUTE_REQUEST,
-  BATCH_EXECUTE_SUCCESS,
-  BATCH_LIST_REQUEST,
-  BATCH_LIST_SUCCESS,
-  BATCH_RETRIEVE_REQUEST,
-  BATCH_RETRIEVE_SUCCESS,
-  BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
-  BATCH_TEMPLATE_DOWNLOAD_REQUEST,
-  BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
-  BATCH_TEMPLATE_LIST_REQUEST,
-  BATCH_TEMPLATE_LIST_SUCCESS,
-  BATCH_UPDATE_REQUEST,
-  BATCH_UPDATE_SUCCESS
-} from 'state/actions';
+import BatchActions, { IBatchDownloadTemplateCsv, IBatchExecute, IBatchUpdate } from 'state/actions/batch/BatchActions';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
-function* listBatches(action) {
+function* listBatches(action: PayloadAction) {
   yield call(listTemplates, action);
   const configuration = yield select(selectConfiguration);
 
@@ -34,41 +14,25 @@ function* listBatches(action) {
     }
   });
 
-  yield put({ type: BATCH_LIST_SUCCESS, payload: (yield res.json())?.result });
+  yield put(BatchActions.listSuccess((yield res.json())?.result));
 }
 
-function* getBatch(action) {
+function* getBatch(action: PayloadAction<string>) {
   const configuration = yield select(selectConfiguration);
-  const { id } = action.payload;
 
-  const res = yield fetch(configuration.API_BASE + `/api/batch/` + encodeURIComponent(id), {
+  const res = yield fetch(configuration.API_BASE + `/api/batch/` + encodeURIComponent(action.payload), {
     headers: {
       Authorization: yield getCurrentJWT()
     }
   });
 
   const data = yield res.json();
-  yield put({ type: BATCH_RETRIEVE_SUCCESS, payload: data.result });
-}
-
-function* createBatch(action) {
-  const configuration = yield select(selectConfiguration);
-
-  const res = yield fetch(configuration.API_BASE + `/api/batch`, {
-    method: 'POST',
-    headers: {
-      Authorization: yield getCurrentJWT(),
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(action.payload)
-  });
-
-  yield put({ type: BATCH_CREATE_SUCCESS, payload: yield res.json() });
+  yield put(BatchActions.retrieveSuccess(data.result));
 }
 
 function* createBatchWithCallback(action) {
   const configuration = yield select(selectConfiguration);
-  const { resolve, reject } = action.payload;
+  const { resolve } = action.payload;
 
   const res = yield fetch(configuration.API_BASE + `/api/batch`, {
     method: 'POST',
@@ -80,14 +44,13 @@ function* createBatchWithCallback(action) {
   });
   const resultBody = yield res.json();
 
-  yield put({ type: BATCH_CREATE_SUCCESS, payload: resultBody });
+  yield put(BatchActions.createSuccess(resultBody));
   yield call(resolve, resultBody?.batchId);
 }
 
-function* updateBatch(action) {
+function* updateBatch(action: PayloadAction<IBatchUpdate>) {
   const configuration = yield select(selectConfiguration);
   const { id } = action.payload;
-
   const res = yield fetch(configuration.API_BASE + `/api/batch/${id}`, {
     method: 'PUT',
     headers: {
@@ -96,14 +59,13 @@ function* updateBatch(action) {
     },
     body: JSON.stringify(action.payload)
   });
-
-  yield put({ type: BATCH_UPDATE_SUCCESS, payload: res?.json() });
-  yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+  yield put(BatchActions.updateSuccess(res?.json()));
+  yield put(BatchActions.retrieve(id));
 }
 
-function* deleteBatch(action: any) {
+function* deleteBatch(action: PayloadAction<string>) {
   const configuration = yield select(selectConfiguration);
-  const { id } = action.payload;
+  const id = action.payload;
 
   const res = yield fetch(configuration.API_BASE + `/api/batch/${id}`, {
     method: 'DELETE',
@@ -111,19 +73,17 @@ function* deleteBatch(action: any) {
       Authorization: yield getCurrentJWT(),
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify(action.payload)
+    body: JSON.stringify({ id })
   });
 
-  const data = yield res.json();
-
   if (!res.ok) {
-    yield put({ type: BATCH_DELETE_ERROR, payload: data });
+    yield put(BatchActions.deleteError());
     return;
   }
-  yield put({ type: BATCH_DELETE_SUCCESS, payload: data });
+  yield put(BatchActions.deleteSuccess());
 }
 
-function* listTemplates(action) {
+function* listTemplates(action: PayloadAction) {
   const configuration = yield select(selectConfiguration);
 
   const res = yield fetch(configuration.API_BASE + `/api/batch/templates`, {
@@ -131,11 +91,10 @@ function* listTemplates(action) {
       Authorization: yield getCurrentJWT()
     }
   });
-
-  yield put({ type: BATCH_TEMPLATE_LIST_SUCCESS, payload: yield res.json() });
+  yield put(BatchActions.templateListSuccess(yield res.json()));
 }
 
-function* templateCSV(action) {
+function* templateCSV(action: PayloadAction<IBatchDownloadTemplateCsv>) {
   const configuration = yield select(selectConfiguration);
 
   const { key, resolve } = action.payload;
@@ -150,28 +109,27 @@ function* templateCSV(action) {
   yield call(resolve, yield res.text());
 }
 
-function* templateDetail(action) {
+function* templateDetail(action: PayloadAction<string>) {
   const configuration = yield select(selectConfiguration);
-
-  const res = yield fetch(configuration.API_BASE + `/api/batch/templates/${action.payload.key}`, {
+  const key = action.payload;
+  const res = yield fetch(configuration.API_BASE + `/api/batch/templates/${key}`, {
     headers: {
       Authorization: yield getCurrentJWT(),
       Accept: 'application/json'
     }
   });
 
-  yield put({
-    type: BATCH_TEMPLATE_DOWNLOAD_SUCCESS,
-    payload: {
-      key: action.payload.key,
+  yield put(
+    BatchActions.downloadTemplateSuccess({
+      key: key,
       data: yield res.json()
-    }
-  });
+    })
+  );
 }
 
-function* executeBatch(action) {
+function* executeBatch(action: PayloadAction<IBatchExecute>) {
   const configuration = yield select(selectConfiguration);
-  const { id } = action.payload;
+  const { id, desiredActivityState, treatmentOfErrorRows } = action.payload;
 
   const res = yield fetch(configuration.API_BASE + `/api/batch/${id}/execute`, {
     method: 'POST',
@@ -180,34 +138,33 @@ function* executeBatch(action) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      desiredActivityState: action.payload.desiredActivityState,
-      treatmentOfErrorRows: action.payload.treatmentOfErrorRows
+      desiredActivityState: desiredActivityState,
+      treatmentOfErrorRows: treatmentOfErrorRows
     })
   });
 
   const data = yield res.json();
 
   if (data.code === 200) {
-    yield put({ type: BATCH_EXECUTE_SUCCESS, payload: data });
-    yield put({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+    yield put(BatchActions.executeSuccess(data.result));
+    yield put(BatchActions.retrieve(id));
   } else {
-    yield put({ type: BATCH_EXECUTE_ERROR, payload: data });
+    yield put(BatchActions.executeError(data.message ?? ''));
   }
 }
 
 function* batchSaga() {
   yield all([
-    takeEvery(BATCH_LIST_REQUEST, listBatches),
-    takeLatest(BATCH_RETRIEVE_REQUEST, getBatch),
-    takeEvery(BATCH_CREATE_REQUEST, createBatch),
-    takeEvery(BATCH_UPDATE_REQUEST, updateBatch),
-    takeEvery(BATCH_DELETE_REQUEST, deleteBatch),
-    takeEvery(BATCH_DELETE_SUCCESS, listBatches),
-    takeLatest(BATCH_TEMPLATE_LIST_REQUEST, listTemplates),
-    takeEvery(BATCH_TEMPLATE_DOWNLOAD_REQUEST, templateDetail),
-    takeLatest(BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, templateCSV),
-    takeLatest(BATCH_CREATE_REQUEST_WITH_CALLBACK, createBatchWithCallback),
-    takeLatest(BATCH_EXECUTE_REQUEST, executeBatch)
+    takeEvery(BatchActions.list, listBatches),
+    takeLatest(BatchActions.retrieve, getBatch),
+    takeEvery(BatchActions.update, updateBatch),
+    takeEvery(BatchActions.delete, deleteBatch),
+    takeEvery(BatchActions.deleteSuccess, listBatches),
+    takeLatest(BatchActions.templateList, listTemplates),
+    takeEvery(BatchActions.downloadTemplate, templateDetail),
+    takeLatest(BatchActions.downloadTemplateCsv, templateCSV),
+    takeLatest(BatchActions.createWithCallback, createBatchWithCallback),
+    takeLatest(BatchActions.execute, executeBatch)
   ]);
 }
 

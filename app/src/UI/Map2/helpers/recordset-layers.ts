@@ -119,6 +119,7 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
       return [
         'match',
         ['get', 'activity_subtype'],
+<<<<<<< HEAD
         'Biocontrol',
         layer.layerState.colorScheme['Activity_Observation_PlantTerrestrial'] || 'red',
         'FREP',
@@ -129,6 +130,32 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
         layer.layerState.colorScheme['Treatment'] || FALLBACK_COLOR,
         'Observation',
         layer.layerState.colorScheme['Observation'] || FALLBACK_COLOR,
+=======
+        'Activity_Biocontrol_Collection',
+        layer.layerState.colorScheme['Activity_Biocontrol_Collection'] || FALLBACK_COLOR,
+        'Activity_Biocontrol_Release',
+        layer.layerState.colorScheme['Activity_Biocontrol_Release'] || FALLBACK_COLOR,
+        'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
+        layer.layerState.colorScheme['Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant'] || FALLBACK_COLOR,
+        'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
+        layer.layerState.colorScheme['Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'] || FALLBACK_COLOR,
+        'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+        layer.layerState.colorScheme['Activity_Monitoring_ChemicalTerrestrialAquaticPlant'] || FALLBACK_COLOR,
+        'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
+        layer.layerState.colorScheme['Activity_Monitoring_MechanicalTerrestrialAquaticPlant'] || FALLBACK_COLOR,
+        'Activity_Observation_PlantAquatic',
+        layer.layerState.colorScheme['Activity_Observation_PlantAquatic'] || FALLBACK_COLOR,
+        'Activity_Observation_PlantTerrestrial',
+        layer.layerState.colorScheme['Activity_Observation_PlantTerrestrial'] || FALLBACK_COLOR,
+        'Activity_Treatment_ChemicalPlantAquatic',
+        layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantAquatic'] || FALLBACK_COLOR,
+        'Activity_Treatment_ChemicalPlantTerrestrial',
+        layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantTerrestrial'] || FALLBACK_COLOR,
+        'Activity_Treatment_MechanicalPlantAquatic',
+        layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantAquatic'] || FALLBACK_COLOR,
+        'Activity_Treatment_MechanicalPlantTerrestrial',
+        layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantTerrestrial'] || FALLBACK_COLOR,
+>>>>>>> origin/react-mapcomponents-refactor
         layer.layerState.color || FALLBACK_COLOR
       ];
     } else {
@@ -348,7 +375,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
       if (/^recordset-layer-/.test(mapLayer)) {
         const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
         if (layer.type === 'Activity') {
-          if (fillPolygonLayerStyle && fillPolygonLayerStyle.paint) {
+          if (fillPolygonLayerStyle?.paint) {
             currentColor = fillPolygonLayerStyle.paint['fill-color'];
           }
 
@@ -357,7 +384,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
             safelySetPaintProperty(map, mapLayer, 'fill-outline-color', layer.layerState?.color || FALLBACK_COLOR);
           }
         } else {
-          if (fillPolygonLayerStyle && fillPolygonLayerStyle.paint) {
+          if (fillPolygonLayerStyle?.paint) {
             currentColor = fillPolygonLayerStyle.paint['circle-color'];
           }
           if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
@@ -366,7 +393,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
         }
       } else if (/polygon-border-/.test(mapLayer)) {
         const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-        if (polyGonBorderLayerStyle && polyGonBorderLayerStyle.paint) {
+        if (polyGonBorderLayerStyle?.paint) {
           currentColor = polyGonBorderLayerStyle.paint['circle-color'];
         }
         if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
@@ -374,7 +401,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
         }
       } else if (/polygon-circle-/.test(mapLayer)) {
         const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-        if (activityCircleMarkerLayerStyle && activityCircleMarkerLayerStyle.paint) {
+        if (activityCircleMarkerLayerStyle?.paint) {
           currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
         }
         if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {

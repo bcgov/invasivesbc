@@ -1,5 +1,5 @@
 import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { CodeTableReference } from './CodeTableReference';
 import { useDispatch } from 'react-redux';
@@ -8,8 +8,8 @@ import { Download } from '@mui/icons-material';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
-import { BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST, BATCH_TEMPLATE_DOWNLOAD_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
+import BatchActions from 'state/actions/batch/BatchActions';
 
 const TemplatePreview = ({ name, id }) => {
   const dispatch = useDispatch();
@@ -23,12 +23,7 @@ const TemplatePreview = ({ name, id }) => {
 
   useEffect(() => {
     if (expanded && !detail) {
-      dispatch({
-        type: BATCH_TEMPLATE_DOWNLOAD_REQUEST,
-        payload: {
-          key: id
-        }
-      });
+      dispatch(BatchActions.downloadTemplate(id));
     }
   }, [id, expanded]);
 
@@ -44,13 +39,12 @@ const TemplatePreview = ({ name, id }) => {
 
   const downloadTemplate = (key: string) => {
     new Promise((resolve, reject) => {
-      dispatch({
-        type: BATCH_TEMPLATE_DOWNLOAD_CSV_REQUEST,
-        payload: {
+      dispatch(
+        BatchActions.downloadTemplateCsv({
           key: id,
           resolve
-        }
-      });
+        })
+      );
     }).then((data) => {
       const dataUrl = `data:text/csv;base64,${btoa(data as string)}`;
       const downloadLink = document.createElement('a');

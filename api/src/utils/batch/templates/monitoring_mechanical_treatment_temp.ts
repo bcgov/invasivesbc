@@ -31,7 +31,7 @@ MonitoringMechanicalTemp.columns = [
 
   new TemplateColumnBuilder(
     'Monitoring - Linked Treatment ID',
-    'text',
+    'linked_id',
     'form_data.activity_type_data.linked_id'
   ).build(),
 

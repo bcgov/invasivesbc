@@ -82,14 +82,14 @@ const Observation = {
 };
 
 const Monitoring = {
-  linked_id: { 'ui:widget': 'single-select-autocomplete' },
+  linked_id: { 'ui:widget': 'linked-id-select-autocomplete' },
   copy_geometry: { 'ui:widget': 'single-select-autocomplete' },
   activity_persons: {},
   'ui:order': ['linked_id', 'copy_geometry', 'activity_persons']
 };
 
 const Monitoring_Biocontrol_Release = {
-  linked_id: { 'ui:widget': 'single-select-autocomplete' },
+  linked_id: { 'ui:widget': 'linked-id-select-autocomplete' },
   legacy_iapp_id: {},
   activity_persons: {},
   'ui:order': ['linked_id', 'copy_geometry', 'legacy_iapp_id', 'activity_persons']

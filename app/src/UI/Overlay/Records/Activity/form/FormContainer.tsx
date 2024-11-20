@@ -24,6 +24,7 @@ import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransf
 import debounce from 'lodash.debounce';
 import { RENDER_DEBUG } from 'UI/App';
 import AgentSelectAutoComplete from 'rjsf/widgets/AgentSelectAutoComplete';
+import LinkedIdSelectAutoComplete from 'rjsf/widgets/LinkedIdSelectAutoComplete';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -137,7 +138,8 @@ const FormContainer = () => {
             widgets={{
               'multi-select-autocomplete': MultiSelectAutoComplete,
               'single-select-autocomplete': SingleSelectAutoComplete,
-              'agent-select-autocomplete': AgentSelectAutoComplete
+              'agent-select-autocomplete': AgentSelectAutoComplete,
+              'linked-id-select-autocomplete': LinkedIdSelectAutoComplete
             }}
             readonly={isDisabled}
             key={activity_ID + pasteCount + reported_area}

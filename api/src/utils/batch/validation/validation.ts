@@ -214,7 +214,9 @@ const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (
   row: Record<string, any>
 ) => {
   try {
-    const isValidShortID = validateShortID(shortId, ActivityLetter.Activity_Treatment_ChemicalPlantAquatic);
+    const isValidShortID =
+      validateShortID(shortId, ActivityLetter.Activity_Treatment_ChemicalPlantAquatic) ||
+      validateShortID(shortId, 'PTC');
     if (!isValidShortID) {
       result.validationMessages.push(invalidShortID);
       return;

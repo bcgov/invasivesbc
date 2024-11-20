@@ -1,12 +1,12 @@
 import { Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import TemplatePreview from './TemplatePreview';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
-import { BATCH_TEMPLATE_LIST_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
 import { selectAuth } from 'state/reducers/auth';
+import BatchActions from 'state/actions/batch/BatchActions';
 
 const TemplateDownloadList = () => {
   const dispatch = useDispatch();
@@ -17,8 +17,7 @@ const TemplateDownloadList = () => {
     if (!authState?.authenticated) {
       return;
     }
-
-    dispatch({ type: BATCH_TEMPLATE_LIST_REQUEST });
+    dispatch(BatchActions.templateList());
   }, [authState?.authenticated]);
 
   if (working) {

@@ -226,7 +226,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
     console.error(e);
     yield put(
       Alerts.create({
-        content: 'An error occured while fetching suggested persons. Suggestions will not be displayed',
+        content: 'An error occured while fetching suggested treatment IDs. Suggestions will not be displayed',
         severity: AlertSeverity.Error,
         subject: AlertSubjects.Form,
         autoClose: 8

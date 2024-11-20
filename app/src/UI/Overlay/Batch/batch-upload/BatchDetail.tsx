@@ -7,7 +7,7 @@ import BatchFileComponent from './BatchFileComponent';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Spinner/Spinner';
-import { BATCH_EXECUTE_REQUEST, BATCH_RETRIEVE_REQUEST, BATCH_UPDATE_REQUEST } from 'state/actions';
+import BatchActions from 'state/actions/batch/BatchActions';
 
 const StyledSelect = {
   width: '70pt',
@@ -30,34 +30,32 @@ const BatchMetadata = ({ batch }) => {
   }
 
   function uploadRevisedData() {
-    dispatch({
-      type: BATCH_UPDATE_REQUEST,
-      payload: {
+    dispatch(
+      BatchActions.update({
         id: batch.id,
-        csvData: fileData
-      }
-    });
+        csvData: fileData ?? ''
+      })
+    );
   }
 
   function doBatchExec() {
-    dispatch({
-      type: BATCH_EXECUTE_REQUEST,
-      payload: {
+    dispatch(
+      BatchActions.execute({
         id: batch.id,
         desiredActivityState: execFinalState,
         treatmentOfErrorRows: execErrorRowsTreatment
-      }
-    });
+      })
+    );
   }
 
-  const [fileData, setFileData] = useState(null);
+  const [fileData, setFileData] = useState<string>();
   const [uploadReady, setUploadReady] = useState(false);
 
   const [execFinalState, setExecFinalState] = useState('');
   const [execErrorRowsTreatment, setExecErrorRowsTreatment] = useState('');
 
   useEffect(() => {
-    setUploadReady(fileData !== null);
+    setUploadReady(fileData != null);
   }, [fileData]);
 
   const acceptFileData = (d) => {
@@ -164,7 +162,7 @@ const BatchDetail = ({ id }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({ type: BATCH_RETRIEVE_REQUEST, payload: { id } });
+    dispatch(BatchActions.retrieve(id));
   }, [id]);
 
   function renderContent() {

@@ -1,14 +1,14 @@
 import { Box, Paper, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Error } from '@mui/icons-material';
 import { Link } from 'react-router-dom';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
-import { BATCH_DELETE_REQUEST, BATCH_LIST_REQUEST } from 'state/actions';
 import Spinner from 'UI/Spinner/Spinner';
 import { selectAuth } from 'state/reducers/auth';
+import BatchActions from 'state/actions/batch/BatchActions';
 
 const BatchUploadList = () => {
   const { working, error, list, templates, errorMessage } = useSelector(selectBatch);
@@ -22,11 +22,11 @@ const BatchUploadList = () => {
       return;
     }
 
-    dispatch({ type: BATCH_LIST_REQUEST });
+    dispatch(BatchActions.list());
   }, [serial, authState?.authenticated]);
 
   function deleteBatch(batchId) {
-    dispatch({ type: BATCH_DELETE_REQUEST, payload: { id: batchId } });
+    dispatch(BatchActions.delete(batchId));
   }
 
   function renderError() {

@@ -108,9 +108,7 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
 
 export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   const configuration = yield select(selectConfiguration);
-
   const networkReturn = yield fetch(configuration.IAPP_GEOJSON_URL);
-
   const data = yield networkReturn.json();
 
   const rows = data?.result || [];
@@ -126,9 +124,7 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   yield put({
     type: IAPP_GEOJSON_GET_SUCCESS,
     payload: {
-      //   recordSetID: action.payload.recordSetID,
       IAPPGeoJSON: featureCollection
-      //   layerState: action.payload.layerState
     }
   });
 }
@@ -214,8 +210,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
     filterObjects: [action.payload.filterObj]
   });
-  //const networkReturn = yield InvasivesAPI_Call('GET', `/api/activities/`, action.payload.ActivityFilterCriteria);
-
   const mapState = yield select((state) => state.Map);
   const tableFiltersHash = mapState?.layers?.filter((layer) => {
     return layer?.recordSetID === action.payload.recordSetID;
@@ -249,15 +243,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
         tableFiltersHash: action.payload.tableFiltersHash
       }
     });
-  } else {
-    /*  put({
-      type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-      payload: {
-        recordSetID: action.payload.recordSetID,
-        error: networkReturn.data
-      }
-    });
-    */
   }
 }
 
@@ -295,14 +280,5 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
         tableFiltersHash: action.payload.tableFiltersHash
       }
     });
-  } else {
-    /*  put({
-      type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-      payload: {
-        recordSetID: action.payload.recordSetID,
-        error: networkReturn.data
-      }
-    });
-    */
   }
 }
