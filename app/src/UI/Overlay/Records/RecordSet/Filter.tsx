@@ -74,7 +74,6 @@ const Filter = ({ setID, id }: PropTypes) => {
         return (
           <select
             className="filterSelect"
-            key={'filterType' + name}
             value={valueInState}
             onChange={(e) => updateFilter({ filter: e.target.value })}
           >
@@ -89,7 +88,6 @@ const Filter = ({ setID, id }: PropTypes) => {
         return (
           <select
             className="filterSelect"
-            key={'filterType' + name}
             value={valueInState}
             onChange={(e) => updateFilter({ filter: e.target.value })}
           >
@@ -136,7 +134,6 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>
         <select
           className="filterSelect"
-          key={'operand2' + name}
           value={operator2InState}
           onChange={(e) => updateFilter({ operator2: e.target.value })}
         >
@@ -179,7 +176,6 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>
         <select
           className="filterSelect"
-          key={'operand' + name}
           value={operatorInState}
           onChange={(e) => updateFilter({ operator: e.target.value })}
         >
@@ -222,7 +218,6 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>
         <select
           className="filterTypeSelect"
-          key={'filterTypeSelect' + name}
           value={filterTypeInState}
           onChange={(e) => {
             const payload = {
@@ -263,7 +258,6 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>
         <select
           className="filterSelect"
-          key={'filterType' + name}
           value={typeInState}
           onChange={(e) => updateFilter({ filterID: id, field: e.target.value, filterType: 'tableFilter' })}
         >
