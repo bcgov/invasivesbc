@@ -22,7 +22,6 @@
 }
 
 .excelExporter {
-  /* justify-self: flex-end; */
   display: flex;
   width: 100%;
   flex-direction: row;
@@ -37,9 +36,6 @@
   width: auto;
 }
 
-.recordSet_back_button {
-}
-
 .recordSet_menu_button {
   width: auto;
 }
@@ -49,7 +45,6 @@
 }
 
 .recordSet_filters_container {
-  /* padding-top: 10px; */
   display: flex;
   position: relative;
   justify-content: center;
@@ -93,13 +88,8 @@
   cursor: pointer;
 }
 
-.recordSet_filter_operator {
-}
-
 .recordSet_filter_type {
   padding-left: 2vw;
-
-  /* z-index: 2147483646; */
 }
 
 .recordSet_filter_value {
@@ -119,7 +109,6 @@ td {
 }
 
 .filterSelect {
-  /* width: 100px; */
   max-width: 150px;
 }
 
