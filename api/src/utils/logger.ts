@@ -3,7 +3,7 @@ import _ from 'lodash';
 import YAML from 'js-yaml';
 import { MDCAsyncLocal } from 'mdc';
 
-class LoggerWithContext {
+export class LoggerWithContext {
   _instance: winston.Logger;
 
   constructor(outputLabel = 'default') {
