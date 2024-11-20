@@ -1,13 +1,11 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
-import Map, {Source, Layer} from 'react-map-gl/maplibre';
-import type {FillLayer} from 'react-map-gl/maplibre';
+import Map, {Source, Layer} from '@vis.gl/react-maplibre';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
-import { RasterSource } from 'react-map-gl';
 import maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
-import { ButtonContainer } from './Controls/ButtonContainer';
+import { RecordSetLayers } from './RecordSetLayers3';
 
 export const MainMap= ({children}) =>{
     const pmtilesProtocol = new Protocol();
@@ -97,7 +95,7 @@ export const MainMap= ({children}) =>{
         }
         return authHeaderRef.current;
       };
-    const transformRequest = (url) => {
+    const transformRequest = (url, resourceType) => {
         if (url.includes(API_BASE)) {
             return {
               url,
@@ -122,7 +120,7 @@ export const MainMap= ({children}) =>{
                     }}
                     minZoom={1}
                     attributionControl={false}
-                    // transformRequest={(url)=>{return transformRequest(url);}}
+                    transformRequest={transformRequest}
                     // mapStyle="https://wms.wheregroup.com/tileserver/style/osm-bright.json"
                     mapLib={maplibregl}
                     onLoad={handleInitialLoad}
@@ -144,13 +142,14 @@ export const MainMap= ({children}) =>{
 
                         />
                     </Source>
-
+                    
                     <Source
                         id='pmtiles-source'
                         type='vector'
                         tiles={[
                             `pmtiles://${PMTILES_URL}`
                         ]}
+                    
                     >
                         <Layer
                             id='pmtiles-layer'
@@ -158,10 +157,16 @@ export const MainMap= ({children}) =>{
                             source='pmtiles-source'
                             source-layer='invasives'
                             paint={{ 'circle-color': '#0905f5', 'circle-opacity': 1.0 }}
+                            layout={{visibility: authenticated? 'none': 'visible'}}
                         />
                     </Source>
-                    <ButtonContainer></ButtonContainer>
+                    
+                    <RecordSetLayers/>
                 </Map>
+                <div id="LoadingMap" className={!true ? 'loadingMap' : 'loadedMap'}>
+                    Loading tiles...
+                </div>
+                {children}
             </div>
         </div>
     )
