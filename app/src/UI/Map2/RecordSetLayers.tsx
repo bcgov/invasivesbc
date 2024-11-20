@@ -58,7 +58,7 @@ export const RecordSetLayers = (props) => {
         return (
           <>
             <MlVectorTileLayer
-              key={Math.random()}
+              key={JSON.stringify(layer.filterObject)+ 'points'}
               mapId="map"
               layerId={layerIDName + 'points'}
               layers={[
@@ -87,7 +87,7 @@ export const RecordSetLayers = (props) => {
               //url={`${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`}
             />
             <MlVectorTileLayer
-              key={Math.random()}
+              key={JSON.stringify(layer.filterObject)+ 'poly'}
               mapId="map"
               layerId={layerIDName + 'poly'}
               layers={[
@@ -100,7 +100,7 @@ export const RecordSetLayers = (props) => {
                     //visibility: 'visible'
                     visibility: layer?.layerState?.mapToggle ? 'visible' : 'none'
                   },
-                  paint: { 'fill-outline-color': JSON.stringify(getPaintBySchemeOrColor(layer)), 'fill-color':  JSON.stringify(getPaintBySchemeOrColor(layer)), 'fill-opacity': 0.5 },
+                  paint: { 'fill-outline-color': getPaintBySchemeOrColor(layer), 'fill-color': getPaintBySchemeOrColor(layer), 'fill-opacity': 0.5 },
                   minzoom: 12,
                   maxzoom: 24
                   // paint: { 'line-color': '#0905f5', "line-opacity": 1.0, "line-width": 10},
