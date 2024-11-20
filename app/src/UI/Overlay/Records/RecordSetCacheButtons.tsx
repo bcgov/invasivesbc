@@ -38,6 +38,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
       Prompt.confirmation({
         title: 'Download Records',
         prompt: 'Would you like to download this cache? The record sets will be available for offline use.',
+        confirmText: 'Download Records',
         callback
       })
     );
@@ -54,6 +55,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
           'Do you want to remove these records from your device? They will no longer be accessible offline.',
           'This action will not delete the records from the database.'
         ],
+        confirmText: 'Delete Records',
         callback
       })
     );
