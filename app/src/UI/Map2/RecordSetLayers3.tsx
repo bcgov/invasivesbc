@@ -56,8 +56,6 @@ export const RecordSetLayers = () => {
                     id={source}
                     key={layerIDName+ 'points'} 
                     type='vector'
-                    ///tiles={[`mbtiles://${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`]}
-                    
                      tiles={[
                          url
                      ]}
@@ -71,7 +69,6 @@ export const RecordSetLayers = () => {
                         source-layer='data'
                         paint={{ 'circle-color': 'orange', 'circle-opacity': 1.0 }}
                         layout={{visibility: 'visible' }}
-                        //maxzoom={12}
                         minzoom={0}
                         
                     />
