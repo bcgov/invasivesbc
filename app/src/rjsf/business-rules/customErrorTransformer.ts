@@ -2,46 +2,29 @@
 
 /**
  * Returns a custom error transformer.
- *
- * @return {*}
  */
 export const getCustomErrorTransformer = () => {
-  return (errors: any[]) => {
-    return errors.filter((error) => {
+  const errorMessages = [
+    'should be equal to one of the allowed values',
+    'should match "then" schema',
+    'should match exactly one schema in oneOf',
+    'should match some schema in anyOf',
+    'must match exactly one schema in oneOf',
+    'must be equal to one of the allowed values'
+  ];
+  return (errors: any[]) =>
+    errors.filter((error) => {
       if (error.message.includes('must have required property')) {
         error.message = 'is a required field';
         return error;
       }
-
-      if (error.message === 'should be equal to one of the allowed values') {
+      if (errorMessages.includes(error.message)) {
         return false;
       }
-
-      if (error.message === 'should match "then" schema') {
-        return false;
-      }
-
-      if (error.message === 'should match exactly one schema in oneOf') {
-        return false;
-      }
-
-      if (error.message === 'should match some schema in anyOf') {
-        return false;
-      }
-      if (error.message === 'must match exactly one schema in oneOf') {
-        return false;
-      }
-
-      if (error.message === 'must be equal to one of the allowed values') {
-        return false;
-      }
-
       if (error.message === 'should match pattern "[A-Za-z -]+"') {
         error.message = 'Only letters are allowed';
         return error;
       }
-
       return true;
     });
-  };
 };
