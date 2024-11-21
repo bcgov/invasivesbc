@@ -87,6 +87,7 @@ const FormContainer = () => {
   const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 
   useEffect(() => {
+    formRef.current?.validateForm();
     const currentState = formRef.current?.state;
     dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
   }, [formRef]);
@@ -98,7 +99,7 @@ const FormContainer = () => {
   const ErrorListTemplate = (err: { errors?: unknown[] }) => {
     return (
       <>
-        {(err.errors?.length || 0) > 0 && (
+        {(err.errors?.length ?? 0) > 0 && (
           <div>
             <Typography color="error" sx={{ mt: 8, mb: 4 }}>
               Red text indicates mandatory entry in order to go from a status of Draft to Submitted. You can however
@@ -118,7 +119,7 @@ const FormContainer = () => {
     return <CircularProgress />;
   }
   return (
-    <Box sx={{ pl: '15%', pr: '15%' }}>
+    <Box sx={{ px: '15%' }}>
       <ThemeProvider theme={darkTheme ? rjsfThemeDark : rjsfThemeLight}>
         <SelectAutoCompleteContextProvider>
           {!createdByUser && userIsAdmin && (
@@ -147,6 +148,7 @@ const FormContainer = () => {
             formData={formDataState}
             schema={activitySchema}
             uiSchema={activityUISchema}
+            onError={() => {}}
             liveValidate={true}
             customValidate={customValidators()}
             validator={validator}
