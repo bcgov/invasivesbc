@@ -34,7 +34,7 @@ export const MainMap = ({ children }) => {
   const authHeaderRef = useRef<string>();
   authHeaderRef.current = currentAuthHeader;
 
-
+  const map_center = useSelector((state: any) => state.Map.map_center);
 
   useEffect(() => {
     if (!authenticated) {
@@ -84,11 +84,12 @@ export const MainMap = ({ children }) => {
       <div className="MapWrapper">
         <Map
           initialViewState={{
-            longitude: -123.333959,
-            latitude: 48.4229865,
-            zoom: 12,
+            longitude: map_center[1],
+            latitude: map_center[0],
+            zoom: 3,
           }}
-          minZoom={1}
+          minZoom={0}
+          maxZoom={24}
           attributionControl={false}
           transformRequest={transformRequest}
           mapLib={maplibregl}
@@ -97,41 +98,83 @@ export const MainMap = ({ children }) => {
             glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
             version:8,
             sources:{
-              // "esri-sat-label-source": {
-              //   type: 'raster',
-              //   tiles: [
-              //     'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
-              //   ],
-              //   tileSize: 256,
-              //   attribution: 'Powered by ESRI',
-              //   maxzoom: 18
-              // },
-              // "wms-source":{
-              //   type: 'raster',
-              //   tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-              //   attribution: 'Powered by ESRI',
-              //   tileSize: 256,
-              //   maxzoom: 24,
-              // }
+              "esri-sat-label-source": {
+                type: 'raster',
+                tiles: [
+                  'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+                ],
+                tileSize: 256,
+                attribution: 'Powered by ESRI',
+                maxzoom: 18
+              },
+              "esri-sat-layer-hd":{
+                type: 'raster',
+                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+                attribution: 'Powered by ESRI',
+                tileSize: 256,
+                maxzoom: 24,
+              },
+              "esri-sat-layer-sd":{
+                type: 'raster',
+                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+                attribution: 'Powered by ESRI',
+                tileSize: 256,
+                maxzoom: 18,
+              },
+              "esri-topo":{
+                type: 'raster',
+                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
+                attribution: 'Powered by ESRI',
+                tileSize: 256,
+                maxzoom: 18,
+              }
+              
             },
             layers:[
               // {
-              //   id: `Esri-Sat-LayerHD`,
+              //   id: 'esri-sat-layer-hd',
               //   type: 'raster',
-              //   source: 'wms-source',
+              //   source: 'esri-sat-layer-hd',
               //   minzoom: 0
               // },
               // {
-              //   id: `Esri-Sat-LabelHD`,
+              //   id: `esri-sat-label-hd`,
               //   type: 'raster',
               //   source: 'esri-sat-label-source',
               //   minzoom: 0
-              // }
+              // },
+              // {
+              //   id: `esri-sat-layer-sd`,
+              //   type: 'raster',
+              //   source: 'esri-sat-layer-sd',
+              //   minzoom: 0
+              // },
+              // {
+              //   id: `esri-sat-label-sd`,
+              //   type: 'raster',
+              //   source: 'esri-sat-label-source',
+              //   minzoom: 0
+              // },
+              {
+                id: 'esri-topo',
+                type: 'raster',
+                source: 'esri-topo',
+                minzoom: 0,
+              }
             ]
           }}
         >
+          {/* <Source
+            id='esri-sat-label-source'
+            type='raster'
+            tiles={[
+              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+            ]}
+            tileSize={256}
+            maxzoom={18}
+          />
           <Source
-            id='wms-source'
+            id='esri-sat-layer-hd'
             type='raster'
             tiles={[
               "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
@@ -141,12 +184,12 @@ export const MainMap = ({ children }) => {
             <Layer
               id='wms-layer'
               type='raster'
-              source='wms-source'
+              source='esri-sat-layer-hd'
             />
-          </Source>
+          </Source> */}
 
           <Source
-            id='pmtiles-source'
+            id='pmtiles-public-layer-source'
             type='vector'
             tiles={[
               `pmtiles://${PMTILES_URL}`
@@ -155,17 +198,17 @@ export const MainMap = ({ children }) => {
             <Layer
               id='invasives-layer'
               type='circle'
-              source='pmtiles-source'
+              source='pmtiles-public-layer-source'
               source-layer='invasives'
               paint={{ 'circle-color': 'lightskyblue', 'circle-opacity': 1.0 }}
               layout={{ visibility: authenticated ? 'none' : 'visible' }}
               minzoom={0}
-              
+              maxzoom={24}
             />
             <Layer
-              id='invasives-label-layer'
+              id='invasives-label'
               type='symbol'
-              source='pmtiles-source'
+              source='pmtiles-public-layer-source'
               source-layer='invasives'
               paint={{
                 'text-color': 'black',
@@ -187,20 +230,23 @@ export const MainMap = ({ children }) => {
                 'text-offset': [0, 0.6],
                 'text-anchor': 'top'
               }}
+              minzoom={0}
+              maxzoom={24}
             />
             <Layer
               id='iapp-layer'
               type='circle'
-              source='pmtiles-source'
+              source='pmtiles-public-layer-source'
               source-layer='iapp'
               paint={{ 'circle-color': 'limegreen', 'circle-opacity': 1.0 }}
               layout={{ visibility: authenticated ? 'none' : 'visible' }}
-              // maxzoom={24}
+              minzoom={0}
+              maxzoom={24}
             />
             <Layer
-              id='iapp-label-layer'
+              id='iapp-label'
               type='symbol'
-              source='pmtiles-source'
+              source='pmtiles-public-layer-source'
               source-layer='iapp'
               paint={{
                 'text-color': 'black',
@@ -223,7 +269,8 @@ export const MainMap = ({ children }) => {
                 'text-offset': [0, 0.6],
                 'text-anchor': 'top'
               }}
-              // maxzoom={24}
+              minzoom={0}
+              maxzoom={24}
             />
           </Source>
 
