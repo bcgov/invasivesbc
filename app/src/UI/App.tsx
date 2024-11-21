@@ -4,7 +4,8 @@ import { Redirect, Route, useHistory } from 'react-router-dom';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
-import { MainMap as Map } from './Map2/Map3';
+import { MainMap as PublicMap } from './Map2/Map3';
+import { Map } from './Map2/Map';
 import { LandingComponent } from './Overlay/Landing/Landing';
 import Overlay from './Overlay/Overlay';
 import { OverlayMenu } from './Overlay/OverlayMenu';
@@ -33,6 +34,7 @@ import AlertsContainer from './AlertsContainer/AlertsContainer';
 import UserInputModalController from './UserInputModals/UserInputModalController';
 import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 import { WhatsHereTable } from 'UI/Overlay/WhatsHere/WhatsHereTable';
+// import { MapComponentsProvider } from '@mapcomponents/react-maplibre';
 import {MapProvider} from 'react-map-gl';
 
 // lazy-loaded components
@@ -228,6 +230,7 @@ const OverlayContentMemo = () => {
 
 const App: React.FC = () => {
   const authInitiated = useSelector((state) => state.Auth.initialized);
+  const authenticated = useSelector((state: any) => state.Auth.authenticated);
   const { detail: errorDetail, hasCrashed } = useSelector(selectGlobalErrorState);
   const { disrupted } = useSelector(selectAuth);
   const ref = useRef(0);
@@ -236,7 +239,7 @@ const App: React.FC = () => {
     console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
   }
   const [appClasses, setAppclasses] = useState('');
-
+  
   useEffect(() => {
     const newAppClasses: string[] = ['App'];
     if (MOBILE) {
@@ -270,7 +273,7 @@ const App: React.FC = () => {
 
   return (
     <div id="app" className={appClasses}>
-      <MapProvider>
+          <MapProvider>
 
       <AlertsContainer />
       <UserInputModalController />
@@ -279,14 +282,25 @@ const App: React.FC = () => {
         {/* On mobile builds, show a message to BCEID users for now*/}
         <MobileBetaAccessMessage />
       </MobileOnly>
-
-      <Map>
-        <Overlay>
-          <OverlayContentMemo />
-        </Overlay>
-        <ButtonContainer />
-        <LayerPicker />
-      </Map>
+      {
+        !authenticated?
+        <PublicMap>
+          <Overlay>
+            <OverlayContentMemo />
+          </Overlay>
+          <ButtonContainer />
+          <LayerPicker />
+        </PublicMap>
+      :
+        <Map>
+          <Overlay>
+            <OverlayContentMemo />
+          </Overlay>
+          <ButtonContainer />
+          <LayerPicker />
+        </Map>
+      }
+      
       <WebOnly>
         <Footer />
       </WebOnly>

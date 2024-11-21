@@ -119,18 +119,6 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
       return [
         'match',
         ['get', 'activity_subtype'],
-<<<<<<< HEAD
-        'Biocontrol',
-        layer.layerState.colorScheme['Activity_Observation_PlantTerrestrial'] || 'red',
-        'FREP',
-        layer.layerState.colorScheme['FREP'] || FALLBACK_COLOR,
-        'Monitoring',
-        layer.layerState.colorScheme['Monitoring'] || FALLBACK_COLOR,
-        'Treatment',
-        layer.layerState.colorScheme['Treatment'] || FALLBACK_COLOR,
-        'Observation',
-        layer.layerState.colorScheme['Observation'] || FALLBACK_COLOR,
-=======
         'Activity_Biocontrol_Collection',
         layer.layerState.colorScheme['Activity_Biocontrol_Collection'] || FALLBACK_COLOR,
         'Activity_Biocontrol_Release',
@@ -155,7 +143,6 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
         layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantAquatic'] || FALLBACK_COLOR,
         'Activity_Treatment_MechanicalPlantTerrestrial',
         layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantTerrestrial'] || FALLBACK_COLOR,
->>>>>>> origin/react-mapcomponents-refactor
         layer.layerState.color || FALLBACK_COLOR
       ];
     } else {

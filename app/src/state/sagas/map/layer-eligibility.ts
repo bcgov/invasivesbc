@@ -89,6 +89,6 @@ function* recomputeEligibleMapLayers(action) {
   }
 }
 
-const LAYER_ELIGIBILITY_UPDATE = [takeEvery('BANANA', recomputeEligibleMapLayers)]; //@todo be more selective about potentially-triggering actions
+const LAYER_ELIGIBILITY_UPDATE = [takeEvery('*', recomputeEligibleMapLayers)]; //@todo be more selective about potentially-triggering actions
 
 export { LAYER_ELIGIBILITY_UPDATE };
