@@ -1,12 +1,13 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getEmailSettingsSQL, updateEmailSettingsSQL } from 'queries/email-settings-queries';
 import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
+import CommonDatabase from 'utils/commonDatabase/commonDatabase';
+import commonResponses from 'utils/CommonResponses';
 
 const defaultLog = getLogger('email-settings');
 
@@ -89,57 +90,18 @@ GET.apiDoc = {
   }
 };
 
-export async function getEmailSettingsFromDB() {
-  const connection = await getDBConnection();
-  if (!connection) {
-    return {
-      message: 'Database connection unavailable',
-      namespace: 'email-settings',
-      code: 503
-    };
-  }
-  try {
-    const sqlStatement: SQLStatement = getEmailSettingsSQL();
-    if (!sqlStatement) {
-      return {
-        message: 'Invalid request',
-        namespace: 'email-settings',
-        code: 400
-      };
+function getEmailSettings(): RequestHandler {
+  return async (req, res): Promise<Response> => {
+    if (!isAdminFromAuthContext(req)) {
+      return res.status(401).json(commonResponses[401]);
     }
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = response?.rows;
-    return {
+    const response = await new CommonDatabase().query(getEmailSettingsSQL());
+    return res.status(200).json({
       message: 'email settings retrieved',
-      result: result,
+      result: response?.rows,
       namespace: 'email-settings',
       code: 200
-    };
-  } catch (error) {
-    defaultLog.debug({ label: 'getEmailSettings', message: 'error', error });
-    return {
-      message: 'Database encountered an error',
-      error: error,
-      namespace: 'email-settings',
-      code: 500
-    };
-  } finally {
-    connection.release();
-  }
-}
-
-function getEmailSettings(): RequestHandler {
-  return async (req, res) => {
-    if (!isAdminFromAuthContext(req)) {
-      return res.status(401).json({
-        message: 'Unauthorized access',
-        request: req.body,
-        namespace: 'email-settings',
-        code: 401
-      });
-    }
-    const response = await getEmailSettingsFromDB();
-    return res.status(response.code).json({ ...response, request: req.body });
+    });
   };
 }
 

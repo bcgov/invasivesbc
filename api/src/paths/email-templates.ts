@@ -1,11 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getEmailTemplatesSQL, updateEmailTemplatesSQL } from 'queries/email-templates-queries';
 import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
+import CommonDatabase from 'utils/commonDatabase/commonDatabase';
 
 const defaultLog = getLogger('email-templates');
 
@@ -88,49 +88,15 @@ GET.apiDoc = {
   }
 };
 
-export async function getEmailTemplatesFromDB() {
-  const connection = await getDBConnection();
-  if (!connection) {
-    return {
-      message: 'Database connection unavailable',
-      namespace: 'email-templates',
-      code: 503
-    };
-  }
-  try {
-    const sqlStatement: SQLStatement = getEmailTemplatesSQL();
-    if (!sqlStatement) {
-      return {
-        message: 'Invalid request',
-        namespace: 'email-templates',
-        code: 400
-      };
-    }
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = response?.rows;
-    return {
-      message: 'email templates retrieved',
-      result: result,
-      namespace: 'email-templates',
-      code: 200
-    };
-  } catch (error) {
-    defaultLog.error({ label: 'getEmailTemplates', message: 'error', error });
-    return {
-      message: 'Database encountered an error',
-      error: error,
-      namespace: 'email-templates',
-      code: 500
-    };
-  } finally {
-    connection.release();
-  }
-}
-
 function getEmailTemplates(): RequestHandler {
   return async (req, res) => {
-    const response = await getEmailTemplatesFromDB();
-    return res.status(response.code).json({ ...response, request: req.body });
+    const response = await new CommonDatabase().query(getEmailTemplatesSQL());
+    return res.status(200).json({
+      message: 'Email templates retrieved',
+      result: response?.rows,
+      namespace: req.url,
+      req: req.body
+    });
   };
 }
 
