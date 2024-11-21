@@ -1,9 +1,10 @@
 import { Button, Tooltip } from '@mui/material';
-import { useRef, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from './RecordTableHelpers';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import debounce from 'lodash.debounce';
 
 type PropTypes = {
   setID: string;
@@ -12,33 +13,32 @@ type PropTypes = {
 
 const Filter = ({ setID, id }: PropTypes) => {
   const TIME_TO_AUTO_UPDATE_IN_SECONDS = 0.75;
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const debouncedUpdate = (value) => {
-    if (value !== valueInState) {
-      dispatch(
-        UserSettings.RecordSet.updateFilter({
-          filterType: 'tableFilter',
-          setID: setID,
-          filterID: id,
-          filter: value
-        })
-      );
-    }
-  };
 
   /**
    * @desc Change Handler for text input filter.
    *       Sets/refreshes timeouts so updates won't fire until user finishes typing.
    */
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-    clearTimeout(timeoutRef.current as NodeJS.Timeout);
-    timeoutRef.current = setTimeout(() => {
-      debouncedUpdate(event.target.value);
-    }, TIME_TO_AUTO_UPDATE_IN_SECONDS * 1000);
+    const newVal = event.target.value;
+    setInputValue(newVal);
+    debouncedFormChange(newVal);
   };
 
+  const debouncedFormChange = useCallback(
+    debounce((value: string) => {
+      if (value !== valueInState) {
+        dispatch(
+          UserSettings.RecordSet.updateFilter({
+            filterType: 'tableFilter',
+            setID: setID,
+            filterID: id,
+            filter: value
+          })
+        );
+      }
+    }, TIME_TO_AUTO_UPDATE_IN_SECONDS * 1000),
+    []
+  );
   /**
    * Update the Recordsets filters
    * @param newVal additional object keys
