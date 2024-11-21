@@ -4,12 +4,12 @@ import { Pool, PoolClient, PoolConfig } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import { getLogger, LoggerWithContext } from 'utils/logger';
 
-const DB_HOST: string = process.env.DB_HOST || 'localhost';
-const DB_PORT: number = Number(process.env.DB_PORT) || 5432;
-const DB_USERNAME: string = process.env.DB_USER || 'invasivebc';
-const DB_PASSWORD: string = process.env.DB_PASS || 'world';
-const DB_DATABASE: string = process.env.DB_DATABASE || 'invasives';
-const DB_SCHEMA: string = process.env.DB_SCHEMA || 'invasivesbc';
+const DB_HOST: string = process.env.DB_HOST;
+const DB_PORT: number = Number(process.env.DB_PORT);
+const DB_USERNAME: string = process.env.DB_USER;
+const DB_PASSWORD: string = process.env.DB_PASS;
+const DB_DATABASE: string = process.env.DB_DATABASE;
+const DB_SCHEMA: string = process.env.DB_SCHEMA;
 
 /** Information needed for Logging */
 interface Log {
