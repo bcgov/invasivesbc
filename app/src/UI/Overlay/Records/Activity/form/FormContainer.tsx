@@ -87,7 +87,9 @@ const FormContainer = () => {
   const rjsfThemeLight = createTheme(rjsfTheme as ThemeOptions);
 
   useEffect(() => {
-    formRef.current?.validateForm();
+    if (isActivityChemTreatment()) {
+      formRef.current?.validateForm();
+    }
     const currentState = formRef.current?.state;
     dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
   }, [formRef]);
