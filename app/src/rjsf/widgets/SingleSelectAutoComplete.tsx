@@ -131,7 +131,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         if (reason === 'clear') {
           // NOTE: currently disabled.
           setValue(null);
-          props.onChange(null);
+          props.onChange(undefined);
         } else {
           setValue(option);
           props.onChange(option.value ?? option);
