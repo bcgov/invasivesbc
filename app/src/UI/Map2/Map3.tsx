@@ -93,6 +93,42 @@ export const MainMap = ({ children }) => {
           transformRequest={transformRequest}
           mapLib={maplibregl}
           interactiveLayerIds={['pmtiles-layer']}
+          mapStyle={{
+            glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+            version:8,
+            sources:{
+              // "esri-sat-label-source": {
+              //   type: 'raster',
+              //   tiles: [
+              //     'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+              //   ],
+              //   tileSize: 256,
+              //   attribution: 'Powered by ESRI',
+              //   maxzoom: 18
+              // },
+              // "wms-source":{
+              //   type: 'raster',
+              //   tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+              //   attribution: 'Powered by ESRI',
+              //   tileSize: 256,
+              //   maxzoom: 24,
+              // }
+            },
+            layers:[
+              // {
+              //   id: `Esri-Sat-LayerHD`,
+              //   type: 'raster',
+              //   source: 'wms-source',
+              //   minzoom: 0
+              // },
+              // {
+              //   id: `Esri-Sat-LabelHD`,
+              //   type: 'raster',
+              //   source: 'esri-sat-label-source',
+              //   minzoom: 0
+              // }
+            ]
+          }}
         >
           <Source
             id='wms-source'
@@ -106,7 +142,6 @@ export const MainMap = ({ children }) => {
               id='wms-layer'
               type='raster'
               source='wms-source'
-
             />
           </Source>
 
@@ -116,19 +151,83 @@ export const MainMap = ({ children }) => {
             tiles={[
               `pmtiles://${PMTILES_URL}`
             ]}
-
           >
             <Layer
-              id='pmtiles-layer'
+              id='invasives-layer'
               type='circle'
               source='pmtiles-source'
               source-layer='invasives'
-              paint={{ 'circle-color': '#0905f5', 'circle-opacity': 1.0 }}
+              paint={{ 'circle-color': 'lightskyblue', 'circle-opacity': 1.0 }}
               layout={{ visibility: authenticated ? 'none' : 'visible' }}
+              minzoom={0}
+              
+            />
+            <Layer
+              id='invasives-label-layer'
+              type='symbol'
+              source='pmtiles-source'
+              source-layer='invasives'
+              paint={{
+                'text-color': 'black',
+                'text-halo-color': 'white',
+                'text-halo-width': 1,
+                'text-halo-blur': 1
+              }}
+              layout={{
+                'text-field': [
+                  'format',
+                  ['upcase', ['get', 'id']],
+                  { 'font-scale': 0.9 },
+                  '\n',
+                  {},
+                  ['get', 'map_symbol'],
+                  { 'font-scale': 0.9 }
+                ],
+                'text-font': ['literal', ['Open Sans Bold']],
+                'text-offset': [0, 0.6],
+                'text-anchor': 'top'
+              }}
+            />
+            <Layer
+              id='iapp-layer'
+              type='circle'
+              source='pmtiles-source'
+              source-layer='iapp'
+              paint={{ 'circle-color': 'limegreen', 'circle-opacity': 1.0 }}
+              layout={{ visibility: authenticated ? 'none' : 'visible' }}
+              // maxzoom={24}
+            />
+            <Layer
+              id='iapp-label-layer'
+              type='symbol'
+              source='pmtiles-source'
+              source-layer='iapp'
+              paint={{
+                'text-color': 'black',
+                'text-halo-color': 'white',
+                'text-halo-width': 1,
+                'text-halo-blur': 1
+              }}
+              layout={{
+                'text-field': [
+                  'format',
+                  ['concat', 'IAPP Site: ', ['get', 'site_id']],
+                  { 'font-scale': 0.9 },
+                  '\n',
+                  {},
+                  ['get', 'map_symbol'],
+                  { 'font-scale': 0.9 }
+                ],
+                // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+                'text-font': ['literal', ['Open Sans Bold']],
+                'text-offset': [0, 0.6],
+                'text-anchor': 'top'
+              }}
+              // maxzoom={24}
             />
           </Source>
 
-          <RecordSetLayers />
+          {/* <RecordSetLayers /> */}
         </Map>
         <div id="LoadingMap" className={!true ? 'loadingMap' : 'loadedMap'}>
           Loading tiles...
