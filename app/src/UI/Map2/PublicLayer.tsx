@@ -1,9 +1,13 @@
-import * as React from 'react';
+import React, { useContext } from 'react';
 import { Source, Layer } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
+import { MOBILE } from 'state/build-time-config';
+import { TileCacheService } from 'utils/tile-cache';
+import { Context } from 'utils/tile-cache/context';
 
 export const PublicLayer = () => {
+    const tileCache = useContext(Context);
     const pmtilesProtocol = new Protocol();
     maplibregl.addProtocol('pmtiles', (request) => {
         return new Promise((resolve, reject) => {
@@ -24,6 +28,23 @@ export const PublicLayer = () => {
 
     // this is so we share one instance across the JS code and the map renderer
     pmtilesProtocol.add(p);
+
+
+    if (MOBILE) {
+        if (!tileCache) {
+            throw new Error('tile cache unexpectedly not available');
+        }
+        maplibregl.addProtocol('baked', async (request) => {
+            try {
+                const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
+
+                return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
+            } catch (e) {
+                // this is a blank 256x256 image
+                return TileCacheService.generateFallbackTile();
+            }
+        });
+    }
 
     return (
         <>

@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { useSelector } from 'react-redux';
 import { useEffect, useRef, useState } from 'react';
-import Map from 'react-map-gl/maplibre';
+import Map, { ScaleControl, NavigationControl } from 'react-map-gl/maplibre';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import maplibregl from 'maplibre-gl';
 import { RecordSetLayers } from './RecordSetLayers3';
 import { PublicLayer } from './PublicLayer';
+import { MOBILE } from 'state/build-time-config';
 
 // to make base layers work on this map, will be refactored in the next iteration
 const wmsBaseLayersValue: Record<string, string> = {
@@ -116,6 +117,15 @@ export const MainMap = ({ children }) => {
 
   const mapstyle_current_layer: maplibregl.LayerSpecification[] = mapStyleLayers[wmsBaseLayersValue[baseMapLayer]]
 
+  /* map can have platform-specific options */
+  const platformOptions = (() => {
+    if (MOBILE) {
+      return {
+        maxBounds: [-141.7761, 46.41459, -114.049, 60.00678] as maplibregl.LngLatBoundsLike
+      };
+    }
+    return {};
+  })();
 
   useEffect(() => {
     if (!authenticated) {
@@ -164,6 +174,7 @@ export const MainMap = ({ children }) => {
     <div className="map-containing-block">
       <div className="MapWrapper">
         <Map
+          {...platformOptions}
           initialViewState={{
             longitude: map_center[1],
             latitude: map_center[0],
@@ -176,7 +187,10 @@ export const MainMap = ({ children }) => {
           mapLib={maplibregl}
           // interactiveLayerIds={['pmtiles-layer']}
           mapStyle={{
-            glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+            ...(MOBILE && { sprite: '/assets/basemaps/sprite/sprite' }),
+            glyphs: MOBILE
+              ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
+              : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
             version: 8,
             sources: {
               ...mapStyleSources.reduce((result, item) => {
@@ -210,6 +224,10 @@ export const MainMap = ({ children }) => {
               source='esri-sat-layer-hd'
             />
           </Source> */}
+
+          <ScaleControl maxWidth={80} unit='metric' position="top-left" />
+          <NavigationControl position="top-left" />
+
           {!authenticated ?
             <PublicLayer />
             : <></>
