@@ -7,14 +7,115 @@ import maplibregl from 'maplibre-gl';
 import { RecordSetLayers } from './RecordSetLayers3';
 import { PublicLayer } from './PublicLayer';
 
+// to make base layers work on this map, will be refactored in the next iteration
+const wmsBaseLayersValue: Record<string, string> = {
+  "Esri-Sat-LayerHD": "esri-sat-layer-hd",
+  "Esri-Sat-LayerSD": "esri-sat-layer-sd",
+  "Esri-Topo": "esri-topo",
+}
+
+type MapStyleSourceDefinition = {
+  name: string;
+  source: maplibregl.SourceSpecification;
+};
+
+// Base map sources
+const mapStyleSources: MapStyleSourceDefinition[] = [
+  {
+    name: "esri-sat-label-source",
+    source: {
+      type: 'raster',
+      tiles: [
+        'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
+      ],
+      tileSize: 256,
+      attribution: 'Powered by ESRI',
+      maxzoom: 18
+    },
+  },
+  {
+    name: "esri-sat-layer-hd",
+    source: {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      attribution: 'Powered by ESRI',
+      tileSize: 256,
+      maxzoom: 24,
+    },
+  },
+  {
+    name: "esri-sat-layer-sd",
+    source: {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+      attribution: 'Powered by ESRI',
+      tileSize: 256,
+      maxzoom: 18,
+    },
+  },
+  {
+    name: "esri-topo",
+    source: {
+      type: 'raster',
+      tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
+      attribution: 'Powered by ESRI',
+      tileSize: 256,
+      maxzoom: 18,
+    }
+  }
+]
+
+// Base map layers
+const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
+  "esri-sat-layer-hd": [
+    {
+      id: 'esri-sat-layer-hd',
+      type: 'raster',
+      source: 'esri-sat-layer-hd',
+      minzoom: 0
+    },
+    {
+      id: `esri-sat-label-hd`,
+      type: 'raster',
+      source: 'esri-sat-label-source',
+      minzoom: 0
+    }
+  ],
+  "esri-sat-layer-sd": [
+    {
+      id: 'esri-sat-layer-sd',
+      type: 'raster',
+      source: 'esri-sat-layer-sd',
+      minzoom: 0
+    },
+    {
+      id: 'esri-sat-label-sd',
+      type: 'raster',
+      source: 'esri-sat-label-source',
+      minzoom: 0
+    },
+  ],
+  "esri-topo": [
+    {
+      id: 'esri-topo',
+      type: 'raster',
+      source: 'esri-topo',
+      minzoom: 0,
+    }
+  ]
+}
+
 export const MainMap = ({ children }) => {
   const API_BASE = useSelector((state: any) => state.Configuration.current.API_BASE);
   const authenticated = useSelector((state: any) => state.Auth.authenticated);
   const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
   const authHeaderRef = useRef<string>();
   authHeaderRef.current = currentAuthHeader;
-
+  const baseMapLayer = useSelector((state: any) => state.Map.baseMapLayer);
   const map_center = useSelector((state: any) => state.Map.map_center);
+
+  const mapstyle_current_layer: maplibregl.LayerSpecification[] = mapStyleLayers[wmsBaseLayersValue[baseMapLayer]]
+
 
   useEffect(() => {
     if (!authenticated) {
@@ -78,70 +179,12 @@ export const MainMap = ({ children }) => {
             glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
             version: 8,
             sources: {
-              "esri-sat-label-source": {
-                type: 'raster',
-                tiles: [
-                  'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
-                ],
-                tileSize: 256,
-                attribution: 'Powered by ESRI',
-                maxzoom: 18
-              },
-              "esri-sat-layer-hd": {
-                type: 'raster',
-                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-                attribution: 'Powered by ESRI',
-                tileSize: 256,
-                maxzoom: 24,
-              },
-              "esri-sat-layer-sd": {
-                type: 'raster',
-                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
-                attribution: 'Powered by ESRI',
-                tileSize: 256,
-                maxzoom: 18,
-              },
-              "esri-topo": {
-                type: 'raster',
-                tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
-                attribution: 'Powered by ESRI',
-                tileSize: 256,
-                maxzoom: 18,
-              }
-
+              ...mapStyleSources.reduce((result, item) => {
+                result[item.name] = item.source;
+                return result;
+              }, {})
             },
-            layers: [
-              {
-                id: 'esri-sat-layer-hd',
-                type: 'raster',
-                source: 'esri-sat-layer-hd',
-                minzoom: 0
-              },
-              {
-                id: `esri-sat-label-hd`,
-                type: 'raster',
-                source: 'esri-sat-label-source',
-                minzoom: 0
-              },
-              // {
-              //   id: `esri-sat-layer-sd`,
-              //   type: 'raster',
-              //   source: 'esri-sat-layer-sd',
-              //   minzoom: 0
-              // },
-              // {
-              //   id: `esri-sat-label-sd`,
-              //   type: 'raster',
-              //   source: 'esri-sat-label-source',
-              //   minzoom: 0
-              // },
-              // {
-              //   id: 'esri-topo',
-              //   type: 'raster',
-              //   source: 'esri-topo',
-              //   minzoom: 0,
-              // }
-            ]
+            layers: mapstyle_current_layer
           }}
         >
           {/* <Source
