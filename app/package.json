@@ -24,7 +24,6 @@
     "@capacitor/ios": "^6.1.2",
     "@ionic/pwa-elements": "^3.3.0",
     "@mapbox/mapbox-gl-draw": "^1.4.3",
-    "@mapcomponents/react-maplibre": "^1.0.8",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
     "@mui/x-data-grid": "^6.19.11",
