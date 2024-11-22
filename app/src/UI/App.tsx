@@ -34,7 +34,6 @@ import AlertsContainer from './AlertsContainer/AlertsContainer';
 import UserInputModalController from './UserInputModals/UserInputModalController';
 import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 import { WhatsHereTable } from 'UI/Overlay/WhatsHere/WhatsHereTable';
-// import { MapComponentsProvider } from '@mapcomponents/react-maplibre';
 import {MapProvider} from 'react-map-gl';
 
 // lazy-loaded components
