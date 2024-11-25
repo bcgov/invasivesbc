@@ -4,6 +4,8 @@ import './LpRecordSet.css';
 import LpRecordSetOption from './LpRecordSetOption';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
+import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
+import { MOBILE } from 'state/build-time-config';
 
 type PropTypes = {
   closePicker: () => void;
@@ -17,12 +19,14 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
   const handleToggleVisibility = (id: string) => dispatch(UserSettings.RecordSet.toggleVisibility(id));
   const handleCycleColour = (id: string) => dispatch(UserSettings.RecordSet.cycleColourById(id));
   const handleToggleLabels = (id: string) => dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
+  const connected = useSelector((state) => state.Network.connected);
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
   const defaultRecordSets: UserRecordSet[] = [];
   const customRecordSets: UserRecordSet[] = [];
 
   const dispatch = useDispatch();
-  Object.keys(recordSets).forEach((recordSet) => {
+  const userIsMobileAndOffline = MOBILE && !connected;
+  filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).forEach((recordSet) => {
     if (DEFAULT_RECORD_TYPES.includes(recordSet)) {
       defaultRecordSets.push({ ...recordSets[recordSet], id: recordSet });
     } else {

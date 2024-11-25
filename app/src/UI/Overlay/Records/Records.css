@@ -23,6 +23,8 @@
   min-height: 40pt;
   padding: 5pt 1rem;
   box-sizing: border-box;
+  border: none;
+  background-color: white;
   border-bottom: 1pt solid black;
   p {
     margin: 0;
