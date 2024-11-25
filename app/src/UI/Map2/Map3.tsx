@@ -30,7 +30,7 @@ const mapStyleSources: MapStyleSourceDefinition[] = [
       ],
       tileSize: 256,
       attribution: 'Powered by ESRI',
-      maxzoom: 18
+      maxzoom: 24
     }
   },
   {
@@ -50,7 +50,7 @@ const mapStyleSources: MapStyleSourceDefinition[] = [
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
       attribution: 'Powered by ESRI',
       tileSize: 256,
-      maxzoom: 18
+      maxzoom: 24
     }
   },
   {
@@ -60,7 +60,7 @@ const mapStyleSources: MapStyleSourceDefinition[] = [
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
       attribution: 'Powered by ESRI',
       tileSize: 256,
-      maxzoom: 18
+      maxzoom: 24
     }
   }
 ];
