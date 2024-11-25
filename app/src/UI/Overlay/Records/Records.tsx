@@ -7,10 +7,12 @@ import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
+import { MOBILE } from 'state/build-time-config';
+import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 
 export const Records = () => {
   const DEFAULT_RECORD_TYPES = ['All InvasivesBC Activities', 'All IAPP Records', 'My Drafts'];
@@ -19,7 +21,7 @@ export const Records = () => {
   const mapLayers = useSelector((state) => state.Map.layers);
   const MapMode = useSelector((state) => state.Map.MapMode);
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
-
+  const connected = useSelector((state) => state.Network.connected);
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
   const [isActivitiesGeoJSONLoaded, setIsActivitiesGeoJSONLoaded] = useState(false);
   const [loadMap, setLoadMap] = useState({});
@@ -89,7 +91,7 @@ export const Records = () => {
 
   const highlightSet = (set: string) => setHighlightedSet(set);
   const unHighlightSet = () => setHighlightedSet(null);
-
+  const userIsMobileAndOffline = MOBILE && !connected;
   if (!recordSets) {
     return;
   }
@@ -98,56 +100,62 @@ export const Records = () => {
       <OverlayHeader />
       <div id="records-container">
         <ul>
-          {Object.keys(recordSets)?.map((set) => (
-            <li
-              key={set}
-              onClick={() => history.push('/Records/List/Local:' + set)}
-              onMouseOver={highlightSet.bind(this, set)}
-              onFocus={highlightSet.bind(this, set)}
-              onMouseOut={unHighlightSet}
-              onBlur={unHighlightSet}
-              className="record-set-option"
-              style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
-            >
-              <RecordSetDetails
-                name={recordSets[set]?.recordSetName}
-                isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
-                handleNameChange={handleNameChange}
-                recordsetKey={set}
+          {filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).map((set) => (
+            <li key={set}>
+              <button
+                onClick={() => history.push('/Records/List/Local:' + set)}
+                onMouseOver={highlightSet.bind(this, set)}
+                onFocus={highlightSet.bind(this, set)}
+                onMouseOut={unHighlightSet}
+                onBlur={unHighlightSet}
+                className="record-set-option"
+                style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
+                disabled={MOBILE && !connected && recordSets[set].cacheMetadata.status !== UserRecordCacheStatus.CACHED}
               >
-                {!loadMap?.[set] && (
-                  <div>
-                    <Spinner />
-                  </div>
-                )}
-              </RecordSetDetails>
+                <RecordSetDetails
+                  name={recordSets[set]?.recordSetName}
+                  isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+                  handleNameChange={handleNameChange}
+                  recordsetKey={set}
+                >
+                  {!loadMap?.[set] && (
+                    <div>
+                      <Spinner />
+                    </div>
+                  )}
+                </RecordSetDetails>
 
-              <RecordSetControl
-                isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
-                recordset={recordSets[set]}
-                recordsetKey={set}
-                onClickToggleLabel={handleToggleLabel}
-                onClickToggleLayer={handleToggleLayer}
-                onClickCycleColour={handleCycleColour}
-                onClickDeleteRecordSet={handleDeleteRecordSet}
-              />
+                <RecordSetControl
+                  isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+                  recordset={recordSets[set]}
+                  recordsetKey={set}
+                  onClickToggleLabel={handleToggleLabel}
+                  onClickToggleLayer={handleToggleLayer}
+                  onClickCycleColour={handleCycleColour}
+                  onClickDeleteRecordSet={handleDeleteRecordSet}
+                />
+              </button>
             </li>
           ))}
         </ul>
-        <div className="records-control">
-          <Button
-            onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.Activity))}
-            className={'new-recordset-button'}
-          >
-            Add Layer of Records
-          </Button>
-          <Button
-            onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.IAPP))}
-            className={'new-recordset-button'}
-          >
-            Add IAPP Layer of Records
-          </Button>
-        </div>
+        {userIsMobileAndOffline ? (
+          <p>Any recordsets that haven't been saved for offline use will not be accessible when you're offline.</p>
+        ) : (
+          <div className="records-control">
+            <Button
+              onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.Activity))}
+              className={'new-recordset-button'}
+            >
+              Add Layer of Records
+            </Button>
+            <Button
+              onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.IAPP))}
+              className={'new-recordset-button'}
+            >
+              Add IAPP Layer of Records
+            </Button>
+          </div>
+        )}
       </div>
     </>
   );
