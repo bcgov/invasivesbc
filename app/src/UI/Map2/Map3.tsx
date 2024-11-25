@@ -1,19 +1,18 @@
-import * as React from 'react';
-import { useSelector } from 'react-redux';
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'utils/use_selector';
 import Map, { ScaleControl, NavigationControl } from 'react-map-gl/maplibre';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import maplibregl from 'maplibre-gl';
-import { RecordSetLayers } from './RecordSetLayers3';
+// import { RecordSetLayers } from './RecordSetLayers3';
 import { PublicLayer } from './PublicLayer';
 import { MOBILE } from 'state/build-time-config';
 
 // to make base layers work on this map, will be refactored in the next iteration
 const wmsBaseLayersValue: Record<string, string> = {
-  "Esri-Sat-LayerHD": "esri-sat-layer-hd",
-  "Esri-Sat-LayerSD": "esri-sat-layer-sd",
-  "Esri-Topo": "esri-topo",
-}
+  'Esri-Sat-LayerHD': 'esri-sat-layer-hd',
+  'Esri-Sat-LayerSD': 'esri-sat-layer-sd',
+  'Esri-Topo': 'esri-topo'
+};
 
 type MapStyleSourceDefinition = {
   name: string;
@@ -23,7 +22,7 @@ type MapStyleSourceDefinition = {
 // Base map sources
 const mapStyleSources: MapStyleSourceDefinition[] = [
   {
-    name: "esri-sat-label-source",
+    name: 'esri-sat-label-source',
     source: {
       type: 'raster',
       tiles: [
@@ -32,43 +31,43 @@ const mapStyleSources: MapStyleSourceDefinition[] = [
       tileSize: 256,
       attribution: 'Powered by ESRI',
       maxzoom: 18
-    },
+    }
   },
   {
-    name: "esri-sat-layer-hd",
+    name: 'esri-sat-layer-hd',
     source: {
       type: 'raster',
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
       attribution: 'Powered by ESRI',
       tileSize: 256,
-      maxzoom: 24,
-    },
+      maxzoom: 24
+    }
   },
   {
-    name: "esri-sat-layer-sd",
+    name: 'esri-sat-layer-sd',
     source: {
       type: 'raster',
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
       attribution: 'Powered by ESRI',
       tileSize: 256,
-      maxzoom: 18,
-    },
+      maxzoom: 18
+    }
   },
   {
-    name: "esri-topo",
+    name: 'esri-topo',
     source: {
       type: 'raster',
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
       attribution: 'Powered by ESRI',
       tileSize: 256,
-      maxzoom: 18,
+      maxzoom: 18
     }
   }
-]
+];
 
 // Base map layers
 const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
-  "esri-sat-layer-hd": [
+  'esri-sat-layer-hd': [
     {
       id: 'esri-sat-layer-hd',
       type: 'raster',
@@ -82,7 +81,7 @@ const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
       minzoom: 0
     }
   ],
-  "esri-sat-layer-sd": [
+  'esri-sat-layer-sd': [
     {
       id: 'esri-sat-layer-sd',
       type: 'raster',
@@ -94,28 +93,28 @@ const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
       type: 'raster',
       source: 'esri-sat-label-source',
       minzoom: 0
-    },
+    }
   ],
-  "esri-topo": [
+  'esri-topo': [
     {
       id: 'esri-topo',
       type: 'raster',
       source: 'esri-topo',
-      minzoom: 0,
+      minzoom: 0
     }
   ]
-}
+};
 
 export const MainMap = ({ children }) => {
-  const API_BASE = useSelector((state: any) => state.Configuration.current.API_BASE);
-  const authenticated = useSelector((state: any) => state.Auth.authenticated);
+  const API_BASE = useSelector((state) => state.Configuration.current.API_BASE);
+  const authenticated = useSelector((state) => state.Auth.authenticated);
   const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
   const authHeaderRef = useRef<string>();
   authHeaderRef.current = currentAuthHeader;
   const baseMapLayer = useSelector((state: any) => state.Map.baseMapLayer);
-  const map_center = useSelector((state: any) => state.Map.map_center);
+  const map_center = useSelector((state) => state.Map.map_center);
 
-  const mapstyle_current_layer: maplibregl.LayerSpecification[] = mapStyleLayers[wmsBaseLayersValue[baseMapLayer]]
+  const mapstyle_current_layer: maplibregl.LayerSpecification[] = mapStyleLayers[wmsBaseLayersValue[baseMapLayer]];
 
   /* map can have platform-specific options */
   const platformOptions = (() => {
@@ -169,7 +168,7 @@ export const MainMap = ({ children }) => {
     return {
       url
     };
-  }
+  };
   return (
     <div className="map-containing-block">
       <div className="MapWrapper">
@@ -178,7 +177,7 @@ export const MainMap = ({ children }) => {
           initialViewState={{
             longitude: map_center[1],
             latitude: map_center[0],
-            zoom: 3,
+            zoom: 3
           }}
           minZoom={0}
           maxZoom={24}
@@ -225,14 +224,10 @@ export const MainMap = ({ children }) => {
             />
           </Source> */}
 
-          <ScaleControl maxWidth={80} unit='metric' position="top-left" />
+          <ScaleControl maxWidth={80} unit="metric" position="top-left" />
           <NavigationControl position="top-left" />
 
-          {!authenticated ?
-            <PublicLayer />
-            : <></>
-          }
-
+          {!authenticated ? <PublicLayer /> : <></>}
 
           {/* <RecordSetLayers /> */}
         </Map>
@@ -242,5 +237,5 @@ export const MainMap = ({ children }) => {
         {children}
       </div>
     </div>
-  )
+  );
 };
