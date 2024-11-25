@@ -19,18 +19,19 @@ export const getUnnestedFieldsForActivity = (activity) => {
   };
 
   // needs to be consistent with API column names
+  const root = activity.hasOwnProperty('activity_payload') ? activity.activity_payload : activity;
   const columns: any = {
     activity_id: activity?.activity_id,
     short_id: activity?.short_id,
     activity_type: activity?.activity_type,
-    activity_subtype: ActivitySubtypeShortLabels[activity?.activity_payload?.activity_subtype],
-    activity_date: new Date(activity?.activity_payload?.form_data?.activity_data?.activity_date_time || null)
+    activity_subtype: ActivitySubtypeShortLabels[root?.activity_subtype ?? activity?.activity_subtype],
+    activity_date: new Date(
+      root?.form_data?.activity_data?.activity_date_time ?? root?.form_data?.activity_data?.activity_date_time ?? null
+    )
       .toISOString()
       .substring(0, 10),
     project_code: getArrayString(
-      Array.isArray(activity?.activity_payload?.form_data?.activity_data?.project_code)
-        ? activity?.activity_payload?.form_data?.activity_data?.project_code
-        : [],
+      Array.isArray(root?.form_data?.activity_data?.project_code) ? root?.form_data?.activity_data?.project_code : [],
       'description'
     ),
     jurisdiction_display: activity?.jurisdiction_display,
@@ -52,11 +53,11 @@ export const getUnnestedFieldsForActivity = (activity) => {
     biogeoclimatic_zones: activity?.biogeoclimatic_zones,
     elevation: activity?.elevation,
     batch_id: activity?.batch_id,
-    geometry: activity?.activity_payload?.geometry
-    // date_modified: new Date(activity?.activity_payload?.created_timestamp).toString(),
-    // reported_area: activity?.activity_payload?.form_data?.activity_data?.reported_area,
-    // latitude: activity?.activity_payload?.form_data?.activity_data?.latitude,
-    // longitude: activity?.activity_payload?.form_data?.activity_data?.longitude,
+    geometry: root?.geometry
+    // date_modified: new Date(root?.created_timestamp).toString(),
+    // reported_area: root?.form_data?.activity_data?.reported_area,
+    // latitude: root?.form_data?.activity_data?.latitude,
+    // longitude: root?.form_data?.activity_data?.longitude,
   };
 
   return JSON.parse(JSON.stringify(columns));
