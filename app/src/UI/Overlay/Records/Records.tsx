@@ -7,7 +7,7 @@ import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
