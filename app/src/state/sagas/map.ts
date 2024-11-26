@@ -676,8 +676,10 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
   const mapState = yield select(selectMap);
 
-  const page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
-  const limit = action.payload.limit
+  const page = !Number.isNaN(action.payload.page)
+    ? action.payload.page
+    : mapState.recordTables?.[action.payload.recordSetID]?.page;
+  const limit = !Number.isNaN(action.payload.limit)
     ? action.payload.limit
     : mapState.recordTables?.[action.payload.recordSetID]?.limit;
 
