@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './RecordTable.css';
 import {
   activityColumnsToDisplay,
@@ -10,35 +10,33 @@ import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUC
 import { validActivitySortColumns, validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { detectTouchDevice } from 'utils/detectTouch';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { RecordSetType } from 'interfaces/UserRecordSet';
+import { useSelector } from 'utils/use_selector';
+import UserRecord from 'interfaces/UserRecord';
 
-export const RecordTableHeader = (props) => {};
+type PropTypes = {
+  setID: string;
+};
 
-export const RecordTable = (props) => {
-  const onUserHoveredRecord = (row) => {
+export const RecordTable = ({ setID }: PropTypes) => {
+  const onUserHoveredRecord = (row: UserRecord) => {
     dispatch({
       type: USER_HOVERED_RECORD,
       payload: {
         recordType: tableType,
-        id: tableType === 'Activity' ? row.activity_id : row.site_id,
+        id: tableType === RecordSetType.Activity ? row.activity_id : row.site_id,
         row: row
       }
     });
   };
-  const unmappedRows = useSelector((state: any) => state.Map?.recordTables?.[props.setID]?.rows);
+  const unmappedRows = useSelector((state) => state.Map?.recordTables?.[setID]?.rows);
+  const tableType = useSelector((state) => state.UserSettings?.recordSets?.[setID].recordSetType);
 
-  const tableType = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]?.recordSetType);
   const dispatch = useDispatch();
   const isTouch = detectTouchDevice();
-
-  // maybe useful for when there's no headers during dev for adding new types:
-  /*
-  const unmappedColumns = mapAndRecordsState?.recordTables?.[props.setID]?.rows[0]
-    ? Object.keys(mapAndRecordsState?.recordTables?.[props.setID]?.rows[0])
-    : [];
-   */
-
   const mappedRows = unmappedRows?.map((row) => {
-    const unnestedRow = tableType === 'Activity' ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row);
+    const unnestedRow =
+      tableType === RecordSetType.Activity ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row);
     const mappedRow = {};
     Object.keys(unnestedRow).forEach((key) => {
       mappedRow[key] = unnestedRow[key];
@@ -46,8 +44,8 @@ export const RecordTable = (props) => {
     return mappedRow;
   });
 
-  const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]?.sortColumn);
-  const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]?.sortOrder);
+  const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
+  const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
 
   return (
     <div className="record_table_container">
@@ -60,42 +58,40 @@ export const RecordTable = (props) => {
               </th>
             )}
             {tableType === 'Activity'
-              ? activityColumnsToDisplay.map((col: any, i) => {
-                  return (
-                    <th
-                      className={'record_table_header_column'}
-                      key={col.key}
-                      onClick={() => {
-                        if (validActivitySortColumns.includes(col.key))
-                          dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
-                      }}
-                    >
-                      {col.name}{' '}
-                      {validActivitySortColumns.includes(sortColumn) &&
-                        sortColumn === col.key &&
-                        (sortOrder === 'ASC' ? '▲' : '▼')}
-                    </th>
-                  );
-                })
-              : iappColumnsToDisplay.map((col: any) => {
-                  return (
-                    <th
-                      className="record_table_header_column"
-                      key={col.key}
-                      onClick={() => {
-                        if (validIAPPSortColumns.includes(col.key))
-                          dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
-                      }}
-                    >
-                      {col.name}{' '}
-                      {validIAPPSortColumns.includes(sortColumn) &&
-                        sortColumn === col.key &&
-                        (sortOrder === 'ASC' ? '▲' : '▼')}
-                    </th>
-                  );
-                })}
+              ? activityColumnsToDisplay.map((col: any, i) => (
+                  <th
+                    className={'record_table_header_column'}
+                    key={col.key}
+                    onClick={() => {
+                      if (validActivitySortColumns.includes(col.key)) {
+                        dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
+                      }
+                    }}
+                  >
+                    {col.name}{' '}
+                    {validActivitySortColumns.includes(sortColumn) &&
+                      sortColumn === col.key &&
+                      (sortOrder === 'ASC' ? '▲' : '▼')}
+                  </th>
+                ))
+              : iappColumnsToDisplay.map((col: any) => (
+                  <th
+                    className="record_table_header_column"
+                    key={col.key}
+                    onClick={() => {
+                      if (validIAPPSortColumns.includes(col.key)) {
+                        dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
+                      }
+                    }}
+                  >
+                    {col.name}{' '}
+                    {validIAPPSortColumns.includes(sortColumn) &&
+                      sortColumn === col.key &&
+                      (sortOrder === 'ASC' ? '▲' : '▼')}
+                  </th>
+                ))}
           </tr>
-          {mappedRows?.map((row) => {
+          {mappedRows?.map((row: UserRecord) => {
             return (
               <tr
                 onContextMenu={(event) => {
