@@ -23,13 +23,14 @@ class RecordCache {
 
       const state: RootState = getState() as RootState;
 
-      const idsToCache = state.Map.layers.find((l) => l.recordSetID == spec.setId).IDList;
+      const idsToCache: string[] = state.Map.layers.find((l) => l.recordSetID == spec.setId).IDList;
 
       await service.download({
         idsToCache,
         setId: spec.setId,
         API_BASE: state.Configuration.current.API_BASE
       });
+      return { cachedIds: idsToCache };
     }
   );
 }
