@@ -101,40 +101,38 @@ export const Records = () => {
       <div id="records-container">
         <ul>
           {filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).map((set) => (
-            <li key={set}>
-              <button
-                onClick={() => history.push('/Records/List/Local:' + set)}
-                onMouseOver={highlightSet.bind(this, set)}
-                onFocus={highlightSet.bind(this, set)}
-                onMouseOut={unHighlightSet}
-                onBlur={unHighlightSet}
-                className="record-set-option"
-                style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
-                disabled={MOBILE && !connected && recordSets[set].cacheMetadata.status !== UserRecordCacheStatus.CACHED}
+            <li
+              key={set}
+              onClick={() => history.push('/Records/List/Local:' + set)}
+              onMouseOver={highlightSet.bind(this, set)}
+              onFocus={highlightSet.bind(this, set)}
+              onMouseOut={unHighlightSet}
+              onBlur={unHighlightSet}
+              className="record-set-option"
+              style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
+            >
+              <RecordSetDetails
+                name={recordSets[set]?.recordSetName}
+                isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+                handleNameChange={handleNameChange}
+                recordsetKey={set}
               >
-                <RecordSetDetails
-                  name={recordSets[set]?.recordSetName}
-                  isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
-                  handleNameChange={handleNameChange}
-                  recordsetKey={set}
-                >
-                  {!loadMap?.[set] && (
-                    <div>
-                      <Spinner />
-                    </div>
-                  )}
-                </RecordSetDetails>
+                {!loadMap?.[set] && (
+                  <div>
+                    <Spinner />
+                  </div>
+                )}
+              </RecordSetDetails>
 
-                <RecordSetControl
-                  isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
-                  recordset={recordSets[set]}
-                  recordsetKey={set}
-                  onClickToggleLabel={handleToggleLabel}
-                  onClickToggleLayer={handleToggleLayer}
-                  onClickCycleColour={handleCycleColour}
-                  onClickDeleteRecordSet={handleDeleteRecordSet}
-                />
-              </button>
+              <RecordSetControl
+                isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+                recordset={recordSets[set]}
+                recordsetKey={set}
+                onClickToggleLabel={handleToggleLabel}
+                onClickToggleLayer={handleToggleLayer}
+                onClickCycleColour={handleCycleColour}
+                onClickDeleteRecordSet={handleDeleteRecordSet}
+              />
             </li>
           ))}
         </ul>
