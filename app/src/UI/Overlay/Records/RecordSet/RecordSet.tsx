@@ -126,7 +126,7 @@ export const RecordSet = (props) => {
       </div>
       <div className="recordSet_filters_container">
         <div className="recordSet_filters">
-          {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters ? (
+          {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters && (
             <table className="recordSetFilterTable">
               <thead>
                 <tr>
@@ -144,8 +144,6 @@ export const RecordSet = (props) => {
                 })}
               </tbody>
             </table>
-          ) : (
-            <></>
           )}
           <ExcelExporter setName={props.setID} />
         </div>

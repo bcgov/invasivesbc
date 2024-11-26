@@ -2,7 +2,7 @@ import { useRef } from 'react';
 
 import './Record.css';
 import { Route, useHistory } from 'react-router';
-import { useSelector } from 'react-redux';
+import { useSelector } from 'utils/use_selector';
 import { ActivityForm } from './Activity/Form';
 import { ActivityPhotos } from './Activity/Photos';
 import { OverlayHeader } from '../OverlayHeader';
@@ -19,12 +19,12 @@ export const Activity = (props) => {
 
   const history = useHistory();
   const id = history.location.pathname.split(':')[1]?.split('/')[0];
-  const failCode = useSelector((state: any) => state.ActivityPage?.failCode);
-  const activity_ID = useSelector((state: any) => state.ActivityPage?.activity?.activity_id);
+  const failCode = useSelector((state) => state.ActivityPage?.failCode);
+  const activity_ID = useSelector((state) => state.ActivityPage?.activity?.activity_id);
 
-  const loading = useSelector((state: any) => state.ActivityPage?.loading);
-  const apiDocsWithSelectOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithSelectOptions);
-  const apiDocsWithViewOptions = useSelector((state: any) => state.UserSettings?.apiDocsWithViewOptions);
+  const loading = useSelector((state) => state.ActivityPage?.loading);
+  const apiDocsWithSelectOptions = useSelector((state) => state.UserSettings?.apiDocsWithSelectOptions);
+  const apiDocsWithViewOptions = useSelector((state) => state.UserSettings?.apiDocsWithViewOptions);
 
   return (
     <div className="records__activity">
