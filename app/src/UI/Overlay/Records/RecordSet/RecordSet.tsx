@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router';
@@ -15,19 +15,26 @@ import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import ExcelExporter from '../ExcelExporter';
 import RecordSetFooter from './RecordSetFooter';
 import Filter from './Filter';
+import { useSelector } from 'utils/use_selector';
+import { MOBILE } from 'state/build-time-config';
+import { useEffect, useState } from 'react';
 
 export const RecordSet = (props) => {
-  const viewFilters = useSelector((state: any) => state.Map.viewFilters);
+  const viewFilters = useSelector((state) => state.Map.viewFilters);
+  const connected = useSelector((state) => state.Network.connected);
   const history = useHistory();
   const dispatch = useDispatch();
 
   const onClickBackButton = () => {
     history.push('/Records');
   };
-
-  const recordSet = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]);
+  const [userOfflineMobile, setUserOfflineMobile] = useState<boolean>(!connected && MOBILE);
+  const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[props.setID]);
   const tableType = recordSet?.recordSetType;
 
+  useEffect(() => {
+    setUserOfflineMobile(MOBILE && !connected);
+  }, [connected]);
   const onlyFilterIsForDrafts =
     recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
   if (!recordSet) {
@@ -51,6 +58,7 @@ export const RecordSet = (props) => {
           <Tooltip classes={{ tooltip: 'toolTip' }} title="Clear all filters and refetch all data for this layer.">
             <Button
               size={'small'}
+              disabled={userOfflineMobile}
               onClick={() => {
                 dispatch({
                   type: RECORDSET_CLEAR_FILTERS,
@@ -70,6 +78,7 @@ export const RecordSet = (props) => {
           <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle hiding filters - does not toggle applying them.">
             <Button
               size={'small'}
+              disabled={userOfflineMobile}
               onClick={() => {
                 dispatch({
                   type: RECORDSETS_TOGGLE_VIEW_FILTER
@@ -103,6 +112,7 @@ export const RecordSet = (props) => {
           >
             <Button
               size={'small'}
+              disabled={userOfflineMobile}
               onClick={() => {
                 dispatch({
                   type: RECORDSET_ADD_FILTER,
@@ -140,7 +150,14 @@ export const RecordSet = (props) => {
               <tbody>
                 {recordSet?.tableFilters.map((filter: any, i) => {
                   if (filter.field !== 'form_status')
-                    return <Filter key={'filterIndex' + i} setID={props.setID} id={filter.id} />;
+                    return (
+                      <Filter
+                        key={'filterIndex' + i}
+                        setID={props.setID}
+                        id={filter.id}
+                        userOfflineMobile={userOfflineMobile}
+                      />
+                    );
                 })}
               </tbody>
             </table>
@@ -148,7 +165,7 @@ export const RecordSet = (props) => {
           <ExcelExporter setName={props.setID} />
         </div>
       </div>
-      <RecordTable setID={props.setID} />
+      <RecordTable setID={props.setID} userOfflineMobile={userOfflineMobile} />
       <RecordSetFooter setID={props.setID} />
     </div>
   );

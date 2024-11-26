@@ -16,9 +16,10 @@ import UserRecord from 'interfaces/UserRecord';
 
 type PropTypes = {
   setID: string;
+  userOfflineMobile: boolean;
 };
 
-export const RecordTable = ({ setID }: PropTypes) => {
+export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
   const onUserHoveredRecord = (row: UserRecord) => {
     dispatch({
       type: USER_HOVERED_RECORD,
@@ -31,7 +32,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
   };
   const unmappedRows = useSelector((state) => state.Map?.recordTables?.[setID]?.rows);
   const tableType = useSelector((state) => state.UserSettings?.recordSets?.[setID].recordSetType);
-
+  const activitySortColumns = userOfflineMobile ? [] : validActivitySortColumns;
   const dispatch = useDispatch();
   const isTouch = detectTouchDevice();
   const mappedRows = unmappedRows?.map((row) => {
@@ -63,13 +64,13 @@ export const RecordTable = ({ setID }: PropTypes) => {
                     className={'record_table_header_column'}
                     key={col.key}
                     onClick={() => {
-                      if (validActivitySortColumns.includes(col.key)) {
+                      if (activitySortColumns.includes(col.key)) {
                         dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
                       }
                     }}
                   >
                     {col.name}{' '}
-                    {validActivitySortColumns.includes(sortColumn) &&
+                    {activitySortColumns.includes(sortColumn) &&
                       sortColumn === col.key &&
                       (sortOrder === 'ASC' ? '▲' : '▼')}
                   </th>
