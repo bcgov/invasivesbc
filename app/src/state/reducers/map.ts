@@ -37,8 +37,6 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  RECORDSET_REMOVE_FILTER,
-  RECORDSET_UPDATE_FILTER,
   RECORDSETS_TOGGLE_VIEW_FILTER,
   REMOVE_CLIENT_BOUNDARY,
   SET_CURRENT_OPEN_SET,
@@ -498,6 +496,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         if (draftState.layers[layerIndex].layerState.mapToggle === false) {
           draftState.layers[layerIndex].layerState.labelToggle = false;
         }
+      } else if (
+        UserSettings.RecordSet.updateFilter.match(action) ||
+        UserSettings.RecordSet.removeFilter.match(action)
+      ) {
+        draftState.recordTables[action.payload.setID].page = 0;
       } else if (UserSettings.KML.deleteSuccess.match(action)) {
         const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload);
         draftState.serverBoundaries.splice(index, 1);
@@ -1068,14 +1071,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case RECORDSETS_TOGGLE_VIEW_FILTER: {
             draftState.viewFilters = !draftState.viewFilters;
-            break;
-          }
-          case RECORDSET_REMOVE_FILTER: {
-            draftState.recordTables[action.payload.setID].page = 0;
-            break;
-          }
-          case RECORDSET_UPDATE_FILTER: {
-            draftState.recordTables[action.payload.setID].page = 0;
             break;
           }
           case RECORD_SET_TO_EXCEL_FAILURE: {

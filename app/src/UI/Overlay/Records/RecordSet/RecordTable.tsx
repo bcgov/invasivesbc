@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './RecordTable.css';
 import {
@@ -15,12 +14,20 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 export const RecordTableHeader = (props) => {};
 
 export const RecordTable = (props) => {
+  const onUserHoveredRecord = (row) => {
+    dispatch({
+      type: USER_HOVERED_RECORD,
+      payload: {
+        recordType: tableType,
+        id: tableType === 'Activity' ? row.activity_id : row.site_id,
+        row: row
+      }
+    });
+  };
   const unmappedRows = useSelector((state: any) => state.Map?.recordTables?.[props.setID]?.rows);
 
   const tableType = useSelector((state: any) => state.UserSettings?.recordSets?.[props.setID]?.recordSetType);
-  //  const tableType = userSettingsState?.recordSets?.[props.setID]?.recordSetType;
   const dispatch = useDispatch();
-  const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
   const isTouch = detectTouchDevice();
 
   // maybe useful for when there's no headers during dev for adding new types:
@@ -57,49 +64,43 @@ export const RecordTable = (props) => {
                   return (
                     <th
                       className={'record_table_header_column'}
-                      key={i}
+                      key={col.key}
                       onClick={() => {
                         if (validActivitySortColumns.includes(col.key))
                           dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
                       }}
                     >
                       {col.name}{' '}
-                      {validActivitySortColumns.includes(sortColumn) && sortColumn === col.key
-                        ? sortOrder === 'ASC'
-                          ? '▲'
-                          : '▼'
-                        : ''}
+                      {validActivitySortColumns.includes(sortColumn) &&
+                        sortColumn === col.key &&
+                        (sortOrder === 'ASC' ? '▲' : '▼')}
                     </th>
                   );
                 })
-              : iappColumnsToDisplay.map((col: any, i) => {
+              : iappColumnsToDisplay.map((col: any) => {
                   return (
                     <th
                       className="record_table_header_column"
-                      key={i}
+                      key={col.key}
                       onClick={() => {
                         if (validIAPPSortColumns.includes(col.key))
                           dispatch({ type: RECORDSET_SET_SORT, payload: { setID: props.setID, sortColumn: col.key } });
                       }}
                     >
                       {col.name}{' '}
-                      {validIAPPSortColumns.includes(sortColumn) && sortColumn === col.key
-                        ? sortOrder === 'ASC'
-                          ? '▲'
-                          : '▼'
-                        : ''}
+                      {validIAPPSortColumns.includes(sortColumn) &&
+                        sortColumn === col.key &&
+                        (sortOrder === 'ASC' ? '▲' : '▼')}
                     </th>
                   );
                 })}
           </tr>
-          {mappedRows?.map((row, i) => {
+          {mappedRows?.map((row) => {
             return (
               <tr
                 onContextMenu={(event) => {
-                  {
-                    event.preventDefault();
-                    event.stopPropagation();
-                  }
+                  event.preventDefault();
+                  event.stopPropagation();
                 }}
                 onClick={() => {
                   if (!isTouch) {
@@ -113,16 +114,8 @@ export const RecordTable = (props) => {
                     });
                   }
                 }}
-                onMouseOver={() => {
-                  dispatch({
-                    type: USER_HOVERED_RECORD,
-                    payload: {
-                      recordType: tableType,
-                      id: tableType === 'Activity' ? row.activity_id : row.site_id,
-                      row: row
-                    }
-                  });
-                }}
+                onMouseOver={() => onUserHoveredRecord(row)}
+                onFocus={() => onUserHoveredRecord(row)}
                 onTouchStart={(e) => {
                   dispatch({
                     type: USER_TOUCHED_RECORD,
@@ -134,7 +127,7 @@ export const RecordTable = (props) => {
                   });
                 }}
                 className="record_table_row"
-                key={i}
+                key={row?.activity_id}
               >
                 {isTouch && (
                   <td
@@ -155,16 +148,16 @@ export const RecordTable = (props) => {
                   </td>
                 )}
                 {tableType === 'Activity'
-                  ? activityColumnsToDisplay.map((col, j) => {
+                  ? activityColumnsToDisplay.map((col) => {
                       return (
-                        <td className="record_table_row_column" key={j}>
+                        <td className="record_table_row_column" key={col.key + col.name}>
                           {row[col.key]}
                         </td>
                       );
                     })
                   : iappColumnsToDisplay.map((col, j) => {
                       return (
-                        <td className="record_table_row_column" key={j}>
+                        <td className="record_table_row_column" key={col.key + col.name}>
                           {row[col.key]}
                         </td>
                       );
