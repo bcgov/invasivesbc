@@ -1,10 +1,11 @@
+import UserRecord from 'interfaces/UserRecord';
 import localForage from 'localforage';
 import { RecordCacheAddSpec, RecordCacheService, RecordSetCacheMetadata } from 'utils/record-cache/index';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
 
-  private static CACHED_SETS_METADATA_KEY = 'cached-sets';
+  private static readonly CACHED_SETS_METADATA_KEY = 'cached-sets';
 
   private store: LocalForage | null = null;
 
@@ -57,8 +58,31 @@ class LocalForageRecordCacheService extends RecordCacheService {
       setId: spec.setId,
       cachedIds: spec.idsToCache
     });
-
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
+  }
+
+  /**
+   * @desc fetch `n` records for a given recordset, supporting pagination
+   * @param recordSetID Recordset to filter from
+   * @param page Page to start pagination on
+   * @param limit Maximum results per page
+   * @returns { UserRecord[] } Filter Objects
+   */
+  async fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]> {
+    if (recordSetIdList?.length === 0) {
+      return [];
+    }
+    const startPos = page * limit;
+    const results: any[] = [];
+    const recordSetLength = recordSetIdList.length;
+    for (let i = startPos; i < (page + 1) * limit; i++) {
+      if (i >= recordSetLength) {
+        break;
+      }
+      const entry: UserRecord = (await this.loadActivity(recordSetIdList[i])) as UserRecord;
+      results.push(entry);
+    }
+    return results;
   }
 
   async listCachedSets(): Promise<RecordSetCacheMetadata[]> {
