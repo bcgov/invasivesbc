@@ -60,11 +60,6 @@
   z-index: 999;
 }
 
-.mapContainer {
-  height: 100%;
-  width: 100%;
-}
-
 .maplibregl-ctrl-group > button {
   height: 30pt;
   width: 30pt;
