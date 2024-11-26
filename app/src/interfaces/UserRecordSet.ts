@@ -31,5 +31,6 @@ export interface UserRecordSet {
   };
   cacheMetadata: {
     status: UserRecordCacheStatus;
+    idList?: string[];
   };
 }
