@@ -222,8 +222,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
           recordSetID: action.payload.recordSetID,
           rows: records,
           tableFiltersHash: action.payload.tableFiltersHash,
-          page: action.payload.page,
-          limit: action.payload.limit
+          page: page,
+          limit: limit
         }
       });
     } else {
