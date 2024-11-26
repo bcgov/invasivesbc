@@ -47,7 +47,7 @@ export async function buildPublicMapExport(connection) {
   try {
     await new Promise<void>((resolve, reject) => {
       exec(
-        `tippecanoe -o ${filePrefix}.mbtiles -n InvasivesBC -z24 -r1 -aC --cluster-distance=4 -Liapp:${filePrefix}-iapp.json -Linvasives:${filePrefix}-activities.json`,
+        `tippecanoe -o ${filePrefix}.mbtiles -n InvasivesBC -z15 -r1 -aC --cluster-distance=4 -Liapp:${filePrefix}-iapp.json -Linvasives:${filePrefix}-activities.json`,
         (error, stdout, stderr) => {
           if (error) {
             defaultLog.error({ message: 'Error in tippecanoe', stdout, stderr });
