@@ -1,4 +1,5 @@
 import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import UserRecord from 'interfaces/UserRecord';
 import { RecordCacheAddSpec, RecordCacheService, RecordSetCacheMetadata } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
@@ -107,6 +108,45 @@ class SQLiteRecordCacheService extends RecordCacheService {
     } catch (e) {
       await this.cacheDB.rollbackTransaction();
     }
+  }
+  /**
+   * @desc fetch `n` records for a given recordset, supporting pagination
+   * @param recordSetID Recordset to filter from
+   * @param page Page to start pagination on
+   * @param limit Maximum results per page
+   * @returns { UserRecord[] } Filter Objects
+   */
+  async fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]> {
+    if (!recordSetIdList || recordSetIdList.length === 0) {
+      return [];
+    }
+
+    const startPos = page * limit;
+    const results = await this.cacheDB?.query(
+      // language=SQLite
+      `SELECT DATA
+       FROM CACHED_RECORDS
+       WHERE ID IN (${recordSetIdList.map(() => '?').join(', ')})
+       LIMIT ?, ?`,
+      [...recordSetIdList, startPos, limit]
+    );
+
+    if (!results || !results.values || results?.values?.length === 0) {
+      return [];
+    }
+
+    const response = results.values
+      .map((item) => {
+        try {
+          return JSON.parse(item['DATA']) as UserRecord;
+        } catch (e) {
+          console.error('Error parsing record:', e);
+          return null;
+        }
+      })
+      .filter((record) => record !== null);
+
+    return response;
   }
 
   async listCachedSets(): Promise<RecordSetCacheMetadata[]> {
