@@ -9,6 +9,7 @@ import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
+  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
@@ -19,6 +20,9 @@ import {
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import { MOBILE } from 'state/build-time-config';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import GeoShapes from 'constants/geoShapes';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -180,7 +184,11 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   try {
     // new filter object:
     const currentState = yield select((state) => state.UserSettings);
+    const connected = yield select((state) => state.Network.connected);
     const mapState = yield select((state) => state.Map);
+
+    const userMobileOffline = MOBILE && !connected;
+
     const filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
@@ -201,7 +209,24 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
       return;
     }
 
-    if (true) {
+    if (userMobileOffline) {
+      const { recordSetID, page, limit } = action.payload;
+      const recordSetIdList = yield select(
+        (state) => state.UserSettings.recordSets[recordSetID].cacheMetadata.idList ?? []
+      );
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const records = yield service.fetchPaginatedCachedRecords(recordSetIdList, page, limit);
+      yield put({
+        type: ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
+        payload: {
+          recordSetID: action.payload.recordSetID,
+          rows: records,
+          tableFiltersHash: action.payload.tableFiltersHash,
+          page: action.payload.page,
+          limit: action.payload.limit
+        }
+      });
+    } else {
       yield put({
         type: ACTIVITIES_TABLE_ROWS_GET_ONLINE,
         payload: {
@@ -212,9 +237,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
           limit: action.payload.limit
         }
       });
-    }
-    if (false) {
-      yield put({ type: ACTIVITIES_GEOJSON_GET_OFFLINE, payload: { activityID: action.payload.activityID } });
     }
   } catch (e) {
     console.error(e);
@@ -315,7 +337,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   }
 
   currentMapState = yield select(selectMap);
-  const featuresFilteredByShape = [];
+  const featuresFilteredByShape: Record<string, any> = [];
 
   for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
     if (!currentMapState?.activitiesGeoJSONDict?.hasOwnProperty(source)) continue;
@@ -327,13 +349,13 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
       ...Object.values(current)?.filter((feature: any) => {
         const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
         switch (feature?.geometry?.type) {
-          case 'Point':
+          case GeoShapes.Point:
             const featurePoint = point(feature.geometry.coordinates);
             return booleanPointInPolygon(featurePoint, boundaryPolygon);
-          case 'Polygon':
+          case GeoShapes.Polygon:
             const featurePolygon = polygon(feature.geometry.coordinates);
             return intersect(featurePolygon, boundaryPolygon);
-          case 'MultiPolygon':
+          case GeoShapes.MultiPolygon:
             const amultiPolygon = multiPolygon(feature.geometry.coordinates);
             return intersect(amultiPolygon, boundaryPolygon);
           default:
@@ -347,7 +369,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
     return feature.properties.id;
   });
 
-  const unfilteredRecordSetIDs = [];
+  const unfilteredRecordSetIDs: string[] = [];
   currentMapState?.layers?.map((layer) => {
     if (layer?.type === 'Activity' && layer?.layerState.mapToggle) {
       unfilteredRecordSetIDs.push(...layer?.IDList);
@@ -367,7 +389,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
 
 function getSelectColumnsByRecordSetType(recordSetType: any) {
   //throw new Error('Function not implemented.');
-  let columns = [];
+  let columns: string[] = [];
   if (recordSetType === 'Activity') {
     columns = [
       'activity_id',
