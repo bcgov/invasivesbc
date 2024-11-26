@@ -9,9 +9,10 @@ import debounce from 'lodash.debounce';
 type PropTypes = {
   setID: string;
   id: string;
+  userOfflineMobile: boolean;
 };
 
-const Filter = ({ setID, id }: PropTypes) => {
+const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
   const TIME_TO_AUTO_UPDATE_IN_SECONDS = 0.75;
 
   /**
@@ -69,13 +70,22 @@ const Filter = ({ setID, id }: PropTypes) => {
   const getFilterType = (filterTypeInState: string) => {
     switch (filterTypeInState) {
       case 'tableFilter':
-        return <input key={id} className="filterSelect" onChange={handleInputChange} type="text" value={inputValue} />;
+        return (
+          <input
+            className="filterSelect"
+            disabled={userOfflineMobile}
+            onChange={handleInputChange}
+            type="text"
+            value={inputValue}
+          />
+        );
       case 'spatialFilterUploaded':
         return (
           <select
             className="filterSelect"
-            value={valueInState}
+            disabled={userOfflineMobile}
             onChange={(e) => updateFilter({ filter: e.target.value })}
+            value={valueInState}
           >
             {serverBoundariesToDisplay?.map((option) => (
               <option key={option.value + option.label} value={option.value}>
@@ -88,8 +98,9 @@ const Filter = ({ setID, id }: PropTypes) => {
         return (
           <select
             className="filterSelect"
-            value={valueInState}
+            disabled={userOfflineMobile}
             onChange={(e) => updateFilter({ filter: e.target.value })}
+            value={valueInState}
           >
             {clientBoundariesToDisplay?.map((option) => (
               <option key={option.value + option.label} value={option.value}>
@@ -134,8 +145,9 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>
         <select
           className="filterSelect"
-          value={operator2InState}
+          disabled={userOfflineMobile}
           onChange={(e) => updateFilter({ operator2: e.target.value })}
+          value={operator2InState}
         >
           {
             {
@@ -176,8 +188,9 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>
         <select
           className="filterSelect"
-          value={operatorInState}
+          disabled={userOfflineMobile}
           onChange={(e) => updateFilter({ operator: e.target.value })}
+          value={operatorInState}
         >
           {
             {
@@ -218,7 +231,7 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>
         <select
           className="filterTypeSelect"
-          value={filterTypeInState}
+          disabled={userOfflineMobile}
           onChange={(e) => {
             const payload = {
               filterType: e.target.value,
@@ -232,9 +245,9 @@ const Filter = ({ setID, id }: PropTypes) => {
             if (e.target.value === 'spatialFilterDrawn') {
               payload.filter = clientBoundariesToDisplay[0].value;
             }
-
             updateFilter({ ...payload });
           }}
+          value={filterTypeInState}
         >
           <option value={'tableFilter'} label={'Field/Column'}>
             Field/Column
@@ -258,6 +271,7 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>
         <select
           className="filterSelect"
+          disabled={userOfflineMobile}
           value={typeInState}
           onChange={(e) => updateFilter({ filterID: id, field: e.target.value, filterType: 'tableFilter' })}
         >
@@ -277,7 +291,12 @@ const Filter = ({ setID, id }: PropTypes) => {
       <td>{input}</td>
       <td className="deleteButtonCell">
         <Tooltip classes={{ tooltip: 'toolTip' }} title="Delete the filter in this row, data will be refetched.">
-          <Button className={'deleteButton'} variant="contained" onClick={() => removeFilter('tableFilter')}>
+          <Button
+            className={'deleteButton'}
+            disabled={userOfflineMobile}
+            onClick={() => removeFilter('tableFilter')}
+            variant="contained"
+          >
             Delete
           </Button>
         </Tooltip>
