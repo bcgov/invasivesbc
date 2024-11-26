@@ -30,7 +30,7 @@ const mapStyleSources: MapStyleSourceDefinition[] = [
       ],
       tileSize: 256,
       attribution: 'Powered by ESRI',
-      maxzoom: 24
+      maxzoom: 18
     }
   },
   {

@@ -47,7 +47,7 @@ export const PublicLayer = () => {
 
   return (
     <>
-      <Source id="pmtiles-public-layer-source" type="vector" tiles={[`pmtiles://${PMTILES_URL}`]}>
+      <Source id="pmtiles-public-layer-source" type="vector" tiles={[`pmtiles://${PMTILES_URL}`]} maxzoom={15}>
         <Layer
           id="invasives-layer"
           type="circle"
