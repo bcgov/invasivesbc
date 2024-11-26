@@ -205,7 +205,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         };
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.CACHED
+          status: UserRecordCacheStatus.CACHED,
+          idList: action.payload.cachedIds
         };
       } else if (RecordCache.deleteCache.pending.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
@@ -224,7 +225,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         for (const cachedSet of cacheStatus) {
           if (draftState.recordSets[cachedSet.setId]) {
             draftState.recordSets[cachedSet.setId].cacheMetadata = {
-              status: UserRecordCacheStatus.CACHED
+              status: UserRecordCacheStatus.CACHED,
+              idList: draftState.recordSets[cachedSet.setId].cacheMetadata.idList ?? []
             };
           }
         }
