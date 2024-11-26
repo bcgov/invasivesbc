@@ -34,7 +34,7 @@ import AlertsContainer from './AlertsContainer/AlertsContainer';
 import UserInputModalController from './UserInputModals/UserInputModalController';
 import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 import { WhatsHereTable } from 'UI/Overlay/WhatsHere/WhatsHereTable';
-import {MapProvider} from 'react-map-gl';
+import { MapProvider } from 'react-map-gl';
 
 // lazy-loaded components
 const BatchList = React.lazy(() => import('./Overlay/Batch/BatchList'));
@@ -238,7 +238,7 @@ const App: React.FC = () => {
     console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
   }
   const [appClasses, setAppclasses] = useState('');
-  
+
   useEffect(() => {
     const newAppClasses: string[] = ['App'];
     if (MOBILE) {
@@ -272,43 +272,41 @@ const App: React.FC = () => {
 
   return (
     <div id="app" className={appClasses}>
-          <MapProvider>
+      <MapProvider>
+        <AlertsContainer />
+        <UserInputModalController />
+        <Header />
+        <MobileOnly>
+          {/* On mobile builds, show a message to BCEID users for now*/}
+          <MobileBetaAccessMessage />
+        </MobileOnly>
+        {!authenticated ? (
+          <PublicMap>
+            <Overlay>
+              <OverlayContentMemo />
+            </Overlay>
+            <ButtonContainer />
+            <LayerPicker />
+          </PublicMap>
+        ) : (
+          <Map>
+            <Overlay>
+              <OverlayContentMemo />
+            </Overlay>
+            <ButtonContainer />
+            <LayerPicker />
+          </Map>
+        )}
 
-      <AlertsContainer />
-      <UserInputModalController />
-      <Header />
-      <MobileOnly>
-        {/* On mobile builds, show a message to BCEID users for now*/}
-        <MobileBetaAccessMessage />
-      </MobileOnly>
-      {
-        !authenticated?
-        <PublicMap>
-          <Overlay>
-            <OverlayContentMemo />
-          </Overlay>
-          <ButtonContainer />
-          <LayerPicker />
-        </PublicMap>
-      :
-        <Map>
-          <Overlay>
-            <OverlayContentMemo />
-          </Overlay>
-          <ButtonContainer />
-          <LayerPicker />
-        </Map>
-      }
-      
-      <WebOnly>
-        <Footer />
-      </WebOnly>
-      <NewRecordDialog />
-      <MobileOnly>
-        <OfflineDataSyncDialog />
-        <OfflineUserMenu />
-      </MobileOnly>
-      <CustomizeLayerMenu />
+        <WebOnly>
+          <Footer />
+        </WebOnly>
+        <NewRecordDialog />
+        <MobileOnly>
+          <OfflineDataSyncDialog />
+          <OfflineUserMenu />
+        </MobileOnly>
+        <CustomizeLayerMenu />
       </MapProvider>
     </div>
   );
