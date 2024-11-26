@@ -1,3 +1,4 @@
+import UserRecord from 'interfaces/UserRecord';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 export interface RecordCacheDownloadRequestSpec {
@@ -41,6 +42,8 @@ abstract class RecordCacheService {
   abstract listCachedSets(): Promise<RecordSetCacheMetadata[]>;
 
   abstract deleteCachedSet(id: string): Promise<void>;
+
+  abstract fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]>;
 
   async download(
     spec: RecordCacheDownloadRequestSpec,
