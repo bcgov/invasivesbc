@@ -143,8 +143,7 @@ export default defineConfig({
       buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
       events: 'rollup-plugin-node-polyfills/polyfills/events',
       process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
-      stream: 'rollup-plugin-node-polyfills/polyfills/stream',
-      string_decoder: 'rollup-plugin-node-polyfills/polyfills/string-decoder'
+      stream: 'rollup-plugin-node-polyfills/polyfills/stream'
     }
   }
 });
