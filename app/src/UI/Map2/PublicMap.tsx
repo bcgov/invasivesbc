@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'utils/use_selector';
-import Map, { ScaleControl, NavigationControl } from 'react-map-gl/maplibre';
+import Map, { NavigationControl, ScaleControl } from 'react-map-gl/maplibre';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import maplibregl from 'maplibre-gl';
-// import { RecordSetLayers } from './RecordSetLayers3';
 import { PublicLayer } from './PublicLayer';
 import { MOBILE } from 'state/build-time-config';
 
@@ -105,14 +104,18 @@ const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
   ]
 };
 
-export const MainMap = ({ children }) => {
+export const PublicMap = ({ children }) => {
   const API_BASE = useSelector((state) => state.Configuration.current.API_BASE);
   const authenticated = useSelector((state) => state.Auth.authenticated);
   const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
   const authHeaderRef = useRef<string>();
   authHeaderRef.current = currentAuthHeader;
-  const baseMapLayer = useSelector((state: any) => state.Map.baseMapLayer);
+  const baseMapLayer = useSelector((state) => state.Map.baseMapLayer);
   const map_center = useSelector((state) => state.Map.map_center);
+
+  if (!baseMapLayer) {
+    return null;
+  }
 
   const mapstyle_current_layer: maplibregl.LayerSpecification[] = mapStyleLayers[wmsBaseLayersValue[baseMapLayer]];
 
@@ -156,7 +159,7 @@ export const MainMap = ({ children }) => {
     }
     return authHeaderRef.current;
   };
-  const transformRequest = (url, resourceType) => {
+  const transformRequest: maplibregl.RequestTransformFunction = (url) => {
     if (url.includes(API_BASE)) {
       return {
         url,
@@ -184,7 +187,6 @@ export const MainMap = ({ children }) => {
           attributionControl={false}
           transformRequest={transformRequest}
           mapLib={maplibregl}
-          // interactiveLayerIds={['pmtiles-layer']}
           mapStyle={{
             ...(MOBILE && { sprite: '/assets/basemaps/sprite/sprite' }),
             glyphs: MOBILE
@@ -200,38 +202,12 @@ export const MainMap = ({ children }) => {
             layers: mapstyle_current_layer
           }}
         >
-          {/* <Source
-            id='esri-sat-label-source'
-            type='raster'
-            tiles={[
-              'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-            ]}
-            tileSize={256}
-            maxzoom={18}
-          />
-          <Source
-            id='esri-sat-layer-hd'
-            type='raster'
-            tiles={[
-              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-            ]}
-            tileSize={256}
-          >
-            <Layer
-              id='wms-layer'
-              type='raster'
-              source='esri-sat-layer-hd'
-            />
-          </Source> */}
-
           <ScaleControl maxWidth={80} unit="metric" position="top-left" />
           <NavigationControl position="top-left" />
 
           {!authenticated ? <PublicLayer /> : <></>}
-
-          {/* <RecordSetLayers /> */}
         </Map>
-        <div id="LoadingMap" className={!true ? 'loadingMap' : 'loadedMap'}>
+        <div id="LoadingMap" className={'loadedMap'}>
           Loading tiles...
         </div>
         {children}

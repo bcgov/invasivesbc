@@ -4,7 +4,7 @@ import { Redirect, Route, useHistory } from 'react-router-dom';
 import './App.css';
 import { Footer } from './Footer/Footer';
 import { Header } from './Header/Header';
-import { MainMap as PublicMap } from './Map2/Map3';
+import { PublicMap } from './Map2/PublicMap';
 import { Map } from './Map2/Map';
 import { LandingComponent } from './Overlay/Landing/Landing';
 import Overlay from './Overlay/Overlay';
