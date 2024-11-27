@@ -131,7 +131,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       [...recordSetIdList, startPos, limit]
     );
 
-    if (!results || !results.values || results?.values?.length === 0) {
+    if (!results?.values || results.values?.length === 0) {
       return [];
     }
 
