@@ -377,7 +377,7 @@ const LoginOrOutMemo = React.memo(() => {
 
 const NetworkStateControl: React.FC = () => {
   const handleNetworkStateChange = () => {
-    dispatch(connected ? NetworkActions.offline() : NetworkActions.online());
+    dispatch(connected ? NetworkActions.offline() : NetworkActions.checkMobileNetworkStatus());
   };
   const { connected } = useSelector((state) => state.Network);
   const dispatch = useDispatch();

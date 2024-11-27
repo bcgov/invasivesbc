@@ -15,7 +15,7 @@ function createNetworkReducer(initialStatus: Network) {
     return createNextState(state, (draftState: Draft<Network>) => {
       if (NetworkActions.online.match(action)) {
         draftState.connected = true;
-      } else if (NetworkActions.offline.match(action)) {
+      } else if (NetworkActions.offline.match(action) || NetworkActions.userLostConnection.match(action)) {
         draftState.connected = false;
       }
     });
