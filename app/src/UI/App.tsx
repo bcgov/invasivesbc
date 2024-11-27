@@ -28,7 +28,6 @@ import { OfflineDataSyncDialog } from 'UI/OfflineDataSync/OfflineDataSyncDialog'
 import Spinner from 'UI/Spinner/Spinner';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import { useSelector } from 'utils/use_selector';
-import { MobileBetaAccessMessage } from 'UI/Overlay/MobileBetaAccess/MobileBetaAccessMessage';
 import AlertsContainer from './AlertsContainer/AlertsContainer';
 import UserInputModalController from './UserInputModals/UserInputModalController';
 import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
@@ -272,10 +271,6 @@ const App: React.FC = () => {
       <AlertsContainer />
       <UserInputModalController />
       <Header />
-      <MobileOnly>
-        {/* On mobile builds, show a message to BCEID users for now*/}
-        <MobileBetaAccessMessage />
-      </MobileOnly>
 
       <Map>
         <Overlay>
