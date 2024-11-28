@@ -6,6 +6,8 @@ import Prompt from 'state/actions/prompts/Prompt';
 import { PromptAction } from 'interfaces/prompt-interfaces';
 import RecordCache from 'state/actions/cache/RecordCache';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
+import NetworkActions from 'state/actions/network/NetworkActions';
+import networkAlertMessages from 'constants/alerts/networkAlerts';
 
 interface AlertsAndPromptsState {
   alerts: AlertMessage[];
@@ -19,6 +21,12 @@ const initialState: AlertsAndPromptsState = {
 
 const filterDuplicates = (key: keyof AlertMessage, matchValue: any, state: AlertMessage[]): any[] =>
   state.filter((entry) => entry[key] !== matchValue);
+
+const addAlert = (state: AlertMessage[], alert: AlertMessage): AlertMessage[] => [...state, { ...alert, id: nanoid() }];
+const addPrompt = (state: PromptAction[], prompt: PromptAction): PromptAction[] => [
+  ...state,
+  { ...prompt, id: nanoid() }
+];
 
 export function createAlertsAndPromptsReducer(
   configuration: AppConfig
@@ -43,15 +51,15 @@ export function createAlertsAndPromptsReducer(
         draftState.prompts = [];
       } else if (RegExp(Prompt.NEW_PROMPT).exec(action.type)) {
         const newPrompt: PromptAction = action.payload;
-        draftState.prompts = [...state.prompts, { ...newPrompt, id: nanoid() }];
+        draftState.prompts = addPrompt(state.prompts, newPrompt);
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
-        draftState.alerts = [...state.alerts, { ...cacheAlertMessages.recordsetCacheSuccess, id: nanoid() }];
+        draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheSuccess);
       } else if (RecordCache.requestCaching.rejected.match(action)) {
-        draftState.alerts = [...state.alerts, { ...cacheAlertMessages.recordsetCacheFailed, id: nanoid() }];
+        draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheFailed);
       } else if (RecordCache.deleteCache.rejected.match(action)) {
-        draftState.alerts = [...state.alerts, { ...cacheAlertMessages.recordsetDeleteCacheFailed, id: nanoid() }];
+        draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetDeleteCacheFailed);
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
-        draftState.alerts = [...state.alerts, { ...cacheAlertMessages.recordsetDeleteCacheSuccess, id: nanoid() }];
+        draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetDeleteCacheSuccess);
       }
     });
   };
