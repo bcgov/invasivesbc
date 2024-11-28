@@ -1,6 +1,6 @@
 import slugify from 'slugify';
 import moment from 'moment';
-import { ActivityLetter, lookupAreaLimit } from 'sharedAPI';
+import { ActivityLetter, ActivitySubtype, lookupAreaLimit } from 'sharedAPI';
 import circle from '@turf/circle';
 import booleanIntersects from '@turf/boolean-intersects';
 import {
@@ -197,48 +197,46 @@ const _handleBooleanCell = (data: string, result: CellValidationResult) => {
  * @param activityLetter The Letter corresponsing to the type of entry being uploaded
  * @returns Regex Pattern matches ShortID
  */
-const validateShortID = (shortId, activityLetter) => {
+const validateShortID = (shortId: string, activityLetter: string) => {
   const shortIdPattern = RegExp(`^[0-9]{2}${activityLetter}[0-9A-Z]{8}$`);
   return shortIdPattern.test(shortId);
 };
 
+interface LinkedIdOptions {
+  expectedRecordTypes: string[];
+  shortIdActivityLetters: string[];
+}
 /**
- * @desc  Validation Handler for batch records with type Activity_Monitoring_ChemicalTerrestrialAquaticPlant
+ * @desc  Validation Handler for matching Records with linked_id
  *        Validates fields in form to ensure data properly links with an existing record.
  * @param data
  * @param result
  */
-const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (
+
+const _handleGetLinkedId = async (
   shortId: string,
   result: CellValidationResult,
-  row: Record<string, any>
+  row: Record<string, any>,
+  options: LinkedIdOptions
 ) => {
   try {
-    const isValidShortID =
-      validateShortID(shortId, ActivityLetter.Activity_Treatment_ChemicalPlantAquatic) ||
-      validateShortID(shortId, 'PTC');
+    const isValidShortID = options.shortIdActivityLetters.some((letters) => validateShortID(shortId, letters));
     if (!isValidShortID) {
       result.validationMessages.push(invalidShortID);
       return;
     }
-    const expectedRecordTypes = [
-      'Activity_Treatment_ChemicalPlantAquatic',
-      'Activity_Treatment_ChemicalPlantTerrestrial'
-    ];
-    const batchUploadInvasivePlantRow = 'Monitoring - Terrestrial Invasive Plant';
-    const batchUploadTerrestrialPlantRow = 'Monitoring - Aquatic Invasive Plant';
     const linkedRecord = await getRecordFromShort(shortId);
     if (!linkedRecord) {
       result.validationMessages.push(invalidLongID(shortId));
       return;
     }
-    const isItTheRightRecordType = expectedRecordTypes.includes(linkedRecord['activity_subtype']);
+    const isItTheRightRecordType = options.expectedRecordTypes.includes(linkedRecord['activity_subtype']);
     const doTheSpeciesMatch =
-      linkedRecord['species_treated']?.includes(row.data[batchUploadInvasivePlantRow]) ||
-      linkedRecord['species_treated']?.includes(row.data[batchUploadTerrestrialPlantRow]);
+      linkedRecord['species_treated']?.includes(row.data['Monitoring - Terrestrial Invasive Plant']) ||
+      linkedRecord['species_treated']?.includes(row.data['Monitoring - Aquatic Invasive Plant']);
     const thisGeoJSON: any = row.data['WKT'];
-    const isValidGeoJSON: boolean = thisGeoJSON || false;
-    const linkedGeoJSON: any = JSON.parse(linkedRecord['sample']) || false;
+    const isValidGeoJSON: boolean = thisGeoJSON ?? false;
+    const linkedGeoJSON: any = JSON.parse(linkedRecord['sample']) ?? false;
     const doTheyOverlap =
       isValidGeoJSON && linkedGeoJSON && booleanIntersects(thisGeoJSON.parsedValue?.geojson, linkedGeoJSON);
     if (!doTheSpeciesMatch) {
@@ -257,11 +255,11 @@ const _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant = async (
       result.validationMessages.push(invalidWKT);
     }
     if (linkedRecord) {
-      result.parsedValue = linkedRecord['activity_id'] || '';
+      result.parsedValue = linkedRecord['activity_id'] ?? '';
     }
   } catch (e) {
     defaultLog.error({
-      message: '[handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant]',
+      message: '[_handleGetLinkedId]',
       error: e
     });
   }
@@ -303,8 +301,35 @@ async function _validateCell(
       }
       const thisRecordType = template.subtype;
       switch (thisRecordType) {
-        case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-          await _handleActivity_Monitoring_ChemicalTerrestrialAquaticPlant(data, result, row);
+        case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
+          await _handleGetLinkedId(data, result, row, {
+            shortIdActivityLetters: [
+              ActivityLetter[ActivitySubtype.Treatment_ChemicalPlantAquatic],
+              ActivityLetter[ActivitySubtype.Treatment_ChemicalPlant]
+            ],
+            expectedRecordTypes: [
+              ActivitySubtype.Treatment_ChemicalPlantAquatic,
+              ActivitySubtype.Treatment_ChemicalPlant
+            ]
+          });
+          break;
+        case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
+          await _handleGetLinkedId(data, result, row, {
+            shortIdActivityLetters: [
+              ActivityLetter[ActivitySubtype.Treatment_MechanicalPlantAquatic],
+              ActivityLetter[ActivitySubtype.Treatment_MechanicalPlant]
+            ],
+            expectedRecordTypes: [
+              ActivitySubtype.Treatment_MechanicalPlantAquatic,
+              ActivitySubtype.Treatment_MechanicalPlant
+            ]
+          });
+          break;
+        case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
+          await _handleGetLinkedId(data, result, row, {
+            shortIdActivityLetters: [ActivityLetter[ActivitySubtype.Treatment_BiologicalPlant]],
+            expectedRecordTypes: [ActivitySubtype.Treatment_BiologicalPlant]
+          });
           break;
         default:
           break;
