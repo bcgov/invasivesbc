@@ -104,7 +104,7 @@ const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
   ]
 };
 
-export const PublicMap = ({ children }) => {
+export const MainMap = ({ children }) => {
   const API_BASE = useSelector((state) => state.Configuration.current.API_BASE);
   const authenticated = useSelector((state) => state.Auth.authenticated);
   const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
