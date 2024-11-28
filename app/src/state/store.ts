@@ -1,4 +1,4 @@
-import { configureStore, ThunkDispatch } from '@reduxjs/toolkit';
+import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
 import { createBrowserHistory } from 'history';
@@ -19,6 +19,7 @@ import userSettingsSaga from './sagas/userSettings';
 import { createSagaCrashHandler } from './sagas/error_handler';
 import { AppConfig } from './config';
 import { DEBUG } from './build-time-config';
+import NetworkActions from './actions/network/NetworkActions';
 
 const historySingleton = createBrowserHistory();
 
@@ -79,6 +80,7 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(emailTemplatesSaga);
   sagaMiddleware.run(networkSaga);
 
+  store.dispatch(NetworkActions.checkMobileNetworkStatus());
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 
   historySingleton.listen((location) => {
