@@ -6,8 +6,6 @@ import Prompt from 'state/actions/prompts/Prompt';
 import { PromptAction } from 'interfaces/prompt-interfaces';
 import RecordCache from 'state/actions/cache/RecordCache';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
-import NetworkActions from 'state/actions/network/NetworkActions';
-import networkAlertMessages from 'constants/alerts/networkAlerts';
 
 interface AlertsAndPromptsState {
   alerts: AlertMessage[];
