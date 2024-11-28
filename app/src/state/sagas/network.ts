@@ -6,13 +6,19 @@ import Alerts from 'state/actions/alerts/Alerts';
 import NetworkActions from 'state/actions/network/NetworkActions';
 import { MOBILE } from 'state/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { selectNetworkConnected } from 'state/reducers/network';
 import { OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 
-function* handle_ATTEMPT_TO_RECONNECT_FAILED() {
-  yield put(Alerts.create(networkAlertMessages.attemptToReconnectFailed));
+/**
+ * @desc Handler for a Manual Reconnect attempt by user
+ */
+function* handle_MANUAL_RECONNECT() {
+  const configuration = yield select(selectConfiguration);
+  if (yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT)) {
+    yield put(NetworkActions.online());
+  } else {
+    yield put(Alerts.create(networkAlertMessages.attemptToReconnectFailed));
+  }
 }
-
 function* handle_AUTOMATIC_RECONNECT_FAILED() {
   yield put(Alerts.create(networkAlertMessages.automaticReconnectFailed));
 }
@@ -31,14 +37,13 @@ function* handle_CHECK_MOBILE_NETWORK_STATUS(cancel: PayloadAction<boolean>) {
   const SECONDS_BETWEEN_ATTEMPTS = 5;
 
   while (true) {
-    const currentOnlineStatus = yield select(selectNetworkConnected);
     const configuration = yield select(selectConfiguration);
     let attempts: number = 0;
-    let networkCheckPassed: boolean = false;
+    let canConnect: boolean = false;
 
     do {
-      networkCheckPassed = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
-      if (!networkCheckPassed) {
+      canConnect = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
+      if (!canConnect) {
         attempts++;
         yield delay(SECONDS_BETWEEN_ATTEMPTS * 1000);
       }
@@ -46,16 +51,11 @@ function* handle_CHECK_MOBILE_NETWORK_STATUS(cancel: PayloadAction<boolean>) {
       if (yield cancelled()) {
         return;
       }
-    } while (!networkCheckPassed && attempts < MAX_ATTEMPTS);
+    } while (!canConnect && attempts < MAX_ATTEMPTS);
 
-    if (!networkCheckPassed && !currentOnlineStatus) {
-      yield put(NetworkActions.attemptToReconnectFailed());
-    } else if (!networkCheckPassed) {
+    if (!canConnect) {
       yield put(NetworkActions.userLostConnection());
       return;
-    } else if (networkCheckPassed && !currentOnlineStatus) {
-      // Only fire online event if we are not already online
-      yield put(NetworkActions.online());
     }
     yield delay(SECONDS_BETWEEN_CHECKS * 1000);
   }
@@ -68,7 +68,7 @@ function* handle_CHECK_MOBILE_NETWORK_STATUS(cancel: PayloadAction<boolean>) {
  */
 const canConnectToNetwork = async (url: string): Promise<boolean> => {
   return await fetch(url)
-    .then((res) => res.status === 200)
+    .then((res) => res.ok)
     .catch(() => false);
 };
 
@@ -115,25 +115,25 @@ function* handle_NETWORK_GO_ONLINE() {
  * @desc Attempt to establish connection with the API. Abandons after ~3 minutes of disconnection.
  *       When this event fires, it cancels the rolling API checks
  */
-function* handle_USER_LOST_CONNECTION() {
+function* handle_ATTEMPT_AUTOMATIC_RECONNECT() {
   const MAX_RECONNECT_ATTEMPTS = 18;
   const SECONDS_BETWEEN_ATTEMPTS = 10;
 
   const configuration = yield select(selectConfiguration);
-  let attempts: number = 0;
-  let networkCheckPassed: boolean = false;
+  let attempts = 0;
+  let canReconnect: boolean;
 
   yield put(Alerts.create(networkAlertMessages.userLostConnection));
 
   do {
-    networkCheckPassed = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
-    if (!networkCheckPassed) {
+    canReconnect = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
+    if (!canReconnect) {
       attempts++;
       yield delay(SECONDS_BETWEEN_ATTEMPTS * 1000);
     }
-  } while (!networkCheckPassed && attempts < MAX_RECONNECT_ATTEMPTS);
+  } while (!canReconnect && attempts < MAX_RECONNECT_ATTEMPTS);
 
-  if (networkCheckPassed) {
+  if (canReconnect) {
     yield put(NetworkActions.online());
   } else {
     yield put(NetworkActions.automaticReconnectFailed());
@@ -142,13 +142,13 @@ function* handle_USER_LOST_CONNECTION() {
 
 function* networkSaga() {
   yield all([
-    takeEvery(NetworkActions.attemptToReconnectFailed, handle_ATTEMPT_TO_RECONNECT_FAILED),
+    takeEvery(NetworkActions.manualReconnect, handle_MANUAL_RECONNECT),
     takeEvery(NetworkActions.automaticReconnectFailed, handle_AUTOMATIC_RECONNECT_FAILED),
     takeEvery(NetworkActions.checkInitConnection, handle_CHECK_INIT_CONNECTION),
     takeLatest(NetworkActions.checkMobileNetworkStatus, handle_CHECK_MOBILE_NETWORK_STATUS),
     takeEvery(NetworkActions.offline, handle_NETWORK_GO_OFFLINE),
     takeEvery(NetworkActions.online, handle_NETWORK_GO_ONLINE),
-    takeLatest(NetworkActions.userLostConnection, handle_USER_LOST_CONNECTION)
+    takeLatest(NetworkActions.userLostConnection, handle_ATTEMPT_AUTOMATIC_RECONNECT)
   ]);
 }
 
