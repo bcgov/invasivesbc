@@ -80,7 +80,7 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(emailTemplatesSaga);
   sagaMiddleware.run(networkSaga);
 
-  store.dispatch(NetworkActions.checkMobileNetworkStatus());
+  store.dispatch(NetworkActions.checkInitConnection());
   store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
 
   historySingleton.listen((location) => {
