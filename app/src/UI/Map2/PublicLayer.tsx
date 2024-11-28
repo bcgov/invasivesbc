@@ -1,11 +1,10 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Source, Layer } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
-import { Context } from 'utils/tile-cache/context';
+import { MOBILE } from 'state/build-time-config';
 
 export const PublicLayer = () => {
-  const tileCache = useContext(Context);
   const pmtilesProtocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {
@@ -26,6 +25,13 @@ export const PublicLayer = () => {
 
   // this is so we share one instance across the JS code and the map renderer
   pmtilesProtocol.add(p);
+
+  // available from CDN, but not in asset pack
+  let VECTOR_MAP_FONT_FACE = 'Open Sans Bold';
+  if (MOBILE) {
+    // available locally, but not from CDN
+    VECTOR_MAP_FONT_FACE = 'Noto Sans Bold';
+  }
 
   return (
     <>
@@ -60,7 +66,7 @@ export const PublicLayer = () => {
               ['get', 'map_symbol'],
               { 'font-scale': 0.9 }
             ],
-            'text-font': ['literal', ['Open Sans Bold']],
+            'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
             'text-offset': [0, 0.6],
             'text-anchor': 'top'
           }}
@@ -98,7 +104,7 @@ export const PublicLayer = () => {
               { 'font-scale': 0.9 }
             ],
             // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-            'text-font': ['literal', ['Open Sans Bold']],
+            'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
             'text-offset': [0, 0.6],
             'text-anchor': 'top'
           }}

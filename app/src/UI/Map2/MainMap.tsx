@@ -104,6 +104,7 @@ const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
   ]
 };
 
+// name will be changed to 'Map' upon full transition
 export const MainMap = ({ children }) => {
   const API_BASE = useSelector((state) => state.Configuration.current.API_BASE);
   const authenticated = useSelector((state) => state.Auth.authenticated);
@@ -205,7 +206,7 @@ export const MainMap = ({ children }) => {
           <ScaleControl maxWidth={80} unit="metric" position="top-left" />
           <NavigationControl position="top-left" />
 
-          {!authenticated ? <PublicLayer /> : <></>}
+          {!authenticated && <PublicLayer />}
         </Map>
         <div id="LoadingMap" className={'loadedMap'}>
           Loading tiles...
