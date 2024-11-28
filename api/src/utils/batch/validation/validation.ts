@@ -202,6 +202,11 @@ const validateShortID = (shortId: string, activityLetter: string) => {
   return shortIdPattern.test(shortId);
 };
 
+/**
+ * @desc Customization for Linked ID Validation
+ * @property {string[]} expectedRecordTypes Recordtypes that must match to be properly linked
+ * @property {string[]} shortIdActivityLetters unique three letter code in Activity Short ID identifying it as a record type. e.g. 'PAC', 'PTM', etc
+ */
 interface LinkedIdOptions {
   expectedRecordTypes: string[];
   shortIdActivityLetters: string[];
@@ -209,10 +214,7 @@ interface LinkedIdOptions {
 /**
  * @desc  Validation Handler for matching Records with linked_id
  *        Validates fields in form to ensure data properly links with an existing record.
- * @param data
- * @param result
  */
-
 const _handleGetLinkedId = async (
   shortId: string,
   result: CellValidationResult,
