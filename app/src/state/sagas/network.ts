@@ -35,9 +35,9 @@ function* handle_CHECK_MOBILE_NETWORK_STATUS(cancel: PayloadAction<boolean>) {
   const MAX_ATTEMPTS = 5;
   const SECONDS_BETWEEN_CHECKS = 20;
   const SECONDS_BETWEEN_ATTEMPTS = 5;
+  const configuration = yield select(selectConfiguration);
 
   while (true) {
-    const configuration = yield select(selectConfiguration);
     let attempts: number = 0;
     let canConnect: boolean = false;
 
