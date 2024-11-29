@@ -3,7 +3,11 @@ import { Button, IconButton, LinearProgress } from '@mui/material';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
-import { ACTIVITY_OFFLINE_DELETE_ITEM, ACTIVITY_RUN_OFFLINE_SYNC } from 'state/actions';
+import {
+  ACTIVITY_OFFLINE_DELETE_ITEM,
+  ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
+  ACTIVITY_RUN_OFFLINE_SYNC
+} from 'state/actions';
 import Delete from '@mui/icons-material/Delete';
 import './OfflineDataSync.css';
 import moment from 'moment';
@@ -16,7 +20,6 @@ export const OfflineDataSyncTable = () => {
   const { working, serializedActivities } = useSelector(selectOfflineActivity);
   const { authenticated, workingOffline } = useSelector((state) => state.Auth);
   const connected = useSelector((state) => state.Network.connected);
-
   const [syncDisabled, setSyncDisabled] = useState(false);
 
   const history = useHistory();
@@ -63,8 +66,8 @@ export const OfflineDataSyncTable = () => {
                         disabled={!(workingOffline || authenticated)}
                         color="primary"
                         onClick={() => {
-                          dispatch(Activity.getLocal(key));
                           history.push(`/Records/Activity:${key}/form`);
+                          dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: false } });
                         }}
                       >
                         <FileOpen></FileOpen>
