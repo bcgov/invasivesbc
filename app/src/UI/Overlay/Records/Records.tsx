@@ -1,9 +1,7 @@
 import { MouseEvent, useEffect, useState } from 'react';
-
 import { Button } from '@mui/material';
 import './Records.css';
 import { OverlayHeader } from '../OverlayHeader';
-import Spinner from 'UI/Spinner/Spinner';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -16,15 +14,9 @@ import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState
 
 export const Records = () => {
   const DEFAULT_RECORD_TYPES = ['All InvasivesBC Activities', 'All IAPP Records', 'My Drafts'];
-  const activitiesGeoJSONState = useSelector((state) => state.Map?.activitiesGeoJSONDict);
-  const isIAPPGeoJSONLoaded = useSelector((state) => state.Map?.IAPPGeoJSONDict !== undefined);
-  const mapLayers = useSelector((state) => state.Map.layers);
-  const MapMode = useSelector((state) => state.Map.MapMode);
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
   const connected = useSelector((state) => state.Network.connected);
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
-  const [isActivitiesGeoJSONLoaded, setIsActivitiesGeoJSONLoaded] = useState(false);
-  const [loadMap, setLoadMap] = useState({});
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -36,23 +28,6 @@ export const Records = () => {
     // make sure the displayed status accurately reflects the contents of the cache
     dispatch(UserSettings.RecordSet.syncCacheStatusWithCacheService());
   }, []);
-
-  useEffect(() => {
-    setIsActivitiesGeoJSONLoaded(activitiesGeoJSONState.hasOwnProperty('s3'));
-  }, [activitiesGeoJSONState]);
-
-  useEffect(() => {
-    const rv = {};
-    mapLayers.forEach((layer) => {
-      const geojson = layer?.type === RecordSetType.Activity ? isActivitiesGeoJSONLoaded : isIAPPGeoJSONLoaded;
-      if (MapMode !== 'VECTOR_ENDPOINT') {
-        rv[layer?.recordSetID] = !layer?.loading && geojson;
-      } else {
-        rv[layer?.recordSetID] = !layer?.loading;
-      }
-    });
-    setLoadMap(rv);
-  }, [JSON.stringify(mapLayers), isActivitiesGeoJSONLoaded, isIAPPGeoJSONLoaded, MapMode]);
 
   //Record set handlers:
   const handleToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
@@ -116,13 +91,7 @@ export const Records = () => {
                 isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
                 handleNameChange={handleNameChange}
                 recordsetKey={set}
-              >
-                {!loadMap?.[set] && (
-                  <div>
-                    <Spinner />
-                  </div>
-                )}
-              </RecordSetDetails>
+              ></RecordSetDetails>
 
               <RecordSetControl
                 isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
