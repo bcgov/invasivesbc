@@ -7,59 +7,9 @@ import NetworkActions from 'state/actions/network/NetworkActions';
 import { MOBILE } from 'state/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { selectNetworkState } from 'state/reducers/network';
 
-/**
- * @desc Handler for a Manual Reconnect attempt by user
- */
-function* handle_MANUAL_RECONNECT() {
-  const configuration = yield select(selectConfiguration);
-  if (yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT)) {
-    yield put(NetworkActions.online());
-  } else {
-    yield put(Alerts.create(networkAlertMessages.attemptToReconnectFailed));
-  }
-}
-function* handle_AUTOMATIC_RECONNECT_FAILED() {
-  yield put(Alerts.create(networkAlertMessages.automaticReconnectFailed));
-}
-
-/**
- * @desc Rolling function that targets the API to determine our online status.
- *       On failure to reach the API, attempts up to 5 times before determining we cannot proceed
- *       In event of this, disconnect the user and alert them of the incident.
- */
-function* handle_CHECK_MOBILE_NETWORK_STATUS(cancel: PayloadAction<boolean>) {
-  if (!MOBILE || cancel.payload) {
-    return;
-  }
-  const MAX_ATTEMPTS = 5;
-  const SECONDS_BETWEEN_CHECKS = 20;
-  const SECONDS_BETWEEN_ATTEMPTS = 5;
-  const configuration = yield select(selectConfiguration);
-
-  while (true) {
-    let attempts: number = 0;
-    let canConnect: boolean = false;
-
-    do {
-      canConnect = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
-      if (!canConnect) {
-        attempts++;
-        yield delay(SECONDS_BETWEEN_ATTEMPTS * 1000);
-      }
-
-      if (yield cancelled()) {
-        return;
-      }
-    } while (!canConnect && attempts < MAX_ATTEMPTS);
-
-    if (!canConnect) {
-      yield put(NetworkActions.userLostConnection());
-      return;
-    }
-    yield delay(SECONDS_BETWEEN_CHECKS * 1000);
-  }
-}
+/* Utilities */
 
 /**
  * @desc Targets the API and checks for successful response.
@@ -73,25 +23,59 @@ const canConnectToNetwork = async (url: string): Promise<boolean> => {
 };
 
 /**
- * Initial Network Connectivity Check, determines to begin application online or offline
+ * @desc Get the time between ticks for polling the heartbeat
+ * @param heartbeatFailures Current number of failed network attempts
+ * @returns { number } Greater of two delay values
+ */
+const getTimeBetweenTicks = (heartbeatFailures: number): number => {
+  const BASE_SECONDS_BETWEEN_FAILURE = 20;
+  const BASE_SECONDS_BETWEEN_SUCCESS = 60;
+  return Math.max(
+    BASE_SECONDS_BETWEEN_FAILURE * 1000 * Math.pow(1.1, heartbeatFailures),
+    BASE_SECONDS_BETWEEN_SUCCESS * 1000
+  );
+};
+
+/* Sagas */
+
+/**
+ * @desc If administrative status enabled at launch, begin monitoring heartbeat
  */
 function* handle_CHECK_INIT_CONNECTION() {
-  if (!MOBILE) {
+  const { administrativeStatus } = yield select(selectNetworkState);
+  if (administrativeStatus) {
+    yield put(NetworkActions.monitorHeartbeat());
+  }
+}
+
+/**
+ * @desc Handles Manual reconnect attempt by user. Sets their administrative status to true
+ */
+function* handle_MANUAL_RECONNECT() {
+  const configuration = yield select(selectConfiguration);
+  yield put(NetworkActions.setAdministrativeStatus(true));
+  if (yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT)) {
+    yield put(NetworkActions.monitorHeartbeat());
+  } else {
+    yield put(Alerts.create(networkAlertMessages.attemptToReconnectFailed));
+  }
+}
+
+/**
+ * @desc Rolling function that targets the API to determine our online status.
+ */
+function* handle_MONITOR_HEARTBEAT(cancel: PayloadAction<boolean>) {
+  if (!MOBILE || cancel.payload) {
     return;
   }
   const configuration = yield select(selectConfiguration);
-  if (yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT)) {
-    yield put(NetworkActions.online());
-  } else {
-    yield put(NetworkActions.offline());
-  }
-}
-/**
- * @desc Handler for User manually going offline. Fires a cancellation event to stop rolling api checks.
- */
-function* handle_NETWORK_GO_OFFLINE() {
-  yield put(Alerts.create(networkAlertMessages.userWentOffline));
-  yield put(NetworkActions.checkMobileNetworkStatus(true));
+
+  do {
+    const { consecutiveHeartbeatFailures } = yield select(selectNetworkState);
+    const networkRequestSuccess = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
+    yield put(NetworkActions.updateConnectionStatus(networkRequestSuccess));
+    yield delay(getTimeBetweenTicks(consecutiveHeartbeatFailures));
+  } while (!(yield cancelled()));
 }
 
 /**
@@ -108,47 +92,53 @@ function* handle_NETWORK_GO_ONLINE() {
   } else {
     yield put(Alerts.create(networkAlertMessages.userWentOnline));
   }
-  yield put(NetworkActions.checkMobileNetworkStatus());
 }
 
 /**
- * @desc Attempt to establish connection with the API. Abandons after ~3 minutes of disconnection.
- *       When this event fires, it cancels the rolling API checks
+ * @desc Handler for Administrative status.
+ *       When enabled, begin polling for heartbeat.
+ *       When disabled, notify user they're offline, cancel heartbeat polling,
+ * @param newStatus new Administrative status
  */
-function* handle_ATTEMPT_AUTOMATIC_RECONNECT() {
-  const MAX_RECONNECT_ATTEMPTS = 18;
-  const SECONDS_BETWEEN_ATTEMPTS = 10;
-
-  const configuration = yield select(selectConfiguration);
-  let attempts = 0;
-  let canReconnect: boolean;
-
-  yield put(Alerts.create(networkAlertMessages.userLostConnection));
-
-  do {
-    canReconnect = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
-    if (!canReconnect) {
-      attempts++;
-      yield delay(SECONDS_BETWEEN_ATTEMPTS * 1000);
-    }
-  } while (!canReconnect && attempts < MAX_RECONNECT_ATTEMPTS);
-
-  if (canReconnect) {
-    yield put(NetworkActions.online());
+function* handle_SET_ADMINISTRATIVE_STATUS(newStatus: PayloadAction<boolean>) {
+  if (newStatus.payload) {
+    yield put(NetworkActions.monitorHeartbeat());
   } else {
-    yield put(NetworkActions.automaticReconnectFailed());
+    yield all([
+      put(NetworkActions.monitorHeartbeat(true)), // Cancel loop
+      put(Alerts.create(networkAlertMessages.userWentOffline)),
+      put(NetworkActions.updateConnectionStatus(true))
+    ]);
+  }
+}
+
+/**
+ * @desc Handler for updating current connection status given boolean flags.
+ *       In case of match, do nothing.
+ */
+function* handle_UPDATE_CONNECTION_STATUS() {
+  const { administrativeStatus, operationalStatus, connected } = yield select(selectNetworkState);
+
+  const networkLive = administrativeStatus && operationalStatus;
+  const disconnected = connected && administrativeStatus && !operationalStatus;
+  if (disconnected) {
+    yield put(Alerts.create(networkAlertMessages.userLostConnection));
+  }
+  if (connected && !networkLive) {
+    yield put(NetworkActions.offline());
+  } else if (!connected && networkLive) {
+    yield put(NetworkActions.online());
   }
 }
 
 function* networkSaga() {
   yield all([
     takeEvery(NetworkActions.manualReconnect, handle_MANUAL_RECONNECT),
-    takeEvery(NetworkActions.automaticReconnectFailed, handle_AUTOMATIC_RECONNECT_FAILED),
-    takeEvery(NetworkActions.checkInitConnection, handle_CHECK_INIT_CONNECTION),
-    takeLatest(NetworkActions.checkMobileNetworkStatus, handle_CHECK_MOBILE_NETWORK_STATUS),
-    takeEvery(NetworkActions.offline, handle_NETWORK_GO_OFFLINE),
+    takeLatest(NetworkActions.monitorHeartbeat, handle_MONITOR_HEARTBEAT),
     takeEvery(NetworkActions.online, handle_NETWORK_GO_ONLINE),
-    takeLatest(NetworkActions.userLostConnection, handle_ATTEMPT_AUTOMATIC_RECONNECT)
+    takeEvery(NetworkActions.setAdministrativeStatus, handle_SET_ADMINISTRATIVE_STATUS),
+    takeEvery(NetworkActions.updateConnectionStatus, handle_UPDATE_CONNECTION_STATUS),
+    takeEvery(NetworkActions.checkInitConnection, handle_CHECK_INIT_CONNECTION)
   ]);
 }
 
