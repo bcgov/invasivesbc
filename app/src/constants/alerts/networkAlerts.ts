@@ -30,6 +30,12 @@ const networkAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Error,
     subject: AlertSubjects.Network,
     autoClose: 10
+  },
+  automaticReconnectFailed: {
+    content: 'We were unable to bring you back online. Please try again later.',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Network,
+    autoClose: 10
   }
 };
 
