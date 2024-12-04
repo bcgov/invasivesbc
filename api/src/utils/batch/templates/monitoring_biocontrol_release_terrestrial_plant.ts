@@ -70,7 +70,7 @@ MonitoringBiocontrolReleaseTerrestrialPlant.columns = [
     .isRequired()
     .build(),
 
-  new TemplateColumnBuilder('Monitoring - Linked Treatment ID', 'text', 'form_data.activity_type_data.linked_id')
+  new TemplateColumnBuilder('Monitoring - Linked Treatment ID', 'linked_id', 'form_data.activity_type_data.linked_id')
     .isRequired()
     .build(),
   new TemplateColumnBuilder(
