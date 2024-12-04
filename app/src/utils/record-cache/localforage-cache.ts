@@ -1,6 +1,13 @@
 import UserRecord from 'interfaces/UserRecord';
 import localForage from 'localforage';
-import { RecordCacheAddSpec, RecordCacheService, RecordSetCacheMetadata } from 'utils/record-cache/index';
+import centroid from '@turf/centroid';
+import {
+  RecordCacheAddSpec,
+  RecordCacheService,
+  RecordSetCachedShape,
+  RecordSetCacheMetadata,
+  RecordSetSourceMetadata
+} from 'utils/record-cache/index';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -98,6 +105,27 @@ class LocalForageRecordCacheService extends RecordCacheService {
       return [];
     }
     return metadata;
+  }
+
+  /**
+   * @desc Iterate ids to produce list of values to populate in the map.
+   *       The values only change with the recordsets, so we create the list at cache-ception to avoid querying
+   * @param ids ids to filter
+   * @returns { RecordSetSourceMetadata } Two formatted queries for High/Low zoom layers
+   */
+  async loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+    const cachedCentroid: RecordSetCachedShape[] = [];
+    const cachedGeoJson: RecordSetCachedShape[] = [];
+
+    for (const id of ids) {
+      const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
+      const label = data.short_id;
+      const feature = data.geometry;
+      cachedCentroid.push({ label, feature: centroid(feature?.[0]) });
+      cachedGeoJson.push({ label, feature });
+    }
+
+    return { cachedCentroid, cachedGeoJson };
   }
 
   async deleteCachedSet(id: string): Promise<void> {
