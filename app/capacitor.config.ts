@@ -17,7 +17,7 @@ const config: CapacitorConfig = {
       enabled: false
     },
     CapacitorHttp: {
-      enabled: true
+      enabled: false
     },
     CapacitorSQLite: {
       iosDatabaseLocation: 'Library/InvasivesDatabase'

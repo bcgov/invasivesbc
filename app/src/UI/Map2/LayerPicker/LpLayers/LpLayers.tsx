@@ -38,6 +38,7 @@ const LpLayers = () => {
   const WmsLayers = useSelector((state) => state.Map?.simplePickerLayers2);
   const KmlLayers = useSelector((state) => state.Map?.serverBoundaries);
   const drawnLayers = useSelector((state) => state.Map?.clientBoundaries);
+  const isAuth = useSelector((state: any) => state.Auth?.authenticated);
 
   return (
     <div id="lp-layers">
@@ -45,7 +46,7 @@ const LpLayers = () => {
         DataBC Layers <TooltipWithIcon tooltipText={WmsTooltip} />
       </h3>
       <div>
-        {WmsLayers?.length > 0 && connectedToNetwork ? (
+        {WmsLayers?.length > 0 && connectedToNetwork && isAuth ? (
           <ul className="layerList">
             {WmsLayers.map((layer, index) => (
               <LpLayersOption

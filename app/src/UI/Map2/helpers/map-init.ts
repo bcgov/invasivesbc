@@ -128,7 +128,7 @@ export const mapInit = (options: MapInitOptions) => {
     maxZoom: 24,
     zoom: 3,
     minZoom: 0,
-    transformRequest: (url) => {
+    transformRequest: (url, resourceType) => {
       if (url.includes(api_base)) {
         return {
           url,
@@ -137,6 +137,16 @@ export const mapInit = (options: MapInitOptions) => {
           }
         };
       }
+
+      const api_local = 'http://localhost:3002';
+      // to make bcgw layers work on mobile
+      if (MOBILE && url.includes('openmaps.gov.bc.ca/geo/ows')) {
+        const proxyUrl = `${api_local}/api/proxy/openmaps?url=${encodeURIComponent(url)}`;
+        return {
+          url: proxyUrl
+        };
+      }
+
       return {
         url
       };
