@@ -387,7 +387,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   yield put(WhatsHere.activity_rows_request);
 }
 
-function getSelectColumnsByRecordSetType(recordSetType: any) {
+export function getSelectColumnsByRecordSetType(recordSetType: any) {
   //throw new Error('Function not implemented.');
   let columns: string[] = [];
   if (recordSetType === 'Activity') {
