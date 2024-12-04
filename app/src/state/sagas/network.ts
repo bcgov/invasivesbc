@@ -1,13 +1,87 @@
+import { PayloadAction } from '@reduxjs/toolkit';
+import { all, cancelled, delay, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
 import networkAlertMessages from 'constants/alerts/networkAlerts';
-import { all, put, select, takeEvery } from 'redux-saga/effects';
+import { HEALTH_ENDPOINT } from 'constants/misc';
 import Alerts from 'state/actions/alerts/Alerts';
 import NetworkActions from 'state/actions/network/NetworkActions';
+import { MOBILE } from 'state/build-time-config';
+import { selectConfiguration } from 'state/reducers/configuration';
 import { OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { selectNetworkState } from 'state/reducers/network';
 
-function* handle_NETWORK_GO_OFFLINE() {
-  yield put(Alerts.create(networkAlertMessages.userWentOffline));
+/* Utilities */
+
+/**
+ * @desc Targets the API and checks for successful response.
+ * @param url Path to API Health check
+ * @returns Connection to API Succeeded
+ */
+const canConnectToNetwork = async (url: string): Promise<boolean> => {
+  return await fetch(url)
+    .then((res) => res.ok)
+    .catch(() => false);
+};
+
+/**
+ * @desc Get the time between ticks for polling the heartbeat
+ * @param heartbeatFailures Current number of failed network attempts
+ * @returns { number } Greater of two delay values
+ */
+const getTimeBetweenTicks = (heartbeatFailures: number): number => {
+  const BASE_SECONDS_BETWEEN_FAILURE = 20;
+  const BASE_SECONDS_BETWEEN_SUCCESS = 60;
+  return Math.max(
+    BASE_SECONDS_BETWEEN_FAILURE * 1000 * Math.pow(1.1, heartbeatFailures),
+    BASE_SECONDS_BETWEEN_SUCCESS * 1000
+  );
+};
+
+/* Sagas */
+
+/**
+ * @desc If administrative status enabled at launch, begin monitoring heartbeat
+ */
+function* handle_CHECK_INIT_CONNECTION() {
+  const { administrativeStatus } = yield select(selectNetworkState);
+  if (administrativeStatus) {
+    yield put(NetworkActions.monitorHeartbeat());
+  }
 }
 
+/**
+ * @desc Handles Manual reconnect attempt by user. Sets their administrative status to true
+ */
+function* handle_MANUAL_RECONNECT() {
+  const configuration = yield select(selectConfiguration);
+  yield put(NetworkActions.setAdministrativeStatus(true));
+  if (yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT)) {
+    yield put(NetworkActions.monitorHeartbeat());
+  } else {
+    yield put(Alerts.create(networkAlertMessages.attemptToReconnectFailed));
+  }
+}
+
+/**
+ * @desc Rolling function that targets the API to determine our online status.
+ */
+function* handle_MONITOR_HEARTBEAT(cancel: PayloadAction<boolean>) {
+  if (!MOBILE || cancel.payload) {
+    return;
+  }
+  const configuration = yield select(selectConfiguration);
+
+  do {
+    const { consecutiveHeartbeatFailures } = yield select(selectNetworkState);
+    const networkRequestSuccess = yield canConnectToNetwork(configuration.API_BASE + HEALTH_ENDPOINT);
+    yield put(NetworkActions.updateConnectionStatus(networkRequestSuccess));
+    yield delay(getTimeBetweenTicks(consecutiveHeartbeatFailures));
+  } while (!(yield cancelled()));
+}
+
+/**
+ * @desc When user comes online, check for any existing unsychronized Activities.
+ *       Restart the rolling Network status checks.
+ */
 function* handle_NETWORK_GO_ONLINE() {
   const { serializedActivities } = yield select(selectOfflineActivity);
   const userHasUnsynchronizedActivities = Object.keys(serializedActivities).some(
@@ -20,10 +94,51 @@ function* handle_NETWORK_GO_ONLINE() {
   }
 }
 
+/**
+ * @desc Handler for Administrative status.
+ *       When enabled, begin polling for heartbeat.
+ *       When disabled, notify user they're offline, cancel heartbeat polling,
+ * @param newStatus new Administrative status
+ */
+function* handle_SET_ADMINISTRATIVE_STATUS(newStatus: PayloadAction<boolean>) {
+  if (newStatus.payload) {
+    yield put(NetworkActions.monitorHeartbeat());
+  } else {
+    yield all([
+      put(NetworkActions.monitorHeartbeat(true)), // Cancel loop
+      put(Alerts.create(networkAlertMessages.userWentOffline)),
+      put(NetworkActions.updateConnectionStatus(true))
+    ]);
+  }
+}
+
+/**
+ * @desc Handler for updating current connection status given boolean flags.
+ *       In case of match, do nothing.
+ */
+function* handle_UPDATE_CONNECTION_STATUS() {
+  const { administrativeStatus, operationalStatus, connected } = yield select(selectNetworkState);
+
+  const networkLive = administrativeStatus && operationalStatus;
+  const disconnected = connected && administrativeStatus && !operationalStatus;
+  if (disconnected) {
+    yield put(Alerts.create(networkAlertMessages.userLostConnection));
+  }
+  if (connected && !networkLive) {
+    yield put(NetworkActions.offline());
+  } else if (!connected && networkLive) {
+    yield put(NetworkActions.online());
+  }
+}
+
 function* networkSaga() {
   yield all([
-    takeEvery(NetworkActions.offline, handle_NETWORK_GO_OFFLINE),
-    takeEvery(NetworkActions.online, handle_NETWORK_GO_ONLINE)
+    takeEvery(NetworkActions.manualReconnect, handle_MANUAL_RECONNECT),
+    takeLatest(NetworkActions.monitorHeartbeat, handle_MONITOR_HEARTBEAT),
+    takeEvery(NetworkActions.online, handle_NETWORK_GO_ONLINE),
+    takeEvery(NetworkActions.setAdministrativeStatus, handle_SET_ADMINISTRATIVE_STATUS),
+    takeEvery(NetworkActions.updateConnectionStatus, handle_UPDATE_CONNECTION_STATUS),
+    takeEvery(NetworkActions.checkInitConnection, handle_CHECK_INIT_CONNECTION)
   ]);
 }
 

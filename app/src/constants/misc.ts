@@ -11,3 +11,5 @@ export const MediumDateTimeFormat = 'MMMM D, YYYY, H:mm a'; //January 5, 2020, 3
 export const LongDateFormat = 'dddd, MMMM D, YYYY, H:mm a'; //Monday, January 5, 2020, 3:30 pm
 
 export const LongDateTimeFormat = 'dddd, MMMM D, YYYY, H:mm a'; //Monday, January 5, 2020, 3:30 pm
+
+export const HEALTH_ENDPOINT = '/api/misc/version';
