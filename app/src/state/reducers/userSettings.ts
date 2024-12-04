@@ -38,9 +38,9 @@ export interface UserSettingsState {
 
   mapCenter: [number, number];
   newRecordDialogState: any;
-
+  newRecordDialogueOpen: boolean;
   recordSets: {
-    [key: number | string]: UserRecordSet;
+    [key: PropertyKey]: UserRecordSet;
   };
   recordsExpanded: boolean;
 
@@ -63,6 +63,7 @@ const initialState: UserSettingsState = {
   error: false,
   recordSets: {},
   recordsExpanded: false,
+  newRecordDialogueOpen: false,
   initialized: false,
   darkTheme: false,
   mapCenter: [55, -128],
@@ -206,7 +207,10 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.CACHED,
-          idList: action.payload.cachedIds
+          idList: action.payload.cachedIds,
+          bbox: action.payload.bbox,
+          cachedGeoJson: action.payload.cachedGeoJson,
+          cachedCentroid: action.payload.cachedCentroid
         };
       } else if (RecordCache.deleteCache.pending.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
@@ -224,9 +228,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         const cacheStatus = action.payload;
         for (const cachedSet of cacheStatus) {
           if (draftState.recordSets[cachedSet.setId]) {
+            const { idList, cachedGeoJson, cachedCentroid } = draftState.recordSets[cachedSet.setId].cacheMetadata;
             draftState.recordSets[cachedSet.setId].cacheMetadata = {
               status: UserRecordCacheStatus.CACHED,
-              idList: draftState.recordSets[cachedSet.setId].cacheMetadata.idList ?? []
+              idList,
+              cachedGeoJson,
+              cachedCentroid
             };
           }
         }
