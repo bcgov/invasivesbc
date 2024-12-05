@@ -209,7 +209,6 @@ export interface MapState {
   IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
   IAPPGeoJSONDict: object;
-  // LeafletWhosEditing: LeafletWhosEditingEnum;
   accuracyToggle: boolean;
   activitiesGeoJSON: any;
   activitiesGeoJSONDict: object;
@@ -295,70 +294,6 @@ export interface MapState {
   layerPickerOpen: boolean;
 
   tileCacheMode: boolean;
-
-  //
-  //   constructor()
-  //
-  // {
-  //   this.CanTriggerCSV = true;
-  //   this.HDToggle = false;
-  //   this.IAPPBoundsPolygon = null;
-  //   this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
-  //   this.accuracyToggle = false;
-  //   this.activityPageMapExtentToggle = false;
-  //   this.activity_center = [53, -127];
-  //   this.activity_zoom = 5;
-  //   this.baseMapToggle = false;
-  //   this.clientBoundaries =
-  //     localStorage.getItem('CLIENT_BOUNDARIES') !== null
-  //       ? (JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES')) as Array<any>)
-  //       : [];
-  //   this.currentOpenSet = null;
-  //   this.customizeLayersToggle = false;
-  //   this.drawingCustomLayer = false;
-  //   this.layerPickerOpen = false;
-  //   this.layers = [];
-  //   this.initialized = false;
-  //   this.labelBoundsPolygon = null;
-  //   this.legendsPopup = false;
-  //   this.linkToCSV = null;
-  //   this.map_center = [53, -127];
-  //   this.map_zoom = 5;
-  //   this.panned = true;
-  //   this.positionTracking = false;
-  //   this.quickPanToRecord = false;
-  //   this.quickPanToRecord = false;
-  //   this.recordSetForCSV = null;
-  //   this.recordTables = {};
-  //   this.serverBoundaries = ;
-  //   this.simplePickerLayers = [];
-
-  //   this.tooManyLabelsDialog = { dialogActions: [], dialogOpen: false, dialogTitle: '', dialogContentText: null };
-  //   this.userHeading = null;
-  //   this.userRecordOnClickMenuOpen = false;
-  //   this.viewFilters = true;
-  //   this.whatsHere = {
-  //     ActivityIDs: [],
-  //     ActivityLimit: 5,
-  //     ActivityPage: 0,
-  //     ActivitySortDirection: 'desc',
-  //     ActivitySortField: 'created',
-  //     IAPPIDs: [],
-  //     IAPPLimit: 5,
-  //     IAPPPage: 0,
-  //     IAPPSortDirection: 'desc',
-  //     IAPPSortField: 'earliest_survey',
-  //     activityRows: [],
-  //     feature: null,
-  //     highlightedType: null,
-  //     iappRows: [],
-  //     limit: 5,
-  //     page: 0,
-  //     section: 'invasivesbc',
-  //     toggle: false
-  //   };
-  //   this.workingLayerName = null;
-  // }
 }
 
 const initialState: MapState = {
@@ -545,16 +480,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
           }
           draftState.layers[layerIndex].layerState = {};
-          if (action.payload.recordSets[setID].colorScheme)
+          if (action.payload.recordSets[setID].colorScheme) {
             draftState.layers[layerIndex].layerState.colorScheme = action.payload.recordSets[setID].colorScheme;
-          if (action.payload.recordSets[setID].color)
+          }
+          if (action.payload.recordSets[setID].color) {
             draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
-          if (action.payload.recordSets[setID].mapToggle)
+          }
+          if (action.payload.recordSets[setID].mapToggle) {
             draftState.layers[layerIndex].layerState.mapToggle = action.payload.recordSets[setID].mapToggle;
-          if (action.payload.recordSets[setID].labelToggle)
+          }
+          if (action.payload.recordSets[setID].labelToggle) {
             draftState.layers[layerIndex].layerState.labelToggle = action.payload.recordSets[setID].labelToggle;
-          if (action.payload.recordSets[setID].drawOrder)
+          }
+          if (action.payload.recordSets[setID].drawOrder) {
             draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
+          }
+          if (action.payload.recordSets[setID].cacheMetadata) {
+            draftState.layers[layerIndex].layerState.cacheMetadata = action.payload.recordSets[setID].cacheMetadata;
+          }
         });
       } else if (WhatsHere.map_init_get_poi_ids_fetched.match(action)) {
         draftState.whatsHere.IAPPIDs = action.payload ?? [];
@@ -826,6 +769,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
                 draftState.activitiesGeoJSONDict = {};
                 draftState.IAPPGeoJSONDict = {};
                 draftState.layers = draftState.layers.map((layer) => {
+                  console.log(layer);
                   delete layer.geoJSON;
                   return layer;
                 });
