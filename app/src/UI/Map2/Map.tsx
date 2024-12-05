@@ -193,11 +193,11 @@ export const Map = ({ children }) => {
     if (!mapReady) return;
     if (!map.current) return;
 
-    rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE);
+    rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE, connectedToNetwork);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-  }, [storeLayers, map.current, mapReady]);
+  }, [storeLayers, map.current, mapReady, connectedToNetwork]);
 
   // Layer picker:
   useEffect(() => {
