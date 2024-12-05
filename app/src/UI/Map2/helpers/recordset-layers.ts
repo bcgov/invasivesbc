@@ -1,7 +1,16 @@
-import maplibregl from 'maplibre-gl';
+import maplibregl, {
+  CircleLayerSpecification,
+  FillLayerSpecification,
+  GeoJSONSourceSpecification,
+  LineLayerSpecification,
+  SourceSpecification,
+  SymbolLayerSpecification
+} from 'maplibre-gl';
 import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Map2/helpers/layer-definitions';
 import { FALLBACK_COLOR } from 'UI/Map2/helpers/constants';
 import { safelySetPaintProperty } from 'UI/Map2/helpers/utility-functions';
+import { MOBILE } from 'state/build-time-config';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
@@ -20,18 +29,6 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
       data: layer.geoJSON
     };
   }
-
-  const circleLayer = {
-    id: layerID,
-    source: layerID,
-    type: 'circle',
-    paint: {
-      'circle-color': layer.layerState.color || FALLBACK_COLOR,
-      'circle-radius': 3
-    },
-    minzoom: 0,
-    maxzoom: 24
-  };
 
   const labelLayer = {
     id: 'label-' + layerID,
@@ -61,6 +58,9 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
     },
     minzoom: 10
   };
+  const color: string = layer.layerState.color ?? FALLBACK_COLOR;
+  const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
+  // const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color });
 
   if (mode === 'VECTOR_ENDPOINT') {
     circleLayer['source-layer'] = 'data';
@@ -103,6 +103,166 @@ export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
     }
   });
 };
+const getPaintBySchemeOrColor = (layer: any) => {
+  if (layer?.layerState?.colorScheme) {
+    return [
+      'match',
+      ['get', 'activity_subtype'],
+      'Activity_Biocontrol_Collection',
+      layer.layerState.colorScheme['Activity_Biocontrol_Collection'] || FALLBACK_COLOR,
+      'Activity_Biocontrol_Release',
+      layer.layerState.colorScheme['Activity_Biocontrol_Release'] || FALLBACK_COLOR,
+      'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
+      layer.layerState.colorScheme['Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant'] || FALLBACK_COLOR,
+      'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
+      layer.layerState.colorScheme['Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'] || FALLBACK_COLOR,
+      'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+      layer.layerState.colorScheme['Activity_Monitoring_ChemicalTerrestrialAquaticPlant'] || FALLBACK_COLOR,
+      'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
+      layer.layerState.colorScheme['Activity_Monitoring_MechanicalTerrestrialAquaticPlant'] || FALLBACK_COLOR,
+      'Activity_Observation_PlantAquatic',
+      layer.layerState.colorScheme['Activity_Observation_PlantAquatic'] || FALLBACK_COLOR,
+      'Activity_Observation_PlantTerrestrial',
+      layer.layerState.colorScheme['Activity_Observation_PlantTerrestrial'] || FALLBACK_COLOR,
+      'Activity_Treatment_ChemicalPlantAquatic',
+      layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantAquatic'] || FALLBACK_COLOR,
+      'Activity_Treatment_ChemicalPlantTerrestrial',
+      layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantTerrestrial'] || FALLBACK_COLOR,
+      'Activity_Treatment_MechanicalPlantAquatic',
+      layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantAquatic'] || FALLBACK_COLOR,
+      'Activity_Treatment_MechanicalPlantTerrestrial',
+      layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantTerrestrial'] || FALLBACK_COLOR,
+      layer.layerState.color || FALLBACK_COLOR
+    ];
+  } else {
+    return layer?.layerState?.color || FALLBACK_COLOR;
+  }
+};
+interface LayerOptions {
+  color: string;
+  minzoom?: number;
+  maxzoom?: number;
+}
+
+const getFillLayer = (layerID: string, options: LayerOptions): FillLayerSpecification => ({
+  id: layerID,
+  source: layerID,
+  type: 'fill',
+  paint: {
+    'fill-color': options.color,
+    'fill-outline-color': options.color,
+    'fill-opacity': 0.5
+  },
+  maxzoom: options.maxzoom ?? 24,
+  minzoom: options.minzoom ?? 0
+});
+
+const getBorderLayer = (layerID: string, options: LayerOptions): LineLayerSpecification => ({
+  id: 'polygon-border-' + layerID,
+  source: layerID,
+  type: 'line',
+  paint: {
+    'line-color': options.color,
+    'line-opacity': 1,
+    'line-width': 3
+  },
+  maxzoom: options.maxzoom ?? 24,
+  minzoom: options.minzoom ?? 0
+});
+
+const getCircleMarkerZoomedOutLayer = (layerID: string, options: LayerOptions): CircleLayerSpecification => ({
+  id: 'polygon-circle-' + layerID,
+  source: layerID,
+  type: 'circle',
+  paint: {
+    'circle-color': options.color,
+    'circle-radius': 4
+  },
+  maxzoom: options.maxzoom ?? 24,
+  minzoom: options.minzoom ?? 0
+});
+
+const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpecification => ({
+  id: 'label-' + layerID,
+  type: 'symbol',
+  source: layerID,
+  layout: {
+    'text-field': [
+      'format',
+      ['upcase', ['get', 'short_id']],
+      { 'font-scale': 0.9 },
+      '\n',
+      {},
+      ['get', 'map_symbol'],
+      { 'font-scale': 0.9 }
+    ],
+    'text-font': ['literal', ['Open Sans Bold']],
+    'text-offset': [0, 0.6],
+    'text-anchor': 'top'
+  },
+  paint: {
+    'text-color': 'black',
+    'text-halo-color': 'white',
+    'text-halo-width': 1,
+    'text-halo-blur': 1
+  },
+  minzoom: options.minzoom ?? 0,
+  maxzoom: options.maxzoom ?? 24
+});
+
+export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
+  if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
+    return;
+  }
+  if (!layer.layerState.cacheMetadata.hasOwnProperty('cachedGeoJson')) {
+    return;
+  }
+  const CENTROID_TO_GEOJSON_ZOOM = 12;
+  const GEOJSON_ID = `recordset-layer-${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+  const CENTROID_ID = `${GEOJSON_ID}-centroid`;
+  const color = getPaintBySchemeOrColor(layer);
+
+  const geoJsonSourcObj: GeoJSONSourceSpecification = {
+    type: 'geojson',
+    data: {
+      type: 'FeatureCollection',
+      features: layer.layerState.cacheMetadata.cachedGeoJson.map((item) => item.feature[0])
+    }
+  };
+  const centroidSourceObj: GeoJSONSourceSpecification = {
+    type: 'geojson',
+    data: {
+      type: 'FeatureCollection',
+      features: layer.layerState.cacheMetadata.cachedCentroid.map((item) => item.feature)
+    }
+  };
+  const circleMarkerZoomedOutLayerCentroid: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(CENTROID_ID, {
+    color,
+    maxzoom: CENTROID_TO_GEOJSON_ZOOM
+  });
+  const labelLayerCentroid: SymbolLayerSpecification = getLabelLayer(CENTROID_ID, {
+    color,
+    maxzoom: CENTROID_TO_GEOJSON_ZOOM
+  });
+
+  const fillLayer: FillLayerSpecification = getFillLayer(GEOJSON_ID, { color, minzoom: CENTROID_TO_GEOJSON_ZOOM });
+  const borderLayer: LineLayerSpecification = getBorderLayer(GEOJSON_ID, { color, minzoom: CENTROID_TO_GEOJSON_ZOOM });
+  const circleMarkerZoomedOutLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(GEOJSON_ID, {
+    color,
+    minzoom: CENTROID_TO_GEOJSON_ZOOM
+  });
+  const labelLayer: SymbolLayerSpecification = getLabelLayer(GEOJSON_ID, { color, minzoom: CENTROID_TO_GEOJSON_ZOOM });
+
+  map.addSource(CENTROID_ID, geoJsonSourcObj);
+  map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
+  map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
+  map.addLayer(circleMarkerZoomedOutLayer, LAYER_Z_FOREGROUND);
+  map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
+
+  map.addSource(CENTROID_ID + '-centroid', centroidSourceObj);
+  map.addLayer(labelLayerCentroid, LAYER_Z_FOREGROUND);
+  map.addLayer(circleMarkerZoomedOutLayerCentroid, LAYER_Z_FOREGROUND);
+};
 
 export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
@@ -111,44 +271,8 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
     return;
   }
 
-  const getPaintBySchemeOrColor = (layer: any) => {
-    if (layer?.layerState?.colorScheme) {
-      return [
-        'match',
-        ['get', 'activity_subtype'],
-        'Activity_Biocontrol_Collection',
-        layer.layerState.colorScheme['Activity_Biocontrol_Collection'] || FALLBACK_COLOR,
-        'Activity_Biocontrol_Release',
-        layer.layerState.colorScheme['Activity_Biocontrol_Release'] || FALLBACK_COLOR,
-        'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
-        layer.layerState.colorScheme['Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant'] || FALLBACK_COLOR,
-        'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
-        layer.layerState.colorScheme['Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'] || FALLBACK_COLOR,
-        'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
-        layer.layerState.colorScheme['Activity_Monitoring_ChemicalTerrestrialAquaticPlant'] || FALLBACK_COLOR,
-        'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-        layer.layerState.colorScheme['Activity_Monitoring_MechanicalTerrestrialAquaticPlant'] || FALLBACK_COLOR,
-        'Activity_Observation_PlantAquatic',
-        layer.layerState.colorScheme['Activity_Observation_PlantAquatic'] || FALLBACK_COLOR,
-        'Activity_Observation_PlantTerrestrial',
-        layer.layerState.colorScheme['Activity_Observation_PlantTerrestrial'] || FALLBACK_COLOR,
-        'Activity_Treatment_ChemicalPlantAquatic',
-        layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantAquatic'] || FALLBACK_COLOR,
-        'Activity_Treatment_ChemicalPlantTerrestrial',
-        layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantTerrestrial'] || FALLBACK_COLOR,
-        'Activity_Treatment_MechanicalPlantAquatic',
-        layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantAquatic'] || FALLBACK_COLOR,
-        'Activity_Treatment_MechanicalPlantTerrestrial',
-        layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantTerrestrial'] || FALLBACK_COLOR,
-        layer.layerState.color || FALLBACK_COLOR
-      ];
-    } else {
-      return layer?.layerState?.color || FALLBACK_COLOR;
-    }
-  };
-
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
-  let source = {};
+  let source: SourceSpecification;
   if (mode === 'VECTOR_ENDPOINT') {
     source = {
       type: 'vector',
@@ -165,72 +289,11 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
       //tolerance: 0 defaults to 0.375, 0 is a hog but 0.375 is too much at low zooms
     };
   }
-
-  const fillLayer = {
-    id: layerID,
-    source: layerID,
-    type: 'fill',
-    paint: {
-      'fill-color': getPaintBySchemeOrColor(layer),
-      'fill-outline-color': getPaintBySchemeOrColor(layer),
-      'fill-opacity': 0.5
-    },
-    minzoom: 0,
-    maxzoom: 24
-  };
-
-  const borderLayer = {
-    id: 'polygon-border-' + layerID,
-    source: layerID,
-    type: 'line',
-    paint: {
-      'line-color': getPaintBySchemeOrColor(layer),
-      'line-opacity': 1,
-      'line-width': 3
-    }
-  };
-
-  const circleMarkerZoomedOutLayer = {
-    id: 'polygon-circle-' + layerID,
-    source: layerID,
-    type: 'circle',
-    paint: {
-      'circle-color': getPaintBySchemeOrColor(layer),
-      'circle-radius': 4
-    },
-    maxzoom: 24,
-    minzoom: 0
-  };
-
-  const labelLayer = {
-    id: 'label-' + layerID,
-    type: 'symbol',
-    source: layerID,
-    layout: {
-      //                'icon-image': 'dog-park-11',
-      'text-field': [
-        'format',
-        ['upcase', ['get', 'short_id']],
-        { 'font-scale': 0.9 },
-        '\n',
-        {},
-        ['get', 'map_symbol'],
-        { 'font-scale': 0.9 }
-      ],
-      // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-      'text-font': ['literal', ['Open Sans Bold']],
-      // 'text-font': ['literal', ['Open Sans Semibold']],
-      'text-offset': [0, 0.6],
-      'text-anchor': 'top'
-    },
-    paint: {
-      'text-color': 'black',
-      'text-halo-color': 'white',
-      'text-halo-width': 1,
-      'text-halo-blur': 1
-    },
-    minzoom: 10
-  };
+  const color = getPaintBySchemeOrColor(layer);
+  const fillLayer: FillLayerSpecification = getFillLayer(layerID, { color });
+  const borderLayer: LineLayerSpecification = getBorderLayer(layerID, { color });
+  const circleMarkerZoomedOutLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
+  const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color });
 
   if (mode === 'VECTOR_ENDPOINT') {
     fillLayer['source-layer'] = 'data';
@@ -287,7 +350,13 @@ export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: unknown) =>
   });
 };
 
-export const rebuildLayersOnTableHashUpdate = (storeLayers, map: maplibregl.Map, mode, API_BASE) => {
+export const rebuildLayersOnTableHashUpdate = (
+  storeLayers: Record<PropertyKey, any>,
+  map: maplibregl.Map,
+  mode: string,
+  API_BASE: string,
+  connectedToNetwork: boolean
+) => {
   /*
       First need to delete the layers who's record set was deleted altogether:
 
@@ -295,11 +364,11 @@ export const rebuildLayersOnTableHashUpdate = (storeLayers, map: maplibregl.Map,
   const storeLayersIds = storeLayers.map((layer) => {
     return 'recordset-layer-' + layer.recordSetID + '-';
   });
-
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
   const allThatAreRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes('recordset-layer'));
   const allThatAreRecordSetSources = allSourcesOnMap.filter((source) => source.includes('recordset-layer-'));
+  console.log(allThatAreRecordSetLayers);
   const recordSetLayersThatAreNotInStore = allThatAreRecordSetLayers.filter(
     (layer) => storeLayersIds.filter((storeLayerId) => layer.includes(storeLayerId)).length === 0
   );
@@ -325,15 +394,19 @@ export const rebuildLayersOnTableHashUpdate = (storeLayers, map: maplibregl.Map,
   // now update the layers that are in the store
   storeLayers.map((layer: any) => {
     if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
-      if (layer.type === 'Activity') {
+      if (layer.type === RecordSetType.Activity) {
         deleteStaleActivityLayer(map, layer);
         const existingSource = map.getSource(
           'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
         );
         if (existingSource === undefined) {
-          createActivityLayer(map, layer, mode, API_BASE);
+          if (MOBILE && !connectedToNetwork) {
+            createOfflineActivityLayer(map, layer);
+          } else {
+            createActivityLayer(map, layer, mode, API_BASE);
+          }
         }
-      } else if (layer.type === 'IAPP') {
+      } else if (layer.type === RecordSetType.IAPP) {
         deleteStaleIAPPLayer(map, layer, mode);
         const existingSource = map.getSource(
           'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
