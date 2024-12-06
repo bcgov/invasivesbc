@@ -139,13 +139,13 @@ export const mapInit = (options: MapInitOptions) => {
       }
 
       // const api_local = 'http://localhost:3002';
-      // to make bcgw layers work on mobile
-      if (MOBILE && url.includes('openmaps.gov.bc.ca/geo/ows')) {
-        const proxyUrl = `${api_base}/api/proxy/openmaps?url=${encodeURIComponent(url)}`;
-        return {
-          url: proxyUrl
-        };
-      }
+      // // to make bcgw layers work on mobile
+      // if (MOBILE && url.includes('openmaps.gov.bc.ca/geo/ows')) {
+      //   const proxyUrl = `${api_local}/api/proxy/openmaps?url=${encodeURIComponent(url)}`;
+      //   return {
+      //     url: proxyUrl
+      //   };
+      // }
 
       return {
         url

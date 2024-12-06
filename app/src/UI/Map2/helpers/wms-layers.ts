@@ -1,3 +1,4 @@
+import { MOBILE } from 'state/build-time-config';
 import { LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Map2/helpers/layer-definitions';
 
 export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
@@ -6,7 +7,9 @@ export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
       map
         .addSource(layer.url, {
           type: 'raster',
-          tiles: [layer.url],
+          tiles: [
+            `http://localhost:3002/api/proxy/openmaps?bbox={bbox-epsg-3857}&url=${encodeURIComponent(layer.url)}`
+          ],
           tileSize: 256,
           maxzoom: 18
         })

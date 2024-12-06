@@ -12,12 +12,24 @@ const GET: Operation = [getOpenMapsWMSTiles()];
 GET.apiDoc = {
   description: 'Proxy requests to a BCGW WMS endpoint',
   tags: ['proxy'],
+  security: SECURITY_ON
+    ? [
+        {
+          Bearer: ALL_ROLES
+        }
+      ]
+    : [],
   parameters: [
+    {
+      name: 'bbox',
+      in: 'query',
+      required: true,
+      description: 'BBox'
+    },
     {
       name: 'url',
       in: 'query',
       required: true,
-      type: 'string',
       description: 'The target WMS URL to proxy'
     }
   ],
@@ -25,17 +37,17 @@ GET.apiDoc = {
     200: {
       description: 'Successful response',
       schema: {
-        type: 'string'
+        type: 'object'
       }
     },
     400: {
       description: 'Invalid request'
     },
-    500: {
-      description: 'Internal server error'
-    },
     401: {
       $ref: '#/components/responses/401'
+    },
+    500: {
+      description: 'Internal server error'
     },
     503: {
       $ref: '#/components/responses/503'
@@ -52,10 +64,26 @@ GET.apiDoc = {
  * @return {RequestHandler}
  */
 function getOpenMapsWMSTiles(): RequestHandler {
-  return async (req, res, next) => {
+  return async (req: InvasivesRequest, res) => {
+    if (req.authContext.roles.length === 0) {
+      res.status(401).json({ message: 'No Role for user' });
+    }
     const targetUrl = req.query.url;
+    const bbox = req.query.bbox;
+    const decodedUrl = decodeURI(targetUrl as string);
+    console.log('Decoded', decodedUrl);
 
-    if (!targetUrl) {
+    const updatedUrl = decodedUrl.replace('{bbox-epsg-3857}', bbox as string);
+    console.log('Updated', updatedUrl);
+
+    const finalEncodedUrl = encodeURI(updatedUrl);
+
+    // const finalEncodedUrl = encodeURIComponent(
+    //   decodeURIComponent(targetUrl.toString()).replace('{bbox-epsg-3857}', bbox.toString())
+    // );
+    console.log('Final', finalEncodedUrl);
+
+    if (!finalEncodedUrl) {
       return res.status(400).json({
         message: 'Missing URL parameter',
         request: req.body,
@@ -65,13 +93,13 @@ function getOpenMapsWMSTiles(): RequestHandler {
     }
 
     https
-      .get(targetUrl, (apiRes) => {
+      .get(finalEncodedUrl, (apiRes) => {
         if (apiRes.statusCode !== 200) {
           console.error(`Failed to fetch data: ${apiRes.statusMessage}`);
           return res.status(apiRes.statusCode).send(`Error fetching data: ${apiRes.statusMessage}`);
         }
 
-        // Pass through headers from the OpenMaps API response
+        // Pass headers from the OpenMaps API response
         res.setHeader('Content-Type', apiRes.headers['content-type']);
         res.setHeader('Cache-Control', apiRes.headers['cache-control'] || 'no-cache');
 
@@ -82,6 +110,7 @@ function getOpenMapsWMSTiles(): RequestHandler {
         console.error('Request error:', err);
         res.status(500).send('Internal Server Error');
       });
+    // return next();
   };
 }
 
