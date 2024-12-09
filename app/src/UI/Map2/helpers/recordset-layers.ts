@@ -10,7 +10,7 @@ import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Map2/hel
 import { FALLBACK_COLOR } from 'UI/Map2/helpers/constants';
 import { safelySetPaintProperty } from 'UI/Map2/helpers/utility-functions';
 import { MOBILE } from 'state/build-time-config';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 
 export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
@@ -60,7 +60,6 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
   };
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
-  // const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color });
 
   if (mode === 'VECTOR_ENDPOINT') {
     circleLayer['source-layer'] = 'data';
@@ -211,10 +210,10 @@ const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpeci
 });
 
 export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
-  if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
-    return;
-  }
-  if (!layer.layerState.cacheMetadata.hasOwnProperty('cachedGeoJson')) {
+  if (
+    (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) ||
+    layer.layerState.cacheMetadata.status !== UserRecordCacheStatus.CACHED
+  ) {
     return;
   }
   const CENTROID_TO_GEOJSON_ZOOM = 12;
@@ -222,20 +221,9 @@ export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
   const CENTROID_ID = `${GEOJSON_ID}-centroid`;
   const color = getPaintBySchemeOrColor(layer);
 
-  const geoJsonSourcObj: GeoJSONSourceSpecification = {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: layer.layerState.cacheMetadata.cachedGeoJson.map((item) => item.feature[0])
-    }
-  };
-  const centroidSourceObj: GeoJSONSourceSpecification = {
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: layer.layerState.cacheMetadata.cachedCentroid.map((item) => item.feature)
-    }
-  };
+  const geoJsonSourcObj: GeoJSONSourceSpecification = layer.layerState.cacheMetadata.cachedGeoJson;
+  const centroidSourceObj: GeoJSONSourceSpecification = layer.layerState.cacheMetadata.cachedCentroid;
+
   const circleMarkerZoomedOutLayerCentroid: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(CENTROID_ID, {
     color,
     maxzoom: CENTROID_TO_GEOJSON_ZOOM
@@ -253,13 +241,13 @@ export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
   });
   const labelLayer: SymbolLayerSpecification = getLabelLayer(GEOJSON_ID, { color, minzoom: CENTROID_TO_GEOJSON_ZOOM });
 
-  map.addSource(CENTROID_ID, geoJsonSourcObj);
+  map.addSource(GEOJSON_ID, geoJsonSourcObj);
   map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
   map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
   map.addLayer(circleMarkerZoomedOutLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 
-  map.addSource(CENTROID_ID + '-centroid', centroidSourceObj);
+  map.addSource(CENTROID_ID, centroidSourceObj);
   map.addLayer(labelLayerCentroid, LAYER_Z_FOREGROUND);
   map.addLayer(circleMarkerZoomedOutLayerCentroid, LAYER_Z_FOREGROUND);
 };
@@ -309,7 +297,7 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 };
 
-export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: unknown) => {
+export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
   if (!map) {
     return;
   }
@@ -322,12 +310,11 @@ export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: unknown) =>
       mapLayer.includes('polygon-circle-' + layer.recordSetID)
     );
   });
-
   const stale = allLayersForRecordSet.filter((mapLayer) => {
     return !mapLayer.includes(layer.tableFiltersHash);
   });
 
-  stale.map((staleLayer) => {
+  stale.forEach((staleLayer) => {
     try {
       map.removeLayer(staleLayer);
     } catch (e) {
@@ -350,6 +337,36 @@ export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: unknown) =>
   });
 };
 
+/**
+ * @desc Delete all recordset layers on the map when network changes
+ * @param storeLayers
+ * @param map Current Mapre
+ */
+export const removeLayersOnNetworkConnectivityChange = (storeLayers: Record<PropertyKey, any>, map: maplibregl.Map) => {
+  if (!MOBILE) {
+    return;
+  }
+  const allLayersOnMap = map.getLayersOrder();
+  const allSourcesOnMap = Object.keys(map.style.sourceCaches);
+
+  const recordSetLayers = allLayersOnMap.filter((layer) => layer.includes('recordset-layer'));
+  const recordSetSources = allSourcesOnMap.filter((source) => source.includes('recordset-layer-'));
+  recordSetLayers.forEach((layer) => {
+    try {
+      map.removeLayer(layer);
+    } catch (e) {
+      console.error('error removing layer', e);
+    }
+  });
+  recordSetSources.forEach((source) => {
+    try {
+      map.removeSource(source);
+    } catch (e) {
+      console.error('error removing source', e);
+    }
+  });
+};
+
 export const rebuildLayersOnTableHashUpdate = (
   storeLayers: Record<PropertyKey, any>,
   map: maplibregl.Map,
@@ -357,18 +374,13 @@ export const rebuildLayersOnTableHashUpdate = (
   API_BASE: string,
   connectedToNetwork: boolean
 ) => {
-  /*
-      First need to delete the layers who's record set was deleted altogether:
-
-  */
-  const storeLayersIds = storeLayers.map((layer) => {
-    return 'recordset-layer-' + layer.recordSetID + '-';
-  });
+  /* First need to delete the layers who's record set was deleted altogether: */
+  const storeLayersIds = storeLayers.map((layer) => 'recordset-layer-' + layer.recordSetID + '-');
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
   const allThatAreRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes('recordset-layer'));
   const allThatAreRecordSetSources = allSourcesOnMap.filter((source) => source.includes('recordset-layer-'));
-  console.log(allThatAreRecordSetLayers);
+
   const recordSetLayersThatAreNotInStore = allThatAreRecordSetLayers.filter(
     (layer) => storeLayersIds.filter((storeLayerId) => layer.includes(storeLayerId)).length === 0
   );
@@ -376,14 +388,14 @@ export const rebuildLayersOnTableHashUpdate = (
     (source) => storeLayersIds.filter((storeLayerId) => source.includes(storeLayerId)).length === 0
   );
 
-  recordSetLayersThatAreNotInStore.map((layer) => {
+  recordSetLayersThatAreNotInStore.forEach((layer) => {
     try {
       map.removeLayer(layer);
     } catch (e) {
       console.error('error removing layer', e);
     }
   });
-  recordSetSourcesThatAreNotInStore.map((source) => {
+  recordSetSourcesThatAreNotInStore.forEach((source) => {
     try {
       map.removeSource(source);
     } catch (e) {
@@ -429,7 +441,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
     for (const mapLayer of matchingLayers) {
       let currentColor = '';
 
-      if (/^recordset-layer-/.test(mapLayer)) {
+      if (mapLayer.startsWith('recordset-layer-')) {
         const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
         if (layer.type === 'Activity') {
           if (fillPolygonLayerStyle?.paint) {
@@ -499,6 +511,7 @@ export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map
   });
 };
 
+/** TODO: */
 export const removeDeletedRecordSetLayersOnRecordSetDelete = (storeLayers, map) => {
   map.getLayersOrder().map((layer: any) => {
     if (
