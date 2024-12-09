@@ -1,5 +1,6 @@
-import { Feature } from '@turf/helpers';
+import { Feature, FeatureCollection } from '@turf/helpers';
 import UserRecord from 'interfaces/UserRecord';
+import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
 export interface RecordCacheDownloadRequestSpec {
@@ -12,17 +13,6 @@ export interface RecordCacheAddSpec {
   setId: string;
   idsToCache: string[];
 }
-
-/**
- * @desc Map source metadata
- * @property {string} label short_id to display under points
- * @property {Feature} feature Shape data to display.
- */
-export interface RecordSetCachedShape {
-  label: string;
-  feature: Feature;
-}
-
 /**
  * @desc Cached Metadata for Recordsets
  * @property { string } setID Recordset ID
@@ -33,13 +23,13 @@ export interface RecordSetCachedShape {
 export interface RecordSetCacheMetadata {
   setId: string;
   cachedIds?: string[];
-  cachedGeoJson: RecordSetCachedShape[];
-  cachedCentroid: RecordSetCachedShape[];
+  cachedGeoJson: GeoJSONSourceSpecification;
+  cachedCentroid: GeoJSONSourceSpecification;
 }
 
 export interface RecordSetSourceMetadata {
-  cachedGeoJson: RecordSetCachedShape[];
-  cachedCentroid: RecordSetCachedShape[];
+  cachedGeoJson: GeoJSONSourceSpecification;
+  cachedCentroid: GeoJSONSourceSpecification;
 }
 
 export interface RecordCacheProgressCallbackParameters {

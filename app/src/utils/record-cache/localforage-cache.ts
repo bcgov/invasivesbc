@@ -4,10 +4,11 @@ import centroid from '@turf/centroid';
 import {
   RecordCacheAddSpec,
   RecordCacheService,
-  RecordSetCachedShape,
   RecordSetCacheMetadata,
   RecordSetSourceMetadata
 } from 'utils/record-cache/index';
+import { Feature } from '@turf/helpers';
+import { GeoJSONSourceSpecification } from 'maplibre-gl';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -114,17 +115,33 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @returns { RecordSetSourceMetadata } Two formatted queries for High/Low zoom layers
    */
   async loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
-    const cachedCentroid: RecordSetCachedShape[] = [];
-    const cachedGeoJson: RecordSetCachedShape[] = [];
+    const centroidArr: any[] = [];
+    const geoJsonArr: any[] = [];
 
     for (const id of ids) {
       const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
       const label = data.short_id;
-      const feature = data.geometry;
-      cachedCentroid.push({ label, feature: centroid(feature?.[0]) });
-      cachedGeoJson.push({ label, feature });
+      const features = data.geometry;
+      features.forEach((feature: Feature) => {
+        feature.properties = { name: label };
+        centroidArr.push(centroid(feature));
+        geoJsonArr.push(feature);
+      });
     }
-
+    const cachedCentroid: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: centroidArr
+      }
+    };
+    const cachedGeoJson: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: geoJsonArr
+      }
+    };
     return { cachedCentroid, cachedGeoJson };
   }
 
