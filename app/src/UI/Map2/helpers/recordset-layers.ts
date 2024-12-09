@@ -10,7 +10,8 @@ import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Map2/hel
 import { FALLBACK_COLOR } from 'UI/Map2/helpers/constants';
 import { safelySetPaintProperty } from 'UI/Map2/helpers/utility-functions';
 import { MOBILE } from 'state/build-time-config';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetType } from 'interfaces/UserRecordSet';
+import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 
 export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
@@ -30,35 +31,8 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
     };
   }
 
-  const labelLayer = {
-    id: 'label-' + layerID,
-    type: 'symbol',
-    source: layerID,
-    layout: {
-      //                'icon-image': 'dog-park-11',
-      'text-field': [
-        'format',
-        ['to-string', ['get', 'site_id']],
-        { 'font-scale': 0.9 },
-        '\n',
-        {},
-        ['to-string', ['get', 'map_symbol']],
-        { 'font-scale': 0.9 }
-      ],
-      // the actual font names that work are here
-      'text-font': ['literal', ['Open Sans Bold']],
-      'text-offset': [0, 0.6],
-      'text-anchor': 'top'
-    },
-    paint: {
-      'text-color': 'black',
-      'text-halo-color': 'white',
-      'text-halo-width': 1,
-      'text-halo-blur': 1
-    },
-    minzoom: 10
-  };
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
+  const labelLayer = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'site_id' });
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
 
   if (mode === 'VECTOR_ENDPOINT') {
@@ -141,6 +115,7 @@ interface LayerOptions {
   color: string;
   minzoom?: number;
   maxzoom?: number;
+  get_tag?: string;
 }
 
 const getFillLayer = (layerID: string, options: LayerOptions): FillLayerSpecification => ({
@@ -183,19 +158,20 @@ const getCircleMarkerZoomedOutLayer = (layerID: string, options: LayerOptions): 
 
 const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpecification => ({
   id: 'label-' + layerID,
-  type: 'symbol',
   source: layerID,
+  type: 'symbol',
   layout: {
     'text-field': [
       'format',
-      ['upcase', ['get', 'short_id']],
+      ['get', options.get_tag ?? 'short_id'],
       { 'font-scale': 0.9 },
       '\n',
       {},
       ['get', 'map_symbol'],
       { 'font-scale': 0.9 }
     ],
-    'text-font': ['literal', ['Open Sans Bold']],
+    // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
+    'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
     'text-offset': [0, 0.6],
     'text-anchor': 'top'
   },
@@ -205,14 +181,18 @@ const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpeci
     'text-halo-width': 1,
     'text-halo-blur': 1
   },
-  minzoom: options.minzoom ?? 0,
+  minzoom: options.minzoom ?? 12,
   maxzoom: options.maxzoom ?? 24
 });
 
+/**
+ * @desc Uses the device's recordset Cache data to display geoJson Layers on the map when offline
+ *       Displays two layers: Points at high levels, and shapes at lower
+ */
 export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
   if (
     (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) ||
-    layer.layerState.cacheMetadata.status !== UserRecordCacheStatus.CACHED
+    !layer.layerState.cacheMetadata.hasOwnProperty('cachedGeoJson')
   ) {
     return;
   }
@@ -230,7 +210,8 @@ export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
   });
   const labelLayerCentroid: SymbolLayerSpecification = getLabelLayer(CENTROID_ID, {
     color,
-    maxzoom: CENTROID_TO_GEOJSON_ZOOM
+    maxzoom: CENTROID_TO_GEOJSON_ZOOM,
+    get_tag: 'name'
   });
 
   const fillLayer: FillLayerSpecification = getFillLayer(GEOJSON_ID, { color, minzoom: CENTROID_TO_GEOJSON_ZOOM });
@@ -239,7 +220,11 @@ export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
     color,
     minzoom: CENTROID_TO_GEOJSON_ZOOM
   });
-  const labelLayer: SymbolLayerSpecification = getLabelLayer(GEOJSON_ID, { color, minzoom: CENTROID_TO_GEOJSON_ZOOM });
+  const labelLayer: SymbolLayerSpecification = getLabelLayer(GEOJSON_ID, {
+    color,
+    minzoom: CENTROID_TO_GEOJSON_ZOOM,
+    get_tag: 'name'
+  });
 
   map.addSource(GEOJSON_ID, geoJsonSourcObj);
   map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
@@ -281,7 +266,7 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
   const fillLayer: FillLayerSpecification = getFillLayer(layerID, { color });
   const borderLayer: LineLayerSpecification = getBorderLayer(layerID, { color });
   const circleMarkerZoomedOutLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
-  const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color });
+  const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, get_tag: 'short_id' });
 
   if (mode === 'VECTOR_ENDPOINT') {
     fillLayer['source-layer'] = 'data';
@@ -375,6 +360,7 @@ export const rebuildLayersOnTableHashUpdate = (
   connectedToNetwork: boolean
 ) => {
   /* First need to delete the layers who's record set was deleted altogether: */
+  const MOBILE_OFFLINE = MOBILE && !connectedToNetwork;
   const storeLayersIds = storeLayers.map((layer) => 'recordset-layer-' + layer.recordSetID + '-');
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
@@ -412,13 +398,13 @@ export const rebuildLayersOnTableHashUpdate = (
           'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
         );
         if (existingSource === undefined) {
-          if (MOBILE && !connectedToNetwork) {
+          if (MOBILE_OFFLINE) {
             createOfflineActivityLayer(map, layer);
           } else {
             createActivityLayer(map, layer, mode, API_BASE);
           }
         }
-      } else if (layer.type === RecordSetType.IAPP) {
+      } else if (layer.type === RecordSetType.IAPP && !MOBILE_OFFLINE) {
         deleteStaleIAPPLayer(map, layer, mode);
         const existingSource = map.getSource(
           'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
