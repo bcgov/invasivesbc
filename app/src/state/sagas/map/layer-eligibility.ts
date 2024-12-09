@@ -75,11 +75,10 @@ function* recomputeEligibleMapLayers(action) {
   ) {
     yield put(MapActions.updateAvailableBaseMaps(UPDATED_BASEMAP_LIST));
     yield put(MapActions.updateAvailableOverlays(UPDATED_OVERLAY_LIST));
-    
   }
-  
+
   const { enabledOverlayLayers } = yield select((state) => state.Map);
-  
+
   if (
     !AUTHENTICATED &&
     UPDATED_OVERLAY_LIST.includes('public_layer') &&
