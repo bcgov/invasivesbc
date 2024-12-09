@@ -27,7 +27,8 @@ import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshVisibilityOnToggleUpdate,
-  removeDeletedRecordSetLayersOnRecordSetDelete
+  removeDeletedRecordSetLayersOnRecordSetDelete,
+  removeLayersOnNetworkConnectivityChange
 } from 'UI/Map2/helpers/recordset-layers';
 import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/Map2/helpers/wms-layers';
 import { addServerBoundariesIfNotExists, refreshServerBoundariesOnToggle } from 'UI/Map2/helpers/server-boundaries';
@@ -188,6 +189,11 @@ export const Map = ({ children }) => {
     });
   }, [authInitiated, map_center]);
 
+  useEffect(() => {
+    if (!mapReady) return;
+    if (!map.current) return;
+    removeLayersOnNetworkConnectivityChange(storeLayers, map.current);
+  }, [connectedToNetwork]);
   // RecordSet Layers:
   useEffect(() => {
     if (!mapReady) return;
