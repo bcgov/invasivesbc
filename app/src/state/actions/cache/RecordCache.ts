@@ -39,6 +39,7 @@ class RecordCache {
 
       return {
         cachedIds: idsToCache,
+        setId: spec.setId,
         bbox,
         cachedGeoJson,
         cachedCentroid

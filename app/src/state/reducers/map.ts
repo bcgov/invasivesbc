@@ -64,6 +64,7 @@ import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
 import MapActions from 'state/actions/map';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import RecordCache from 'state/actions/cache/RecordCache';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -423,7 +424,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.layers.splice(index, 1);
       } else if (UserSettings.RecordSet.set.match(action)) {
         const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
-        Object.keys(action.payload.updatedSet).map((key) => {
+        Object.keys(action.payload.updatedSet).forEach((key) => {
           if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
             draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
           }
@@ -472,8 +473,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         for (const r of removalList) {
           draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
         }
+      } else if (RecordCache.requestCaching.fulfilled.match(action)) {
+        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setId);
+        draftState.layers[index].layerState.cacheMetadata = {
+          ...draftState.layers[index].layerState.cacheMetadata,
+          cachedCentroid: action.payload.cachedCentroid,
+          cachedGeoJson: action.payload.cachedGeoJson,
+          bbox: action.payload.bbox
+        };
       } else if (UserSettings.InitState.getSuccess.match(action)) {
-        Object.keys(action.payload.recordSets).map((setID) => {
+        Object.keys(action.payload.recordSets).forEach((setID) => {
           let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
           if (!draftState.layers[layerIndex]) {
             draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
@@ -534,20 +543,20 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
         let localActivityIDs = [];
 
-        toggledOnActivityLayers.map((layer) => {
+        toggledOnActivityLayers.forEach((layer) => {
           localActivityIDs = localActivityIDs.concat(layer.IDList);
         });
 
         let localIAPPIDs = [];
 
-        toggledOnIAPPLayers.map((layer) => {
+        toggledOnIAPPLayers.forEach((layer) => {
           localIAPPIDs = localIAPPIDs.concat(layer.IDList);
         });
 
         const iappIDs = [];
         const activityIDs = [];
-        localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
-        localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
+        localIAPPIDs.forEach((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
+        localActivityIDs.forEach((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
 
         draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
         draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
@@ -882,7 +891,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               const IAPPLayersToRegen = draftState.layers?.filter(
                 (layer) => layer.type === RecordSetType.IAPP && layer.IDList?.length !== undefined
               );
-              IAPPLayersToRegen.map((layer) => {
+              IAPPLayersToRegen.forEach((layer) => {
                 GeoJSONFilterSetForLayer(draftState, state, RecordSetType.IAPP, layer.recordSetID, layer.IDList);
               });
             }
@@ -1112,7 +1121,7 @@ export { createMapReducer, selectMap };
 const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
   if (
     !draftState.layers?.length ||
-    (!(Object.keys(draftState.activitiesGeoJSONDict).length === ACTIVITY_GEOJSON_SOURCE_KEYS.length) &&
+    (Object.keys(draftState.activitiesGeoJSONDict).length !== ACTIVITY_GEOJSON_SOURCE_KEYS.length &&
       typeToFilter === RecordSetType.Activity) ||
     (!draftState.IAPPGeoJSONDict && typeToFilter === RecordSetType.Activity)
   )
