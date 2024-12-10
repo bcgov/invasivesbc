@@ -88,8 +88,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
 }
 
-function* handle_MAP_INIT_REQUEST(action) {
-  const authState = yield select(selectAuth);
+function* handle_MAP_INIT_REQUEST() {
   const mapState = yield select(selectMap);
   const sets = {};
   const filterCriteria = yield getSearchCriteriaFromFilters([], sets, '2', false, [], 0, 100000);
@@ -113,8 +112,6 @@ function* refetchServerBoundaries() {
   const shapes = serverShapesServerResponse.data.result;
   yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
 }
-
-function* getPOIIDsOnline(feature, filterCriteria) {}
 
 function* handle_WHATS_HERE_FEATURE(action) {
   let mapState = yield select(selectMap);
@@ -810,10 +807,6 @@ function* handle_CUSTOM_LAYER_DRAWN(actions) {
   if (!panelState) {
     yield put({ type: TOGGLE_PANEL });
   }
-}
-
-function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
-  console.dir(action.payload);
 }
 
 function* handle_MAP_ON_SHAPE_CREATE(action) {
