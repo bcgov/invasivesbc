@@ -1,6 +1,14 @@
 import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import centroid from '@turf/centroid';
+import { Feature } from '@turf/helpers';
 import UserRecord from 'interfaces/UserRecord';
-import { RecordCacheAddSpec, RecordCacheService, RecordSetCacheMetadata } from 'utils/record-cache/index';
+import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import {
+  RecordCacheAddSpec,
+  RecordCacheService,
+  RecordSetCacheMetadata,
+  RecordSetSourceMetadata
+} from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
 const CACHE_DB_NAME = 'record_cache.db';
@@ -22,6 +30,11 @@ const RECORD_CACHE_DB_MIGRATIONS_1 = [
      CACHE_METADATA_ID VARCHAR(64) NOT NULL,
      PRIMARY KEY (RECORD_ID, CACHE_METADATA_ID)
    );`
+];
+
+const RECORD_CACHE_DB_MIGRATIONS_2 = [
+  `ALTER TABLE CACHED_RECORDS
+   ADD COLUMN GEOJSON TEXT;`
 ];
 
 class SQLiteRecordCacheService extends RecordCacheService {
@@ -189,7 +202,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       [id]
     );
 
-    if (!result || !result.values) {
+    if (!result?.values) {
       return null;
     }
 
@@ -206,23 +219,73 @@ class SQLiteRecordCacheService extends RecordCacheService {
       throw new Error('cache not available');
     }
     const stringified = JSON.stringify(data);
-
+    const geometry = (data as Record<PropertyKey, Feature[]>).geometry;
+    const geojson = JSON.stringify(geometry);
     await this.cacheDB.query(
       //language=SQLite
-      `INSERT INTO CACHED_RECORDS(ID, DATA)
-       VALUES (?, ?)
-       ON CONFLICT (ID) DO UPDATE SET DATA=?;`,
-      [id, stringified, stringified]
+      `INSERT INTO CACHED_RECORDS(ID, DATA, GEOJSON)
+         VALUES (?, ?, ?)
+         ON CONFLICT (ID) DO UPDATE SET DATA=?;`,
+      [id, stringified, geojson, stringified]
     );
+  }
+  async loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+    if (this.cacheDB == null) {
+      throw new Error('cache not available');
+    }
+    const centroidArr: any[] = [];
+    const geoJsonArr: any[] = [];
+    const results = await this.cacheDB?.query(
+      // language=SQLite
+      `SELECT GEOJSON, CENTROID, ID
+       FROM CACHED_RECORDS
+       WHERE ID IN (${ids.map(() => '?').join(', ')})`,
+      [...ids]
+    );
+    if (!results?.values) {
+      throw Error('Unable to obtain cached records');
+    }
+    results.values.forEach((item) => {
+      try {
+        JSON.parse(item['GEOJSON'])?.forEach((shape: Feature) => {
+          centroidArr.push(centroid(shape));
+          geoJsonArr.push(shape);
+        });
+      } catch (e) {
+        console.error('Error parsing record:', e);
+      }
+    });
+    const cachedCentroid: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: centroidArr
+      }
+    };
+    const cachedGeoJson: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: geoJsonArr
+      }
+    };
+    return { cachedCentroid, cachedGeoJson };
   }
 
   private async initializeRecordCache(sqlite: SQLiteConnection) {
-    await sqlite.addUpgradeStatement(CACHE_DB_NAME, [
+    // Hold Migrations as named variable so we can use length to update the Db version automagically
+    // Note: toVersion must be an integer.
+    const MIGRATIONS = [
       {
         toVersion: 1,
         statements: RECORD_CACHE_DB_MIGRATIONS_1
+      },
+      {
+        toVersion: 2,
+        statements: RECORD_CACHE_DB_MIGRATIONS_2
       }
-    ]);
+    ];
+    await sqlite.addUpgradeStatement(CACHE_DB_NAME, MIGRATIONS);
 
     const ret = await sqlite.checkConnectionsConsistency();
     const isConn = (await sqlite.isConnection(CACHE_DB_NAME, false)).result;
@@ -230,9 +293,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (ret.result && isConn) {
       this.cacheDB = await sqlite.retrieveConnection(CACHE_DB_NAME, false);
     } else {
-      this.cacheDB = await sqlite.createConnection(CACHE_DB_NAME, false, 'no-encryption', 1, false);
+      this.cacheDB = await sqlite.createConnection(CACHE_DB_NAME, false, 'no-encryption', MIGRATIONS.length, false);
     }
-
     try {
       await this.cacheDB.open().catch((e) => {
         console.error(e);
