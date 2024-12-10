@@ -1,4 +1,3 @@
-import { Feature, FeatureCollection } from '@turf/helpers';
 import UserRecord from 'interfaces/UserRecord';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
