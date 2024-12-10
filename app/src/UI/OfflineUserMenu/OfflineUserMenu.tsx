@@ -41,7 +41,7 @@ const UserSelection = ({ user, handleClose }) => {
 };
 
 export const OfflineUserMenu: React.FC = () => {
-  const { offlineUsers, offlineUserDialogOpen, displayName, authenticated } = useSelector(selectAuth);
+  const { offlineUsers, offlineUserDialogOpen } = useSelector(selectAuth);
   const dispatch = useDispatch();
 
   const closeHandler = () => {
