@@ -778,7 +778,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
                 draftState.activitiesGeoJSONDict = {};
                 draftState.IAPPGeoJSONDict = {};
                 draftState.layers = draftState.layers.map((layer) => {
-                  console.log(layer);
                   delete layer.geoJSON;
                   return layer;
                 });
@@ -788,7 +787,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             if (!draftState.layers[index]) {
-              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType });
+              draftState.layers.push({
+                recordSetID: action.payload.recordSetID,
+                type: action.payload.recordSetType,
+                cacheMetadata: action.payload.cacheMetadata
+              });
             }
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
