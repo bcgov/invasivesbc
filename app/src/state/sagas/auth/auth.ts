@@ -4,14 +4,17 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
 import {
+  AUTH_MAKE_OFFLINE_USER_CURRENT,
   AUTH_REFRESH_ROLES_COMPLETE,
   AUTH_REFRESH_ROLES_ERROR,
   AUTH_REFRESH_ROLES_REQUEST,
   AUTH_SAVE_CURRENT_TO_OFFLINE,
+  MAP_INIT_REQUEST,
   TABS_GET_INITIAL_STATE_REQUEST,
   USERINFO_LOAD_COMPLETE
 } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 // not a saga, but an exported convenience function
 type withCurrentJWTCallback = (header: string) => Promise<any>;
@@ -95,13 +98,21 @@ function* refreshRoles() {
   }
 }
 
+function* handle_AUTH_MAKE_OFFLINE_USER_CURRENT() {
+  yield put(UserSettings.InitState.get());
+}
+
 function* authenticationSaga() {
+  const baseSaga = [
+    takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles),
+    takeLatest(AUTH_MAKE_OFFLINE_USER_CURRENT, handle_AUTH_MAKE_OFFLINE_USER_CURRENT)
+  ];
   if (MOBILE && [Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
     // use native authentication bridge for better user experience
-    yield all([takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles), ...nativeAuthEffects]);
+    yield all([...baseSaga, ...nativeAuthEffects]);
   } else {
     // building for web, use keycloak
-    yield all([takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles), ...keycloakAuthEffects]);
+    yield all([...baseSaga, ...keycloakAuthEffects]);
   }
 }
 
