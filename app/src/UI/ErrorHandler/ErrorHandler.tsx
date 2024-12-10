@@ -39,6 +39,9 @@ export const ErrorHandler = ({ detail }) => {
             >
               {copied ? 'Copied!' : 'Copy Error Detail To Clipboard'}
             </Button>
+            <Button variant="contained" color="primary" onClick={() => location.reload()}>
+              Refresh
+            </Button>
             <Button
               sx={{ margin: '0.5rem' }}
               variant={'contained'}
