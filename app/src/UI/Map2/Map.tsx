@@ -52,7 +52,7 @@ export const Map = ({ children }) => {
 
   const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
-
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
   const map: React.MutableRefObject<MapLibre | null> = useRef<MapLibre>(null);
 
@@ -62,7 +62,7 @@ export const Map = ({ children }) => {
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const authInitiated = useSelector((state) => state.Auth.initialized);
-  const loggedIn = useSelector((state) => state.Auth.authenticated);
+  const { authenticated, workingOffline } = useSelector((state) => state.Auth);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
 
   // RecordSet Layers
@@ -128,6 +128,9 @@ export const Map = ({ children }) => {
   const PUBLIC_MAP_URL = useSelector((state) => state.Configuration.current.PUBLIC_MAP_URL);
 
   useEffect(() => {
+    setLoggedIn(authenticated || workingOffline);
+  }, [workingOffline, authenticated]);
+  useEffect(() => {
     if (!map.current || mapReady) return;
 
     map.current.once('idle', function () {
@@ -146,7 +149,7 @@ export const Map = ({ children }) => {
   authHeaderRef.current = currentAuthHeader;
 
   useEffect(() => {
-    if (!loggedIn) {
+    if (!authenticated) {
       return;
     }
 
@@ -165,7 +168,7 @@ export const Map = ({ children }) => {
     return () => {
       clearInterval(id);
     };
-  }, [loggedIn]);
+  }, [authenticated]);
 
   // Map Init
   useEffect(() => {
@@ -192,18 +195,18 @@ export const Map = ({ children }) => {
   useEffect(() => {
     if (!mapReady) return;
     if (!map.current) return;
-    removeLayersOnNetworkConnectivityChange(storeLayers, map.current);
+    removeLayersOnNetworkConnectivityChange(map.current);
   }, [connectedToNetwork]);
+
   // RecordSet Layers:
   useEffect(() => {
     if (!mapReady) return;
     if (!map.current) return;
-
     rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE, connectedToNetwork);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-  }, [storeLayers, map.current, mapReady, connectedToNetwork]);
+  }, [storeLayers, map.current, mapReady, connectedToNetwork, workingOffline]);
 
   // Layer picker:
   useEffect(() => {
@@ -216,11 +219,11 @@ export const Map = ({ children }) => {
 
   useEffect(() => {
     if (!mapReady) return;
-    if (loggedIn) {
+    if (authenticated) {
       addServerBoundariesIfNotExists(serverBoundaries, map.current);
       refreshServerBoundariesOnToggle(serverBoundaries, map.current);
     }
-  }, [serverBoundaries, loggedIn, map.current, mapReady]);
+  }, [serverBoundaries, authenticated, map.current, mapReady]);
 
   useEffect(() => {
     if (!mapReady) return;
