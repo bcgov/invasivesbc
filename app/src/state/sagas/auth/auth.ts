@@ -25,13 +25,11 @@ async function withCurrentJWT(callback: withCurrentJWTCallback) {
     const { idToken } = await AuthBridge.token({});
     const header = `Bearer ${idToken}`;
     return await callback(header);
+  } else if (keycloakInstance !== null) {
+    const header = `Bearer ${keycloakInstance.idToken}`;
+    return await callback(header);
   } else {
-    if (keycloakInstance !== null) {
-      const header = `Bearer ${keycloakInstance.idToken}`;
-      return await callback(header);
-    } else {
-      console.error('Keycloak instance was null. this is unexpected');
-    }
+    console.error('Keycloak instance was null. this is unexpected');
   }
 }
 
