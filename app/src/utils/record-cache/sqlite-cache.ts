@@ -34,7 +34,9 @@ const RECORD_CACHE_DB_MIGRATIONS_1 = [
 
 const RECORD_CACHE_DB_MIGRATIONS_2 = [
   `ALTER TABLE CACHED_RECORDS
-   ADD COLUMN GEOJSON TEXT;`
+   ADD COLUMN GEOJSON TEXT;`,
+  `ALTER TABLE CACHED_RECORDS
+   ADD COLUMN SHORT_ID TEXT;`
 ];
 
 class SQLiteRecordCacheService extends RecordCacheService {
@@ -219,14 +221,15 @@ class SQLiteRecordCacheService extends RecordCacheService {
       throw new Error('cache not available');
     }
     const stringified = JSON.stringify(data);
+    const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
     const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
     const geojson = JSON.stringify(geometry) ?? null;
     await this.cacheDB.query(
       //language=SQLite
-      `INSERT INTO CACHED_RECORDS(ID, DATA, GEOJSON)
-         VALUES (?, ?, ?)
+      `INSERT INTO CACHED_RECORDS(ID, DATA, GEOJSON, SHORT_ID)
+         VALUES (?, ?, ?, ?)
          ON CONFLICT (ID) DO UPDATE SET DATA=?;`,
-      [id, stringified, geojson, stringified]
+      [id, stringified, geojson, short_id, stringified]
     );
   }
   async loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
@@ -237,7 +240,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const geoJsonArr: any[] = [];
     const results = await this.cacheDB?.query(
       // language=SQLite
-      `SELECT GEOJSON, ID
+      `SELECT GEOJSON, SHORT_ID
        FROM CACHED_RECORDS
        WHERE ID IN (${ids.map(() => '?').join(', ')})
        AND GEOJSON NOT NULL`,
@@ -246,9 +249,11 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
     results?.values?.forEach((item) => {
       try {
-        JSON.parse(item['GEOJSON'])?.forEach((shape: Feature) => {
-          centroidArr.push(centroid(shape));
-          geoJsonArr.push(shape);
+        const label = item['SHORT_ID'];
+        JSON.parse(item['GEOJSON'])?.forEach((feature: Feature) => {
+          feature.properties = { name: label };
+          centroidArr.push(centroid(feature));
+          geoJsonArr.push(feature);
         });
       } catch (e) {
         console.error('Error parsing record:', e);
