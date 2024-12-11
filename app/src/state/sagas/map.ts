@@ -68,7 +68,6 @@ import {
 } from './map/online';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
-import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -220,7 +219,7 @@ function* handle_WHATS_HERE_FEATURE(action) {
     yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
   }
 
-  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
+  if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
     if (!mapState.activitiesGeoJSONDict) {
       yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
     }
@@ -277,7 +276,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
     });
     yield put(WhatsHere.iapp_rows_success(mappedToWhatsHereColumns));
   }
-  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
+  if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
     try {
       const startRecord =
         mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
@@ -293,8 +292,6 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
             : -1;
         }
       });
-      /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-       */
       const sliceWithData = sorted.slice(startRecord, endRecord);
 
       const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => {
@@ -364,7 +361,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
     yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
   }
 
-  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
+  if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
     try {
       const mapState = yield select(selectMap);
       const startRecord =
@@ -394,16 +391,14 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
             : -1;
         }
       });
-      /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-       */
       const sliceWithData = sorted.slice(startRecord, endRecord);
       const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
-        const jurisdiction_code = [];
+        const jurisdiction_code: any[] = [];
         activityRecord?.properties?.jurisdiction?.forEach((item) => {
           jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
 
-        const species_code = [];
+        const species_code: any[] = [];
         switch (activityRecord?.properties?.type) {
           case 'Observation':
             activityRecord?.properties?.species_positive?.forEach((s) => {
@@ -476,7 +471,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       const currentState = yield select((state) => state.UserSettings);
 
       const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
-      //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
       filterObject.CSVType = action.payload.CSVType;
@@ -496,7 +490,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       const currentState = yield select((state) => state.UserSettings);
 
       const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
-      //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
       filterObject.CSVType = action.payload.CSVType;
