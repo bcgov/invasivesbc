@@ -14,6 +14,7 @@ import {
 } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import NetworkActions from 'state/actions/network/NetworkActions';
 
 // not a saga, but an exported convenience function
 type withCurrentJWTCallback = (header: string) => Promise<any>;
@@ -98,7 +99,7 @@ function* refreshRoles() {
 }
 
 function* handle_AUTH_MAKE_OFFLINE_USER_CURRENT() {
-  yield put(UserSettings.InitState.get());
+  yield all([put(NetworkActions.setAdministrativeStatus(false)), put(UserSettings.InitState.get())]);
 }
 
 function* authenticationSaga() {

@@ -8,6 +8,7 @@ import { MOBILE } from 'state/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkState } from 'state/reducers/network';
+import { selectAuth } from 'state/reducers/auth';
 
 /* Utilities */
 
@@ -101,6 +102,15 @@ function* handle_NETWORK_GO_ONLINE() {
  * @param newStatus new Administrative status
  */
 function* handle_SET_ADMINISTRATIVE_STATUS(newStatus: PayloadAction<boolean>) {
+  const { workingOffline } = yield select(selectAuth);
+
+  if (workingOffline) {
+    yield all([
+      put(Alerts.create(networkAlertMessages.offlineUserWarning)),
+      put(NetworkActions.updateConnectionStatus(true))
+    ]);
+    return;
+  }
   if (newStatus.payload) {
     yield put(NetworkActions.monitorHeartbeat());
   } else {
@@ -118,13 +128,14 @@ function* handle_SET_ADMINISTRATIVE_STATUS(newStatus: PayloadAction<boolean>) {
  */
 function* handle_UPDATE_CONNECTION_STATUS() {
   const { administrativeStatus, operationalStatus, connected } = yield select(selectNetworkState);
+  const { workingOffline } = yield select(selectAuth);
 
   const networkLive = administrativeStatus && operationalStatus;
   const disconnected = connected && administrativeStatus && !operationalStatus;
   if (disconnected) {
     yield put(Alerts.create(networkAlertMessages.userLostConnection));
   }
-  if (connected && !networkLive) {
+  if ((connected && !networkLive) || workingOffline) {
     yield put(NetworkActions.offline());
   } else if (!connected && networkLive) {
     yield put(NetworkActions.online());
