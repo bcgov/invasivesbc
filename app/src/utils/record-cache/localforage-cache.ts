@@ -121,7 +121,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     for (const id of ids) {
       const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
       const label = data.short_id;
-      const features = data.geometry;
+      const features = data.geometry ?? [];
       features.forEach((feature: Feature) => {
         feature.properties = { name: label };
         centroidArr.push(centroid(feature));

@@ -219,8 +219,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
       throw new Error('cache not available');
     }
     const stringified = JSON.stringify(data);
-    const geometry = (data as Record<PropertyKey, Feature[]>).geometry;
-    const geojson = JSON.stringify(geometry);
+    const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
+    const geojson = JSON.stringify(geometry) ?? null;
     await this.cacheDB.query(
       //language=SQLite
       `INSERT INTO CACHED_RECORDS(ID, DATA, GEOJSON)
@@ -237,15 +237,14 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const geoJsonArr: any[] = [];
     const results = await this.cacheDB?.query(
       // language=SQLite
-      `SELECT GEOJSON, CENTROID, ID
+      `SELECT GEOJSON, ID
        FROM CACHED_RECORDS
-       WHERE ID IN (${ids.map(() => '?').join(', ')})`,
+       WHERE ID IN (${ids.map(() => '?').join(', ')})
+       AND GEOJSON NOT NULL`,
       [...ids]
     );
-    if (!results?.values) {
-      throw Error('Unable to obtain cached records');
-    }
-    results.values.forEach((item) => {
+
+    results?.values?.forEach((item) => {
       try {
         JSON.parse(item['GEOJSON'])?.forEach((shape: Feature) => {
           centroidArr.push(centroid(shape));
