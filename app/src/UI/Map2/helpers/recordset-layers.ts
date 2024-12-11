@@ -192,7 +192,7 @@ const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpeci
 export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
   if (
     (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) ||
-    !layer.layerState.cacheMetadata.hasOwnProperty('cachedGeoJson')
+    !layer?.layerState?.cacheMetadata?.hasOwnProperty('cachedGeoJson')
   ) {
     return;
   }
@@ -324,10 +324,9 @@ export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: Record<Prop
 
 /**
  * @desc Delete all recordset layers on the map when network changes
- * @param storeLayers
  * @param map Current Mapre
  */
-export const removeLayersOnNetworkConnectivityChange = (storeLayers: Record<PropertyKey, any>, map: maplibregl.Map) => {
+export const removeLayersOnNetworkConnectivityChange = (map: maplibregl.Map) => {
   if (!MOBILE) {
     return;
   }
@@ -359,8 +358,8 @@ export const rebuildLayersOnTableHashUpdate = (
   API_BASE: string,
   connectedToNetwork: boolean
 ) => {
-  /* First need to delete the layers who's record set was deleted altogether: */
   const MOBILE_OFFLINE = MOBILE && !connectedToNetwork;
+  /* First need to delete the layers who's record set was deleted altogether: */
   const storeLayersIds = storeLayers.map((layer) => 'recordset-layer-' + layer.recordSetID + '-');
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
