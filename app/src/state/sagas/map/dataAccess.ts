@@ -7,6 +7,7 @@ import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_FAILURE,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
@@ -59,6 +60,7 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
   try {
     const currentState = yield select((state) => state?.UserSettings);
     const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
+    const cacheMetadata = currentState.recordSets[action.payload.recordSetID].cacheMetadata;
     const filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
@@ -81,37 +83,49 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
         filterObject: filterObject,
         recordSetID: action.payload.recordSetID,
         tableFiltersHash: action.payload.tableFiltersHash,
-        recordSetType: action.payload.recordSetType
+        recordSetType: action.payload.recordSetType,
+        cacheMetadata: cacheMetadata ?? null
       }
     });
   } catch (e) {
     console.error(e);
     throw e;
   }
-
-  //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
-  //  filterObject.limit = 200000;
-  // filterObject.selectColumns = ['activity_id'];
 }
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   const currentState = yield select((state) => state.UserSettings);
   const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
   const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
-  //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
+  const workingOffline = yield select((state) => state.Auth.workingOffline);
+  const connected = yield select((state) => state.Network.connected);
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
 
   try {
     // if mobile or web
-    yield put({
-      type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-      payload: {
-        filterObj: filterObject,
-        recordSetID: action.payload.recordSetID,
-        tableFiltersHash: action.payload.tableFiltersHash
+    if (connected && !workingOffline) {
+      yield put({
+        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+        payload: {
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID,
+          tableFiltersHash: action.payload.tableFiltersHash
+        }
+      });
+    } else {
+      const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
+      if (recordSet?.cachedMetadata?.idList) {
+        yield put({
+          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+          payload: {
+            recordSetID: action.payload.recordSetID,
+            IDList: recordSet.cachedMetadata.idList,
+            tableFiltersHash: action.payload.tableFiltersHash
+          }
+        });
       }
-    });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
@@ -122,24 +136,26 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
     const currentState = yield select((state) => state.UserSettings);
     const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
+    const workingOffline = yield select((state) => state.Auth.workingOffline);
+    const connected = yield select((state) => state.Network.connected);
     const filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
       clientBoundaries
     );
-    //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
     filterObject.limit = 200000;
     filterObject.selectColumns = ['site_id'];
-
-    // if mobile or web
-    yield put({
-      type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-      payload: {
-        filterObj: filterObject,
-        recordSetID: action.payload.recordSetID,
-        tableFiltersHash: action.payload.tableFiltersHash
-      }
-    });
+    if (connected && !workingOffline) {
+      // if mobile or web
+      yield put({
+        type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+        payload: {
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID,
+          tableFiltersHash: action.payload.tableFiltersHash
+        }
+      });
+    }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
