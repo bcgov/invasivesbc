@@ -67,7 +67,7 @@ import {
   handle_IAPP_TABLE_ROWS_GET_ONLINE
 } from './map/online';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
+import { ACTIVITY_GEOJSON_SOURCE_KEYS, MapState, selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -80,8 +80,10 @@ import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 import { RECORD_COLOURS } from 'constants/colors';
-import { PayloadAction } from '@reduxjs/toolkit';
+import { Action, PayloadAction } from '@reduxjs/toolkit';
 import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import { selectNetworkState } from 'state/reducers/network';
+import UserRecord from 'interfaces/UserRecord';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -113,123 +115,53 @@ function* refetchServerBoundaries() {
 }
 
 function* handle_WHATS_HERE_FEATURE(action) {
-  let mapState = yield select(selectMap);
-
-  let layersLoading = true;
-  while (layersLoading) {
-    mapState = yield select(selectMap);
-
-    const toggledOnActivityLayers = mapState.layers.filter((layer) => {
-      return layer.layerState.mapToggle && layer.type === RecordSetType.Activity;
-    });
-
-    const activityLayersLoading = toggledOnActivityLayers.filter((layer) => {
-      return layer.loading;
-    });
-
-    const toggledOnIAPPLayers = mapState.layers.filter((layer) => {
-      return layer.layerState.mapToggle && layer.type === RecordSetType.IAPP;
-    });
-
-    const IAPPLayersLoading = toggledOnIAPPLayers.filter((layer) => {
-      return layer.loading;
-    });
-
-    if (activityLayersLoading.length === 0 && IAPPLayersLoading.length === 0) {
-      layersLoading = false;
-    } else {
-      const actionsToTake = [];
-      if (activityLayersLoading.length > 0) {
-        actionsToTake.push(
-          activityLayersLoading.map((layer) => {
-            return ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS;
-          })
-        );
-      }
-      if (IAPPLayersLoading.length > 0) {
-        actionsToTake.push(
-          IAPPLayersLoading.map((layer) => {
-            return IAPP_GET_IDS_FOR_RECORDSET_SUCCESS;
-          })
-        );
-      }
-      yield all(actionsToTake.map((action) => take(action)));
-    }
-  }
-  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
+  const { MapMode, activitiesGeoJSONDict, IAPPGeoJSONDict } = yield select(selectMap);
+  if (MapMode === 'VECTOR_ENDPOINT') {
     // get all the toggled on recordsets
+    const tableFilters = [
+      {
+        id: '0.81778552637744651712083357942',
+        filterType: 'spatialFilterDrawn',
+        operator: 'CONTAINED IN',
+        filter: '0.652479498272151712093656568',
+        geojson: action.payload
+      }
+    ];
 
     const activitiesfilterObj = {
       selectColumns: ['activity_id'],
-      tableFilters: [
-        {
-          id: '0.81778552637744651712083357942',
-          filterType: 'spatialFilterDrawn',
-          operator: 'CONTAINED IN',
-          filter: '0.652479498272151712093656568',
-          geojson: action.payload
-        }
-      ],
+      tableFilters,
       limit: 200000
     };
-
-    const activitiesNetworkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-      filterObjects: [activitiesfilterObj]
-    });
-
-    let activitiesServerIDList = [];
-    if (activitiesNetworkReturn.data.result || activitiesNetworkReturn.data?.data?.result) {
-      const list = activitiesNetworkReturn.data?.data?.result
-        ? activitiesNetworkReturn.data?.data?.result
-        : activitiesNetworkReturn.data?.result;
-      activitiesServerIDList = list.map((row) => {
-        return row.activity_id;
-      });
-    }
-
     const iappfilterObj = {
       selectColumns: ['site_id'],
-      tableFilters: [
-        {
-          id: '0.81778552637744651712083357942',
-          filterType: 'spatialFilterDrawn',
-          operator: 'CONTAINED IN',
-          filter: '0.652479498272151712093656568',
-          geojson: action.payload
-        }
-      ],
+      tableFilters,
       limit: 200000
     };
+    const [activitiesNetworkReturn, iappNetworkReturn] = yield all([
+      call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
+        filterObjects: [activitiesfilterObj]
+      }),
+      call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
+        filterObjects: [iappfilterObj]
+      })
+    ]);
 
-    const iappNetworkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
-      filterObjects: [iappfilterObj]
-    });
+    const activityReturn = activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
+    const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
 
-    let iappServerIDList = [];
-
-    if (iappNetworkReturn.data.result || iappNetworkReturn.data?.data?.result) {
-      const list = iappNetworkReturn.data?.data?.result
-        ? iappNetworkReturn.data?.data?.result
-        : iappNetworkReturn.data?.result;
-      iappServerIDList = list.map((row) => {
-        return row.site_id;
-      });
-    }
+    const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
+    const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
 
     yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
-  }
-
-  if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
-    if (!mapState.activitiesGeoJSONDict) {
+  } else {
+    if (!activitiesGeoJSONDict) {
       yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
     }
-    mapState = yield select(selectMap);
-    if (!mapState.IAPPGeoJSONDict) {
+    if (!IAPPGeoJSONDict) {
       yield take(IAPP_GEOJSON_GET_SUCCESS);
     }
-
-    yield put(WhatsHere.map_init_get_activity());
-    yield put(WhatsHere.map_init_get_poi());
+    yield all([put(WhatsHere.map_init_get_activity()), put(WhatsHere.map_init_get_poi())]);
   }
 }
 
@@ -317,8 +249,10 @@ function* handle_WHATS_HERE_PAGE_POI(action) {
   yield put(WhatsHere.iapp_rows_request());
 }
 
-function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
+function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
   const mapState = yield select(selectMap);
+  const { connected } = yield select(selectNetworkState);
+
   if (mapState.MapMode === 'VECTOR_ENDPOINT') {
     const startRecord =
       mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
@@ -341,7 +275,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
       yield put(WhatsHere.activity_rows_success([]));
       return;
     }
-
+    console.log('Whats Here search', filterObject);
     const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
       filterObjects: [filterObject]
     });
@@ -359,11 +293,8 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
       };
     });
     yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
-  }
-
-  if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
+  } else {
     try {
-      const mapState = yield select(selectMap);
       const startRecord =
         mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) -
         mapState?.whatsHere?.ActivityLimit;
@@ -842,9 +773,8 @@ function* handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
   location.reload();
 }
 
-function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
-  yield put(WhatsHere.iapp_rows_request());
-  yield put(WhatsHere.activity_rows_request());
+function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED() {
+  yield all([put(WhatsHere.iapp_rows_request()), put(WhatsHere.activity_rows_request())]);
 }
 
 function* handle_RECORDSET_ROTATE_COLOUR(action: PayloadAction<string>) {
