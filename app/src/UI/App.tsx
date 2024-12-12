@@ -275,10 +275,7 @@ const App: React.FC = () => {
         <AlertsContainer />
         <UserInputModalController />
         <Header />
-        <MobileOnly>
-          {/* On mobile builds, show a message to BCEID users for now*/}
-          <MobileBetaAccessMessage />
-        </MobileOnly>
+
         {!authenticated ? (
           <MainMap>
             <Overlay>
