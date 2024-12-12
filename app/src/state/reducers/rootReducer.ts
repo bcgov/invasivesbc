@@ -14,7 +14,7 @@ import { createTrainingVideosReducer } from './training_videos';
 import { createUserSettingsReducer, UserSettingsState } from './userSettings';
 import { createIAPPSiteReducer } from './iappsite';
 import { createConfigurationReducerWithDefaultState } from './configuration';
-import { createNetworkReducer } from './network';
+import { createNetworkReducer, NetworkState } from './network';
 import { createUserInfoReducer } from './userInfo';
 import { errorHandlerReducer } from './error_handler';
 import { createOfflineActivityReducer, OfflineActivityState } from './offlineActivity';
@@ -65,7 +65,15 @@ function createRootReducer(config: AppConfig) {
       createAuthReducer(config)
     ),
     UserInfo: createUserInfoReducer({ loaded: false, accessRequested: false, activated: false }),
-    Network: createNetworkReducer({ connected: true }),
+    Network: persistReducer<NetworkState>(
+      {
+        key: 'network',
+        storage: platformStorage,
+        stateReconciler: autoMergeLevel1,
+        whitelist: ['connected', 'administrativeStatus', 'operationalStatus']
+      },
+      createNetworkReducer()
+    ),
     ActivityPage: persistReducer<ActivityState>(
       {
         key: 'activity',
