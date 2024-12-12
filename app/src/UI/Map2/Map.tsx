@@ -52,7 +52,6 @@ export const Map = ({ children }) => {
 
   const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
   const map: React.MutableRefObject<MapLibre | null> = useRef<MapLibre>(null);
 
@@ -62,7 +61,7 @@ export const Map = ({ children }) => {
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const authInitiated = useSelector((state) => state.Auth.initialized);
-  const { authenticated, workingOffline } = useSelector((state) => state.Auth);
+  const { authenticated, loggedInOrWorkingOffline } = useSelector((state) => state.Auth);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
 
   // RecordSet Layers
@@ -127,9 +126,6 @@ export const Map = ({ children }) => {
 
   const PUBLIC_MAP_URL = useSelector((state) => state.Configuration.current.PUBLIC_MAP_URL);
 
-  useEffect(() => {
-    setLoggedIn(authenticated || workingOffline);
-  }, [workingOffline, authenticated]);
   useEffect(() => {
     if (!map.current || mapReady) return;
 
@@ -206,7 +202,7 @@ export const Map = ({ children }) => {
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-  }, [storeLayers, map.current, mapReady, connectedToNetwork, workingOffline]);
+  }, [storeLayers, map.current, mapReady, connectedToNetwork, loggedInOrWorkingOffline]);
 
   // Layer picker:
   useEffect(() => {
@@ -432,13 +428,13 @@ export const Map = ({ children }) => {
   // toggle public map pmtile layer
   useEffect(() => {
     if (!mapReady) return;
-    if (loggedIn) {
+    if (loggedInOrWorkingOffline) {
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector-label', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector-label', false);
     }
-  }, [loggedIn, map.current, mapReady]);
+  }, [loggedInOrWorkingOffline, map.current, mapReady]);
 
   useEffect(() => {
     refreshWhatsHereFeature(map.current, { whatsHereFeature });
