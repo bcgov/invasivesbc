@@ -228,7 +228,7 @@ const OverlayContentMemo = () => {
 
 const App: React.FC = () => {
   const authInitiated = useSelector((state) => state.Auth.initialized);
-  const authenticated = useSelector((state: any) => state.Auth.authenticated);
+  const authenticated = useSelector((state) => state.Auth.authenticated);
   const { detail: errorDetail, hasCrashed } = useSelector(selectGlobalErrorState);
   const { disrupted } = useSelector(selectAuth);
   const ref = useRef(0);
