@@ -321,12 +321,15 @@ export const WeatherInformation = [
     'Weather - Temperature',
     'numeric',
     'form_data.activity_subtype_data.Weather_Conditions.temperature'
-  ).build(),
+  )
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder(
     'Weather - Wind Speed',
     'numeric',
     'form_data.activity_subtype_data.Weather_Conditions.wind_speed'
   )
+    .isRequired()
     .valueRange(0, null)
     .build(),
   new TemplateColumnBuilder(
@@ -334,6 +337,7 @@ export const WeatherInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Weather_Conditions.wind_direction_code'
   )
+    .isRequired()
     .hardcodedCodes(WIND_DIRECTION_CODES)
     .build(),
   new TemplateColumnBuilder(
@@ -341,6 +345,7 @@ export const WeatherInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Weather_Conditions.cloud_cover_code'
   )
+    .isRequired()
     .referencesCode('cloud_cover_code')
     .build(),
   new TemplateColumnBuilder(
@@ -348,6 +353,7 @@ export const WeatherInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Weather_Conditions.precipitation_code'
   )
+    .isRequired()
     .referencesCode('precipitation_code')
     .build(),
   new TemplateColumnBuilder(
