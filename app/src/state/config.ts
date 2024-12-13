@@ -18,6 +18,7 @@ interface AppConfig {
     PLAN_MY_TRIP: boolean;
     EMBEDDED_REPORTS: boolean;
     BATCH: boolean;
+    COMPONENTIZED_MAP: boolean;
   };
 }
 
@@ -33,6 +34,7 @@ declare global {
   const CONFIGURATION_PUBLIC_MAP_URL: string | null;
   const INJECTED_COMMIT_HASH: string | null;
   const CONFIGURATION_IAPP_GEOJSON_URL: string | null;
+  const CONFIGURATION_COMPONENTIZED_MAP: string | null;
 }
 
 let CONFIG: AppConfig;
@@ -52,7 +54,8 @@ switch (CONFIGURATION_SOURCE) {
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
         EMBEDDED_REPORTS: true,
-        BATCH: '{{env "FEATURE_GATE_BATCH_ENABLED"}}'.toLowerCase() === 'true'
+        BATCH: '{{env "FEATURE_GATE_BATCH_ENABLED"}}'.toLowerCase() === 'true',
+        COMPONENTIZED_MAP: '{{env "FEATURE_GATE_COMPONENTIZED_MAP_ENABLED"}}'.toLowerCase() === 'true'
       }
     };
     break;
@@ -70,7 +73,9 @@ switch (CONFIGURATION_SOURCE) {
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
         EMBEDDED_REPORTS: true,
-        BATCH: true
+        BATCH: true,
+        COMPONENTIZED_MAP:
+          (CONFIGURATION_COMPONENTIZED_MAP && CONFIGURATION_COMPONENTIZED_MAP.toLowerCase() == 'true') || false
       }
     };
     break;
@@ -80,4 +85,3 @@ switch (CONFIGURATION_SOURCE) {
 
 export { CONFIG };
 export type { AppConfig };
-

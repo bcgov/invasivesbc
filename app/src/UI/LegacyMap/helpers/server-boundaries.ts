@@ -1,4 +1,4 @@
-import { LAYER_Z_FOREGROUND } from 'UI/Map2/helpers/layer-definitions';
+import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/layer-definitions';
 
 export const addServerBoundariesIfNotExists = (serverBoundaries, map) => {
   if (map && serverBoundaries?.length > 0) {

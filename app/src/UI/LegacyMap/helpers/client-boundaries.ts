@@ -1,4 +1,4 @@
-import { LAYER_Z_FOREGROUND } from 'UI/Map2/helpers/layer-definitions';
+import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/layer-definitions';
 
 export const addClientBoundariesIfNotExists = (clientBoundaries, map) => {
   if (map && clientBoundaries?.length > 0) {

@@ -6,9 +6,9 @@ import maplibregl, {
   SourceSpecification,
   SymbolLayerSpecification
 } from 'maplibre-gl';
-import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Map2/helpers/layer-definitions';
-import { FALLBACK_COLOR } from 'UI/Map2/helpers/constants';
-import { safelySetPaintProperty } from 'UI/Map2/helpers/utility-functions';
+import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMap/helpers/layer-definitions';
+import { FALLBACK_COLOR } from 'UI/LegacyMap/helpers/constants';
+import { safelySetPaintProperty } from 'UI/LegacyMap/helpers/utility-functions';
 import { MOBILE } from 'state/build-time-config';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
@@ -111,6 +111,7 @@ const getPaintBySchemeOrColor = (layer: any) => {
     return layer?.layerState?.color || FALLBACK_COLOR;
   }
 };
+
 interface LayerOptions {
   color: string;
   minzoom?: number;

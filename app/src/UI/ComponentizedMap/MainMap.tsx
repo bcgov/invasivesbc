@@ -3,7 +3,7 @@ import { useSelector } from 'utils/use_selector';
 import Map, { NavigationControl, ScaleControl } from 'react-map-gl/maplibre';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import maplibregl from 'maplibre-gl';
-import { PublicLayer } from './PublicLayer';
+import { PublicLayer } from 'UI/ComponentizedMap/PublicLayer';
 import { MOBILE } from 'state/build-time-config';
 
 // to make base layers work on this map, will be refactored in the next iteration

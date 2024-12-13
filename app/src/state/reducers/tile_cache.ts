@@ -7,7 +7,7 @@ import {
   MapDefinitionEligibilityPredicatesBuilder,
   MapSourceAndLayerDefinition,
   MapSourceAndLayerDefinitionMode
-} from 'UI/Map2/helpers/layer-definitions';
+} from 'UI/LegacyMap/helpers/layer-definitions';
 
 interface TileCacheState {
   mapSpecifications: MapSourceAndLayerDefinition[];

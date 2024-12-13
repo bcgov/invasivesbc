@@ -1,4 +1,4 @@
-import { LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Map2/helpers/layer-definitions';
+import { LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMap/helpers/layer-definitions';
 
 export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
   simplePickerLayers2.map((layer) => {
