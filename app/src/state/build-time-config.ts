@@ -1,5 +1,7 @@
 /* These definitions are known at build-time, and may result in smaller builds by allowing tree shaking to discard code */
 
+import { useEffect, useState } from 'react';
+
 const MOBILE = import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true';
 
 const DEBUG = import.meta.env.VITE_DEBUG && import.meta.env.VITE_DEBUG.toLowerCase() === 'true';
@@ -24,4 +26,31 @@ const PLATFORM: Platform = (() => {
   }
 })();
 
-export { DEBUG, MOBILE, PLATFORM, Platform };
+const usePlatformClasses = () => {
+  const [appClasses, setAppclasses] = useState('');
+
+  useEffect(() => {
+    const newAppClasses: string[] = ['App'];
+    if (MOBILE) {
+      newAppClasses.push('is-mobile');
+    }
+
+    switch (PLATFORM) {
+      case Platform.ANDROID:
+        newAppClasses.push('android');
+        break;
+      case Platform.IOS:
+        newAppClasses.push('ios');
+        break;
+      case Platform.WEB:
+      default:
+        newAppClasses.push('web');
+        break;
+    }
+    setAppclasses(newAppClasses.join(' '));
+  }, [PLATFORM]);
+
+  return appClasses;
+};
+
+export { DEBUG, MOBILE, PLATFORM, Platform, usePlatformClasses };

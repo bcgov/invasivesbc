@@ -20,24 +20,30 @@ import {
   LAYER_Z_MID,
   layersForDefinition,
   MAP_DEFINITIONS
-} from 'UI/Map2/helpers/layer-definitions';
+} from 'UI/LegacyMap/helpers/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
-import { mapInit } from 'UI/Map2/helpers/map-init';
+import { mapInit } from 'UI/LegacyMap/helpers/map-init';
 import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshVisibilityOnToggleUpdate,
   removeDeletedRecordSetLayersOnRecordSetDelete,
   removeLayersOnNetworkConnectivityChange
-} from 'UI/Map2/helpers/recordset-layers';
-import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/Map2/helpers/wms-layers';
-import { addServerBoundariesIfNotExists, refreshServerBoundariesOnToggle } from 'UI/Map2/helpers/server-boundaries';
-import { addClientBoundariesIfNotExists, refreshClientBoundariesOnToggle } from 'UI/Map2/helpers/client-boundaries';
-import { handlePositionTracking } from 'UI/Map2/helpers/position-tracking';
-import { refreshDrawControls } from 'UI/Map2/helpers/draw-tools';
-import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/Map2/helpers/current-record';
-import { toggleLayerOnBool } from 'UI/Map2/helpers/utility-functions';
-import { refreshWhatsHereFeature } from 'UI/Map2/helpers/whats-here';
+} from 'UI/LegacyMap/helpers/recordset-layers';
+import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/LegacyMap/helpers/wms-layers';
+import {
+  addServerBoundariesIfNotExists,
+  refreshServerBoundariesOnToggle
+} from 'UI/LegacyMap/helpers/server-boundaries';
+import {
+  addClientBoundariesIfNotExists,
+  refreshClientBoundariesOnToggle
+} from 'UI/LegacyMap/helpers/client-boundaries';
+import { handlePositionTracking } from 'UI/LegacyMap/helpers/position-tracking';
+import { refreshDrawControls } from 'UI/LegacyMap/helpers/draw-tools';
+import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/LegacyMap/helpers/current-record';
+import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/utility-functions';
+import { refreshWhatsHereFeature } from 'UI/LegacyMap/helpers/whats-here';
 import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 
 /*

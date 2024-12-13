@@ -10,7 +10,7 @@ import { WhatsHereButton } from './WhatsHereButton';
 import { MapModeToggle } from './MapToggleCacheGeoJSON';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import TrackingButtonsContainer from './TrackingButtonsContainer';
-import { PrimaryLayerSelect } from 'UI/Map2/Controls/PrimaryLayerSelect';
+import { PrimaryLayerSelect } from 'UI/LegacyMap/Controls/PrimaryLayerSelect';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export const ButtonContainer = () => {

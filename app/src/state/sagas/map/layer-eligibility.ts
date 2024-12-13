@@ -3,7 +3,7 @@ import {
   MAP_DEFINITIONS,
   MapSourceAndLayerDefinition,
   MapSourceAndLayerDefinitionMode
-} from 'UI/Map2/helpers/layer-definitions';
+} from 'UI/LegacyMap/helpers/layer-definitions';
 import { RootState } from 'state/reducers/rootReducer';
 import { MOBILE } from 'state/build-time-config';
 import MapActions from 'state/actions/map';
