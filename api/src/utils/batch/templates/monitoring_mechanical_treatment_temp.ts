@@ -102,9 +102,7 @@ MonitoringMechanicalTemp.columns = [
     'Monitoring - Comments',
     'text',
     'form_data.activity_subtype_data.Monitoring_MechanicalTerrestrialAquaticPlant_Information[0].comment'
-  )
-    .isRequired()
-    .build()
+  ).build()
 ];
 
 MonitoringMechanicalTemp.rowValidators = [
