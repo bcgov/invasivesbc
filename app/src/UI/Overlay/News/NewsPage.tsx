@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import newsItems from './newsItems';
 import './NewsPage.css';
 import NewsArticle, { NewsSubject } from 'interfaces/NewsArticle';
@@ -9,6 +9,7 @@ const NewsPage = (props: any) => {
   const BASE_SHOW = 5;
   const [loadMore, setLoadMore] = useState<number>(BASE_SHOW);
   const handleMore = () => setLoadMore((prev) => prev + BASE_SHOW);
+
   const subjectToIcon = (subject: NewsSubject) => {
     switch (subject) {
       case NewsSubject.New:
@@ -32,6 +33,29 @@ const NewsPage = (props: any) => {
       default:
     }
   };
+
+  const renderContentWithLinks = (content: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = content.split(urlRegex);
+
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <a
+            key={index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#007bff', textDecoration: 'none' }}
+          >
+            {part}
+          </a>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  };
+
   return (
     <div id="newsPageContainer">
       <h2 id="newsPageHeader">What's New in InvasivesBC?</h2>
@@ -46,10 +70,13 @@ const NewsPage = (props: any) => {
                   Posted:{' '}
                   <time dateTime={newsItem.date.toLocaleDateString()}>{newsItem.date.toLocaleDateString()}</time>
                 </p>
-                <ul>
-                  {newsItem.content.map((content: string) => (
-                    <li className="newsListItemContent" key={content}>
-                      {content}
+                <ul className="newsListItemContent">
+                  {newsItem.content.map((content: string, contentIndex: number) => (
+                    <li
+                      key={contentIndex}
+                      style={{ marginBottom: contentIndex < newsItem.content.length - 1 ? '1rem' : '0' }}
+                    >
+                      {renderContentWithLinks(content)}
                     </li>
                   ))}
                 </ul>
