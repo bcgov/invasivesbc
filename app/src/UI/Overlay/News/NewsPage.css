@@ -78,3 +78,8 @@
     border: 1px solid black;
   }
 }
+
+.newsListItemContent > li:not(:last-child) {
+  margin-bottom: 1rem;
+}
+

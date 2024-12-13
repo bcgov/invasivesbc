@@ -71,13 +71,8 @@ const NewsPage = (props: any) => {
                   <time dateTime={newsItem.date.toLocaleDateString()}>{newsItem.date.toLocaleDateString()}</time>
                 </p>
                 <ul className="newsListItemContent">
-                  {newsItem.content.map((content: string, contentIndex: number) => (
-                    <li
-                      key={contentIndex}
-                      style={{ marginBottom: contentIndex < newsItem.content.length - 1 ? '1rem' : '0' }}
-                    >
-                      {renderContentWithLinks(content)}
-                    </li>
+                  {newsItem.content.map((content: string) => (
+                    <li key={content}>{renderContentWithLinks(content)}</li>
                   ))}
                 </ul>
               </div>
