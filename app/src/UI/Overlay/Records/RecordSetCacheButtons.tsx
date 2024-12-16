@@ -1,4 +1,4 @@
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { Button, Tooltip } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { MouseEvent, useEffect, useState } from 'react';
@@ -80,9 +80,6 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
     );
   }, [recordSet.cacheMetadata?.status, connected]);
 
-  if (recordSet.recordSetType !== RecordSetType.Activity) {
-    return;
-  }
   return (
     <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to save this layer and it's records">
       <span>

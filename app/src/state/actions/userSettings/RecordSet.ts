@@ -77,7 +77,7 @@ class RecordSet {
       server_id: 0
     },
     cacheMetadata: {
-      status: type == 'Activity' ? UserRecordCacheStatus.NOT_CACHED : UserRecordCacheStatus.NOT_ELIGIBLE
+      status: UserRecordCacheStatus.NOT_CACHED
     }
   });
 }
