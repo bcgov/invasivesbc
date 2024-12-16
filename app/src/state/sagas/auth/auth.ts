@@ -24,6 +24,7 @@ async function withCurrentJWT(callback: withCurrentJWTCallback) {
     return await callback(header);
   } else {
     if (keycloakInstance !== null) {
+      console.log(keycloakInstance.idToken);
       const header = `Bearer ${keycloakInstance.idToken}`;
       return await callback(header);
     } else {
@@ -39,6 +40,8 @@ async function getCurrentJWT(): Promise<string> {
 
 // this saga is platform (mobile/web) agnostic
 function* refreshRoles() {
+  console.log('HEREEE');
+
   const configuration = yield select(selectConfiguration);
 
   try {

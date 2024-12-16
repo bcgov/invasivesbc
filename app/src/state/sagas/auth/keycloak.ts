@@ -37,6 +37,7 @@ function* handleSigninRequest() {
     yield call(keycloakInstance.login, {
       redirectUri: config.REDIRECT_URI
     });
+    console.log('Login', keycloakInstance);
 
     yield put({
       type: AUTH_REQUEST_COMPLETE,
@@ -119,6 +120,8 @@ function* keepTokenFresh() {
 
 function* reinitAuth() {
   const config: AppConfig = yield select(selectConfiguration);
+  console.log(!keycloakInstance, keycloakInstance);
+
   if (!keycloakInstance) {
     return;
   }
@@ -150,6 +153,8 @@ function* reinitAuth() {
   let failCount = 0;
   while (failCount < FAIL_LIMIT) {
     try {
+      console.log('calling', keycloakInstance);
+
       yield call(keycloakInstance.init, {
         checkLoginIframe: false,
         redirectUri: config.REDIRECT_URI,
@@ -201,10 +206,15 @@ function* reinitAuth() {
 function* initializeAuthentication() {
   const config: AppConfig = yield select(selectConfiguration);
 
+  // keycloakInstance = new Keycloak({
+  //   clientId: config.KEYCLOAK_CLIENT_ID,
+  //   realm: config.KEYCLOAK_REALM,
+  //   url: config.KEYCLOAK_URL
+  // });
   keycloakInstance = new Keycloak({
-    clientId: config.KEYCLOAK_CLIENT_ID,
-    realm: config.KEYCLOAK_REALM,
-    url: config.KEYCLOAK_URL
+    url: 'http://localhost:8080',
+    realm: 'invasives',
+    clientId: 'invasivesbc'
   });
 
   yield put({

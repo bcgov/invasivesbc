@@ -14,8 +14,7 @@ import { getLogger } from 'utils/logger';
 const defaultLog = getLogger('auth-utils');
 
 const APP_CERTIFICATE_URL =
-  process.env.APP_CERTIFICATE_URL ||
-  'https://dev.loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/certs';
+  process.env.APP_CERTIFICATE_URL || 'http://localhost:8080/realms/invasives/protocol/openid-connect/certs';
 
 // so we have type information available to endpoints
 export interface InvasivesRequest extends Request {
