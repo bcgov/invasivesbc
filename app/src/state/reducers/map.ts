@@ -532,34 +532,22 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
         draftState.whatsHere.serverActivityIDs = action.payload.activities;
         draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
-
         const toggledOnActivityLayers = draftState.layers.filter(
-          (layer) => layer.type === RecordSetType.Activity && layer.layerState.mapToggle
+          ({ type, layerState }) => type === RecordSetType.Activity && layerState.mapToggle
         );
 
         const toggledOnIAPPLayers = draftState.layers.filter(
-          (layer) => layer.type === RecordSetType.IAPP && layer.layerState.mapToggle
+          ({ type, layerState }) => type === RecordSetType.IAPP && layerState.mapToggle
         );
+        const localActivityIDs = toggledOnActivityLayers.flatMap(
+          (layer) => layer.IDList ?? layer?.layerState?.cacheMetadata?.idList ?? []
+        );
+        const localIappIds = toggledOnIAPPLayers.flatMap((layer) => layer.IDList ?? layer?.cacheMetadata?.idList ?? []);
+        const iappIds = localIappIds.filter((l) => draftState.whatsHere.serverIAPPIDs.includes(l));
+        const activityIds = localActivityIDs.filter((l) => draftState.whatsHere.serverActivityIDs.includes(l));
 
-        let localActivityIDs = [];
-
-        toggledOnActivityLayers.forEach((layer) => {
-          localActivityIDs = localActivityIDs.concat(layer.IDList);
-        });
-
-        let localIAPPIDs = [];
-
-        toggledOnIAPPLayers.forEach((layer) => {
-          localIAPPIDs = localIAPPIDs.concat(layer.IDList);
-        });
-
-        const iappIDs = [];
-        const activityIDs = [];
-        localIAPPIDs.forEach((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
-        localActivityIDs.forEach((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
-
-        draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
-        draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
+        draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIds));
+        draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIds));
       } else if (WhatsHere.sort_filter_update.match(action)) {
         if (action.payload.type === RecordSetType.IAPP) {
           draftState.whatsHere.IAPPPage = 0;
@@ -758,8 +746,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             if (draftState.MapMode === 'VECTOR_ENDPOINT') {
               draftState.layers[index].loading = false;
             }
-
-            //if (draftState.activitiesGeoJSON?.features?.length > 0) {
             if (draftState.MapMode !== 'VECTOR_ENDPOINT' && draftState.activitiesGeoJSONDict !== undefined) {
               GeoJSONFilterSetForLayer(
                 draftState,
