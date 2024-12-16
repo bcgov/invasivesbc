@@ -120,7 +120,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
           payload: {
             recordSetID: action.payload.recordSetID,
-            IDList: recordSet.cachedMetadata.idList,
+            IDList: recordSet.cachedMetadata.idList ?? [],
             tableFiltersHash: action.payload.tableFiltersHash
           }
         });
