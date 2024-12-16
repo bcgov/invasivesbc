@@ -23,12 +23,12 @@ const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Pro
     body: JSON.stringify({ filterObjects: [filterObj] })
   }).then((data) => data.json());
 
-  const [minX, minY, maxX, maxY] = bbox(parse(data.bbox));
+  const [minLongitude, minLatitude, maxLongitude, maxLatitude] = bbox(parse(data.bbox));
   return {
-    minLatitude: minY,
-    maxLatitude: maxY,
-    minLongitude: minX,
-    maxLongitude: maxX
+    minLatitude: minLatitude,
+    maxLatitude: maxLongitude,
+    minLongitude: minLongitude,
+    maxLongitude: maxLatitude
   };
 };
 
