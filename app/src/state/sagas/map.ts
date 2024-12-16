@@ -1,4 +1,5 @@
-import * as turf from '@turf/turf';
+import { bboxPolygon, Feature, buffer } from '@turf/turf';
+import booleanIntersects from '@turf/boolean-intersects';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
 import {
@@ -7,7 +8,6 @@ import {
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITIES_TABLE_ROWS_GET_ONLINE,
   ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
@@ -21,7 +21,6 @@ import {
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_TABLE_ROWS_GET_ONLINE,
   IAPP_TABLE_ROWS_GET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
@@ -67,12 +66,12 @@ import {
   handle_IAPP_TABLE_ROWS_GET_ONLINE
 } from './map/online';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { ACTIVITY_GEOJSON_SOURCE_KEYS, MapState, selectMap } from 'state/reducers/map';
+import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -80,10 +79,13 @@ import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 import { RECORD_COLOURS } from 'constants/colors';
-import { Action, PayloadAction } from '@reduxjs/toolkit';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
-import { selectNetworkState } from 'state/reducers/network';
+import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
+import { MOBILE } from 'state/build-time-config';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import bboxToPolygon from 'utils/bboxToPolygon';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -114,46 +116,66 @@ function* refetchServerBoundaries() {
   yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
 }
 
-function* handle_WHATS_HERE_FEATURE(action) {
+function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
   const { MapMode, activitiesGeoJSONDict, IAPPGeoJSONDict } = yield select(selectMap);
+  const { connected } = yield select(selectNetworkState);
+
   if (MapMode === 'VECTOR_ENDPOINT') {
-    // get all the toggled on recordsets
-    const tableFilters = [
-      {
-        id: '0.81778552637744651712083357942',
-        filterType: 'spatialFilterDrawn',
-        operator: 'CONTAINED IN',
-        filter: '0.652479498272151712093656568',
-        geojson: action.payload
-      }
-    ];
+    if (connected) {
+      // get all the toggled on recordsets
+      const tableFilters = [
+        {
+          id: '0.81778552637744651712083357942',
+          filterType: 'spatialFilterDrawn',
+          operator: 'CONTAINED IN',
+          filter: '0.652479498272151712093656568',
+          geojson: whatsHereFeature.payload
+        }
+      ];
 
-    const activitiesfilterObj = {
-      selectColumns: ['activity_id'],
-      tableFilters,
-      limit: 200000
-    };
-    const iappfilterObj = {
-      selectColumns: ['site_id'],
-      tableFilters,
-      limit: 200000
-    };
-    const [activitiesNetworkReturn, iappNetworkReturn] = yield all([
-      call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
-        filterObjects: [activitiesfilterObj]
-      }),
-      call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
-        filterObjects: [iappfilterObj]
-      })
-    ]);
+      const activitiesfilterObj = {
+        selectColumns: ['activity_id'],
+        tableFilters,
+        limit: 200000
+      };
+      const iappfilterObj = {
+        selectColumns: ['site_id'],
+        tableFilters,
+        limit: 200000
+      };
+      const [activitiesNetworkReturn, iappNetworkReturn] = yield all([
+        call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
+          filterObjects: [activitiesfilterObj]
+        }),
+        call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
+          filterObjects: [iappfilterObj]
+        })
+      ]);
 
-    const activityReturn = activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
-    const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
+      const activityReturn = activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
+      const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
 
-    const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
-    const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
-
-    yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
+      const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
+      const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
+      yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
+    } else {
+      // Get IDs from Offline Caches
+      const { recordSets } = yield select(selectUserSettings);
+      const recordSetsInBoundingBox = Object.keys(recordSets).filter((set) => {
+        const { bbox, status } = recordSets[set].cacheMetadata;
+        const recordSetIsCached = status === UserRecordCacheStatus.CACHED;
+        return recordSetIsCached && bbox && booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox));
+      });
+      const overlappingRecords: string[] = [];
+      recordSetsInBoundingBox.flatMap((set) =>
+        recordSets[set].cacheMetadata.cachedGeoJson.data.features.forEach((shape: Feature) => {
+          if (booleanIntersects(whatsHereFeature.payload, shape)) {
+            overlappingRecords.push(shape?.properties?.description);
+          }
+        })
+      );
+      yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, []));
+    }
   } else {
     if (!activitiesGeoJSONDict) {
       yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
@@ -251,14 +273,13 @@ function* handle_WHATS_HERE_PAGE_POI(action) {
 
 function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
   const mapState = yield select(selectMap);
-  const { connected } = yield select(selectNetworkState);
+  const connected = yield select(selectNetworkConnected);
 
   if (mapState.MapMode === 'VECTOR_ENDPOINT') {
-    const startRecord =
-      mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
-    const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
-    const slicedIDs = mapState.whatsHere.ActivityIDs.slice(startRecord, endRecord);
-
+    const { whatsHere } = mapState;
+    const startRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1) - whatsHere.ActivityLimit;
+    const endRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1);
+    const slicedIDs = whatsHere.ActivityIDs.slice(startRecord, endRecord);
     const filterObject = {
       selectColumns: [
         'activity_id',
@@ -275,21 +296,33 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
       yield put(WhatsHere.activity_rows_success([]));
       return;
     }
-    console.log('Whats Here search', filterObject);
-    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-      filterObjects: [filterObject]
-    });
 
-    const mappedToWhatsHereColumns = networkReturn.data.result.map((activityRecord) => {
+    let records: UserRecord[];
+    if (MOBILE && !connected) {
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      records = yield service.fetchPaginatedCachedRecords(
+        whatsHere.ActivityIDs,
+        whatsHere.ActivityPage,
+        whatsHere.ActivityLimit
+      );
+    } else {
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+        filterObjects: [filterObject]
+      });
+      records = networkReturn.data.result;
+    }
+    const mappedToWhatsHereColumns = records.map((activityRecord) => {
+      // Differenciate the Cached records from the API called ones
+      const shortHand = activityRecord.activity_payload ? activityRecord.activity_payload : activityRecord;
       return {
         id: activityRecord.activity_id,
         short_id: activityRecord.short_id,
         activity_type: activityRecord.activity_type,
         jurisdiction_code: activityRecord.jurisdiction_display,
         species_code: activityRecord.map_symbol,
-        reported_area: activityRecord.activity_payload.form_data.activity_data.reported_area,
-        geometry: activityRecord.activity_payload.geometry?.[0],
-        created: new Date(activityRecord.activity_payload.form_data.activity_data.activity_date_time).toDateString()
+        reported_area: shortHand.form_data.activity_data.reported_area,
+        geometry: shortHand.geometry?.[0],
+        created: new Date(shortHand.form_data.activity_data.activity_date_time).toDateString()
       };
     });
     yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
@@ -452,20 +485,18 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   }
 }
 
-function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
-  switch (action.payload.recordType) {
-    case RecordSetType.IAPP:
-      yield put(WhatsHere.iapp_rows_request());
-      break;
-    default:
-      yield put(WhatsHere.activity_rows_request());
-      break;
+function* handle_WHATS_HERE_SORT_FILTER_UPDATE(record: PayloadAction<Record<PropertyKey, any>>) {
+  const { recordType } = record.payload;
+  if (recordType === RecordSetType.IAPP) {
+    yield put(WhatsHere.iapp_rows_request());
+  } else if (recordType === RecordSetType.Activity) {
+    yield put(WhatsHere.activity_rows_request());
   }
 }
 
 function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
   const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
-  const bounds = turf.bboxPolygon(bbox as any);
+  const bounds = bboxPolygon(bbox as any);
 
   yield put({
     type: MAP_LABEL_EXTENT_FILTER_SUCCESS,
@@ -477,7 +508,7 @@ function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
 
 function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
   const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
-  const bounds = turf.bboxPolygon(bbox as any);
+  const bounds = bboxPolygon(bbox as any);
 
   yield put({
     type: IAPP_EXTENT_FILTER_SUCCESS,
@@ -735,9 +766,9 @@ function* handle_CUSTOM_LAYER_DRAWN(actions) {
 
 function* handle_MAP_ON_SHAPE_CREATE(action) {
   const callback = (width: number) => {
-    const newGeo = turf.buffer(action.payload.geometry, width / 10000);
+    const newGeo = buffer(action.payload.geometry, width / 10000) ?? action.payload;
     if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-      return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo ? newGeo : action.payload] } }];
+      return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
     }
   };
   const appModeUrl = yield select((state: any) => state.AppMode.url);
@@ -769,7 +800,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   }
 }
 
-function* handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
+function handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
   location.reload();
 }
 
