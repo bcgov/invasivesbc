@@ -13,10 +13,23 @@ import { MOBILE } from 'state/build-time-config';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 
-export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
-  const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
+export const createOfflineIappLayer = (map: maplibregl.Map, layer: any) => {
+  if (!layer?.layerState?.cacheMetadata?.hasOwnProperty('cachedGeoJson')) {
+    return;
+  }
+  const layerID = `recordset-layer-${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+  const source: GeoJSONSourceSpecification = layer.layerState.cacheMetadata.cachedGeoJson;
+  const color: string = layer.layerState.color ?? FALLBACK_COLOR;
+  const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'name' });
+  const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
+  map.addSource(layerID, source);
+  map.addLayer(circleLayer, LAYER_Z_FOREGROUND);
+  map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
+};
 
-  let source = {};
+export const createOnlineIappLayer = (map: any, layer: any, mode: string, API_BASE: string) => {
+  const layerID = `recordset-layer-${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+  let source: SourceSpecification;
   if (mode === 'VECTOR_ENDPOINT') {
     source = {
       type: 'vector',
@@ -41,41 +54,9 @@ export const createIAPPLayer = (map: any, layer: any, mode, API_BASE) => {
   }
 
   map.addSource(layerID, source).addLayer(circleLayer, LAYER_Z_MID);
-
   map.addLayer(labelLayer, LAYER_Z_BACKGROUND);
 };
 
-export const deleteStaleIAPPLayer = (map: any, layer: any, mode) => {
-  const allLayersForRecordSet = map.getLayersOrder().filter((mapLayer: any) => {
-    return mapLayer.includes('recordset-layer-' + layer.recordSetID) || mapLayer.includes('label-' + layer.recordSetID);
-  });
-
-  const stale = allLayersForRecordSet.filter((mapLayer) => {
-    return !mapLayer.includes(layer.tableFiltersHash);
-  });
-
-  stale.map((staleLayer) => {
-    try {
-      map.removeLayer(staleLayer);
-    } catch (e) {
-      console.error('error removing layer' + staleLayer);
-    }
-  });
-
-  const staleSources = Object.keys(map.style.sourceCaches).filter((source) => {
-    return source.includes('recordset-layer-' + layer.recordSetID) && !source.includes(layer.tableFiltersHash);
-  });
-
-  staleSources?.map((staleSource) => {
-    if (map.getSource(staleSource)) {
-      try {
-        map.removeSource(staleSource);
-      } catch (e) {
-        console.error('error removing source', e);
-      }
-    }
-  });
-};
 const getPaintBySchemeOrColor = (layer: any) => {
   if (layer?.layerState?.colorScheme) {
     return [
@@ -238,7 +219,7 @@ export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
   map.addLayer(circleMarkerZoomedOutLayerCentroid, LAYER_Z_FOREGROUND);
 };
 
-export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_BASE) => {
+export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode, API_BASE) => {
   const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
 
   if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
@@ -283,7 +264,7 @@ export const createActivityLayer = (map: maplibregl.Map, layer: any, mode, API_B
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 };
 
-export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
+export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
   if (!map) {
     return;
   }
@@ -296,9 +277,7 @@ export const deleteStaleActivityLayer = (map: maplibregl.Map, layer: Record<Prop
       mapLayer.includes('polygon-circle-' + layer.recordSetID)
     );
   });
-  const stale = allLayersForRecordSet.filter((mapLayer) => {
-    return !mapLayer.includes(layer.tableFiltersHash);
-  });
+  const stale = allLayersForRecordSet.filter((mapLayer) => !mapLayer.includes(layer.tableFiltersHash));
 
   stale.forEach((staleLayer) => {
     try {
@@ -390,31 +369,40 @@ export const rebuildLayersOnTableHashUpdate = (
   });
 
   // now update the layers that are in the store
-  storeLayers.map((layer: any) => {
+  storeLayers.map((layer: Record<PropertyKey, any>) => {
     if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
-      if (layer.type === RecordSetType.Activity) {
-        deleteStaleActivityLayer(map, layer);
-        const existingSource = map.getSource(
-          'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
-        );
-        if (existingSource === undefined) {
-          if (MOBILE_OFFLINE) {
-            createOfflineActivityLayer(map, layer);
-          } else {
-            createActivityLayer(map, layer, mode, API_BASE);
-          }
-        }
-      } else if (layer.type === RecordSetType.IAPP && !MOBILE_OFFLINE) {
-        deleteStaleIAPPLayer(map, layer, mode);
-        const existingSource = map.getSource(
-          'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash
-        );
-        if (existingSource === undefined) {
-          createIAPPLayer(map, layer, mode, API_BASE);
-        }
-      }
+      const sourceId = `recordset-layer-${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+      deleteStaleRecordsetLayer(map, layer);
+      const existingSource = map.getSource(sourceId);
+      if (existingSource) return;
+      createMapLayer(map, layer, mode, API_BASE, MOBILE_OFFLINE);
     }
   });
+};
+
+/**
+ * @desc Handler logic for creating a new layer based on Network condition and recordset type
+ */
+const createMapLayer = (
+  map: maplibregl.Map,
+  layer: Record<PropertyKey, any>,
+  mapMode: string,
+  apiBase: string,
+  isOfflineLayer: boolean
+): void => {
+  if (layer.type === RecordSetType.Activity) {
+    if (isOfflineLayer) {
+      createOfflineActivityLayer(map, layer);
+    } else {
+      createOnlineActivityLayer(map, layer, mapMode, apiBase);
+    }
+  } else if (layer.type === RecordSetType.IAPP) {
+    if (isOfflineLayer) {
+      createOfflineIappLayer(map, layer);
+    } else {
+      createOnlineIappLayer(map, layer, mapMode, apiBase);
+    }
+  }
 };
 
 export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) => {
