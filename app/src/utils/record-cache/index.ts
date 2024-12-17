@@ -1,9 +1,14 @@
+import IappRecord from 'interfaces/IappRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
 
+export enum IappRecordMode {
+  Record,
+  Row
+}
 export interface RecordCacheDownloadRequestSpec {
   setId: string;
   API_BASE: string;
@@ -30,7 +35,7 @@ export interface RecordSetCacheMetadata {
 
 export interface RecordSetSourceMetadata {
   cachedGeoJson: GeoJSONSourceSpecification;
-  cachedCentroid: GeoJSONSourceSpecification;
+  cachedCentroid?: GeoJSONSourceSpecification;
 }
 
 export interface RecordCacheProgressCallbackParameters {
@@ -61,8 +66,14 @@ abstract class RecordCacheService {
 
   abstract deleteCachedSet(id: string): Promise<void>;
 
+  abstract fetchPaginatedCachedIappRecords(
+    recordSetIdList: string[],
+    page: number,
+    limit: number
+  ): Promise<IappRecord[]>;
   abstract fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]>;
 
+  abstract loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
   abstract loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
   async downloadIapp(
@@ -75,7 +86,7 @@ abstract class RecordCacheService {
         fetch(
           `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${id}","isIAPP":true,"site_id_only":false}`,
           { headers: { authorization } }
-        ),
+        ).then(async (data) => await data.json()),
         fetch(`${spec.API_BASE}/api/v2/IAPP/`, {
           method: 'POST',
           headers: { authorization, 'Content-type': 'application/json' },
@@ -97,9 +108,9 @@ abstract class RecordCacheService {
               }
             ]
           })
-        })
+        }).then(async (data) => await data.json())
       ]);
-      await this.saveIapp(id, await iappRecord.json(), await tableRow.json());
+      await this.saveIapp(id.toString(), iappRecord, tableRow);
     }
   }
 
