@@ -45,14 +45,14 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error('cache not available');
     }
     const data = { record: iappRecord.result.rows[0], row: iappTableRow.result[0] };
-    await this.store.setItem(id, data);
+    await this.store.setItem(id.toString(), data);
   }
 
   async loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    const data = await this.store.getItem(id);
+    const data = await this.store.getItem(id.toString());
     if (!data) {
       throw new Error(`Iapp ${id} not found in cache`);
     }
