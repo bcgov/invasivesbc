@@ -43,7 +43,6 @@ class RecordCache {
         await service.downloadIapp(args);
         responseData = await service.loadIappRecordsetSourceMetadata(idsToCache);
       }
-      console.log(responseData);
       return {
         cachedIds: idsToCache,
         setId: spec.setId,
