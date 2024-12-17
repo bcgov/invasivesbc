@@ -6,8 +6,8 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
 
 export enum IappRecordMode {
-  Record,
-  Row
+  Record = 'record',
+  Row = 'row'
 }
 export interface RecordCacheDownloadRequestSpec {
   setId: string;
