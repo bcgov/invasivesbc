@@ -1,6 +1,8 @@
 import UserRecord from 'interfaces/UserRecord';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
+import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
 
 export interface RecordCacheDownloadRequestSpec {
   setId: string;
@@ -49,6 +51,8 @@ abstract class RecordCacheService {
 
   abstract saveActivity(id: string, data: unknown): Promise<void>;
 
+  abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
+
   abstract loadActivity(id: string): Promise<unknown>;
 
   abstract addCachedSet(spec: RecordCacheAddSpec): Promise<void>;
@@ -60,6 +64,44 @@ abstract class RecordCacheService {
   abstract fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]>;
 
   abstract loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
+
+  async downloadIapp(
+    spec: RecordCacheDownloadRequestSpec,
+    progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
+  ): Promise<void> {
+    for (const id of spec.idsToCache) {
+      const authorization = await getCurrentJWT();
+      const [iappRecord, tableRow] = await Promise.all([
+        fetch(
+          `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${id}","isIAPP":true,"site_id_only":false}`,
+          { headers: { authorization } }
+        ),
+        fetch(`${spec.API_BASE}/api/v2/IAPP/`, {
+          method: 'POST',
+          headers: { authorization, 'Content-type': 'application/json' },
+          body: JSON.stringify({
+            filterObjects: [
+              {
+                limit: 1,
+                recordSetType: RecordSetType.IAPP,
+                selectColumns: getSelectColumnsByRecordSetType(RecordSetType.IAPP),
+                tableFilters: [
+                  {
+                    field: 'site_id',
+                    filter: id,
+                    filterType: 'tableFilter',
+                    operator: 'CONTAINS',
+                    operator2: 'AND'
+                  }
+                ]
+              }
+            ]
+          })
+        })
+      ]);
+      await this.saveIapp(id, await iappRecord.json(), await tableRow.json());
+    }
+  }
 
   async download(
     spec: RecordCacheDownloadRequestSpec,
