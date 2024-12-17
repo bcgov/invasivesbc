@@ -154,11 +154,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
    */
   async loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
     const geoJsonArr: any[] = [];
-
     for (const id of ids) {
-      const data: IappRecord = await this.loadIapp(id, IappRecordMode.Record);
-      const label = `IAPP Site: ${id}`;
-      const feature = data.geom;
+      const data: IappRecord = await this.loadIapp(id, IappRecordMode.Row);
+      console.log(data);
+      const label = `${id} ${data.geojson.properties.map_symbol ?? ''}`;
+      const feature = data.geojson;
       feature.properties = { name: label, description: id };
       geoJsonArr.push(feature);
     }
