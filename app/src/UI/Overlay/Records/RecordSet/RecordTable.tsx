@@ -33,6 +33,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
   const unmappedRows = useSelector((state) => state.Map?.recordTables?.[setID]?.rows);
   const tableType = useSelector((state) => state.UserSettings?.recordSets?.[setID].recordSetType);
   const activitySortColumns = userOfflineMobile ? [] : validActivitySortColumns;
+  const iappSortColumns = userOfflineMobile ? [] : validIAPPSortColumns;
   const dispatch = useDispatch();
   const isTouch = detectTouchDevice();
   const mappedRows = unmappedRows?.map((row) => {
@@ -80,13 +81,13 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     className="record_table_header_column"
                     key={col.key}
                     onClick={() => {
-                      if (validIAPPSortColumns.includes(col.key)) {
+                      if (iappSortColumns.includes(col.key)) {
                         dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
                       }
                     }}
                   >
                     {col.name}{' '}
-                    {validIAPPSortColumns.includes(sortColumn) &&
+                    {iappSortColumns.includes(sortColumn) &&
                       sortColumn === col.key &&
                       (sortOrder === 'ASC' ? '▲' : '▼')}
                   </th>
