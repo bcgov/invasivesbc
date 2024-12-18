@@ -3,7 +3,7 @@ import * as GeoJSON from '@mapbox/togeojson';
 import AdmZip from 'adm-zip';
 import { FeatureCollection } from 'geojson';
 import { getLogger } from 'utils/logger';
-import { VALID_GEOMETRY_TYPES } from 'constants';
+import { VALID_GEOMETRY_TYPES } from 'sharedAPI';
 
 function KMZToKML(data: Buffer): Buffer {
   const log = getLogger('KML');

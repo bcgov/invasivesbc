@@ -22,3 +22,13 @@ export const FORM_SUBTYPES_WITH_AREA_LIMITS = [
   'Activity_Transect_BiocontrolEfficacy',
   'Activity_Biocontrol_Collection'
 ];
+
+export const VALID_GEOMETRY_TYPES = [
+  'GeometryCollection',
+  'MultiPolygon',
+  'MultiLineString',
+  'MultiPoint',
+  'Polygon',
+  'LineString',
+  'Point'
+];
