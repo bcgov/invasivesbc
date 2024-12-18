@@ -1,4 +1,5 @@
 import IappRecord from 'interfaces/IappRecord';
+import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
@@ -59,6 +60,7 @@ abstract class RecordCacheService {
   abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
 
   abstract loadActivity(id: string): Promise<unknown>;
+  abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
 
   abstract addCachedSet(spec: RecordCacheAddSpec): Promise<void>;
 
