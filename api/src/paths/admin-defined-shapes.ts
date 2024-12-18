@@ -274,6 +274,7 @@ function uploadShape(): RequestHandler {
           const buffer = Buffer.from(data['data'], 'base64');
           const KML = KMZToKML(buffer);
           const dirtyGeoJSON = GeoJSONFromKML(KML);
+
           geoJSON = sanitizeGeoJSON(dirtyGeoJSON);
 
           break;
