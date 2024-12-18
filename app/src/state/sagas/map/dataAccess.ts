@@ -405,7 +405,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
 
   yield put(WhatsHere.map_init_get_activity_ids_fetched(recordSetUniqueFilteredIDs));
-  yield put(WhatsHere.activity_rows_request);
+  yield put(WhatsHere.activity_rows_request());
 }
 
 export function getSelectColumnsByRecordSetType(recordSetType: any) {

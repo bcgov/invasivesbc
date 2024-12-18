@@ -85,6 +85,7 @@ import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import IappActions from 'state/actions/activity/Iapp';
+import IappRecord from 'interfaces/IappRecord';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -173,7 +174,7 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
           }
         })
       );
-      yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, []));
+      yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, [...overlappingRecords]));
     }
   } else {
     if (!activitiesGeoJSONDict) {
@@ -194,13 +195,14 @@ function* whatsHereSaga() {
   ]);
 }
 
-function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
+function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
   const mapState = yield select(selectMap);
+  const connected = yield select(selectNetworkConnected);
   if (mapState.MapMode === 'VECTOR_ENDPOINT') {
-    const startRecord =
-      mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
-    const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
-    const slicedIDs = mapState.whatsHere.IAPPIDs.slice(startRecord, endRecord);
+    const { whatsHere } = mapState;
+    const startRecord = whatsHere.IAPPLimit * (whatsHere.IAPPPage + 1) - whatsHere.IAPPLimit;
+    const endRecord = whatsHere.IAPPLimit * (whatsHere.IAPPPage + 1);
+    const slicedIDs = whatsHere.IAPPIDs.slice(startRecord, endRecord);
 
     const filterObject = {
       selectColumns: ['site_id', 'jurisdictions_flattened', 'map_symbol', 'min_survey', 'reported_area', 'geojson'],
@@ -212,24 +214,30 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
       yield put(WhatsHere.iapp_rows_success([]));
       return;
     }
-
-    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
-      filterObjects: [filterObject]
-    });
-
-    const mappedToWhatsHereColumns = networkReturn.data.result.map((iappRecord) => {
-      return {
-        id: iappRecord.site_id,
-        site_id: iappRecord.site_id,
-        jurisdiction_code: iappRecord.jurisdictions_flattened,
-        species_code: iappRecord.map_symbol,
-        earliest_survey: new Date(iappRecord.min_survey).toDateString(),
-        geometry: iappRecord.geojson
-      };
-    });
+    let records: IappRecord[];
+    if (MOBILE && !connected) {
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      records = yield service.fetchPaginatedCachedIappRecords(
+        whatsHere.IAPPIDs,
+        whatsHere.IAPPPage,
+        whatsHere.IAPPLimit
+      );
+    } else {
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
+        filterObjects: [filterObject]
+      });
+      records = networkReturn.data.result;
+    }
+    const mappedToWhatsHereColumns = records.map((iappRecord) => ({
+      id: iappRecord.site_id,
+      site_id: iappRecord.site_id,
+      jurisdiction_code: iappRecord.jurisdictions_flattened,
+      species_code: iappRecord.map_symbol,
+      earliest_survey: new Date(iappRecord.min_survey).toDateString(),
+      geometry: iappRecord.geojson
+    }));
     yield put(WhatsHere.iapp_rows_success(mappedToWhatsHereColumns));
-  }
-  if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
+  } else {
     try {
       const startRecord =
         mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
@@ -266,7 +274,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
   }
 }
 
-function* handle_WHATS_HERE_PAGE_POI(action) {
+function* handle_WHATS_HERE_PAGE_POI() {
   yield put(WhatsHere.iapp_rows_request());
 }
 

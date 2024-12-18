@@ -534,17 +534,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         const toggledOnActivityLayers = draftState.layers.filter(
           ({ type, layerState }) => type === RecordSetType.Activity && layerState.mapToggle
         );
-
         const toggledOnIAPPLayers = draftState.layers.filter(
           ({ type, layerState }) => type === RecordSetType.IAPP && layerState.mapToggle
         );
         const localActivityIDs = toggledOnActivityLayers.flatMap(
           (layer) => layer.IDList ?? layer?.layerState?.cacheMetadata?.idList ?? []
         );
-        const localIappIds = toggledOnIAPPLayers.flatMap((layer) => layer.IDList ?? layer?.cacheMetadata?.idList ?? []);
+        const localIappIds = toggledOnIAPPLayers.flatMap(
+          (layer) => layer.IDList ?? layer?.layerState?.cacheMetadata?.idList ?? []
+        );
         const iappIds = localIappIds.filter((l) => draftState.whatsHere.serverIAPPIDs.includes(l));
         const activityIds = localActivityIDs.filter((l) => draftState.whatsHere.serverActivityIDs.includes(l));
-
         draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIds));
         draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIds));
       } else if (WhatsHere.sort_filter_update.match(action)) {
