@@ -175,7 +175,6 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
   mapState = yield select((state) => state.Map);
 
-  mapState = yield select((state) => state.Map);
   tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
   if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
@@ -183,7 +182,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
 
   if (networkReturn.data.result) {
     yield put(
-      IappActions.getSuccess({
+      IappActions.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result,
         tableFiltersHash: action.payload.tableFiltersHash,

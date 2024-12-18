@@ -6,7 +6,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import IappActions from 'state/actions/activity/Iapp';
 
 function* handle_USER_SETTINGS_READY(action) {
-  if (action.payload.activeIAPP && action.payload.activeIAPP !== null) {
+  if (action.payload?.activeIAPP) {
     yield put(IappActions.get(action.payload.activeIAPP));
   }
 }

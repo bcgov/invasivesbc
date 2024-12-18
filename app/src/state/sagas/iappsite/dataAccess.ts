@@ -11,22 +11,21 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions from 'state/actions/activity/Iapp';
 
-export function* handle_IAPP_GET_REQUEST(iappID: PayloadAction<string>) {
+export function* handle_IAPP_GET_REQUEST(iappId: PayloadAction<string>) {
   try {
     const connected = yield select(selectNetworkConnected);
     if (MOBILE && !connected) {
       const service: RecordCacheService = yield RecordCacheServiceFactory.getPlatformInstance();
-      const result = yield service.loadIapp(iappID.payload, IappRecordMode.Record);
+      const result = yield service.loadIapp(iappId.payload, IappRecordMode.Record);
       yield put(IappActions.getSuccess(result));
     } else {
-      if (!iappID.payload) {
-        yield put(IappActions.get(iappID.payload));
-        return;
-      }
-      const { activeIAPP } = yield select(selectUserSettings);
-
-      if (!activeIAPP) {
-        yield put(IappActions.getRequest(activeIAPP));
+      if (iappId.payload) {
+        yield put(IappActions.getRequest(iappId.payload));
+      } else {
+        const { activeIAPP } = yield select(selectUserSettings);
+        if (activeIAPP) {
+          yield put(IappActions.getRequest(activeIAPP.recordSetID));
+        }
       }
     }
   } catch (e) {

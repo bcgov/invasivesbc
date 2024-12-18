@@ -550,7 +550,7 @@ function* handle_URL_CHANGE(action) {
           limit: limit
         }
       });
-    } else {
+    } else if (recordSetType === RecordSetType.IAPP) {
       yield put(
         IappActions.getRows({
           recordSetID: id,

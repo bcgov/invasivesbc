@@ -19,17 +19,17 @@ export interface IappTableRowsGetFailure extends IappTableRowRequest {
 }
 
 class IappActions {
-  private static readonly PREFIX = 'Iapp';
+  private static readonly PREFIX = 'IappActions';
 
   static readonly get = createAction<string>(`${this.PREFIX}/get`);
   static readonly getRequest = createAction<string>(`${this.PREFIX}/getRequest`);
   static readonly getSuccess = createAction<IappRecord>(`${this.PREFIX}/getSuccess`);
   static readonly getFailure = createAction(`${this.PREFIX}/getFailure`);
 
-  static readonly getRows = createAction<IappTableRowRequest>(`${this.PREFIX}/get`);
-  static readonly getRowsRequest = createAction<IappTableRowGetRequest>(`${this.PREFIX}/getRequest`);
-  static readonly getRowsSuccess = createAction<IappTableRowsGetSuccess>(`${this.PREFIX}/getSuccess`);
-  static readonly getRowsFailure = createAction<IappTableRowsGetFailure>(`${this.PREFIX}/getFailure`);
+  static readonly getRows = createAction<IappTableRowRequest>(`${this.PREFIX}/getRows`);
+  static readonly getRowsRequest = createAction<IappTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
+  static readonly getRowsSuccess = createAction<IappTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
+  static readonly getRowsFailure = createAction<IappTableRowsGetFailure>(`${this.PREFIX}/getRowsFailure`);
 }
 
 export default IappActions;
