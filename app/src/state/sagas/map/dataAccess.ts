@@ -14,9 +14,7 @@ import {
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  IAPP_TABLE_ROWS_GET_ONLINE,
-  IAPP_TABLE_ROWS_GET_SUCCESS
+  IAPP_GET_IDS_FOR_RECORDSET_ONLINE
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -26,6 +24,8 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { PayloadAction } from '@reduxjs/toolkit';
+import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -256,7 +256,7 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   }
 }
 
-export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
+export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTableRowRequest>) {
   try {
     const currentState = yield select(selectUserSettings);
     const connected = yield select(selectNetworkConnected);
@@ -283,27 +283,25 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
       const recordSetIdList = currentState.recordSets[recordSetID].cacheMetadata.idList ?? [];
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const records = yield service.fetchPaginatedCachedIappRecords(recordSetIdList, page, limit);
-      yield put({
-        type: IAPP_TABLE_ROWS_GET_SUCCESS,
-        payload: {
+      yield put(
+        IappActions.getRowsSuccess({
           recordSetID: recordSetID,
           rows: records,
           tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit
-        }
-      });
+        })
+      );
     } else {
-      yield put({
-        type: IAPP_TABLE_ROWS_GET_ONLINE,
-        payload: {
+      yield put(
+        IappActions.getRowsRequest({
           filterObj: filterObject,
           recordSetID: recordSetID,
           tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit
-        }
-      });
+        })
+      );
     }
   } catch (e) {
     console.error(e);

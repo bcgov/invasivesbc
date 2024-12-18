@@ -21,8 +21,6 @@ import {
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  IAPP_TABLE_ROWS_GET_ONLINE,
-  IAPP_TABLE_ROWS_GET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
   MAP_INIT_FOR_RECORDSET,
   MAP_INIT_REQUEST,
@@ -86,6 +84,7 @@ import UserRecord from 'interfaces/UserRecord';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import bboxToPolygon from 'utils/bboxToPolygon';
+import IappActions from 'state/actions/activity/Iapp';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -552,15 +551,14 @@ function* handle_URL_CHANGE(action) {
         }
       });
     } else {
-      yield put({
-        type: IAPP_TABLE_ROWS_GET_REQUEST,
-        payload: {
+      yield put(
+        IappActions.getRows({
           recordSetID: id,
           tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash,
           page: page,
           limit: limit
-        }
-      });
+        })
+      );
     }
   }
 }
@@ -604,15 +602,14 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
     });
   } else {
     if (currentSet === action.payload.setID)
-      yield put({
-        type: IAPP_TABLE_ROWS_GET_REQUEST,
-        payload: {
+      yield put(
+        IappActions.getRows({
           recordSetID: action.payload.setID,
           tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
           page: 0,
           limit: 20
-        }
-      });
+        })
+      );
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
       payload: {
@@ -646,15 +643,14 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
       }
     });
   } else {
-    yield put({
-      type: IAPP_TABLE_ROWS_GET_REQUEST,
-      payload: {
+    yield put(
+      IappActions.getRows({
         recordSetID: action.payload.setID,
         tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
         page: page,
         limit: limit
-      }
-    });
+      })
+    );
   }
 }
 
@@ -838,10 +834,9 @@ function* handle_RECORDSET_SET_SORT(action) {
       payload: { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash }
     });
   } else {
-    yield put({
-      type: IAPP_TABLE_ROWS_GET_REQUEST,
-      payload: { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash }
-    });
+    yield put(
+      IappActions.getRows({ recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash })
+    );
   }
 }
 
@@ -884,8 +879,8 @@ function* activitiesPageSaga() {
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
     takeLatest(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
     takeEvery(ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
-    takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
-    takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
+    takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),
+    takeEvery(IappActions.getRowsRequest, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(WhatsHere.iapp_rows_request, handle_WHATS_HERE_IAPP_ROWS_REQUEST),

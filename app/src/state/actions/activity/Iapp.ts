@@ -14,6 +14,9 @@ export interface IappTableRowGetRequest extends IappTableRowRequest {
 export interface IappTableRowsGetSuccess extends IappTableRowRequest {
   rows: Record<PropertyKey, any>[];
 }
+export interface IappTableRowsGetFailure extends IappTableRowRequest {
+  error: Record<PropertyKey, any>[];
+}
 
 class IappActions {
   private static readonly PREFIX = 'Iapp';
@@ -26,7 +29,7 @@ class IappActions {
   static readonly getRows = createAction<IappTableRowRequest>(`${this.PREFIX}/get`);
   static readonly getRowsRequest = createAction<IappTableRowGetRequest>(`${this.PREFIX}/getRequest`);
   static readonly getRowsSuccess = createAction<IappTableRowsGetSuccess>(`${this.PREFIX}/getSuccess`);
-  static readonly getRowsFailure = createAction(`${this.PREFIX}/getFailure`);
+  static readonly getRowsFailure = createAction<IappTableRowsGetFailure>(`${this.PREFIX}/getFailure`);
 }
 
 export default IappActions;

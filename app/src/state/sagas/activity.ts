@@ -127,7 +127,7 @@ function* handle_URL_CHANGE(action) {
   }
 }
 
-function* handle_ACTIVITY_DELETE_FAILURE(action) {
+function* handle_ACTIVITY_DELETE_FAILURE() {
   yield put(
     Alerts.create({
       subject: AlertSubjects.Form,
@@ -203,7 +203,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
  *       if they abandon progress, Alerts are cleared and shape is erased.
  *       If no, all validation messages appear, and user continues as they were.
  */
-function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   const invalidCoordinatesErrorMessage = (minNumberCoords: number): AlertMessage => ({
     subject: AlertSubjects.Map,
     content: `Unable to get minimum number of coordinates (${minNumberCoords})`,

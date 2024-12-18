@@ -1,15 +1,16 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import './IAPPRecords.css';
-import { Route, useHistory, useParams, useRouteMatch } from 'react-router';
+import { Route, useHistory, useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
 import { OverlayHeader } from '../OverlayHeader';
 import { Button } from '@mui/material';
 import { Summary } from './Summary';
 import { Photos } from './Photos';
-import { IAPP_GET_REQUEST, IAPP_PAN_AND_ZOOM } from '../../../state/actions';
+import { IAPP_PAN_AND_ZOOM } from '../../../state/actions';
+import IappActions from 'state/actions/activity/Iapp';
 
-export const IAPPRecord = (props) => {
+export const IAPPRecord = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -18,8 +19,9 @@ export const IAPPRecord = (props) => {
   const IAPPState = useSelector((state: any) => state?.IAPPSitePage);
 
   useEffect(() => {
-    if (id !== null && id !== undefined && id !== '' && id !== 'undefined')
-      dispatch({ type: IAPP_GET_REQUEST, payload: { iappID: id } });
+    if (id !== null && id !== undefined && id !== '' && id !== 'undefined') {
+      dispatch(IappActions.get(id));
+    }
   }, [id]);
 
   return (

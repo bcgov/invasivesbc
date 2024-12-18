@@ -16,8 +16,6 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_PAN_AND_ZOOM,
-  IAPP_TABLE_ROWS_GET_REQUEST,
-  IAPP_TABLE_ROWS_GET_SUCCESS,
   INIT_SERVER_BOUNDARIES_GET,
   MAIN_MAP_MOVE,
   MAP_DELETE_LAYER_AND_TABLE,
@@ -65,6 +63,7 @@ import TileCache from 'state/actions/cache/TileCache';
 import MapActions from 'state/actions/map';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import RecordCache from 'state/actions/cache/RecordCache';
+import IappActions from 'state/actions/activity/Iapp';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -649,6 +648,56 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.track_me_draw_geo.drawingShape = false;
       } else if (GeoTracking.resume.match(action)) {
         draftState.track_me_draw_geo.drawingShape = true;
+      } else if (IappActions.getRows.match(action)) {
+        const { recordSetID, page, limit, tableFiltersHash } = action.payload;
+        draftState.recordTables[recordSetID] ??= {};
+        draftState.recordTables[recordSetID].loading = true;
+        draftState.recordTables[recordSetID].page = page;
+        draftState.recordTables[recordSetID].limit = limit;
+        draftState.recordTables[recordSetID].tableFiltersHash = tableFiltersHash;
+      } else if (IappActions.getRowsSuccess.match(action)) {
+        {
+          // the hash, page, and limit all need to line up
+          if (
+            draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash
+          ) {
+            console.warn(
+              'hash mismatch',
+              draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash,
+              action.payload.tableFiltersHash
+            );
+            return;
+          }
+          if (Number(draftState.recordTables?.[action.payload.recordSetID]?.limit) !== Number(action.payload.limit)) {
+            console.warn(
+              'limit mismatch',
+              draftState.recordTables?.[action.payload.recordSetID]?.limit,
+              action.payload.limit
+            );
+            console.warn(
+              'typeof',
+              typeof draftState.recordTables?.[action.payload.recordSetID]?.limit,
+              typeof action.payload.limit
+            );
+            return;
+          }
+          if (Number(draftState.recordTables?.[action.payload.recordSetID]?.page) !== Number(action.payload.page)) {
+            console.warn(
+              'page mismatch',
+              draftState.recordTables?.[action.payload.recordSetID]?.page,
+              action.payload.page
+            );
+            return;
+          }
+          if (draftState.recordTables?.[action.payload.recordSetID]) {
+            draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
+          } else {
+            draftState.recordTables[action.payload.recordSetID] = {};
+            draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
+          } // set defaults
+          draftState.recordTables[action.payload.recordSetID].loading = false;
+          return;
+        }
       } else {
         switch (action.type) {
           case TOGGLE_LAYER_PICKER_OPEN:
@@ -667,7 +716,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
             break;
           }
-          case IAPP_TABLE_ROWS_GET_REQUEST:
           case ACTIVITIES_TABLE_ROWS_GET_REQUEST: {
             if (!draftState.recordTables?.[action.payload.recordSetID]) {
               draftState.recordTables[action.payload.recordSetID] = {};
@@ -785,7 +833,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
             break;
           }
-          case IAPP_TABLE_ROWS_GET_SUCCESS:
           case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
             // the hash, page, and limit all need to line up
             if (
