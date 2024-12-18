@@ -19,7 +19,7 @@ export const IAPPRecord = () => {
   const IAPPState = useSelector((state: any) => state?.IAPPSitePage);
 
   useEffect(() => {
-    if (id !== null && id !== undefined && id !== '' && id !== 'undefined') {
+    if (id && id !== 'undefined') {
       dispatch(IappActions.get(id));
     }
   }, [id]);
@@ -55,6 +55,11 @@ export const IAPPRecord = () => {
           </Button>
         </div>
       </div>
+      <div className="control">
+        <Button variant="contained" color="primary" onClick={() => history.goBack()}>
+          {'< Back'}
+        </Button>
+      </div>
       <Route
         path="/Records/IAPP/:id/summary"
         render={() => {
@@ -64,9 +69,11 @@ export const IAPPRecord = () => {
             }, 3000);
             return <div>Activity does not exists, redirecting...</div>;
           }
-          if ((IAPPState?.site as any)?.site_id && IAPPState?.loading === false)
+          if ((IAPPState?.site as any)?.site_id && IAPPState?.loading === false) {
             return <Summary record={IAPPState?.site} />;
-          else return <div>loading</div>;
+          } else {
+            return <div>loading</div>;
+          }
         }}
       />
       <Route
