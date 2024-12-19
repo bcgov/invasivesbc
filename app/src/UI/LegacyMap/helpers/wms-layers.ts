@@ -1,12 +1,15 @@
 import { LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMap/helpers/layer-definitions';
+import { MOBILE } from 'state/build-time-config';
 
-export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map) => {
+export const addWMSLayersIfNotExist = (simplePickerLayers2: any, map, API_BASE) => {
   simplePickerLayers2.map((layer) => {
     if (!map.getSource(layer.url) && layer.toggle && layer.type === 'wms') {
       map
         .addSource(layer.url, {
           type: 'raster',
-          tiles: [layer.url],
+          tiles: MOBILE
+            ? [`${API_BASE}/api/proxy/openmaps?bbox={bbox-epsg-3857}&url=${encodeURIComponent(layer.url)}`]
+            : [layer.url],
           tileSize: 256,
           maxzoom: 18
         })
