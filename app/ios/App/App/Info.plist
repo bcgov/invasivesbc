@@ -46,9 +46,9 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>We need to use the photo library to allow you to choose and submit site photos.</string>
 	<key>SSO_BASE_URL</key>
-	<string>${SSO_BASE_URL}</string>
+	<string>http://localhost:8080/realms/invasives</string>
 	<key>SSO_CLIENT_ID</key>
-	<string>${SSO_CLIENT_ID}</string>
+	<string>invasivesbc</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>

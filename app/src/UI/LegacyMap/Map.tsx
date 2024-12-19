@@ -215,7 +215,7 @@ export const Map = ({ children }) => {
     if (!mapReady) return;
     if (!map.current) return;
     const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
-    addWMSLayersIfNotExist(layers, map.current);
+    addWMSLayersIfNotExist(layers, map.current, API_BASE);
     refreshWMSOnToggle(layers, map.current);
   }, [simplePickerLayers2, map.current, mapReady, baseMapLayer, connectedToNetwork]);
 
