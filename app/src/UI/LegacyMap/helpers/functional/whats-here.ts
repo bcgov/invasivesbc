@@ -1,4 +1,4 @@
-import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/layer-definitions';
+import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 
 export const refreshWhatsHereFeature = (map, options: any) => {
   const layerID = 'WhatsHereFeatureLayer';

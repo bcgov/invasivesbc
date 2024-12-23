@@ -6,9 +6,9 @@ import maplibregl, {
   SourceSpecification,
   SymbolLayerSpecification
 } from 'maplibre-gl';
-import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMap/helpers/layer-definitions';
-import { FALLBACK_COLOR } from 'UI/LegacyMap/helpers/constants';
-import { safelySetPaintProperty } from 'UI/LegacyMap/helpers/utility-functions';
+import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMap/helpers/functional/layer-definitions';
+import { FALLBACK_COLOR } from 'UI/LegacyMap/helpers/functional/constants';
+import { safelySetPaintProperty } from 'UI/LegacyMap/helpers/functional/utility-functions';
 import { MOBILE } from 'state/build-time-config';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
