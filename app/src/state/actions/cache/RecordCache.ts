@@ -23,7 +23,9 @@ class RecordCache {
     ) => {
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const state: RootState = getState() as RootState;
-      const idsToCache: string[] = state.Map.layers.find((l) => l.recordSetID == spec.setId).IDList;
+      const idsToCache: string[] = state.Map.layers
+        .find((l) => l.recordSetID == spec.setId)
+        .IDList.map((id: string | number) => id.toString());
       const { recordSetType, tableFilters }: UserRecordSet = state.UserSettings.recordSets[spec.setId];
       const args = {
         idsToCache,
@@ -41,7 +43,7 @@ class RecordCache {
         responseData = await service.loadRecordsetSourceMetadata(idsToCache);
       } else if (recordSetType === RecordSetType.IAPP) {
         await service.downloadIapp(args);
-        responseData = await service.loadIappRecordsetSourceMetadata(idsToCache.map((id) => id.toString()));
+        responseData = await service.loadIappRecordsetSourceMetadata(idsToCache);
       }
       return {
         cachedIds: idsToCache,
