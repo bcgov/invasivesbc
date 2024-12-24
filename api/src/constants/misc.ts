@@ -53,18 +53,6 @@ export const ALL_ROLES = [
 ];
 
 /**
- * Supported activity types.
- *
- * @export
- * @enum {number}
- */
-export enum ActivityType {
-  OBSERVATION = 'Observation',
-  MONITOR = 'Monitor',
-  TREATMENT = 'Treatment'
-}
-
-/**
  * Some of the S3 ACL roles supported by default.
  *
  * Full list: https://docs.aws.amazon.com/AmazonS3/latest/dev/acl-overview.html#canned-acl
