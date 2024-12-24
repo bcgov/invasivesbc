@@ -41,7 +41,7 @@ class RecordCache {
         responseData = await service.loadRecordsetSourceMetadata(idsToCache);
       } else if (recordSetType === RecordSetType.IAPP) {
         await service.downloadIapp(args);
-        responseData = await service.loadIappRecordsetSourceMetadata(idsToCache);
+        responseData = await service.loadIappRecordsetSourceMetadata(idsToCache.map((id) => id.toString()));
       }
       return {
         cachedIds: idsToCache,
