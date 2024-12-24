@@ -63,12 +63,12 @@ switch (CONFIGURATION_SOURCE) {
     CONFIG = {
       COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       API_BASE: CONFIGURATION_API_BASE || 'unset',
-      KEYCLOAK_CLIENT_ID: 'invasivesbc' || 'unset',
-      KEYCLOAK_REALM: 'invasives' || 'unset',
-      KEYCLOAK_URL: 'http://192.168.1.86:8080/' || 'unset',
-      REDIRECT_URI: 'invasives://callback' || 'unset',
+      KEYCLOAK_CLIENT_ID: CONFIGURATION_KEYCLOAK_CLIENT_ID || 'unset',
+      KEYCLOAK_REALM: CONFIGURATION_KEYCLOAK_REALM || 'unset',
+      KEYCLOAK_URL: CONFIGURATION_KEYCLOAK_URL || 'unset',
+      REDIRECT_URI: CONFIGURATION_REDIRECT_URI || 'unset',
       PUBLIC_MAP_URL: CONFIGURATION_PUBLIC_MAP_URL || 'unset',
-      SILENT_CHECK_URI: 'invasives://check_sso.html' || 'unset',
+      SILENT_CHECK_URI: CONFIGURATION_SILENT_CHECK_URI || 'unset',
       IAPP_GEOJSON_URL: CONFIGURATION_IAPP_GEOJSON_URL || 'unset',
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,

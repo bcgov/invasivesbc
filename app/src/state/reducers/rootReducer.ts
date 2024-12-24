@@ -118,10 +118,10 @@ function createRootReducer(config: AppConfig) {
           'MapMode',
           'HDToggle',
           'accuracyToggle',
-          'simplePickerLayers2',
           'clientBoundaries',
           'serverBoundaries'
-        ]
+        ],
+        blacklist: ['simplePickerLayers2']
       },
       createMapReducer(config)
     ),
