@@ -306,19 +306,16 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const dataType = type === IappRecordMode.Record ? 'RECORD_DATA' : 'TABLE_DATA';
     const result = await this.cacheDB.query(
       //language=SQLite
-      `SELECT ?
+      `SELECT ${dataType}
          FROM CACHED_IAPP_RECORDS
          WHERE ID = ?
          LIMIT 1`,
-      [dataType, id.toString()]
+      [id.toString()]
     );
     if (!result?.values) {
       throw Error('No results found');
     }
-    if (result.values.length !== 1) {
-      console.error(`Unexpected result set size ${result.values.length} when querying cached_records table`);
-    }
-    return JSON.parse(result.values[0]);
+    return JSON.parse(result.values[0][dataType]);
   }
 
   async loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {

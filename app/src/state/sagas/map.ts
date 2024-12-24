@@ -218,7 +218,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
     if (MOBILE && !connected) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       records = yield service.fetchPaginatedCachedIappRecords(
-        whatsHere.IAPPIDs,
+        whatsHere.IAPPIDs.map((id) => id.toString()),
         whatsHere.IAPPPage,
         whatsHere.IAPPLimit
       );

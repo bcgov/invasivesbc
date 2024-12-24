@@ -320,7 +320,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI() {
   const currentMapState = yield select((state) => state.Map);
 
   const featuresFilteredByUserShape = Object.values(currentMapState?.IAPPGeoJSONDict)?.filter((feature: any) => {
-    // IAPP will always be a points
+    // IAPP will always be points
     const pointToCheck = point(feature.geometry.coordinates);
     const polygonToCheck = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
     return booleanPointInPolygon(pointToCheck, polygonToCheck);
