@@ -31,13 +31,6 @@ async function withCurrentJWT(callback: withCurrentJWTCallback) {
   } else {
     console.error('Keycloak instance was null. this is unexpected');
   }
-  // if (keycloakInstance !== null) {
-  //   console.log(keycloakInstance.idToken);
-  //   const header = `Bearer ${keycloakInstance.idToken}`;
-  //   return await callback(header);
-  // } else {
-  //   console.error('Keycloak instance was null. this is unexpected');
-  // }
 }
 
 // convenience function to just return the token rather than executing a callback
