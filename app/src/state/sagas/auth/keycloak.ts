@@ -32,7 +32,6 @@ function* handleSigninRequest() {
   if (!keycloakInstance) {
     return;
   }
-  console.log('Login', keycloakInstance, config.REDIRECT_URI);
 
   try {
     yield call(keycloakInstance.login, {
@@ -168,7 +167,6 @@ function* reinitAuth() {
       yield delay(1000);
     }
   }
-  console.log(keycloakInstance);
 
   yield put({
     type: AUTH_INITIALIZE_COMPLETE,
@@ -208,12 +206,6 @@ function* initializeAuthentication() {
     realm: config.KEYCLOAK_REALM,
     url: config.KEYCLOAK_URL
   });
-  // keycloakInstance = new Keycloak({
-  //   url: 'http://localhost:8080',
-  //   realm: 'invasives',
-  //   clientId: 'invasivesbc'
-  // });
-  console.log('instance', keycloakInstance);
 
   yield put({
     type: AUTH_REINIT
