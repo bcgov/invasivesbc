@@ -58,6 +58,10 @@ function* recomputeEligibleMapLayers(action) {
       pass = false;
     }
 
+    if (!l.predicates.requiresNetwork && l.predicates.mobileOnly && CONNECTED) {
+      pass = false;
+    }
+
     if (pass) {
       if (l.mode == MapSourceAndLayerDefinitionMode.BASEMAP) {
         UPDATED_BASEMAP_LIST.push(l.name);
