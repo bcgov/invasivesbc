@@ -1,13 +1,7 @@
 import UserRecord from 'interfaces/UserRecord';
 import localForage from 'localforage';
 import centroid from '@turf/centroid';
-import {
-  IappRecordMode,
-  RecordCacheAddSpec,
-  RecordCacheService,
-  RecordSetCacheMetadata,
-  RecordSetSourceMetadata
-} from 'utils/record-cache/index';
+import { IappRecordMode, RecordCacheService, RecordSetSourceMetadata } from 'utils/record-cache/index';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import IappRecord from 'interfaces/IappRecord';
@@ -92,24 +86,6 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return data;
   }
 
-  async addCachedSet(spec: RecordCacheAddSpec): Promise<void> {
-    if (this.store == null) {
-      throw new Error('cache not available');
-    }
-
-    const cachedSets = await this.listCachedSets();
-    const foundIndex = cachedSets.findIndex((p) => p.setId == spec.setId);
-    if (foundIndex !== -1) {
-      throw new Error('cached set already exists');
-    }
-
-    cachedSets.push({
-      setId: spec.setId,
-      cachedIds: spec.idsToCache
-    });
-    await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
-  }
-
   /**
    * @desc fetch `n` records for a given recordset, supporting pagination
    * @param recordSetID Recordset to filter from
@@ -129,21 +105,6 @@ class LocalForageRecordCacheService extends RecordCacheService {
       results.push(entry);
     }
     return results;
-  }
-
-  async listCachedSets(): Promise<RecordSetCacheMetadata[]> {
-    if (this.store == null) {
-      return [];
-    }
-
-    const metadata = (await this.store.getItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY)) as
-      | RecordSetCacheMetadata[]
-      | null;
-    if (metadata == null) {
-      console.error('expected key not found');
-      return [];
-    }
-    return metadata;
   }
 
   /**
@@ -207,51 +168,12 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return { cachedCentroid, cachedGeoJson };
   }
 
-  async deleteCachedSet(id: string): Promise<void> {
+  async deleteCachedRecordsFromIds(idsToDelete: string[]): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-
-    const cachedSets = await this.listCachedSets();
-    const foundIndex = cachedSets.findIndex((p) => p.setId == id);
-    if (foundIndex !== -1) {
-      cachedSets.splice(foundIndex, 1);
-    }
-    try {
-      await this.cleanupOrphanActivities();
-    } finally {
-      await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
-    }
-  }
-
-  private async cleanupOrphanActivities(): Promise<void> {
-    if (this.store == null) {
-      throw new Error('cache not available');
-    }
-    const cachedSets = await this.listCachedSets();
-
-    const allKeys = await this.store.keys();
-    const deletionQueue: string[] = [];
-    for (const k of allKeys) {
-      if (k == LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY) {
-        continue;
-      }
-      let referenced = false;
-      for (const set of cachedSets) {
-        if (set.cachedIds?.includes(k)) {
-          referenced = true;
-        }
-      }
-      if (!referenced) {
-        deletionQueue.push(k);
-      }
-    }
-    for (const d of deletionQueue) {
-      try {
-        await this.store.removeItem(d);
-      } catch (e) {
-        console.error(e);
-      }
+    for (const id of idsToDelete) {
+      await this.store.removeItem(id.toString());
     }
   }
 
