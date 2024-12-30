@@ -16,10 +16,6 @@ export interface RecordCacheDownloadRequestSpec {
   idsToCache: string[];
 }
 
-export interface RecordCacheAddSpec {
-  setId: string;
-  idsToCache: string[];
-}
 /**
  * @desc Cached Metadata for Recordsets
  * @property { string } setID Recordset ID
@@ -61,12 +57,6 @@ abstract class RecordCacheService {
 
   abstract loadActivity(id: string): Promise<unknown>;
   abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
-
-  abstract addCachedSet(spec: RecordCacheAddSpec): Promise<void>;
-
-  abstract listCachedSets(): Promise<RecordSetCacheMetadata[]>;
-
-  abstract deleteCachedSet(id: string): Promise<void>;
 
   abstract fetchPaginatedCachedIappRecords(
     recordSetIdList: string[],
