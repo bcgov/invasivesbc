@@ -1,32 +1,36 @@
 import { put, select } from 'redux-saga/effects';
 import centroid from '@turf/centroid';
 import { selectIAPPSite } from '../../reducers/iappsite';
-import { IAPP_GET_FAILURE, IAPP_GET_NETWORK_REQUEST, MAIN_MAP_MOVE } from 'state/actions';
+import { MAIN_MAP_MOVE } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import { selectNetworkConnected } from 'state/reducers/network';
+import { MOBILE } from 'state/build-time-config';
+import { IappRecordMode, RecordCacheService } from 'utils/record-cache';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { PayloadAction } from '@reduxjs/toolkit';
+import IappActions from 'state/actions/activity/Iapp';
 
-export function* handle_IAPP_GET_REQUEST(action) {
+export function* handle_IAPP_GET_REQUEST(iappId: PayloadAction<string>) {
   try {
-    // if mobile or web
-
-    const idFromURL = action.payload.iappID;
-    if (idFromURL !== undefined) {
-      yield put({ type: IAPP_GET_NETWORK_REQUEST, payload: { iappID: action.payload.iappID } });
-      return;
-    }
-
-    const userSettingsState = yield select(selectUserSettings);
-    const activeIAPP = userSettingsState.activeIAPP;
-
-    if (activeIAPP !== undefined) {
-      yield put({ type: IAPP_GET_NETWORK_REQUEST, payload: { iappID: activeIAPP } });
+    const connected = yield select(selectNetworkConnected);
+    if (MOBILE && !connected) {
+      const service: RecordCacheService = yield RecordCacheServiceFactory.getPlatformInstance();
+      const result = yield service.loadIapp(iappId.payload, IappRecordMode.Record);
+      yield put(IappActions.getSuccess(result));
     } else {
-      // dispatch alert to user that there is no active iapp site
-      //yield put({ type: Notif})
+      if (iappId.payload) {
+        yield put(IappActions.getRequest(iappId.payload));
+      } else {
+        const { activeIAPP } = yield select(selectUserSettings);
+        if (activeIAPP) {
+          yield put(IappActions.getRequest(activeIAPP.recordSetID));
+        }
+      }
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: IAPP_GET_FAILURE });
+    yield put(IappActions.getFailure());
   }
 }
 
@@ -35,7 +39,7 @@ export function* handle_IAPP_GET_SUCCESS(action) {
     yield put(UserSettings.Map.setCenter(action.payload.iapp?.geom?.geometry?.coordinates));
   } catch (e) {
     console.error(e);
-    yield put({ type: IAPP_GET_FAILURE });
+    yield put(IappActions.getFailure());
   }
 }
 

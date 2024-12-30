@@ -4,7 +4,6 @@ import { Draft } from 'immer';
 import {
   CLOSE_NEW_RECORD_MENU,
   GET_API_DOC_SUCCESS,
-  IAPP_GET_SUCCESS,
   OPEN_NEW_RECORD_MENU,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
@@ -19,6 +18,7 @@ import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
+import IappActions from 'state/actions/activity/Iapp';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
@@ -242,6 +242,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.activeActivityDescription = null;
       } else if (Activity.get.match(action)) {
         draftState.activeActivity = action.payload;
+      } else if (IappActions.getSuccess.match(action)) {
+        draftState.activeIAPP = action.payload.iapp?.site_id;
       } else {
         switch (action.type) {
           case GET_API_DOC_SUCCESS: {
@@ -255,10 +257,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           }
           case CLOSE_NEW_RECORD_MENU: {
             draftState.newRecordDialogueOpen = false;
-            break;
-          }
-          case IAPP_GET_SUCCESS: {
-            draftState.activeIAPP = action.payload.iapp?.site_id;
             break;
           }
           case RECORDSET_ADD_FILTER: {

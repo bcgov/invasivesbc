@@ -90,6 +90,7 @@ export const Records = () => {
                 name={recordSets[set]?.recordSetName}
                 isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
                 handleNameChange={handleNameChange}
+                recordSetType={recordSets[set].recordSetType}
                 recordsetKey={set}
               ></RecordSetDetails>
 

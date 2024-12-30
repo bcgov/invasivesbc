@@ -1,5 +1,6 @@
 import { Check, Edit } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import { MouseEvent, ReactNode, useState } from 'react';
 
 type PropTypes = {
@@ -8,8 +9,16 @@ type PropTypes = {
   isDefaultRecordset: boolean;
   handleNameChange: (val: string, recordsetKey: string) => void;
   children?: ReactNode;
+  recordSetType: RecordSetType;
 };
-const RecordSetDetails = ({ name, isDefaultRecordset, handleNameChange, recordsetKey, children }: PropTypes) => {
+const RecordSetDetails = ({
+  name,
+  isDefaultRecordset,
+  handleNameChange,
+  recordsetKey,
+  recordSetType,
+  children
+}: PropTypes) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const toggleEdit = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -34,7 +43,7 @@ const RecordSetDetails = ({ name, isDefaultRecordset, handleNameChange, recordse
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
-        <p>{name}</p>
+        <p>{name || `New Recordset - ${recordSetType}`}</p>
       )}
       <IconButton color="primary" onClick={toggleEdit}>
         {isEditing ? <Check /> : <Edit />}
