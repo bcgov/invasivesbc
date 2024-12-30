@@ -1,8 +1,8 @@
 /**
  * Stub interface to reduce later refactoring
  */
-interface UserRecord {
+interface IappRecord {
   [key: PropertyKey]: any;
 }
 
-export default UserRecord;
+export default IappRecord;

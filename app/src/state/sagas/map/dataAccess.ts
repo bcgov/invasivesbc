@@ -3,7 +3,6 @@ import intersect from '@turf/intersect';
 
 import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
 import {
-  ACTIVITIES_GEOJSON_GET_OFFLINE,
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
@@ -15,8 +14,7 @@ import {
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  IAPP_TABLE_ROWS_GET_ONLINE
+  IAPP_GET_IDS_FOR_RECORDSET_ONLINE
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -24,6 +22,10 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
+import { selectNetworkConnected } from 'state/reducers/network';
+import { selectUserSettings } from 'state/reducers/userSettings';
+import { PayloadAction } from '@reduxjs/toolkit';
+import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -198,35 +200,29 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   try {
-    // new filter object:
-    const currentState = yield select((state) => state.UserSettings);
-    const connected = yield select((state) => state.Network.connected);
-    const mapState = yield select((state) => state.Map);
-
+    const currentState = yield select(selectUserSettings);
+    const connected = yield select(selectNetworkConnected);
+    const mapState = yield select(selectMap);
+    const { recordSetID, page, limit, tableFiltersHash } = action.payload;
     const userMobileOffline = MOBILE && !connected;
 
-    const filterObject = getRecordFilterObjectFromStateForAPI(
-      action.payload.recordSetID,
-      currentState,
-      mapState?.clientBoundaries
-    );
-    filterObject.page = action.payload.page;
-    filterObject.limit = action.payload.limit;
+    const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState, mapState?.clientBoundaries);
+    filterObject.page = page;
+    filterObject.limit = limit;
 
-    if (mapState?.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash) {
+    if (mapState?.recordTables?.[recordSetID]?.tableFiltersHash !== tableFiltersHash) {
       console.warn('Stale tableRow request (tableFiltersHash mismatch), aborting');
       return;
     }
     if (
-      mapState?.recordTables?.[action.payload.recordSetID]?.page !== action.payload.page ||
-      mapState?.recordTables?.[action.payload.recordSetID]?.limit !== action.payload.limit
+      mapState?.recordTables?.[recordSetID]?.page !== page ||
+      mapState?.recordTables?.[recordSetID]?.limit !== limit
     ) {
       console.warn('Stale tableRow request (page or limit mismatch), aborting');
       return;
     }
 
     if (userMobileOffline) {
-      const { recordSetID, page, limit } = action.payload;
       const recordSetIdList = yield select(
         (state) => state.UserSettings.recordSets[recordSetID].cacheMetadata.idList ?? []
       );
@@ -235,9 +231,9 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
       yield put({
         type: ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
         payload: {
-          recordSetID: action.payload.recordSetID,
+          recordSetID: recordSetID,
           rows: records,
-          tableFiltersHash: action.payload.tableFiltersHash,
+          tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit
         }
@@ -247,10 +243,10 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
         type: ACTIVITIES_TABLE_ROWS_GET_ONLINE,
         payload: {
           filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash,
-          page: action.payload.page,
-          limit: action.payload.limit
+          recordSetID: recordSetID,
+          tableFiltersHash: tableFiltersHash,
+          page: page,
+          limit: limit
         }
       });
     }
@@ -260,43 +256,52 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
   }
 }
 
-export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action) {
+export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTableRowRequest>) {
   try {
-    const currentState = yield select((state) => state.UserSettings);
-    const mapState = yield select((state) => state.Map);
-    const filterObject = getRecordFilterObjectFromStateForAPI(
-      action.payload.recordSetID,
-      currentState,
-      mapState?.clientBoundaries
-    );
-    filterObject.page = action.payload.page;
-    filterObject.limit = action.payload.limit;
+    const currentState = yield select(selectUserSettings);
+    const connected = yield select(selectNetworkConnected);
+    const mapState = yield select(selectMap);
+    const { recordSetID, page, limit, tableFiltersHash } = action.payload;
+    const userMobileOffline = MOBILE && !connected;
 
-    if (mapState?.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !== action.payload.tableFiltersHash) {
+    const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState, mapState?.clientBoundaries);
+    filterObject.page = page;
+    filterObject.limit = limit;
+
+    if (mapState?.recordTables?.[recordSetID]?.tableFiltersHash !== tableFiltersHash) {
       console.warn('Stale tableRow request (tableFiltersHash mismatch), aborting');
       return;
     }
     if (
-      mapState?.recordTables?.[action.payload.recordSetID]?.page !== action.payload.page ||
-      mapState?.recordTables?.[action.payload.recordSetID]?.limit !== action.payload.limit
+      mapState?.recordTables?.[recordSetID]?.page !== page ||
+      mapState?.recordTables?.[recordSetID]?.limit !== limit
     ) {
       console.warn('Stale tableRow request (page or limit mismatch), aborting');
       return;
     }
-    if (true) {
-      yield put({
-        type: IAPP_TABLE_ROWS_GET_ONLINE,
-        payload: {
+    if (userMobileOffline) {
+      const recordSetIdList = currentState.recordSets[recordSetID].cacheMetadata.idList ?? [];
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const records = yield service.fetchPaginatedCachedIappRecords(recordSetIdList, page, limit);
+      yield put(
+        IappActions.getRowsSuccess({
+          recordSetID: recordSetID,
+          rows: records,
+          tableFiltersHash: tableFiltersHash,
+          page: page,
+          limit: limit
+        })
+      );
+    } else {
+      yield put(
+        IappActions.getRowsRequest({
           filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash,
-          page: action.payload.page,
-          limit: action.payload.limit
-        }
-      });
-    }
-    if (false) {
-      yield put({ type: ACTIVITIES_GEOJSON_GET_OFFLINE, payload: { activityID: action.payload.activityID } });
+          recordSetID: recordSetID,
+          tableFiltersHash: tableFiltersHash,
+          page: page,
+          limit: limit
+        })
+      );
     }
   } catch (e) {
     console.error(e);
@@ -315,7 +320,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI() {
   const currentMapState = yield select((state) => state.Map);
 
   const featuresFilteredByUserShape = Object.values(currentMapState?.IAPPGeoJSONDict)?.filter((feature: any) => {
-    // IAPP will always be a points
+    // IAPP will always be points
     const pointToCheck = point(feature.geometry.coordinates);
     const polygonToCheck = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
     return booleanPointInPolygon(pointToCheck, polygonToCheck);
@@ -400,7 +405,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
   const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
 
   yield put(WhatsHere.map_init_get_activity_ids_fetched(recordSetUniqueFilteredIDs));
-  yield put(WhatsHere.activity_rows_request);
+  yield put(WhatsHere.activity_rows_request());
 }
 
 export function getSelectColumnsByRecordSetType(recordSetType: any) {

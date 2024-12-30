@@ -1,8 +1,8 @@
 /**
  * Stub interface to reduce later refactoring
  */
-interface UserRecord {
+interface IappTableRow {
   [key: PropertyKey]: any;
 }
 
-export default UserRecord;
+export default IappTableRow;

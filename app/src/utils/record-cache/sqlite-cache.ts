@@ -1,9 +1,12 @@
 import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import centroid from '@turf/centroid';
 import { Feature } from '@turf/helpers';
+import IappRecord from 'interfaces/IappRecord';
+import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import {
+  IappRecordMode,
   RecordCacheAddSpec,
   RecordCacheService,
   RecordSetCacheMetadata,
@@ -12,7 +15,7 @@ import {
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
 const CACHE_DB_NAME = 'record_cache.db';
-
+const CACHE_UNAVAILABLE = 'cache not available';
 //language=SQLite
 const RECORD_CACHE_DB_MIGRATIONS_1 = [
   `CREATE TABLE CACHE_METADATA
@@ -39,6 +42,15 @@ const RECORD_CACHE_DB_MIGRATIONS_2 = [
    ADD COLUMN SHORT_ID TEXT;`
 ];
 
+const RECORD_CACHE_DB_MIGRATIONS_3 = [
+  `CREATE TABLE CACHED_IAPP_RECORDS
+  (
+    ID          VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
+    TABLE_DATA  TEXT NOT NULL,
+    RECORD_DATA TEXT NOT NULL,
+    GEOJSON     TEXT NOT NULL
+  );`
+];
 class SQLiteRecordCacheService extends RecordCacheService {
   private static _instance: SQLiteRecordCacheService;
 
@@ -58,7 +70,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
   async addCachedSet(spec: RecordCacheAddSpec): Promise<void> {
     if (this.cacheDB == null) {
-      throw new Error('cache not available');
+      throw new Error(CACHE_UNAVAILABLE);
     }
     try {
       await this.cacheDB.beginTransaction();
@@ -87,7 +99,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
   async deleteCachedSet(id: string): Promise<void> {
     if (this.cacheDB == null) {
-      throw new Error('cache not available');
+      throw new Error(CACHE_UNAVAILABLE);
     }
     try {
       await this.cacheDB.beginTransaction();
@@ -163,10 +175,39 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
     return response;
   }
+  async fetchPaginatedCachedIappRecords(recordSetIdList: string[], page: number, limit: number): Promise<IappRecord[]> {
+    if (!recordSetIdList || recordSetIdList.length === 0) {
+      return [];
+    }
 
+    const startPos = page * limit;
+    const results = await this.cacheDB?.query(
+      // language=SQLite
+      `SELECT TABLE_DATA
+       FROM CACHED_IAPP_RECORDS
+       WHERE ID IN (${recordSetIdList.map(() => '?').join(', ')})
+       LIMIT ?, ?`,
+      [...recordSetIdList, startPos, limit]
+    );
+
+    if (!results?.values || results.values?.length === 0) {
+      return [];
+    }
+    const response = results.values
+      .map((item) => {
+        try {
+          return JSON.parse(item['TABLE_DATA']) as IappRecord;
+        } catch (e) {
+          console.error('Error parsing record:', e);
+          return null;
+        }
+      })
+      .filter((record) => record !== null);
+    return response;
+  }
   async listCachedSets(): Promise<RecordSetCacheMetadata[]> {
     if (this.cacheDB == null) {
-      throw new Error('cache not available');
+      throw new Error(CACHE_UNAVAILABLE);
     }
 
     try {
@@ -194,7 +235,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
   async loadActivity(id: string): Promise<unknown> {
     if (this.cacheDB == null) {
-      throw new Error('cache not available');
+      throw new Error(CACHE_UNAVAILABLE);
     }
     const result = await this.cacheDB.query(
       //language=SQLite
@@ -218,7 +259,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
   async saveActivity(id: string, data: unknown): Promise<void> {
     if (this.cacheDB == null) {
-      throw new Error('cache not available');
+      throw new Error(CACHE_UNAVAILABLE);
     }
     const stringified = JSON.stringify(data);
     const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
@@ -232,9 +273,76 @@ class SQLiteRecordCacheService extends RecordCacheService {
       [id, stringified, geojson, short_id, stringified]
     );
   }
+
+  async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    try {
+      const geojson = iappTableRow.result[0].geojson;
+      geojson.properties = {
+        name: `${id} ${geojson.properties.map_symbol ?? ''}`,
+        description: id
+      };
+      const stringRecord = JSON.stringify(iappRecord.result.rows[0]);
+      const stringRow = JSON.stringify(iappTableRow.result[0]);
+      const stringGeo = JSON.stringify(geojson);
+      await this.cacheDB.query(
+        //language=SQLite
+        `INSERT INTO CACHED_IAPP_RECORDS(ID, RECORD_DATA, TABLE_DATA, GEOJSON)
+         VALUES ( ?, ?, ?, ? )
+         ON CONFLICT (ID) DO NOTHING;`, // IAPP is static, no update needed.
+        [id.toString(), stringRecord, stringRow, stringGeo]
+      );
+    } catch (ex) {
+      console.error(ex);
+    }
+  }
+
+  async loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const dataType = type === IappRecordMode.Record ? 'RECORD_DATA' : 'TABLE_DATA';
+    const result = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT ${dataType}
+         FROM CACHED_IAPP_RECORDS
+         WHERE ID = ?
+         LIMIT 1`,
+      [id.toString()]
+    );
+    if (!result?.values) {
+      throw Error('No results found');
+    }
+    return JSON.parse(result.values[0][dataType]);
+  }
+
+  async loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const results = await this.cacheDB?.query(
+      // language SQLite
+      `SELECT GEOJSON
+      FROM CACHED_IAPP_RECORDS
+      WHERE ID IN (${ids.map(() => '?').join(', ')})
+      AND GEOJSON NOT NULL`,
+      [...ids]
+    );
+    const geojson = results?.values?.map((item) => JSON.parse(item['GEOJSON']));
+    const cachedGeoJson: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: geojson as any[]
+      }
+    };
+    return { cachedGeoJson };
+  }
   async loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
     if (this.cacheDB == null) {
-      throw new Error('cache not available');
+      throw new Error(CACHE_UNAVAILABLE);
     }
     const centroidArr: any[] = [];
     const geoJsonArr: any[] = [];
@@ -287,6 +395,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
       {
         toVersion: 2,
         statements: RECORD_CACHE_DB_MIGRATIONS_2
+      },
+      {
+        toVersion: 3,
+        statements: RECORD_CACHE_DB_MIGRATIONS_3
       }
     ];
     await sqlite.addUpgradeStatement(CACHE_DB_NAME, MIGRATIONS);

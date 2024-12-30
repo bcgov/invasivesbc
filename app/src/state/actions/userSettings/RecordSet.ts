@@ -67,17 +67,17 @@ class RecordSet {
     expanded: false,
     isSelected: false,
     mapToggle: false,
-    recordSetName: `New Recordset - ` + type,
+    recordSetName: '',
     recordSetType: type,
     labelToggle: false,
     searchBoundary: {
       geos: [],
       id: 0,
-      name: ``,
+      name: '',
       server_id: 0
     },
     cacheMetadata: {
-      status: type == 'Activity' ? UserRecordCacheStatus.NOT_CACHED : UserRecordCacheStatus.NOT_ELIGIBLE
+      status: UserRecordCacheStatus.NOT_CACHED
     }
   });
 }

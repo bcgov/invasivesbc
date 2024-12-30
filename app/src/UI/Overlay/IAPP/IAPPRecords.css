@@ -62,6 +62,14 @@
   color: white;
 }
 
+.records__activity .control {
+  width: 100%;
+  max-width: 1200px;
+  color: red;
+  padding: 10pt;
+  display: flex;
+}
+
 .records__activity__header {
   /* same height as the apps header and footer */
   width: 100%;

@@ -1,14 +1,14 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { IAPP_GET_FAILURE, IAPP_GET_REQUEST, IAPP_GET_SUCCESS } from '../actions';
-
 import { AppConfig } from '../config';
+import IappActions from 'state/actions/activity/Iapp';
+import IappRecord from 'interfaces/IappRecord';
 
 interface IAPPSiteState {
   initialized: boolean;
   loading: boolean;
   failCode: unknown | null;
-  site: unknown | null;
+  site: IappRecord | null;
 }
 
 const initialState: IAPPSiteState = {
@@ -21,24 +21,14 @@ const initialState: IAPPSiteState = {
 function createIAPPSiteReducer(configuration: AppConfig) {
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<IAPPSiteState>) => {
-      switch (action.type) {
-        case IAPP_GET_REQUEST: {
-          draftState.failCode = null;
-          draftState.loading = true;
-          break;
-        }
-        case IAPP_GET_FAILURE: {
-          draftState.loading = false;
-          draftState.failCode = action.payload?.failNetworkObj?.status;
-          break;
-        }
-        case IAPP_GET_SUCCESS: {
-          draftState.site = { ...action.payload.iapp };
-          draftState.loading = false;
-          break;
-        }
-        default:
-          break;
+      if (IappActions.get.match(action)) {
+        draftState.failCode = null;
+        draftState.loading = true;
+      } else if (IappActions.getSuccess.match(action)) {
+        draftState.site = { ...action.payload };
+        draftState.loading = false;
+      } else if (IappActions.getFailure.match(action)) {
+        draftState.loading = false;
       }
     });
   };

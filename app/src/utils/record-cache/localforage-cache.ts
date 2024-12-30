@@ -2,6 +2,7 @@ import UserRecord from 'interfaces/UserRecord';
 import localForage from 'localforage';
 import centroid from '@turf/centroid';
 import {
+  IappRecordMode,
   RecordCacheAddSpec,
   RecordCacheService,
   RecordSetCacheMetadata,
@@ -9,6 +10,8 @@ import {
 } from 'utils/record-cache/index';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import IappRecord from 'interfaces/IappRecord';
+import IappTableRow from 'interfaces/IappTableRecord';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -35,6 +38,44 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
 
     await this.store.setItem(id, data);
+  }
+
+  async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+    const data = { record: iappRecord.result.rows[0], row: iappTableRow.result[0] };
+    await this.store.setItem(id.toString(), data);
+  }
+
+  async loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow> {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+    const data = await this.store.getItem(id.toString());
+    if (!data) {
+      throw new Error(`Iapp ${id} not found in cache`);
+    }
+    return data[type];
+  }
+
+  async fetchPaginatedCachedIappRecords(
+    recordSetIdList: string[],
+    page: number,
+    limit: number,
+    type: IappRecordMode = IappRecordMode.Row
+  ): Promise<IappRecord[]> {
+    if (recordSetIdList?.length === 0) {
+      return [];
+    }
+    const startPos = page * limit;
+    const results: any[] = [];
+    const endPos = Math.min((page + 1) * limit, recordSetIdList.length);
+    for (let i = startPos; i < endPos; i++) {
+      const entry: IappRecord = await this.loadIapp(recordSetIdList[i], type);
+      results.push(entry);
+    }
+    return results;
   }
 
   async loadActivity(id: string): Promise<unknown> {
@@ -82,11 +123,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
     const startPos = page * limit;
     const results: any[] = [];
-    const recordSetLength = recordSetIdList.length;
-    for (let i = startPos; i < (page + 1) * limit; i++) {
-      if (i >= recordSetLength) {
-        break;
-      }
+    const endPos = Math.min((page + 1) * limit, recordSetIdList.length);
+    for (let i = startPos; i < endPos; i++) {
       const entry: UserRecord = (await this.loadActivity(recordSetIdList[i])) as UserRecord;
       results.push(entry);
     }
@@ -108,6 +146,30 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return metadata;
   }
 
+  /**
+   * @desc Iterate ids to produce list of values to populate in the map.
+   *       The values only change with the recordsets, so we create the list at cache-ception to avoid querying
+   * @param ids ids to filter
+   * @returns { RecordSetSourceMetadata } Returns cached GeoJson, all IAPP Sites are Points.
+   */
+  async loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+    const geoJsonArr: any[] = [];
+    for (const id of ids) {
+      const data: IappRecord = await this.loadIapp(id, IappRecordMode.Row);
+      const label = `${id} ${data.geojson.properties.map_symbol ?? ''}`;
+      const feature = data.geojson;
+      feature.properties = { name: label, description: id };
+      geoJsonArr.push(feature);
+    }
+    const cachedGeoJson: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: geoJsonArr
+      }
+    };
+    return { cachedGeoJson };
+  }
   /**
    * @desc Iterate ids to produce list of values to populate in the map.
    *       The values only change with the recordsets, so we create the list at cache-ception to avoid querying
