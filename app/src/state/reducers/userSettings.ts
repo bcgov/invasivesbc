@@ -200,7 +200,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.DOWNLOADING
         };
-      } else if (RecordCache.requestCaching.rejected.match(action)) {
+      } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.ERROR
         };
@@ -213,13 +213,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           cachedCentroid: action.payload.cachedCentroid
         };
       } else if (RecordCache.deleteCache.pending.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.DELETING
-        };
-      } else if (RecordCache.deleteCache.rejected.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.ERROR
-        };
+        draftState.recordSets[action.meta.arg.setId].cacheMetadata.status = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.NOT_CACHED

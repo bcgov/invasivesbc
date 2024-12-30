@@ -7,11 +7,28 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 class RecordCache {
   static readonly PREFIX = 'RecordCache';
 
-  static readonly deleteCache = createAsyncThunk(`${this.PREFIX}/deleteCache`, async (spec: { setId: string }) => {
-    const service = await RecordCacheServiceFactory.getPlatformInstance();
-
-    await service.deleteCachedSet(spec.setId);
-  });
+  /**
+   * @desc Deletes cached records for a recordset.
+   *       determines duplicates with a frequency map to avoid duplicating records contained elsewhere
+   */
+  static readonly deleteCache = createAsyncThunk(
+    `${this.PREFIX}/deleteCache`,
+    async (spec: { setId: string }, { getState }) => {
+      const service = await RecordCacheServiceFactory.getPlatformInstance();
+      const state = getState() as RootState;
+      const { recordSets } = state.UserSettings;
+      const deleteList = recordSets[spec.setId].cacheMetadata.idList ?? [];
+      const ids: Record<string, number> = {};
+      Object.keys(recordSets)
+        .flatMap((key) => recordSets[key].cacheMetadata.idList ?? [])
+        .forEach((id) => {
+          ids[id] ??= 0;
+          ids[id]++;
+        });
+      const recordsToErase = deleteList.filter((id) => ids[id] === 1);
+      await service.deleteCachedRecordsFromIds(recordsToErase, recordSets[spec.setId].recordSetType);
+    }
+  );
 
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
