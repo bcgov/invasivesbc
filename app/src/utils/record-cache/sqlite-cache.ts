@@ -5,13 +5,7 @@ import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
-import {
-  IappRecordMode,
-  RecordCacheAddSpec,
-  RecordCacheService,
-  RecordSetCacheMetadata,
-  RecordSetSourceMetadata
-} from 'utils/record-cache/index';
+import { IappRecordMode, RecordCacheService, RecordSetSourceMetadata } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
 const CACHE_DB_NAME = 'record_cache.db';
@@ -68,74 +62,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return SQLiteRecordCacheService._instance;
   }
 
-  async addCachedSet(spec: RecordCacheAddSpec): Promise<void> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    try {
-      await this.cacheDB.beginTransaction();
-
-      await this.cacheDB.query(
-        //language=SQLite
-        `
-          INSERT INTO (SET_ID)
-          VALUES (?)`,
-        [spec.setId]
-      );
-      for (const s of spec.idsToCache) {
-        await this.cacheDB.query(
-          //language=SQLite
-          `
-            INSERT INTO CACHED_RECORD_TO_CACHE_METADATA (CACHE_METADATA_ID, RECORD_ID)
-            VALUES (?, ?)`,
-          [spec.setId, s]
-        );
-      }
-      await this.cacheDB.commitTransaction();
-    } catch (e) {
-      await this.cacheDB.rollbackTransaction();
-    }
-  }
-
-  async deleteCachedSet(id: string): Promise<void> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    try {
-      await this.cacheDB.beginTransaction();
-
-      // delete the record of this set
-      await this.cacheDB.query(
-        //language=SQLite
-        `DELETE
-         FROM CACHED_RECORD_TO_CACHE_METADATA
-         WHERE CACHE_METADATA_ID = ?`,
-        [id]
-      );
-
-      // delete the associations
-      await this.cacheDB.query(
-        //language=SQLite
-        `DELETE
-         FROM CACHE_METADATA
-         WHERE SET_ID = ?`,
-        [id]
-      );
-
-      // delete and records that are now unreferenced
-      // won't delete records that are still referenced by another cache set (in case a record exists in more than one)
-      await this.cacheDB.query(
-        //language=SQLite
-        `DELETE
-         FROM CACHED_RECORDS
-         WHERE ID NOT IN (SELECT RECORD_ID FROM CACHED_RECORD_TO_CACHE_METADATA)`
-      );
-
-      await this.cacheDB.commitTransaction();
-    } catch (e) {
-      await this.cacheDB.rollbackTransaction();
-    }
-  }
   /**
    * @desc fetch `n` records for a given recordset, supporting pagination
    * @param recordSetID Recordset to filter from
@@ -204,33 +130,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
       })
       .filter((record) => record !== null);
     return response;
-  }
-  async listCachedSets(): Promise<RecordSetCacheMetadata[]> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-
-    try {
-      await this.cacheDB.beginTransaction();
-
-      const rows = await this.cacheDB.query(`SELECT SET_ID
-                                             FROM CACHE_METADATA`);
-
-      const cachedSets: RecordSetCacheMetadata[] = [];
-
-      if (rows.values) {
-        for (const row of rows.values) {
-          cachedSets.push({ setId: row['SET_ID'] });
-        }
-      }
-
-      await this.cacheDB.commitTransaction();
-
-      return cachedSets;
-    } catch (e) {
-      await this.cacheDB.rollbackTransaction();
-      throw new Error('error while querying cache');
-    }
   }
 
   async loadActivity(id: string): Promise<unknown> {
