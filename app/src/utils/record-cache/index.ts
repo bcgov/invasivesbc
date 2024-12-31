@@ -54,7 +54,7 @@ abstract class RecordCacheService {
   abstract saveActivity(id: string, data: unknown): Promise<void>;
 
   abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
-
+  abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
   abstract loadActivity(id: string): Promise<unknown>;
   abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
 
