@@ -7,9 +7,6 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-  ACTIVITIES_TABLE_ROWS_GET_FAILURE,
-  ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
@@ -26,6 +23,7 @@ import { selectNetworkConnected } from 'state/reducers/network';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
+import Activity from 'state/actions/activity/Activity';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -228,31 +226,28 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
       );
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const records = yield service.fetchPaginatedCachedRecords(recordSetIdList, page, limit);
-      yield put({
-        type: ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
-        payload: {
+      yield put(
+        Activity.getRowsSuccess({
           recordSetID: recordSetID,
           rows: records,
           tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit
-        }
-      });
+        })
+      );
     } else {
-      yield put({
-        type: ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-        payload: {
+      yield put(
+        Activity.getRowsRequest({
           filterObj: filterObject,
           recordSetID: recordSetID,
           tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit
-        }
-      });
+        })
+      );
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITIES_TABLE_ROWS_GET_FAILURE });
   }
 }
 

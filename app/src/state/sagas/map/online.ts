@@ -6,8 +6,6 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-  ACTIVITIES_TABLE_ROWS_GET_FAILURE,
-  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   EXPORT_CONFIG_LOAD_ERROR,
   EXPORT_CONFIG_LOAD_REQUEST,
   EXPORT_CONFIG_LOAD_SUCCESS,
@@ -17,6 +15,7 @@ import {
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
+import Activity from 'state/actions/activity/Activity';
 
 function* refreshExportConfigIfRequired(action?: AnyAction) {
   const config = yield select(selectRootConfiguration);
@@ -144,27 +143,15 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
   }
 
   if (networkReturn.data.result) {
-    yield put({
-      type: ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
-      payload: {
+    yield put(
+      Activity.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result,
         tableFiltersHash: action.payload.tableFiltersHash,
         page: action.payload.page,
         limit: action.payload.limit
-      }
-    });
-  } else {
-    put({
-      type: ACTIVITIES_TABLE_ROWS_GET_FAILURE,
-      payload: {
-        recordSetID: action.payload.recordSetID,
-        rows: networkReturn.data.result,
-        page: action.payload.page,
-        limit: action.payload.limit,
-        error: networkReturn.data
-      }
-    });
+      })
+    );
   }
 }
 

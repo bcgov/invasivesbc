@@ -8,8 +8,6 @@ import {
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
@@ -548,25 +546,16 @@ function* handle_URL_CHANGE(action) {
     const page = mapState.recordTables?.[id]?.page || 0;
     const limit = mapState.recordTables?.[id]?.limit || 20;
 
+    const actionArg = {
+      recordSetID: id,
+      tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash,
+      page: page,
+      limit: limit
+    };
     if (recordSetType === RecordSetType.Activity) {
-      yield put({
-        type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-        payload: {
-          recordSetID: id,
-          tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash,
-          page: page,
-          limit: limit
-        }
-      });
+      yield put(Activity.getRows(actionArg));
     } else if (recordSetType === RecordSetType.IAPP) {
-      yield put(
-        IappActions.getRows({
-          recordSetID: id,
-          tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash,
-          page: page,
-          limit: limit
-        })
-      );
+      yield put(IappActions.getRows(actionArg));
     }
   }
 }
@@ -590,17 +579,14 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
         }
       });
     }
+  const actionArg = {
+    recordSetID: action.payload.setID,
+    tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+    page: 0,
+    limit: 20
+  };
   if (recordSetType === RecordSetType.Activity) {
-    if (currentSet === action.payload.setID)
-      yield put({
-        type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-        payload: {
-          recordSetID: action.payload.setID,
-          tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-          page: 0,
-          limit: 20
-        }
-      });
+    if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
       payload: {
@@ -609,15 +595,7 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
       }
     });
   } else {
-    if (currentSet === action.payload.setID)
-      yield put(
-        IappActions.getRows({
-          recordSetID: action.payload.setID,
-          tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-          page: 0,
-          limit: 20
-        })
-      );
+    if (currentSet === action.payload.setID) yield put(IappActions.getRows(actionArg));
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
       payload: {
@@ -640,25 +618,16 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
     ? action.payload.limit
     : mapState.recordTables?.[action.payload.recordSetID]?.limit;
 
-  if (recordSetType === 'Activity') {
-    yield put({
-      type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-      payload: {
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-        page: page,
-        limit: limit
-      }
-    });
-  } else {
-    yield put(
-      IappActions.getRows({
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-        page: page,
-        limit: limit
-      })
-    );
+  const actionArg = {
+    recordSetID: action.payload.setID,
+    tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+    page: page,
+    limit: limit
+  };
+  if (recordSetType === RecordSetType.Activity) {
+    yield put(Activity.getRows(actionArg));
+  } else if (recordSetType === RecordSetType.IAPP) {
+    yield put(IappActions.getRows(actionArg));
   }
 }
 
@@ -836,20 +805,15 @@ function* handle_RECORDSET_SET_SORT(action) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSetType = userSettingsState.recordSets?.[action.payload.setID]?.recordSetType;
   const tableFiltersHash = userSettingsState.recordSets?.[action.payload.setID]?.tableFiltersHash;
+  const actionArg = { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash };
   if (recordSetType === RecordSetType.Activity) {
-    yield put({
-      type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-      payload: { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash }
-    });
-  } else {
-    yield put(
-      IappActions.getRows({ recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash })
-    );
+    yield put(Activity.getRows(actionArg));
+  } else if (recordSetType === RecordSetType.IAPP) {
+    yield put(IappActions.getRows(actionArg));
   }
 }
 
 function* activitiesPageSaga() {
-  //  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
     debounce(500, UserSettings.RecordSet.updateFilter, handle_UserFilterChange),
@@ -885,8 +849,8 @@ function* activitiesPageSaga() {
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeLatest(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
-    takeEvery(ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
+    takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
+    takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IappActions.getRowsRequest, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
