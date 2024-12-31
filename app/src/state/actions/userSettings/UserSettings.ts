@@ -13,10 +13,12 @@ class Boundaries {
   static readonly delete = createAction(`${this.PREFIX}/delete`);
   static readonly deleteSuccess = createAction<Boundary>(`${this.PREFIX}/deleteSuccess`);
   static readonly addToSet = createAction<RecordSet>(`${this.PREFIX}/addToSet`);
-  static readonly addToSetSuccess = createAction<{ [key: string]: RecordSet }>(`${this.PREFIX}/addToSetSuccess`);
+  static readonly addToSetSuccess = createAction<{ [key: PropertyKey]: UserRecordSet }>(
+    `${this.PREFIX}/addToSetSuccess`
+  );
   static readonly addToSetFailure = createAction(`${this.PREFIX}/addToSetFailure`);
   static readonly removeFromSet = createAction(`${this.PREFIX}/removeFromSet`);
-  static readonly removeFromSetSuccess = createAction<{ [key: string]: RecordSet }>(
+  static readonly removeFromSetSuccess = createAction<{ [key: PropertyKey]: UserRecordSet }>(
     `${this.PREFIX}/removeFromSetSuccess`
   );
   static readonly removeFromSetFailure = createAction(`${this.PREFIX}/removeFromSetFailure`);
@@ -34,11 +36,14 @@ class InitState {
   private static readonly PREFIX = `UserSettings/InitState`;
 
   static readonly get = createAction(`${this.PREFIX}/get`);
-  static readonly getSuccess = createAction(`${this.PREFIX}/getSuccess`, (recordSets: UserRecordSet) => ({
-    payload: {
-      recordSets
-    }
-  }));
+  static readonly getSuccess = createAction(
+    `${this.PREFIX}/getSuccess`,
+    (recordSets: { [key: PropertyKey]: UserRecordSet }) => ({
+      payload: {
+        recordSets
+      }
+    })
+  );
 }
 
 class IAPP {
