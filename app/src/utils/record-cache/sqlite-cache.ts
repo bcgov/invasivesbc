@@ -4,6 +4,7 @@ import { Feature } from '@turf/helpers';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { IappRecordMode, RecordCacheService, RecordSetSourceMetadata } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
@@ -282,7 +283,22 @@ class SQLiteRecordCacheService extends RecordCacheService {
     };
     return { cachedCentroid, cachedGeoJson };
   }
-
+  async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const RecordsToTable = {
+      [RecordSetType.Activity]: 'CACHED_RECORDS',
+      [RecordSetType.IAPP]: 'CACHED_IAPP_RECORDS'
+    };
+    const RECORD_TABLE = RecordsToTable[recordSetType];
+    await this.cacheDB.query(
+      // language=SQLite
+      `DELETE FROM ${RECORD_TABLE}
+       WHERE ID IN (${idsToDelete.map(() => '?').join(', ')})`,
+      [...idsToDelete]
+    );
+  }
   private async initializeRecordCache(sqlite: SQLiteConnection) {
     // Hold Migrations as named variable so we can use length to update the Db version automagically
     // Note: toVersion must be an integer.

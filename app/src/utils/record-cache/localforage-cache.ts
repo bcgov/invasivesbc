@@ -6,6 +6,7 @@ import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -168,7 +169,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return { cachedCentroid, cachedGeoJson };
   }
 
-  async deleteCachedRecordsFromIds(idsToDelete: string[]): Promise<void> {
+  async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
