@@ -13,11 +13,16 @@ import { MOBILE } from 'state/build-time-config';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 
+const LAYER_ID_PREFIX = 'recordset-layer-';
+/** DRY Handler for formatting LayerIDs */
+const formatLayerID = (recordSetID: string, tableFiltersHash: string): string =>
+  `${LAYER_ID_PREFIX}${recordSetID}-hash-${tableFiltersHash}`;
+
 export const createOfflineIappLayer = (map: maplibregl.Map, layer: any) => {
   if (!layer?.layerState?.cacheMetadata?.hasOwnProperty('cachedGeoJson')) {
     return;
   }
-  const layerID = `recordset-layer-${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+  const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   const source: GeoJSONSourceSpecification = layer.layerState.cacheMetadata.cachedGeoJson;
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
   const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'name' });
@@ -28,7 +33,7 @@ export const createOfflineIappLayer = (map: maplibregl.Map, layer: any) => {
 };
 
 export const createOnlineIappLayer = (map: any, layer: any, mode: string, API_BASE: string) => {
-  const layerID = `recordset-layer-${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+  const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   let source: SourceSpecification;
   if (mode === 'VECTOR_ENDPOINT') {
     source = {
@@ -53,7 +58,8 @@ export const createOnlineIappLayer = (map: any, layer: any, mode: string, API_BA
     labelLayer['source-layer'] = 'data';
   }
 
-  map.addSource(layerID, source).addLayer(circleLayer, LAYER_Z_MID);
+  map.addSource(layerID, source);
+  map.addLayer(circleLayer, LAYER_Z_MID);
   map.addLayer(labelLayer, LAYER_Z_BACKGROUND);
 };
 
@@ -179,7 +185,7 @@ export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
     return;
   }
   const CENTROID_TO_GEOJSON_ZOOM = 12;
-  const GEOJSON_ID = `recordset-layer-${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+  const GEOJSON_ID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   const CENTROID_ID = `${GEOJSON_ID}-centroid`;
   const color = getPaintBySchemeOrColor(layer);
 
@@ -220,7 +226,7 @@ export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
 };
 
 export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode, API_BASE) => {
-  const layerID = 'recordset-layer-' + layer.recordSetID + '-hash-' + layer.tableFiltersHash;
+  const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
 
   if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
     return;
@@ -271,7 +277,7 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
   //get all layers for recordset
   const allLayersForRecordSet = map.getLayersOrder().filter((mapLayer) => {
     return (
-      mapLayer.includes('recordset-layer-' + layer.recordSetID) ||
+      mapLayer.includes(LAYER_ID_PREFIX + layer.recordSetID) ||
       mapLayer.includes('label-' + layer.recordSetID) ||
       mapLayer.includes('polygon-border-' + layer.recordSetID) ||
       mapLayer.includes('polygon-circle-' + layer.recordSetID)
@@ -288,7 +294,7 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
   });
 
   const staleSources = Object.keys(map.style.sourceCaches).filter((source) => {
-    return source.includes('recordset-layer-' + layer.recordSetID) && !source.includes(layer.tableFiltersHash);
+    return source.includes(LAYER_ID_PREFIX + layer.recordSetID) && !source.includes(layer.tableFiltersHash);
   });
 
   staleSources?.map((staleSource) => {
@@ -313,8 +319,8 @@ export const removeLayersOnNetworkConnectivityChange = (map: maplibregl.Map) => 
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
 
-  const recordSetLayers = allLayersOnMap.filter((layer) => layer.includes('recordset-layer'));
-  const recordSetSources = allSourcesOnMap.filter((source) => source.includes('recordset-layer-'));
+  const recordSetLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID_PREFIX));
+  const recordSetSources = allSourcesOnMap.filter((source) => source.includes(LAYER_ID_PREFIX));
   recordSetLayers.forEach((layer) => {
     try {
       map.removeLayer(layer);
@@ -340,11 +346,11 @@ export const rebuildLayersOnTableHashUpdate = (
 ) => {
   const MOBILE_OFFLINE = MOBILE && !connectedToNetwork;
   /* First need to delete the layers who's record set was deleted altogether: */
-  const storeLayersIds = storeLayers.map((layer) => 'recordset-layer-' + layer.recordSetID + '-');
+  const storeLayersIds = storeLayers.map((layer) => LAYER_ID_PREFIX + layer.recordSetID + '-');
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
-  const allThatAreRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes('recordset-layer'));
-  const allThatAreRecordSetSources = allSourcesOnMap.filter((source) => source.includes('recordset-layer-'));
+  const allThatAreRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID_PREFIX));
+  const allThatAreRecordSetSources = allSourcesOnMap.filter((source) => source.includes(LAYER_ID_PREFIX));
 
   const recordSetLayersThatAreNotInStore = allThatAreRecordSetLayers.filter(
     (layer) => storeLayersIds.filter((storeLayerId) => layer.includes(storeLayerId)).length === 0
@@ -371,7 +377,7 @@ export const rebuildLayersOnTableHashUpdate = (
   // now update the layers that are in the store
   storeLayers.map((layer: Record<PropertyKey, any>) => {
     if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
-      const sourceId = `recordset-layer-${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+      const sourceId = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
       deleteStaleRecordsetLayer(map, layer);
       const existingSource = map.getSource(sourceId);
       if (existingSource) return;
@@ -406,52 +412,32 @@ const createMapLayer = (
 };
 
 export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) => {
+  /** Get color value for a given paint property */
+  const currentColor = (paint, property: string) => paint[property] ?? '';
+
+  /** Check if current layer color matches stored color, and that colorScheme is not present */
+  const shouldUpdatePaint = (layer, layerStyle, property: string): boolean =>
+    !currentColor(layerStyle, property) && !Object.hasOwn(layer.layerState, 'colorScheme');
+
   for (const layer of storeLayers) {
-    const layerSearchString = layer.recordSetID + '-hash-' + layer.tableFiltersHash;
-    const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => {
-      return mapLayer.includes(layerSearchString);
-    });
+    const layerSearchString = `${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+    const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => mapLayer.includes(layerSearchString));
 
-    for (const mapLayer of matchingLayers) {
-      let currentColor = '';
-
-      if (mapLayer.startsWith('recordset-layer-')) {
-        const fillPolygonLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-        if (layer.type === 'Activity') {
-          if (fillPolygonLayerStyle?.paint) {
-            currentColor = fillPolygonLayerStyle.paint['fill-color'];
-          }
-
-          if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
-            safelySetPaintProperty(map, mapLayer, 'fill-color', layer.layerState?.color || FALLBACK_COLOR);
-            safelySetPaintProperty(map, mapLayer, 'fill-outline-color', layer.layerState?.color || FALLBACK_COLOR);
-          }
-        } else {
-          if (fillPolygonLayerStyle?.paint) {
-            currentColor = fillPolygonLayerStyle.paint['circle-color'];
-          }
-          if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
-            safelySetPaintProperty(map, mapLayer, 'circle-color', layer.layerState?.color || FALLBACK_COLOR);
-          }
-        }
-      } else if (/polygon-border-/.test(mapLayer)) {
-        const polyGonBorderLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-        if (polyGonBorderLayerStyle?.paint) {
-          currentColor = polyGonBorderLayerStyle.paint['circle-color'];
-        }
-        if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
-          safelySetPaintProperty(map, mapLayer, 'line-color', layer.layerState?.color || FALLBACK_COLOR);
-        }
-      } else if (/polygon-circle-/.test(mapLayer)) {
-        const activityCircleMarkerLayerStyle = map.getStyle().layers.find((el) => el.id === mapLayer);
-        if (activityCircleMarkerLayerStyle?.paint) {
-          currentColor = activityCircleMarkerLayerStyle.paint['circle-color'];
-        }
-        if (currentColor !== layer.layerState?.color && !layer.layerState?.colorScheme) {
-          safelySetPaintProperty(map, mapLayer, 'circle-color', layer.layerState?.color || FALLBACK_COLOR);
-        }
+    matchingLayers.forEach((mapLayer) => {
+      const layerStyle = map.getStyle().layers.find((el) => el.id === mapLayer)?.paint;
+      if (
+        mapLayer.startsWith(LAYER_ID_PREFIX) &&
+        layer.type === RecordSetType.Activity &&
+        shouldUpdatePaint(layer, layerStyle, 'circle-color')
+      ) {
+        safelySetPaintProperty(map, mapLayer, 'fill-color', getPaintBySchemeOrColor(layer));
+        safelySetPaintProperty(map, mapLayer, 'fill-outline-color', getPaintBySchemeOrColor(layer));
+      } else if (mapLayer.startsWith('polygon-border-') && shouldUpdatePaint(layer, layerStyle, 'circle-color')) {
+        safelySetPaintProperty(map, mapLayer, 'line-color', getPaintBySchemeOrColor(layer));
+      } else if (mapLayer.startsWith('polygon-circle-') && shouldUpdatePaint(layer, layerStyle, 'fill-color')) {
+        safelySetPaintProperty(map, mapLayer, 'circle-color', getPaintBySchemeOrColor(layer));
       }
-    }
+    });
   }
 };
 
