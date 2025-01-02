@@ -52,7 +52,7 @@ export const refreshWMSOnToggle = (simplePickerLayers2, map) => {
   });
 };
 
-export const disableWMSOnLogout = (simplePickerLayers2, map) => {
+export const hideWMSIfUnauthenticated = (simplePickerLayers2, map) => {
   simplePickerLayers2.map((layer) => {
     if (map.getLayer(layer.url)) {
       map.setLayoutProperty(layer.url, 'visibility', 'none');

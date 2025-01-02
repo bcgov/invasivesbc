@@ -30,7 +30,7 @@ import {
   removeDeletedRecordSetLayersOnRecordSetDelete,
   removeLayersOnNetworkConnectivityChange
 } from 'UI/LegacyMap/helpers/recordset-layers';
-import { addWMSLayersIfNotExist, refreshWMSOnToggle, disableWMSOnLogout } from 'UI/LegacyMap/helpers/wms-layers';
+import { addWMSLayersIfNotExist, refreshWMSOnToggle, hideWMSIfUnauthenticated } from 'UI/LegacyMap/helpers/wms-layers';
 import {
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle
@@ -217,7 +217,7 @@ export const Map = ({ children }) => {
 
     const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
     if (!authenticated || !rolesInitialized) {
-      disableWMSOnLogout(layers, map.current);
+      hideWMSIfUnauthenticated(layers, map.current);
       return;
     }
 
