@@ -1,7 +1,10 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { MOBILE } from 'state/build-time-config';
+import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import RecordCache from '../cache/RecordCache';
 
 export interface IUpdateFilter {
   setID: string | number;
@@ -53,6 +56,21 @@ class RecordSet {
       return cachedSets.map((set) => {
         return { setId: set.setId };
       });
+    }
+  );
+
+  static readonly requestRemoval = createAsyncThunk(
+    `${this.PREFIX}/requestRemoval`,
+    async (spec: { setId: string }, thunkAPI) => {
+      const state = thunkAPI.getState() as RootState;
+      const { recordSets } = state.UserSettings;
+      if (MOBILE && recordSets[spec.setId].cacheMetadata.status == UserRecordCacheStatus.CACHED) {
+        const deletionResult = await thunkAPI.dispatch(RecordCache.deleteCache(spec));
+        if (RecordCache.deleteCache.rejected.match(deletionResult)) {
+          throw Error('Cache failed to delete');
+        }
+      }
+      return spec.setId;
     }
   );
 

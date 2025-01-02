@@ -287,17 +287,30 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
+
     const RecordsToTable = {
       [RecordSetType.Activity]: 'CACHED_RECORDS',
       [RecordSetType.IAPP]: 'CACHED_IAPP_RECORDS'
     };
     const RECORD_TABLE = RecordsToTable[recordSetType];
-    await this.cacheDB.query(
-      // language=SQLite
-      `DELETE FROM ${RECORD_TABLE}
-       WHERE ID IN (${idsToDelete.map(() => '?').join(', ')})`,
-      [...idsToDelete]
-    );
+    const BATCH_AMOUNT = 100;
+
+    this.cacheDB.beginTransaction();
+    try {
+      for (let i = 0; i < idsToDelete.length; i += BATCH_AMOUNT) {
+        const sliced = idsToDelete.slice(i, Math.min(i + BATCH_AMOUNT, idsToDelete.length));
+        await this.cacheDB.query(
+          // language=SQLite
+          `DELETE FROM ${RECORD_TABLE}
+           WHERE ID IN (${sliced.map(() => '?').join(', ')})`,
+          [...sliced]
+        );
+      }
+      this.cacheDB.commitTransaction();
+    } catch (e) {
+      this.cacheDB.rollbackTransaction();
+      throw e;
+    }
   }
   private async initializeRecordCache(sqlite: SQLiteConnection) {
     // Hold Migrations as named variable so we can use length to update the Db version automagically
