@@ -5,13 +5,12 @@ import { OverlayHeader } from '../OverlayHeader';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
 import { MOBILE } from 'state/build-time-config';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
-import RecordCache from 'state/actions/cache/RecordCache';
 
 export const Records = () => {
   const DEFAULT_RECORD_TYPES = ['All InvasivesBC Activities', 'All IAPP Records', 'My Drafts'];
@@ -50,10 +49,7 @@ export const Records = () => {
     e.stopPropagation();
     const callback = (userConfirmation: boolean) => {
       if (userConfirmation) {
-        if (recordSets[set]?.cacheMetadata?.status === UserRecordCacheStatus.CACHED) {
-          dispatch(RecordCache.deleteCache({ setId: set }));
-        }
-        setTimeout(() => dispatch(UserSettings.RecordSet.remove(set)), 250);
+        dispatch(UserSettings.RecordSet.requestRemoval({ setId: set }));
       }
     };
     dispatch(

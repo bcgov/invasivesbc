@@ -104,7 +104,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.mapCenter = action.payload as [number, number];
       } else if (UserSettings.RecordSet.add.match(action)) {
         draftState.recordSets[Date.now().toString()] ??= action.payload;
-      } else if (UserSettings.RecordSet.remove.match(action)) {
+      } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
         delete draftState.recordSets[action.payload];
       } else if (UserSettings.RecordSet.set.match(action)) {
         Object.keys(action.payload.updatedSet).forEach((key) => {
@@ -218,19 +218,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.NOT_CACHED
         };
-      } else if (UserSettings.RecordSet.syncCacheStatusWithCacheService.fulfilled.match(action)) {
-        const cacheStatus = action.payload;
-        for (const cachedSet of cacheStatus) {
-          if (draftState.recordSets[cachedSet.setId]) {
-            const { idList, cachedGeoJson, cachedCentroid } = draftState.recordSets[cachedSet.setId].cacheMetadata;
-            draftState.recordSets[cachedSet.setId].cacheMetadata = {
-              status: UserRecordCacheStatus.CACHED,
-              idList,
-              cachedGeoJson,
-              cachedCentroid
-            };
-          }
-        }
       } else if (Activity.deleteSuccess.match(action)) {
         draftState.activeActivity = null;
         draftState.activeActivityDescription = null;
