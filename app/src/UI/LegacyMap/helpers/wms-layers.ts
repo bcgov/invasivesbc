@@ -39,6 +39,7 @@ export const refreshWMSOnToggle = (simplePickerLayers2, map) => {
       const visibility = map.getLayoutProperty(layer.url, 'visibility');
       if (visibility !== 'none' && !layer.toggle) {
         map.setLayoutProperty(layer.url, 'visibility', 'none');
+        map.moveLayer(layer.url, LAYER_Z_MID);
       }
       if (visibility !== 'visible' && layer.toggle) {
         map.setLayoutProperty(layer.url, 'visibility', 'visible');
@@ -47,6 +48,15 @@ export const refreshWMSOnToggle = (simplePickerLayers2, map) => {
           map.moveLayer(layer.url, LAYER_Z_FOREGROUND);
         }
       }
+    }
+  });
+};
+
+export const disableWMSOnLogout = (simplePickerLayers2, map) => {
+  simplePickerLayers2.map((layer) => {
+    if (map.getLayer(layer.url)) {
+      map.setLayoutProperty(layer.url, 'visibility', 'none');
+      map.moveLayer(layer.url, LAYER_Z_MID);
     }
   });
 };

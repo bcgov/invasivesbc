@@ -30,7 +30,7 @@ import {
   removeDeletedRecordSetLayersOnRecordSetDelete,
   removeLayersOnNetworkConnectivityChange
 } from 'UI/LegacyMap/helpers/recordset-layers';
-import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/LegacyMap/helpers/wms-layers';
+import { addWMSLayersIfNotExist, refreshWMSOnToggle, disableWMSOnLogout } from 'UI/LegacyMap/helpers/wms-layers';
 import {
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle
@@ -67,7 +67,7 @@ export const Map = ({ children }) => {
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const authInitiated = useSelector((state) => state.Auth.initialized);
-  const { authenticated, loggedInOrWorkingOffline } = useSelector((state) => state.Auth);
+  const { authenticated, loggedInOrWorkingOffline, rolesInitialized } = useSelector((state) => state.Auth);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
 
   // RecordSet Layers
@@ -214,10 +214,16 @@ export const Map = ({ children }) => {
   useEffect(() => {
     if (!mapReady) return;
     if (!map.current) return;
+
     const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
+    if (!authenticated || !rolesInitialized) {
+      disableWMSOnLogout(layers, map.current);
+      return;
+    }
+
     addWMSLayersIfNotExist(layers, map.current, API_BASE);
     refreshWMSOnToggle(layers, map.current);
-  }, [simplePickerLayers2, map.current, mapReady, baseMapLayer, connectedToNetwork]);
+  }, [simplePickerLayers2, map.current, mapReady, baseMapLayer, connectedToNetwork, authenticated, rolesInitialized]);
 
   useEffect(() => {
     if (!mapReady) return;
