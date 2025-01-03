@@ -17,7 +17,6 @@ export const Records = () => {
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
   const connected = useSelector((state) => state.Network.connected);
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
-  const authenticated = useSelector((state) => state.Auth.authenticated);
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -68,7 +67,7 @@ export const Records = () => {
   const highlightSet = (set: string) => setHighlightedSet(set);
   const unHighlightSet = () => setHighlightedSet(null);
   const userIsMobileAndOffline = MOBILE && !connected;
-  if (!recordSets || !authenticated) {
+  if (!recordSets) {
     return;
   }
   return (
