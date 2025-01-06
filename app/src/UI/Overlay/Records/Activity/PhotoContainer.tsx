@@ -67,7 +67,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const choosePhotoFromLibrary = async () => {
     try {
       const libraryPhoto = await Camera.getPhoto({
-        quality: 90,
+        quality: 100,
         allowEditing: false,
         resultType: CameraResultType.DataUrl,
         source: CameraSource.Photos
