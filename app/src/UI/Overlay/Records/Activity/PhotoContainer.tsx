@@ -1,4 +1,4 @@
-import { CameraResultType, CameraSource, Camera } from '@capacitor/camera';
+import { CameraResultType, CameraSource, Camera, Photo } from '@capacitor/camera';
 import {
   Box,
   Button,
@@ -13,7 +13,7 @@ import {
   Typography
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { AddAPhoto, DeleteForever } from '@mui/icons-material';
+import { PhotoCamera, PhotoLibrary, DeleteForever } from '@mui/icons-material';
 import React, { useState } from 'react';
 import Activity from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
@@ -37,7 +37,18 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const dispatch = useDispatch();
   const media = useSelector((state) => state.ActivityPage.activity?.media || []);
 
-  const takePhoto = async () => {
+  const preparePhoto = (photoToProcess: Photo) => {
+    const fileName = new Date().getTime() + '.' + photoToProcess.format;
+    const photo: UploadedPhoto = {
+      file_name: fileName,
+      encoded_file: photoToProcess.dataUrl,
+      description: 'untitled',
+      editing: false
+    };
+    return photo;
+  };
+
+  const takePhotoFromCamera = async () => {
     try {
       const cameraPhoto = await Camera.getPhoto({
         presentationStyle: 'fullscreen',
@@ -46,17 +57,26 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
         quality: 100
       });
 
-      const fileName = new Date().getTime() + '.' + cameraPhoto.format;
-      const photo: UploadedPhoto = {
-        file_name: fileName,
-        encoded_file: cameraPhoto.dataUrl,
-        description: 'untitled',
-        editing: false
-      };
-
+      const photo = preparePhoto(cameraPhoto);
       dispatch(Activity.Photo.add(photo));
     } catch (e) {
       console.error('user cancelled or other camera problem', e);
+    }
+  };
+
+  const choosePhotoFromLibrary = async () => {
+    try {
+      const libraryPhoto = await Camera.getPhoto({
+        quality: 90,
+        allowEditing: false,
+        resultType: CameraResultType.DataUrl,
+        source: CameraSource.Photos
+      });
+
+      const photo = preparePhoto(libraryPhoto);
+      dispatch(Activity.Photo.add(photo));
+    } catch (e) {
+      console.error('User cancelled or other errors selecting photos', e);
     }
   };
 
@@ -129,8 +149,18 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
           <Grid container>
             <Grid container item spacing={3} justifyContent="center">
               <Grid item>
-                <Button variant="contained" color="primary" startIcon={<AddAPhoto />} onClick={takePhoto}>
-                  Add A Photo
+                <Button variant="contained" color="primary" startIcon={<PhotoCamera />} onClick={takePhotoFromCamera}>
+                  Capture Photo
+                </Button>
+              </Grid>
+              <Grid item>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  startIcon={<PhotoLibrary />}
+                  onClick={choosePhotoFromLibrary}
+                >
+                  Choose from Gallery
                 </Button>
               </Grid>
             </Grid>
