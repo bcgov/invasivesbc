@@ -76,7 +76,7 @@ const TileCacheListRow = ({ metadata, visible }) => {
       </td>
       <td>{metadata.description || metadata.id}</td>
       <td>{metadata.status}</td>
-      <td>{stats?.tileCount}</td>
+      <td>{stats?.tileCount?.toLocaleString('en-US')}</td>
       <td>{stats && convertBytesToReadableString(stats.sizeInBytes)}</td>
       <td>
         <IconButton color={'primary'} onClick={handleEditCacheDescription}>
