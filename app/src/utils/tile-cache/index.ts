@@ -203,9 +203,7 @@ abstract class TileCacheService {
           if (progressCallback) {
             progressCallback({
               repository: spec.id,
-              message: abort
-                ? `Aborting`
-                : `${processedTiles.toLocaleString('en-US')}/${totalTiles.toLocaleString('en-US')} Tiles`,
+              message: abort ? `Aborting` : `${processedTiles.toLocaleString()}/${totalTiles.toLocaleString()} Tiles`,
               aborted: abort,
               normalizedProgress: processedTiles / totalTiles,
               processedTiles,
