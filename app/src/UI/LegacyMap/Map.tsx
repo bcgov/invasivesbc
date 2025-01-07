@@ -17,8 +17,12 @@ import {
   refreshVisibilityOnToggleUpdate,
   removeDeletedRecordSetLayersOnRecordSetDelete,
   removeLayersOnNetworkConnectivityChange
-} from 'UI/LegacyMap/helpers/recordset-layers';
-import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/LegacyMap/helpers/wms-layers';
+} from 'UI/LegacyMap/helpers/functional/recordset-layers';
+import {
+  addWMSLayersIfNotExist,
+  hideWMSIfUnauthorized,
+  refreshWMSOnToggle
+} from 'UI/LegacyMap/helpers/functional/wms-layers';
 import {
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle
@@ -38,7 +42,6 @@ import { TileCacheService } from 'utils/tile-cache';
 import { Coordinates } from 'UI/LegacyMap/helpers/components/Coordinates';
 import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
-import { hideWMSIfUnauthorized } from 'UI/LegacyMap/helpers/functional/wms-layers';
 
 /*
 
@@ -57,7 +60,6 @@ export const Map = ({ children }) => {
   const MapMode = useSelector((state) => state.Map.MapMode);
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
-  const authInitiated = useSelector((state) => state.Auth.initialized);
   const { authenticated, loggedInOrWorkingOffline, rolesInitialized } = useSelector((state) => state.Auth);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
 
