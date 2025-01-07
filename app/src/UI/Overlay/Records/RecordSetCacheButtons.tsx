@@ -22,11 +22,28 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
       case UserRecordCacheStatus.NOT_CACHED:
         downloadCache();
         break;
+      case UserRecordCacheStatus.DOWNLOADING:
+        cancelCacheDownload();
+        break;
       case UserRecordCacheStatus.ERROR:
       case UserRecordCacheStatus.CACHED:
         deleteCache();
         break;
     }
+  };
+  const cancelCacheDownload = () => {
+    const callback = (confirmation: boolean) => {
+      if (confirmation) {
+        dispatch(RecordCache.deleteCache({ setId }));
+      }
+    };
+    dispatch(
+      Prompt.confirmation({
+        title: 'Cancel Download',
+        prompt: 'Would you like to cancel the download in progress?',
+        callback
+      })
+    );
   };
   const downloadCache = () => {
     const callback = (confirmation: boolean) => {
@@ -74,9 +91,12 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   useEffect(() => {
     setCacheActionEnabled(
       connected &&
-        [UserRecordCacheStatus.CACHED, UserRecordCacheStatus.NOT_CACHED, UserRecordCacheStatus.ERROR].includes(
-          recordSet.cacheMetadata?.status
-        )
+        [
+          UserRecordCacheStatus.CACHED,
+          UserRecordCacheStatus.NOT_CACHED,
+          UserRecordCacheStatus.ERROR,
+          UserRecordCacheStatus.DOWNLOADING
+        ].includes(recordSet.cacheMetadata?.status)
     );
   }, [recordSet.cacheMetadata?.status, connected]);
 
