@@ -20,8 +20,8 @@ export interface RecordCacheDownloadRequestSpec {
  * @desc Cached Metadata for Recordsets
  * @property { string } setID Recordset ID
  * @property { string[] } cachedIds collection of activity_ids in Recordset
- * @property { RecordSetCachedShape[] } cachedGeoJSON  Cached Features for low map layers
- * @property { RecordSetCachedShape[] } cachedCentroid Cached Points for high map layers
+ * @property { GeoJSONSourceSpecification } cachedGeoJSON  Cached Features for low map layers
+ * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
  */
 export interface RecordSetCacheMetadata {
   setId: string;
