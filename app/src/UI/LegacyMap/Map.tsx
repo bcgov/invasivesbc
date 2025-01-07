@@ -145,13 +145,13 @@ export const Map = ({ children }) => {
             return {
               url,
               headers: {
-                Authorization: () => {
+                Authorization: (() => {
                   if (authHeaderRef.current === undefined) {
                     console.error('requested access before header received');
                     return '';
                   }
                   return authHeaderRef.current;
-                }
+                })()
               }
             };
           }

@@ -9,7 +9,7 @@ import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
 import { DoNothing, LotsOfPointsMode, WhatsHereBoxMode } from 'UI/LegacyMap/helpers/functional/custom-drawing-modes';
 import maplibregl, { IControl } from 'maplibre-gl';
-import { createRoot } from 'react-dom/client';
+import { createRoot, Root } from 'react-dom/client';
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
@@ -40,13 +40,23 @@ const DrawControls = () => {
 
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
+  const drawModeDisplay = useRef<DrawModeDisplay>();
 
   const uHistory = useHistory();
 
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
 
+  // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
+  const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
+
+  useEffect(() => {
+    modeRef.current = mode;
+  }, [mode]);
+
   const drawCreate = useCallback((event) => {
     if (!drawInstance.current) return;
+
+    const currentMode = modeRef.current;
 
     //enforce one at a time everywhere
     const feature = event.features[0];
@@ -57,7 +67,7 @@ const DrawControls = () => {
       console.error(e);
     }
 
-    switch (mode) {
+    switch (currentMode) {
       case TargetMode.WHATS_HERE: {
         dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
         uHistory.push('/WhatsHere');
@@ -66,12 +76,14 @@ const DrawControls = () => {
       case TargetMode.ACTIVITY: {
         break;
       }
-
       case TargetMode.TILE_CACHE: {
         dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
         break;
       }
-      case TargetMode.DISABLED:
+      case TargetMode.DISABLED: {
+        drawInstance.current.deleteAll();
+        break;
+      }
       default: {
         dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
         break;
@@ -81,10 +93,6 @@ const DrawControls = () => {
 
   // setup mode based on what's going on in the redux store / current url
   useEffect(() => {
-    console.log('recomputing mode');
-
-    const genericDrawTarget = true;
-
     if (whatsHereToggle) {
       setMode(TargetMode.WHATS_HERE);
       return;
@@ -96,12 +104,9 @@ const DrawControls = () => {
       return;
     } else if (appModeURL?.includes('Activity')) {
       setMode(TargetMode.ACTIVITY);
-      return;
-    } else if (genericDrawTarget) {
-      setMode(TargetMode.GENERIC);
-      return;
+    } else {
+      setMode(TargetMode.DISABLED);
     }
-    setMode(TargetMode.DISABLED);
   }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, appModeURL]);
 
   const drawShapeUpdate = useCallback((event) => {
@@ -114,32 +119,51 @@ const DrawControls = () => {
   }, []);
 
   useEffect(() => {
+    if (drawModeDisplay.current) {
+      drawModeDisplay.current.setMode(mode);
+    }
+
+    if (drawInstance.current) {
+      // we changed modes, so reset everything
+      drawInstance.current.deleteAll();
+
+      switch (mode) {
+        case TargetMode.WHATS_HERE:
+          drawInstance.current.changeMode('whats_here_box_mode');
+          break;
+        case TargetMode.DISABLED:
+          drawInstance.current.changeMode('do_nothing');
+          break;
+        case TargetMode.ACTIVITY:
+          drawInstance.current.changeMode('do_nothing');
+          if (activityGeo && activityGeo[0] && activityGeo[0].id) {
+            drawInstance.current.deleteAll();
+            drawInstance.current.add(activityGeo[0]);
+          }
+          break;
+        default:
+          break;
+      }
+
+      //drawInstance.current.changeMode('whats_here_box_mode');
+    }
+  }, [mode, activityGeo]);
+
+  useEffect(() => {
     if (!map) {
       return;
     }
 
-    console.log(`setting up for ${mode}`);
-
-    if (mode == TargetMode.DISABLED) {
-      return;
-    }
-
     const modes = (() => {
-      if (tileCacheMode) {
-        return {
-          ...MapboxDraw.modes
-        };
-      } else {
-        return Object.assign(
-          {
-            draw_rectangle: DrawRectangle,
-            do_nothing: DoNothing,
-            lots_of_points: LotsOfPointsMode,
-            whats_here_box_mode: WhatsHereBoxMode
-          },
-          MapboxDraw.modes
-        );
-      }
+      return Object.assign(
+        {
+          draw_rectangle: DrawRectangle,
+          do_nothing: DoNothing,
+          lots_of_points: LotsOfPointsMode,
+          whats_here_box_mode: WhatsHereBoxMode
+        },
+        MapboxDraw.modes
+      );
     })();
 
     drawInstance.current = new MapboxDraw({
@@ -148,35 +172,38 @@ const DrawControls = () => {
         combine_features: false,
         uncombine_features: false
       },
-      defaultMode: mode == TargetMode.WHATS_HERE ? 'whats_here_box_mode' : 'simple_select',
+      defaultMode: 'simple_select',
       modes: modes as { [modeKey: string]: DrawCustomMode }
     });
 
-    const drawModeDisplay = new DrawModeDisplay(mode);
+    drawModeDisplay.current = new DrawModeDisplay(mode);
 
     map.on('draw.create', drawCreate);
     map.on('draw.selectionchange', drawShapeUpdate);
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
-    map.addControl(drawModeDisplay, 'top-left');
+    map.addControl(drawModeDisplay.current, 'top-left');
 
     // cleanup
     return () => {
       if (!map) {
         return;
       }
+
       map.off('draw.create', drawCreate);
       map.off('draw.selectionChange', drawShapeUpdate);
+
       if (drawInstance.current) {
         (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
         drawInstance.current = undefined;
       }
 
-      map.removeControl(drawModeDisplay);
-
-      console.debug('mapboxdraw listener cleanup complete');
+      if (drawModeDisplay.current) {
+        map.removeControl(drawModeDisplay.current);
+        drawModeDisplay.current = undefined;
+      }
     };
-  }, [map, mode]);
+  }, [map]);
 
   return null;
 };
@@ -186,8 +213,21 @@ class DrawModeDisplay implements IControl {
   _map: maplibregl.Map | undefined;
   _container: HTMLDivElement | undefined;
 
+  _root: Root | undefined = undefined;
+
   constructor(mode: TargetMode) {
     this._text = mode;
+  }
+
+  setMode(mode: TargetMode) {
+    this._text = mode;
+    this._rerender();
+  }
+
+  _rerender() {
+    if (this._root) {
+      this._root.render(<>Current drawing mode: {this._text}</>);
+    }
   }
 
   onAdd(map: maplibregl.Map): HTMLElement {
@@ -195,9 +235,9 @@ class DrawModeDisplay implements IControl {
     const control = document.createElement('div');
     control.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 
-    const root = createRoot(control);
+    this._root = createRoot(control);
 
-    root.render(<>Current drawing mode: {this._text}</>);
+    this._rerender();
 
     this._container = control;
 
@@ -205,8 +245,13 @@ class DrawModeDisplay implements IControl {
   }
 
   onRemove(_map: maplibregl.Map) {
+    if (this._root) {
+      this._root.unmount();
+      this._root = undefined;
+    }
     if (this._container?.parentNode) {
       this._container.parentNode.removeChild(this._container);
+      this._container = undefined;
     }
   }
 }
