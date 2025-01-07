@@ -48,6 +48,41 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     return photo;
   };
 
+  async function convertWebPathToDataUrl(webPath: string): Promise<string> {
+    const response = await fetch(webPath);
+
+    // convert response into a blob
+    const blob = await response.blob();
+
+    // read the blob as a dataUrl
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string); // result is the dataUrl
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  const selectMultiplePhotos = async () => {
+    const multiplePhotos = await Camera.pickImages({
+      quality: 100,
+      limit: 30
+    });
+    console.log('HERE', multiplePhotos);
+    for (let i = 0; i < multiplePhotos.photos.length; i++) {
+      const fileName = new Date().getTime() + '.' + multiplePhotos.photos[i].format;
+      console.log(multiplePhotos.photos[i].webPath, multiplePhotos.photos[i].path);
+      const dataUrl = await convertWebPathToDataUrl(multiplePhotos.photos[i].webPath);
+      const photo: UploadedPhoto = {
+        file_name: fileName,
+        encoded_file: dataUrl,
+        description: 'untitled',
+        editing: false
+      };
+      dispatch(Activity.Photo.add(photo));
+    }
+  };
+
   const takePhotoFromCamera = async () => {
     try {
       const cameraPhoto = await Camera.getPhoto({
@@ -77,6 +112,44 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
       dispatch(Activity.Photo.add(photo));
     } catch (e) {
       console.error('User cancelled or other errors selecting photos', e);
+    }
+  };
+  const requestPhotoPermission = async () => {
+    try {
+      const permission = await Camera.requestPermissions({ permissions: ['photos'] });
+
+      if (permission.photos === 'granted') {
+        console.log('Permission granted for photo library');
+        return true;
+      } else {
+        console.log('Permission denied for photo library');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error requesting permission', error);
+      return false;
+    }
+  };
+
+  const chooseMultiplePhotosFromLibrary = async () => {
+    try {
+      const permissions = await Camera.checkPermissions();
+      console.log('Permissions', permissions);
+      selectMultiplePhotos();
+      // if (permissions.photos === 'granted') {
+      //   console.log('Granted by default');
+      //   selectMultiplePhotos();
+      // } else {
+      //   const newPermissions = await Camera.requestPermissions({ permissions: ['photos'] });
+      //   if (newPermissions.photos === 'granted') {
+      //     console.log('Granted now');
+      //     selectMultiplePhotos();
+      //   } else {
+      //     console.log('Permission denied after request.');
+      //   }
+      // }
+    } catch (e) {
+      console.error('error occurred: ', e);
     }
   };
 
@@ -158,7 +231,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                   variant="contained"
                   color="primary"
                   startIcon={<PhotoLibrary />}
-                  onClick={choosePhotoFromLibrary}
+                  onClick={chooseMultiplePhotosFromLibrary}
                 >
                   Choose from Gallery
                 </Button>
