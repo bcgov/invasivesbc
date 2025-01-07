@@ -283,7 +283,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     };
     return { cachedCentroid, cachedGeoJson };
   }
-  async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
+  async deleteCachedRecordsFromIds(idsToDelete: string[], setId: string, recordSetType: RecordSetType): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }

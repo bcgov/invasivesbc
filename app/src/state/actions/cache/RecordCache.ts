@@ -18,15 +18,16 @@ class RecordCache {
       const state = getState() as RootState;
       const { recordSets } = state.UserSettings;
       const deleteList = recordSets[spec.setId].cacheMetadata.idList ?? [];
-      const ids: Record<string, number> = {};
+      const ids: Record<PropertyKey, number> = {};
       Object.keys(recordSets)
         .flatMap((key) => recordSets[key].cacheMetadata.idList ?? [])
         .forEach((id) => {
           ids[id] ??= 0;
           ids[id]++;
         });
+
       const recordsToErase = deleteList.filter((id) => ids[id] === 1);
-      await service.deleteCachedRecordsFromIds(recordsToErase, recordSets[spec.setId].recordSetType);
+      await service.deleteCachedRecordsFromIds(recordsToErase, spec.setId, recordSets[spec.setId].recordSetType);
     }
   );
 

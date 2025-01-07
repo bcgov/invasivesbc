@@ -15,7 +15,14 @@ export interface RecordCacheDownloadRequestSpec {
   API_BASE: string;
   idsToCache: string[];
 }
+export interface RecordCacheAddSpec {
+  setId: string;
+  cacheTime: Date;
+  cachedIds: string[];
+  recordSetType: RecordSetType;
+}
 
+export interface CachedSetMetadata {}
 /**
  * @desc Cached Metadata for Recordsets
  * @property { string } setID Recordset ID
@@ -23,7 +30,7 @@ export interface RecordCacheDownloadRequestSpec {
  * @property { GeoJSONSourceSpecification } cachedGeoJSON  Cached Features for low map layers
  * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
  */
-export interface RecordSetCacheMetadata {
+export interface ReduxRecordSetCacheMetadata {
   setId: string;
   cachedIds?: string[];
   cachedGeoJson: GeoJSONSourceSpecification;
@@ -54,7 +61,13 @@ abstract class RecordCacheService {
   abstract saveActivity(id: string, data: unknown): Promise<void>;
 
   abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
-  abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
+
+  abstract deleteCachedRecordsFromIds(
+    idsToDelete: string[],
+    setId: string,
+    recordSetType: RecordSetType
+  ): Promise<void>;
+
   abstract loadActivity(id: string): Promise<unknown>;
   abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
 
@@ -63,15 +76,27 @@ abstract class RecordCacheService {
     page: number,
     limit: number
   ): Promise<IappRecord[]>;
+
   abstract fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]>;
 
+  abstract addCachedSet(spec: RecordCacheAddSpec): Promise<void>;
+
+  abstract listCachedSets(): Promise<RecordCacheAddSpec[]>;
+
   abstract loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
+
   abstract loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
   async downloadIapp(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<void> {
+    await this.addCachedSet({
+      setId: spec.setId,
+      cacheTime: new Date(),
+      cachedIds: spec.idsToCache,
+      recordSetType: RecordSetType.IAPP
+    });
     for (const id of spec.idsToCache) {
       const authorization = await getCurrentJWT();
       const [iappRecord, tableRow] = await Promise.all([
@@ -110,6 +135,12 @@ abstract class RecordCacheService {
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<void> {
+    await this.addCachedSet({
+      setId: spec.setId,
+      cacheTime: new Date(),
+      cachedIds: spec.idsToCache,
+      recordSetType: RecordSetType.Activity
+    });
     for (const id of spec.idsToCache) {
       const rez = await fetch(`${spec.API_BASE}/api/activity/${id}`, {
         headers: {
