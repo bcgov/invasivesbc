@@ -5,7 +5,7 @@ import NewsArticle, { NewsSubject } from 'interfaces/NewsArticle';
 import { BugReport, FiberNew, Update } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 
-const NewsPage = (props: any) => {
+const NewsPage = () => {
   const BASE_SHOW = 5;
   const [loadMore, setLoadMore] = useState<number>(BASE_SHOW);
   const handleMore = () => setLoadMore((prev) => prev + BASE_SHOW);
@@ -42,7 +42,7 @@ const NewsPage = (props: any) => {
       if (urlRegex.test(part)) {
         return (
           <a
-            key={index}
+            key={part + index}
             href={part}
             target="_blank"
             rel="noopener noreferrer"
@@ -52,7 +52,7 @@ const NewsPage = (props: any) => {
           </a>
         );
       }
-      return <span key={index}>{part}</span>;
+      return <span key={part + index}>{part}</span>;
     });
   };
 
@@ -63,16 +63,18 @@ const NewsPage = (props: any) => {
         {newsItems.map((newsItem: NewsArticle, index) => {
           if (index < loadMore) {
             return (
-              <div className="newsListItem" key={index}>
+              <div className="newsListItem" key={newsItem.content.toString()}>
                 <div className="newsIcon">{subjectToIcon(newsItem?.subject)}</div>
                 <h3 className="newsListItemTitle">{newsItem.title}</h3>
                 <p className="newsListDate">
                   Posted:{' '}
                   <time dateTime={newsItem.date.toLocaleDateString()}>{newsItem.date.toLocaleDateString()}</time>
                 </p>
-                <ul className="newsListItemContent">
+                <ul>
                   {newsItem.content.map((content: string) => (
-                    <li key={content}>{renderContentWithLinks(content)}</li>
+                    <li className="newsListItemContent" key={content}>
+                      {renderContentWithLinks(content)}
+                    </li>
                   ))}
                 </ul>
               </div>
