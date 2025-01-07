@@ -5,6 +5,14 @@ import NewsArticle, { NewsSubject } from 'interfaces/NewsArticle';
  * Array sorts by date to keep things chronological.
  */
 const newsItems: NewsArticle[] = [
+  /*
+  {
+    title: '',
+    date: new Date(),
+    content: [],
+    subject: NewsSubject.
+  }
+  */
   {
     title: 'Updated Ministry names',
     date: new Date('December 13, 2024'),
