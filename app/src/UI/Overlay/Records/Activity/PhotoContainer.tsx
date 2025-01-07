@@ -63,8 +63,31 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     });
   }
 
+  const checkPermissionsAndDisplayInfo = async (PhotoOption: CameraSource): Promise<void> => {
+    try {
+      const permissions = await Camera.checkPermissions();
+
+      if (PhotoOption === CameraSource.Camera) {
+        if (permissions.camera === 'denied') {
+          alert('Camera access is denied. Please enable camera permissions in your device settings to take photos.');
+        }
+      }
+
+      if (PhotoOption === CameraSource.Photos) {
+        if (permissions.photos === 'denied') {
+          alert(
+            'Photo library access is denied. Please enable photo library permissions in your device settings to choose photos.'
+          );
+        }
+      }
+    } catch (error) {
+      console.error('Error checking permissions:', error);
+    }
+  };
+
   const takePhotoFromCamera = async () => {
     try {
+      await checkPermissionsAndDisplayInfo(CameraSource.Camera);
       const cameraPhoto = await Camera.getPhoto({
         presentationStyle: 'fullscreen',
         resultType: CameraResultType.DataUrl,
@@ -79,45 +102,44 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     }
   };
 
-  const choosePhotoFromLibrary = async () => {
-    try {
-      const libraryPhoto = await Camera.getPhoto({
-        quality: 100,
-        allowEditing: false,
-        resultType: CameraResultType.DataUrl,
-        source: CameraSource.Photos
-      });
-
-      const photo = preparePhoto(libraryPhoto);
-      dispatch(Activity.Photo.add(photo));
-    } catch (e) {
-      console.error('User cancelled or other errors selecting photos', e);
-    }
-  };
-
   const chooseMultiplePhotosFromLibrary = async () => {
     try {
-      const permissions = await Camera.checkPermissions();
-      console.log('Permissions', permissions);
-      // TODO: If permission is denied by user, display info on how to activate manually from settings
-      // TODO: Check for Camera permissions as well
+      await checkPermissionsAndDisplayInfo(CameraSource.Photos);
       const multiplePhotos = await Camera.pickImages({
         quality: 100,
-        limit: 30
+        limit: 10
       });
 
-      for (let i = 0; i < multiplePhotos.photos.length; i++) {
-        const fileName = new Date().getTime() + '.' + multiplePhotos.photos[i].format;
-        console.log(multiplePhotos.photos[i].webPath, multiplePhotos.photos[i].path);
-        const dataUrl = await convertWebPathToDataUrl(multiplePhotos.photos[i].webPath);
-        const photo: UploadedPhoto = {
-          file_name: fileName,
-          encoded_file: dataUrl,
-          description: 'untitled',
-          editing: false
-        };
-        dispatch(Activity.Photo.add(photo));
+      if (!multiplePhotos.photos.length) {
+        console.log('No photos selected');
+        return;
       }
+
+      // process all photos concurrently
+      const processedPhotos = await Promise.all(
+        multiplePhotos.photos.map(async (photo, index) => {
+          try {
+            const fileName = `${new Date().getTime()}-${index}.${photo.format}`;
+            const dataUrl = await convertWebPathToDataUrl(photo.webPath);
+
+            return {
+              file_name: fileName,
+              encoded_file: dataUrl,
+              description: 'untitled',
+              editing: false
+            } as UploadedPhoto;
+          } catch (error) {
+            console.error(`Error processing photo ${index + 1}:`, error);
+            return null; // skip photo on failure
+          }
+        })
+      );
+
+      // filter out failed photo conversions
+      const validPhotos = processedPhotos.filter((photo) => photo !== null);
+      validPhotos.forEach((photo) => {
+        if (photo) dispatch(Activity.Photo.add(photo));
+      });
     } catch (e) {
       console.error('error occurred: ', e);
     }
@@ -207,6 +229,16 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                 </Button>
               </Grid>
             </Grid>
+            {/* <>
+              <Box mt={8}>
+                <u>
+                  <strong>To enable Camera and Photo permissions manually: </strong>
+                </u>
+              </Box>
+              <Box mt={4}>
+                <strong>To enable permissions: </strong> ....
+              </Box>
+            </> */}
           </Grid>
         </Box>
       )}
