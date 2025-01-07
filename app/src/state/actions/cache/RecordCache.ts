@@ -11,25 +11,26 @@ class RecordCache {
    * @desc Deletes cached records for a recordset.
    *       determines duplicates with a frequency map to avoid duplicating records contained elsewhere
    */
-  static readonly deleteCache = createAsyncThunk(
-    `${this.PREFIX}/deleteCache`,
-    async (spec: { setId: string }, { getState }) => {
-      const service = await RecordCacheServiceFactory.getPlatformInstance();
-      const state = getState() as RootState;
-      const { recordSets } = state.UserSettings;
-      const deleteList = recordSets[spec.setId].cacheMetadata.idList ?? [];
-      const ids: Record<PropertyKey, number> = {};
-      Object.keys(recordSets)
-        .flatMap((key) => recordSets[key].cacheMetadata.idList ?? [])
-        .forEach((id) => {
-          ids[id] ??= 0;
-          ids[id]++;
-        });
-
-      const recordsToErase = deleteList.filter((id) => ids[id] === 1);
-      await service.deleteCachedRecordsFromIds(recordsToErase, spec.setId, recordSets[spec.setId].recordSetType);
+  static readonly deleteCache = createAsyncThunk(`${this.PREFIX}/deleteCache`, async (spec: { setId: string }) => {
+    const service = await RecordCacheServiceFactory.getPlatformInstance();
+    const sets = await service.listCachedSets();
+    const deleteTarget = sets.find((p) => p.setId === spec.setId);
+    if (!deleteTarget) {
+      throw Error(`set ${spec.setId} was not found in Cache`);
     }
-  );
+
+    const deleteList = deleteTarget?.cachedIds ?? [];
+    const ids: Record<PropertyKey, number> = {};
+    sets
+      .flatMap((set) => set.cachedIds)
+      .forEach((id) => {
+        ids[id] ??= 0;
+        ids[id]++;
+      });
+
+    const recordsToErase = deleteList.filter((id) => ids[id] === 1);
+    await service.deleteCachedRecordsFromIds(recordsToErase, spec.setId, deleteTarget.recordSetType);
+  });
 
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
