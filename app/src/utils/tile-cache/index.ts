@@ -43,6 +43,13 @@ enum RepositoryStatus {
   UNKNOWN = 'UNKNOWN'
 }
 
+interface TilePromise {
+  id: string;
+  url: string;
+  x: number;
+  y: number;
+  z: number;
+}
 export interface TileCacheProgressCallbackParameters {
   repository: string;
   message: string;
@@ -107,75 +114,106 @@ abstract class TileCacheService {
 
   abstract setRepositoryStatus(repository: string, status: RepositoryStatus): Promise<void>;
 
+  private async downloadTile(tileDetails: TilePromise): Promise<void> {
+    const { id, url, x, y, z } = tileDetails;
+    const responseData = await fetch(url).then(async (r) => await r.arrayBuffer());
+    await this.setTile(id, z, x, y, new Uint8Array(responseData));
+  }
+
   async download(
     spec: RepositoryDownloadRequestSpec,
     progressCallback?: (currentProgress: TileCacheProgressCallbackParameters) => void
   ): Promise<void> {
-    await this.addRepository({
-      id: spec.id,
-      status: RepositoryStatus.DOWNLOADING,
-      maxZoom: spec.maxZoom,
-      bounds: spec.bounds,
-      description: spec.description
-    });
+    const processNext = async (promiseFn) => {
+      const promise = promiseFn();
+      executing.add(promise);
+      try {
+        await promise;
+      } catch (e) {
+        console.error(e);
+        try {
+          await promise;
+        } catch (e) {
+          console.error('Failed second attempt at fetching tile');
+        }
+      } finally {
+        executing.delete(promise);
+      }
+    };
 
+    const CONCURRENCY_LIMIT = 10;
     const totalTiles = TileCacheService.computeTileCount(spec.bounds, spec.maxZoom);
-
     let abort = false;
-
     let processedTiles = 0;
     let lastProgressCallback: null | number = null;
     let lastProgressCallbackTimestamp: number | null = null;
+    const tileUrls: TilePromise[] = [];
+    const executing = new Set();
 
     try {
+      await this.addRepository({
+        id: spec.id,
+        status: RepositoryStatus.DOWNLOADING,
+        maxZoom: spec.maxZoom,
+        bounds: spec.bounds,
+        description: spec.description
+      });
+
       for (let z = 0; z <= spec.maxZoom && !abort; z++) {
         const startTileLat = lat2tile(spec.bounds.minLatitude, z);
         const startTileLng = long2tile(spec.bounds.minLongitude, z);
-
         const endTileLat = lat2tile(spec.bounds.maxLatitude, z);
         const endTileLng = long2tile(spec.bounds.maxLongitude, z);
 
         for (let x = Math.min(startTileLng, endTileLng); x <= Math.max(startTileLng, endTileLng) && !abort; x++) {
           for (let y = Math.min(startTileLat, endTileLat); y <= Math.max(startTileLat, endTileLat) && !abort; y++) {
-            const url = spec.tileURL(x, y, z);
-            const response = await fetch(url);
-            const data = await response.arrayBuffer();
-
-            await this.setTile(spec.id, z, x, y, new Uint8Array(data));
-            processedTiles++;
-
-            const currentProgress = processedTiles / totalTiles;
-            // trigger a callback on the first run, on the last run, every 1%, and every 200ms
-            if (
-              lastProgressCallback == null ||
-              lastProgressCallbackTimestamp == null ||
-              currentProgress - lastProgressCallback > 0.01 ||
-              processedTiles == totalTiles ||
-              Date.now() - lastProgressCallbackTimestamp > 200
-            ) {
-              // take advantage of the periodic callback to check if we should abort (because the repo was concurrently deleted)
-              const updatedRepositoryState = await this.getRepository(spec.id);
-              if (updatedRepositoryState == null || updatedRepositoryState.status == RepositoryStatus.DELETING) {
-                abort = true;
-              }
-
-              lastProgressCallback = currentProgress;
-              lastProgressCallbackTimestamp = Date.now();
-
-              if (progressCallback) {
-                progressCallback({
-                  repository: spec.id,
-                  message: abort ? `Aborting` : `Zoom ${z}/${spec.maxZoom}, ${processedTiles}/${totalTiles} Tiles`,
-                  aborted: abort,
-                  normalizedProgress: processedTiles / totalTiles,
-                  processedTiles,
-                  totalTiles
-                });
-              }
-            }
+            tileUrls.push({ id: spec.id, url: spec.tileURL(x, y, z), x, y, z });
           }
         }
       }
+      const promises = tileUrls.map((config) => () => this.downloadTile(config));
+
+      for (let i = 0; i < promises.length && !abort; i++) {
+        if (executing.size >= CONCURRENCY_LIMIT) {
+          await Promise.race(executing);
+        }
+
+        processNext(promises[i]);
+        processedTiles++;
+        const currentProgress = processedTiles / totalTiles;
+        const currTime = Date.now();
+
+        // trigger a callback on the first run, on the last run, every 1%, and every 200ms
+        if (
+          lastProgressCallback == null ||
+          lastProgressCallbackTimestamp == null ||
+          currentProgress - lastProgressCallback > 0.01 ||
+          processedTiles == totalTiles ||
+          currTime - lastProgressCallbackTimestamp > 500
+        ) {
+          // take advantage of the periodic callback to check if we should abort (because the repo was concurrently deleted)
+          const updatedRepositoryState = await this.getRepository(spec.id);
+          if (updatedRepositoryState == null || updatedRepositoryState.status == RepositoryStatus.DELETING) {
+            abort = true;
+          }
+
+          lastProgressCallback = currentProgress;
+          lastProgressCallbackTimestamp = currTime;
+
+          if (progressCallback) {
+            progressCallback({
+              repository: spec.id,
+              message: abort ? `Aborting` : `${processedTiles.toLocaleString()}/${totalTiles.toLocaleString()} Tiles`,
+              aborted: abort,
+              normalizedProgress: processedTiles / totalTiles,
+              processedTiles,
+              totalTiles
+            });
+          }
+        }
+      }
+
+      await Promise.all(executing);
       await this.setRepositoryStatus(spec.id, RepositoryStatus.READY);
     } catch (e) {
       try {
