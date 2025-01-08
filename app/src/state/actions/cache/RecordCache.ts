@@ -45,13 +45,13 @@ class RecordCache {
       const idsToCache: string[] = state.Map.layers
         .find((l) => l.recordSetID == spec.setId)
         .IDList.map((id: string | number) => id.toString());
-      const { recordSetType, tableFilters }: UserRecordSet = state.UserSettings.recordSets[spec.setId];
+      const recordSet = state.UserSettings.recordSets[spec.setId];
       const args = {
         idsToCache,
         setId: spec.setId,
         API_BASE: state.Configuration.current.API_BASE
       };
-      const bbox = await getBoundingBoxFromRecordsetFilters(tableFilters);
+      const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
       let responseData: Record<PropertyKey, any> = {
         cachedGeoJSON: null,
         cachedCentroid: null
@@ -61,31 +61,33 @@ class RecordCache {
         setId: spec.setId,
         cacheTime: new Date(),
         cachedIds: idsToCache,
-        recordSetType: RecordSetType.IAPP,
+        recordSetType: recordSet.recordSetType,
         status: UserRecordCacheStatus.DOWNLOADING,
         bbox: bbox
       });
 
-      if (recordSetType === RecordSetType.Activity) {
-        await service.download(args);
+      if (recordSet.recordSetType === RecordSetType.Activity && (await service.download(args))) {
         Object.assign(responseData, await service.loadRecordsetSourceMetadata(idsToCache));
-      } else if (recordSetType === RecordSetType.IAPP) {
-        await service.downloadIapp(args);
+      } else if (recordSet.recordSetType === RecordSetType.IAPP && (await service.downloadIapp(args))) {
         Object.assign(responseData, await service.loadIappRecordsetSourceMetadata(idsToCache));
+      } else {
+        // All API calls have resolved at this stage, we can call record deletion to collect any orphans
+        await service.deleteCachedRecordsFromIds(idsToCache, spec.setId, recordSet.recordSetType);
+        throw Error('Early Exit');
       }
 
       await service.addOrUpdateCachedSet({
         setId: spec.setId,
         cacheTime: new Date(),
         cachedIds: idsToCache,
-        recordSetType: RecordSetType.IAPP,
+        recordSetType: recordSet.recordSetType,
         status: UserRecordCacheStatus.CACHED,
         cachedGeoJson: responseData.cachedGeoJson,
         cachedCentroid: responseData.cachedCentroid,
         bbox: bbox
       });
 
-      // Will Refactor the current uses of Cache Metadata separately
+      // Will Refactor the current uses of Cache Metadata separately [Maintain only cache status]
       return {
         status: UserRecordCacheStatus.CACHED,
         idList: idsToCache,
