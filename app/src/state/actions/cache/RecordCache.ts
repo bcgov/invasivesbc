@@ -53,8 +53,8 @@ class RecordCache {
       };
       const bbox = await getBoundingBoxFromRecordsetFilters(tableFilters);
       let responseData: Record<PropertyKey, any> = {
-        cachedGeoJSON: [],
-        cachedCentroid: []
+        cachedGeoJSON: null,
+        cachedCentroid: null
       };
 
       await service.addOrUpdateCachedSet({
@@ -68,10 +68,10 @@ class RecordCache {
 
       if (recordSetType === RecordSetType.Activity) {
         await service.download(args);
-        responseData = await service.loadRecordsetSourceMetadata(idsToCache);
+        Object.assign(responseData, await service.loadRecordsetSourceMetadata(idsToCache));
       } else if (recordSetType === RecordSetType.IAPP) {
         await service.downloadIapp(args);
-        responseData = await service.loadIappRecordsetSourceMetadata(idsToCache);
+        Object.assign(responseData, await service.loadIappRecordsetSourceMetadata(idsToCache));
       }
 
       await service.addOrUpdateCachedSet({
@@ -81,7 +81,7 @@ class RecordCache {
         recordSetType: RecordSetType.IAPP,
         status: UserRecordCacheStatus.CACHED,
         cachedGeoJson: responseData.cachedGeoJson,
-        cachedCentroid: responseData.cachedCentroid ?? [],
+        cachedCentroid: responseData.cachedCentroid,
         bbox: bbox
       });
 
