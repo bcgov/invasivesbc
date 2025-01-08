@@ -13,12 +13,10 @@ const Overlay = (props) => {
   const panelOpen = useSelector((state) => state.AppMode.panelOpen);
   const fullScreen = useSelector((state) => state.AppMode.panelFullScreen);
 
-  const { authenticated } = useSelector((state) => state.Auth);
-
   return (
     <div
       id="overlaydiv"
-      className={`map__overlay ${authenticated && panelOpen && !fullScreen ? 'map__overlay--show' : ''} ${
+      className={`map__overlay ${panelOpen && !fullScreen ? 'map__overlay--show' : ''} ${
         panelOpen && fullScreen ? 'map__overlay--show-fullscreen' : ''
       }`}
     >
