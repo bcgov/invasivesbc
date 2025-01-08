@@ -37,17 +37,6 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
   const dispatch = useDispatch();
   const media = useSelector((state) => state.ActivityPage.activity?.media || []);
 
-  const preparePhoto = (photoToProcess: Photo) => {
-    const fileName = new Date().getTime() + '.' + photoToProcess.format;
-    const photo: UploadedPhoto = {
-      file_name: fileName,
-      encoded_file: photoToProcess.dataUrl,
-      description: 'untitled',
-      editing: false
-    };
-    return photo;
-  };
-
   async function convertWebPathToDataUrl(webPath: string): Promise<string> {
     const response = await fetch(webPath);
 
@@ -95,7 +84,14 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
         quality: 100
       });
 
-      const photo = preparePhoto(cameraPhoto);
+      const fileName = new Date().getTime() + '.' + cameraPhoto.format;
+      const photo: UploadedPhoto = {
+        file_name: fileName,
+        encoded_file: cameraPhoto.dataUrl,
+        description: 'untitled',
+        editing: false
+      };
+
       dispatch(Activity.Photo.add(photo));
     } catch (e) {
       console.error('user cancelled or other camera problem', e);
