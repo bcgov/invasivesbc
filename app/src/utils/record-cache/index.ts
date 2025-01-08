@@ -1,10 +1,11 @@
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
+import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 export enum IappRecordMode {
   Record = 'record',
@@ -15,26 +16,24 @@ export interface RecordCacheDownloadRequestSpec {
   API_BASE: string;
   idsToCache: string[];
 }
+/**
+ * @desc Cached Metadata for Recordsets
+ * @property { string } setID Recordset ID
+ * @property { string[] } cachedIds collection of activity_ids in Recordset
+ * @property { Date } cacheTime Timestamp of cache
+ * @property { GeoJSONSourceSpecification } cachedGeoJSON  Cached Features for low map layers
+ * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
+ * @property { UserRecordCacheStatus } status Cache Status.
+ */
 export interface RecordCacheAddSpec {
   setId: string;
   cacheTime: Date;
   cachedIds: string[];
   recordSetType: RecordSetType;
-}
-
-export interface CachedSetMetadata {}
-/**
- * @desc Cached Metadata for Recordsets
- * @property { string } setID Recordset ID
- * @property { string[] } cachedIds collection of activity_ids in Recordset
- * @property { GeoJSONSourceSpecification } cachedGeoJSON  Cached Features for low map layers
- * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
- */
-export interface ReduxRecordSetCacheMetadata {
-  setId: string;
-  cachedIds?: string[];
-  cachedGeoJson: GeoJSONSourceSpecification;
-  cachedCentroid: GeoJSONSourceSpecification;
+  cachedGeoJson?: GeoJSONSourceSpecification;
+  cachedCentroid?: GeoJSONSourceSpecification;
+  bbox?: RepositoryBoundingBoxSpec;
+  status: UserRecordCacheStatus;
 }
 
 export interface RecordSetSourceMetadata {
@@ -79,7 +78,7 @@ abstract class RecordCacheService {
 
   abstract fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]>;
 
-  abstract addCachedSet(spec: RecordCacheAddSpec): Promise<void>;
+  abstract addOrUpdateCachedSet(spec: RecordCacheAddSpec): Promise<void>;
 
   abstract listCachedSets(): Promise<RecordCacheAddSpec[]>;
 
@@ -91,12 +90,6 @@ abstract class RecordCacheService {
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<void> {
-    await this.addCachedSet({
-      setId: spec.setId,
-      cacheTime: new Date(),
-      cachedIds: spec.idsToCache,
-      recordSetType: RecordSetType.IAPP
-    });
     for (const id of spec.idsToCache) {
       const authorization = await getCurrentJWT();
       const [iappRecord, tableRow] = await Promise.all([
@@ -135,12 +128,6 @@ abstract class RecordCacheService {
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<void> {
-    await this.addCachedSet({
-      setId: spec.setId,
-      cacheTime: new Date(),
-      cachedIds: spec.idsToCache,
-      recordSetType: RecordSetType.Activity
-    });
     for (const id of spec.idsToCache) {
       const rez = await fetch(`${spec.API_BASE}/api/activity/${id}`, {
         headers: {

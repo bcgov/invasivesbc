@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getBoundingBoxFromRecordsetFilters from 'utils/getBoundingBoxFromRecordsetFilters';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
@@ -57,6 +57,15 @@ class RecordCache {
         cachedCentroid: []
       };
 
+      await service.addOrUpdateCachedSet({
+        setId: spec.setId,
+        cacheTime: new Date(),
+        cachedIds: idsToCache,
+        recordSetType: RecordSetType.IAPP,
+        status: UserRecordCacheStatus.DOWNLOADING,
+        bbox: bbox
+      });
+
       if (recordSetType === RecordSetType.Activity) {
         await service.download(args);
         responseData = await service.loadRecordsetSourceMetadata(idsToCache);
@@ -64,12 +73,26 @@ class RecordCache {
         await service.downloadIapp(args);
         responseData = await service.loadIappRecordsetSourceMetadata(idsToCache);
       }
-      return {
-        cachedIds: idsToCache,
+
+      await service.addOrUpdateCachedSet({
         setId: spec.setId,
-        bbox,
+        cacheTime: new Date(),
+        cachedIds: idsToCache,
+        recordSetType: RecordSetType.IAPP,
+        status: UserRecordCacheStatus.CACHED,
         cachedGeoJson: responseData.cachedGeoJson,
-        cachedCentroid: responseData.cachedCentroid ?? []
+        cachedCentroid: responseData.cachedCentroid ?? [],
+        bbox: bbox
+      });
+
+      // Will Refactor the current uses of Cache Metadata separately
+      return {
+        status: UserRecordCacheStatus.CACHED,
+        idList: idsToCache,
+        bbox: bbox,
+        setId: spec.setId,
+        cachedGeoJson: responseData.cachedGeoJson,
+        cachedCentroid: responseData.cachedCentroid
       };
     }
   );

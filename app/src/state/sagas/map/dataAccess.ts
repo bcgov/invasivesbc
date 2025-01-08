@@ -115,12 +115,12 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       });
     } else {
       const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
-      if (recordSet?.cachedMetadata?.idList) {
+      if (recordSet?.cacheMetadata?.idList) {
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
           payload: {
             recordSetID: action.payload.recordSetID,
-            IDList: recordSet.cachedMetadata.idList ?? [],
+            IDList: recordSet.cacheMetadata.idList ?? [],
             tableFiltersHash: action.payload.tableFiltersHash
           }
         });

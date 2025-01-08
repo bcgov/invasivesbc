@@ -207,7 +207,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.CACHED,
-          idList: action.payload.cachedIds,
+          idList: action.payload.idList,
           bbox: action.payload.bbox,
           cachedGeoJson: action.payload.cachedGeoJson,
           cachedCentroid: action.payload.cachedCentroid

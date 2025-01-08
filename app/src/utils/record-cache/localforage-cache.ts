@@ -190,23 +190,18 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
   }
 
-  async addCachedSet(spec: RecordCacheAddSpec): Promise<void> {
+  async addOrUpdateCachedSet(newSet: RecordCacheAddSpec): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    const newEntry = {
-      setId: spec.setId,
-      cacheTime: new Date(),
-      cachedIds: spec.cachedIds,
-      recordSetType: spec.recordSetType
-    };
 
     const cachedSets = (await this.listCachedSets()) ?? [];
-    const foundIndex = cachedSets.findIndex((p) => p.setId === spec.setId);
+    const foundIndex = cachedSets.findIndex((p) => p.setId === newSet.setId);
+
     if (foundIndex !== -1) {
-      cachedSets[foundIndex] = newEntry;
+      Object.assign(cachedSets[foundIndex], newSet);
     } else {
-      cachedSets.push(newEntry);
+      cachedSets.push(newSet);
     }
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
