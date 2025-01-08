@@ -11,7 +11,8 @@ import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RepositoryStatus } from 'utils/tile-cache';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -40,6 +41,26 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(id, data);
   }
 
+  async setCacheStatus(cacheId: string, status: RepositoryStatus) {
+    if (this.store == null) {
+      throw Error('Cache not available');
+    }
+    const cachedSets = await this.listCachedSets();
+    const foundIndex = cachedSets.findIndex((p) => p.setId === cacheId);
+    if (foundIndex !== -1) {
+      Object.assign(cachedSets[foundIndex], { status });
+      await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
+    }
+  }
+
+  async checkForAbort(id: string): Promise<boolean> {
+    const sets = await this.listCachedSets();
+    const index = sets.findIndex((p) => p.setId === id);
+    if (index !== -1) {
+      return sets[index].status === UserRecordCacheStatus.DELETING;
+    }
+    return true;
+  }
   async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
@@ -178,8 +199,14 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
+    this.setCacheStatus(setId, RepositoryStatus.DELETING);
+
     for (const id of idsToDelete) {
-      await this.store.removeItem(id.toString());
+      try {
+        await this.store.removeItem(id.toString());
+      } catch {
+        // Item may not exist if a cache was quit while in progress.
+      }
     }
 
     const cachedSets = await this.listCachedSets();
@@ -190,6 +217,10 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
   }
 
+  /**
+   * @desc Create or Update an entry in the cachedSet Repository
+   * @param newSet Data to update
+   */
   async addOrUpdateCachedSet(newSet: RecordCacheAddSpec): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
@@ -198,10 +229,10 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const cachedSets = (await this.listCachedSets()) ?? [];
     const foundIndex = cachedSets.findIndex((p) => p.setId === newSet.setId);
 
-    if (foundIndex !== -1) {
-      Object.assign(cachedSets[foundIndex], newSet);
-    } else {
+    if (foundIndex === -1) {
       cachedSets.push(newSet);
+    } else {
+      Object.assign(cachedSets[foundIndex], newSet);
     }
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
