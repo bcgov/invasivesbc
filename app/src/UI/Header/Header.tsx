@@ -38,7 +38,7 @@ import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { RENDER_DEBUG } from 'UI/App';
-import { useDispatch, useSelector } from 'utils/use_selector';
+import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 import RefreshButton from './RefreshButton';
@@ -186,7 +186,7 @@ const LoginButton = ({ labelText = 'Login' }) => {
 const LogoutButton = () => {
   const dispatch = useDispatch();
   const signOutAndTogglePanel = () => {
-    return (dispatch: any) => {
+    return (dispatch: AppDispatch) => {
       dispatch({
         type: TOGGLE_PANEL,
         payload: { panelOpen: false }
