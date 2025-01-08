@@ -19,6 +19,8 @@ import Activity from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import './PhotoContainer.css';
+import Alerts from 'state/actions/alerts/Alerts';
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 export interface IPhoto {
   file_name: string;
   webviewPath?: string;
@@ -57,14 +59,26 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
 
       if (photoOption === CameraSource.Camera) {
         if (permissions.camera === 'denied') {
-          alert('Camera access is denied. Please enable camera permissions in your device settings to take photos.');
+          dispatch(
+            Alerts.create({
+              content:
+                'Camera access is denied. Please enable camera permissions in your device settings to take photos.',
+              severity: AlertSeverity.Warning,
+              subject: AlertSubjects.Photo,
+              autoClose: 5
+            })
+          );
         }
-      }
-
-      if (photoOption === CameraSource.Photos) {
+      } else if (photoOption === CameraSource.Photos) {
         if (permissions.photos === 'denied') {
-          alert(
-            'Photo library access is denied. Please enable photo library permissions in your device settings to choose photos.'
+          dispatch(
+            Alerts.create({
+              content:
+                'Photo library access is denied. Please enable photo library permissions in your device settings to choose photos.',
+              severity: AlertSeverity.Warning,
+              subject: AlertSubjects.Photo,
+              autoClose: 5
+            })
           );
         }
       }
