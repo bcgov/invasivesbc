@@ -57,30 +57,26 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     try {
       const permissions = await Camera.checkPermissions();
 
-      if (photoOption === CameraSource.Camera) {
-        if (permissions.camera === 'denied') {
-          dispatch(
-            Alerts.create({
-              content:
-                'Camera access is denied. Please enable camera permissions in your device settings to take photos.',
-              severity: AlertSeverity.Warning,
-              subject: AlertSubjects.Photo,
-              autoClose: 5
-            })
-          );
-        }
-      } else if (photoOption === CameraSource.Photos) {
-        if (permissions.photos === 'denied') {
-          dispatch(
-            Alerts.create({
-              content:
-                'Photo library access is denied. Please enable photo library permissions in your device settings to choose photos.',
-              severity: AlertSeverity.Warning,
-              subject: AlertSubjects.Photo,
-              autoClose: 5
-            })
-          );
-        }
+      if (photoOption === CameraSource.Camera && permissions.camera === 'denied') {
+        dispatch(
+          Alerts.create({
+            content:
+              'Camera access is denied. Please enable camera permissions in your device settings to take photos.',
+            severity: AlertSeverity.Warning,
+            subject: AlertSubjects.Photo,
+            autoClose: 5
+          })
+        );
+      } else if (photoOption === CameraSource.Photos && permissions.photos === 'denied') {
+        dispatch(
+          Alerts.create({
+            content:
+              'Photo library access is denied. Please enable photo library permissions in your device settings to choose photos.',
+            severity: AlertSeverity.Warning,
+            subject: AlertSubjects.Photo,
+            autoClose: 5
+          })
+        );
       }
     } catch (error) {
       console.error('Error checking permissions:', error);
