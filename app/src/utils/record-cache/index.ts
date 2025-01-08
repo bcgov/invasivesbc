@@ -5,7 +5,7 @@ import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import { RepositoryBoundingBoxSpec, RepositoryStatus } from 'utils/tile-cache';
 
 export enum IappRecordMode {
   Record = 'record',
@@ -51,6 +51,7 @@ export interface RecordCacheProgressCallbackParameters {
 }
 
 abstract class RecordCacheService {
+  private readonly TIME_BETWEEN_ABORT_CHECKS = 25;
   protected constructor() {}
 
   static async getInstance(): Promise<RecordCacheService> {
@@ -78,23 +79,34 @@ abstract class RecordCacheService {
 
   abstract fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]>;
 
-  abstract addOrUpdateCachedSet(spec: RecordCacheAddSpec): Promise<void>;
+  abstract addOrUpdateRepository(spec: RecordCacheAddSpec): Promise<void>;
 
-  abstract listCachedSets(): Promise<RecordCacheAddSpec[]>;
+  abstract deleteRepository(repositoryId: string): Promise<void>;
+
+  abstract listRepositories(): Promise<RecordCacheAddSpec[]>;
 
   abstract loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
   abstract loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
+  abstract setRepositoryStatus(repositoryId: string, status: RepositoryStatus): Promise<void>;
+
+  abstract checkForAbort(id: string): Promise<boolean>;
+
+  /**
+   * Download Records for IAPP Given a list of IDs
+   * @returns { boolean } download was successful
+   */
   async downloadIapp(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
-  ): Promise<void> {
-    for (const id of spec.idsToCache) {
+  ): Promise<boolean> {
+    let abort = false;
+    for (let i = 0; i < spec.idsToCache.length && !abort; i++) {
       const authorization = await getCurrentJWT();
       const [iappRecord, tableRow] = await Promise.all([
         fetch(
-          `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${id}","isIAPP":true,"site_id_only":false}`,
+          `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${spec.idsToCache[i]}","isIAPP":true,"site_id_only":false}`,
           { headers: { authorization } }
         ).then(async (data) => await data.json()),
         fetch(`${spec.API_BASE}/api/v2/IAPP/`, {
@@ -109,7 +121,7 @@ abstract class RecordCacheService {
                 tableFilters: [
                   {
                     field: 'site_id',
-                    filter: id,
+                    filter: spec.idsToCache[i],
                     filterType: 'tableFilter',
                     operator: 'CONTAINS',
                     operator2: 'AND'
@@ -120,22 +132,41 @@ abstract class RecordCacheService {
           })
         }).then(async (data) => await data.json())
       ]);
-      await this.saveIapp(id.toString(), iappRecord, tableRow);
+      await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
+      if (i % this.TIME_BETWEEN_ABORT_CHECKS === 0) {
+        abort = await this.checkForAbort(spec.setId);
+        /*
+          ProgressCallback Logic
+        */
+      }
     }
+    return !abort;
   }
 
+  /**
+   * Download Records for Activities Given a list of IDs
+   * @returns { boolean } download was successful
+   */
   async download(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
-  ): Promise<void> {
-    for (const id of spec.idsToCache) {
-      const rez = await fetch(`${spec.API_BASE}/api/activity/${id}`, {
+  ): Promise<boolean> {
+    let abort = false;
+    for (let i = 0; i < spec.idsToCache.length && !abort; i++) {
+      const rez = await fetch(`${spec.API_BASE}/api/activity/${spec.idsToCache[i]}`, {
         headers: {
           Authorization: await getCurrentJWT()
         }
       });
-      await this.saveActivity(id, await rez.json());
+      await this.saveActivity(spec.idsToCache[i], await rez.json());
+      if (i % this.TIME_BETWEEN_ABORT_CHECKS === 0) {
+        abort = await this.checkForAbort(spec.setId);
+        /*
+          ProgressCallback Logic
+        */
+      }
     }
+    return !abort;
   }
 }
 
