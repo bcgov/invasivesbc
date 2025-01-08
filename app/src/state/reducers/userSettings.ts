@@ -201,9 +201,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           status: UserRecordCacheStatus.DOWNLOADING
         };
       } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.ERROR
-        };
+        if (action.error.message !== 'Early Exit') {
+          draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+            status: UserRecordCacheStatus.ERROR
+          };
+        }
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.CACHED,

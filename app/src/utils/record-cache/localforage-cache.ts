@@ -41,11 +41,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(id, data);
   }
 
-  async setCacheStatus(cacheId: string, status: RepositoryStatus) {
+  async setRepositoryStatus(cacheId: string, status: RepositoryStatus) {
     if (this.store == null) {
       throw Error('Cache not available');
     }
-    const cachedSets = await this.listCachedSets();
+    const cachedSets = await this.listRepositories();
     const foundIndex = cachedSets.findIndex((p) => p.setId === cacheId);
     if (foundIndex !== -1) {
       Object.assign(cachedSets[foundIndex], { status });
@@ -54,7 +54,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
   }
 
   async checkForAbort(id: string): Promise<boolean> {
-    const sets = await this.listCachedSets();
+    const sets = await this.listRepositories();
     const index = sets.findIndex((p) => p.setId === id);
     if (index !== -1) {
       return sets[index].status === UserRecordCacheStatus.DELETING;
@@ -199,18 +199,25 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    this.setCacheStatus(setId, RepositoryStatus.DELETING);
+    this.setRepositoryStatus(setId, RepositoryStatus.DELETING);
 
     for (const id of idsToDelete) {
       try {
         await this.store.removeItem(id.toString());
-      } catch {
+      } catch (e) {
         // Item may not exist if a cache was quit while in progress.
       }
     }
+  }
 
-    const cachedSets = await this.listCachedSets();
-    const foundIndex = cachedSets.findIndex((p) => p.setId === setId);
+  async deleteRepository(repositoryId: string) {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+
+    const cachedSets = await this.listRepositories();
+    const foundIndex = cachedSets.findIndex((p) => p.setId === repositoryId);
+
     if (foundIndex !== -1) {
       cachedSets.splice(foundIndex, 1);
       await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
@@ -221,12 +228,12 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @desc Create or Update an entry in the cachedSet Repository
    * @param newSet Data to update
    */
-  async addOrUpdateCachedSet(newSet: RecordCacheAddSpec): Promise<void> {
+  async addOrUpdateRepository(newSet: RecordCacheAddSpec): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
 
-    const cachedSets = (await this.listCachedSets()) ?? [];
+    const cachedSets = (await this.listRepositories()) ?? [];
     const foundIndex = cachedSets.findIndex((p) => p.setId === newSet.setId);
 
     if (foundIndex === -1) {
@@ -237,7 +244,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
-  async listCachedSets(): Promise<RecordCacheAddSpec[]> {
+  async listRepositories(): Promise<RecordCacheAddSpec[]> {
     if (this.store == null) {
       return [];
     }

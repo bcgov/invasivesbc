@@ -50,7 +50,7 @@ class RecordSet {
         throw Error('no record cache service is available');
       }
 
-      const cachedSets = await service.listCachedSets();
+      const cachedSets = await service.listRepositories();
 
       // these will be passed to the reducer, which can then mark the record sets as cached
       return cachedSets.map((set) => {

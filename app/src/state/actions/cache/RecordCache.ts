@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getBoundingBoxFromRecordsetFilters from 'utils/getBoundingBoxFromRecordsetFilters';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
@@ -13,7 +13,7 @@ class RecordCache {
    */
   static readonly deleteCache = createAsyncThunk(`${this.PREFIX}/deleteCache`, async (spec: { setId: string }) => {
     const service = await RecordCacheServiceFactory.getPlatformInstance();
-    const sets = await service.listCachedSets();
+    const sets = await service.listRepositories();
     const deleteTarget = sets.find((p) => p.setId === spec.setId);
     if (!deleteTarget) {
       throw Error(`set ${spec.setId} was not found in Cache`);
@@ -29,7 +29,10 @@ class RecordCache {
       });
 
     const recordsToErase = deleteList.filter((id) => ids[id] === 1);
-    await service.deleteCachedRecordsFromIds(recordsToErase, spec.setId, deleteTarget.recordSetType);
+    Promise.all([
+      await service.deleteCachedRecordsFromIds(recordsToErase, spec.setId, deleteTarget.recordSetType),
+      await service.deleteRepository(spec.setId)
+    ]);
   });
 
   static readonly requestCaching = createAsyncThunk(
@@ -57,7 +60,7 @@ class RecordCache {
         cachedCentroid: null
       };
 
-      await service.addOrUpdateCachedSet({
+      await service.addOrUpdateRepository({
         setId: spec.setId,
         cacheTime: new Date(),
         cachedIds: idsToCache,
@@ -76,7 +79,7 @@ class RecordCache {
         throw Error('Early Exit');
       }
 
-      await service.addOrUpdateCachedSet({
+      await service.addOrUpdateRepository({
         setId: spec.setId,
         cacheTime: new Date(),
         cachedIds: idsToCache,
