@@ -98,7 +98,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     }
   };
 
-  const chooseMultiplePhotosFromLibrary = async () => {
+  const choosePhotosFromLibrary = async () => {
     try {
       await checkPermissionsAndDisplayInfo(CameraSource.Photos);
       const multiplePhotos = await Camera.pickImages({
@@ -219,22 +219,12 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
                   variant="contained"
                   color="primary"
                   startIcon={<PhotoLibrary />}
-                  onClick={chooseMultiplePhotosFromLibrary}
+                  onClick={choosePhotosFromLibrary}
                 >
                   Choose from Gallery
                 </Button>
               </Grid>
             </Grid>
-            {/* <>
-              <Box mt={8}>
-                <u>
-                  <strong>To enable Camera and Photo permissions manually: </strong>
-                </u>
-              </Box>
-              <Box mt={4}>
-                <strong>To enable permissions: </strong> ....
-              </Box>
-            </> */}
           </Grid>
         </Box>
       )}
