@@ -1,4 +1,4 @@
-import { CameraResultType, CameraSource, Camera, Photo } from '@capacitor/camera';
+import { CameraResultType, CameraSource, Camera } from '@capacitor/camera';
 import {
   Box,
   Button,
@@ -43,26 +43,25 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
     // convert response into a blob
     const blob = await response.blob();
 
-    // read the blob as a dataUrl
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string); // result is the dataUrl
+      reader.onloadend = () => resolve(reader.result as string); // result is a dataUrl
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
   }
 
-  const checkPermissionsAndDisplayInfo = async (PhotoOption: CameraSource): Promise<void> => {
+  const checkPermissionsAndAlert = async (photoOption: CameraSource): Promise<void> => {
     try {
       const permissions = await Camera.checkPermissions();
 
-      if (PhotoOption === CameraSource.Camera) {
+      if (photoOption === CameraSource.Camera) {
         if (permissions.camera === 'denied') {
           alert('Camera access is denied. Please enable camera permissions in your device settings to take photos.');
         }
       }
 
-      if (PhotoOption === CameraSource.Photos) {
+      if (photoOption === CameraSource.Photos) {
         if (permissions.photos === 'denied') {
           alert(
             'Photo library access is denied. Please enable photo library permissions in your device settings to choose photos.'
@@ -76,7 +75,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
 
   const takePhotoFromCamera = async () => {
     try {
-      await checkPermissionsAndDisplayInfo(CameraSource.Camera);
+      await checkPermissionsAndAlert(CameraSource.Camera);
       const cameraPhoto = await Camera.getPhoto({
         presentationStyle: 'fullscreen',
         resultType: CameraResultType.DataUrl,
@@ -100,7 +99,7 @@ const PhotoContainer: React.FC<IPhotoContainerProps> = (props) => {
 
   const choosePhotosFromLibrary = async () => {
     try {
-      await checkPermissionsAndDisplayInfo(CameraSource.Photos);
+      await checkPermissionsAndAlert(CameraSource.Photos);
       const multiplePhotos = await Camera.pickImages({
         quality: 100,
         limit: 10
