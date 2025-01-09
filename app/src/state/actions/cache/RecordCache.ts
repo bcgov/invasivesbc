@@ -13,26 +13,7 @@ class RecordCache {
    */
   static readonly deleteCache = createAsyncThunk(`${this.PREFIX}/deleteCache`, async (spec: { setId: string }) => {
     const service = await RecordCacheServiceFactory.getPlatformInstance();
-    const sets = await service.listRepositories();
-    const deleteTarget = sets.find((p) => p.setId === spec.setId);
-    if (!deleteTarget) {
-      throw Error(`set ${spec.setId} was not found in Cache`);
-    }
-
-    const deleteList = deleteTarget?.cachedIds ?? [];
-    const ids: Record<PropertyKey, number> = {};
-    sets
-      .flatMap((set) => set.cachedIds)
-      .forEach((id) => {
-        ids[id] ??= 0;
-        ids[id]++;
-      });
-
-    const recordsToErase = deleteList.filter((id) => ids[id] === 1);
-    Promise.all([
-      await service.deleteCachedRecordsFromIds(recordsToErase, spec.setId, deleteTarget.recordSetType),
-      await service.deleteRepository(spec.setId)
-    ]);
+    await service.deleteRepository(spec.setId);
   });
 
   static readonly requestCaching = createAsyncThunk(
@@ -75,7 +56,7 @@ class RecordCache {
         Object.assign(responseData, await service.loadIappRecordsetSourceMetadata(idsToCache));
       } else {
         // All API calls have resolved at this stage, we can call record deletion to collect any orphans
-        await service.deleteCachedRecordsFromIds(idsToCache, spec.setId, recordSet.recordSetType);
+        await service.deleteCachedRecordsFromIds(idsToCache, recordSet.recordSetType);
         throw Error('Early Exit');
       }
 

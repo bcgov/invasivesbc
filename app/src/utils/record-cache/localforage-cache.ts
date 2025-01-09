@@ -195,11 +195,10 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return { cachedCentroid, cachedGeoJson };
   }
 
-  async deleteCachedRecordsFromIds(idsToDelete: string[], setId: string, recordSetType: RecordSetType): Promise<void> {
+  async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    this.setRepositoryStatus(setId, RepositoryStatus.DELETING);
 
     for (const id of idsToDelete) {
       try {
@@ -214,14 +213,24 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-
     const cachedSets = await this.listRepositories();
     const foundIndex = cachedSets.findIndex((p) => p.setId === repositoryId);
 
-    if (foundIndex !== -1) {
-      cachedSets.splice(foundIndex, 1);
-      await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
-    }
+    if (foundIndex === -1) return;
+    await this.setRepositoryStatus(repositoryId, RepositoryStatus.DELETING);
+    const deleteList = cachedSets[foundIndex].cachedIds;
+    const ids: Record<PropertyKey, number> = {};
+
+    cachedSets
+      .flatMap((set) => set.cachedIds)
+      .forEach((id) => {
+        ids[id] ??= 0;
+        ids[id]++;
+      });
+    const recordsToErase = deleteList.filter((id) => ids[id] === 1);
+    this.deleteCachedRecordsFromIds(recordsToErase, cachedSets[foundIndex].recordSetType);
+    cachedSets.splice(foundIndex, 1);
+    await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
   /**
