@@ -51,7 +51,7 @@ export interface RecordCacheProgressCallbackParameters {
 }
 
 abstract class RecordCacheService {
-  private readonly TIME_BETWEEN_ABORT_CHECKS = 25;
+  private readonly RECORDS_BETWEEN_PROGRESS_UPDATES = 25;
   protected constructor() {}
 
   static async getInstance(): Promise<RecordCacheService> {
@@ -62,11 +62,7 @@ abstract class RecordCacheService {
 
   abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
 
-  abstract deleteCachedRecordsFromIds(
-    idsToDelete: string[],
-    setId: string,
-    recordSetType: RecordSetType
-  ): Promise<void>;
+  abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
 
   abstract loadActivity(id: string): Promise<unknown>;
   abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
@@ -133,7 +129,7 @@ abstract class RecordCacheService {
         }).then(async (data) => await data.json())
       ]);
       await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
-      if (i % this.TIME_BETWEEN_ABORT_CHECKS === 0) {
+      if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
         abort = await this.checkForAbort(spec.setId);
         /*
           ProgressCallback Logic
@@ -159,7 +155,7 @@ abstract class RecordCacheService {
         }
       });
       await this.saveActivity(spec.idsToCache[i], await rez.json());
-      if (i % this.TIME_BETWEEN_ABORT_CHECKS === 0) {
+      if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
         abort = await this.checkForAbort(spec.setId);
         /*
           ProgressCallback Logic
