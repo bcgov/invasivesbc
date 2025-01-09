@@ -34,7 +34,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const cancelCacheDownload = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
-        dispatch(RecordCache.deleteCache({ setId }));
+        dispatch(RecordCache.stopDownload({ setId }));
       }
     };
     dispatch(

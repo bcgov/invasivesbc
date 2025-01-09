@@ -201,7 +201,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           status: UserRecordCacheStatus.DOWNLOADING
         };
       } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
-        if (action.error.message !== 'Early Exit') {
+        if (action.error.message === 'Early Exit') {
+          draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+            status: UserRecordCacheStatus.NOT_CACHED
+          };
+        } else {
           draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
             status: UserRecordCacheStatus.ERROR
           };
@@ -214,7 +218,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           cachedGeoJson: action.payload.cachedGeoJson,
           cachedCentroid: action.payload.cachedCentroid
         };
-      } else if (RecordCache.deleteCache.pending.match(action)) {
+      } else if (RecordCache.deleteCache.pending.match(action) || RecordCache.stopDownload.pending.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata.status = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {

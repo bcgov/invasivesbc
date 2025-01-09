@@ -65,6 +65,7 @@ abstract class RecordCacheService {
   abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
 
   abstract loadActivity(id: string): Promise<unknown>;
+
   abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
 
   abstract fetchPaginatedCachedIappRecords(
@@ -85,7 +86,7 @@ abstract class RecordCacheService {
 
   abstract loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
-  abstract setRepositoryStatus(repositoryId: string, status: RepositoryStatus): Promise<void>;
+  abstract setRepositoryStatus(repositoryId: string, status: UserRecordCacheStatus): Promise<void>;
 
   abstract checkForAbort(id: string): Promise<boolean>;
 
@@ -163,6 +164,17 @@ abstract class RecordCacheService {
       }
     }
     return !abort;
+  }
+  async stopDownload(repositoryId: string): Promise<void> {
+    const repositories = await this.listRepositories();
+    const foundIndex = repositories.findIndex((repo) => repo.setId === repositoryId);
+    if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);
+
+    if (repositories[foundIndex].status === UserRecordCacheStatus.DOWNLOADING) {
+      await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
+    } else if (repositories[foundIndex].status === UserRecordCacheStatus.CACHED) {
+      await this.deleteRepository(repositoryId);
+    }
   }
 }
 

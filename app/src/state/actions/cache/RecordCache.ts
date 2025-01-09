@@ -16,6 +16,10 @@ class RecordCache {
     await service.deleteRepository(spec.setId);
   });
 
+  static readonly stopDownload = createAsyncThunk(`${this.PREFIX}/stopDownload`, async (spec: { setId: string }) => {
+    await (await RecordCacheServiceFactory.getPlatformInstance()).stopDownload(spec.setId);
+  });
+
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
     async (
@@ -55,8 +59,7 @@ class RecordCache {
       } else if (recordSet.recordSetType === RecordSetType.IAPP && (await service.downloadIapp(args))) {
         Object.assign(responseData, await service.loadIappRecordsetSourceMetadata(idsToCache));
       } else {
-        // All API calls have resolved at this stage, we can call record deletion to collect any orphans
-        await service.deleteCachedRecordsFromIds(idsToCache, recordSet.recordSetType);
+        service.deleteRepository(spec.setId);
         throw Error('Early Exit');
       }
 

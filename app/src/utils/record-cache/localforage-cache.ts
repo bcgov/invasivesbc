@@ -12,7 +12,6 @@ import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
-import { RepositoryStatus } from 'utils/tile-cache';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -41,7 +40,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(id, data);
   }
 
-  async setRepositoryStatus(cacheId: string, status: RepositoryStatus) {
+  async setRepositoryStatus(cacheId: string, status: UserRecordCacheStatus) {
     if (this.store == null) {
       throw Error('Cache not available');
     }
@@ -217,7 +216,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const foundIndex = cachedSets.findIndex((p) => p.setId === repositoryId);
 
     if (foundIndex === -1) return;
-    await this.setRepositoryStatus(repositoryId, RepositoryStatus.DELETING);
+
+    await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
     const deleteList = cachedSets[foundIndex].cachedIds;
     const ids: Record<PropertyKey, number> = {};
 
