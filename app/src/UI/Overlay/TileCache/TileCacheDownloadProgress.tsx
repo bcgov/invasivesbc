@@ -24,10 +24,12 @@ const TileCacheDownloadProgress = () => {
     <section>
       <table>
         <thead>
-          <th>Cache Name</th>
-          <th>Download Status</th>
-          <th>Progress</th>
-          <th>Cancel</th>
+          <tr>
+            <th>Cache Name</th>
+            <th>Download Status</th>
+            <th>Progress</th>
+            <th>Cancel</th>
+          </tr>
         </thead>
         <tbody>
           {Object.keys(downloadProgress).map((k) => (
