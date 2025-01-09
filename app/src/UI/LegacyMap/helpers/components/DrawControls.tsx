@@ -74,6 +74,7 @@ const DrawControls = () => {
         break;
       }
       case TargetMode.ACTIVITY: {
+        dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
         break;
       }
       case TargetMode.TILE_CACHE: {
@@ -199,7 +200,7 @@ const DrawControls = () => {
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
-    
+
     // cleanup
     return () => {
       if (!map) {
