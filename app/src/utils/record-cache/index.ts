@@ -5,7 +5,7 @@ import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
-import { RepositoryBoundingBoxSpec, RepositoryStatus } from 'utils/tile-cache';
+import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 export enum IappRecordMode {
   Record = 'record',

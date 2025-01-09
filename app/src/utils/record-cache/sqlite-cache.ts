@@ -4,9 +4,14 @@ import { Feature } from '@turf/helpers';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
-import { IappRecordMode, RecordCacheService, RecordSetSourceMetadata } from 'utils/record-cache/index';
+import {
+  IappRecordMode,
+  RecordCacheAddSpec,
+  RecordCacheService,
+  RecordSetSourceMetadata
+} from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
 const CACHE_DB_NAME = 'record_cache.db';
@@ -46,6 +51,15 @@ const RECORD_CACHE_DB_MIGRATIONS_3 = [
     GEOJSON     TEXT NOT NULL
   );`
 ];
+
+const RECORD_CACHE_DB_MIGRATIONS_4 = [
+  `ALTER TABLE CACHE_METADATA
+    ADD COLUMN CACHE_TIME TEXT NOT NULL;`,
+  `ALTER TABLE CACHE_METADATA
+    ADD COLUMN STATUS TEXT NOT NULL;`,
+  `ALTER TABLE CACHE_METADATA
+    ADD COLUMN DATA TEXT NOT NULL;`
+];
 class SQLiteRecordCacheService extends RecordCacheService {
   private static _instance: SQLiteRecordCacheService;
 
@@ -61,6 +75,129 @@ class SQLiteRecordCacheService extends RecordCacheService {
       await SQLiteRecordCacheService._instance.initializeRecordCache(sqlite);
     }
     return SQLiteRecordCacheService._instance;
+  }
+
+  async addOrUpdateRepository(spec: RecordCacheAddSpec): Promise<void> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    try {
+      await this.cacheDB.query(
+        //language=SQLite`
+        `INSERT INTO CACHE_METADATA(SET_ID, STATUS, CACHE_TIME, DATA)
+       VALUES(?, ?, ?, ?)
+       ON CONFLICT(SET_ID)
+       DO UPDATE SET
+         STATUS = excluded.STATUS,
+         CACHE_TIME = excluded.CACHE_TIME,
+         DATA = excluded.DATA`,
+        [spec.setId, spec.status, spec.cacheTime.toString(), JSON.stringify(spec)]
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async deleteRepository(repositoryId: string): Promise<void> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const rawRepositoryMetadata = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT DATA
+       FROM CACHE_METADATA`
+    );
+    const repositoryMetadata: RecordCacheAddSpec[] =
+      rawRepositoryMetadata?.values?.map((set) => JSON.parse(set['DATA'])) ?? [];
+    const targetIndex = repositoryMetadata.findIndex((set) => set.setId === repositoryId);
+
+    if (targetIndex === -1) throw Error('Repository not found');
+
+    const { cachedIds, recordSetType } = repositoryMetadata[targetIndex];
+
+    const ids: Record<PropertyKey, number> = {};
+    repositoryMetadata
+      .flatMap((set) => set.cachedIds)
+      .forEach((id) => {
+        ids[id] ??= 0;
+        ids[id]++;
+      });
+    const recordsToErase = cachedIds.filter((id) => ids[id] <= 1);
+
+    await this.deleteCachedRecordsFromIds(recordsToErase, recordSetType);
+    await this.cacheDB.query(
+      //language=SQLite
+      `DELETE FROM CACHE_METADATA
+       WHERE SET_ID = ?`,
+      [repositoryId]
+    );
+  }
+
+  async listRepositories(): Promise<RecordCacheAddSpec[]> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const repositories = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT *
+       FROM CACHE_METADATA`
+    );
+    return repositories?.values?.map((entry) => JSON.parse(entry['DATA']) as RecordCacheAddSpec) ?? [];
+  }
+
+  /**
+   * @desc Helper method to fetch and parse repo metadata
+   */
+  private async getRepoData(repositoryId: string) {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const repoData = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT DATA
+       FROM CACHE_METADATA
+       WHERE SET_ID = ?`,
+      [repositoryId]
+    );
+    return JSON.parse(repoData?.values?.[0]['DATA']) ?? {};
+  }
+
+  async setRepositoryStatus(repositoryId: string, status: UserRecordCacheStatus): Promise<void> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const currData = await this.getRepoData(repositoryId);
+    currData.status = status;
+    await this.cacheDB.query(
+      //language=SQLite
+      `UPDATE CACHE_METADATA
+        SET STATUS = ?,
+            CACHE_TIME = ?,
+            DATA = ?
+        WHERE SET_ID = ?`,
+      [status, JSON.stringify(currData.cacheTime), JSON.stringify(currData), repositoryId]
+    );
+  }
+
+  async checkForAbort(repositoryId: string): Promise<boolean> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const metadata = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT STATUS
+       FROM CACHE_METADATA
+       WHERE SET_ID = ?
+       LIMIT 1
+      `,
+      [repositoryId]
+    );
+
+    const cacheStatus = metadata?.values?.[0]['STATUS'];
+    if (cacheStatus) {
+      return cacheStatus === UserRecordCacheStatus.DELETING;
+    }
+    return true;
   }
 
   /**
@@ -102,6 +239,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
     return response;
   }
+
   async fetchPaginatedCachedIappRecords(recordSetIdList: string[], page: number, limit: number): Promise<IappRecord[]> {
     if (!recordSetIdList || recordSetIdList.length === 0) {
       return [];
@@ -283,7 +421,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     };
     return { cachedCentroid, cachedGeoJson };
   }
-  async deleteCachedRecordsFromIds(idsToDelete: string[], setId: string, recordSetType: RecordSetType): Promise<void> {
+  async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
@@ -327,6 +465,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
       {
         toVersion: 3,
         statements: RECORD_CACHE_DB_MIGRATIONS_3
+      },
+      {
+        toVersion: 4,
+        statements: RECORD_CACHE_DB_MIGRATIONS_4
       }
     ];
     await sqlite.addUpgradeStatement(CACHE_DB_NAME, MIGRATIONS);
