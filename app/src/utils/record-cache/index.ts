@@ -50,6 +50,14 @@ export interface RecordCacheProgressCallbackParameters {
   processedActivities: number;
 }
 
+export interface CacheDownloadSpec {
+  bbox: RepositoryBoundingBoxSpec;
+  idsToCache: string[];
+  setId: string;
+  API_BASE: string;
+  recordSetType: RecordSetType;
+}
+
 abstract class RecordCacheService {
   private readonly RECORDS_BETWEEN_PROGRESS_UPDATES = 25;
   protected constructor() {}
@@ -90,6 +98,49 @@ abstract class RecordCacheService {
 
   abstract checkForAbort(id: string): Promise<boolean>;
 
+  async downloadCache(spec: CacheDownloadSpec): Promise<Record<PropertyKey, any>> {
+    const args = {
+      idsToCache: spec.idsToCache,
+      setId: spec.setId,
+      API_BASE: spec.API_BASE
+    };
+
+    let responseData: Record<PropertyKey, any> = {
+      cachedGeoJSON: null,
+      cachedCentroid: null
+    };
+
+    await this.addOrUpdateRepository({
+      setId: spec.setId,
+      cacheTime: new Date(),
+      cachedIds: spec.idsToCache,
+      recordSetType: spec.recordSetType,
+      status: UserRecordCacheStatus.DOWNLOADING,
+      bbox: spec.bbox
+    });
+
+    if (spec.recordSetType === RecordSetType.Activity && (await this.downloadActivity(args))) {
+      Object.assign(responseData, await this.loadRecordsetSourceMetadata(spec.idsToCache));
+    } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args))) {
+      Object.assign(responseData, await this.loadIappRecordsetSourceMetadata(spec.idsToCache));
+    } else {
+      this.deleteRepository(spec.setId);
+      throw Error('Early Exit');
+    }
+
+    await this.addOrUpdateRepository({
+      setId: spec.setId,
+      cacheTime: new Date(),
+      cachedIds: spec.idsToCache,
+      recordSetType: spec.recordSetType,
+      status: UserRecordCacheStatus.CACHED,
+      cachedGeoJson: responseData.cachedGeoJson,
+      cachedCentroid: responseData.cachedCentroid,
+      bbox: spec.bbox
+    });
+
+    return responseData;
+  }
   /**
    * Download Records for IAPP Given a list of IDs
    * @returns { boolean } download was successful
@@ -144,7 +195,7 @@ abstract class RecordCacheService {
    * Download Records for Activities Given a list of IDs
    * @returns { boolean } download was successful
    */
-  async download(
+  async downloadActivity(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<boolean> {
