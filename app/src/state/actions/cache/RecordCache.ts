@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getBoundingBoxFromRecordsetFilters from 'utils/getBoundingBoxFromRecordsetFilters';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
