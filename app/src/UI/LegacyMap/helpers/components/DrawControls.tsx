@@ -173,7 +173,23 @@ const DrawControls = () => {
         uncombine_features: false
       },
       defaultMode: 'simple_select',
-      modes: modes as { [modeKey: string]: DrawCustomMode }
+      modes: modes as { [modeKey: string]: DrawCustomMode },
+      styles: [
+        {
+          id: 'gl-draw-line',
+          type: 'line',
+          filter: ['all', ['==', '$type', 'LineString']],
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          },
+          paint: {
+            'line-color': '#D20C0C',
+            'line-dasharray': [0.2, 2],
+            'line-width': 2
+          }
+        }
+      ]
     });
 
     drawModeDisplay.current = new DrawModeDisplay(mode);
@@ -183,7 +199,7 @@ const DrawControls = () => {
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
-
+    
     // cleanup
     return () => {
       if (!map) {

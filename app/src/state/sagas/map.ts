@@ -1,6 +1,7 @@
-import { bboxPolygon, Feature, buffer } from '@turf/turf';
+import { bboxPolygon, buffer, Feature } from '@turf/turf';
 import booleanIntersects from '@turf/boolean-intersects';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
@@ -75,7 +76,6 @@ import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 import { RECORD_COLOURS } from 'constants/colors';
-import { PayloadAction } from '@reduxjs/toolkit';
 import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
@@ -636,6 +636,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action: PayloadAction<UserRecordSet>) {
     type: string;
     payload: any;
   }
+
   const userSettingsState = yield select(selectUserSettings);
   const recordSets = Object.keys(userSettingsState.recordSets);
   const mapMode = yield select((state) => state.Map.MapMode);
