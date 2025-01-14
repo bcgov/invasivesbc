@@ -13,7 +13,6 @@ import {
   MenuItem,
   Switch
 } from '@mui/material';
-import { useDispatch } from 'react-redux';
 import {
   AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
   AUTH_SIGNIN_REQUEST,
@@ -39,12 +38,13 @@ import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { RENDER_DEBUG } from 'UI/App';
-import { useSelector } from 'utils/use_selector';
+import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 import RefreshButton from './RefreshButton';
 import { MOBILE } from 'state/build-time-config';
 import NetworkActions from 'state/actions/network/NetworkActions';
+import MapActions from 'state/actions/map';
 
 type TabPredicate =
   | 'authenticated_any'
@@ -185,10 +185,20 @@ const LoginButton = ({ labelText = 'Login' }) => {
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
+  const signOutAndTogglePanel = () => {
+    return (dispatch: AppDispatch) => {
+      dispatch({
+        type: TOGGLE_PANEL,
+        payload: { panelOpen: false }
+      });
+      dispatch({ type: AUTH_SIGNOUT_REQUEST });
+      dispatch(MapActions.toggleOverlay('public_layer'));
+    };
+  };
   return (
     <MenuItem
       onClick={() => {
-        dispatch({ type: AUTH_SIGNOUT_REQUEST });
+        dispatch(signOutAndTogglePanel());
       }}
     >
       <ListItemIcon>
