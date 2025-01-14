@@ -1,4 +1,4 @@
-import { bboxPolygon, Feature, buffer } from '@turf/turf';
+import { bboxPolygon, Feature, buffer, booleanContains } from '@turf/turf';
 import booleanIntersects from '@turf/boolean-intersects';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
@@ -84,6 +84,7 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
+import { RecordCacheAddSpec } from 'utils/record-cache';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -158,15 +159,21 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
       yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
     } else {
       // Get IDs from Offline Caches
-      const { recordSets } = yield select(selectUserSettings);
-      const recordSetsInBoundingBox = Object.keys(recordSets).filter((set) => {
-        const { bbox, status } = recordSets[set].cacheMetadata;
-        const recordSetIsCached = status === UserRecordCacheStatus.CACHED;
-        return recordSetIsCached && bbox && booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox));
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const repos = yield service.listRepositories();
+
+      const recordSetsInBoundingBox = repos.filter((repo: RecordCacheAddSpec) => {
+        const { status, bbox } = repo;
+        return (
+          status === UserRecordCacheStatus.CACHED &&
+          bbox &&
+          booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox as any))
+        );
       });
+
       const overlappingRecords: string[] = [];
       recordSetsInBoundingBox.flatMap((set) =>
-        recordSets[set].cacheMetadata.cachedGeoJson.data.features.forEach((shape: Feature) => {
+        set.cachedGeoJson.data.features.forEach((shape: Feature) => {
           if (booleanIntersects(whatsHereFeature.payload, shape)) {
             overlappingRecords.push(shape?.properties?.description);
           }
