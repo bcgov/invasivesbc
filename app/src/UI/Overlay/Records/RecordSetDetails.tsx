@@ -43,7 +43,7 @@ const RecordSetDetails = ({
           onClick={(e) => e.stopPropagation()}
         />
       ) : (
-        <p>{name || `New Recordset - ${recordSetType}`}</p>
+        <p>{name || `New Recordset1 - ${recordSetType}`}</p>
       )}
       <IconButton color="primary" onClick={toggleEdit}>
         {isEditing ? <Check /> : <Edit />}

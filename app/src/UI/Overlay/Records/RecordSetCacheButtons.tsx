@@ -1,6 +1,10 @@
 import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { Button, Tooltip } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
+import { LinearProgress, Box } from '@mui/material';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
+import PlayCircleIcon from '@mui/icons-material/PlayCircle';
+import CloseIcon from '@mui/icons-material/Close';
 import { MouseEvent, useEffect, useState } from 'react';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -15,6 +19,9 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const dispatch = useDispatch();
   const connected = useSelector((state) => state.Network.connected);
   const [cacheActionEnabled, setCacheActionEnabled] = useState<boolean>(false);
+  const [showProgress, setShowProgress] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -48,7 +55,10 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const downloadCache = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
-        dispatch(RecordCache.requestCaching({ setId }));
+        // dispatch(RecordCache.requestCaching({ setId }));
+        setShowProgress(true);
+        setProgress(0);
+        setIsPaused(false);
       }
     };
     dispatch(
@@ -88,6 +98,17 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
     return cacheStatus.replaceAll('_', ' ');
   };
 
+  const handlePausePlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setIsPaused((prev) => !prev);
+  };
+
+  const handleCancelClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    setShowProgress(false);
+    setProgress(0);
+  };
+
   useEffect(() => {
     setCacheActionEnabled(
       connected &&
@@ -100,18 +121,61 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
     );
   }, [recordSet.cacheMetadataStatus, connected]);
 
+  useEffect(() => {
+    // to test out progress bar; to be removed
+    let timer: NodeJS.Timeout;
+    if (showProgress && !isPaused) {
+      timer = setInterval(() => {
+        setProgress((prev) => {
+          if (prev >= 100) {
+            clearInterval(timer);
+            return 100;
+          }
+          return prev + 5;
+        });
+      }, 500);
+    }
+
+    return () => clearInterval(timer);
+  }, [showProgress, isPaused]);
+
   return (
     <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to save this layer and it's records">
       <span>
-        <Button
-          disabled={!cacheActionEnabled}
-          className="records__set__layer_cache"
-          onClick={handleClick}
-          variant="outlined"
-        >
-          {formatStatusKey(recordSet.cacheMetadataStatus)}
-          <SaveIcon />
-        </Button>
+        {!showProgress && (
+          <Button
+            disabled={!cacheActionEnabled}
+            className="records__set__layer_cache"
+            onClick={handleClick}
+            variant="outlined"
+          >
+            {formatStatusKey(recordSet.cacheMetadataStatus)}
+            <SaveIcon />
+          </Button>
+        )}
+
+        {showProgress && (
+          <Box
+            display="flex"
+            flexDirection="row"
+            alignItems="center"
+            gap={2}
+            sx={{
+              border: '1px solid #1976d2',
+              borderRadius: '8px',
+              padding: '10px'
+            }}
+          >
+            <Button onClick={handlePausePlayClick}>{isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}</Button>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <LinearProgress variant={'determinate'} value={progress} style={{ width: '300px' }} />
+              <div>{progress}% Completed</div>
+            </Box>
+            <Button color={'error'} onClick={handleCancelClick}>
+              <CloseIcon />
+            </Button>
+          </Box>
+        )}
       </span>
     </Tooltip>
   );
