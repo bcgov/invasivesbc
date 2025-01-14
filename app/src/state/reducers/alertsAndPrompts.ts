@@ -53,9 +53,13 @@ export function createAlertsAndPromptsReducer(
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheSuccess);
       } else if (RecordCache.requestCaching.rejected.match(action)) {
-        draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheFailed);
+        if (action?.error?.message !== 'Early Exit') {
+          draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheFailed);
+        }
       } else if (RecordCache.deleteCache.rejected.match(action)) {
         draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetDeleteCacheFailed);
+      } else if (RecordCache.stopDownload.fulfilled.match(action)) {
+        draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordSetDownloadStoppedEarly);
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetDeleteCacheSuccess);
       }

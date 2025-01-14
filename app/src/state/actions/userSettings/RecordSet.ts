@@ -50,7 +50,7 @@ class RecordSet {
         throw Error('no record cache service is available');
       }
 
-      const cachedSets = await service.listCachedSets();
+      const cachedSets = await service.listRepositories();
 
       // these will be passed to the reducer, which can then mark the record sets as cached
       return cachedSets.map((set) => {
@@ -64,7 +64,12 @@ class RecordSet {
     async (spec: { setId: string }, thunkAPI) => {
       const state = thunkAPI.getState() as RootState;
       const { recordSets } = state.UserSettings;
-      if (MOBILE && recordSets[spec.setId].cacheMetadata.status == UserRecordCacheStatus.CACHED) {
+      if (
+        MOBILE &&
+        [UserRecordCacheStatus.CACHED, UserRecordCacheStatus.DOWNLOADING].includes(
+          recordSets[spec.setId]?.cacheMetadata?.status
+        )
+      ) {
         const deletionResult = await thunkAPI.dispatch(RecordCache.deleteCache(spec));
         if (RecordCache.deleteCache.rejected.match(deletionResult)) {
           throw Error('Cache failed to delete');

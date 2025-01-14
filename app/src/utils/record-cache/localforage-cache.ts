@@ -1,12 +1,17 @@
 import UserRecord from 'interfaces/UserRecord';
 import localForage from 'localforage';
 import centroid from '@turf/centroid';
-import { IappRecordMode, RecordCacheService, RecordSetSourceMetadata } from 'utils/record-cache/index';
+import {
+  IappRecordMode,
+  RecordCacheAddSpec,
+  RecordCacheService,
+  RecordSetSourceMetadata
+} from 'utils/record-cache/index';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -35,6 +40,26 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(id, data);
   }
 
+  async setRepositoryStatus(cacheId: string, status: UserRecordCacheStatus) {
+    if (this.store == null) {
+      throw Error('Cache not available');
+    }
+    const cachedSets = await this.listRepositories();
+    const foundIndex = cachedSets.findIndex((p) => p.setId === cacheId);
+    if (foundIndex !== -1) {
+      Object.assign(cachedSets[foundIndex], { status });
+      await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
+    }
+  }
+
+  async checkForAbort(id: string): Promise<boolean> {
+    const sets = await this.listRepositories();
+    const index = sets.findIndex((p) => p.setId === id);
+    if (index !== -1) {
+      return sets[index].status === UserRecordCacheStatus.DELETING;
+    }
+    return true;
+  }
   async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
@@ -173,9 +198,73 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
+
     for (const id of idsToDelete) {
-      await this.store.removeItem(id.toString());
+      try {
+        await this.store.removeItem(id.toString());
+      } catch (e) {
+        // Item may not exist if a cache was quit while in progress.
+      }
     }
+  }
+
+  async deleteRepository(repositoryId: string) {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+    const cachedSets = await this.listRepositories();
+    const foundIndex = cachedSets.findIndex((p) => p.setId === repositoryId);
+
+    if (foundIndex === -1) return;
+
+    await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
+    const deleteList = cachedSets[foundIndex].cachedIds;
+    const ids: Record<PropertyKey, number> = {};
+
+    cachedSets
+      .flatMap((set) => set.cachedIds)
+      .forEach((id) => {
+        ids[id] ??= 0;
+        ids[id]++;
+      });
+    const recordsToErase = deleteList.filter((id) => ids[id] === 1);
+    this.deleteCachedRecordsFromIds(recordsToErase, cachedSets[foundIndex].recordSetType);
+    cachedSets.splice(foundIndex, 1);
+    await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
+  }
+
+  /**
+   * @desc Create or Update an entry in the cachedSet Repository
+   * @param newSet Data to update
+   */
+  async addOrUpdateRepository(newSet: RecordCacheAddSpec): Promise<void> {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+
+    const cachedSets = (await this.listRepositories()) ?? [];
+    const foundIndex = cachedSets.findIndex((p) => p.setId === newSet.setId);
+
+    if (foundIndex === -1) {
+      cachedSets.push(newSet);
+    } else {
+      Object.assign(cachedSets[foundIndex], newSet);
+    }
+    await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
+  }
+
+  async listRepositories(): Promise<RecordCacheAddSpec[]> {
+    if (this.store == null) {
+      return [];
+    }
+
+    const metadata: RecordCacheAddSpec[] =
+      (await this.store.getItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY)) ?? [];
+    if (metadata == null) {
+      console.error('expected key not found');
+      return [];
+    }
+    return metadata;
   }
 
   private async initializeCache() {
