@@ -1,4 +1,5 @@
-import * as turf from '@turf/turf';
+import { bboxPolygon, Feature, buffer } from '@turf/turf';
+import booleanIntersects from '@turf/boolean-intersects';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
 import {
@@ -7,9 +8,6 @@ import {
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-  ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
@@ -21,9 +19,6 @@ import {
   IAPP_GEOJSON_GET_SUCCESS,
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
-  IAPP_TABLE_ROWS_GET_ONLINE,
-  IAPP_TABLE_ROWS_GET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
   MAP_INIT_FOR_RECORDSET,
   MAP_INIT_REQUEST,
@@ -68,12 +63,11 @@ import {
 } from './map/online';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
-import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -83,13 +77,19 @@ import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 import { RECORD_COLOURS } from 'constants/colors';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
+import UserRecord from 'interfaces/UserRecord';
+import { MOBILE } from 'state/build-time-config';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import bboxToPolygon from 'utils/bboxToPolygon';
+import IappActions from 'state/actions/activity/Iapp';
+import IappRecord from 'interfaces/IappRecord';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
 }
 
-function* handle_MAP_INIT_REQUEST(action) {
-  const authState = yield select(selectAuth);
+function* handle_MAP_INIT_REQUEST() {
   const mapState = yield select(selectMap);
   const sets = {};
   const filterCriteria = yield getSearchCriteriaFromFilters([], sets, '2', false, [], 0, 100000);
@@ -114,126 +114,74 @@ function* refetchServerBoundaries() {
   yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
 }
 
-function* getPOIIDsOnline(feature, filterCriteria) {}
+function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
+  const { MapMode, activitiesGeoJSONDict, IAPPGeoJSONDict } = yield select(selectMap);
+  const { connected } = yield select(selectNetworkState);
 
-function* handle_WHATS_HERE_FEATURE(action) {
-  let mapState = yield select(selectMap);
+  if (MapMode === 'VECTOR_ENDPOINT') {
+    if (connected) {
+      // get all the toggled on recordsets
+      const tableFilters = [
+        {
+          id: '0.81778552637744651712083357942',
+          filterType: 'spatialFilterDrawn',
+          operator: 'CONTAINED IN',
+          filter: '0.652479498272151712093656568',
+          geojson: whatsHereFeature.payload
+        }
+      ];
 
-  let layersLoading = true;
-  while (layersLoading) {
-    mapState = yield select(selectMap);
+      const activitiesfilterObj = {
+        selectColumns: ['activity_id'],
+        tableFilters,
+        limit: 200000
+      };
+      const iappfilterObj = {
+        selectColumns: ['site_id'],
+        tableFilters,
+        limit: 200000
+      };
+      const [activitiesNetworkReturn, iappNetworkReturn] = yield all([
+        call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
+          filterObjects: [activitiesfilterObj]
+        }),
+        call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
+          filterObjects: [iappfilterObj]
+        })
+      ]);
 
-    const toggledOnActivityLayers = mapState.layers.filter((layer) => {
-      return layer.layerState.mapToggle && layer.type === RecordSetType.Activity;
-    });
+      const activityReturn = activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
+      const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
 
-    const activityLayersLoading = toggledOnActivityLayers.filter((layer) => {
-      return layer.loading;
-    });
-
-    const toggledOnIAPPLayers = mapState.layers.filter((layer) => {
-      return layer.layerState.mapToggle && layer.type === RecordSetType.IAPP;
-    });
-
-    const IAPPLayersLoading = toggledOnIAPPLayers.filter((layer) => {
-      return layer.loading;
-    });
-
-    if (activityLayersLoading.length === 0 && IAPPLayersLoading.length === 0) {
-      layersLoading = false;
+      const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
+      const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
+      yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
     } else {
-      const actionsToTake = [];
-      if (activityLayersLoading.length > 0) {
-        actionsToTake.push(
-          activityLayersLoading.map((layer) => {
-            return ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS;
-          })
-        );
-      }
-      if (IAPPLayersLoading.length > 0) {
-        actionsToTake.push(
-          IAPPLayersLoading.map((layer) => {
-            return IAPP_GET_IDS_FOR_RECORDSET_SUCCESS;
-          })
-        );
-      }
-      yield all(actionsToTake.map((action) => take(action)));
-    }
-  }
-  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
-    // get all the toggled on recordsets
-
-    const activitiesfilterObj = {
-      selectColumns: ['activity_id'],
-      tableFilters: [
-        {
-          id: '0.81778552637744651712083357942',
-          filterType: 'spatialFilterDrawn',
-          operator: 'CONTAINED IN',
-          filter: '0.652479498272151712093656568',
-          geojson: action.payload
-        }
-      ],
-      limit: 200000
-    };
-
-    const activitiesNetworkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-      filterObjects: [activitiesfilterObj]
-    });
-
-    let activitiesServerIDList = [];
-    if (activitiesNetworkReturn.data.result || activitiesNetworkReturn.data?.data?.result) {
-      const list = activitiesNetworkReturn.data?.data?.result
-        ? activitiesNetworkReturn.data?.data?.result
-        : activitiesNetworkReturn.data?.result;
-      activitiesServerIDList = list.map((row) => {
-        return row.activity_id;
+      // Get IDs from Offline Caches
+      const { recordSets } = yield select(selectUserSettings);
+      const recordSetsInBoundingBox = Object.keys(recordSets).filter((set) => {
+        const { bbox, status } = recordSets[set].cacheMetadata;
+        const recordSetIsCached = status === UserRecordCacheStatus.CACHED;
+        return recordSetIsCached && bbox && booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox));
       });
+      const overlappingRecords: string[] = [];
+      recordSetsInBoundingBox.flatMap((set) =>
+        recordSets[set].cacheMetadata.cachedGeoJson.data.features.forEach((shape: Feature) => {
+          if (booleanIntersects(whatsHereFeature.payload, shape)) {
+            overlappingRecords.push(shape?.properties?.description);
+          }
+        })
+      );
+      yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, [...overlappingRecords]));
     }
-
-    const iappfilterObj = {
-      selectColumns: ['site_id'],
-      tableFilters: [
-        {
-          id: '0.81778552637744651712083357942',
-          filterType: 'spatialFilterDrawn',
-          operator: 'CONTAINED IN',
-          filter: '0.652479498272151712093656568',
-          geojson: action.payload
-        }
-      ],
-      limit: 200000
-    };
-
-    const iappNetworkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
-      filterObjects: [iappfilterObj]
-    });
-
-    let iappServerIDList = [];
-
-    if (iappNetworkReturn.data.result || iappNetworkReturn.data?.data?.result) {
-      const list = iappNetworkReturn.data?.data?.result
-        ? iappNetworkReturn.data?.data?.result
-        : iappNetworkReturn.data?.result;
-      iappServerIDList = list.map((row) => {
-        return row.site_id;
-      });
-    }
-
-    yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
-  }
-
-  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
-    if (!mapState.activitiesGeoJSONDict) {
+  } else {
+    if (!activitiesGeoJSONDict) {
       yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
     }
-    mapState = yield select(selectMap);
-    if (!mapState.IAPPGeoJSONDict) {
+    if (!IAPPGeoJSONDict) {
       yield take(IAPP_GEOJSON_GET_SUCCESS);
     }
-
-    yield put(WhatsHere.map_init_get_activity());
-    yield put(WhatsHere.map_init_get_poi());
+    yield all([put(WhatsHere.map_init_get_activity()), put(WhatsHere.map_init_get_poi())]);
   }
 }
 
@@ -245,13 +193,14 @@ function* whatsHereSaga() {
   ]);
 }
 
-function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
+function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
   const mapState = yield select(selectMap);
+  const connected = yield select(selectNetworkConnected);
   if (mapState.MapMode === 'VECTOR_ENDPOINT') {
-    const startRecord =
-      mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
-    const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
-    const slicedIDs = mapState.whatsHere.IAPPIDs.slice(startRecord, endRecord);
+    const { whatsHere } = mapState;
+    const startRecord = whatsHere.IAPPLimit * (whatsHere.IAPPPage + 1) - whatsHere.IAPPLimit;
+    const endRecord = whatsHere.IAPPLimit * (whatsHere.IAPPPage + 1);
+    const slicedIDs = whatsHere.IAPPIDs.slice(startRecord, endRecord);
 
     const filterObject = {
       selectColumns: ['site_id', 'jurisdictions_flattened', 'map_symbol', 'min_survey', 'reported_area', 'geojson'],
@@ -263,24 +212,30 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
       yield put(WhatsHere.iapp_rows_success([]));
       return;
     }
-
-    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
-      filterObjects: [filterObject]
-    });
-
-    const mappedToWhatsHereColumns = networkReturn.data.result.map((iappRecord) => {
-      return {
-        id: iappRecord.site_id,
-        site_id: iappRecord.site_id,
-        jurisdiction_code: iappRecord.jurisdictions_flattened,
-        species_code: iappRecord.map_symbol,
-        earliest_survey: new Date(iappRecord.min_survey).toDateString(),
-        geometry: iappRecord.geojson
-      };
-    });
+    let records: IappRecord[];
+    if (MOBILE && !connected) {
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      records = yield service.fetchPaginatedCachedIappRecords(
+        whatsHere.IAPPIDs.map((id) => id.toString()),
+        whatsHere.IAPPPage,
+        whatsHere.IAPPLimit
+      );
+    } else {
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
+        filterObjects: [filterObject]
+      });
+      records = networkReturn.data.result;
+    }
+    const mappedToWhatsHereColumns = records.map((iappRecord) => ({
+      id: iappRecord.site_id,
+      site_id: iappRecord.site_id,
+      jurisdiction_code: iappRecord.jurisdictions_flattened,
+      species_code: iappRecord.map_symbol,
+      earliest_survey: new Date(iappRecord.min_survey).toDateString(),
+      geometry: iappRecord.geojson
+    }));
     yield put(WhatsHere.iapp_rows_success(mappedToWhatsHereColumns));
-  }
-  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
+  } else {
     try {
       const startRecord =
         mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
@@ -296,8 +251,6 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
             : -1;
         }
       });
-      /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-       */
       const sliceWithData = sorted.slice(startRecord, endRecord);
 
       const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => {
@@ -319,18 +272,19 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST(action) {
   }
 }
 
-function* handle_WHATS_HERE_PAGE_POI(action) {
+function* handle_WHATS_HERE_PAGE_POI() {
   yield put(WhatsHere.iapp_rows_request());
 }
 
-function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
+function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
   const mapState = yield select(selectMap);
-  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
-    const startRecord =
-      mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) - mapState?.whatsHere?.ActivityLimit;
-    const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
-    const slicedIDs = mapState.whatsHere.ActivityIDs.slice(startRecord, endRecord);
+  const connected = yield select(selectNetworkConnected);
 
+  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
+    const { whatsHere } = mapState;
+    const startRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1) - whatsHere.ActivityLimit;
+    const endRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1);
+    const slicedIDs = whatsHere.ActivityIDs.slice(startRecord, endRecord);
     const filterObject = {
       selectColumns: [
         'activity_id',
@@ -348,28 +302,37 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
       return;
     }
 
-    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-      filterObjects: [filterObject]
-    });
-
-    const mappedToWhatsHereColumns = networkReturn.data.result.map((activityRecord) => {
+    let records: UserRecord[];
+    if (MOBILE && !connected) {
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      records = yield service.fetchPaginatedCachedRecords(
+        whatsHere.ActivityIDs,
+        whatsHere.ActivityPage,
+        whatsHere.ActivityLimit
+      );
+    } else {
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+        filterObjects: [filterObject]
+      });
+      records = networkReturn.data.result;
+    }
+    const mappedToWhatsHereColumns = records.map((activityRecord) => {
+      // Differenciate the Cached records from the API called ones
+      const shortHand = activityRecord.activity_payload ? activityRecord.activity_payload : activityRecord;
       return {
         id: activityRecord.activity_id,
         short_id: activityRecord.short_id,
         activity_type: activityRecord.activity_type,
         jurisdiction_code: activityRecord.jurisdiction_display,
         species_code: activityRecord.map_symbol,
-        reported_area: activityRecord.activity_payload.form_data.activity_data.reported_area,
-        geometry: activityRecord.activity_payload.geometry?.[0],
-        created: new Date(activityRecord.activity_payload.form_data.activity_data.activity_date_time).toDateString()
+        reported_area: shortHand.form_data.activity_data.reported_area,
+        geometry: shortHand.geometry?.[0],
+        created: new Date(shortHand.form_data.activity_data.activity_date_time).toDateString()
       };
     });
     yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
-  }
-
-  if (!(mapState.MapMode === 'VECTOR_ENDPOINT')) {
+  } else {
     try {
-      const mapState = yield select(selectMap);
       const startRecord =
         mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) -
         mapState?.whatsHere?.ActivityLimit;
@@ -397,16 +360,14 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST(action) {
             : -1;
         }
       });
-      /*const slice = mapState?.whatsHere?.ActivityIDs?.slice(startRecord, endRecord);
-       */
       const sliceWithData = sorted.slice(startRecord, endRecord);
       const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
-        const jurisdiction_code = [];
+        const jurisdiction_code: any[] = [];
         activityRecord?.properties?.jurisdiction?.forEach((item) => {
           jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
         });
 
-        const species_code = [];
+        const species_code: any[] = [];
         switch (activityRecord?.properties?.type) {
           case 'Observation':
             activityRecord?.properties?.species_positive?.forEach((s) => {
@@ -479,7 +440,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       const currentState = yield select((state) => state.UserSettings);
 
       const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
-      //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
       filterObject.CSVType = action.payload.CSVType;
@@ -499,7 +459,6 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       const currentState = yield select((state) => state.UserSettings);
 
       const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
-      //filterObject.page = action.payload.page ? action.payload.page : mapState.recordTables?.[action.payload.recordSetID]?.page;
       filterObject.limit = 200000;
       filterObject.isCSV = true;
       filterObject.CSVType = action.payload.CSVType;
@@ -531,20 +490,18 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   }
 }
 
-function* handle_WHATS_HERE_SORT_FILTER_UPDATE(action) {
-  switch (action.payload.recordType) {
-    case RecordSetType.IAPP:
-      yield put(WhatsHere.iapp_rows_request());
-      break;
-    default:
-      yield put(WhatsHere.activity_rows_request());
-      break;
+function* handle_WHATS_HERE_SORT_FILTER_UPDATE(record: PayloadAction<Record<PropertyKey, any>>) {
+  const { recordType } = record.payload;
+  if (recordType === RecordSetType.IAPP) {
+    yield put(WhatsHere.iapp_rows_request());
+  } else if (recordType === RecordSetType.Activity) {
+    yield put(WhatsHere.activity_rows_request());
   }
 }
 
 function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
   const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
-  const bounds = turf.bboxPolygon(bbox as any);
+  const bounds = bboxPolygon(bbox as any);
 
   yield put({
     type: MAP_LABEL_EXTENT_FILTER_SUCCESS,
@@ -556,7 +513,7 @@ function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
 
 function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
   const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
-  const bounds = turf.bboxPolygon(bbox as any);
+  const bounds = bboxPolygon(bbox as any);
 
   yield put({
     type: IAPP_EXTENT_FILTER_SUCCESS,
@@ -589,26 +546,16 @@ function* handle_URL_CHANGE(action) {
     const page = mapState.recordTables?.[id]?.page || 0;
     const limit = mapState.recordTables?.[id]?.limit || 20;
 
+    const actionArg = {
+      recordSetID: id,
+      tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash,
+      page: page,
+      limit: limit
+    };
     if (recordSetType === RecordSetType.Activity) {
-      yield put({
-        type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-        payload: {
-          recordSetID: id,
-          tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash,
-          page: page,
-          limit: limit
-        }
-      });
-    } else {
-      yield put({
-        type: IAPP_TABLE_ROWS_GET_REQUEST,
-        payload: {
-          recordSetID: id,
-          tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash,
-          page: page,
-          limit: limit
-        }
-      });
+      yield put(Activity.getRows(actionArg));
+    } else if (recordSetType === RecordSetType.IAPP) {
+      yield put(IappActions.getRows(actionArg));
     }
   }
 }
@@ -632,17 +579,14 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
         }
       });
     }
+  const actionArg = {
+    recordSetID: action.payload.setID,
+    tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+    page: 0,
+    limit: 20
+  };
   if (recordSetType === RecordSetType.Activity) {
-    if (currentSet === action.payload.setID)
-      yield put({
-        type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-        payload: {
-          recordSetID: action.payload.setID,
-          tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-          page: 0,
-          limit: 20
-        }
-      });
+    if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
       payload: {
@@ -651,16 +595,7 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
       }
     });
   } else {
-    if (currentSet === action.payload.setID)
-      yield put({
-        type: IAPP_TABLE_ROWS_GET_REQUEST,
-        payload: {
-          recordSetID: action.payload.setID,
-          tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-          page: 0,
-          limit: 20
-        }
-      });
+    if (currentSet === action.payload.setID) yield put(IappActions.getRows(actionArg));
     yield put({
       type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
       payload: {
@@ -683,26 +618,16 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
     ? action.payload.limit
     : mapState.recordTables?.[action.payload.recordSetID]?.limit;
 
-  if (recordSetType === 'Activity') {
-    yield put({
-      type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-      payload: {
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-        page: page,
-        limit: limit
-      }
-    });
-  } else {
-    yield put({
-      type: IAPP_TABLE_ROWS_GET_REQUEST,
-      payload: {
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-        page: page,
-        limit: limit
-      }
-    });
+  const actionArg = {
+    recordSetID: action.payload.setID,
+    tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+    page: page,
+    limit: limit
+  };
+  if (recordSetType === RecordSetType.Activity) {
+    yield put(Activity.getRows(actionArg));
+  } else if (recordSetType === RecordSetType.IAPP) {
+    yield put(IappActions.getRows(actionArg));
   }
 }
 
@@ -812,15 +737,11 @@ function* handle_CUSTOM_LAYER_DRAWN(actions) {
   }
 }
 
-function* handle_USER_SETTINGS_SET_RECORD_SET_SUCCESS(action) {
-  console.dir(action.payload);
-}
-
 function* handle_MAP_ON_SHAPE_CREATE(action) {
   const callback = (width: number) => {
-    const newGeo = turf.buffer(action.payload.geometry, width / 10000);
+    const newGeo = buffer(action.payload.geometry, width / 10000) ?? action.payload;
     if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-      return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo ? newGeo : action.payload] } }];
+      return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
     }
   };
   const appModeUrl = yield select((state: any) => state.AppMode.url);
@@ -852,13 +773,12 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   }
 }
 
-function* handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
+function handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
   location.reload();
 }
 
-function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED(action) {
-  yield put(WhatsHere.iapp_rows_request());
-  yield put(WhatsHere.activity_rows_request());
+function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED() {
+  yield all([put(WhatsHere.iapp_rows_request()), put(WhatsHere.activity_rows_request())]);
 }
 
 function* handle_RECORDSET_ROTATE_COLOUR(action: PayloadAction<string>) {
@@ -885,21 +805,15 @@ function* handle_RECORDSET_SET_SORT(action) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSetType = userSettingsState.recordSets?.[action.payload.setID]?.recordSetType;
   const tableFiltersHash = userSettingsState.recordSets?.[action.payload.setID]?.tableFiltersHash;
+  const actionArg = { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash };
   if (recordSetType === RecordSetType.Activity) {
-    yield put({
-      type: ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-      payload: { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash }
-    });
-  } else {
-    yield put({
-      type: IAPP_TABLE_ROWS_GET_REQUEST,
-      payload: { recordSetID: action.payload.setID, limit: 20, page: 0, tableFiltersHash: tableFiltersHash }
-    });
+    yield put(Activity.getRows(actionArg));
+  } else if (recordSetType === RecordSetType.IAPP) {
+    yield put(IappActions.getRows(actionArg));
   }
 }
 
 function* activitiesPageSaga() {
-  //  yield fork(leafletWhosEditing);
   yield all([
     fork(whatsHereSaga),
     debounce(500, UserSettings.RecordSet.updateFilter, handle_UserFilterChange),
@@ -935,10 +849,10 @@ function* activitiesPageSaga() {
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeLatest(ACTIVITIES_TABLE_ROWS_GET_REQUEST, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
-    takeEvery(ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
-    takeEvery(IAPP_TABLE_ROWS_GET_REQUEST, handle_IAPP_TABLE_ROWS_GET_REQUEST),
-    takeEvery(IAPP_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE),
+    takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
+    takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
+    takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),
+    takeEvery(IappActions.getRowsRequest, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
     takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(WhatsHere.iapp_rows_request, handle_WHATS_HERE_IAPP_ROWS_REQUEST),

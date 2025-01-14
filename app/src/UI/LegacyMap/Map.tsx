@@ -20,23 +20,30 @@ import {
   LAYER_Z_MID,
   layersForDefinition,
   MAP_DEFINITIONS
-} from 'UI/Map2/helpers/layer-definitions';
+} from 'UI/LegacyMap/helpers/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
-import { mapInit } from 'UI/Map2/helpers/map-init';
+import { mapInit } from 'UI/LegacyMap/helpers/map-init';
 import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshVisibilityOnToggleUpdate,
-  removeDeletedRecordSetLayersOnRecordSetDelete
-} from 'UI/Map2/helpers/recordset-layers';
-import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/Map2/helpers/wms-layers';
-import { addServerBoundariesIfNotExists, refreshServerBoundariesOnToggle } from 'UI/Map2/helpers/server-boundaries';
-import { addClientBoundariesIfNotExists, refreshClientBoundariesOnToggle } from 'UI/Map2/helpers/client-boundaries';
-import { handlePositionTracking } from 'UI/Map2/helpers/position-tracking';
-import { refreshDrawControls } from 'UI/Map2/helpers/draw-tools';
-import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/Map2/helpers/current-record';
-import { toggleLayerOnBool } from 'UI/Map2/helpers/utility-functions';
-import { refreshWhatsHereFeature } from 'UI/Map2/helpers/whats-here';
+  removeDeletedRecordSetLayersOnRecordSetDelete,
+  removeLayersOnNetworkConnectivityChange
+} from 'UI/LegacyMap/helpers/recordset-layers';
+import { addWMSLayersIfNotExist, refreshWMSOnToggle, hideWMSIfUnauthorized } from 'UI/LegacyMap/helpers/wms-layers';
+import {
+  addServerBoundariesIfNotExists,
+  refreshServerBoundariesOnToggle
+} from 'UI/LegacyMap/helpers/server-boundaries';
+import {
+  addClientBoundariesIfNotExists,
+  refreshClientBoundariesOnToggle
+} from 'UI/LegacyMap/helpers/client-boundaries';
+import { handlePositionTracking } from 'UI/LegacyMap/helpers/position-tracking';
+import { refreshDrawControls } from 'UI/LegacyMap/helpers/draw-tools';
+import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/LegacyMap/helpers/current-record';
+import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/utility-functions';
+import { refreshWhatsHereFeature } from 'UI/LegacyMap/helpers/whats-here';
 import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 
 /*
@@ -51,7 +58,6 @@ export const Map = ({ children }) => {
 
   const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
-
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
   const map: React.MutableRefObject<MapLibre | null> = useRef<MapLibre>(null);
 
@@ -61,7 +67,7 @@ export const Map = ({ children }) => {
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const authInitiated = useSelector((state) => state.Auth.initialized);
-  const loggedIn = useSelector((state) => state.Auth.authenticated);
+  const { authenticated, loggedInOrWorkingOffline, rolesInitialized } = useSelector((state) => state.Auth);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
 
   // RecordSet Layers
@@ -145,7 +151,7 @@ export const Map = ({ children }) => {
   authHeaderRef.current = currentAuthHeader;
 
   useEffect(() => {
-    if (!loggedIn) {
+    if (!authenticated) {
       return;
     }
 
@@ -164,7 +170,7 @@ export const Map = ({ children }) => {
     return () => {
       clearInterval(id);
     };
-  }, [loggedIn]);
+  }, [authenticated]);
 
   // Map Init
   useEffect(() => {
@@ -188,33 +194,44 @@ export const Map = ({ children }) => {
     });
   }, [authInitiated, map_center]);
 
+  useEffect(() => {
+    if (!mapReady) return;
+    if (!map.current) return;
+    removeLayersOnNetworkConnectivityChange(map.current);
+  }, [connectedToNetwork]);
+
   // RecordSet Layers:
   useEffect(() => {
     if (!mapReady) return;
     if (!map.current) return;
-
-    rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE);
+    rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE, connectedToNetwork);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
     removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
-  }, [storeLayers, map.current, mapReady]);
+  }, [storeLayers, map.current, mapReady, connectedToNetwork, loggedInOrWorkingOffline]);
 
   // Layer picker:
   useEffect(() => {
     if (!mapReady) return;
     if (!map.current) return;
+
     const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
-    addWMSLayersIfNotExist(layers, map.current);
+    if (!authenticated || !rolesInitialized) {
+      hideWMSIfUnauthorized(layers, map.current);
+      return;
+    }
+
+    addWMSLayersIfNotExist(layers, map.current, API_BASE);
     refreshWMSOnToggle(layers, map.current);
-  }, [simplePickerLayers2, map.current, mapReady, baseMapLayer, connectedToNetwork]);
+  }, [simplePickerLayers2, map.current, mapReady, baseMapLayer, connectedToNetwork, authenticated, rolesInitialized]);
 
   useEffect(() => {
     if (!mapReady) return;
-    if (loggedIn) {
+    if (authenticated) {
       addServerBoundariesIfNotExists(serverBoundaries, map.current);
       refreshServerBoundariesOnToggle(serverBoundaries, map.current);
     }
-  }, [serverBoundaries, loggedIn, map.current, mapReady]);
+  }, [serverBoundaries, authenticated, map.current, mapReady]);
 
   useEffect(() => {
     if (!mapReady) return;
@@ -423,13 +440,13 @@ export const Map = ({ children }) => {
   // toggle public map pmtile layer
   useEffect(() => {
     if (!mapReady) return;
-    if (loggedIn) {
+    if (loggedInOrWorkingOffline) {
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector-label', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector-label', false);
     }
-  }, [loggedIn, map.current, mapReady]);
+  }, [loggedInOrWorkingOffline, map.current, mapReady]);
 
   useEffect(() => {
     refreshWhatsHereFeature(map.current, { whatsHereFeature });

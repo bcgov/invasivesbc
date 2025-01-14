@@ -4,6 +4,7 @@ import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
 import {
+  AUTH_MAKE_OFFLINE_USER_CURRENT,
   AUTH_REFRESH_ROLES_COMPLETE,
   AUTH_REFRESH_ROLES_ERROR,
   AUTH_REFRESH_ROLES_REQUEST,
@@ -12,6 +13,8 @@ import {
   USERINFO_LOAD_COMPLETE
 } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import NetworkActions from 'state/actions/network/NetworkActions';
 
 // not a saga, but an exported convenience function
 type withCurrentJWTCallback = (header: string) => Promise<any>;
@@ -22,13 +25,11 @@ async function withCurrentJWT(callback: withCurrentJWTCallback) {
     const { idToken } = await AuthBridge.token({});
     const header = `Bearer ${idToken}`;
     return await callback(header);
+  } else if (keycloakInstance !== null) {
+    const header = `Bearer ${keycloakInstance.idToken}`;
+    return await callback(header);
   } else {
-    if (keycloakInstance !== null) {
-      const header = `Bearer ${keycloakInstance.idToken}`;
-      return await callback(header);
-    } else {
-      console.error('Keycloak instance was null. this is unexpected');
-    }
+    console.error('Keycloak instance was null. this is unexpected');
   }
 }
 
@@ -95,13 +96,21 @@ function* refreshRoles() {
   }
 }
 
+function* handle_AUTH_MAKE_OFFLINE_USER_CURRENT() {
+  yield all([put(NetworkActions.setAdministrativeStatus(false)), put(UserSettings.InitState.get())]);
+}
+
 function* authenticationSaga() {
+  const baseSaga = [
+    takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles),
+    takeLatest(AUTH_MAKE_OFFLINE_USER_CURRENT, handle_AUTH_MAKE_OFFLINE_USER_CURRENT)
+  ];
   if (MOBILE && [Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
     // use native authentication bridge for better user experience
-    yield all([takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles), ...nativeAuthEffects]);
+    yield all([...baseSaga, ...nativeAuthEffects]);
   } else {
     // building for web, use keycloak
-    yield all([takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles), ...keycloakAuthEffects]);
+    yield all([...baseSaga, ...keycloakAuthEffects]);
   }
 }
 

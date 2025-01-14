@@ -69,6 +69,7 @@ export interface AuthState {
   offlineUserDialogOpen: boolean;
   offlineUsers: OfflineUserState[];
   workingOffline: boolean;
+  loggedInOrWorkingOffline: boolean;
 
   roles: { role_id: number; role_name: string }[];
   accessRoles: { role_id: number; role_name: string }[];
@@ -130,6 +131,7 @@ const initialState: AuthState = {
   offlineUserDialogOpen: false,
   offlineUsers: [],
   workingOffline: false,
+  loggedInOrWorkingOffline: false,
   extendedInfo: {
     account_status: 0,
     activation_status: 0,
@@ -152,16 +154,17 @@ const initialState: AuthState = {
 
 function loadCurrentStateFromIdToken(idToken): object {
   let displayName = 'User';
-  let username = null;
+  let username: string | null = null;
   let email = '';
   let bceid_userid = '';
   let idir_userid = '';
   let bceid_user_guid = '';
   let idir_user_guid = '';
-
+  let loggedInOrWorkingOffline = false;
   const authenticated = !!idToken;
 
   if (authenticated) {
+    loggedInOrWorkingOffline = true;
     try {
       const parsedToken = JSON.parse(
         decodeURIComponent(
@@ -203,7 +206,8 @@ function loadCurrentStateFromIdToken(idToken): object {
     idir_userid,
     bceid_userid,
     idir_user_guid,
-    bceid_user_guid
+    bceid_user_guid,
+    loggedInOrWorkingOffline
   };
 }
 
@@ -222,6 +226,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           draftState.displayName = null;
           draftState.email = null;
           draftState.username = 'loggedOut';
+          draftState.loggedInOrWorkingOffline = false;
           break;
         }
         case AUTH_SAVE_CURRENT_TO_OFFLINE: {
@@ -281,6 +286,7 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           draftState.username = found.username;
           draftState.displayName = found.displayName;
           draftState.workingOffline = true;
+          draftState.loggedInOrWorkingOffline = true;
           break;
         }
         case AUTH_INITIALIZE_COMPLETE: {
@@ -290,6 +296,8 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
             draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
           });
+          draftState.workingOffline = draftState.authenticated ? false : draftState.workingOffline;
+
           break;
         }
         case AUTH_REQUEST_COMPLETE: {

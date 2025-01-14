@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
 import 'UI/Global.css';
-import { MAP_DEFINITIONS } from 'UI/Map2/helpers/layer-definitions';
+import { MAP_DEFINITIONS } from 'UI/LegacyMap/helpers/layer-definitions';
 import { DeviceUnknown, Hd, Landscape, Map, SaveAlt, Sd, SignalCellularNodata } from '@mui/icons-material';
 import MapActions from 'state/actions/map';
 

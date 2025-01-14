@@ -10,7 +10,7 @@ import {
   LAYER_Z_FOREGROUND,
   LAYER_Z_MID,
   MAP_DEFINITIONS
-} from 'UI/Map2/helpers/layer-definitions';
+} from 'UI/LegacyMap/helpers/layer-definitions';
 
 interface MapInitOptions {
   map: React.MutableRefObject<maplibregl.Map | null>;

@@ -1,7 +1,10 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { MOBILE } from 'state/build-time-config';
+import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import RecordCache from '../cache/RecordCache';
 
 export interface IUpdateFilter {
   setID: string | number;
@@ -56,28 +59,43 @@ class RecordSet {
     }
   );
 
+  static readonly requestRemoval = createAsyncThunk(
+    `${this.PREFIX}/requestRemoval`,
+    async (spec: { setId: string }, thunkAPI) => {
+      const state = thunkAPI.getState() as RootState;
+      const { recordSets } = state.UserSettings;
+      if (MOBILE && recordSets[spec.setId].cacheMetadata.status == UserRecordCacheStatus.CACHED) {
+        const deletionResult = await thunkAPI.dispatch(RecordCache.deleteCache(spec));
+        if (RecordCache.deleteCache.rejected.match(deletionResult)) {
+          throw Error('Cache failed to delete');
+        }
+      }
+      return spec.setId;
+    }
+  );
+
   static readonly updateFilter = createAction<IUpdateFilter>(`${this.PREFIX}/updateFilter`);
   static readonly removeFilter = createAction<IRemoveFilter>(`${this.PREFIX}/removeFilter`);
 
   private static readonly createDefaultRecordset = (type: RecordSetType): UserRecordSet => ({
-    tableFilters: null,
+    tableFilters: [],
     id: nanoid(),
     color: RECORD_COLOURS[0],
     drawOrder: 0,
     expanded: false,
     isSelected: false,
     mapToggle: false,
-    recordSetName: `New Recordset - ` + type,
+    recordSetName: '',
     recordSetType: type,
     labelToggle: false,
     searchBoundary: {
       geos: [],
       id: 0,
-      name: ``,
+      name: '',
       server_id: 0
     },
     cacheMetadata: {
-      status: type == 'Activity' ? UserRecordCacheStatus.NOT_CACHED : UserRecordCacheStatus.NOT_ELIGIBLE
+      status: UserRecordCacheStatus.NOT_CACHED
     }
   });
 }

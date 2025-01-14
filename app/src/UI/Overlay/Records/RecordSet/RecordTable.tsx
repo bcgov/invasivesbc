@@ -33,6 +33,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
   const unmappedRows = useSelector((state) => state.Map?.recordTables?.[setID]?.rows);
   const tableType = useSelector((state) => state.UserSettings?.recordSets?.[setID].recordSetType);
   const activitySortColumns = userOfflineMobile ? [] : validActivitySortColumns;
+  const iappSortColumns = userOfflineMobile ? [] : validIAPPSortColumns;
   const dispatch = useDispatch();
   const isTouch = detectTouchDevice();
   const mappedRows = unmappedRows?.map((row) => {
@@ -58,8 +59,8 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                 View/Edit
               </th>
             )}
-            {tableType === 'Activity'
-              ? activityColumnsToDisplay.map((col: any, i) => (
+            {tableType === RecordSetType.Activity
+              ? activityColumnsToDisplay.map((col: any) => (
                   <th
                     className={'record_table_header_column'}
                     key={col.key}
@@ -80,13 +81,13 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     className="record_table_header_column"
                     key={col.key}
                     onClick={() => {
-                      if (validIAPPSortColumns.includes(col.key)) {
+                      if (iappSortColumns.includes(col.key)) {
                         dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
                       }
                     }}
                   >
                     {col.name}{' '}
-                    {validIAPPSortColumns.includes(sortColumn) &&
+                    {iappSortColumns.includes(sortColumn) &&
                       sortColumn === col.key &&
                       (sortOrder === 'ASC' ? '▲' : '▼')}
                   </th>
@@ -105,7 +106,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                       type: USER_CLICKED_RECORD,
                       payload: {
                         recordType: tableType,
-                        id: tableType === 'Activity' ? row.activity_id : row.site_id,
+                        id: tableType === RecordSetType.Activity ? row.activity_id : row.site_id,
                         row: row
                       }
                     });
@@ -118,13 +119,13 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     type: USER_TOUCHED_RECORD,
                     payload: {
                       recordType: tableType,
-                      id: tableType === 'Activity' ? row.activity_id : row.site_id,
+                      id: tableType === RecordSetType.Activity ? row.activity_id : row.site_id,
                       row: row
                     }
                   });
                 }}
                 className="record_table_row"
-                key={row?.activity_id}
+                key={row?.activity_id ?? row?.site_id}
               >
                 {isTouch && (
                   <td
@@ -133,7 +134,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                         type: USER_CLICKED_RECORD,
                         payload: {
                           recordType: tableType,
-                          id: tableType === 'Activity' ? row.activity_id : row.site_id,
+                          id: tableType === RecordSetType.Activity ? row.activity_id : row.site_id,
                           row: row
                         }
                       });
@@ -144,7 +145,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     <VisibilityIcon />
                   </td>
                 )}
-                {tableType === 'Activity'
+                {tableType === RecordSetType.Activity
                   ? activityColumnsToDisplay.map((col) => {
                       return (
                         <td className="record_table_row_column" key={col.key + col.name}>

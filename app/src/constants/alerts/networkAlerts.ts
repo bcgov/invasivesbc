@@ -36,6 +36,12 @@ const networkAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Error,
     subject: AlertSubjects.Network,
     autoClose: 10
+  },
+  offlineUserWarning: {
+    content: 'To enable network activity, please log in first. Offline users cannot access network features.',
+    severity: AlertSeverity.Warning,
+    subject: AlertSubjects.Network,
+    autoClose: 8
   }
 };
 

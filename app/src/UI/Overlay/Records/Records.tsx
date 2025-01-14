@@ -49,7 +49,7 @@ export const Records = () => {
     e.stopPropagation();
     const callback = (userConfirmation: boolean) => {
       if (userConfirmation) {
-        dispatch(UserSettings.RecordSet.remove(set));
+        dispatch(UserSettings.RecordSet.requestRemoval({ setId: set }));
       }
     };
     dispatch(
@@ -90,6 +90,7 @@ export const Records = () => {
                 name={recordSets[set]?.recordSetName}
                 isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
                 handleNameChange={handleNameChange}
+                recordSetType={recordSets[set].recordSetType}
                 recordsetKey={set}
               ></RecordSetDetails>
 

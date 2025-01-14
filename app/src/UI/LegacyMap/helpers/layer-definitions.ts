@@ -1,3 +1,4 @@
+import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 import { MOBILE } from 'state/build-time-config';
 
@@ -84,13 +85,6 @@ export class MapDefinitionEligibilityPredicatesBuilder {
   build() {
     return this.state;
   }
-}
-
-// available from CDN, but not in asset pack
-let VECTOR_MAP_FONT_FACE = 'Open Sans Bold';
-if (MOBILE) {
-  // available locally, but not from CDN
-  VECTOR_MAP_FONT_FACE = 'Noto Sans Bold';
 }
 
 // determines layer stacking and whether the layer is individually toggle-able (eg only one basemap can be active at once)

@@ -3,6 +3,7 @@ import * as GeoJSON from '@mapbox/togeojson';
 import AdmZip from 'adm-zip';
 import { FeatureCollection } from 'geojson';
 import { getLogger } from 'utils/logger';
+import { VALID_GEOMETRY_TYPES } from 'sharedAPI';
 
 function KMZToKML(data: Buffer): Buffer {
   const log = getLogger('KML');
@@ -59,20 +60,14 @@ function sanitizeGeoJSON(data: FeatureCollection): FeatureCollection {
     throw new Error(`Invalid GeoJSON Type: ${data.type}`);
   }
 
-  // filter out non-polygon features (V1)
-  const newFeatures = data.features.map((feature) => {
-    if (
-      feature.geometry.type === 'Polygon' ||
-      feature.geometry.type === 'LineString' ||
-      feature.geometry.type === 'Point'
-    ) {
-      return {
-        type: feature.type,
-        geometry: feature.geometry,
-        properties: {}
-      };
-    }
-  });
+  // Exclude features with geometry types that are not supported
+  const newFeatures = data.features
+    .filter((feature) => VALID_GEOMETRY_TYPES.includes(feature.geometry.type))
+    .map((feature) => ({
+      type: feature.type,
+      geometry: feature.geometry,
+      properties: {}
+    }));
 
   const filteredData: FeatureCollection = { type: 'FeatureCollection', features: newFeatures };
 

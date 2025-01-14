@@ -19,6 +19,20 @@ export interface ICreateLocal {
   id: string;
   data: Record<string, any>;
 }
+export interface ActivityTableRowRequest {
+  recordSetID: string | number;
+  tableFiltersHash: Record<PropertyKey, any>;
+  page: number;
+  limit: number;
+}
+
+export interface ActivityTableRowGetRequest extends ActivityTableRowRequest {
+  filterObj: Record<PropertyKey, any>;
+}
+export interface ActivityTableRowsGetSuccess extends ActivityTableRowRequest {
+  rows: Record<PropertyKey, any>[];
+}
+
 class Activity {
   private static readonly PREFIX = 'Activity';
   static readonly Offline = Offline;
@@ -59,5 +73,9 @@ class Activity {
   static readonly getFailure = createAction(`${this.PREFIX}/getFailure`, (arg?: Response) => ({
     payload: arg
   }));
+
+  static readonly getRows = createAction<ActivityTableRowRequest>(`${this.PREFIX}/getRows`);
+  static readonly getRowsRequest = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
+  static readonly getRowsSuccess = createAction<ActivityTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
 }
 export default Activity;

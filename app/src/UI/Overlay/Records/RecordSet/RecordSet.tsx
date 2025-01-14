@@ -50,7 +50,9 @@ export const RecordSet = (props) => {
               {'< Back'}
             </Button>
           </div>
-          <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
+          <div className="recordSet_header_name">
+            {recordSet?.recordSetName || `New Recordset - ${recordSet?.recordSetType}`}
+          </div>
         </div>
       </div>
       <div className="recordSet_filter_buttons_container">

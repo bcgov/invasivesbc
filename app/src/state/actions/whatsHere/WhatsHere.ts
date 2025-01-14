@@ -29,7 +29,7 @@ class WhatsHere {
   static readonly page_activity = createAction<{ page: number; limit: number }>(`${this.PREFIX}/page_activity`);
   static readonly server_filtered_ids_fetched = createAction(
     `${this.PREFIX}/server_filtered_ids_fetched`,
-    (activities, iapp) => ({
+    (activities: string[], iapp: string[]) => ({
       payload: { activities, iapp }
     })
   );

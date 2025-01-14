@@ -4,7 +4,6 @@ import { Draft } from 'immer';
 import {
   CLOSE_NEW_RECORD_MENU,
   GET_API_DOC_SUCCESS,
-  IAPP_GET_SUCCESS,
   OPEN_NEW_RECORD_MENU,
   RECORDSET_ADD_FILTER,
   RECORDSET_CLEAR_FILTERS,
@@ -19,6 +18,7 @@ import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
+import IappActions from 'state/actions/activity/Iapp';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
@@ -38,9 +38,9 @@ export interface UserSettingsState {
 
   mapCenter: [number, number];
   newRecordDialogState: any;
-
+  newRecordDialogueOpen: boolean;
   recordSets: {
-    [key: number | string]: UserRecordSet;
+    [key: PropertyKey]: UserRecordSet;
   };
   recordsExpanded: boolean;
 
@@ -63,6 +63,7 @@ const initialState: UserSettingsState = {
   error: false,
   recordSets: {},
   recordsExpanded: false,
+  newRecordDialogueOpen: false,
   initialized: false,
   darkTheme: false,
   mapCenter: [55, -128],
@@ -102,8 +103,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (UserSettings.Map.setCenterSuccess.match(action)) {
         draftState.mapCenter = action.payload as [number, number];
       } else if (UserSettings.RecordSet.add.match(action)) {
-        draftState.recordSets[Date.now()] = action.payload;
-      } else if (UserSettings.RecordSet.remove.match(action)) {
+        draftState.recordSets[Date.now().toString()] ??= action.payload;
+      } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
         delete draftState.recordSets[action.payload];
       } else if (UserSettings.RecordSet.set.match(action)) {
         Object.keys(action.payload.updatedSet).forEach((key) => {
@@ -199,42 +200,31 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.DOWNLOADING
         };
-      } else if (RecordCache.requestCaching.rejected.match(action)) {
+      } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.ERROR
         };
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.CACHED,
-          idList: action.payload.cachedIds
+          idList: action.payload.cachedIds,
+          bbox: action.payload.bbox,
+          cachedGeoJson: action.payload.cachedGeoJson,
+          cachedCentroid: action.payload.cachedCentroid
         };
       } else if (RecordCache.deleteCache.pending.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.DELETING
-        };
-      } else if (RecordCache.deleteCache.rejected.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.ERROR
-        };
+        draftState.recordSets[action.meta.arg.setId].cacheMetadata.status = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.NOT_CACHED
         };
-      } else if (UserSettings.RecordSet.syncCacheStatusWithCacheService.fulfilled.match(action)) {
-        const cacheStatus = action.payload;
-        for (const cachedSet of cacheStatus) {
-          if (draftState.recordSets[cachedSet.setId]) {
-            draftState.recordSets[cachedSet.setId].cacheMetadata = {
-              status: UserRecordCacheStatus.CACHED,
-              idList: draftState.recordSets[cachedSet.setId].cacheMetadata.idList ?? []
-            };
-          }
-        }
       } else if (Activity.deleteSuccess.match(action)) {
         draftState.activeActivity = null;
         draftState.activeActivityDescription = null;
       } else if (Activity.get.match(action)) {
         draftState.activeActivity = action.payload;
+      } else if (IappActions.getSuccess.match(action)) {
+        draftState.activeIAPP = action.payload.iapp?.site_id;
       } else {
         switch (action.type) {
           case GET_API_DOC_SUCCESS: {
@@ -248,10 +238,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           }
           case CLOSE_NEW_RECORD_MENU: {
             draftState.newRecordDialogueOpen = false;
-            break;
-          }
-          case IAPP_GET_SUCCESS: {
-            draftState.activeIAPP = action.payload.iapp?.site_id;
             break;
           }
           case RECORDSET_ADD_FILTER: {

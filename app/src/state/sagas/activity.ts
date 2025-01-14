@@ -3,10 +3,8 @@ import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
-  ACTIVITY_LINK_RECORD_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_PERSIST_REQUEST,
   ACTIVITY_RESTORE_OFFLINE,
   ACTIVITY_SET_CURRENT_HASH_FAILURE,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
@@ -68,7 +66,7 @@ import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import { selectMap } from 'state/reducers/map';
 
-function* handle_ACTIVITY_DELETE_SUCESS(action) {
+function* handle_ACTIVITY_DELETE_SUCCESS(action) {
   yield put(UserSettings.RecordSet.setSelected(null));
   yield put(
     Alerts.create({
@@ -102,12 +100,6 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
       currentHash = (currentHash * 33) ^ activitySerialized.charCodeAt(i);
     }
 
-    // check if different than saved
-    let visible = false;
-    if (currentHash !== activityState?.saved_activity_hash) {
-      visible = true;
-    }
-
     yield put({
       type: ACTIVITY_SET_CURRENT_HASH_SUCCESS,
       payload: {
@@ -135,7 +127,7 @@ function* handle_URL_CHANGE(action) {
   }
 }
 
-function* handle_ACTIVITY_DELETE_FAILURE(action) {
+function* handle_ACTIVITY_DELETE_FAILURE() {
   yield put(
     Alerts.create({
       subject: AlertSubjects.Form,
@@ -211,7 +203,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
  *       if they abandon progress, Alerts are cleared and shape is erased.
  *       If no, all validation messages appear, and user continues as they were.
  */
-function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP(action) {
+function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   const invalidCoordinatesErrorMessage = (minNumberCoords: number): AlertMessage => ({
     subject: AlertSubjects.Map,
     content: `Unable to get minimum number of coordinates (${minNumberCoords})`,
@@ -431,17 +423,13 @@ function* activityPageSaga() {
     takeEvery(Activity.Photo.delete, handle_ACTIVITY_DELETE_PHOTO_REQUEST),
     takeEvery(Activity.Photo.add, handle_ACTIVITY_ADD_PHOTO_REQUEST),
     takeEvery(Activity.Photo.edit, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
-    takeEvery(Activity.deleteSuccess, handle_ACTIVITY_DELETE_SUCESS),
+    takeEvery(Activity.deleteSuccess, handle_ACTIVITY_DELETE_SUCCESS),
     takeEvery(Activity.deleteFailure, handle_ACTIVITY_DELETE_FAILURE),
     takeEvery(ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
     takeEvery(
       ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
       handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST
     ),
-    takeEvery(Activity.Autofill.update, () => console.log('Activity.Autofill.update')),
-    takeEvery(Activity.Photo.update, () => console.log('Activity.Photo.update')),
-    takeEvery(ACTIVITY_LINK_RECORD_REQUEST, () => console.log('ACTIVITY_LINK_RECORD_REQUEST')),
-    takeEvery(ACTIVITY_PERSIST_REQUEST, () => console.log('ACTIVITY_PERSIST_REQUEST')),
     takeEvery(Activity.deleteReq, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(Activity.deleteNetwork, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
     takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),

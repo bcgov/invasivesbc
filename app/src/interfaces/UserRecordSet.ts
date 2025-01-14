@@ -1,3 +1,6 @@
+import { RecordSetCachedShape } from 'utils/record-cache';
+import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+
 export enum RecordSetType {
   IAPP = 'IAPP',
   Activity = 'Activity'
@@ -32,5 +35,8 @@ export interface UserRecordSet {
   cacheMetadata: {
     status: UserRecordCacheStatus;
     idList?: string[];
+    cachedGeoJson?: RecordSetCachedShape[];
+    cachedCentroid?: RecordSetCachedShape[];
+    bbox?: RepositoryBoundingBoxSpec;
   };
 }

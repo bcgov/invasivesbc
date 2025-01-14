@@ -6,17 +6,16 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-  ACTIVITIES_TABLE_ROWS_GET_FAILURE,
-  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   EXPORT_CONFIG_LOAD_ERROR,
   EXPORT_CONFIG_LOAD_REQUEST,
   EXPORT_CONFIG_LOAD_SUCCESS,
   IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
-  IAPP_TABLE_ROWS_GET_FAILURE,
-  IAPP_TABLE_ROWS_GET_SUCCESS
+  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS
 } from 'state/actions';
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
+import { PayloadAction } from '@reduxjs/toolkit';
+import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
+import Activity from 'state/actions/activity/Activity';
 
 function* refreshExportConfigIfRequired(action?: AnyAction) {
   const config = yield select(selectRootConfiguration);
@@ -144,65 +143,50 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
   }
 
   if (networkReturn.data.result) {
-    yield put({
-      type: ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
-      payload: {
+    yield put(
+      Activity.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result,
         tableFiltersHash: action.payload.tableFiltersHash,
         page: action.payload.page,
         limit: action.payload.limit
-      }
-    });
-  } else {
-    put({
-      type: ACTIVITIES_TABLE_ROWS_GET_FAILURE,
-      payload: {
-        recordSetID: action.payload.recordSetID,
-        rows: networkReturn.data.result,
-        page: action.payload.page,
-        limit: action.payload.limit,
-        error: networkReturn.data
-      }
-    });
+      })
+    );
   }
 }
 
-export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action) {
+export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTableRowGetRequest>) {
   let mapState = yield select((state) => state.Map);
   let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
   mapState = yield select((state) => state.Map);
 
-  mapState = yield select((state) => state.Map);
   tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
   if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
   }
 
   if (networkReturn.data.result) {
-    yield put({
-      type: IAPP_TABLE_ROWS_GET_SUCCESS,
-      payload: {
+    yield put(
+      IappActions.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
         rows: networkReturn.data.result,
         tableFiltersHash: action.payload.tableFiltersHash,
         page: action.payload.page,
         limit: action.payload.limit
-      }
-    });
+      })
+    );
   } else {
-    put({
-      type: IAPP_TABLE_ROWS_GET_FAILURE,
-      payload: {
+    put(
+      IappActions.getRowsFailure({
         recordSetID: action.payload.recordSetID,
         error: networkReturn.data,
         tableFiltersHash: action.payload.tableFiltersHash,
         page: action.payload.page,
         limit: action.payload.limit
-      }
-    });
+      })
+    );
   }
 }
 

@@ -3,7 +3,7 @@ import {
   MAP_DEFINITIONS,
   MapSourceAndLayerDefinition,
   MapSourceAndLayerDefinitionMode
-} from 'UI/Map2/helpers/layer-definitions';
+} from 'UI/LegacyMap/helpers/layer-definitions';
 import { RootState } from 'state/reducers/rootReducer';
 import { MOBILE } from 'state/build-time-config';
 import MapActions from 'state/actions/map';
@@ -58,6 +58,10 @@ function* recomputeEligibleMapLayers(action) {
       pass = false;
     }
 
+    if (!l.predicates.requiresNetwork && l.predicates.mobileOnly && CONNECTED) {
+      pass = false;
+    }
+
     if (pass) {
       if (l.mode == MapSourceAndLayerDefinitionMode.BASEMAP) {
         UPDATED_BASEMAP_LIST.push(l.name);
@@ -75,11 +79,10 @@ function* recomputeEligibleMapLayers(action) {
   ) {
     yield put(MapActions.updateAvailableBaseMaps(UPDATED_BASEMAP_LIST));
     yield put(MapActions.updateAvailableOverlays(UPDATED_OVERLAY_LIST));
-    
   }
-  
+
   const { enabledOverlayLayers } = yield select((state) => state.Map);
-  
+
   if (
     !AUTHENTICATED &&
     UPDATED_OVERLAY_LIST.includes('public_layer') &&

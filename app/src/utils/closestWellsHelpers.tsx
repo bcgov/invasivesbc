@@ -4,13 +4,13 @@ import polygonToLine from '@turf/polygon-to-line';
 import inside from '@turf/inside';
 import buffer from '@turf/buffer';
 import { getDataFromDataBCv2 } from './WFSConsumer';
-import { selectNetworkConnected } from 'state/reducers/network';
+import { selectNetworkState } from 'state/reducers/network';
 import { select } from 'redux-saga/effects';
 
 //gets layer data based on the layer name
 export function* getClosestWells(inputGeometry) {
   const firstFeature = inputGeometry;
-  const networkState = yield select(selectNetworkConnected);
+  const networkState = yield select(selectNetworkState);
   //get the map extent as geoJson polygon feature
   const bufferedGeo = buffer(firstFeature, 1, { units: 'kilometers' });
   //if well layer is selected

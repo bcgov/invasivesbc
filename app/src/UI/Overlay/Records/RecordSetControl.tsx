@@ -33,9 +33,11 @@ const RecordSetControl = ({
 
   return (
     <div className="record-set-control">
-      <MobileOnly>
-        <RecordSetCacheButtons recordSet={recordset} setId={recordsetKey} />
-      </MobileOnly>
+      {!isDefaultRecordset && (
+        <MobileOnly>
+          <RecordSetCacheButtons recordSet={recordset} setId={recordsetKey} />
+        </MobileOnly>
+      )}
 
       <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
         <IconButton onClick={(e) => onClickToggleLabel(recordsetKey, e)} color="primary">

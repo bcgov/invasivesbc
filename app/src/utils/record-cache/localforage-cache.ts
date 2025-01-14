@@ -1,6 +1,12 @@
 import UserRecord from 'interfaces/UserRecord';
 import localForage from 'localforage';
-import { RecordCacheAddSpec, RecordCacheService, RecordSetCacheMetadata } from 'utils/record-cache/index';
+import centroid from '@turf/centroid';
+import { IappRecordMode, RecordCacheService, RecordSetSourceMetadata } from 'utils/record-cache/index';
+import { Feature } from '@turf/helpers';
+import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import IappRecord from 'interfaces/IappRecord';
+import IappTableRow from 'interfaces/IappTableRecord';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -29,6 +35,44 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(id, data);
   }
 
+  async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+    const data = { record: iappRecord.result.rows[0], row: iappTableRow.result[0] };
+    await this.store.setItem(id.toString(), data);
+  }
+
+  async loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow> {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+    const data = await this.store.getItem(id.toString());
+    if (!data) {
+      throw new Error(`Iapp ${id} not found in cache`);
+    }
+    return data[type];
+  }
+
+  async fetchPaginatedCachedIappRecords(
+    recordSetIdList: string[],
+    page: number,
+    limit: number,
+    type: IappRecordMode = IappRecordMode.Row
+  ): Promise<IappRecord[]> {
+    if (recordSetIdList?.length === 0) {
+      return [];
+    }
+    const startPos = page * limit;
+    const results: any[] = [];
+    const endPos = Math.min((page + 1) * limit, recordSetIdList.length);
+    for (let i = startPos; i < endPos; i++) {
+      const entry: IappRecord = await this.loadIapp(recordSetIdList[i], type);
+      results.push(entry);
+    }
+    return results;
+  }
+
   async loadActivity(id: string): Promise<unknown> {
     if (this.store == null) {
       throw new Error('cache not available');
@@ -41,24 +85,6 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
 
     return data;
-  }
-
-  async addCachedSet(spec: RecordCacheAddSpec): Promise<void> {
-    if (this.store == null) {
-      throw new Error('cache not available');
-    }
-
-    const cachedSets = await this.listCachedSets();
-    const foundIndex = cachedSets.findIndex((p) => p.setId == spec.setId);
-    if (foundIndex !== -1) {
-      throw new Error('cached set already exists');
-    }
-
-    cachedSets.push({
-      setId: spec.setId,
-      cachedIds: spec.idsToCache
-    });
-    await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
   /**
@@ -74,77 +100,81 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
     const startPos = page * limit;
     const results: any[] = [];
-    const recordSetLength = recordSetIdList.length;
-    for (let i = startPos; i < (page + 1) * limit; i++) {
-      if (i >= recordSetLength) {
-        break;
-      }
+    const endPos = Math.min((page + 1) * limit, recordSetIdList.length);
+    for (let i = startPos; i < endPos; i++) {
       const entry: UserRecord = (await this.loadActivity(recordSetIdList[i])) as UserRecord;
       results.push(entry);
     }
     return results;
   }
 
-  async listCachedSets(): Promise<RecordSetCacheMetadata[]> {
-    if (this.store == null) {
-      return [];
+  /**
+   * @desc Iterate ids to produce list of values to populate in the map.
+   *       The values only change with the recordsets, so we create the list at cache-ception to avoid querying
+   * @param ids ids to filter
+   * @returns { RecordSetSourceMetadata } Returns cached GeoJson, all IAPP Sites are Points.
+   */
+  async loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+    const geoJsonArr: any[] = [];
+    for (const id of ids) {
+      const data: IappRecord = await this.loadIapp(id, IappRecordMode.Row);
+      const label = `${id} ${data.geojson.properties.map_symbol ?? ''}`;
+      const feature = data.geojson;
+      feature.properties = { name: label, description: id };
+      geoJsonArr.push(feature);
     }
+    const cachedGeoJson: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: geoJsonArr
+      }
+    };
+    return { cachedGeoJson };
+  }
+  /**
+   * @desc Iterate ids to produce list of values to populate in the map.
+   *       The values only change with the recordsets, so we create the list at cache-ception to avoid querying
+   * @param ids ids to filter
+   * @returns { RecordSetSourceMetadata } Two formatted queries for High/Low zoom layers
+   */
+  async loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+    const centroidArr: any[] = [];
+    const geoJsonArr: any[] = [];
 
-    const metadata = (await this.store.getItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY)) as
-      | RecordSetCacheMetadata[]
-      | null;
-    if (metadata == null) {
-      console.error('expected key not found');
-      return [];
+    for (const id of ids) {
+      const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
+      const label = data.short_id;
+      const features = data.geometry ?? [];
+      features.forEach((feature: Feature) => {
+        feature.properties = { name: label, description: id };
+        centroidArr.push(centroid(feature));
+        geoJsonArr.push(feature);
+      });
     }
-    return metadata;
+    const cachedCentroid: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: centroidArr
+      }
+    };
+    const cachedGeoJson: GeoJSONSourceSpecification = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: geoJsonArr
+      }
+    };
+    return { cachedCentroid, cachedGeoJson };
   }
 
-  async deleteCachedSet(id: string): Promise<void> {
+  async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-
-    const cachedSets = await this.listCachedSets();
-    const foundIndex = cachedSets.findIndex((p) => p.setId == id);
-    if (foundIndex !== -1) {
-      cachedSets.splice(foundIndex, 1);
-    }
-    try {
-      await this.cleanupOrphanActivities();
-    } finally {
-      await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
-    }
-  }
-
-  private async cleanupOrphanActivities(): Promise<void> {
-    if (this.store == null) {
-      throw new Error('cache not available');
-    }
-    const cachedSets = await this.listCachedSets();
-
-    const allKeys = await this.store.keys();
-    const deletionQueue: string[] = [];
-    for (const k of allKeys) {
-      if (k == LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY) {
-        continue;
-      }
-      let referenced = false;
-      for (const set of cachedSets) {
-        if (set.cachedIds?.includes(k)) {
-          referenced = true;
-        }
-      }
-      if (!referenced) {
-        deletionQueue.push(k);
-      }
-    }
-    for (const d of deletionQueue) {
-      try {
-        await this.store.removeItem(d);
-      } catch (e) {
-        console.error(e);
-      }
+    for (const id of idsToDelete) {
+      await this.store.removeItem(id.toString());
     }
   }
 

@@ -4,8 +4,6 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-  ACTIVITIES_TABLE_ROWS_GET_REQUEST,
-  ACTIVITIES_TABLE_ROWS_GET_SUCCESS,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
@@ -16,8 +14,6 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
   IAPP_PAN_AND_ZOOM,
-  IAPP_TABLE_ROWS_GET_REQUEST,
-  IAPP_TABLE_ROWS_GET_SUCCESS,
   INIT_SERVER_BOUNDARIES_GET,
   MAIN_MAP_MOVE,
   MAP_DELETE_LAYER_AND_TABLE,
@@ -64,6 +60,9 @@ import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
 import MapActions from 'state/actions/map';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import RecordCache from 'state/actions/cache/RecordCache';
+import IappActions from 'state/actions/activity/Iapp';
+import Activity from 'state/actions/activity/Activity';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -209,7 +208,6 @@ export interface MapState {
   IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
   IAPPGeoJSONDict: object;
-  // LeafletWhosEditing: LeafletWhosEditingEnum;
   accuracyToggle: boolean;
   activitiesGeoJSON: any;
   activitiesGeoJSONDict: object;
@@ -295,70 +293,6 @@ export interface MapState {
   layerPickerOpen: boolean;
 
   tileCacheMode: boolean;
-
-  //
-  //   constructor()
-  //
-  // {
-  //   this.CanTriggerCSV = true;
-  //   this.HDToggle = false;
-  //   this.IAPPBoundsPolygon = null;
-  //   this.LeafletWhosEditing = LeafletWhosEditingEnum.NONE;
-  //   this.accuracyToggle = false;
-  //   this.activityPageMapExtentToggle = false;
-  //   this.activity_center = [53, -127];
-  //   this.activity_zoom = 5;
-  //   this.baseMapToggle = false;
-  //   this.clientBoundaries =
-  //     localStorage.getItem('CLIENT_BOUNDARIES') !== null
-  //       ? (JSON.parse(localStorage.getItem('CLIENT_BOUNDARIES')) as Array<any>)
-  //       : [];
-  //   this.currentOpenSet = null;
-  //   this.customizeLayersToggle = false;
-  //   this.drawingCustomLayer = false;
-  //   this.layerPickerOpen = false;
-  //   this.layers = [];
-  //   this.initialized = false;
-  //   this.labelBoundsPolygon = null;
-  //   this.legendsPopup = false;
-  //   this.linkToCSV = null;
-  //   this.map_center = [53, -127];
-  //   this.map_zoom = 5;
-  //   this.panned = true;
-  //   this.positionTracking = false;
-  //   this.quickPanToRecord = false;
-  //   this.quickPanToRecord = false;
-  //   this.recordSetForCSV = null;
-  //   this.recordTables = {};
-  //   this.serverBoundaries = ;
-  //   this.simplePickerLayers = [];
-
-  //   this.tooManyLabelsDialog = { dialogActions: [], dialogOpen: false, dialogTitle: '', dialogContentText: null };
-  //   this.userHeading = null;
-  //   this.userRecordOnClickMenuOpen = false;
-  //   this.viewFilters = true;
-  //   this.whatsHere = {
-  //     ActivityIDs: [],
-  //     ActivityLimit: 5,
-  //     ActivityPage: 0,
-  //     ActivitySortDirection: 'desc',
-  //     ActivitySortField: 'created',
-  //     IAPPIDs: [],
-  //     IAPPLimit: 5,
-  //     IAPPPage: 0,
-  //     IAPPSortDirection: 'desc',
-  //     IAPPSortField: 'earliest_survey',
-  //     activityRows: [],
-  //     feature: null,
-  //     highlightedType: null,
-  //     iappRows: [],
-  //     limit: 5,
-  //     page: 0,
-  //     section: 'invasivesbc',
-  //     toggle: false
-  //   };
-  //   this.workingLayerName = null;
-  // }
 }
 
 const initialState: MapState = {
@@ -488,7 +422,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.layers.splice(index, 1);
       } else if (UserSettings.RecordSet.set.match(action)) {
         const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
-        Object.keys(action.payload.updatedSet).map((key) => {
+        Object.keys(action.payload.updatedSet).forEach((key) => {
           if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
             draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
           }
@@ -537,119 +471,119 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         for (const r of removalList) {
           draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
         }
+      } else if (RecordCache.requestCaching.fulfilled.match(action)) {
+        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setId);
+        draftState.layers[index].layerState.cacheMetadata = {
+          ...draftState.layers[index].layerState.cacheMetadata,
+          cachedCentroid: action.payload.cachedCentroid,
+          cachedGeoJson: action.payload.cachedGeoJson,
+          bbox: action.payload.bbox
+        };
       } else if (UserSettings.InitState.getSuccess.match(action)) {
-        Object.keys(action.payload.recordSets).map((setID) => {
+        Object.keys(action.payload.recordSets).forEach((setID) => {
           let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
           if (!draftState.layers[layerIndex]) {
             draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
             layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
           }
           draftState.layers[layerIndex].layerState = {};
-          if (action.payload.recordSets[setID].colorScheme)
-            draftState.layers[layerIndex].layerState.colorScheme = action.payload.recordSets[setID].colorScheme;
-          if (action.payload.recordSets[setID].color)
-            draftState.layers[layerIndex].layerState.color = action.payload.recordSets[setID].color;
-          if (action.payload.recordSets[setID].mapToggle)
-            draftState.layers[layerIndex].layerState.mapToggle = action.payload.recordSets[setID].mapToggle;
-          if (action.payload.recordSets[setID].labelToggle)
-            draftState.layers[layerIndex].layerState.labelToggle = action.payload.recordSets[setID].labelToggle;
-          if (action.payload.recordSets[setID].drawOrder)
-            draftState.layers[layerIndex].layerState.drawOrder = action.payload.recordSets[setID].drawOrder;
+          Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
         });
       } else if (WhatsHere.map_init_get_poi_ids_fetched.match(action)) {
-        draftState.whatsHere.IAPPIDs = action.payload ?? [];
-        draftState.whatsHere.iappRows = [];
-        draftState.whatsHere.IAPPPage = 0;
-        draftState.whatsHere.IAPPLimit = 15;
+        Object.assign(draftState.whatsHere, {
+          IAPPIDs: action.payload ?? [],
+          iappRows: [],
+          IAPPPage: 0,
+          IAPPLimit: 15
+        });
       } else if (WhatsHere.map_init_get_activity_ids_fetched.match(action)) {
-        draftState.whatsHere.ActivityIDs = [...action.payload];
-        draftState.whatsHere.activityRows = [];
-        draftState.whatsHere.ActivityPage = 0;
-        draftState.whatsHere.ActivityLimit = 15;
+        Object.assign(draftState.whatsHere, {
+          ActivityIDs: [...action.payload],
+          activityRows: [],
+          ActivityPage: 0,
+          ActivityLimit: 15
+        });
       } else if (WhatsHere.map_feature.match(action)) {
-        draftState.whatsHere.clickedActivity = null;
-        draftState.whatsHere.clickedActivityDescription = null;
-        draftState.whatsHere.clickedIAPP = null;
-        draftState.whatsHere.clickedIAPPDescription = null;
-        draftState.whatsHere.loadingActivities = true;
-        draftState.whatsHere.loadingIAPP = true;
-        draftState.whatsHere.feature = action.payload;
-        draftState.whatsHere.toggle = state.whatsHere.toggle;
-        draftState.whatsHere.limit = 5;
-        draftState.whatsHere.page = 0;
+        Object.assign(draftState.whatsHere, {
+          clickedActivity: null,
+          clickedActivityDescription: null,
+          clickedIAPP: null,
+          clickedIAPPDescription: null,
+          loadingActivities: true,
+          loadingIAPP: true,
+          feature: action.payload,
+          toggle: state.whatsHere.toggle,
+          limit: 5,
+          page: 0
+        });
       } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
         draftState.whatsHere.serverActivityIDs = action.payload.activities;
         draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
-
         const toggledOnActivityLayers = draftState.layers.filter(
-          (layer) => layer.type === RecordSetType.Activity && layer.layerState.mapToggle
+          ({ type, layerState }) => type === RecordSetType.Activity && layerState.mapToggle
         );
-
         const toggledOnIAPPLayers = draftState.layers.filter(
-          (layer) => layer.type === RecordSetType.IAPP && layer.layerState.mapToggle
+          ({ type, layerState }) => type === RecordSetType.IAPP && layerState.mapToggle
         );
-
-        let localActivityIDs = [];
-
-        toggledOnActivityLayers.map((layer) => {
-          localActivityIDs = localActivityIDs.concat(layer.IDList);
-        });
-
-        let localIAPPIDs = [];
-
-        toggledOnIAPPLayers.map((layer) => {
-          localIAPPIDs = localIAPPIDs.concat(layer.IDList);
-        });
-
-        const iappIDs = [];
-        const activityIDs = [];
-        localIAPPIDs.map((l) => draftState.whatsHere.serverIAPPIDs.includes(l) && iappIDs.push(l));
-        localActivityIDs.map((l) => draftState.whatsHere.serverActivityIDs.includes(l) && activityIDs.push(l));
-
-        draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIDs));
-        draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIDs));
+        const localActivityIDs = toggledOnActivityLayers.flatMap(
+          (layer) => layer.IDList ?? layer?.layerState?.cacheMetadata?.idList ?? []
+        );
+        const localIappIds = toggledOnIAPPLayers.flatMap(
+          (layer) => layer.IDList ?? layer?.layerState?.cacheMetadata?.idList ?? []
+        );
+        const iappIds = localIappIds.filter((l) => draftState.whatsHere.serverIAPPIDs.includes(l));
+        const activityIds = localActivityIDs.filter((l) => draftState.whatsHere.serverActivityIDs.includes(l));
+        draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIds));
+        draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIds));
       } else if (WhatsHere.sort_filter_update.match(action)) {
+        const { field, direction } = action.payload;
         if (action.payload.type === RecordSetType.IAPP) {
-          draftState.whatsHere.IAPPPage = 0;
-          draftState.whatsHere.IAPPSortField = action.payload.field;
-          draftState.whatsHere.IAPPSortDirection = action.payload.direction;
+          Object.assign(draftState.whatsHere, {
+            IAPPPage: 0,
+            IAPPSortField: field,
+            IAPPSortDirection: direction
+          });
         } else {
-          draftState.whatsHere.ActivityPage = 0;
-          draftState.whatsHere.ActivitySortField = action.payload.field;
-          draftState.whatsHere.ActivitySortDirection = action.payload.direction;
+          Object.assign(draftState.whatsHere, {
+            ActivityPage: 0,
+            ActivitySortField: action.payload.field,
+            ActivitySortDirection: action.payload.direction
+          });
         }
       } else if (WhatsHere.toggle.match(action)) {
         if (draftState.whatsHere.toggle) {
-          draftState.whatsHere.loadingActivities = false;
-          draftState.whatsHere.loadingIAPP = false;
+          Object.assign(draftState.whatsHere, {
+            loadingActivities: false,
+            loadingIAPP: false
+          });
         } else {
-          draftState.whatsHere.toggle = !state.whatsHere.toggle;
-          draftState.whatsHere.feature = null;
-          draftState.whatsHere.iappRows = [];
-          draftState.whatsHere.activityRows = [];
-          draftState.whatsHere.limit = 5;
-          draftState.whatsHere.page = 0;
+          Object.assign(draftState.whatsHere, {
+            toggle: !state.whatsHere.toggle,
+            feature: null,
+            iappRows: [],
+            activityRows: [],
+            limit: 5,
+            page: 0
+          });
         }
       } else if (WhatsHere.map_set_section.match(action)) {
-        draftState.whatsHere.section = action.payload;
-        draftState.whatsHere.page = 0;
-        draftState.whatsHere.limit = 5;
+        Object.assign(draftState.whatsHere, {
+          section: action.payload,
+          page: 0,
+          limit: 5
+        });
       } else if (WhatsHere.set_highlighted_iapp.match(action)) {
         draftState.userRecordOnHoverRecordRow = {
           id: action.payload,
-          geometry: state?.whatsHere?.iappRows.filter((row) => {
-            return row.site_id === action.payload;
-          })[0].geometry
+          geometry: state?.whatsHere?.iappRows.filter((row) => row.site_id === action.payload)[0].geometry
         };
-        draftState.userRecordOnHoverRecordType = RecordSetType.IAPP;
-        // to delete:
-        draftState.whatsHere.highlightedType = RecordSetType.IAPP;
-        draftState.whatsHere.highlightedURLID = action.payload;
-        draftState.whatsHere.highlightedIAPP = action.payload;
-        draftState.whatsHere.highlightedACTIVITY = null;
-        draftState.whatsHere.highlightedGeo = state?.whatsHere?.iappRows.filter((row) => {
-          return row.site_id === action.payload;
-        })[0];
+        Object.assign(draftState.whatsHere, {
+          highlightedType: RecordSetType.IAPP,
+          highlightedURLID: action.payload,
+          highlightedIAPP: action.payload,
+          highlightedACTIVITY: null,
+          highlightedGeo: state?.whatsHere?.iappRows.filter((row) => row.site_id === action.payload)[0]
+        });
       } else if (WhatsHere.set_highlighted_activity.match(action)) {
         draftState.userRecordOnHoverRecordRow = {
           id: action.payload.id,
@@ -661,13 +595,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ]
         };
         draftState.userRecordOnHoverRecordType = RecordSetType.Activity;
-        draftState.whatsHere.highlightedType = RecordSetType.Activity;
-        draftState.whatsHere.highlightedURLID = action.payload.id;
-        draftState.whatsHere.highlightedIAPP = null;
-        draftState.whatsHere.highlightedACTIVITY = action.payload.short_id;
-        draftState.whatsHere.highlightedGeo = state?.whatsHere?.activityRows.filter((row) => {
-          return row.short_id === action.payload.short_id;
-        })[0];
+        Object.assign(draftState.whatsHere, {
+          highlightedType: RecordSetType.Activity,
+          highlightedURLID: action.payload.id,
+          highlightedIAPP: null,
+          highlightedACTIVITY: action.payload.short_id,
+          highlightedGeo: state?.whatsHere?.activityRows.filter((row) => row.short_id === action.payload.short_id)[0]
+        });
       } else if (WhatsHere.iapp_rows_success.match(action)) {
         draftState.whatsHere.loadingIAPP = false;
         draftState.whatsHere.iappRows = [...action.payload];
@@ -709,15 +643,69 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.track_me_draw_geo.drawingShape = false;
       } else if (GeoTracking.resume.match(action)) {
         draftState.track_me_draw_geo.drawingShape = true;
+      } else if (IappActions.getRows.match(action) || Activity.getRows.match(action)) {
+        const { recordSetID, page, limit, tableFiltersHash } = action.payload;
+        draftState.recordTables[recordSetID] ??= {};
+        Object.assign(draftState.recordTables[recordSetID], {
+          loading: true,
+          page: page,
+          limit: limit,
+          tableFiltersHash: tableFiltersHash
+        });
+      } else if (IappActions.getRowsSuccess.match(action)) {
+        // the hash, page, and limit all need to line up
+        const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
+        const recordTable = draftState.recordTables?.[recordSetID];
+        if (recordTable?.tableFiltersHash !== tableFiltersHash) {
+          console.warn('hash mismatch', draftState.recordTables?.[recordSetID]?.tableFiltersHash, tableFiltersHash);
+          return;
+        }
+        if (Number(recordTable?.limit) !== Number(limit)) {
+          console.warn('limit mismatch', draftState.recordTables?.[recordSetID]?.limit, limit);
+          return;
+        }
+        if (Number(recordTable?.page) !== Number(action.payload.page)) {
+          console.warn('page mismatch', draftState.recordTables?.[recordSetID]?.page, page);
+          return;
+        }
+        if (recordTable) {
+          draftState.recordTables[recordSetID].rows = rows;
+        } else {
+          draftState.recordTables[recordSetID] = { rows };
+        } // set defaults
+        draftState.recordTables[recordSetID].loading = false;
+      } else if (Activity.getRowsSuccess.match(action)) {
+        // the hash, page, and limit all need to line up
+        const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
+        const recordTable = draftState.recordTables?.[recordSetID];
+        if (recordTable?.tableFiltersHash !== tableFiltersHash) {
+          console.warn('hash mismatch', recordTable?.tableFiltersHash, tableFiltersHash);
+          return;
+        }
+        if (Number(recordTable?.limit) !== Number(limit)) {
+          console.warn('limit mismatch', recordTable?.limit, limit);
+          return;
+        }
+        if (Number(recordTable?.page) !== Number(page)) {
+          console.warn('page mismatch', recordTable?.page, page);
+          return;
+        }
+        if (draftState.recordTables?.[recordSetID]) {
+          draftState.recordTables[recordSetID].rows = rows;
+        } else {
+          draftState.recordTables[recordSetID] = { rows };
+        } // set defaults
+        draftState.recordTables[action.payload.recordSetID].loading = false;
       } else {
         switch (action.type) {
           case TOGGLE_LAYER_PICKER_OPEN:
             draftState.layerPickerOpen = !draftState.layerPickerOpen;
             break;
-          case TOGGLE_WMS_LAYER:
+          case TOGGLE_WMS_LAYER: {
             const index = draftState.simplePickerLayers2.findIndex((layer) => layer.url === action.payload.layer.url);
             draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle;
             break;
+          }
           case TOGGLE_DRAWN_LAYER: {
             const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
             draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
@@ -725,17 +713,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case MAP_TOGGLE_GEOJSON_CACHE: {
             draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
-            break;
-          }
-          case IAPP_TABLE_ROWS_GET_REQUEST:
-          case ACTIVITIES_TABLE_ROWS_GET_REQUEST: {
-            if (!draftState.recordTables?.[action.payload.recordSetID]) {
-              draftState.recordTables[action.payload.recordSetID] = {};
-            }
-            draftState.recordTables[action.payload.recordSetID].loading = true;
-            draftState.recordTables[action.payload.recordSetID].page = action.payload.page;
-            draftState.recordTables[action.payload.recordSetID].limit = action.payload.limit;
-            draftState.recordTables[action.payload.recordSetID].tableFiltersHash = action.payload.tableFiltersHash;
             break;
           }
           case ACTIVITIES_GEOJSON_GET_SUCCESS: {
@@ -806,8 +783,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             if (draftState.MapMode === 'VECTOR_ENDPOINT') {
               draftState.layers[index].loading = false;
             }
-
-            //if (draftState.activitiesGeoJSON?.features?.length > 0) {
             if (draftState.MapMode !== 'VECTOR_ENDPOINT' && draftState.activitiesGeoJSONDict !== undefined) {
               GeoJSONFilterSetForLayer(
                 draftState,
@@ -835,56 +810,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             if (!draftState.layers[index]) {
-              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: action.payload.recordSetType });
+              draftState.layers.push({
+                recordSetID: action.payload.recordSetID,
+                type: action.payload.recordSetType,
+                cacheMetadata: action.payload.cacheMetadata
+              });
             }
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
             draftState.layers[index].filterObject = action.payload.filterObject;
             draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-            break;
-          }
-          case IAPP_TABLE_ROWS_GET_SUCCESS:
-          case ACTIVITIES_TABLE_ROWS_GET_SUCCESS: {
-            // the hash, page, and limit all need to line up
-            if (
-              draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash !==
-              action.payload.tableFiltersHash
-            ) {
-              console.warn(
-                'hash mismatch',
-                draftState.recordTables?.[action.payload.recordSetID]?.tableFiltersHash,
-                action.payload.tableFiltersHash
-              );
-              break;
-            }
-            if (Number(draftState.recordTables?.[action.payload.recordSetID]?.limit) !== Number(action.payload.limit)) {
-              console.warn(
-                'limit mismatch',
-                draftState.recordTables?.[action.payload.recordSetID]?.limit,
-                action.payload.limit
-              );
-              console.warn(
-                'typeof',
-                typeof draftState.recordTables?.[action.payload.recordSetID]?.limit,
-                typeof action.payload.limit
-              );
-              break;
-            }
-            if (Number(draftState.recordTables?.[action.payload.recordSetID]?.page) !== Number(action.payload.page)) {
-              console.warn(
-                'page mismatch',
-                draftState.recordTables?.[action.payload.recordSetID]?.page,
-                action.payload.page
-              );
-              break;
-            }
-            if (draftState.recordTables?.[action.payload.recordSetID]) {
-              draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
-            } else {
-              draftState.recordTables[action.payload.recordSetID] = {};
-              draftState.recordTables[action.payload.recordSetID].rows = action.payload.rows;
-            } // set defaults
-            draftState.recordTables[action.payload.recordSetID].loading = false;
             break;
           }
           case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
@@ -938,7 +873,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               const IAPPLayersToRegen = draftState.layers?.filter(
                 (layer) => layer.type === RecordSetType.IAPP && layer.IDList?.length !== undefined
               );
-              IAPPLayersToRegen.map((layer) => {
+              IAPPLayersToRegen.forEach((layer) => {
                 GeoJSONFilterSetForLayer(draftState, state, RecordSetType.IAPP, layer.recordSetID, layer.IDList);
               });
             }
@@ -1168,7 +1103,7 @@ export { createMapReducer, selectMap };
 const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
   if (
     !draftState.layers?.length ||
-    (!(Object.keys(draftState.activitiesGeoJSONDict).length === ACTIVITY_GEOJSON_SOURCE_KEYS.length) &&
+    (Object.keys(draftState.activitiesGeoJSONDict).length !== ACTIVITY_GEOJSON_SOURCE_KEYS.length &&
       typeToFilter === RecordSetType.Activity) ||
     (!draftState.IAPPGeoJSONDict && typeToFilter === RecordSetType.Activity)
   )
