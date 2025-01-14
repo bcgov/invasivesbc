@@ -32,6 +32,26 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return LocalForageRecordCacheService._instance;
   }
 
+  async isCached(repositoryId: string): Promise<boolean> {
+    try {
+      return (await this.fetchRepository(repositoryId)).status === UserRecordCacheStatus.CACHED;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async fetchRepository(repositoryId: string): Promise<RecordCacheAddSpec> {
+    const repos = await this.listRepositories();
+    const foundIndex = repos.findIndex((p) => p.setId === repositoryId);
+    if (foundIndex === -1) throw Error('Repository not found');
+
+    return repos[foundIndex];
+  }
+
+  async fetchIdList(repositoryId: string): Promise<string[]> {
+    return (await this.fetchRepository(repositoryId)).cachedIds ?? [];
+  }
+
   async saveActivity(id: string, data: unknown): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
