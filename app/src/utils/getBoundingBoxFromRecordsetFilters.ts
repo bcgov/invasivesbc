@@ -29,10 +29,10 @@ const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Pro
 
   const [minLongitude, minLatitude, maxLongitude, maxLatitude] = bbox(parse(data.bbox));
   return {
-    minLatitude: minLatitude,
-    maxLatitude: maxLongitude,
-    minLongitude: minLongitude,
-    maxLongitude: maxLatitude
+    minLatitude,
+    maxLatitude,
+    minLongitude,
+    maxLongitude
   };
 };
 

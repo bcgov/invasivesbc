@@ -337,8 +337,7 @@ export function getIAPPSQLv2(filterObject: any) {
       sqlStatement = offSetStatement(sqlStatement, filterObject);
     } else if (filterObject.vt_request) {
       sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom;`);
-    }
-    if (filterObject.boundingBoxOnly) {
+    } else if (filterObject.boundingBoxOnly) {
       // wrap the whole thing into a subquery for the aggregate function
       const wrappedStatement = SQL` WITH userQuery AS ( `.append(sqlStatement.text).append(` )
             SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
@@ -603,9 +602,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'all_species_on_site':
         where.append(
-          `${filter.operator2} LOWER(sites.all_species_on_site) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(sites.all_species_on_site) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${filter.filter}%') `
         );
         break;
       case 'max_survey':
