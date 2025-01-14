@@ -15,7 +15,7 @@ import {
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
@@ -77,16 +77,20 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
       return;
     }
 
-    yield put({
-      type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-      payload: {
-        filterObject: filterObject,
-        recordSetID: action.payload.recordSetID,
-        tableFiltersHash: action.payload.tableFiltersHash,
-        recordSetType: recordset.recordSetType,
-        cacheMetadata: recordset.cacheMetadata ?? null
+    const payload = {
+      filterObject: filterObject,
+      recordSetID: action.payload.recordSetID,
+      tableFiltersHash: action.payload.tableFiltersHash,
+      recordSetType: recordset.recordSetType
+    };
+
+    if (MOBILE) {
+      const recordService = yield RecordCacheServiceFactory.getPlatformInstance();
+      if (yield recordService.isCached(action.payload.recordSetID)) {
+        payload['cacheMetadata'] = yield recordService.fetchRepository(action.payload.recordSetID);
       }
-    });
+    }
+    yield put({ type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, payload });
   } catch (e) {
     console.error(e);
     throw e;
@@ -115,12 +119,15 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       });
     } else {
       const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
-      if (recordSet?.cacheMetadata?.idList) {
+      if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
+        const service = yield RecordCacheServiceFactory.getPlatformInstance();
+        const ids = yield service.fetchIdList(action.payload.recordSetID);
+
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
           payload: {
             recordSetID: action.payload.recordSetID,
-            IDList: recordSet.cacheMetadata.idList ?? [],
+            IDList: ids ?? [],
             tableFiltersHash: action.payload.tableFiltersHash
           }
         });
@@ -221,10 +228,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
     }
 
     if (userMobileOffline) {
-      const recordSetIdList = yield select(
-        (state) => state.UserSettings.recordSets[recordSetID].cacheMetadata.idList ?? []
-      );
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const recordSetIdList = yield service.fetchIdList(recordSetID);
       const records = yield service.fetchPaginatedCachedRecords(recordSetIdList, page, limit);
       yield put(
         Activity.getRowsSuccess({
@@ -275,8 +280,8 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
       return;
     }
     if (userMobileOffline) {
-      const recordSetIdList = currentState.recordSets[recordSetID].cacheMetadata.idList ?? [];
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const recordSetIdList = yield service.fetchIdList(recordSetID) ?? [];
       const records = yield service.fetchPaginatedCachedIappRecords(recordSetIdList, page, limit);
       yield put(
         IappActions.getRowsSuccess({
