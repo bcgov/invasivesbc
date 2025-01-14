@@ -11,7 +11,8 @@ import {
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_GET_IDS_FOR_RECORDSET_ONLINE
+  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -159,6 +160,17 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
         payload: {
           filterObj: filterObject,
           recordSetID: action.payload.recordSetID,
+          tableFiltersHash: action.payload.tableFiltersHash
+        }
+      });
+    } else {
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const ids = yield service.fetchIdList(action.payload.recordSetID);
+      yield put({
+        type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
+        payload: {
+          recordSetID: action.payload.recordSetID,
+          IDList: ids,
           tableFiltersHash: action.payload.tableFiltersHash
         }
       });
