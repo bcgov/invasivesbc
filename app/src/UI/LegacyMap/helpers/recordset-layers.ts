@@ -34,6 +34,9 @@ export const createOfflineIappLayer = async (map: maplibregl.Map, layer: any) =>
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
   const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'name' });
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
+
+  const existingSource = map.getSource(layerID);
+  if (existingSource) return; // Due to the async nature of the local DB Calls, check the layer wasn't created during a re-render
   map.addSource(layerID, source);
   map.addLayer(circleLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
@@ -225,6 +228,8 @@ export const createOfflineActivityLayer = async (map: maplibregl.Map, layer: any
     get_tag: 'name'
   });
 
+  const existingSource = map.getSource(GEOJSON_ID);
+  if (existingSource) return; // Due to the async nature of the local DB Calls, check the layer wasn't created during a re-render
   map.addSource(GEOJSON_ID, geoJsonSourceObj);
   map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
   map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
@@ -386,7 +391,7 @@ export const rebuildLayersOnTableHashUpdate = (
   });
 
   // now update the layers that are in the store
-  storeLayers.map(async (layer: Record<PropertyKey, any>) => {
+  storeLayers.forEach(async (layer: Record<PropertyKey, any>) => {
     if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
       const sourceId = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
       deleteStaleRecordsetLayer(map, layer);
