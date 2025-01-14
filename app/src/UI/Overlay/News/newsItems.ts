@@ -11,8 +11,17 @@ const newsItems: NewsArticle[] = [
     date: new Date(),
     content: [],
     subject: NewsSubject.
-  },
+  }
   */
+  {
+    title: 'Updated Ministry names',
+    date: new Date('December 13, 2024'),
+    content: [
+      'We have updated the descriptions of certain ministry names in our system to align with recent changes in government nomenclature. While the underlying codes remain unchanged, the descriptions displayed in relevant contexts have been revised to reflect the updated ministry names accurately. This ensures that our system stays current and consistent with official terminology.',
+      'Ministry names can be found here: https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries'
+    ],
+    subject: NewsSubject.Update
+  },
   {
     title: 'Layer Picker Update',
     date: new Date('October 24, 2024'),

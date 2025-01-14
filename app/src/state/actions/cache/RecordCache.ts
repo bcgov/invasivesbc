@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getBoundingBoxFromRecordsetFilters from 'utils/getBoundingBoxFromRecordsetFilters';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
@@ -11,24 +11,14 @@ class RecordCache {
    * @desc Deletes cached records for a recordset.
    *       determines duplicates with a frequency map to avoid duplicating records contained elsewhere
    */
-  static readonly deleteCache = createAsyncThunk(
-    `${this.PREFIX}/deleteCache`,
-    async (spec: { setId: string }, { getState }) => {
-      const service = await RecordCacheServiceFactory.getPlatformInstance();
-      const state = getState() as RootState;
-      const { recordSets } = state.UserSettings;
-      const deleteList = recordSets[spec.setId].cacheMetadata.idList ?? [];
-      const ids: Record<string, number> = {};
-      Object.keys(recordSets)
-        .flatMap((key) => recordSets[key].cacheMetadata.idList ?? [])
-        .forEach((id) => {
-          ids[id] ??= 0;
-          ids[id]++;
-        });
-      const recordsToErase = deleteList.filter((id) => ids[id] === 1);
-      await service.deleteCachedRecordsFromIds(recordsToErase, recordSets[spec.setId].recordSetType);
-    }
-  );
+  static readonly deleteCache = createAsyncThunk(`${this.PREFIX}/deleteCache`, async (spec: { setId: string }) => {
+    const service = await RecordCacheServiceFactory.getPlatformInstance();
+    await service.deleteRepository(spec.setId);
+  });
+
+  static readonly stopDownload = createAsyncThunk(`${this.PREFIX}/stopDownload`, async (spec: { setId: string }) => {
+    await (await RecordCacheServiceFactory.getPlatformInstance()).stopDownload(spec.setId);
+  });
 
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
@@ -40,34 +30,30 @@ class RecordCache {
     ) => {
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const state: RootState = getState() as RootState;
+
       const idsToCache: string[] = state.Map.layers
         .find((l) => l.recordSetID == spec.setId)
         .IDList.map((id: string | number) => id.toString());
-      const { recordSetType, tableFilters }: UserRecordSet = state.UserSettings.recordSets[spec.setId];
-      const args = {
-        idsToCache,
-        setId: spec.setId,
-        API_BASE: state.Configuration.current.API_BASE
-      };
-      const bbox = await getBoundingBoxFromRecordsetFilters(tableFilters);
-      let responseData: Record<PropertyKey, any> = {
-        cachedGeoJSON: [],
-        cachedCentroid: []
-      };
 
-      if (recordSetType === RecordSetType.Activity) {
-        await service.download(args);
-        responseData = await service.loadRecordsetSourceMetadata(idsToCache);
-      } else if (recordSetType === RecordSetType.IAPP) {
-        await service.downloadIapp(args);
-        responseData = await service.loadIappRecordsetSourceMetadata(idsToCache);
-      }
-      return {
-        cachedIds: idsToCache,
-        setId: spec.setId,
+      const recordSet = state.UserSettings.recordSets[spec.setId];
+      const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
+
+      const responseData = await service.downloadCache({
+        API_BASE: state.Configuration.current.API_BASE,
         bbox,
+        idsToCache,
+        recordSetType: recordSet.recordSetType,
+        setId: spec.setId
+      });
+
+      // Will Refactor the current uses of Cache Metadata separately [Maintain only cache status]
+      return {
+        status: UserRecordCacheStatus.CACHED,
+        idList: idsToCache,
+        bbox: bbox,
+        setId: spec.setId,
         cachedGeoJson: responseData.cachedGeoJson,
-        cachedCentroid: responseData.cachedCentroid ?? []
+        cachedCentroid: responseData.cachedCentroid
       };
     }
   );

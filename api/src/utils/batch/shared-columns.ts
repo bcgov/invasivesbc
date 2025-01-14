@@ -321,12 +321,15 @@ export const WeatherInformation = [
     'Weather - Temperature',
     'numeric',
     'form_data.activity_subtype_data.Weather_Conditions.temperature'
-  ).build(),
+  )
+    .isRequired()
+    .build(),
   new TemplateColumnBuilder(
     'Weather - Wind Speed',
     'numeric',
     'form_data.activity_subtype_data.Weather_Conditions.wind_speed'
   )
+    .isRequired()
     .valueRange(0, null)
     .build(),
   new TemplateColumnBuilder(
@@ -334,6 +337,7 @@ export const WeatherInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Weather_Conditions.wind_direction_code'
   )
+    .isRequired()
     .hardcodedCodes(WIND_DIRECTION_CODES)
     .build(),
   new TemplateColumnBuilder(
@@ -341,6 +345,7 @@ export const WeatherInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Weather_Conditions.cloud_cover_code'
   )
+    .isRequired()
     .referencesCode('cloud_cover_code')
     .build(),
   new TemplateColumnBuilder(
@@ -348,6 +353,7 @@ export const WeatherInformation = [
     'codeReference',
     'form_data.activity_subtype_data.Weather_Conditions.precipitation_code'
   )
+    .isRequired()
     .referencesCode('precipitation_code')
     .build(),
   new TemplateColumnBuilder(
@@ -852,6 +858,56 @@ export const ApplicationMethodValidator = (row): RowValidationResult => {
     valid,
     validationMessages,
     appliesToFields: fields
+  };
+};
+
+export const CalculationType = (row): RowValidationResult => {
+  let valid = true;
+  const rowData = row.data;
+  const validationMessages = [];
+  let appliesToFields = [];
+
+  const calculationType = rowData[`Chemical Treatment - Calculation Type`]?.parsedValue;
+  const dilutionFields = ['Herbicide - 1 - Dilution - Dilution %', 'Herbicide - 1 - Area Treated (Dilution)'];
+  const productApplicationRateFields = [
+    'Herbicide - Delivery Rate of Mix',
+    'Herbicide - 1 - PAR - Production Application Rate',
+    'Herbicide - 2 - PAR - Production Application Rate',
+    'Herbicide - 3 - PAR - Production Application Rate'
+  ];
+
+  const anyFieldHasData = (fields) =>
+    fields.some((field) => rowData[field]?.parsedValue === 0 || rowData[field]?.parsedValue);
+
+  const filledFields = (fields) =>
+    fields.filter((field) => rowData[field]?.parsedValue === 0 || rowData[field]?.parsedValue);
+
+  if (calculationType === 'PAR' && anyFieldHasData(dilutionFields)) {
+    valid = false;
+    const badFields = filledFields(dilutionFields);
+    appliesToFields.push(...badFields);
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: `If Calculation Type is Product Application Rate, Dilution related fields should be left blank.`
+    });
+  }
+
+  if (calculationType === 'D' && anyFieldHasData(productApplicationRateFields)) {
+    valid = false;
+    const badFields = filledFields(productApplicationRateFields);
+    appliesToFields.push(...badFields);
+    validationMessages.push({
+      severity: 'error',
+      messageTitle: 'Invalid value',
+      messageDetail: `If Calculation Type is Dilution, Product Application Rate related fields should be left blank.`
+    });
+  }
+
+  return {
+    valid,
+    validationMessages,
+    appliesToFields
   };
 };
 

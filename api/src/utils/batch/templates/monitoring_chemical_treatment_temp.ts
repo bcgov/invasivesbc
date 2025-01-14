@@ -102,9 +102,7 @@ MonitoringChemicalTemp.columns = [
     'Monitoring - Comments',
     'text',
     'form_data.activity_subtype_data.Monitoring_ChemicalTerrestrialAquaticPlant_Information[0].comment'
-  )
-    .isRequired()
-    .build()
+  ).build()
 ];
 
 MonitoringChemicalTemp.rowValidators = [

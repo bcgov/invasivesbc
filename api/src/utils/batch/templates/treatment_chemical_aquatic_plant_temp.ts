@@ -5,6 +5,7 @@ import {
   ApplicationMethodValidator,
   BasicInformation,
   BasicInformationRowValidators,
+  CalculationType,
   ChemicalPlantTreatmentInformation,
   GranularHerbicideRate,
   HerbicidesInformation,
@@ -80,6 +81,7 @@ TreatmentChemicalAquaticPlantTemp.rowValidators = [
   WindDirectionValidator,
   ApplicationMethodType,
   ApplicationMethodValidator,
-  GranularHerbicideRate
+  GranularHerbicideRate,
+  CalculationType
 ];
 export { TreatmentChemicalAquaticPlantTemp };

@@ -201,18 +201,24 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           status: UserRecordCacheStatus.DOWNLOADING
         };
       } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.ERROR
-        };
+        if (action.error.message === 'Early Exit') {
+          draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+            status: UserRecordCacheStatus.NOT_CACHED
+          };
+        } else {
+          draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
+            status: UserRecordCacheStatus.ERROR
+          };
+        }
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
           status: UserRecordCacheStatus.CACHED,
-          idList: action.payload.cachedIds,
+          idList: action.payload.idList,
           bbox: action.payload.bbox,
           cachedGeoJson: action.payload.cachedGeoJson,
           cachedCentroid: action.payload.cachedCentroid
         };
-      } else if (RecordCache.deleteCache.pending.match(action)) {
+      } else if (RecordCache.deleteCache.pending.match(action) || RecordCache.stopDownload.pending.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata.status = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadata = {

@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import newsItems from './newsItems';
 import './NewsPage.css';
 import NewsArticle, { NewsSubject } from 'interfaces/NewsArticle';
 import { BugReport, FiberNew, Update } from '@mui/icons-material';
 import { Icon } from '@mui/material';
 
-const NewsPage = (props: any) => {
+const NewsPage = () => {
   const BASE_SHOW = 5;
   const [loadMore, setLoadMore] = useState<number>(BASE_SHOW);
   const handleMore = () => setLoadMore((prev) => prev + BASE_SHOW);
+
   const subjectToIcon = (subject: NewsSubject) => {
     switch (subject) {
       case NewsSubject.New:
@@ -32,6 +33,29 @@ const NewsPage = (props: any) => {
       default:
     }
   };
+
+  const renderContentWithLinks = (content: string) => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = content.split(urlRegex);
+
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        return (
+          <a
+            key={part + index}
+            href={part}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: '#007bff', textDecoration: 'none' }}
+          >
+            {part}
+          </a>
+        );
+      }
+      return <span key={part + index}>{part}</span>;
+    });
+  };
+
   return (
     <div id="newsPageContainer">
       <h2 id="newsPageHeader">What's New in InvasivesBC?</h2>
@@ -39,7 +63,7 @@ const NewsPage = (props: any) => {
         {newsItems.map((newsItem: NewsArticle, index) => {
           if (index < loadMore) {
             return (
-              <div className="newsListItem" key={index}>
+              <div className="newsListItem" key={newsItem.content.toString()}>
                 <div className="newsIcon">{subjectToIcon(newsItem?.subject)}</div>
                 <h3 className="newsListItemTitle">{newsItem.title}</h3>
                 <p className="newsListDate">
@@ -49,7 +73,7 @@ const NewsPage = (props: any) => {
                 <ul>
                   {newsItem.content.map((content: string) => (
                     <li className="newsListItemContent" key={content}>
-                      {content}
+                      {renderContentWithLinks(content)}
                     </li>
                   ))}
                 </ul>

@@ -1,4 +1,4 @@
-import { RecordSetCachedShape } from 'utils/record-cache';
+import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 export enum RecordSetType {
@@ -35,8 +35,8 @@ export interface UserRecordSet {
   cacheMetadata: {
     status: UserRecordCacheStatus;
     idList?: string[];
-    cachedGeoJson?: RecordSetCachedShape[];
-    cachedCentroid?: RecordSetCachedShape[];
+    cachedGeoJson?: GeoJSONSourceSpecification;
+    cachedCentroid?: GeoJSONSourceSpecification;
     bbox?: RepositoryBoundingBoxSpec;
   };
 }

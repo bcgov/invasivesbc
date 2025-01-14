@@ -15,7 +15,7 @@ import {
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
@@ -60,7 +60,7 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
   try {
     const currentState = yield select((state) => state?.UserSettings);
     const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
-    const cacheMetadata = currentState.recordSets[action.payload.recordSetID].cacheMetadata;
+    const recordset: UserRecordSet = currentState.recordSets[action.payload.recordSetID];
     const filterObject = getRecordFilterObjectFromStateForAPI(
       action.payload.recordSetID,
       currentState,
@@ -83,8 +83,8 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
         filterObject: filterObject,
         recordSetID: action.payload.recordSetID,
         tableFiltersHash: action.payload.tableFiltersHash,
-        recordSetType: action.payload.recordSetType,
-        cacheMetadata: cacheMetadata ?? null
+        recordSetType: recordset.recordSetType,
+        cacheMetadata: recordset.cacheMetadata ?? null
       }
     });
   } catch (e) {
@@ -115,12 +115,12 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       });
     } else {
       const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
-      if (recordSet?.cachedMetadata?.idList) {
+      if (recordSet?.cacheMetadata?.idList) {
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
           payload: {
             recordSetID: action.payload.recordSetID,
-            IDList: recordSet.cachedMetadata.idList ?? [],
+            IDList: recordSet.cacheMetadata.idList ?? [],
             tableFiltersHash: action.payload.tableFiltersHash
           }
         });
@@ -404,7 +404,6 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
 }
 
 export function getSelectColumnsByRecordSetType(recordSetType: any) {
-  //throw new Error('Function not implemented.');
   let columns: string[] = [];
   if (recordSetType === 'Activity') {
     columns = [

@@ -25,6 +25,12 @@ const cacheAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Success,
     subject: AlertSubjects.Cache,
     autoClose: 4
+  },
+  recordSetDownloadStoppedEarly: {
+    content: 'Recordset download stopped',
+    severity: AlertSeverity.Success,
+    subject: AlertSubjects.Cache,
+    autoClose: 4
   }
 };
 
