@@ -60,7 +60,6 @@ import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
 import MapActions from 'state/actions/map';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
-import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
 
@@ -471,14 +470,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         for (const r of removalList) {
           draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
         }
-      } else if (RecordCache.requestCaching.fulfilled.match(action)) {
-        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setId);
-        draftState.layers[index].layerState.cacheMetadata = {
-          ...draftState.layers[index].layerState.cacheMetadata,
-          cachedCentroid: action.payload.cachedCentroid,
-          cachedGeoJson: action.payload.cachedGeoJson,
-          bbox: action.payload.bbox
-        };
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         Object.keys(action.payload.recordSets).forEach((setID) => {
           let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);

@@ -6,6 +6,8 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
+import RecordCache from 'state/actions/cache/RecordCache';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -105,9 +107,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         Activity_Treatment_MechanicalPlantAquatic: '#c6c617',
         Activity_Treatment_MechanicalPlantTerrestrial: '#c6c617'
       },
-      cacheMetadata: {
-        status: UserRecordCacheStatus.NOT_CACHED
-      },
+      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
       drawOrder: 1
     },
     '2': {
@@ -127,9 +127,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         Activity_Treatment_MechanicalPlantAquatic: '#c6c617',
         Activity_Treatment_MechanicalPlantTerrestrial: '#c6c617'
       },
-      cacheMetadata: {
-        status: UserRecordCacheStatus.NOT_ELIGIBLE
-      },
+      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
       drawOrder: 2
     },
     '3': {
@@ -137,9 +135,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
       drawOrder: 3,
-      cacheMetadata: {
-        status: UserRecordCacheStatus.NOT_ELIGIBLE
-      }
+      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE
     }
   };
 
@@ -197,9 +193,14 @@ function* handle_GET_API_DOC_ONLINE(action) {
     console.dir(e);
   }
 }
+function* handle_RECORD_CACHING_FAILED(action: ReturnType<typeof RecordCache.requestCaching.rejected>) {
+  const service = yield RecordCacheServiceFactory.getPlatformInstance();
+  yield service.setRepositoryStatus(action.meta.arg.setId, UserRecordCacheStatus.ERROR);
+}
 
 function* userSettingsSaga() {
   yield all([
+    takeEvery(RecordCache.requestCaching.rejected, handle_RECORD_CACHING_FAILED),
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
     takeEvery(GET_API_DOC_REQUEST, handle_GET_API_DOC_REQUEST),
     takeEvery(GET_API_DOC_ONLINE, handle_GET_API_DOC_ONLINE),

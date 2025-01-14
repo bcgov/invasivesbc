@@ -6,6 +6,7 @@ import Prompt from 'state/actions/prompts/Prompt';
 import { PromptAction } from 'interfaces/prompt-interfaces';
 import RecordCache from 'state/actions/cache/RecordCache';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
+import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 
 interface AlertsAndPromptsState {
   alerts: AlertMessage[];
@@ -50,12 +51,13 @@ export function createAlertsAndPromptsReducer(
       } else if (RegExp(Prompt.NEW_PROMPT).exec(action.type)) {
         const newPrompt: PromptAction = action.payload;
         draftState.prompts = addPrompt(state.prompts, newPrompt);
-      } else if (RecordCache.requestCaching.fulfilled.match(action)) {
+      } else if (
+        RecordCache.requestCaching.fulfilled.match(action) &&
+        action.payload.status === UserRecordCacheStatus.CACHED
+      ) {
         draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheSuccess);
       } else if (RecordCache.requestCaching.rejected.match(action)) {
-        if (action?.error?.message !== 'Early Exit') {
-          draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheFailed);
-        }
+        draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheFailed);
       } else if (RecordCache.deleteCache.rejected.match(action)) {
         draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetDeleteCacheFailed);
       } else if (RecordCache.stopDownload.fulfilled.match(action)) {

@@ -88,6 +88,12 @@ abstract class RecordCacheService {
 
   abstract deleteRepository(repositoryId: string): Promise<void>;
 
+  abstract fetchRepository(repositoryId: string): Promise<RecordCacheAddSpec>;
+
+  abstract isCached(repositoryId: string): Promise<boolean>;
+
+  abstract fetchIdList(repositoryId: string): Promise<string[]>;
+
   abstract listRepositories(): Promise<RecordCacheAddSpec[]>;
 
   abstract loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
@@ -98,7 +104,7 @@ abstract class RecordCacheService {
 
   abstract checkForAbort(id: string): Promise<boolean>;
 
-  async downloadCache(spec: CacheDownloadSpec): Promise<Record<PropertyKey, any>> {
+  async downloadCache(spec: CacheDownloadSpec): Promise<boolean> {
     const args = {
       idsToCache: spec.idsToCache,
       setId: spec.setId,
@@ -119,27 +125,29 @@ abstract class RecordCacheService {
       bbox: spec.bbox
     });
 
+    let downloadCompleted = true;
     if (spec.recordSetType === RecordSetType.Activity && (await this.downloadActivity(args))) {
       Object.assign(responseData, await this.loadRecordsetSourceMetadata(spec.idsToCache));
     } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args))) {
       Object.assign(responseData, await this.loadIappRecordsetSourceMetadata(spec.idsToCache));
     } else {
+      downloadCompleted = false;
       this.deleteRepository(spec.setId);
-      throw Error('Early Exit');
     }
 
-    await this.addOrUpdateRepository({
-      setId: spec.setId,
-      cacheTime: new Date(),
-      cachedIds: spec.idsToCache,
-      recordSetType: spec.recordSetType,
-      status: UserRecordCacheStatus.CACHED,
-      cachedGeoJson: responseData.cachedGeoJson,
-      cachedCentroid: responseData.cachedCentroid,
-      bbox: spec.bbox
-    });
-
-    return responseData;
+    if (downloadCompleted) {
+      await this.addOrUpdateRepository({
+        setId: spec.setId,
+        cacheTime: new Date(),
+        cachedIds: spec.idsToCache,
+        recordSetType: spec.recordSetType,
+        status: UserRecordCacheStatus.CACHED,
+        cachedGeoJson: responseData.cachedGeoJson,
+        cachedCentroid: responseData.cachedCentroid,
+        bbox: spec.bbox
+      });
+    }
+    return downloadCompleted;
   }
   /**
    * Download Records for IAPP Given a list of IDs

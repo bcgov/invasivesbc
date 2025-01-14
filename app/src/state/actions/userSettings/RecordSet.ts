@@ -67,7 +67,7 @@ class RecordSet {
       if (
         MOBILE &&
         [UserRecordCacheStatus.CACHED, UserRecordCacheStatus.DOWNLOADING].includes(
-          recordSets[spec.setId]?.cacheMetadata?.status
+          recordSets[spec.setId].cacheMetadataStatus
         )
       ) {
         const deletionResult = await thunkAPI.dispatch(RecordCache.deleteCache(spec));
@@ -99,9 +99,7 @@ class RecordSet {
       name: '',
       server_id: 0
     },
-    cacheMetadata: {
-      status: UserRecordCacheStatus.NOT_CACHED
-    }
+    cacheMetadataStatus: UserRecordCacheStatus.NOT_CACHED
   });
 }
 

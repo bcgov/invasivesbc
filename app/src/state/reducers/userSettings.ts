@@ -197,33 +197,15 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (WhatsHere.toggle.match(action)) {
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
       } else if (RecordCache.requestCaching.pending.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.DOWNLOADING
-        };
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
       } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
-        if (action.error.message === 'Early Exit') {
-          draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-            status: UserRecordCacheStatus.NOT_CACHED
-          };
-        } else {
-          draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-            status: UserRecordCacheStatus.ERROR
-          };
-        }
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.ERROR;
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.CACHED,
-          idList: action.payload.idList,
-          bbox: action.payload.bbox,
-          cachedGeoJson: action.payload.cachedGeoJson,
-          cachedCentroid: action.payload.cachedCentroid
-        };
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = action.payload.status;
       } else if (RecordCache.deleteCache.pending.match(action) || RecordCache.stopDownload.pending.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata.status = UserRecordCacheStatus.DELETING;
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadata = {
-          status: UserRecordCacheStatus.NOT_CACHED
-        };
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.NOT_CACHED;
       } else if (Activity.deleteSuccess.match(action)) {
         draftState.activeActivity = null;
         draftState.activeActivityDescription = null;
