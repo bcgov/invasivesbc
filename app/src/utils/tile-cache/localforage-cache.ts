@@ -21,7 +21,7 @@ interface TileKey {
 class LocalForageCacheService extends TileCacheService {
   private static _instance: LocalForageCacheService;
 
-  private static REPOSITORY_METADATA_KEY = 'repositories';
+  private static readonly REPOSITORY_METADATA_KEY = 'repositories';
 
   private store: LocalForage | null = null;
 
