@@ -159,15 +159,17 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       });
     } else {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const ids = yield service.fetchIdList(action.payload.recordSetID);
-      yield put({
-        type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
-        payload: {
-          recordSetID: action.payload.recordSetID,
-          IDList: ids,
-          tableFiltersHash: action.payload.tableFiltersHash
-        }
-      });
+      if (yield service.isCached(action.payload.recordSetID)) {
+        const ids = yield service.fetchIdList(action.payload.recordSetID);
+        yield put({
+          type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
+          payload: {
+            recordSetID: action.payload.recordSetID,
+            IDList: ids,
+            tableFiltersHash: action.payload.tableFiltersHash
+          }
+        });
+      }
     }
   } catch (e) {
     console.error(e);
