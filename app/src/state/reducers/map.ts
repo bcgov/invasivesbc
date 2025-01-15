@@ -511,18 +511,21 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           page: 0
         });
       } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
-        draftState.whatsHere.serverActivityIDs = action.payload.activities;
-        draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
+        const { iapp, activities } = action.payload;
+        draftState.whatsHere.serverActivityIDs = activities;
+        draftState.whatsHere.serverIAPPIDs = iapp;
         const toggledOnActivityLayers = draftState.layers.filter(
           ({ type, layerState }) => type === RecordSetType.Activity && layerState.mapToggle
         );
         const toggledOnIAPPLayers = draftState.layers.filter(
           ({ type, layerState }) => type === RecordSetType.IAPP && layerState.mapToggle
         );
+
         const localActivityIDs = toggledOnActivityLayers.flatMap((layer) => layer.IDList ?? []);
         const localIappIds = toggledOnIAPPLayers.flatMap((layer) => layer.IDList ?? []);
-        const iappIds = localIappIds.filter((l) => draftState.whatsHere.serverIAPPIDs.includes(l));
-        const activityIds = localActivityIDs.filter((l) => draftState.whatsHere.serverActivityIDs.includes(l));
+
+        const iappIds = localIappIds.filter((l) => iapp.includes(l) || iapp.includes(l.toString()));
+        const activityIds = localActivityIDs.filter((l) => activities.includes(l));
         draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIds));
         draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIds));
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
@@ -751,7 +754,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             if (!draftState.layers[index]) {
-              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.IAPP });
               index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             }
             draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
