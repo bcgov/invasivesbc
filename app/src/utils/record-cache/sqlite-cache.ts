@@ -111,7 +111,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       rawRepositoryMetadata?.values?.map((set) => JSON.parse(set['DATA'])) ?? [];
     const targetIndex = repositoryMetadata.findIndex((set) => set.setId === repositoryId);
 
-    if (targetIndex === -1) throw Error('Repository not found');
+    if (targetIndex === -1) throw Error(`Repository ${repositoryId} not found`);
 
     const { cachedIds, recordSetType } = repositoryMetadata[targetIndex];
 

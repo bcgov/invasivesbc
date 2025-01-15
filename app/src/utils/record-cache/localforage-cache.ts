@@ -43,7 +43,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
   async fetchRepository(repositoryId: string): Promise<RecordCacheAddSpec> {
     const repos = await this.listRepositories();
     const foundIndex = repos.findIndex((p) => p.setId === repositoryId);
-    if (foundIndex === -1) throw Error('Repository not found');
+    if (foundIndex === -1) throw Error(`Repository ${repositoryId} not found`);
 
     return repos[foundIndex];
   }
