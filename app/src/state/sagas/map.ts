@@ -1,4 +1,4 @@
-import { bboxPolygon, Feature, buffer, booleanContains } from '@turf/turf';
+import { bboxPolygon, Feature, buffer } from '@turf/turf';
 import booleanIntersects from '@turf/boolean-intersects';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
@@ -67,7 +67,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -638,7 +638,7 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   }
 }
 
-function* handle_MAP_INIT_FOR_RECORDSETS(action: PayloadAction<UserRecordSet>) {
+function* handle_MAP_INIT_FOR_RECORDSETS() {
   interface ActionType {
     type: string;
     payload: any;
@@ -730,14 +730,14 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
   yield put(UserSettings.KML.delete(action.payload.id));
 }
 
-function* handle_DRAW_CUSTOM_LAYER(action) {
+function* handle_DRAW_CUSTOM_LAYER() {
   const panelState = yield select((state) => state.AppMode.panelOpen);
   if (panelState) {
     yield put({ type: TOGGLE_PANEL });
   }
 }
 
-function* handle_CUSTOM_LAYER_DRAWN(actions) {
+function* handle_CUSTOM_LAYER_DRAWN() {
   const panelState = yield select((state) => state.AppMode.panelOpen);
   if (!panelState) {
     yield put({ type: TOGGLE_PANEL });
@@ -780,7 +780,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   }
 }
 
-function handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
+function handle_MAP_TOGGLE_GEOJSON_CACHE() {
   location.reload();
 }
 
