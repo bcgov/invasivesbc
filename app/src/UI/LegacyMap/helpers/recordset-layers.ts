@@ -486,20 +486,3 @@ export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map
     });
   });
 };
-
-/** TODO: */
-export const removeDeletedRecordSetLayersOnRecordSetDelete = (storeLayers, map) => {
-  map.getLayersOrder().map((layer: any) => {
-    if (
-      storeLayers.filter((l: any) => l.recordSetID === layer).length === 0 &&
-      !['wms-test-layer', 'wms-test-layer2', 'invasives-vector', 'buildings'].includes(layer)
-    ) {
-      //map.current.removeLayer(layer);
-      //map.current.removeSource(layer);
-    }
-  });
-  storeLayers.map((layer) => {
-    // get matching layers for type
-    // update visibility if doesn't match
-  });
-};
