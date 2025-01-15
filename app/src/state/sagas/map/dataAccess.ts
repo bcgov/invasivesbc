@@ -85,12 +85,6 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
       recordSetType: recordset.recordSetType
     };
 
-    if (MOBILE) {
-      const recordService = yield RecordCacheServiceFactory.getPlatformInstance();
-      if (yield recordService.isCached(action.payload.recordSetID)) {
-        payload['cacheMetadata'] = yield recordService.fetchRepository(action.payload.recordSetID);
-      }
-    }
     yield put({ type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, payload });
   } catch (e) {
     console.error(e);
