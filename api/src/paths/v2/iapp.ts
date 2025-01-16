@@ -350,7 +350,6 @@ export function getIAPPSQLv2(filterObject: any) {
 
     return sqlStatement;
   } catch (e) {
-    console.log(e);
     defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'error', body: e.message });
     throw e;
   }
