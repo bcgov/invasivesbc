@@ -64,7 +64,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
   private static _instance: SQLiteRecordCacheService;
 
   private cacheDB: SQLiteDBConnection | null = null;
-
   protected constructor() {
     super();
   }
@@ -98,6 +97,44 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
   }
 
+  async fetchRepository(repositoryId: string): Promise<RecordCacheAddSpec> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const repoData = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT DATA
+       FROM CACHE_METADATA
+       WHERE SET_ID = ?
+       LIMIT 1`,
+      [repositoryId]
+    );
+    return JSON.parse(repoData?.values?.[0]['DATA']) ?? {};
+  }
+
+  async isCached(repositoryId: string): Promise<boolean> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const metadata = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT STATUS
+       FROM CACHE_METADATA
+       WHERE SET_ID = ?
+       LIMIT 1
+      `,
+      [repositoryId]
+    );
+    return metadata?.values?.[0]?.['STATUS'] === UserRecordCacheStatus.CACHED;
+  }
+
+  async fetchIdList(repositoryId: string): Promise<string[]> {
+    if (this.cacheDB == null) {
+      throw Error(CACHE_UNAVAILABLE);
+    }
+    return (await this.fetchRepository(repositoryId)).cachedIds ?? [];
+  }
+
   async deleteRepository(repositoryId: string): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
@@ -111,7 +148,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       rawRepositoryMetadata?.values?.map((set) => JSON.parse(set['DATA'])) ?? [];
     const targetIndex = repositoryMetadata.findIndex((set) => set.setId === repositoryId);
 
-    if (targetIndex === -1) throw Error(`Repository ${repositoryId} not found`);
+    if (targetIndex === -1) return;
 
     const { cachedIds, recordSetType } = repositoryMetadata[targetIndex];
 
@@ -139,44 +176,26 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
     const repositories = await this.cacheDB.query(
       //language=SQLite
-      `SELECT *
+      `SELECT DATA
        FROM CACHE_METADATA`
     );
-    return repositories?.values?.map((entry) => JSON.parse(entry['DATA']) as RecordCacheAddSpec) ?? [];
-  }
-
-  /**
-   * @desc Helper method to fetch and parse repo metadata
-   */
-  private async getRepoData(repositoryId: string) {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const repoData = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT DATA
-       FROM CACHE_METADATA
-       WHERE SET_ID = ?`,
-      [repositoryId]
-    );
-    return JSON.parse(repoData?.values?.[0]['DATA']) ?? {};
+    const response = repositories?.values?.map((entry) => JSON.parse(entry['DATA']) as RecordCacheAddSpec) ?? [];
+    return response;
   }
 
   async setRepositoryStatus(repositoryId: string, status: UserRecordCacheStatus): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const currData = await this.getRepoData(repositoryId);
+    const currData = await this.fetchRepository(repositoryId);
+    if (Object.keys(currData).length === 0) return; // Repo doesn't exist.
     currData.status = status;
-    await this.cacheDB.query(
-      //language=SQLite
-      `UPDATE CACHE_METADATA
-        SET STATUS = ?,
-            CACHE_TIME = ?,
-            DATA = ?
-        WHERE SET_ID = ?`,
-      [status, JSON.stringify(currData.cacheTime), JSON.stringify(currData), repositoryId]
-    );
+
+    this.addOrUpdateRepository({
+      ...currData,
+      setId: repositoryId,
+      status: status
+    });
   }
 
   async checkForAbort(repositoryId: string): Promise<boolean> {
@@ -302,6 +321,12 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const stringified = JSON.stringify(data);
     const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
     const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
+    geometry.forEach((_, i) => {
+      geometry[i].properties = {
+        name: short_id,
+        description: id
+      };
+    });
     const geojson = JSON.stringify(geometry) ?? null;
     await this.cacheDB.query(
       //language=SQLite
@@ -395,9 +420,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
     results?.values?.forEach((item) => {
       try {
-        const label = item['SHORT_ID'];
         JSON.parse(item['GEOJSON'])?.forEach((feature: Feature) => {
-          feature.properties = { name: label };
           centroidArr.push(centroid(feature));
           geoJsonArr.push(feature);
         });
@@ -433,7 +456,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const RECORD_TABLE = RecordsToTable[recordSetType];
     const BATCH_AMOUNT = 100;
 
-    this.cacheDB.beginTransaction();
+    await this.cacheDB.beginTransaction();
     try {
       for (let i = 0; i < idsToDelete.length; i += BATCH_AMOUNT) {
         const sliced = idsToDelete.slice(i, Math.min(i + BATCH_AMOUNT, idsToDelete.length));
@@ -444,9 +467,9 @@ class SQLiteRecordCacheService extends RecordCacheService {
           [...sliced]
         );
       }
-      this.cacheDB.commitTransaction();
+      await this.cacheDB.commitTransaction();
     } catch (e) {
-      this.cacheDB.rollbackTransaction();
+      await this.cacheDB.rollbackTransaction();
       throw e;
     }
   }
