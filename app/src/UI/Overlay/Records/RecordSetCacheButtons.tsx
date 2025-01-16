@@ -1,5 +1,5 @@
 import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
-import { Button, Tooltip } from '@mui/material';
+import { Button, Grid, IconButton, Tooltip, Typography } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
 import { LinearProgress, Box } from '@mui/material';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
@@ -155,25 +155,103 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
         )}
 
         {showProgress && (
+          // <div className="record-set-control">
+          //   <Tooltip title="Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time.">
+          //     <IconButton onClick={handlePausePlayClick} color="primary">
+          //       {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
+          //     </IconButton>
+          //   </Tooltip>
+          //   <Tooltip title="progress bar">
+          //     <LinearProgress variant={'determinate'} value={progress} />
+          //   </Tooltip>
+          //   <Tooltip title="cancel">
+          //     <IconButton color={'error'} onClick={handleCancelClick}>
+          //       <CloseIcon />
+          //     </IconButton>
+          //   </Tooltip>
+          // </div>
+
+          // <Box
+          //   display="flex"
+          //   flexDirection="column"
+          //   alignItems="center"
+          //   sx={{
+          //     border: '1px solid #1976d2',
+          //     borderRadius: '8px',
+          //     padding: '10px'
+          //   }}
+          // >
+          //   <Grid spacing={2}>
+          //     <Grid xs={3}>
+          //       <IconButton onClick={handlePausePlayClick} color="primary">
+          //         {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
+          //       </IconButton>
+          //     </Grid>
+          //     <Grid xs={6}>
+          //       <LinearProgress variant={'determinate'} value={progress} />
+          //     </Grid>
+          //     <Grid xs={3}>
+          //       <IconButton color={'error'} onClick={handleCancelClick}>
+          //         <CloseIcon />
+          //       </IconButton>
+          //     </Grid>
+          //   </Grid>
+          //   <Grid>
+          //     <Grid xs={12}>
+          //       <div>{progress}% Completed</div>
+          //     </Grid>
+          //   </Grid>
+          // </Box>
+
           <Box
-            display="flex"
-            flexDirection="row"
-            alignItems="center"
-            gap={2}
             sx={{
               border: '1px solid #1976d2',
               borderRadius: '8px',
-              padding: '10px'
+              padding: 2
             }}
+            onClick={(e) => e.stopPropagation()}
           >
-            <Button onClick={handlePausePlayClick}>{isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}</Button>
-            <Box display="flex" flexDirection="column" gap={2}>
-              <LinearProgress variant={'determinate'} value={progress} style={{ width: '300px' }} />
-              <div>{progress}% Completed</div>
-            </Box>
-            <Button color={'error'} onClick={handleCancelClick}>
-              <CloseIcon />
-            </Button>
+            <Grid container spacing={2} alignItems="center">
+              {/* First row with buttons and progress bar */}
+              <Grid item xs={2}>
+                <IconButton
+                  onClick={handlePausePlayClick}
+                  color="primary"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%'
+                  }}
+                >
+                  {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
+                </IconButton>
+              </Grid>
+              <Grid item xs={8}>
+                <LinearProgress variant={'determinate'} value={progress} sx={{ height: 5 }} />
+              </Grid>
+              <Grid item xs={2}>
+                <IconButton
+                  color={'error'}
+                  onClick={handleCancelClick}
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    width: '100%'
+                  }}
+                >
+                  <CloseIcon />
+                </IconButton>
+              </Grid>
+
+              {/* Second row with progress text */}
+              <Grid item xs={12}>
+                <Typography variant="caption" align="center">
+                  {`${progress}% completed`}
+                </Typography>
+              </Grid>
+            </Grid>
           </Box>
         )}
       </span>
