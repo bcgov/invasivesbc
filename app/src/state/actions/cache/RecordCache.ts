@@ -30,10 +30,9 @@ class RecordCache {
     ) => {
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const state: RootState = getState() as RootState;
-
-      const idsToCache: string[] = state.Map.layers
-        .find((l) => l.recordSetID == spec.setId)
-        .IDList.map((id: string | number) => id.toString());
+      const idsToCache: string[] =
+        state.Map.layers.find((l) => l.recordSetID == spec.setId)?.IDList.map((id: string | number) => id.toString()) ??
+        [];
 
       const recordSet = state.UserSettings.recordSets[spec.setId];
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
