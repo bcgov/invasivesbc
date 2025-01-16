@@ -85,6 +85,7 @@ import bboxToPolygon from 'utils/bboxToPolygon';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
 import { RecordCacheAddSpec } from 'utils/record-cache';
+import NetworkActions from 'state/actions/network/NetworkActions';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -663,7 +664,6 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   const newUninitializedLayers = newLayerIDs.map((layer) => {
     return { recordSetID: layer, recordSetType: userSettingsState.recordSets[layer].recordSetType };
   });
-
   // combined:
   const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
 
@@ -835,10 +835,13 @@ function* activitiesPageSaga() {
     takeEvery(DRAW_CUSTOM_LAYER, handle_DRAW_CUSTOM_LAYER),
     takeEvery(CUSTOM_LAYER_DRAWN, handle_CUSTOM_LAYER_DRAWN),
 
+    //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
+    takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
+
     takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
     takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
-
-    takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(UserSettings.RecordSet.cycleColourById, handle_RECORDSET_ROTATE_COLOUR),
     takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),
     takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
@@ -847,7 +850,6 @@ function* activitiesPageSaga() {
     takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
-    takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(Activity.GeoJson.get, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
