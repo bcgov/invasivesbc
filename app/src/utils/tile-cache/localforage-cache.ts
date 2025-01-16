@@ -222,7 +222,7 @@ class LocalForageCacheService extends TileCacheService {
     }
   }
 
-  protected async addRepository(spec: RepositoryMetadata) {
+  protected async addOrUpdateRepository(spec: RepositoryMetadata) {
     if (this.store == null) {
       throw new Error('cache not available');
     }
@@ -230,10 +230,10 @@ class LocalForageCacheService extends TileCacheService {
     const repositories = await this.listRepositories();
     const foundIndex = repositories.findIndex((p) => p.id == spec.id);
     if (foundIndex !== -1) {
-      throw new Error('repository already exists');
+      repositories[foundIndex] = spec;
+    } else {
+      repositories.push(spec);
     }
-
-    repositories.push(spec);
 
     await this.store.setItem(LocalForageCacheService.REPOSITORY_METADATA_KEY, repositories);
   }

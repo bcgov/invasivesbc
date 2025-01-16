@@ -37,7 +37,7 @@ class RecordCache {
       const recordSet = state.UserSettings.recordSets[spec.setId];
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
 
-      const downloadCompleted = await service.downloadCache({
+      const downloadCompleted = await service.download({
         API_BASE: state.Configuration.current.API_BASE,
         bbox,
         idsToCache,
