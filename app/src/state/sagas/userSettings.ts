@@ -6,8 +6,6 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
-import RecordCache from 'state/actions/cache/RecordCache';
-import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
   yield put(UserSettings.toggleRecordExpandSuccess());
