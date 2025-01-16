@@ -193,14 +193,9 @@ function* handle_GET_API_DOC_ONLINE(action) {
     console.dir(e);
   }
 }
-function* handle_RECORD_CACHING_FAILED(action: ReturnType<typeof RecordCache.requestCaching.rejected>) {
-  const service = yield RecordCacheServiceFactory.getPlatformInstance();
-  yield service.setRepositoryStatus(action.meta.arg.setId, UserRecordCacheStatus.ERROR);
-}
 
 function* userSettingsSaga() {
   yield all([
-    takeEvery(RecordCache.requestCaching.rejected, handle_RECORD_CACHING_FAILED),
     takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
     takeEvery(GET_API_DOC_REQUEST, handle_GET_API_DOC_REQUEST),
     takeEvery(GET_API_DOC_ONLINE, handle_GET_API_DOC_ONLINE),
