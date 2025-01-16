@@ -8,7 +8,7 @@ import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import {
   IappRecordMode,
-  RecordCacheAddSpec,
+  RepositoryMetadata,
   RecordCacheService,
   RecordSetSourceMetadata
 } from 'utils/record-cache/index';
@@ -76,7 +76,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return SQLiteRecordCacheService._instance;
   }
 
-  async addOrUpdateRepository(spec: RecordCacheAddSpec): Promise<void> {
+  async addOrUpdateRepository(spec: RepositoryMetadata): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
@@ -97,7 +97,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
   }
 
-  async fetchRepository(repositoryId: string): Promise<RecordCacheAddSpec> {
+  async getRepository(repositoryId: string): Promise<RepositoryMetadata> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
@@ -128,11 +128,11 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return metadata?.values?.[0]?.['STATUS'] === UserRecordCacheStatus.CACHED;
   }
 
-  async fetchIdList(repositoryId: string): Promise<string[]> {
+  async getIdList(repositoryId: string): Promise<string[]> {
     if (this.cacheDB == null) {
       throw Error(CACHE_UNAVAILABLE);
     }
-    return (await this.fetchRepository(repositoryId)).cachedIds ?? [];
+    return (await this.getRepository(repositoryId)).cachedIds ?? [];
   }
 
   async deleteRepository(repositoryId: string): Promise<void> {
@@ -144,7 +144,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       `SELECT DATA
        FROM CACHE_METADATA`
     );
-    const repositoryMetadata: RecordCacheAddSpec[] =
+    const repositoryMetadata: RepositoryMetadata[] =
       rawRepositoryMetadata?.values?.map((set) => JSON.parse(set['DATA'])) ?? [];
     const targetIndex = repositoryMetadata.findIndex((set) => set.setId === repositoryId);
 
@@ -170,7 +170,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     );
   }
 
-  async listRepositories(): Promise<RecordCacheAddSpec[]> {
+  async listRepositories(): Promise<RepositoryMetadata[]> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
@@ -179,7 +179,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       `SELECT DATA
        FROM CACHE_METADATA`
     );
-    const response = repositories?.values?.map((entry) => JSON.parse(entry['DATA']) as RecordCacheAddSpec) ?? [];
+    const response = repositories?.values?.map((entry) => JSON.parse(entry['DATA']) as RepositoryMetadata) ?? [];
     return response;
   }
 
@@ -187,7 +187,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const currData = await this.fetchRepository(repositoryId);
+    const currData = await this.getRepository(repositoryId);
     if (Object.keys(currData).length === 0) return; // Repo doesn't exist.
     currData.status = status;
 
@@ -226,7 +226,11 @@ class SQLiteRecordCacheService extends RecordCacheService {
    * @param limit Maximum results per page
    * @returns { UserRecord[] } Filter Objects
    */
-  async fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]> {
+  async getPaginatedCachedActivityRecords(
+    recordSetIdList: string[],
+    page: number,
+    limit: number
+  ): Promise<UserRecord[]> {
     if (!recordSetIdList || recordSetIdList.length === 0) {
       return [];
     }
@@ -259,7 +263,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return response;
   }
 
-  async fetchPaginatedCachedIappRecords(recordSetIdList: string[], page: number, limit: number): Promise<IappRecord[]> {
+  async getPaginatedCachedIappRecords(recordSetIdList: string[], page: number, limit: number): Promise<IappRecord[]> {
     if (!recordSetIdList || recordSetIdList.length === 0) {
       return [];
     }
@@ -381,7 +385,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return JSON.parse(result.values[0][dataType]);
   }
 
-  async loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+  async createIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
@@ -403,7 +407,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
     };
     return { cachedGeoJson };
   }
-  async loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+
+  async createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
@@ -428,6 +433,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
         console.error('Error parsing record:', e);
       }
     });
+
     const cachedCentroid: GeoJSONSourceSpecification = {
       type: 'geojson',
       data: {
@@ -444,6 +450,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     };
     return { cachedCentroid, cachedGeoJson };
   }
+
   async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
@@ -473,6 +480,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       throw e;
     }
   }
+
   private async initializeRecordCache(sqlite: SQLiteConnection) {
     // Hold Migrations as named variable so we can use length to update the Db version automagically
     // Note: toVersion must be an integer.

@@ -84,7 +84,7 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
-import { RecordCacheAddSpec } from 'utils/record-cache';
+import { RepositoryMetadata } from 'utils/record-cache';
 import NetworkActions from 'state/actions/network/NetworkActions';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
@@ -163,7 +163,7 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const repos = yield service.listRepositories();
 
-      const recordSetsInBoundingBox = repos.filter((repo: RecordCacheAddSpec) => {
+      const recordSetsInBoundingBox = repos.filter((repo: RepositoryMetadata) => {
         const { status, bbox } = repo;
         return (
           status === UserRecordCacheStatus.CACHED &&
@@ -223,7 +223,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
     let records: IappRecord[];
     if (MOBILE && !connected) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      records = yield service.fetchPaginatedCachedIappRecords(
+      records = yield service.getPaginatedCachedIappRecords(
         whatsHere.IAPPIDs.map((id) => id.toString()),
         whatsHere.IAPPPage,
         whatsHere.IAPPLimit
@@ -313,7 +313,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
     let records: UserRecord[];
     if (MOBILE && !connected) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      records = yield service.fetchPaginatedCachedRecords(
+      records = yield service.getPaginatedCachedActivityRecords(
         whatsHere.ActivityIDs,
         whatsHere.ActivityPage,
         whatsHere.ActivityLimit

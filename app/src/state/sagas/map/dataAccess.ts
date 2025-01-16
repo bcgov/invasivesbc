@@ -116,7 +116,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
       if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
         const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        const ids = yield service.fetchIdList(action.payload.recordSetID);
+        const ids = yield service.getIdList(action.payload.recordSetID);
 
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -160,7 +160,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     } else {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       if (yield service.isCached(action.payload.recordSetID)) {
-        const ids = yield service.fetchIdList(action.payload.recordSetID);
+        const ids = yield service.getIdList(action.payload.recordSetID);
         yield put({
           type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
           payload: {
@@ -237,8 +237,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
 
     if (userMobileOffline) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const recordSetIdList = yield service.fetchIdList(recordSetID);
-      const records = yield service.fetchPaginatedCachedRecords(recordSetIdList, page, limit);
+      const recordSetIdList = yield service.getIdList(recordSetID);
+      const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
       yield put(
         Activity.getRowsSuccess({
           recordSetID: recordSetID,
@@ -289,8 +289,8 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
     }
     if (userMobileOffline) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const recordSetIdList = yield service.fetchIdList(recordSetID) ?? [];
-      const records = yield service.fetchPaginatedCachedIappRecords(recordSetIdList, page, limit);
+      const recordSetIdList = yield service.getIdList(recordSetID.toString()) ?? [];
+      const records = yield service.getPaginatedCachedIappRecords(recordSetIdList, page, limit);
       yield put(
         IappActions.getRowsSuccess({
           recordSetID: recordSetID,

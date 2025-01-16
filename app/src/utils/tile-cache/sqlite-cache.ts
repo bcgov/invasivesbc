@@ -190,7 +190,7 @@ class SQLiteTileCacheService extends TileCacheService {
     );
   }
 
-  protected async addRepository(spec: RepositoryMetadata): Promise<void> {
+  protected async addOrUpdateRepository(spec: RepositoryMetadata): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error('cache not available');
     }
@@ -207,7 +207,15 @@ class SQLiteTileCacheService extends TileCacheService {
                            MIN_LONGITUDE,
                            MAX_LONGITUDE)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `,
+       ON CONFLICT(TILESET)
+       DO UPDATE SET
+          DESCRIPTION = excluded.DESCRIPTION,
+          STATUS = excluded.STATUS,
+          MAX_ZOOM = excluded.MAX_ZOOM,
+          MIN_LATITUDE = excluded.MIN_LATITUDE,
+          MAX_LATITUDE = excluded.MAX_LATITUDE,
+          MIN_LONGITUDE = excluded.MIN_LONGITUDE,
+          MAX_LONGITUDE = excluded.MAX_LONGITUDE`,
       [
         spec.id,
         spec.description,

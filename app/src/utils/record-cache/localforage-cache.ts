@@ -3,7 +3,7 @@ import localForage from 'localforage';
 import centroid from '@turf/centroid';
 import {
   IappRecordMode,
-  RecordCacheAddSpec,
+  RepositoryMetadata,
   RecordCacheService,
   RecordSetSourceMetadata
 } from 'utils/record-cache/index';
@@ -34,13 +34,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
 
   async isCached(repositoryId: string): Promise<boolean> {
     try {
-      return (await this.fetchRepository(repositoryId)).status === UserRecordCacheStatus.CACHED;
+      return (await this.getRepository(repositoryId)).status === UserRecordCacheStatus.CACHED;
     } catch (e) {
       return false;
     }
   }
 
-  async fetchRepository(repositoryId: string): Promise<RecordCacheAddSpec> {
+  async getRepository(repositoryId: string): Promise<RepositoryMetadata> {
     const repos = await this.listRepositories();
     const foundIndex = repos.findIndex((p) => p.setId === repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} not found`);
@@ -48,8 +48,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return repos[foundIndex];
   }
 
-  async fetchIdList(repositoryId: string): Promise<string[]> {
-    return (await this.fetchRepository(repositoryId)).cachedIds ?? [];
+  async getIdList(repositoryId: string): Promise<string[]> {
+    return (await this.getRepository(repositoryId)).cachedIds ?? [];
   }
 
   async saveActivity(id: string, data: unknown): Promise<void> {
@@ -80,6 +80,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
     return true;
   }
+
   async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
@@ -99,7 +100,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return data[type];
   }
 
-  async fetchPaginatedCachedIappRecords(
+  async getPaginatedCachedIappRecords(
     recordSetIdList: string[],
     page: number,
     limit: number,
@@ -139,7 +140,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @param limit Maximum results per page
    * @returns { UserRecord[] } Filter Objects
    */
-  async fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]> {
+  async getPaginatedCachedActivityRecords(
+    recordSetIdList: string[],
+    page: number,
+    limit: number
+  ): Promise<UserRecord[]> {
     if (recordSetIdList?.length === 0) {
       return [];
     }
@@ -159,7 +164,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @param ids ids to filter
    * @returns { RecordSetSourceMetadata } Returns cached GeoJson, all IAPP Sites are Points.
    */
-  async loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+  async createIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
     const geoJsonArr: any[] = [];
     for (const id of ids) {
       const data: IappRecord = await this.loadIapp(id, IappRecordMode.Row);
@@ -183,7 +188,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @param ids ids to filter
    * @returns { RecordSetSourceMetadata } Two formatted queries for High/Low zoom layers
    */
-  async loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
+  async createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
     const centroidArr: any[] = [];
     const geoJsonArr: any[] = [];
 
@@ -257,7 +262,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
    * @desc Create or Update an entry in the cachedSet Repository
    * @param newSet Data to update
    */
-  async addOrUpdateRepository(newSet: RecordCacheAddSpec): Promise<void> {
+  async addOrUpdateRepository(newSet: RepositoryMetadata): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
@@ -273,12 +278,12 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
-  async listRepositories(): Promise<RecordCacheAddSpec[]> {
+  async listRepositories(): Promise<RepositoryMetadata[]> {
     if (this.store == null) {
       return [];
     }
 
-    const metadata: RecordCacheAddSpec[] =
+    const metadata: RepositoryMetadata[] =
       (await this.store.getItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY)) ?? [];
     if (metadata == null) {
       console.error('expected key not found');

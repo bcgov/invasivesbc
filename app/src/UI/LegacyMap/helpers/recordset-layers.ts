@@ -24,9 +24,9 @@ export const createOfflineIappLayer = async (map: maplibregl.Map, layer: any) =>
     return;
   }
   const service = await RecordCacheServiceFactory.getPlatformInstance();
-  const repo = await service.fetchRepository(layer.recordSetID);
+  const repo = await service.getRepository(layer.recordSetID);
 
-  if (!repo.cachedGeoJson) {
+  if (!repo?.cachedGeoJson) {
     return;
   }
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
@@ -192,9 +192,9 @@ export const createOfflineActivityLayer = async (map: maplibregl.Map, layer: any
     return;
   }
   const service = await RecordCacheServiceFactory.getPlatformInstance();
-  const { cachedCentroid, cachedGeoJson } = await service.fetchRepository(layer.recordSetID);
+  const metadata = await service.getRepository(layer.recordSetID);
 
-  if (!cachedCentroid || !cachedGeoJson) {
+  if (!metadata?.cachedCentroid || !metadata?.cachedGeoJson) {
     return;
   }
 
@@ -203,8 +203,8 @@ export const createOfflineActivityLayer = async (map: maplibregl.Map, layer: any
   const CENTROID_ID = `${GEOJSON_ID}-centroid`;
   const color = getPaintBySchemeOrColor(layer);
 
-  const geoJsonSourceObj: GeoJSONSourceSpecification = cachedGeoJson;
-  const centroidSourceObj: GeoJSONSourceSpecification = cachedCentroid;
+  const geoJsonSourceObj: GeoJSONSourceSpecification = metadata.cachedGeoJson;
+  const centroidSourceObj: GeoJSONSourceSpecification = metadata.cachedCentroid;
 
   const circleMarkerZoomedOutLayerCentroid: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(CENTROID_ID, {
     color,
