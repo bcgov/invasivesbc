@@ -10,6 +10,7 @@ import { TileCacheService } from 'utils/tile-cache';
 import { Context, TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { MOBILE } from 'state/build-time-config';
 import TileCache from 'state/actions/cache/TileCache';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register(import.meta.env.MODE === 'production' ? '/worker.js' : '/dev-sw.js?dev-sw', {
@@ -21,8 +22,10 @@ async function mountApp(CONFIG) {
   const { store, persistor } = setupStore(CONFIG);
 
   let tileCache: TileCacheService | null = null;
+
   if (MOBILE) {
     tileCache = await TileCacheServiceFactory.getPlatformInstance();
+    await RecordCacheServiceFactory.getPlatformInstance();
     // load any caches present
     store.dispatch(TileCache.repositoryList());
   }
