@@ -6,7 +6,7 @@ import { RepositoryBoundingBoxSpec } from './tile-cache';
  * @param bbox Cached bounding box
  * @returns {Feature<Polygon>} Geojson Bounding box
  */
-function bboxToPolygon(bbox: Record<PropertyKey, number> | RepositoryBoundingBoxSpec): Feature<Polygon> {
+function bboxToPolygon(bbox: RepositoryBoundingBoxSpec): Feature<Polygon> {
   const { minLatitude, minLongitude, maxLatitude, maxLongitude } = bbox;
   return {
     type: 'Feature',
