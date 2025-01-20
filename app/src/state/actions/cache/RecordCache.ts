@@ -1,7 +1,8 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getBoundingBoxFromRecordsetFilters from 'utils/getBoundingBoxFromRecordsetFilters';
+import { RecordCacheProgressCallbackParameters } from 'utils/record-cache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 class RecordCache {
@@ -20,13 +21,17 @@ class RecordCache {
     await (await RecordCacheServiceFactory.getPlatformInstance()).stopDownload(spec.setId);
   });
 
+  static readonly downloadProgressEvent = createAction<RecordCacheProgressCallbackParameters>(
+    'RECORD_CACHE_DOWNLOAD_PROGRESS_EVENT'
+  );
+
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
     async (
       spec: {
         setId: string;
       },
-      { getState }
+      { getState, dispatch }
     ) => {
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const state: RootState = getState() as RootState;
@@ -39,13 +44,19 @@ class RecordCache {
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
       console.log('BBox', bbox);
 
-      const downloadCompleted = await service.download({
-        API_BASE: state.Configuration.current.API_BASE,
-        bbox,
-        idsToCache,
-        recordSetType: recordSet.recordSetType,
-        setId: spec.setId
-      });
+      const downloadCompleted = await service.download(
+        {
+          API_BASE: state.Configuration.current.API_BASE,
+          bbox,
+          idsToCache,
+          recordSetType: recordSet.recordSetType,
+          setId: spec.setId
+        },
+        (p) => {
+          dispatch(RecordCache.downloadProgressEvent(p));
+        }
+      );
+      console.log('Download completed', downloadCompleted);
 
       return {
         setId: spec.setId,

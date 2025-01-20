@@ -99,7 +99,15 @@ class RecordSet {
       name: '',
       server_id: 0
     },
-    cacheMetadataStatus: UserRecordCacheStatus.NOT_CACHED
+    cacheMetadataStatus: UserRecordCacheStatus.NOT_CACHED,
+    cacheDownloadProgress: {
+      setId: '',
+      message: '',
+      aborted: false,
+      normalizedProgress: 0,
+      totalActivities: 0,
+      processedActivities: 0
+    }
   });
 }
 

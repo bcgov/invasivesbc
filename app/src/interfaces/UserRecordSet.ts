@@ -1,3 +1,5 @@
+import { RecordCacheProgressCallbackParameters } from 'utils/record-cache';
+
 export enum RecordSetType {
   IAPP = 'IAPP',
   Activity = 'Activity'
@@ -30,4 +32,5 @@ export interface UserRecordSet {
     server_id: any;
   };
   cacheMetadataStatus: UserRecordCacheStatus;
+  cacheDownloadProgress: RecordCacheProgressCallbackParameters;
 }

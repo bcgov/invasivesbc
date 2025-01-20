@@ -208,6 +208,29 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.NOT_CACHED;
+      } else if (RecordCache.downloadProgressEvent.match(action)) {
+        if (action.payload.normalizedProgress == 1 || action.payload.aborted) {
+          // completed or aborted
+          // if (Object.prototype.hasOwnProperty.call(draft.downloadProgress, action.payload.repository)) {
+          //   delete draft.downloadProgress[action.payload.repository];
+          // }
+          console.log('inside abort or completed reducer', action.payload);
+          draftState.recordSets[action.payload.setId].cacheDownloadProgress = {
+            setId: '',
+            message: '',
+            aborted: false,
+            normalizedProgress: 0,
+            totalActivities: 0,
+            processedActivities: 0
+          };
+          // if (Object.prototype.hasOwnProperty.call(draftState.recordSets.cacheDownloadProgress, action.payload.setId)) {
+          //   delete draftState.recordSets[action.payload.setId].cacheDownloadProgress;
+          // }
+        } else {
+          console.log('inside in-progress', action.payload);
+          draftState.recordSets[action.payload.setId].cacheDownloadProgress = action.payload;
+          // draft.downloadProgress[action.payload.repository] = action.payload;
+        }
       } else if (Activity.deleteSuccess.match(action)) {
         draftState.activeActivity = null;
         draftState.activeActivityDescription = null;

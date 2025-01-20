@@ -109,7 +109,10 @@ abstract class RecordCacheService extends BaseCacheService<
 
   abstract checkForAbort(id: string): Promise<boolean>;
 
-  public async download(spec: CacheDownloadSpec): Promise<boolean> {
+  public async download(
+    spec: CacheDownloadSpec,
+    progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
+  ): Promise<boolean> {
     const args = {
       idsToCache: spec.idsToCache,
       setId: spec.setId,
@@ -131,9 +134,9 @@ abstract class RecordCacheService extends BaseCacheService<
     });
 
     let downloadCompleted = true;
-    if (spec.recordSetType === RecordSetType.Activity && (await this.downloadActivity(args))) {
+    if (spec.recordSetType === RecordSetType.Activity && (await this.downloadActivity(args, progressCallback))) {
       Object.assign(responseData, await this.createActivityRecordsetSourceMetadata(spec.idsToCache));
-    } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args))) {
+    } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args, progressCallback))) {
       Object.assign(responseData, await this.createIappRecordsetSourceMetadata(spec.idsToCache));
     } else {
       downloadCompleted = false;
@@ -230,7 +233,7 @@ abstract class RecordCacheService extends BaseCacheService<
       });
       await this.saveActivity(spec.idsToCache[i], await rez.json());
       processedCaches++;
-      const currentProgress = processedCaches / totalRecordsToCache;
+
       console.log("What's in spec", spec);
 
       if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
@@ -252,10 +255,11 @@ abstract class RecordCacheService extends BaseCacheService<
           totalActivities: totalRecordsToCache,
           processedActivities: processedCaches
         });
+        console.log('progress callback payload', progressCallback);
 
         if (progressCallback) {
           progressCallback({
-            setId: spec.idsToCache[i],
+            setId: spec.setId,
             message: '',
             aborted: abort,
             normalizedProgress: processedCaches / totalRecordsToCache,
