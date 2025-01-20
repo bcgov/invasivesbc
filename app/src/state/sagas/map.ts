@@ -168,7 +168,7 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
         return (
           status === UserRecordCacheStatus.CACHED &&
           bbox &&
-          booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox as any))
+          booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox))
         );
       });
 
