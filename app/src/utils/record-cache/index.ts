@@ -47,8 +47,8 @@ export interface RecordCacheProgressCallbackParameters {
   message: string;
   aborted: boolean;
   normalizedProgress: number;
-  totalActivities: number;
-  processedActivities: number;
+  totalActivities: number; // is this needed?
+  processedActivities: number; // is this needed?
 }
 
 export interface CacheDownloadSpec {
@@ -166,6 +166,8 @@ abstract class RecordCacheService extends BaseCacheService<
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<boolean> {
     let abort = false;
+    let processedCaches = 0;
+    let totalRecordsToCache = spec.idsToCache.length;
     for (let i = 0; i < spec.idsToCache.length && !abort; i++) {
       const authorization = await getCurrentJWT();
       const [iappRecord, tableRow] = await Promise.all([
@@ -197,12 +199,23 @@ abstract class RecordCacheService extends BaseCacheService<
         }).then(async (data) => await data.json())
       ]);
       await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
-
+      processedCaches++;
       if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
         abort = await this.checkForAbort(spec.setId);
         /*
           ProgressCallback Logic
         */
+        console.log('IAPP', this.RECORDS_BETWEEN_PROGRESS_UPDATES, i, spec.idsToCache.length);
+        if (progressCallback) {
+          progressCallback({
+            setId: spec.setId,
+            message: '',
+            aborted: abort,
+            normalizedProgress: processedCaches / totalRecordsToCache,
+            totalActivities: totalRecordsToCache,
+            processedActivities: processedCaches
+          });
+        }
       }
     }
     return !abort;
