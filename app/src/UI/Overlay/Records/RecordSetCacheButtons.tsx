@@ -18,7 +18,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    switch (recordSet.cacheMetadata.status) {
+    switch (recordSet.cacheMetadataStatus) {
       case UserRecordCacheStatus.NOT_CACHED:
         downloadCache();
         break;
@@ -96,9 +96,9 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
           UserRecordCacheStatus.NOT_CACHED,
           UserRecordCacheStatus.ERROR,
           UserRecordCacheStatus.DOWNLOADING
-        ].includes(recordSet.cacheMetadata?.status)
+        ].includes(recordSet.cacheMetadataStatus)
     );
-  }, [recordSet.cacheMetadata?.status, connected]);
+  }, [recordSet.cacheMetadataStatus, connected]);
 
   return (
     <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to save this layer and it's records">
@@ -109,7 +109,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
           onClick={handleClick}
           variant="outlined"
         >
-          {formatStatusKey(recordSet.cacheMetadata?.status)}
+          {formatStatusKey(recordSet.cacheMetadataStatus)}
           <SaveIcon />
         </Button>
       </span>

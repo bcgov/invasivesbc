@@ -27,7 +27,6 @@ import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshVisibilityOnToggleUpdate,
-  removeDeletedRecordSetLayersOnRecordSetDelete,
   removeLayersOnNetworkConnectivityChange
 } from 'UI/LegacyMap/helpers/recordset-layers';
 import { addWMSLayersIfNotExist, refreshWMSOnToggle, hideWMSIfUnauthorized } from 'UI/LegacyMap/helpers/wms-layers';
@@ -207,7 +206,6 @@ export const Map = ({ children }) => {
     rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE, connectedToNetwork);
     refreshColoursOnColourUpdate(storeLayers, map.current);
     refreshVisibilityOnToggleUpdate(storeLayers, map.current);
-    removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map.current);
   }, [storeLayers, map.current, mapReady, connectedToNetwork, loggedInOrWorkingOffline]);
 
   // Layer picker:
@@ -440,6 +438,7 @@ export const Map = ({ children }) => {
   // toggle public map pmtile layer
   useEffect(() => {
     if (!mapReady) return;
+    if (!map.current) return;
     if (loggedInOrWorkingOffline) {
       toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
       toggleLayerOnBool(map.current, 'iapp-pmtile-vector', false);

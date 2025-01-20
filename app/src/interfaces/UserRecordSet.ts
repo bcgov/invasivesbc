@@ -1,6 +1,3 @@
-import { GeoJSONSourceSpecification } from 'maplibre-gl';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
-
 export enum RecordSetType {
   IAPP = 'IAPP',
   Activity = 'Activity'
@@ -32,11 +29,5 @@ export interface UserRecordSet {
     name: string;
     server_id: any;
   };
-  cacheMetadata: {
-    status: UserRecordCacheStatus;
-    idList?: string[];
-    cachedGeoJson?: GeoJSONSourceSpecification;
-    cachedCentroid?: GeoJSONSourceSpecification;
-    bbox?: RepositoryBoundingBoxSpec;
-  };
+  cacheMetadataStatus: UserRecordCacheStatus;
 }

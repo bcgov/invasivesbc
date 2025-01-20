@@ -105,9 +105,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         Activity_Treatment_MechanicalPlantAquatic: '#c6c617',
         Activity_Treatment_MechanicalPlantTerrestrial: '#c6c617'
       },
-      cacheMetadata: {
-        status: UserRecordCacheStatus.NOT_CACHED
-      },
+      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
       drawOrder: 1
     },
     '2': {
@@ -127,9 +125,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         Activity_Treatment_MechanicalPlantAquatic: '#c6c617',
         Activity_Treatment_MechanicalPlantTerrestrial: '#c6c617'
       },
-      cacheMetadata: {
-        status: UserRecordCacheStatus.NOT_ELIGIBLE
-      },
+      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
       drawOrder: 2
     },
     '3': {
@@ -137,9 +133,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
       drawOrder: 3,
-      cacheMetadata: {
-        status: UserRecordCacheStatus.NOT_ELIGIBLE
-      }
+      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE
     }
   };
 

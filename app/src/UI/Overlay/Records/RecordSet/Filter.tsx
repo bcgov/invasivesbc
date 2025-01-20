@@ -291,14 +291,16 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
       <td>{input}</td>
       <td className="deleteButtonCell">
         <Tooltip classes={{ tooltip: 'toolTip' }} title="Delete the filter in this row, data will be refetched.">
-          <Button
-            className={'deleteButton'}
-            disabled={userOfflineMobile}
-            onClick={() => removeFilter('tableFilter')}
-            variant="contained"
-          >
-            Delete
-          </Button>
+          <span>
+            <Button
+              className={'deleteButton'}
+              disabled={userOfflineMobile}
+              onClick={() => removeFilter('tableFilter')}
+              variant="contained"
+            >
+              Delete
+            </Button>
+          </span>
         </Tooltip>
       </td>
     </tr>

@@ -67,7 +67,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -84,6 +84,8 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
+import { RepositoryMetadata } from 'utils/record-cache';
+import NetworkActions from 'state/actions/network/NetworkActions';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -158,15 +160,21 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
       yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
     } else {
       // Get IDs from Offline Caches
-      const { recordSets } = yield select(selectUserSettings);
-      const recordSetsInBoundingBox = Object.keys(recordSets).filter((set) => {
-        const { bbox, status } = recordSets[set].cacheMetadata;
-        const recordSetIsCached = status === UserRecordCacheStatus.CACHED;
-        return recordSetIsCached && bbox && booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox));
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const repos = yield service.listRepositories();
+
+      const recordSetsInBoundingBox = repos.filter((repo: RepositoryMetadata) => {
+        const { status, bbox } = repo;
+        return (
+          status === UserRecordCacheStatus.CACHED &&
+          bbox &&
+          booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox as any))
+        );
       });
+
       const overlappingRecords: string[] = [];
       recordSetsInBoundingBox.flatMap((set) =>
-        recordSets[set].cacheMetadata.cachedGeoJson.data.features.forEach((shape: Feature) => {
+        set.cachedGeoJson.data.features.forEach((shape: Feature) => {
           if (booleanIntersects(whatsHereFeature.payload, shape)) {
             overlappingRecords.push(shape?.properties?.description);
           }
@@ -215,7 +223,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
     let records: IappRecord[];
     if (MOBILE && !connected) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      records = yield service.fetchPaginatedCachedIappRecords(
+      records = yield service.getPaginatedCachedIappRecords(
         whatsHere.IAPPIDs.map((id) => id.toString()),
         whatsHere.IAPPPage,
         whatsHere.IAPPLimit
@@ -305,7 +313,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
     let records: UserRecord[];
     if (MOBILE && !connected) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      records = yield service.fetchPaginatedCachedRecords(
+      records = yield service.getPaginatedCachedActivityRecords(
         whatsHere.ActivityIDs,
         whatsHere.ActivityPage,
         whatsHere.ActivityLimit
@@ -631,7 +639,7 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   }
 }
 
-function* handle_MAP_INIT_FOR_RECORDSETS(action: PayloadAction<UserRecordSet>) {
+function* handle_MAP_INIT_FOR_RECORDSETS() {
   interface ActionType {
     type: string;
     payload: any;
@@ -656,7 +664,6 @@ function* handle_MAP_INIT_FOR_RECORDSETS(action: PayloadAction<UserRecordSet>) {
   const newUninitializedLayers = newLayerIDs.map((layer) => {
     return { recordSetID: layer, recordSetType: userSettingsState.recordSets[layer].recordSetType };
   });
-
   // combined:
   const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
 
@@ -723,14 +730,14 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
   yield put(UserSettings.KML.delete(action.payload.id));
 }
 
-function* handle_DRAW_CUSTOM_LAYER(action) {
+function* handle_DRAW_CUSTOM_LAYER() {
   const panelState = yield select((state) => state.AppMode.panelOpen);
   if (panelState) {
     yield put({ type: TOGGLE_PANEL });
   }
 }
 
-function* handle_CUSTOM_LAYER_DRAWN(actions) {
+function* handle_CUSTOM_LAYER_DRAWN() {
   const panelState = yield select((state) => state.AppMode.panelOpen);
   if (!panelState) {
     yield put({ type: TOGGLE_PANEL });
@@ -773,7 +780,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   }
 }
 
-function handle_MAP_TOGGLE_GEOJSON_CACHE(action) {
+function handle_MAP_TOGGLE_GEOJSON_CACHE() {
   location.reload();
 }
 
@@ -828,10 +835,13 @@ function* activitiesPageSaga() {
     takeEvery(DRAW_CUSTOM_LAYER, handle_DRAW_CUSTOM_LAYER),
     takeEvery(CUSTOM_LAYER_DRAWN, handle_CUSTOM_LAYER_DRAWN),
 
+    //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
+    takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
+
     takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
     takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
-
-    takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(UserSettings.RecordSet.cycleColourById, handle_RECORDSET_ROTATE_COLOUR),
     takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),
     takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
@@ -840,7 +850,6 @@ function* activitiesPageSaga() {
     takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
-    takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(Activity.GeoJson.get, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),

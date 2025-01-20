@@ -11,11 +11,12 @@ import {
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_GET_IDS_FOR_RECORDSET_ONLINE
+  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
@@ -77,16 +78,14 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
       return;
     }
 
-    yield put({
-      type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-      payload: {
-        filterObject: filterObject,
-        recordSetID: action.payload.recordSetID,
-        tableFiltersHash: action.payload.tableFiltersHash,
-        recordSetType: recordset.recordSetType,
-        cacheMetadata: recordset.cacheMetadata ?? null
-      }
-    });
+    const payload = {
+      filterObject: filterObject,
+      recordSetID: action.payload.recordSetID,
+      tableFiltersHash: action.payload.tableFiltersHash,
+      recordSetType: recordset.recordSetType
+    };
+
+    yield put({ type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, payload });
   } catch (e) {
     console.error(e);
     throw e;
@@ -115,12 +114,15 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       });
     } else {
       const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
-      if (recordSet?.cacheMetadata?.idList) {
+      if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
+        const service = yield RecordCacheServiceFactory.getPlatformInstance();
+        const ids = yield service.getIdList(action.payload.recordSetID);
+
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
           payload: {
             recordSetID: action.payload.recordSetID,
-            IDList: recordSet.cacheMetadata.idList ?? [],
+            IDList: ids ?? [],
             tableFiltersHash: action.payload.tableFiltersHash
           }
         });
@@ -155,6 +157,19 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
           tableFiltersHash: action.payload.tableFiltersHash
         }
       });
+    } else {
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      if (yield service.isCached(action.payload.recordSetID)) {
+        const ids = yield service.getIdList(action.payload.recordSetID);
+        yield put({
+          type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
+          payload: {
+            recordSetID: action.payload.recordSetID,
+            IDList: ids,
+            tableFiltersHash: action.payload.tableFiltersHash
+          }
+        });
+      }
     }
   } catch (e) {
     console.error(e);
@@ -221,11 +236,9 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
     }
 
     if (userMobileOffline) {
-      const recordSetIdList = yield select(
-        (state) => state.UserSettings.recordSets[recordSetID].cacheMetadata.idList ?? []
-      );
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const records = yield service.fetchPaginatedCachedRecords(recordSetIdList, page, limit);
+      const recordSetIdList = yield service.getIdList(recordSetID);
+      const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
       yield put(
         Activity.getRowsSuccess({
           recordSetID: recordSetID,
@@ -275,9 +288,9 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
       return;
     }
     if (userMobileOffline) {
-      const recordSetIdList = currentState.recordSets[recordSetID].cacheMetadata.idList ?? [];
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const records = yield service.fetchPaginatedCachedIappRecords(recordSetIdList, page, limit);
+      const recordSetIdList = yield service.getIdList(recordSetID.toString()) ?? [];
+      const records = yield service.getPaginatedCachedIappRecords(recordSetIdList, page, limit);
       yield put(
         IappActions.getRowsSuccess({
           recordSetID: recordSetID,

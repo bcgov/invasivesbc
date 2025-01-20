@@ -60,9 +60,9 @@ import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
 import MapActions from 'state/actions/map';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
-import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
+import RecordCache from 'state/actions/cache/RecordCache';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -417,9 +417,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
        in) and builder.addCase instead of switches, although I assume you lose fallthrough cases then.
       */
     return createNextState(state, (draftState: Draft<MapState>) => {
-      if (UserSettings.RecordSet.remove.match(action)) {
-        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload);
-        draftState.layers.splice(index, 1);
+      if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
+        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.meta.arg.setId);
+        if (index !== -1) {
+          draftState.layers.splice(index, 1);
+        }
       } else if (UserSettings.RecordSet.set.match(action)) {
         const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
         Object.keys(action.payload.updatedSet).forEach((key) => {
@@ -471,14 +473,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         for (const r of removalList) {
           draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
         }
-      } else if (RecordCache.requestCaching.fulfilled.match(action)) {
-        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setId);
-        draftState.layers[index].layerState.cacheMetadata = {
-          ...draftState.layers[index].layerState.cacheMetadata,
-          cachedCentroid: action.payload.cachedCentroid,
-          cachedGeoJson: action.payload.cachedGeoJson,
-          bbox: action.payload.bbox
-        };
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         Object.keys(action.payload.recordSets).forEach((setID) => {
           let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
@@ -517,24 +511,28 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           page: 0
         });
       } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
-        draftState.whatsHere.serverActivityIDs = action.payload.activities;
-        draftState.whatsHere.serverIAPPIDs = action.payload.iapp;
+        const { iapp, activities } = action.payload;
+        draftState.whatsHere.serverActivityIDs = activities;
+        draftState.whatsHere.serverIAPPIDs = iapp;
         const toggledOnActivityLayers = draftState.layers.filter(
           ({ type, layerState }) => type === RecordSetType.Activity && layerState.mapToggle
         );
         const toggledOnIAPPLayers = draftState.layers.filter(
           ({ type, layerState }) => type === RecordSetType.IAPP && layerState.mapToggle
         );
-        const localActivityIDs = toggledOnActivityLayers.flatMap(
-          (layer) => layer.IDList ?? layer?.layerState?.cacheMetadata?.idList ?? []
-        );
-        const localIappIds = toggledOnIAPPLayers.flatMap(
-          (layer) => layer.IDList ?? layer?.layerState?.cacheMetadata?.idList ?? []
-        );
-        const iappIds = localIappIds.filter((l) => draftState.whatsHere.serverIAPPIDs.includes(l));
-        const activityIds = localActivityIDs.filter((l) => draftState.whatsHere.serverActivityIDs.includes(l));
+
+        const localActivityIDs = toggledOnActivityLayers.flatMap((layer) => layer.IDList ?? []);
+        const localIappIds = toggledOnIAPPLayers.flatMap((layer) => layer.IDList ?? []);
+
+        const iappIds = localIappIds.filter((l) => iapp.includes(l) || iapp.includes(l.toString()));
+        const activityIds = localActivityIDs.filter((l) => activities.includes(l));
         draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIds));
         draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIds));
+      } else if (RecordCache.requestCaching.fulfilled.match(action)) {
+        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.meta.arg.setId);
+        if (index !== -1) {
+          draftState.layers[index].layerState.cacheMetadataStatus = action.payload.status;
+        }
       } else if (WhatsHere.sort_filter_update.match(action)) {
         const { field, direction } = action.payload;
         if (action.payload.type === RecordSetType.IAPP) {
@@ -756,7 +754,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             if (!draftState.layers[index]) {
-              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.IAPP });
               index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             }
             draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
@@ -812,8 +810,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             if (!draftState.layers[index]) {
               draftState.layers.push({
                 recordSetID: action.payload.recordSetID,
-                type: action.payload.recordSetType,
-                cacheMetadata: action.payload.cacheMetadata
+                type: action.payload.recordSetType
               });
             }
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
