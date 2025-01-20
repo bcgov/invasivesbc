@@ -197,8 +197,10 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (WhatsHere.toggle.match(action)) {
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
       } else if (RecordCache.requestCaching.pending.match(action)) {
+        console.log('In pending reducer, user setting', action);
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
       } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
+        console.log('In rejected reducer, user setting', action);
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.ERROR;
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = action.payload.status;

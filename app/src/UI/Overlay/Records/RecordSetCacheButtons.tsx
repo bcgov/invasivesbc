@@ -24,6 +24,22 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const [isPaused, setIsPaused] = useState(false);
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    /**
+     * Save -> Progress bar shows up
+     * For Progress bar:
+     * * Get the total no.of records in the recordset
+     * * Get the number of caches being downloaded and move the progress bar accordingly
+     * * Check how the system works when there are multiple progress bars
+     *
+     * Cancel:
+     * * Add the previous method to this button / prompts to be shown as before
+     *
+     * Pause/Play: Next iteration / brain storm all use cases
+     *
+     * UI clean up: Make the box look better
+     *
+     * Code refactor and optimization (?)
+     */
     e.stopPropagation();
     switch (recordSet.cacheMetadataStatus) {
       case UserRecordCacheStatus.NOT_CACHED:
@@ -55,12 +71,17 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const downloadCache = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
-        // dispatch(RecordCache.requestCaching({ setId }));
+        dispatch(RecordCache.requestCaching({ setId }));
+        console.log('Dispatched request caching');
+
         setShowProgress(true);
         setProgress(0);
         setIsPaused(false);
       }
     };
+    console.log('Record set:', recordSet);
+    console.log('Set id', setId);
+
     dispatch(
       Prompt.confirmation({
         title: 'Download Records',
@@ -154,106 +175,119 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
           </Button>
         )}
 
-        {showProgress && (
-          // <div className="record-set-control">
-          //   <Tooltip title="Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time.">
-          //     <IconButton onClick={handlePausePlayClick} color="primary">
-          //       {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
-          //     </IconButton>
-          //   </Tooltip>
-          //   <Tooltip title="progress bar">
-          //     <LinearProgress variant={'determinate'} value={progress} />
-          //   </Tooltip>
-          //   <Tooltip title="cancel">
-          //     <IconButton color={'error'} onClick={handleCancelClick}>
-          //       <CloseIcon />
-          //     </IconButton>
-          //   </Tooltip>
-          // </div>
+        {
+          // !showProgress && (
+          //   <Button
+          //     disabled={!cacheActionEnabled}
+          //     className="records__set__layer_cache"
+          //     onClick={handleClick}
+          //     variant="outlined"
+          //   >
+          //     {formatStatusKey(recordSet.cacheMetadata?.status)}
+          //     <SaveIcon />
+          //   </Button>
+          // )
+        }
 
-          // <Box
-          //   display="flex"
-          //   flexDirection="column"
-          //   alignItems="center"
-          //   sx={{
-          //     border: '1px solid #1976d2',
-          //     borderRadius: '8px',
-          //     padding: '10px'
-          //   }}
-          // >
-          //   <Grid spacing={2}>
-          //     <Grid xs={3}>
-          //       <IconButton onClick={handlePausePlayClick} color="primary">
-          //         {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
-          //       </IconButton>
+        {
+          // showProgress && (
+          //   // <div className="record-set-control">
+          //   //   <Tooltip title="Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time.">
+          //   //     <IconButton onClick={handlePausePlayClick} color="primary">
+          //   //       {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
+          //   //     </IconButton>
+          //   //   </Tooltip>
+          //   //   <Tooltip title="progress bar">
+          //   //     <LinearProgress variant={'determinate'} value={progress} />
+          //   //   </Tooltip>
+          //   //   <Tooltip title="cancel">
+          //   //     <IconButton color={'error'} onClick={handleCancelClick}>
+          //   //       <CloseIcon />
+          //   //     </IconButton>
+          //   //   </Tooltip>
+          //   // </div>
+          //   // <Box
+          //   //   display="flex"
+          //   //   flexDirection="column"
+          //   //   alignItems="center"
+          //   //   sx={{
+          //   //     border: '1px solid #1976d2',
+          //   //     borderRadius: '8px',
+          //   //     padding: '10px'
+          //   //   }}
+          //   // >
+          //   //   <Grid spacing={2}>
+          //   //     <Grid xs={3}>
+          //   //       <IconButton onClick={handlePausePlayClick} color="primary">
+          //   //         {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
+          //   //       </IconButton>
+          //   //     </Grid>
+          //   //     <Grid xs={6}>
+          //   //       <LinearProgress variant={'determinate'} value={progress} />
+          //   //     </Grid>
+          //   //     <Grid xs={3}>
+          //   //       <IconButton color={'error'} onClick={handleCancelClick}>
+          //   //         <CloseIcon />
+          //   //       </IconButton>
+          //   //     </Grid>
+          //   //   </Grid>
+          //   //   <Grid>
+          //   //     <Grid xs={12}>
+          //   //       <div>{progress}% Completed</div>
+          //   //     </Grid>
+          //   //   </Grid>
+          //   // </Box>
+          //   <Box
+          //     sx={{
+          //       border: '1px solid #1976d2',
+          //       borderRadius: '8px',
+          //       padding: 2
+          //     }}
+          //     onClick={(e) => e.stopPropagation()}
+          //   >
+          //     <Grid container spacing={2} alignItems="center">
+          //       {/* First row with buttons and progress bar */}
+          //       <Grid item xs={2}>
+          //         <IconButton
+          //           onClick={handlePausePlayClick}
+          //           color="primary"
+          //           sx={{
+          //             display: 'flex',
+          //             justifyContent: 'center',
+          //             alignItems: 'center',
+          //             width: '100%'
+          //           }}
+          //         >
+          //           {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
+          //         </IconButton>
+          //       </Grid>
+          //       <Grid item xs={8}>
+          //         <LinearProgress variant={'determinate'} value={progress} sx={{ height: 5 }} />
+          //       </Grid>
+          //       <Grid item xs={2}>
+          //         <IconButton
+          //           color={'error'}
+          //           onClick={handleCancelClick}
+          //           sx={{
+          //             display: 'flex',
+          //             justifyContent: 'center',
+          //             alignItems: 'center',
+          //             width: '100%'
+          //           }}
+          //         >
+          //           <CloseIcon />
+          //         </IconButton>
+          //       </Grid>
+          //       {/* Second row with progress text */}
+          //       <Grid item xs={12}>
+          //         <Typography variant="caption" align="center">
+          //           {`${progress}% completed`}
+          //         </Typography>
+          //       </Grid>
           //     </Grid>
-          //     <Grid xs={6}>
-          //       <LinearProgress variant={'determinate'} value={progress} />
-          //     </Grid>
-          //     <Grid xs={3}>
-          //       <IconButton color={'error'} onClick={handleCancelClick}>
-          //         <CloseIcon />
-          //       </IconButton>
-          //     </Grid>
-          //   </Grid>
-          //   <Grid>
-          //     <Grid xs={12}>
-          //       <div>{progress}% Completed</div>
-          //     </Grid>
-          //   </Grid>
-          // </Box>
-
-          <Box
-            sx={{
-              border: '1px solid #1976d2',
-              borderRadius: '8px',
-              padding: 2
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Grid container spacing={2} alignItems="center">
-              {/* First row with buttons and progress bar */}
-              <Grid item xs={2}>
-                <IconButton
-                  onClick={handlePausePlayClick}
-                  color="primary"
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%'
-                  }}
-                >
-                  {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
-                </IconButton>
-              </Grid>
-              <Grid item xs={8}>
-                <LinearProgress variant={'determinate'} value={progress} sx={{ height: 5 }} />
-              </Grid>
-              <Grid item xs={2}>
-                <IconButton
-                  color={'error'}
-                  onClick={handleCancelClick}
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%'
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </Grid>
-
-              {/* Second row with progress text */}
-              <Grid item xs={12}>
-                <Typography variant="caption" align="center">
-                  {`${progress}% completed`}
-                </Typography>
-              </Grid>
-            </Grid>
-          </Box>
-        )}
+          //   </Box>
+          // )
+        }
       </span>
     </Tooltip>
   );

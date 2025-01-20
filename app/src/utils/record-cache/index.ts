@@ -194,7 +194,14 @@ abstract class RecordCacheService extends BaseCacheService<
         }).then(async (data) => await data.json())
       ]);
       await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
+
       if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
+        console.log(
+          'RECORDS_BETWEEN_PROGRESS_UPDATES',
+          this.RECORDS_BETWEEN_PROGRESS_UPDATES,
+          i,
+          spec.idsToCache.length
+        );
         abort = await this.checkForAbort(spec.setId);
         /*
           ProgressCallback Logic
@@ -213,6 +220,8 @@ abstract class RecordCacheService extends BaseCacheService<
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<boolean> {
     let abort = false;
+    let processedCaches = 0;
+    let totalRecordsToCache = spec.idsToCache.length;
     for (let i = 0; i < spec.idsToCache.length && !abort; i++) {
       const rez = await fetch(`${spec.API_BASE}/api/activity/${spec.idsToCache[i]}`, {
         headers: {
@@ -220,11 +229,40 @@ abstract class RecordCacheService extends BaseCacheService<
         }
       });
       await this.saveActivity(spec.idsToCache[i], await rez.json());
+      processedCaches++;
+      const currentProgress = processedCaches / totalRecordsToCache;
+      console.log("What's in spec", spec);
+
       if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
+        console.log(
+          'RECORDS_BETWEEN_PROGRESS_UPDATES',
+          this.RECORDS_BETWEEN_PROGRESS_UPDATES,
+          i,
+          spec.idsToCache.length
+        );
         abort = await this.checkForAbort(spec.setId);
         /*
           ProgressCallback Logic
         */
+        console.log('Progress callback', {
+          setId: spec.setId,
+          message: '',
+          aborted: abort,
+          normalizedProgress: processedCaches / totalRecordsToCache,
+          totalActivities: totalRecordsToCache,
+          processedActivities: processedCaches
+        });
+
+        if (progressCallback) {
+          progressCallback({
+            setId: spec.idsToCache[i],
+            message: '',
+            aborted: abort,
+            normalizedProgress: processedCaches / totalRecordsToCache,
+            totalActivities: totalRecordsToCache,
+            processedActivities: processedCaches
+          });
+        }
       }
     }
     return !abort;
