@@ -51,7 +51,7 @@ export const RecordSet = (props) => {
             </Button>
           </div>
           <div className="recordSet_header_name">
-            {recordSet?.recordSetName || `New Recordset2 - ${recordSet?.recordSetType}`}
+            {recordSet?.recordSetName || `New Recordset - ${recordSet?.recordSetType}`}
           </div>
         </div>
       </div>

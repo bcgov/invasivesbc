@@ -10,6 +10,7 @@ import RecordCache from 'state/actions/cache/RecordCache';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import Prompt from 'state/actions/prompts/Prompt';
 import { shallowEqual } from 'react-redux';
+
 interface PropTypes {
   recordSet: UserRecordSet;
   setId: string;
@@ -91,8 +92,6 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
         // setIsPaused(false);
       }
     };
-    console.log('Record set:', recordSet);
-    console.log('Set id', setId);
 
     dispatch(
       Prompt.confirmation({
@@ -134,12 +133,6 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const handlePausePlayClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     setIsPaused((prev) => !prev);
-  };
-
-  const handleCancelClick = (e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    setShowProgress(false);
-    setProgress(0);
   };
 
   useEffect(() => {
@@ -188,52 +181,6 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
         )}
 
         {activeDownloads && (
-          // <div className="record-set-control">
-          //   <Tooltip title="Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time.">
-          //     <IconButton onClick={handlePausePlayClick} color="primary">
-          //       {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
-          //     </IconButton>
-          //   </Tooltip>
-          //   <Tooltip title="progress bar">
-          //     <LinearProgress variant={'determinate'} value={progress} />
-          //   </Tooltip>
-          //   <Tooltip title="cancel">
-          //     <IconButton color={'error'} onClick={handleCancelClick}>
-          //       <CloseIcon />
-          //     </IconButton>
-          //   </Tooltip>
-          // </div>
-          // <Box
-          //   display="flex"
-          //   flexDirection="column"
-          //   alignItems="center"
-          //   sx={{
-          //     border: '1px solid #1976d2',
-          //     borderRadius: '8px',
-          //     padding: '10px'
-          //   }}
-          // >
-          //   <Grid spacing={2}>
-          //     <Grid xs={3}>
-          //       <IconButton onClick={handlePausePlayClick} color="primary">
-          //         {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
-          //       </IconButton>
-          //     </Grid>
-          //     <Grid xs={6}>
-          //       <LinearProgress variant={'determinate'} value={progress} />
-          //     </Grid>
-          //     <Grid xs={3}>
-          //       <IconButton color={'error'} onClick={handleCancelClick}>
-          //         <CloseIcon />
-          //       </IconButton>
-          //     </Grid>
-          //   </Grid>
-          //   <Grid>
-          //     <Grid xs={12}>
-          //       <div>{progress}% Completed</div>
-          //     </Grid>
-          //   </Grid>
-          // </Box>
           <Box
             sx={{
               border: '1px solid #1976d2',

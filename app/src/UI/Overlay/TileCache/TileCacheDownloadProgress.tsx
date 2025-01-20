@@ -11,7 +11,6 @@ const TileCacheDownloadProgress = () => {
   const dispatch = useDispatch();
   const downloadProgress = useSelector((state) => state.TileCache?.downloadProgress, shallowEqual);
   const activeDownloads = Object.keys(downloadProgress ?? {}).length > 0;
-  console.log(downloadProgress, activeDownloads);
 
   if (!downloadProgress || !activeDownloads) {
     return (

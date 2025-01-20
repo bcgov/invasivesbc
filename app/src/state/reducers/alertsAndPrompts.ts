@@ -55,10 +55,8 @@ export function createAlertsAndPromptsReducer(
         RecordCache.requestCaching.fulfilled.match(action) &&
         action.payload.status === UserRecordCacheStatus.CACHED
       ) {
-        console.log('In fulfilled prompts');
         draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheSuccess);
       } else if (RecordCache.requestCaching.rejected.match(action)) {
-        console.log('In rejected prompts');
         draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetCacheFailed);
       } else if (RecordCache.deleteCache.rejected.match(action)) {
         draftState.alerts = addAlert(state.alerts, cacheAlertMessages.recordsetDeleteCacheFailed);

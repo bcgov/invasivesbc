@@ -199,12 +199,6 @@ abstract class RecordCacheService extends BaseCacheService<
       await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
 
       if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
-        console.log(
-          'RECORDS_BETWEEN_PROGRESS_UPDATES',
-          this.RECORDS_BETWEEN_PROGRESS_UPDATES,
-          i,
-          spec.idsToCache.length
-        );
         abort = await this.checkForAbort(spec.setId);
         /*
           ProgressCallback Logic
@@ -255,7 +249,6 @@ abstract class RecordCacheService extends BaseCacheService<
           totalActivities: totalRecordsToCache,
           processedActivities: processedCaches
         });
-        console.log('progress callback payload', progressCallback);
 
         if (progressCallback) {
           progressCallback({

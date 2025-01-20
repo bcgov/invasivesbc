@@ -38,11 +38,9 @@ class RecordCache {
       const idsToCache: string[] =
         state.Map.layers.find((l) => l.recordSetID == spec.setId)?.IDList.map((id: string | number) => id.toString()) ??
         [];
-      console.log('IDs to cache', idsToCache);
 
       const recordSet = state.UserSettings.recordSets[spec.setId];
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
-      console.log('BBox', bbox);
 
       const downloadCompleted = await service.download(
         {

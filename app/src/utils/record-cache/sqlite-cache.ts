@@ -82,8 +82,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
 
     try {
-      console.log('add or update repo', spec.setId, JSON.stringify(spec));
-
       await this.cacheDB.query(
         //language=SQLite`
         `INSERT INTO CACHE_METADATA(SET_ID, STATUS, CACHE_TIME, DATA)
@@ -325,7 +323,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    console.log('Inside save activity');
 
     const stringified = JSON.stringify(data);
     const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
