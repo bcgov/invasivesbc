@@ -1,9 +1,9 @@
-import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/layer-definitions';
+import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 
-export const addClientBoundariesIfNotExists = (clientBoundaries, map) => {
-  if (map && clientBoundaries?.length > 0) {
-    clientBoundaries.map((layer) => {
-      const layerID = 'clientBoundaries' + layer.id;
+export const addServerBoundariesIfNotExists = (serverBoundaries, map) => {
+  if (map && serverBoundaries?.length > 0) {
+    serverBoundaries.map((layer) => {
+      const layerID = 'serverBoundary' + layer.id;
 
       if (!map.getSource(layerID)) {
         map
@@ -31,10 +31,10 @@ export const addClientBoundariesIfNotExists = (clientBoundaries, map) => {
   }
 };
 
-export const refreshClientBoundariesOnToggle = (clientBoundaries, map) => {
-  if (map && clientBoundaries?.length > 0) {
-    clientBoundaries.map((layer) => {
-      const layerID = 'clientBoundaries' + layer.id;
+export const refreshServerBoundariesOnToggle = (serverBoundaries, map) => {
+  if (map && serverBoundaries?.length > 0) {
+    serverBoundaries.map((layer) => {
+      const layerID = 'serverBoundary' + layer.id;
 
       if (map.getSource(layerID) && map.getLayer(layerID)) {
         const visibility = map.getLayoutProperty(layerID, 'visibility');

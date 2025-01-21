@@ -1,5 +1,5 @@
-import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
+import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { MOBILE } from 'state/build-time-config';
 
 // these layers are used as placeholders so the others can be placed relative to them
@@ -235,7 +235,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
 
     mode: MapSourceAndLayerDefinitionMode.OVERLAY,
 
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresAnonymous(false).build(),
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresAnonymous(true).build(),
     source: {
       type: 'vector',
       url: 'pmtiles://https://nrs.objectstore.gov.bc.ca/rzivsz/invasives-prod.pmtiles'

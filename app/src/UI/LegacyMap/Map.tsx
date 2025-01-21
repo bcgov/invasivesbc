@@ -1,49 +1,48 @@
-import circle from '@turf/circle';
-import maplibregl, { LngLatLike, Map as MapLibre } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import './map.css';
 
-import centroid from '@turf/centroid';
-
-// Draw tools:
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
-import { useHistory } from 'react-router-dom';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import {
-  allBaseMapLayerIdsNotInDefinition,
-  allOverlayLayerIdsNotInDefinitions,
-  allSourceIDsRequiredForDefinition,
   LAYER_Z_BACKGROUND,
+  LAYER_Z_FOREGROUND,
   LAYER_Z_MID,
-  layersForDefinition,
   MAP_DEFINITIONS
-} from 'UI/LegacyMap/helpers/layer-definitions';
+} from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
-import { mapInit } from 'UI/LegacyMap/helpers/map-init';
 import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshVisibilityOnToggleUpdate,
   removeLayersOnNetworkConnectivityChange
-} from 'UI/LegacyMap/helpers/recordset-layers';
-import { addWMSLayersIfNotExist, refreshWMSOnToggle, hideWMSIfUnauthorized } from 'UI/LegacyMap/helpers/wms-layers';
+} from 'UI/LegacyMap/helpers/functional/recordset-layers';
+import {
+  addWMSLayersIfNotExist,
+  hideWMSIfUnauthorized,
+  refreshWMSOnToggle
+} from 'UI/LegacyMap/helpers/functional/wms-layers';
 import {
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle
-} from 'UI/LegacyMap/helpers/server-boundaries';
+} from 'UI/LegacyMap/helpers/functional/server-boundaries';
 import {
   addClientBoundariesIfNotExists,
   refreshClientBoundariesOnToggle
-} from 'UI/LegacyMap/helpers/client-boundaries';
-import { handlePositionTracking } from 'UI/LegacyMap/helpers/position-tracking';
-import { refreshDrawControls } from 'UI/LegacyMap/helpers/draw-tools';
-import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/LegacyMap/helpers/current-record';
-import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/utility-functions';
-import { refreshWhatsHereFeature } from 'UI/LegacyMap/helpers/whats-here';
+} from 'UI/LegacyMap/helpers/functional/client-boundaries';
 import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
+import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
+import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
+import { PositionMarkers } from 'UI/LegacyMap/helpers/components/PositionMarkers';
+import maplibregl, { LngLatBoundsLike } from 'maplibre-gl';
+import { MOBILE } from 'state/build-time-config';
+import { PMTiles, Protocol } from 'pmtiles';
+import { TileCacheService } from 'utils/tile-cache';
+import { Coordinates } from 'UI/LegacyMap/helpers/components/Coordinates';
+import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
+import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
+import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
+import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
 
 /*
 
@@ -52,20 +51,16 @@ import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 
  */
 export const Map = ({ children }) => {
-  const { API_BASE } = useSelector((state) => state.Configuration.current);
+  const { API_BASE, PUBLIC_MAP_URL } = useSelector((state) => state.Configuration.current);
   const tileCache = useContext(Context);
 
-  const [draw, setDraw] = useState(null);
   const [mapReady, setMapReady] = useState(false);
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
-  const map: React.MutableRefObject<MapLibre | null> = useRef<MapLibre>(null);
+  // const map: React.MutableRefObject<MapLibre | null> = useRef<MapLibre>(null);
 
   const MapMode = useSelector((state) => state.Map.MapMode);
-  const dispatch = useDispatch();
-  const uHistory = useHistory();
 
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
-  const authInitiated = useSelector((state) => state.Auth.initialized);
   const { authenticated, loggedInOrWorkingOffline, rolesInitialized } = useSelector((state) => state.Auth);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
 
@@ -84,66 +79,143 @@ export const Map = ({ children }) => {
   const map_center = useSelector((state) => state.Map.map_center);
   const map_zoom = useSelector((state) => state.Map.map_zoom);
 
-  // User tracking coords jump and markers/indicators
-  const userCoords = useSelector((state) => state.Map.userCoords);
-  const accuracyToggle = useSelector((state) => state.Map.accuracyToggle);
-  const positionTracking = useSelector((state) => state.Map.positionTracking);
-  const panned = useSelector((state) => state.Map.panned);
-  const positionMarker = new maplibregl.Marker({ element: positionMarkerEl });
-  const accuracyCircle = useSelector((state) => {
-    if (state.Map.userCoords?.long) {
-      return circle([state.Map?.userCoords?.long, state.Map?.userCoords?.lat], state.Map?.userCoords?.accuracy, {
-        steps: 64,
-        units: 'meters'
-      });
-    }
-    return null;
-  });
-
-  // Draw tools - determine who needs edit and where the geos get dispatched, what tools to display etc
-  const whatsHereFeature = useSelector((state) => state.Map.whatsHere?.feature);
-  const whatsHereToggle = useSelector((state) => state.Map.whatsHere?.toggle);
-  const whatsHereMarker = new maplibregl.Marker({ element: whatsHereMarkerEl });
-
-  const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
-
-  const appModeUrl = useSelector((state) => state.AppMode.url);
-  // also used with current marker below:
-  const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry);
-  const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
-
-  //Current rec markers:
-  const currentActivityShortID = useSelector((state) => state.ActivityPage.activity?.short_id);
-  const currentIAPPID = useSelector((state) => state.IAPPSitePage.site?.site_id);
-  const currentIAPPGeo = useSelector((state) => state.IAPPSitePage.site?.geom);
-  const activityMarker = new maplibregl.Marker({ element: activityMarkerEl });
-  const IAPPMarker = new maplibregl.Marker({ element: IAPPMarkerEl });
-
-  //Highlighted Record from main records page:
-  const userRecordOnHoverRecordRow = useSelector((state) => state.Map.userRecordOnHoverRecordRow);
-  const userRecordOnHoverRecordType = useSelector((state) => state.Map.userRecordOnHoverRecordType);
-  const quickPanToRecord = useSelector((state) => state.Map.quickPanToRecord);
-
   const baseMapLayer = useSelector((state) => state.Map.baseMapLayer);
-  const enabledOverlayLayers = useSelector((state) => state.Map.enabledOverlayLayers);
 
-  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications);
-
-  const PUBLIC_MAP_URL = useSelector((state) => state.Configuration.current.PUBLIC_MAP_URL);
+  const [map, setMap] = useState<InvasivesMap>();
 
   useEffect(() => {
-    if (!map.current || mapReady) return;
+    if (!mapContainer.current) {
+      console.error('Mapinit invoked with invalid reference');
+      throw new Error('Mapinit invoked with invalid reference');
+    }
 
-    map.current.once('idle', function () {
-      if (map.current !== null) {
-        map.current.resize();
+    const pmtilesProtocol = new Protocol();
+    maplibregl.addProtocol('pmtiles', (request) => {
+      return new Promise((resolve, reject) => {
+        const callback = (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve({ data });
+          }
+        };
+        pmtilesProtocol.tile(request, callback);
+      });
+    });
+
+    const PMTILES_URL = PUBLIC_MAP_URL || `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
+    const p = new PMTiles(PMTILES_URL);
+
+    // this is so we share one instance across the JS code and the map renderer
+    pmtilesProtocol.add(p);
+    // pmtilesProtocol.add(new PMTiles(new Fetc()));
+
+    if (MOBILE) {
+      if (!tileCache) {
+        throw new Error('tile cache unexpectedly not available');
+      }
+      maplibregl.addProtocol('baked', async (request) => {
+        try {
+          const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
+
+          return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
+        } catch (e) {
+          // this is a blank 256x256 image
+          return TileCacheService.generateFallbackTile();
+        }
+      });
+    }
+
+    /* map can have platform-specific options */
+    const platformOptions = (() => {
+      if (MOBILE) {
+        return {
+          maxBounds: [-141.7761, 46.41459, -114.049, 60.00678] as LngLatBoundsLike
+        };
+      }
+      return {};
+    })();
+
+    setMap(
+      new InvasivesMap({
+        ...platformOptions,
+        container: mapContainer.current,
+        maxZoom: 24,
+        zoom: 3,
+        minZoom: 0,
+        transformRequest: (url) => {
+          if (url.includes(API_BASE)) {
+            return {
+              url,
+              headers: {
+                Authorization: (() => {
+                  if (authHeaderRef.current === undefined) {
+                    console.error('requested access before header received');
+                    return '';
+                  }
+                  return authHeaderRef.current;
+                })()
+              }
+            };
+          }
+          return {
+            url
+          };
+        },
+        center: [map_center[1], map_center[0]],
+        style: {
+          ...(MOBILE && { sprite: '/assets/basemaps/sprite/sprite' }),
+          glyphs: MOBILE
+            ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
+            : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+          version: 8,
+          sources: {
+            ...MAP_DEFINITIONS.reduce((result, item) => {
+              result[item.name] = item.source;
+              return result;
+            }, {})
+          },
+          layers: [
+            {
+              id: LAYER_Z_BACKGROUND,
+              type: 'background',
+              layout: {
+                visibility: 'none'
+              }
+            },
+            {
+              id: LAYER_Z_MID,
+              type: 'background',
+              layout: {
+                visibility: 'none'
+              }
+            },
+            {
+              id: LAYER_Z_FOREGROUND,
+              type: 'background',
+              layout: {
+                visibility: 'none'
+              }
+            }
+          ]
+        }
+      })
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!map || mapReady) return;
+
+    map.once('idle', function () {
+      if (map !== null) {
+        map.resize();
       }
     });
 
-    if (map.current.isStyleLoaded()) {
+    if (map.isStyleLoaded()) {
       setMapReady(true);
     }
-  }, [map?.current?.isStyleLoaded()]);
+  }, [map?.isStyleLoaded()]);
 
   const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
   const authHeaderRef = useRef<string>();
@@ -171,297 +243,84 @@ export const Map = ({ children }) => {
     };
   }, [authenticated]);
 
-  // Map Init
-  useEffect(() => {
-    if (map.current || !authInitiated || !map_center) return;
-
-    mapInit({
-      map: map,
-      mapContainer: mapContainer,
-      api_base: API_BASE,
-      map_center: map_center,
-      PUBLIC_MAP_URL: PUBLIC_MAP_URL,
-      dispatch: dispatch,
-      tileCache: tileCache,
-      getAuthHeaderCallback: () => {
-        if (authHeaderRef.current === undefined) {
-          console.error('requested access before header received');
-          return '';
-        }
-        return authHeaderRef.current;
-      }
-    });
-  }, [authInitiated, map_center]);
-
   useEffect(() => {
     if (!mapReady) return;
-    if (!map.current) return;
-    removeLayersOnNetworkConnectivityChange(map.current);
+    if (!map) return;
+    removeLayersOnNetworkConnectivityChange(map);
   }, [connectedToNetwork]);
 
   // RecordSet Layers:
   useEffect(() => {
     if (!mapReady) return;
-    if (!map.current) return;
-    rebuildLayersOnTableHashUpdate(storeLayers, map.current, MapMode, API_BASE, connectedToNetwork);
-    refreshColoursOnColourUpdate(storeLayers, map.current);
-    refreshVisibilityOnToggleUpdate(storeLayers, map.current);
-  }, [storeLayers, map.current, mapReady, connectedToNetwork, loggedInOrWorkingOffline]);
+    if (!map) return;
+    rebuildLayersOnTableHashUpdate(storeLayers, map, MapMode, API_BASE, connectedToNetwork);
+    refreshColoursOnColourUpdate(storeLayers, map);
+    refreshVisibilityOnToggleUpdate(storeLayers, map);
+  }, [storeLayers, map, mapReady, connectedToNetwork, loggedInOrWorkingOffline]);
 
   // Layer picker:
   useEffect(() => {
     if (!mapReady) return;
-    if (!map.current) return;
-
+    if (!map) return;
     const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
     if (!authenticated || !rolesInitialized) {
-      hideWMSIfUnauthorized(layers, map.current);
+      hideWMSIfUnauthorized(layers, map);
       return;
     }
 
-    addWMSLayersIfNotExist(layers, map.current, API_BASE);
-    refreshWMSOnToggle(layers, map.current);
-  }, [simplePickerLayers2, map.current, mapReady, baseMapLayer, connectedToNetwork, authenticated, rolesInitialized]);
+    addWMSLayersIfNotExist(layers, map, API_BASE);
+    refreshWMSOnToggle(layers, map);
+  }, [simplePickerLayers2, map, mapReady, baseMapLayer, connectedToNetwork, authenticated, rolesInitialized]);
 
   useEffect(() => {
     if (!mapReady) return;
     if (authenticated) {
-      addServerBoundariesIfNotExists(serverBoundaries, map.current);
-      refreshServerBoundariesOnToggle(serverBoundaries, map.current);
+      addServerBoundariesIfNotExists(serverBoundaries, map);
+      refreshServerBoundariesOnToggle(serverBoundaries, map);
     }
-  }, [serverBoundaries, authenticated, map.current, mapReady]);
+  }, [serverBoundaries, authenticated, map, mapReady]);
 
   useEffect(() => {
     if (!mapReady) return;
-    addClientBoundariesIfNotExists(clientBoundaries, map.current);
-    refreshClientBoundariesOnToggle(clientBoundaries, map.current);
-  }, [clientBoundaries, map.current, mapReady]);
+    addClientBoundariesIfNotExists(clientBoundaries, map);
+    refreshClientBoundariesOnToggle(clientBoundaries, map);
+  }, [clientBoundaries, map, mapReady]);
 
   // Jump Nav
   useEffect(() => {
     if (!mapReady) return;
-    if (!map.current) return;
+    if (!map) return;
 
     try {
       if (map_center && map_zoom) {
-        map.current.jumpTo({ center: map_center, zoom: map_zoom });
+        map.jumpTo({ center: map_center, zoom: map_zoom });
       }
     } catch (e) {
       console.error(e);
     }
   }, [map_center, map_zoom]);
 
-  // User position tracking and marker
-  useEffect(() => {
-    if (!mapReady) return;
-    handlePositionTracking(
-      map.current,
-      positionMarker,
-      userCoords,
-      accuracyCircle,
-      accuracyToggle,
-      positionTracking,
-      panned
-    );
-  }, [userCoords, positionTracking, accuracyToggle, mapReady, panned]);
-
-  // set base map layer
-  useEffect(() => {
-    if (!mapReady) return;
-
-    if (!map.current) {
-      return;
-    }
-
-    if (!baseMapLayer) {
-      return;
-    }
-
-    const deactivateBaseLayers = allBaseMapLayerIdsNotInDefinition(
-      [...MAP_DEFINITIONS, ...(offlineDefinitions || [])],
-      baseMapLayer
-    );
-
-    const deactivateOverlayLayers = allOverlayLayerIdsNotInDefinitions(
-      [...MAP_DEFINITIONS, ...(offlineDefinitions || [])],
-      enabledOverlayLayers
-    );
-
-    const staticSources = MAP_DEFINITIONS.map((m) => {
-      return {
-        id: m.name,
-        source: m.source
-      };
-    });
-
-    /* cached layers */
-    const cachedSources = (offlineDefinitions || []).map((m) => {
-      return {
-        id: m.name,
-        source: m.source
-      };
-    });
-
-    const allSources = [...staticSources, ...cachedSources];
-
-    const sourcesRequired = allSources.filter((s) => {
-      for (const layerToCheck of [baseMapLayer, ...enabledOverlayLayers]) {
-        if (
-          allSourceIDsRequiredForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], layerToCheck).includes(
-            s.id
-          )
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-
-    const sourcesNotRequired = allSources.filter((s) => !sourcesRequired.some((r) => r.id == s.id));
-
-    // first remove the unneeded layers
-    for (const layerId of [...deactivateBaseLayers, ...deactivateOverlayLayers]) {
-      if (map.current.getLayer(layerId)) {
-        map.current.removeLayer(layerId);
-      }
-    }
-
-    // now we can delete associated sources we no longer reference
-    for (const source of sourcesNotRequired) {
-      if (map.current.getSource(source.id)) {
-        map.current.removeSource(source.id);
-      }
-    }
-
-    // ...add the required sources in
-    for (const source of sourcesRequired) {
-      if (!map.current.getSource(source.id)) {
-        map.current.addSource(source.id, source.source);
-      }
-    }
-
-    //  add the base map layers (which depend on the sources)
-    for (const layerSpec of layersForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], baseMapLayer)) {
-      if (!map.current.getLayer(layerSpec.id)) {
-        map.current.addLayer(layerSpec, LAYER_Z_BACKGROUND);
-      }
-    }
-
-    // finally add the overlay layers (which can also depend on the sources)
-    for (const overlayLayer of enabledOverlayLayers) {
-      for (const layerSpec of layersForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], overlayLayer)) {
-        if (!map.current.getLayer(layerSpec.id)) {
-          map.current.addLayer(layerSpec, LAYER_Z_MID);
-        }
-      }
-    }
-  }, [baseMapLayer, enabledOverlayLayers, map.current, mapReady]);
-
-  // Handle draw mode changes, controls, and action dispatching:
-  useEffect(() => {
-    if (!mapReady) return;
-    if (!map.current) return;
-    if (!appModeUrl) return;
-
-    refreshDrawControls({
-      map: map.current,
-      draw,
-      drawSetter: setDraw,
-      dispatch,
-      uHistory,
-      whatsHereToggle,
-      tileCacheMode,
-      appModeUrl,
-      activityGeo,
-      drawingCustomLayer
-    });
-  }, [whatsHereToggle, tileCacheMode, appModeUrl, dispatch, map.current, activityGeo, drawingCustomLayer, mapReady]);
-
-  //Current Activity & IAPP Markers
-  useEffect(() => {
-    if (!mapReady) return;
-    refreshCurrentRecMakers(map.current, {
-      activityGeo,
-      currentActivityShortID,
-      currentIAPPID,
-      currentIAPPGeo,
-      userRecordOnHoverRecordRow,
-      activityMarker,
-      IAPPMarker,
-      whatsHereMarker,
-      whatsHereFeature
-    });
-  }, [currentActivityShortID, currentIAPPID, map.current, mapReady, userRecordOnHoverRecordRow]);
-
-  //Highlighted Record
-  useEffect(() => {
-    if (!mapReady) return;
-    if (!map.current) return;
-
-    refreshHighlightedRecord(map.current, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
-
-    if (quickPanToRecord) {
-      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'IAPP') {
-        if (userRecordOnHoverRecordRow.geometry) {
-          const c = centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates as LngLatLike;
-          if (c) {
-            map.current.jumpTo({ center: c, zoom: 15 });
-          }
-        }
-      }
-      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'Activity') {
-        if (userRecordOnHoverRecordRow.geometry?.[0]) {
-          const c = centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates as LngLatLike;
-          if (c) {
-            map.current.jumpTo({
-              center: c,
-              zoom: 15
-            });
-          }
-        }
-      }
-    }
-
-    // Jump Nav
-  }, [userRecordOnHoverRecordRow, map.current, map?.current?.isStyleLoaded()]);
-
   const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
     setInterval(() => {
-      if (map.current) {
-        setMapLoaded(map.current.areTilesLoaded());
+      if (map) {
+        setMapLoaded(map.areTilesLoaded());
       }
     }, 1000);
-  }, [map.current]);
+  }, [map]);
 
   // toggle public map pmtile layer
   useEffect(() => {
     if (!mapReady) return;
-    if (!map.current) return;
+    if (!map) return;
     if (loggedInOrWorkingOffline) {
-      toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector', false);
-      toggleLayerOnBool(map.current, 'iapp-pmtile-vector', false);
-      toggleLayerOnBool(map.current, 'invasivesbc-pmtile-vector-label', false);
-      toggleLayerOnBool(map.current, 'iapp-pmtile-vector-label', false);
+      toggleLayerOnBool(map, 'invasivesbc-pmtile-vector', false);
+      toggleLayerOnBool(map, 'iapp-pmtile-vector', false);
+      toggleLayerOnBool(map, 'invasivesbc-pmtile-vector-label', false);
+      toggleLayerOnBool(map, 'iapp-pmtile-vector-label', false);
     }
-  }, [loggedInOrWorkingOffline, map.current, mapReady]);
-
-  useEffect(() => {
-    refreshWhatsHereFeature(map.current, { whatsHereFeature });
-  }, [whatsHereFeature, appModeUrl, map.current, mapReady]);
-
-  useEffect(() => {
-    try {
-      if (!mapReady) return;
-      if (!userCoords?.heading) return;
-      if (positionMarker?.getRotation() === userCoords?.heading) return;
-      positionMarker?.setRotationAlignment('map');
-      positionMarker?.setRotation(userCoords?.heading);
-    } catch (e) {
-      console.error(e);
-    }
-  }, [userCoords?.heading, mapReady]);
+  }, [loggedInOrWorkingOffline, map, mapReady]);
 
   return (
     <div className="map-containing-block">
@@ -470,30 +329,17 @@ export const Map = ({ children }) => {
         <div id="LoadingMap" className={!mapLoaded ? 'loadingMap' : 'loadedMap'}>
           Loading tiles...
         </div>
+
+        <MapContext.Provider value={map}>
+          <Coordinates />
+          <DrawControls />
+          <ReactiveLayers mapReady={mapReady} />
+          <PositionMarkers mapReady={mapReady} />
+          <CurrentActivityLayer mapReady={mapReady} />
+        </MapContext.Provider>
+
         {children}
       </div>
     </div>
   );
 };
-
-const positionMarkerEl = document.createElement('div');
-positionMarkerEl.className = 'userTrackingMarker';
-positionMarkerEl.innerHTML = `<img src='/assets/icon/circle.svg' />`;
-
-const activityMarkerEl = document.createElement('div');
-activityMarkerEl.className = 'activityMarkerEl';
-activityMarkerEl.style.backgroundImage = 'url(/assets/icon/clip.png)';
-activityMarkerEl.style.width = `32px`;
-activityMarkerEl.style.height = `32px`;
-
-const IAPPMarkerEl = document.createElement('div');
-IAPPMarkerEl.className = 'IAPPMarkerEl';
-IAPPMarkerEl.style.backgroundImage = 'url(/assets/iapp_logo.gif)';
-IAPPMarkerEl.style.width = `32px`;
-IAPPMarkerEl.style.height = `32px`;
-
-const whatsHereMarkerEl = document.createElement('div');
-whatsHereMarkerEl.className = 'whatsHereMarkerEl';
-whatsHereMarkerEl.style.backgroundImage = 'url(/assets/icon/pin.svg)';
-whatsHereMarkerEl.style.width = `32px`;
-whatsHereMarkerEl.style.height = `32px`;
