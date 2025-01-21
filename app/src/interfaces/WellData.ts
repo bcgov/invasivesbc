@@ -6,9 +6,6 @@ import { Feature } from '@turf/helpers';
 interface WellData {
   id: number;
   geometry: Feature;
-  properties: {
-    WELL_TAG_NUMBER: number;
-  };
   [key: PropertyKey]: any;
 }
 
