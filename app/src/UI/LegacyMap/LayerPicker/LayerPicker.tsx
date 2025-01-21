@@ -2,7 +2,6 @@ import { MOBILE } from 'state/build-time-config';
 import LayersIcon from '@mui/icons-material/Layers';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton, Switch } from '@mui/material';
-import './LayerPicker.css';
 import { useState } from 'react';
 import LpModules from 'constants/LpModules';
 import LayerPickerPathOption from './LayerPickerPathRow';
@@ -13,6 +12,8 @@ import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
 import Accordion from 'UI/Accordion/Accordion';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+
+import './LayerPicker.css';
 
 export const LayerPicker = () => {
   const closeLayerPicker = () => {

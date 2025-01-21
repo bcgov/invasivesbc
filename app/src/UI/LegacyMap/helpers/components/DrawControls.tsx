@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
-import MapboxDraw, { DrawCustomMode } from '@mapbox/mapbox-gl-draw';
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
@@ -34,7 +34,6 @@ const DrawControls = () => {
 
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere.toggle);
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
-  const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
   const appModeURL = useSelector((state) => state.AppMode.url);
 
@@ -113,7 +112,13 @@ const DrawControls = () => {
   const drawShapeUpdate = useCallback((event) => {
     if (!drawInstance.current) return;
 
+    if (!['direct_select', 'simple_select'].includes(drawInstance.current.getMode())) {
+      // we're not done drawing until we revert to one of these modes
+      return;
+    }
+
     const editedGeo = drawInstance.current.getAll().features[0];
+
     if (editedGeo?.id !== event?.features?.[0]?.id) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
@@ -137,10 +142,6 @@ const DrawControls = () => {
           break;
         case TargetMode.ACTIVITY:
           drawInstance.current.changeMode('do_nothing');
-          if (activityGeo && activityGeo[0] && activityGeo[0].id) {
-            drawInstance.current.deleteAll();
-            drawInstance.current.add(activityGeo[0]);
-          }
           break;
         default:
           break;
@@ -148,24 +149,12 @@ const DrawControls = () => {
 
       //drawInstance.current.changeMode('whats_here_box_mode');
     }
-  }, [mode, activityGeo]);
+  }, [mode]);
 
   useEffect(() => {
     if (!map) {
       return;
     }
-
-    const modes = (() => {
-      return Object.assign(
-        {
-          draw_rectangle: DrawRectangle,
-          do_nothing: DoNothing,
-          lots_of_points: LotsOfPointsMode,
-          whats_here_box_mode: WhatsHereBoxMode
-        },
-        MapboxDraw.modes
-      );
-    })();
 
     drawInstance.current = new MapboxDraw({
       displayControlsDefault: true,
@@ -173,13 +162,18 @@ const DrawControls = () => {
         combine_features: false,
         uncombine_features: false
       },
-      defaultMode: 'simple_select',
-      modes: modes as { [modeKey: string]: DrawCustomMode },
+      modes: {
+        ...MapboxDraw.modes,
+        draw_rectangle: DrawRectangle,
+        do_nothing: DoNothing,
+        lots_of_points: LotsOfPointsMode,
+        whats_here_box_mode: WhatsHereBoxMode
+      },
       styles: [
         {
           id: 'gl-draw-line',
           type: 'line',
-          filter: ['all', ['==', '$type', 'LineString']],
+          // filter: ['all', ['==', '$type', 'LineString']],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
@@ -187,7 +181,7 @@ const DrawControls = () => {
           paint: {
             'line-color': '#D20C0C',
             'line-dasharray': [0.2, 2],
-            'line-width': 2
+            'line-width': 3
           }
         }
       ]

@@ -74,7 +74,7 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
     }
   } else {
     try {
-      const service: RecordCacheService = yield RecordCacheServiceFactory.getPlatformInstance();
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const result = yield service.loadActivity(activityID);
 
       const datav2 = {

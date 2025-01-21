@@ -30,15 +30,14 @@ class RecordCache {
     ) => {
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const state: RootState = getState() as RootState;
-
-      const idsToCache: string[] = state.Map.layers
-        .find((l) => l.recordSetID == spec.setId)
-        .IDList.map((id: string | number) => id.toString());
+      const idsToCache: string[] =
+        state.Map.layers.find((l) => l.recordSetID == spec.setId)?.IDList.map((id: string | number) => id.toString()) ??
+        [];
 
       const recordSet = state.UserSettings.recordSets[spec.setId];
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
 
-      const responseData = await service.downloadCache({
+      const downloadCompleted = await service.download({
         API_BASE: state.Configuration.current.API_BASE,
         bbox,
         idsToCache,
@@ -46,14 +45,9 @@ class RecordCache {
         setId: spec.setId
       });
 
-      // Will Refactor the current uses of Cache Metadata separately [Maintain only cache status]
       return {
-        status: UserRecordCacheStatus.CACHED,
-        idList: idsToCache,
-        bbox: bbox,
         setId: spec.setId,
-        cachedGeoJson: responseData.cachedGeoJson,
-        cachedCentroid: responseData.cachedCentroid
+        status: downloadCompleted ? UserRecordCacheStatus.CACHED : UserRecordCacheStatus.NOT_CACHED
       };
     }
   );

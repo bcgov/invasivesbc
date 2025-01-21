@@ -331,15 +331,23 @@ export function getIAPPSQLv2(filterObject: any) {
     sqlStatement = fromStatement(sqlStatement, filterObject);
     sqlStatement = whereStatement(sqlStatement, filterObject);
     sqlStatement = groupByStatement(sqlStatement, filterObject);
-    if (!filterObject.vt_request) {
+    if (!filterObject.vt_request && !filterObject.boundingBoxOnly) {
       sqlStatement = orderByStatement(sqlStatement, filterObject);
       sqlStatement = limitStatement(sqlStatement, filterObject);
       sqlStatement = offSetStatement(sqlStatement, filterObject);
-    } else {
+    } else if (filterObject.vt_request) {
       sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom;`);
+    } else if (filterObject.boundingBoxOnly) {
+      // wrap the whole thing into a subquery for the aggregate function
+      const wrappedStatement = SQL` WITH userQuery AS ( `.append(sqlStatement.text).append(` )
+            SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
+            FROM invasivesbc.iapp_spatial
+            WHERE geog IS not null
+              AND site_id in (SELECT site_id
+                              FROM userQuery) `);
+      return wrappedStatement;
     }
 
-    //defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'sql', body: sqlStatement });
     return sqlStatement;
   } catch (e) {
     defaultLog.debug({ label: 'getIAPPBySearchFilterCriteria', message: 'error', body: e.message });
@@ -593,9 +601,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
       case 'all_species_on_site':
         where.append(
-          `${filter.operator2} LOWER(sites.all_species_on_site) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${
-            filter.filter
-          }%') `
+          `${filter.operator2} LOWER(sites.all_species_on_site) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${filter.filter}%') `
         );
         break;
       case 'max_survey':

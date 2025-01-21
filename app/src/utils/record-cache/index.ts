@@ -5,6 +5,7 @@ import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
+import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 export enum IappRecordMode {
@@ -25,7 +26,7 @@ export interface RecordCacheDownloadRequestSpec {
  * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
  * @property { UserRecordCacheStatus } status Cache Status.
  */
-export interface RecordCacheAddSpec {
+export interface RepositoryMetadata {
   setId: string;
   cacheTime: Date;
   cachedIds: string[];
@@ -58,47 +59,57 @@ export interface CacheDownloadSpec {
   recordSetType: RecordSetType;
 }
 
-abstract class RecordCacheService {
+abstract class RecordCacheService extends BaseCacheService<
+  RepositoryMetadata,
+  CacheDownloadSpec,
+  RecordCacheProgressCallbackParameters,
+  UserRecordCacheStatus
+> {
   private readonly RECORDS_BETWEEN_PROGRESS_UPDATES = 25;
-  protected constructor() {}
+
+  protected constructor() {
+    super();
+  }
 
   static async getInstance(): Promise<RecordCacheService> {
     throw new Error('unimplemented in abstract base class');
   }
+  protected abstract addOrUpdateRepository(spec: RepositoryMetadata): Promise<void>;
 
-  abstract saveActivity(id: string, data: unknown): Promise<void>;
+  protected abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
 
-  abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
+  /** */
+  public abstract loadActivity(id: string): Promise<unknown>;
 
-  abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
+  public abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
 
-  abstract loadActivity(id: string): Promise<unknown>;
+  protected abstract saveActivity(id: string, data: unknown): Promise<void>;
 
-  abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
+  protected abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
 
-  abstract fetchPaginatedCachedIappRecords(
+  public abstract getPaginatedCachedActivityRecords(
+    recordSetIdList: string[],
+    page: number,
+    limit: number
+  ): Promise<UserRecord[]>;
+
+  public abstract getPaginatedCachedIappRecords(
     recordSetIdList: string[],
     page: number,
     limit: number
   ): Promise<IappRecord[]>;
 
-  abstract fetchPaginatedCachedRecords(recordSetIdList: string[], page: number, limit: number): Promise<UserRecord[]>;
+  public abstract isCached(repositoryId: string): Promise<boolean>;
 
-  abstract addOrUpdateRepository(spec: RecordCacheAddSpec): Promise<void>;
+  public abstract getIdList(repositoryId: string): Promise<string[]>;
 
-  abstract deleteRepository(repositoryId: string): Promise<void>;
+  protected abstract createIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
-  abstract listRepositories(): Promise<RecordCacheAddSpec[]>;
-
-  abstract loadIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
-
-  abstract loadRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
-
-  abstract setRepositoryStatus(repositoryId: string, status: UserRecordCacheStatus): Promise<void>;
+  protected abstract createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
   abstract checkForAbort(id: string): Promise<boolean>;
 
-  async downloadCache(spec: CacheDownloadSpec): Promise<Record<PropertyKey, any>> {
+  public async download(spec: CacheDownloadSpec): Promise<boolean> {
     const args = {
       idsToCache: spec.idsToCache,
       setId: spec.setId,
@@ -119,33 +130,35 @@ abstract class RecordCacheService {
       bbox: spec.bbox
     });
 
+    let downloadCompleted = true;
     if (spec.recordSetType === RecordSetType.Activity && (await this.downloadActivity(args))) {
-      Object.assign(responseData, await this.loadRecordsetSourceMetadata(spec.idsToCache));
+      Object.assign(responseData, await this.createActivityRecordsetSourceMetadata(spec.idsToCache));
     } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args))) {
-      Object.assign(responseData, await this.loadIappRecordsetSourceMetadata(spec.idsToCache));
+      Object.assign(responseData, await this.createIappRecordsetSourceMetadata(spec.idsToCache));
     } else {
+      downloadCompleted = false;
       this.deleteRepository(spec.setId);
-      throw Error('Early Exit');
     }
 
-    await this.addOrUpdateRepository({
-      setId: spec.setId,
-      cacheTime: new Date(),
-      cachedIds: spec.idsToCache,
-      recordSetType: spec.recordSetType,
-      status: UserRecordCacheStatus.CACHED,
-      cachedGeoJson: responseData.cachedGeoJson,
-      cachedCentroid: responseData.cachedCentroid,
-      bbox: spec.bbox
-    });
-
-    return responseData;
+    if (downloadCompleted) {
+      await this.addOrUpdateRepository({
+        setId: spec.setId,
+        cacheTime: new Date(),
+        cachedIds: spec.idsToCache,
+        recordSetType: spec.recordSetType,
+        status: UserRecordCacheStatus.CACHED,
+        cachedGeoJson: responseData.cachedGeoJson,
+        cachedCentroid: responseData.cachedCentroid,
+        bbox: spec.bbox
+      });
+    }
+    return downloadCompleted;
   }
   /**
    * Download Records for IAPP Given a list of IDs
    * @returns { boolean } download was successful
    */
-  async downloadIapp(
+  private async downloadIapp(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<boolean> {
@@ -195,7 +208,7 @@ abstract class RecordCacheService {
    * Download Records for Activities Given a list of IDs
    * @returns { boolean } download was successful
    */
-  async downloadActivity(
+  private async downloadActivity(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<boolean> {
@@ -216,7 +229,7 @@ abstract class RecordCacheService {
     }
     return !abort;
   }
-  async stopDownload(repositoryId: string): Promise<void> {
+  public async stopDownload(repositoryId: string): Promise<void> {
     const repositories = await this.listRepositories();
     const foundIndex = repositories.findIndex((repo) => repo.setId === repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);

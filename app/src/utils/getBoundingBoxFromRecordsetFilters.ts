@@ -1,5 +1,5 @@
 import bbox from '@turf/bbox';
-import { UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
 import { parse } from 'wkt';
@@ -9,13 +9,16 @@ const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Pro
   const { recordSetType } = recordSet;
   const filterObj = {
     recordSetType: recordSetType,
-    sortColumn: 'short_id',
+    sortColumn: recordSetType === RecordSetType.Activity ? 'short_id' : 'site_id',
     sortOrder: 'DESC',
     tableFilters: recordSet.tableFilters,
     selectColumns: getSelectColumnsByRecordSetType(recordSetType)
   };
-
-  const data = await fetch(`${CONFIGURATION_API_BASE}/api/v2/activities/bbox`, {
+  const url =
+    recordSetType === RecordSetType.Activity
+      ? `${CONFIGURATION_API_BASE}/api/v2/activities/bbox`
+      : `${CONFIGURATION_API_BASE}/api/v2/IAPP/bbox`;
+  const data = await fetch(url, {
     method: 'POST',
     headers: {
       Authorization: await getCurrentJWT(),
@@ -26,10 +29,10 @@ const getBoundingBoxFromRecordsetFilters = async (recordSet: UserRecordSet): Pro
 
   const [minLongitude, minLatitude, maxLongitude, maxLatitude] = bbox(parse(data.bbox));
   return {
-    minLatitude: minLatitude,
-    maxLatitude: maxLongitude,
-    minLongitude: minLongitude,
-    maxLongitude: maxLatitude
+    minLatitude,
+    maxLatitude,
+    minLongitude,
+    maxLongitude
   };
 };
 

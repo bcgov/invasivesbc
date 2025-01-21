@@ -15,7 +15,6 @@ import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshVisibilityOnToggleUpdate,
-  removeDeletedRecordSetLayersOnRecordSetDelete,
   removeLayersOnNetworkConnectivityChange
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
 import {
@@ -41,7 +40,9 @@ import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
 import { Coordinates } from 'UI/LegacyMap/helpers/components/Coordinates';
 import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
+import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
+import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
 
 /*
 
@@ -255,7 +256,6 @@ export const Map = ({ children }) => {
     rebuildLayersOnTableHashUpdate(storeLayers, map, MapMode, API_BASE, connectedToNetwork);
     refreshColoursOnColourUpdate(storeLayers, map);
     refreshVisibilityOnToggleUpdate(storeLayers, map);
-    removeDeletedRecordSetLayersOnRecordSetDelete(storeLayers, map);
   }, [storeLayers, map, mapReady, connectedToNetwork, loggedInOrWorkingOffline]);
 
   // Layer picker:
@@ -310,6 +310,18 @@ export const Map = ({ children }) => {
     }, 1000);
   }, [map]);
 
+  // toggle public map pmtile layer
+  useEffect(() => {
+    if (!mapReady) return;
+    if (!map) return;
+    if (loggedInOrWorkingOffline) {
+      toggleLayerOnBool(map, 'invasivesbc-pmtile-vector', false);
+      toggleLayerOnBool(map, 'iapp-pmtile-vector', false);
+      toggleLayerOnBool(map, 'invasivesbc-pmtile-vector-label', false);
+      toggleLayerOnBool(map, 'iapp-pmtile-vector-label', false);
+    }
+  }, [loggedInOrWorkingOffline, map, mapReady]);
+
   return (
     <div className="map-containing-block">
       <div className="MapWrapper">
@@ -323,6 +335,7 @@ export const Map = ({ children }) => {
           <DrawControls />
           <ReactiveLayers mapReady={mapReady} />
           <PositionMarkers mapReady={mapReady} />
+          <CurrentActivityLayer mapReady={mapReady} />
         </MapContext.Provider>
 
         {children}

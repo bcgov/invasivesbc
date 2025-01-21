@@ -58,53 +58,57 @@ export const RecordSet = (props) => {
       <div className="recordSet_filter_buttons_container">
         <div className="recordSet_clear_filter_button">
           <Tooltip classes={{ tooltip: 'toolTip' }} title="Clear all filters and refetch all data for this layer.">
-            <Button
-              size={'small'}
-              disabled={userOfflineMobile}
-              onClick={() => {
-                dispatch({
-                  type: RECORDSET_CLEAR_FILTERS,
-                  payload: {
-                    setID: props.setID
-                  }
-                });
-              }}
-              variant="contained"
-            >
-              Clear Filters
-              <FilterAltOffIcon />
-            </Button>
+            <span>
+              <Button
+                size={'small'}
+                disabled={userOfflineMobile}
+                onClick={() => {
+                  dispatch({
+                    type: RECORDSET_CLEAR_FILTERS,
+                    payload: {
+                      setID: props.setID
+                    }
+                  });
+                }}
+                variant="contained"
+              >
+                Clear Filters
+                <FilterAltOffIcon />
+              </Button>
+            </span>
           </Tooltip>
         </div>
         <div className="recordSet_toggleView_filter_button">
           <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle hiding filters - does not toggle applying them.">
-            <Button
-              size={'small'}
-              disabled={userOfflineMobile}
-              onClick={() => {
-                dispatch({
-                  type: RECORDSETS_TOGGLE_VIEW_FILTER
-                });
-              }}
-              variant="contained"
-            >
-              {viewFilters ? (
-                <>
-                  Hide Filters
-                  <VisibilityOffIcon />
-                  <FilterAltIcon />
-                </>
-              ) : (
-                <>
-                  Show Filters{' '}
-                  {(recordSet?.tableFilters?.length || 0) > 0 &&
-                    !onlyFilterIsForDrafts &&
-                    `(${recordSet?.tableFilters?.length})`}
-                  <VisibilityIcon />
-                  <FilterAltIcon />
-                </>
-              )}
-            </Button>
+            <span>
+              <Button
+                size={'small'}
+                disabled={userOfflineMobile}
+                onClick={() => {
+                  dispatch({
+                    type: RECORDSETS_TOGGLE_VIEW_FILTER
+                  });
+                }}
+                variant="contained"
+              >
+                {viewFilters ? (
+                  <>
+                    Hide Filters
+                    <VisibilityOffIcon />
+                    <FilterAltIcon />
+                  </>
+                ) : (
+                  <>
+                    Show Filters{' '}
+                    {(recordSet?.tableFilters?.length || 0) > 0 &&
+                      !onlyFilterIsForDrafts &&
+                      `(${recordSet?.tableFilters?.length})`}
+                    <VisibilityIcon />
+                    <FilterAltIcon />
+                  </>
+                )}
+              </Button>
+            </span>
           </Tooltip>
         </div>
         <div className="recordSet_new_filter_button">
@@ -112,27 +116,29 @@ export const RecordSet = (props) => {
             classes={{ tooltip: 'toolTip' }}
             title="Add a new filter, drawn, uploaded KML, or just text search on a field."
           >
-            <Button
-              size={'small'}
-              disabled={userOfflineMobile}
-              onClick={() => {
-                dispatch({
-                  type: RECORDSET_ADD_FILTER,
-                  payload: {
-                    filterType: 'tableFilter',
-                    // short id if activity record set otherwise site_ID
-                    field: tableType === 'Activity' ? 'short_id' : 'site_id',
-                    setID: props.setID,
-                    operator: 'CONTAINS',
-                    operator2: 'AND',
-                    blockFetchForNow: true
-                  }
-                });
-              }}
-              variant="contained"
-            >
-              Add Filter + <FilterAltIcon />
-            </Button>
+            <span>
+              <Button
+                size={'small'}
+                disabled={userOfflineMobile}
+                onClick={() => {
+                  dispatch({
+                    type: RECORDSET_ADD_FILTER,
+                    payload: {
+                      filterType: 'tableFilter',
+                      // short id if activity record set otherwise site_ID
+                      field: tableType === 'Activity' ? 'short_id' : 'site_id',
+                      setID: props.setID,
+                      operator: 'CONTAINS',
+                      operator2: 'AND',
+                      blockFetchForNow: true
+                    }
+                  });
+                }}
+                variant="contained"
+              >
+                Add Filter + <FilterAltIcon />
+              </Button>
+            </span>
           </Tooltip>
         </div>
       </div>

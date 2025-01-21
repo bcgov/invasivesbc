@@ -24,40 +24,48 @@ export const refreshCurrentRecMakers = (map, options: any) => {
 };
 
 export const refreshHighlightedRecord = (map, options: any) => {
-  const layerID = 'highlightRecordLayer';
-  if (map && map.getLayer(layerID + 'shape')) {
-    map.removeLayer(layerID + 'shape');
-  }
-  if (map && map.getLayer(layerID + 'outline')) {
-    map.removeLayer(layerID + 'outline');
-  }
-  if (map && map.getLayer(layerID + 'zoomoutcircle')) {
-    map.removeLayer(layerID + 'zoomoutcircle');
+  const LAYER_ID = 'highlightRecordLayer';
+
+  const SHAPE_LAYER = `${LAYER_ID}-shape`;
+  const OUTLINE_LAYER = `${LAYER_ID}-outline`;
+  const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
+
+  if (!map) {
+    return;
   }
 
-  if (map && map.getLayer(layerID)) {
-    map.removeLayer(layerID);
+  if (map.getLayer(SHAPE_LAYER)) {
+    map.removeLayer(SHAPE_LAYER);
+  }
+  if (map.getLayer(OUTLINE_LAYER)) {
+    map.removeLayer(OUTLINE_LAYER);
+  }
+  if (map.getLayer(ZOOM_CIRCLE_LAYER)) {
+    map.removeLayer(ZOOM_CIRCLE_LAYER);
   }
 
-  if (map && map.getSource(layerID)) {
-    map.removeSource(layerID);
+  if (map.getLayer(LAYER_ID)) {
+    map.removeLayer(LAYER_ID);
+  }
+
+  if (map.getSource(LAYER_ID)) {
+    map.removeSource(LAYER_ID);
   }
 
   if (
-    map &&
     options.userRecordOnHoverRecordType === 'Activity' &&
     options.userRecordOnHoverRecordRow &&
     options.userRecordOnHoverRecordRow?.geometry?.[0]
   ) {
     map
-      .addSource(layerID, {
+      .addSource(LAYER_ID, {
         type: 'geojson',
         data: options.userRecordOnHoverRecordRow.geometry[0]
       })
       .addLayer(
         {
-          id: layerID + 'shape',
-          source: layerID,
+          id: SHAPE_LAYER,
+          source: LAYER_ID,
           type: 'fill',
           paint: {
             'fill-color': 'white',
@@ -71,8 +79,8 @@ export const refreshHighlightedRecord = (map, options: any) => {
       )
       .addLayer(
         {
-          id: layerID + 'outline',
-          source: layerID,
+          id: OUTLINE_LAYER,
+          source: LAYER_ID,
           type: 'line',
           paint: {
             'line-color': 'black',
@@ -86,8 +94,8 @@ export const refreshHighlightedRecord = (map, options: any) => {
       )
       .addLayer(
         {
-          id: layerID + 'zoomoutcircle',
-          source: layerID,
+          id: ZOOM_CIRCLE_LAYER,
+          source: LAYER_ID,
           type: 'circle',
           paint: {
             'circle-color': 'white',
@@ -100,16 +108,16 @@ export const refreshHighlightedRecord = (map, options: any) => {
       );
   }
 
-  if (map && options.userRecordOnHoverRecordType === 'IAPP' && options.userRecordOnHoverRecordRow) {
+  if (options.userRecordOnHoverRecordType === 'IAPP' && options.userRecordOnHoverRecordRow) {
     map
-      .addSource(layerID, {
+      .addSource(LAYER_ID, {
         type: 'geojson',
         data: options.userRecordOnHoverRecordRow.geometry
       })
       .addLayer(
         {
-          id: layerID,
-          source: layerID,
+          id: LAYER_ID,
+          source: LAYER_ID,
           type: 'circle',
           paint: {
             'circle-color': 'yellow',

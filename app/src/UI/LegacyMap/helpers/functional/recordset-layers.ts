@@ -10,23 +10,33 @@ import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMa
 import { FALLBACK_COLOR } from 'UI/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/LegacyMap/helpers/functional/utility-functions';
 import { MOBILE } from 'state/build-time-config';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 const LAYER_ID_PREFIX = 'recordset-layer-';
 /** DRY Handler for formatting LayerIDs */
 const formatLayerID = (recordSetID: string, tableFiltersHash: string): string =>
   `${LAYER_ID_PREFIX}${recordSetID}-hash-${tableFiltersHash}`;
 
-export const createOfflineIappLayer = (map: maplibregl.Map, layer: any) => {
-  if (!layer?.layerState?.cacheMetadata?.hasOwnProperty('cachedGeoJson')) {
+export const createOfflineIappLayer = async (map: maplibregl.Map, layer: any) => {
+  if (layer?.layerState?.cacheMetadataStatus !== UserRecordCacheStatus.CACHED || !layer.layerState.mapToggle) {
+    return;
+  }
+  const service = await RecordCacheServiceFactory.getPlatformInstance();
+  const repo = await service.getRepository(layer.recordSetID);
+
+  if (!repo?.cachedGeoJson) {
     return;
   }
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
-  const source: GeoJSONSourceSpecification = layer.layerState.cacheMetadata.cachedGeoJson;
+  const source: GeoJSONSourceSpecification = repo.cachedGeoJson;
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
   const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'name' });
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
+
+  const existingSource = map.getSource(layerID);
+  if (existingSource) return; // Due to the async nature of the local DB Calls, check the layer wasn't created during a re-render
   map.addSource(layerID, source);
   map.addLayer(circleLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
@@ -177,20 +187,24 @@ const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpeci
  * @desc Uses the device's recordset Cache data to display geoJson Layers on the map when offline
  *       Displays two layers: Points at high levels, and shapes at lower
  */
-export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
-  if (
-    (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) ||
-    !layer?.layerState?.cacheMetadata?.hasOwnProperty('cachedGeoJson')
-  ) {
+export const createOfflineActivityLayer = async (map: maplibregl.Map, layer: any) => {
+  if (layer?.layerState?.cacheMetadataStatus !== UserRecordCacheStatus.CACHED || !layer.layerState.mapToggle) {
     return;
   }
+  const service = await RecordCacheServiceFactory.getPlatformInstance();
+  const metadata = await service.getRepository(layer.recordSetID);
+
+  if (!metadata?.cachedCentroid || !metadata?.cachedGeoJson) {
+    return;
+  }
+
   const CENTROID_TO_GEOJSON_ZOOM = 12;
   const GEOJSON_ID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   const CENTROID_ID = `${GEOJSON_ID}-centroid`;
   const color = getPaintBySchemeOrColor(layer);
 
-  const geoJsonSourcObj: GeoJSONSourceSpecification = layer.layerState.cacheMetadata.cachedGeoJson;
-  const centroidSourceObj: GeoJSONSourceSpecification = layer.layerState.cacheMetadata.cachedCentroid;
+  const geoJsonSourceObj: GeoJSONSourceSpecification = metadata.cachedGeoJson;
+  const centroidSourceObj: GeoJSONSourceSpecification = metadata.cachedCentroid;
 
   const circleMarkerZoomedOutLayerCentroid: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(CENTROID_ID, {
     color,
@@ -214,7 +228,9 @@ export const createOfflineActivityLayer = (map: maplibregl.Map, layer: any) => {
     get_tag: 'name'
   });
 
-  map.addSource(GEOJSON_ID, geoJsonSourcObj);
+  const existingSource = map.getSource(GEOJSON_ID);
+  if (existingSource) return; // Due to the async nature of the local DB Calls, check the layer wasn't created during a re-render
+  map.addSource(GEOJSON_ID, geoJsonSourceObj);
   map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
   map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
   map.addLayer(circleMarkerZoomedOutLayer, LAYER_Z_FOREGROUND);
@@ -375,13 +391,13 @@ export const rebuildLayersOnTableHashUpdate = (
   });
 
   // now update the layers that are in the store
-  storeLayers.map((layer: Record<PropertyKey, any>) => {
+  storeLayers.forEach(async (layer: Record<PropertyKey, any>) => {
     if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
       const sourceId = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
       deleteStaleRecordsetLayer(map, layer);
       const existingSource = map.getSource(sourceId);
       if (existingSource) return;
-      createMapLayer(map, layer, mode, API_BASE, MOBILE_OFFLINE);
+      await createMapLayer(map, layer, mode, API_BASE, MOBILE_OFFLINE);
     }
   });
 };
@@ -389,22 +405,22 @@ export const rebuildLayersOnTableHashUpdate = (
 /**
  * @desc Handler logic for creating a new layer based on Network condition and recordset type
  */
-const createMapLayer = (
+const createMapLayer = async (
   map: maplibregl.Map,
   layer: Record<PropertyKey, any>,
   mapMode: string,
   apiBase: string,
   isOfflineLayer: boolean
-): void => {
+): Promise<void> => {
   if (layer.type === RecordSetType.Activity) {
     if (isOfflineLayer) {
-      createOfflineActivityLayer(map, layer);
+      await createOfflineActivityLayer(map, layer);
     } else {
       createOnlineActivityLayer(map, layer, mapMode, apiBase);
     }
   } else if (layer.type === RecordSetType.IAPP) {
     if (isOfflineLayer) {
-      createOfflineIappLayer(map, layer);
+      await createOfflineIappLayer(map, layer);
     } else {
       createOnlineIappLayer(map, layer, mapMode, apiBase);
     }
@@ -468,22 +484,5 @@ export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map
         map.setLayoutProperty(mapLayer, 'visibility', 'visible');
       }
     });
-  });
-};
-
-/** TODO: */
-export const removeDeletedRecordSetLayersOnRecordSetDelete = (storeLayers, map) => {
-  map.getLayersOrder().map((layer: any) => {
-    if (
-      storeLayers.filter((l: any) => l.recordSetID === layer).length === 0 &&
-      !['wms-test-layer', 'wms-test-layer2', 'invasives-vector', 'buildings'].includes(layer)
-    ) {
-      //map.current.removeLayer(layer);
-      //map.current.removeSource(layer);
-    }
-  });
-  storeLayers.map((layer) => {
-    // get matching layers for type
-    // update visibility if doesn't match
   });
 };

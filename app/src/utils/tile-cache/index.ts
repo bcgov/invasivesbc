@@ -1,3 +1,4 @@
+import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { base64toBuffer, lat2tile, long2tile } from 'utils/tile-cache/helpers';
 
 // base64-encoded blank tile image 256x256 (opaque, light blue)
@@ -42,7 +43,6 @@ enum RepositoryStatus {
   FAILED = 'FAILED',
   UNKNOWN = 'UNKNOWN'
 }
-
 interface TilePromise {
   id: string;
   url: string;
@@ -50,6 +50,7 @@ interface TilePromise {
   y: number;
   z: number;
 }
+
 export interface TileCacheProgressCallbackParameters {
   repository: string;
   message: string;
@@ -64,8 +65,15 @@ export interface RepositoryStatistics {
   tileCount: number;
 }
 
-abstract class TileCacheService {
-  protected constructor() {}
+abstract class TileCacheService extends BaseCacheService<
+  RepositoryMetadata,
+  RepositoryDownloadRequestSpec,
+  TileCacheProgressCallbackParameters,
+  RepositoryStatus
+> {
+  protected constructor() {
+    super();
+  }
 
   static generateFallbackTile(): TileData {
     return {
@@ -106,13 +114,7 @@ abstract class TileCacheService {
 
   abstract setTile(repository: string, z: number, x: number, y: number, tileData: Uint8Array): Promise<void>;
 
-  abstract getRepository(id: string): Promise<RepositoryMetadata | null>;
-
-  abstract listRepositories(): Promise<RepositoryMetadata[]>;
-
-  abstract deleteRepository(repository: string): Promise<void>;
-
-  abstract setRepositoryStatus(repository: string, status: RepositoryStatus): Promise<void>;
+  protected abstract addOrUpdateRepository(spec: RepositoryMetadata): Promise<void>;
 
   private async downloadTile(tileDetails: TilePromise): Promise<void> {
     const { id, url, x, y, z } = tileDetails;
@@ -151,7 +153,7 @@ abstract class TileCacheService {
     const executing = new Set();
 
     try {
-      await this.addRepository({
+      await this.addOrUpdateRepository({
         id: spec.id,
         status: RepositoryStatus.DOWNLOADING,
         maxZoom: spec.maxZoom,
@@ -234,8 +236,6 @@ abstract class TileCacheService {
   public abstract updateDescription(repository: string, newDescription: string): Promise<void>;
 
   protected abstract cleanupOrphanTiles(): Promise<void>;
-
-  protected abstract addRepository(spec: RepositoryMetadata): Promise<void>;
 }
 
 export { TileCacheService, FALLBACK_IMAGE, RepositoryStatus };

@@ -15,7 +15,7 @@ export function* handle_IAPP_GET_REQUEST(iappId: PayloadAction<string>) {
   try {
     const connected = yield select(selectNetworkConnected);
     if (MOBILE && !connected) {
-      const service: RecordCacheService = yield RecordCacheServiceFactory.getPlatformInstance();
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const result = yield service.loadIapp(iappId.payload, IappRecordMode.Record);
       yield put(IappActions.getSuccess(result));
     } else {
