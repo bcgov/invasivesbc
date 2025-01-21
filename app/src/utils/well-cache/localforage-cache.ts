@@ -7,6 +7,7 @@ import {
 } from '.';
 import WellData from 'interfaces/WellData';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import { Feature, FeatureCollection } from '@turf/helpers';
 
 class LocalForageWellCacheService extends WellCacheService {
   private static _instance: LocalForageWellCacheService;
@@ -25,21 +26,26 @@ class LocalForageWellCacheService extends WellCacheService {
     return LocalForageWellCacheService._instance;
   }
 
-  async deleteRepository(repositoryId: string) {
+  async deleteRepository(repository: string | RepositoryBoundingBoxSpec) {
     if (this.store == null) {
       throw new Error(this.CACHE_UNAVAILABLE);
     }
-    const cachedSets = await this.listRepositories();
-    const foundIndex = cachedSets.findIndex((r) => r.id === repositoryId);
+    const repositories = await this.listRepositories();
+    let foundIndex: number;
+    if (typeof repository === 'string') {
+      foundIndex = repositories.findIndex((r) => r.id === repository);
+    } else {
+      foundIndex = repositories.findIndex((r) => this.compareBounds(r.bounds, repository));
+    }
 
     if (foundIndex === -1) return;
 
-    await this.setRepositoryStatus(repositoryId, WellRepositoryStatus.DELETING);
+    await this.setRepositoryStatus(repositories[foundIndex].id, WellRepositoryStatus.DELETING);
 
-    const deleteList = cachedSets[foundIndex].wellTagNumbers;
+    const deleteList = repositories[foundIndex].wellTagNumbers;
     const ids: Record<PropertyKey, number> = {};
 
-    cachedSets
+    repositories
       .flatMap((set) => set.wellTagNumbers)
       .forEach((id) => {
         ids[id] ??= 0;
@@ -48,8 +54,8 @@ class LocalForageWellCacheService extends WellCacheService {
 
     const wellsToDelete = deleteList.filter((id) => ids[id] === 1);
     await this.deleteWellsFromIds(wellsToDelete);
-    cachedSets.splice(foundIndex, 1);
-    await this.store.setItem(LocalForageWellCacheService.REPOSITORY_METADATA_KEY, cachedSets);
+    repositories.splice(foundIndex, 1);
+    await this.store.setItem(LocalForageWellCacheService.REPOSITORY_METADATA_KEY, repositories);
   }
 
   protected async deleteWellsFromIds(wellTagNumbers: number[]) {
@@ -99,14 +105,14 @@ class LocalForageWellCacheService extends WellCacheService {
       throw new Error(this.CACHE_UNAVAILABLE);
     }
     const id = wellData.properties.WELL_TAG_NUMBER;
+    wellData.geometry.properties = { WELL_TAG_NUMBER: wellData.properties.WELL_TAG_NUMBER };
     // converts to String due to IndexDB Constraint requiring string keys
     const cleanedWellData: WellData = {
       id: id,
-      properties: { WELL_TAG_NUMBER: id },
       type: wellData.type,
       geometry: wellData.geometry
     };
-    console.log(cleanedWellData);
+
     await this.store.setItem(cleanedWellData.id.toString(), cleanedWellData);
   }
 
@@ -143,6 +149,24 @@ class LocalForageWellCacheService extends WellCacheService {
       Object.assign(cachedSets[foundIndex], { status });
       await this.store.setItem(LocalForageWellCacheService.REPOSITORY_METADATA_KEY, cachedSets);
     }
+  }
+
+  protected async createFeatureCollectionFromMetadata(
+    repository: string | RepositoryBoundingBoxSpec
+  ): Promise<FeatureCollection> {
+    const repo = await this.getRepository(repository);
+    const features: Feature[] = [];
+    for (const wtn of repo.wellTagNumbers) {
+      const well: WellData = (await this.store?.getItem(wtn.toString())) as WellData;
+      well.geometry.properties = {
+        WELL_TAG_NUMBER: well.id
+      };
+      features.push(well.geometry);
+    }
+    return {
+      type: 'FeatureCollection',
+      features: features
+    };
   }
 
   /**
