@@ -220,6 +220,28 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return true;
   }
 
+  async checkAbortOrPause(repositoryId: string): Promise<boolean> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const metadata = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT STATUS
+       FROM CACHE_METADATA
+       WHERE SET_ID = ?
+       LIMIT 1
+      `,
+      [repositoryId]
+    );
+
+    const cacheStatus = metadata?.values?.[0]['STATUS'];
+
+    if (cacheStatus) {
+      return cacheStatus === UserRecordCacheStatus.DELETING || cacheStatus === UserRecordCacheStatus.PAUSED;
+    }
+    return true;
+  }
+
   /**
    * @desc fetch `n` records for a given recordset, supporting pagination
    * @param recordSetID Recordset to filter from

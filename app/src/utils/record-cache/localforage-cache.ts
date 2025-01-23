@@ -81,6 +81,17 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return true;
   }
 
+  async checkAbortOrPause(id: string): Promise<boolean> {
+    const sets = await this.listRepositories();
+    const index = sets.findIndex((p) => p.setId === id);
+    if (index !== -1) {
+      return (
+        sets[index].status === UserRecordCacheStatus.DELETING || sets[index].status === UserRecordCacheStatus.PAUSED
+      );
+    }
+    return true;
+  }
+
   async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');

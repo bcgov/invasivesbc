@@ -25,6 +25,14 @@ class RecordCache {
     'RECORD_CACHE_DOWNLOAD_PROGRESS_EVENT'
   );
 
+  static readonly pauseOrResumeCache = createAction(`${this.PREFIX}/pauseOrResumeCache`, (setId: string) => ({
+    payload: { setId }
+  }));
+
+  static readonly pauseDownload = createAsyncThunk(`${this.PREFIX}/pauseDownload`, async (spec: { setId: string }) => {
+    await (await RecordCacheServiceFactory.getPlatformInstance()).pauseDownload(spec.setId);
+  });
+
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
     async (
@@ -48,6 +56,7 @@ class RecordCache {
           bbox,
           idsToCache,
           recordSetType: recordSet.recordSetType,
+          recordSetCacheStatus: recordSet.cacheMetadataStatus,
           setId: spec.setId
         },
         (p) => {
@@ -58,7 +67,7 @@ class RecordCache {
 
       return {
         setId: spec.setId,
-        status: downloadCompleted ? UserRecordCacheStatus.CACHED : UserRecordCacheStatus.NOT_CACHED
+        status: downloadCompleted ? UserRecordCacheStatus.CACHED : UserRecordCacheStatus.PAUSED
       };
     }
   );

@@ -104,6 +104,7 @@ class RecordSet {
       setId: '',
       message: '',
       aborted: false,
+      isAbortedOrPaused: false,
       normalizedProgress: 0,
       totalActivities: 0,
       processedActivities: 0

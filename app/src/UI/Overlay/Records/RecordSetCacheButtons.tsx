@@ -53,7 +53,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
      */
     e.stopPropagation();
     switch (recordSet.cacheMetadataStatus) {
-      case UserRecordCacheStatus.NOT_CACHED:
+      case UserRecordCacheStatus.NOT_CACHED: // UserRecordCacheStatus.PAUSED
         downloadCache();
         break;
       case UserRecordCacheStatus.DOWNLOADING:
@@ -89,7 +89,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
 
         // setShowProgress(true);
         // setProgress(0);
-        // setIsPaused(false);
+        setIsPaused(false);
       }
     };
 
@@ -132,6 +132,17 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
 
   const handlePausePlayClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    /**
+     * Update pause state
+     * Pause the download
+     * Resume the download
+     */
+    console.log('Inside pause and play');
+    // for pause first
+    dispatch(RecordCache.pauseDownload({ setId }));
+
+    // previous implementation
+    // dispatch(RecordCache.pauseOrResumeCache(setId));
     setIsPaused((prev) => !prev);
   };
 
@@ -143,6 +154,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
           UserRecordCacheStatus.NOT_CACHED,
           UserRecordCacheStatus.ERROR,
           UserRecordCacheStatus.DOWNLOADING
+          // UserRecordCacheStatus.PAUSED
         ].includes(recordSet.cacheMetadataStatus)
     );
   }, [recordSet.cacheMetadataStatus, connected]);
@@ -225,7 +237,8 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
               {/* Second row with progress text */}
               <Grid item xs={12}>
                 <Typography variant="caption" align="center">
-                  {`${Math.floor(downloadProgress.normalizedProgress * 100)}% completed`}
+                  {/* optimize this */}
+                  {`${Math.floor(downloadProgress.normalizedProgress * 100) == 0 ? (downloadProgress.normalizedProgress * 100).toFixed(1) : Math.floor(downloadProgress.normalizedProgress * 100)}% completed`}
                 </Typography>
               </Grid>
             </Grid>

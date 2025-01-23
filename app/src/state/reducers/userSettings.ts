@@ -198,7 +198,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
       } else if (RecordCache.requestCaching.pending.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
-      } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
+      } else if (
+        RecordCache.requestCaching.rejected.match(action) ||
+        RecordCache.deleteCache.rejected.match(action) ||
+        RecordCache.pauseDownload.rejected.match(action)
+      ) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.ERROR;
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = action.payload.status;
@@ -206,13 +210,28 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.NOT_CACHED;
+      } else if (RecordCache.pauseDownload.pending.match(action)) {
+        // do you need this?
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
+      } else if (RecordCache.pauseDownload.fulfilled.match(action)) {
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
+      } else if (RecordCache.pauseOrResumeCache.match(action)) {
+        console.log('Before', draftState.recordSets[action.payload.setId].cacheMetadataStatus);
+
+        if (draftState.recordSets[action.payload.setId].cacheMetadataStatus != UserRecordCacheStatus.PAUSED) {
+          draftState.recordSets[action.payload.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
+        } else {
+          draftState.recordSets[action.payload.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
+        }
+        console.log('CACHE STATUS', draftState.recordSets[action.payload.setId].cacheMetadataStatus);
       } else if (RecordCache.downloadProgressEvent.match(action)) {
-        if (action.payload.normalizedProgress == 1 || action.payload.aborted) {
+        if (action.payload.normalizedProgress == 1 || action.payload.isAbortedOrPaused) {
           console.log('inside abort or completed reducer', action.payload);
           draftState.recordSets[action.payload.setId].cacheDownloadProgress = {
             setId: '',
             message: '',
             aborted: false,
+            isAbortedOrPaused: false,
             normalizedProgress: 0,
             totalActivities: 0,
             processedActivities: 0
