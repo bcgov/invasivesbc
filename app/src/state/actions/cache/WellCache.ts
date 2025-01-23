@@ -27,13 +27,6 @@ class WellCache {
     const wellService = await WellCacheServiceFactory.getPlatformInstance();
     await wellService.deleteRepository(repository);
   });
-
-  static readonly fetchWellIdsInBounds = createAsyncThunk(
-    `${this.PREFIX}/fetchWellIdsInBounds`,
-    async (bounds: RepositoryBoundingBoxSpec) => {
-      throw new Error('Not yet implemented');
-    }
-  );
 }
 
 export default WellCache;
