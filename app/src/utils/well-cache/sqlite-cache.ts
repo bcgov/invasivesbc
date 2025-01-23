@@ -51,7 +51,10 @@ class SQLiteWellCacheService extends WellCacheService {
     }
     const { id, status, bounds, wellTagNumbers, cachedGeoJson } = repository;
     const wtns = JSON.stringify(wellTagNumbers);
-    const bnds = JSON.stringify(bounds, Object.keys(bounds).sort());
+    const bnds = JSON.stringify(
+      bounds,
+      Object.keys(bounds).sort((a, b) => (a < b ? -1 : 1))
+    );
 
     if (cachedGeoJson) {
       const geojsn = JSON.stringify(cachedGeoJson);
@@ -170,7 +173,12 @@ class SQLiteWellCacheService extends WellCacheService {
       throw new Error(this.CACHE_UNAVAILABLE);
     }
     const identifier =
-      typeof repository === 'string' ? repository : JSON.stringify(repository, Object.keys(repository).sort());
+      typeof repository === 'string'
+        ? repository
+        : JSON.stringify(
+            repository,
+            Object.keys(repository).sort((a, b) => (a < b ? -1 : 1))
+          );
     const result = await this.cacheDB.query(
       //language=SQLite
       `SELECT 
