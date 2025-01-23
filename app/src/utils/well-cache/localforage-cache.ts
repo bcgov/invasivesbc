@@ -18,7 +18,7 @@ class LocalForageWellCacheService extends WellCacheService {
     super();
   }
 
-  static async getInstance(): Promise<LocalForageWellCacheService> {
+  static override async getInstance(): Promise<LocalForageWellCacheService> {
     if (LocalForageWellCacheService._instance == null) {
       LocalForageWellCacheService._instance = new LocalForageWellCacheService();
       await LocalForageWellCacheService._instance.initializeCache();
@@ -109,7 +109,6 @@ class LocalForageWellCacheService extends WellCacheService {
     // converts to String due to IndexDB Constraint requiring string keys
     const cleanedWellData: WellData = {
       id: id,
-      type: wellData.type,
       geometry: wellData.geometry
     };
 
