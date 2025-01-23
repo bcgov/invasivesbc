@@ -57,7 +57,7 @@ abstract class WellCacheService extends BaseCacheService<
   }
 
   /**
-   * @desc Given a list of well Ids, delete wells in IndexDB.
+   * @desc Given a list of well Ids, delete wells in local db.
    * @param { number[] } wellTagNumbers Wells to be deleted
    */
   protected abstract deleteWellsFromIds(wellTagNumbers: number[]): Promise<void>;
@@ -101,8 +101,8 @@ abstract class WellCacheService extends BaseCacheService<
     const WELL_WFS_LAYER = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
     const url = encodeURIComponent(buildURLForDataBC(WELL_WFS_LAYER, bboxToPolygon(spec.bounds), true));
     const response = await (await fetch(`${spec.API_BASE}/api/map-shaper?url=${url}&percentage=0.02`)).json();
-    const wellTagNumbers: number[] = response.result.features.map((well: WellData) => well.properties.WELL_TAG_NUMBER);
-
+    const wellTagNumbers: number[] =
+      response?.result?.features?.map((well: WellData) => well.properties.WELL_TAG_NUMBER) ?? [];
     const uncachedWellTags = await this.removeDuplicateWellsFromIdList(wellTagNumbers, spec.bounds);
     const wellsToCache = response.result.features.filter((well) =>
       uncachedWellTags.includes(well.properties.WELL_TAG_NUMBER)
@@ -117,7 +117,6 @@ abstract class WellCacheService extends BaseCacheService<
 
     await this.saveWells(wellsToCache, progressCallback);
     const featureCollection = await this.createFeatureCollectionFromMetadata(id);
-
     await this.addOrUpdateRepository({
       bounds: spec.bounds,
       id: id,
