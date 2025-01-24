@@ -1,4 +1,4 @@
-import { polygon } from '@turf/helpers';
+import { Feature, polygon } from '@turf/helpers';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import inside from '@turf/inside';
@@ -6,6 +6,10 @@ import buffer from '@turf/buffer';
 import { getDataFromDataBCv2 } from './WFSConsumer';
 import { selectNetworkState } from 'state/reducers/network';
 import { select } from 'redux-saga/effects';
+import { WellCacheServiceFactory } from './well-cache/context';
+import GeoShapes from 'constants/geoShapes';
+import WellData from 'interfaces/WellData';
+import { LineString } from 'geojson';
 
 //gets layer data based on the layer name
 export function* getClosestWells(inputGeometry) {
@@ -24,16 +28,14 @@ export function* getClosestWells(inputGeometry) {
       return getWellsArray(returnVal.features, firstFeature);
     }
   } else {
-    /* TODO */
-    return { well_objects: [], areWellsInside: undefined };
+    const service = yield WellCacheServiceFactory.getPlatformInstance();
+    const wellsInArea = yield service.getNearbyWells(bufferedGeo) ?? [];
+    if (wellsInArea.length > 0) {
+      return getWellsArray(wellsInArea, firstFeature);
+    } else {
+      return { well_objects: [], areWellsInside: undefined };
+    }
   }
-  //if offline: try to get layer data from sqlite local storage
-  /*  else {
-    const allFeatures = await fetchLayerDataFromLocal(
-      'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-      bufferedGeo,
-      databaseContext
-    );*/
 
   //if there is a geometry drawn, get closest wells and wells inside and label them
   // return getWellsArray(allFeatures, firstFeature);
@@ -45,7 +47,7 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
     return;
   }
 
-  if (geoJSONFeature.geometry.type === 'Point') {
+  if (geoJSONFeature.geometry.type === GeoShapes.Point) {
     let radius = 100;
     if (geoJSONFeature.properties?.radius) {
       radius = geoJSONFeature.properties.radius;
@@ -53,17 +55,20 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
     geoJSONFeature = buffer(geoJSONFeature, radius, { units: 'meters' });
   }
 
-  const outputWells = [];
+  const outputWells: WellData[] = [];
   let areWellsInside: boolean = false;
 
   const turfPolygon = polygon(geoJSONFeature.geometry.coordinates);
 
-  arrayOfWells.forEach((well, index) => {
+  arrayOfWells.forEach((well) => {
     if (inside(well, turfPolygon)) {
       areWellsInside = true;
       outputWells.push({ ...well, proximity: 0, inside: true });
     } else {
-      outputWells.push({ ...well, proximity: pointToLineDistance(well, polygonToLine(turfPolygon)) * 1000 });
+      outputWells.push({
+        ...well,
+        proximity: pointToLineDistance(well, polygonToLine(turfPolygon) as Feature<LineString>) * 1000
+      });
     }
   });
 
@@ -74,8 +79,8 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
 
   outputWells[0] = { ...outputWells[0], closest: true };
 
-  const fiveClosest = [];
-  const insideGeoWells = [];
+  const fiveClosest: WellData[] = [];
+  const insideGeoWells: WellData[] = [];
 
   outputWells.forEach((well: any) => {
     if (well.inside) {

@@ -7,6 +7,7 @@ import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
 import CacheFileSize from './CacheFileSize';
 import { useTileSizeThresholds } from './tileSizeHook';
 import { APPROX_SIZE_PER_TILE, AVAILABLE_ZOOMS } from './constants';
+import WellCache from 'state/actions/cache/WellCache';
 
 const TileCacheCreationPanel = () => {
   const handleDownload = () => {
@@ -18,6 +19,7 @@ const TileCacheCreationPanel = () => {
         maxZoom: zoom
       })
     );
+    dispatch(WellCache.requestCaching(drawnShape));
     setCacheName('');
     setTimeout(() => {
       dispatch(TileCache.clearTileCacheShape());

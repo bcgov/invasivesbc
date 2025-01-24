@@ -8,6 +8,7 @@ import { Delete, Edit, Visibility, VisibilityOff } from '@mui/icons-material';
 import Prompt from 'state/actions/prompts/Prompt';
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
 import MapActions from 'state/actions/map';
+import WellCache from 'state/actions/cache/WellCache';
 
 const TileCacheListRow = ({ metadata, visible }) => {
   const handleToggleVisibility = (id: string) => dispatch(MapActions.toggleOverlay(id));
@@ -30,6 +31,8 @@ const TileCacheListRow = ({ metadata, visible }) => {
   const handleDelete = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
+        // Migrate as part of in https://github.com/bcgov/invasivesbc/issues/3807
+        dispatch(WellCache.deleteRepository(metadata.bounds));
         dispatch(TileCache.deleteRepository(metadata.id));
       }
     };
