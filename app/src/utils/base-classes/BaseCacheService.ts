@@ -35,7 +35,7 @@ abstract class BaseCacheService<
   public abstract download(
     spec: RepositoryDownloadRequestSpec,
     progressCallback?: (currentProgress: ProgressCallbackParams) => void
-  ): Promise<boolean | void>;
+  ): Promise<string | boolean | void>;
 
   protected constructor() {}
 }

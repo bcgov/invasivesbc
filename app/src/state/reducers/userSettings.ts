@@ -225,18 +225,22 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         }
         console.log('CACHE STATUS', draftState.recordSets[action.payload.setId].cacheMetadataStatus);
       } else if (RecordCache.downloadProgressEvent.match(action)) {
-        if (action.payload.normalizedProgress == 1 || action.payload.isAbortedOrPaused) {
+        console.log('Check Pause events here', action.payload);
+
+        if (action.payload.normalizedProgress == 1 || action.payload.isAbortedOrPaused == 'abort') {
           console.log('inside abort or completed reducer', action.payload);
           draftState.recordSets[action.payload.setId].cacheDownloadProgress = {
             setId: '',
             message: '',
             aborted: false,
-            isAbortedOrPaused: false,
+            isAbortedOrPaused: '',
+            pausedCacheIdx: -1,
             normalizedProgress: 0,
             totalActivities: 0,
             processedActivities: 0
           };
         } else {
+          // paused idx gets updated
           draftState.recordSets[action.payload.setId].cacheDownloadProgress = action.payload;
         }
       } else if (Activity.deleteSuccess.match(action)) {

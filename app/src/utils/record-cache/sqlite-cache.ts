@@ -220,7 +220,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return true;
   }
 
-  async checkAbortOrPause(repositoryId: string): Promise<boolean> {
+  async checkAbortOrPause(repositoryId: string): Promise<string> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
@@ -235,11 +235,20 @@ class SQLiteRecordCacheService extends RecordCacheService {
     );
 
     const cacheStatus = metadata?.values?.[0]['STATUS'];
+    console.log('Inside CACHE STATUS', cacheStatus);
 
-    if (cacheStatus) {
-      return cacheStatus === UserRecordCacheStatus.DELETING || cacheStatus === UserRecordCacheStatus.PAUSED;
+    // if (cacheStatus) {
+    //   return cacheStatus === UserRecordCacheStatus.DELETING || cacheStatus === UserRecordCacheStatus.PAUSED;
+    // }
+    // return true;
+    switch (cacheStatus) {
+      case UserRecordCacheStatus.PAUSED:
+        return 'pause';
+      case UserRecordCacheStatus.DELETING:
+        return 'abort';
+      default:
+        return '';
     }
-    return true;
   }
 
   /**

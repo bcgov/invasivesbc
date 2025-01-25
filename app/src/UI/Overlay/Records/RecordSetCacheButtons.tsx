@@ -20,8 +20,8 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const dispatch = useDispatch();
   const connected = useSelector((state) => state.Network.connected);
   const [cacheActionEnabled, setCacheActionEnabled] = useState<boolean>(false);
-  const [showProgress, setShowProgress] = useState(false);
-  const [progress, setProgress] = useState(0);
+  // const [showProgress, setShowProgress] = useState(false);
+  // const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const downloadProgress = useSelector(
     (state) => state.UserSettings?.recordSets[setId].cacheDownloadProgress,
@@ -139,8 +139,9 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
      */
     console.log('Inside pause and play');
     // for pause first
-    dispatch(RecordCache.pauseDownload({ setId }));
-
+    if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.DOWNLOADING)
+      dispatch(RecordCache.pauseDownload({ setId }));
+    else if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.PAUSED) downloadCache();
     // previous implementation
     // dispatch(RecordCache.pauseOrResumeCache(setId));
     setIsPaused((prev) => !prev);
@@ -153,29 +154,29 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
           UserRecordCacheStatus.CACHED,
           UserRecordCacheStatus.NOT_CACHED,
           UserRecordCacheStatus.ERROR,
-          UserRecordCacheStatus.DOWNLOADING
-          // UserRecordCacheStatus.PAUSED
+          UserRecordCacheStatus.DOWNLOADING,
+          UserRecordCacheStatus.PAUSED
         ].includes(recordSet.cacheMetadataStatus)
     );
   }, [recordSet.cacheMetadataStatus, connected]);
 
-  useEffect(() => {
-    // to test out progress bar; to be removed
-    let timer: NodeJS.Timeout;
-    if (showProgress && !isPaused) {
-      timer = setInterval(() => {
-        setProgress((prev) => {
-          if (prev >= 100) {
-            clearInterval(timer);
-            return 100;
-          }
-          return prev + 5;
-        });
-      }, 500);
-    }
+  // useEffect(() => {
+  //   // to test out progress bar; to be removed
+  //   let timer: NodeJS.Timeout;
+  //   if (showProgress && !isPaused) {
+  //     timer = setInterval(() => {
+  //       setProgress((prev) => {
+  //         if (prev >= 100) {
+  //           clearInterval(timer);
+  //           return 100;
+  //         }
+  //         return prev + 5;
+  //       });
+  //     }, 500);
+  //   }
 
-    return () => clearInterval(timer);
-  }, [showProgress, isPaused]);
+  //   return () => clearInterval(timer);
+  // }, [showProgress, isPaused]);
 
   return (
     <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to save this layer and it's records">

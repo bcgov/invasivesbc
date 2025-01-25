@@ -57,7 +57,11 @@ class RecordCache {
           idsToCache,
           recordSetType: recordSet.recordSetType,
           recordSetCacheStatus: recordSet.cacheMetadataStatus,
-          setId: spec.setId
+          setId: spec.setId,
+          pausedCacheIdx: recordSet.cacheDownloadProgress.pausedCacheIdx,
+          processedActivities: recordSet.cacheDownloadProgress.processedActivities
+          // pauseidx -1 if nothing, else the actual idx
+          //processed caches, 0 if nothing, else the actual value
         },
         (p) => {
           dispatch(RecordCache.downloadProgressEvent(p));
@@ -67,7 +71,12 @@ class RecordCache {
 
       return {
         setId: spec.setId,
-        status: downloadCompleted ? UserRecordCacheStatus.CACHED : UserRecordCacheStatus.PAUSED
+        status:
+          downloadCompleted == 'abort'
+            ? UserRecordCacheStatus.NOT_CACHED
+            : downloadCompleted == 'pause'
+              ? UserRecordCacheStatus.PAUSED
+              : UserRecordCacheStatus.CACHED
       };
     }
   );

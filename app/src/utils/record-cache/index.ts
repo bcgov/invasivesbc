@@ -16,7 +16,8 @@ export interface RecordCacheDownloadRequestSpec {
   setId: string;
   API_BASE: string;
   idsToCache: string[];
-  pauseStatus: UserRecordCacheStatus;
+  pausedCacheIdx: number;
+  processedActivities: number;
 }
 /**
  * @desc Cached Metadata for Recordsets
@@ -47,7 +48,8 @@ export interface RecordCacheProgressCallbackParameters {
   setId: string;
   message: string;
   aborted: boolean;
-  isAbortedOrPaused: boolean;
+  pausedCacheIdx: number;
+  isAbortedOrPaused: string;
   normalizedProgress: number;
   totalActivities: number; // is this needed?
   processedActivities: number; // is this needed?
@@ -60,6 +62,8 @@ export interface CacheDownloadSpec {
   API_BASE: string;
   recordSetType: RecordSetType;
   recordSetCacheStatus: UserRecordCacheStatus;
+  pausedCacheIdx: number;
+  processedActivities: number;
 }
 
 abstract class RecordCacheService extends BaseCacheService<
@@ -111,18 +115,19 @@ abstract class RecordCacheService extends BaseCacheService<
   protected abstract createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
   abstract checkForAbort(id: string): Promise<boolean>;
-  abstract checkAbortOrPause(id: string): Promise<boolean>;
+  abstract checkAbortOrPause(id: string): Promise<string>;
   // abstract checkForPause(id: string): Promise<boolean>;
 
   public async download(
     spec: CacheDownloadSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
-  ): Promise<boolean> {
+  ): Promise<string> {
     const args = {
       idsToCache: spec.idsToCache,
       setId: spec.setId,
       API_BASE: spec.API_BASE,
-      pauseStatus: spec.recordSetCacheStatus
+      pausedCacheIdx: spec.pausedCacheIdx,
+      processedActivities: spec.processedActivities
     };
 
     let responseData: Record<PropertyKey, any> = {
@@ -140,15 +145,19 @@ abstract class RecordCacheService extends BaseCacheService<
     });
 
     let downloadCompleted = true;
-    if (spec.recordSetType === RecordSetType.Activity && (await this.downloadActivity(args, progressCallback))) {
+    let isAbortOrPaused = '';
+    if (
+      spec.recordSetType === RecordSetType.Activity &&
+      !(isAbortOrPaused = await this.downloadActivity(args, progressCallback))
+    ) {
       Object.assign(responseData, await this.createActivityRecordsetSourceMetadata(spec.idsToCache));
     } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args, progressCallback))) {
       Object.assign(responseData, await this.createIappRecordsetSourceMetadata(spec.idsToCache));
     } else {
       downloadCompleted = false;
-      console.log('Inside ELSE for pause');
-
-      // this.deleteRepository(spec.setId);
+      if (isAbortOrPaused == 'abort') {
+        this.deleteRepository(spec.setId);
+      }
     }
 
     if (downloadCompleted) {
@@ -163,7 +172,7 @@ abstract class RecordCacheService extends BaseCacheService<
         bbox: spec.bbox
       });
     }
-    return downloadCompleted;
+    return isAbortOrPaused;
   }
   /**
    * Download Records for IAPP Given a list of IDs
@@ -219,7 +228,8 @@ abstract class RecordCacheService extends BaseCacheService<
             setId: spec.setId,
             message: '',
             aborted: abort,
-            isAbortedOrPaused: false,
+            isAbortedOrPaused: '',
+            pausedCacheIdx: -1,
             normalizedProgress: processedCaches / totalRecordsToCache,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
@@ -237,13 +247,16 @@ abstract class RecordCacheService extends BaseCacheService<
   private async downloadActivity(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
-  ): Promise<boolean> {
+    //, pauseidx with default as 0
+  ): Promise<string> {
     let abort = false;
-    let isabortOrPaused = false;
-    let processedCaches = 0;
+    // let isabortOrPaused = false;
+    let isabortOrPaused = '';
+    let processedCaches = spec.processedActivities == -1 ? 0 : spec.processedActivities; // 0 or the value in spec
     let totalRecordsToCache = spec.idsToCache.length;
-    for (let i = 0; i < spec.idsToCache.length && !isabortOrPaused; i++) {
-      console.log('spec pause status', spec.pauseStatus);
+    let startIdx = spec.pausedCacheIdx == -1 ? 0 : spec.pausedCacheIdx;
+    for (let i = startIdx; i < spec.idsToCache.length && isabortOrPaused === ''; i++) {
+      //!isabortOrPaused
 
       // if (spec.pauseStatus == UserRecordCacheStatus.PAUSED) {
       //   console.log('Inside PAused');
@@ -272,18 +285,14 @@ abstract class RecordCacheService extends BaseCacheService<
       if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
         console.log('ACTIVITY', this.RECORDS_BETWEEN_PROGRESS_UPDATES, i, spec.idsToCache.length);
         // abort = await this.checkForAbort(spec.setId);
+        // isabortOrPaused = await this.checkAbortOrPause(spec.setId);
         isabortOrPaused = await this.checkAbortOrPause(spec.setId);
-        /*
-          ProgressCallback Logic
-        */
-        console.log('Progress callback', {
-          setId: spec.setId,
-          message: '',
-          aborted: abort,
-          normalizedProgress: processedCaches / totalRecordsToCache,
-          totalActivities: totalRecordsToCache,
-          processedActivities: processedCaches
-        });
+
+        //if (isabortOrPaused == 'pause'){
+        // update database with pause idx
+        // await this.updateCachedRecordMetadata with pause idx
+        //}
+        console.log('ASDF', (processedCaches / totalRecordsToCache) * 100, processedCaches, totalRecordsToCache);
 
         if (progressCallback) {
           progressCallback({
@@ -291,6 +300,7 @@ abstract class RecordCacheService extends BaseCacheService<
             message: '',
             aborted: abort,
             isAbortedOrPaused: isabortOrPaused,
+            pausedCacheIdx: isabortOrPaused != 'pause' ? -1 : i + 1, //i because the other addupdate doesnot go through
             normalizedProgress: processedCaches / totalRecordsToCache,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
@@ -299,7 +309,8 @@ abstract class RecordCacheService extends BaseCacheService<
       }
     }
     // return !abort;
-    return !isabortOrPaused;
+    // return !isabortOrPaused;
+    return isabortOrPaused;
   }
   public async stopDownload(repositoryId: string): Promise<void> {
     const repositories = await this.listRepositories();
