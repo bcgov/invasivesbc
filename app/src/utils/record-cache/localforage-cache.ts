@@ -81,10 +81,12 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return true;
   }
 
-  async checkAbortOrPause(id: string): Promise<string> {
+  async checkPauseOrAbort(id: string): Promise<string> {
     const sets = await this.listRepositories();
     const index = sets.findIndex((p) => p.setId === id);
     if (index !== -1) {
+      console.log('LOCAL FORAGE', sets[index].status);
+
       if (sets[index].status === UserRecordCacheStatus.DELETING) return 'abort';
       else if (sets[index].status === UserRecordCacheStatus.PAUSED) return 'pause';
       // return (

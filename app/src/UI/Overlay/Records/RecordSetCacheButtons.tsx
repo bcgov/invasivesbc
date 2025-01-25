@@ -22,18 +22,13 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const [cacheActionEnabled, setCacheActionEnabled] = useState<boolean>(false);
   // const [showProgress, setShowProgress] = useState(false);
   // const [progress, setProgress] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+
   const downloadProgress = useSelector(
     (state) => state.UserSettings?.recordSets[setId].cacheDownloadProgress,
     shallowEqual
   );
   const activeDownloads = downloadProgress.normalizedProgress != 0;
-  console.log('HOW MUCH COMPLETE?', downloadProgress.normalizedProgress, downloadProgress.normalizedProgress * 100);
-
-  console.log('Download progress', downloadProgress);
-  console.log('Record set progress', recordSet.cacheDownloadProgress);
-  console.log('setid', setId);
-
+  const [isPaused, setIsPaused] = useState(activeDownloads ? activeDownloads : false);
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     /**
      * Save -> Progress bar shows up
@@ -61,6 +56,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
         break;
       case UserRecordCacheStatus.ERROR:
       case UserRecordCacheStatus.CACHED:
+      case UserRecordCacheStatus.PAUSED:
         deleteCache();
         break;
     }
@@ -85,7 +81,6 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
         dispatch(RecordCache.requestCaching({ setId }));
-        console.log('Dispatched request caching');
 
         // setShowProgress(true);
         // setProgress(0);
@@ -132,12 +127,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
 
   const handlePausePlayClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    /**
-     * Update pause state
-     * Pause the download
-     * Resume the download
-     */
-    console.log('Inside pause and play');
+
     // for pause first
     if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.DOWNLOADING)
       dispatch(RecordCache.pauseDownload({ setId }));
@@ -159,24 +149,6 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
         ].includes(recordSet.cacheMetadataStatus)
     );
   }, [recordSet.cacheMetadataStatus, connected]);
-
-  // useEffect(() => {
-  //   // to test out progress bar; to be removed
-  //   let timer: NodeJS.Timeout;
-  //   if (showProgress && !isPaused) {
-  //     timer = setInterval(() => {
-  //       setProgress((prev) => {
-  //         if (prev >= 100) {
-  //           clearInterval(timer);
-  //           return 100;
-  //         }
-  //         return prev + 5;
-  //       });
-  //     }, 500);
-  //   }
-
-  //   return () => clearInterval(timer);
-  // }, [showProgress, isPaused]);
 
   return (
     <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to save this layer and it's records">
@@ -236,12 +208,11 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
                 </IconButton>
               </Grid>
               {/* Second row with progress text */}
-              <Grid item xs={12}>
+              {/* {<Grid item xs={12}>
                 <Typography variant="caption" align="center">
-                  {/* optimize this */}
                   {`${Math.floor(downloadProgress.normalizedProgress * 100) == 0 ? (downloadProgress.normalizedProgress * 100).toFixed(1) : Math.floor(downloadProgress.normalizedProgress * 100)}% completed`}
                 </Typography>
-              </Grid>
+              </Grid>} */}
             </Grid>
           </Box>
         )}

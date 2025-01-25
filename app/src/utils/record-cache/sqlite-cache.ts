@@ -220,7 +220,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return true;
   }
 
-  async checkAbortOrPause(repositoryId: string): Promise<string> {
+  async checkPauseOrAbort(repositoryId: string): Promise<string> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }

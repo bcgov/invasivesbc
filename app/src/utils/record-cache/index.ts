@@ -12,6 +12,12 @@ export enum IappRecordMode {
   Record = 'record',
   Row = 'row'
 }
+
+export enum CacheDownloadMode {
+  CONTINUE = '',
+  PAUSE = 'pause',
+  ABORT = 'abort'
+}
 export interface RecordCacheDownloadRequestSpec {
   setId: string;
   API_BASE: string;
@@ -72,7 +78,7 @@ abstract class RecordCacheService extends BaseCacheService<
   RecordCacheProgressCallbackParameters,
   UserRecordCacheStatus
 > {
-  private readonly RECORDS_BETWEEN_PROGRESS_UPDATES = 15;
+  private readonly RECORDS_BETWEEN_PROGRESS_UPDATES = 10;
 
   protected constructor() {
     super();
@@ -115,8 +121,8 @@ abstract class RecordCacheService extends BaseCacheService<
   protected abstract createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
   abstract checkForAbort(id: string): Promise<boolean>;
-  abstract checkAbortOrPause(id: string): Promise<string>;
-  // abstract checkForPause(id: string): Promise<boolean>;
+
+  abstract checkPauseOrAbort(id: string): Promise<string>;
 
   public async download(
     spec: CacheDownloadSpec,
@@ -247,31 +253,14 @@ abstract class RecordCacheService extends BaseCacheService<
   private async downloadActivity(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
-    //, pauseidx with default as 0
   ): Promise<string> {
     let abort = false;
-    // let isabortOrPaused = false;
-    let isabortOrPaused = '';
+    let pauseOrAbort = '';
     let processedCaches = spec.processedActivities == -1 ? 0 : spec.processedActivities; // 0 or the value in spec
+    let lastProgressCallback: null | number = null;
     let totalRecordsToCache = spec.idsToCache.length;
     let startIdx = spec.pausedCacheIdx == -1 ? 0 : spec.pausedCacheIdx;
-    for (let i = startIdx; i < spec.idsToCache.length && isabortOrPaused === ''; i++) {
-      //!isabortOrPaused
-
-      // if (spec.pauseStatus == UserRecordCacheStatus.PAUSED) {
-      //   console.log('Inside PAused');
-
-      //   // Wait until the pause flag is cleared
-      //   await new Promise((resolve) => {
-      //     const interval = setInterval(() => {
-      //       if (spec.pauseStatus == UserRecordCacheStatus.DOWNLOADING) {
-      //         console.log('Inside play');
-      //         clearInterval(interval);
-      //         resolve(true);
-      //       }
-      //     }, 100); // Check every 100ms
-      //   });
-      // }
+    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === ''; i++) {
       const rez = await fetch(`${spec.API_BASE}/api/activity/${spec.idsToCache[i]}`, {
         headers: {
           Authorization: await getCurrentJWT()
@@ -279,28 +268,27 @@ abstract class RecordCacheService extends BaseCacheService<
       });
       await this.saveActivity(spec.idsToCache[i], await rez.json());
       processedCaches++;
+      const currentProgress = processedCaches / totalRecordsToCache;
 
-      console.log("What's in spec", spec);
-
-      if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
-        console.log('ACTIVITY', this.RECORDS_BETWEEN_PROGRESS_UPDATES, i, spec.idsToCache.length);
-        // abort = await this.checkForAbort(spec.setId);
-        // isabortOrPaused = await this.checkAbortOrPause(spec.setId);
-        isabortOrPaused = await this.checkAbortOrPause(spec.setId);
+      if (
+        lastProgressCallback == null ||
+        currentProgress - lastProgressCallback > 0.01 ||
+        processedCaches == totalRecordsToCache
+      ) {
+        pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
         //if (isabortOrPaused == 'pause'){
         // update database with pause idx
         // await this.updateCachedRecordMetadata with pause idx
         //}
-        console.log('ASDF', (processedCaches / totalRecordsToCache) * 100, processedCaches, totalRecordsToCache);
 
         if (progressCallback) {
           progressCallback({
             setId: spec.setId,
             message: '',
             aborted: abort,
-            isAbortedOrPaused: isabortOrPaused,
-            pausedCacheIdx: isabortOrPaused != 'pause' ? -1 : i + 1, //i because the other addupdate doesnot go through
+            isAbortedOrPaused: pauseOrAbort,
+            pausedCacheIdx: pauseOrAbort != 'pause' ? -1 : i + 1,
             normalizedProgress: processedCaches / totalRecordsToCache,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
@@ -308,16 +296,18 @@ abstract class RecordCacheService extends BaseCacheService<
         }
       }
     }
-    // return !abort;
-    // return !isabortOrPaused;
-    return isabortOrPaused;
+
+    return pauseOrAbort;
   }
   public async stopDownload(repositoryId: string): Promise<void> {
     const repositories = await this.listRepositories();
     const foundIndex = repositories.findIndex((repo) => repo.setId === repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);
 
-    if (repositories[foundIndex].status === UserRecordCacheStatus.DOWNLOADING) {
+    if (
+      repositories[foundIndex].status === UserRecordCacheStatus.DOWNLOADING ||
+      repositories[foundIndex].status === UserRecordCacheStatus.PAUSED
+    ) {
       await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
     } else if (repositories[foundIndex].status === UserRecordCacheStatus.CACHED) {
       await this.deleteRepository(repositoryId);

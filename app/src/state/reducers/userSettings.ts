@@ -210,25 +210,29 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.NOT_CACHED;
+        draftState.recordSets[action.meta.arg.setId].cacheDownloadProgress = {
+          setId: '',
+          message: '',
+          aborted: false,
+          isAbortedOrPaused: '',
+          pausedCacheIdx: -1,
+          normalizedProgress: 0,
+          totalActivities: 0,
+          processedActivities: 0
+        };
       } else if (RecordCache.pauseDownload.pending.match(action)) {
         // do you need this?
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
       } else if (RecordCache.pauseDownload.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
       } else if (RecordCache.pauseOrResumeCache.match(action)) {
-        console.log('Before', draftState.recordSets[action.payload.setId].cacheMetadataStatus);
-
         if (draftState.recordSets[action.payload.setId].cacheMetadataStatus != UserRecordCacheStatus.PAUSED) {
           draftState.recordSets[action.payload.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
         } else {
           draftState.recordSets[action.payload.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
         }
-        console.log('CACHE STATUS', draftState.recordSets[action.payload.setId].cacheMetadataStatus);
       } else if (RecordCache.downloadProgressEvent.match(action)) {
-        console.log('Check Pause events here', action.payload);
-
         if (action.payload.normalizedProgress == 1 || action.payload.isAbortedOrPaused == 'abort') {
-          console.log('inside abort or completed reducer', action.payload);
           draftState.recordSets[action.payload.setId].cacheDownloadProgress = {
             setId: '',
             message: '',
