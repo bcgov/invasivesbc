@@ -10,6 +10,7 @@ import RecordCache from 'state/actions/cache/RecordCache';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import Prompt from 'state/actions/prompts/Prompt';
 import { shallowEqual } from 'react-redux';
+import ProgressControlPanel from './ProgressControlPanel';
 
 interface PropTypes {
   recordSet: UserRecordSet;
@@ -20,15 +21,16 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const dispatch = useDispatch();
   const connected = useSelector((state) => state.Network.connected);
   const [cacheActionEnabled, setCacheActionEnabled] = useState<boolean>(false);
-  // const [showProgress, setShowProgress] = useState(false);
-  // const [progress, setProgress] = useState(0);
 
   const downloadProgress = useSelector(
     (state) => state.UserSettings?.recordSets[setId].cacheDownloadProgress,
     shallowEqual
   );
   const activeDownloads = downloadProgress.normalizedProgress != 0;
+
+  // Ensure the pause/resume button reflects the correct state if the user refreshes after pausing
   const [isPaused, setIsPaused] = useState(activeDownloads ? activeDownloads : false);
+
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     /**
      * Save -> Progress bar shows up
@@ -48,7 +50,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
      */
     e.stopPropagation();
     switch (recordSet.cacheMetadataStatus) {
-      case UserRecordCacheStatus.NOT_CACHED: // UserRecordCacheStatus.PAUSED
+      case UserRecordCacheStatus.NOT_CACHED:
         downloadCache();
         break;
       case UserRecordCacheStatus.DOWNLOADING:
@@ -61,12 +63,11 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
         break;
     }
   };
+
   const cancelCacheDownload = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
         dispatch(RecordCache.stopDownload({ setId }));
-        // setShowProgress(false);
-        // setProgress(0);
       }
     };
     dispatch(
@@ -77,13 +78,11 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
       })
     );
   };
+
   const downloadCache = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
         dispatch(RecordCache.requestCaching({ setId }));
-
-        // setShowProgress(true);
-        // setProgress(0);
         setIsPaused(false);
       }
     };
@@ -128,12 +127,10 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const handlePausePlayClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
-    // for pause first
     if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.DOWNLOADING)
       dispatch(RecordCache.pauseDownload({ setId }));
     else if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.PAUSED) downloadCache();
-    // previous implementation
-    // dispatch(RecordCache.pauseOrResumeCache(setId));
+
     setIsPaused((prev) => !prev);
   };
 
@@ -144,8 +141,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
           UserRecordCacheStatus.CACHED,
           UserRecordCacheStatus.NOT_CACHED,
           UserRecordCacheStatus.ERROR,
-          UserRecordCacheStatus.DOWNLOADING,
-          UserRecordCacheStatus.PAUSED
+          UserRecordCacheStatus.DOWNLOADING
         ].includes(recordSet.cacheMetadataStatus)
     );
   }, [recordSet.cacheMetadataStatus, connected]);
@@ -153,7 +149,14 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   return (
     <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to save this layer and it's records">
       <span>
-        {!activeDownloads && (
+        {activeDownloads ? (
+          <ProgressControlPanel
+            isPaused={isPaused}
+            downloadProgress={downloadProgress}
+            handlePausePlayClick={handlePausePlayClick}
+            handleClick={handleClick}
+          />
+        ) : (
           <Button
             disabled={!cacheActionEnabled}
             className="records__set__layer_cache"
@@ -163,58 +166,6 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
             {formatStatusKey(recordSet.cacheMetadataStatus)}
             <SaveIcon />
           </Button>
-        )}
-
-        {activeDownloads && (
-          <Box
-            sx={{
-              border: '1px solid #1976d2',
-              borderRadius: '8px',
-              padding: 2
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <Grid container spacing={2} alignItems="center">
-              {/* First row with buttons and progress bar */}
-              <Grid item xs={2}>
-                <IconButton
-                  onClick={handlePausePlayClick}
-                  color="primary"
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%'
-                  }}
-                >
-                  {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
-                </IconButton>
-              </Grid>
-              <Grid item xs={8}>
-                <LinearProgress variant={'determinate'} value={downloadProgress.normalizedProgress * 100} />
-              </Grid>
-              <Grid item xs={2}>
-                <IconButton
-                  color={'error'}
-                  onClick={handleClick}
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    width: '100%'
-                  }}
-                >
-                  <CloseIcon />
-                </IconButton>
-              </Grid>
-              {/* Second row with progress text */}
-              {/* {<Grid item xs={12}>
-                <Typography variant="caption" align="center">
-                  {`${Math.floor(downloadProgress.normalizedProgress * 100) == 0 ? (downloadProgress.normalizedProgress * 100).toFixed(1) : Math.floor(downloadProgress.normalizedProgress * 100)}% completed`}
-                </Typography>
-              </Grid>} */}
-            </Grid>
-          </Box>
         )}
       </span>
     </Tooltip>

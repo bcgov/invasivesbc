@@ -224,14 +224,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (RecordCache.pauseDownload.pending.match(action)) {
         // do you need this?
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
-      } else if (RecordCache.pauseDownload.fulfilled.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
-      } else if (RecordCache.pauseOrResumeCache.match(action)) {
-        if (draftState.recordSets[action.payload.setId].cacheMetadataStatus != UserRecordCacheStatus.PAUSED) {
-          draftState.recordSets[action.payload.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
-        } else {
-          draftState.recordSets[action.payload.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
-        }
       } else if (RecordCache.downloadProgressEvent.match(action)) {
         if (action.payload.normalizedProgress == 1 || action.payload.downloadMode === CacheDownloadMode.ABORT) {
           draftState.recordSets[action.payload.setId].cacheDownloadProgress = {
