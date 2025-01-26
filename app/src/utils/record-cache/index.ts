@@ -127,7 +127,7 @@ abstract class RecordCacheService extends BaseCacheService<
   public async download(
     spec: CacheDownloadSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
-  ): Promise<string> {
+  ): Promise<CacheDownloadMode> {
     const args = {
       idsToCache: spec.idsToCache,
       setId: spec.setId,
@@ -151,17 +151,17 @@ abstract class RecordCacheService extends BaseCacheService<
     });
 
     let downloadCompleted = true;
-    let isAbortOrPaused = '';
+    let downloadmode: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     if (
       spec.recordSetType === RecordSetType.Activity &&
-      !(isAbortOrPaused = await this.downloadActivity(args, progressCallback))
+      !(downloadmode = await this.downloadActivity(args, progressCallback))
     ) {
       Object.assign(responseData, await this.createActivityRecordsetSourceMetadata(spec.idsToCache));
     } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args, progressCallback))) {
       Object.assign(responseData, await this.createIappRecordsetSourceMetadata(spec.idsToCache));
     } else {
       downloadCompleted = false;
-      if (isAbortOrPaused == 'abort') {
+      if (downloadmode == CacheDownloadMode.ABORT) {
         this.deleteRepository(spec.setId);
       }
     }
@@ -178,7 +178,7 @@ abstract class RecordCacheService extends BaseCacheService<
         bbox: spec.bbox
       });
     }
-    return isAbortOrPaused;
+    return downloadmode;
   }
   /**
    * Download Records for IAPP Given a list of IDs
@@ -253,7 +253,7 @@ abstract class RecordCacheService extends BaseCacheService<
   private async downloadActivity(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
-  ): Promise<string> {
+  ): Promise<CacheDownloadMode> {
     let abort = false;
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     let processedCaches = spec.processedActivities == -1 ? 0 : spec.processedActivities; // 0 or the value in spec

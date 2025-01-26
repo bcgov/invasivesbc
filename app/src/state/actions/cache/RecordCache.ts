@@ -2,7 +2,7 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getBoundingBoxFromRecordsetFilters from 'utils/getBoundingBoxFromRecordsetFilters';
-import { RecordCacheProgressCallbackParameters } from 'utils/record-cache';
+import { CacheDownloadMode, RecordCacheProgressCallbackParameters } from 'utils/record-cache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 class RecordCache {
@@ -50,7 +50,7 @@ class RecordCache {
       const recordSet = state.UserSettings.recordSets[spec.setId];
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
 
-      const downloadCompleted = await service.download(
+      const downloadMode: CacheDownloadMode = await service.download(
         {
           API_BASE: state.Configuration.current.API_BASE,
           bbox,
@@ -67,14 +67,13 @@ class RecordCache {
           dispatch(RecordCache.downloadProgressEvent(p));
         }
       );
-      console.log('Download completed', downloadCompleted);
 
       return {
         setId: spec.setId,
         status:
-          downloadCompleted == 'abort'
+          downloadMode == CacheDownloadMode.ABORT
             ? UserRecordCacheStatus.NOT_CACHED
-            : downloadCompleted == 'pause'
+            : downloadMode == CacheDownloadMode.PAUSE
               ? UserRecordCacheStatus.PAUSED
               : UserRecordCacheStatus.CACHED
       };
