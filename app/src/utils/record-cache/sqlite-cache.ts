@@ -10,7 +10,8 @@ import {
   IappRecordMode,
   RepositoryMetadata,
   RecordCacheService,
-  RecordSetSourceMetadata
+  RecordSetSourceMetadata,
+  CacheDownloadMode
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
@@ -220,7 +221,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return true;
   }
 
-  async checkPauseOrAbort(repositoryId: string): Promise<string> {
+  async checkPauseOrAbort(repositoryId: string): Promise<CacheDownloadMode> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
@@ -243,11 +244,11 @@ class SQLiteRecordCacheService extends RecordCacheService {
     // return true;
     switch (cacheStatus) {
       case UserRecordCacheStatus.PAUSED:
-        return 'pause';
+        return CacheDownloadMode.PAUSE;
       case UserRecordCacheStatus.DELETING:
-        return 'abort';
+        return CacheDownloadMode.ABORT;
       default:
-        return '';
+        return CacheDownloadMode.DEFAULT;
     }
   }
 

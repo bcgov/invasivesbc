@@ -5,7 +5,8 @@ import {
   IappRecordMode,
   RepositoryMetadata,
   RecordCacheService,
-  RecordSetSourceMetadata
+  RecordSetSourceMetadata,
+  CacheDownloadMode
 } from 'utils/record-cache/index';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
@@ -81,20 +82,20 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return true;
   }
 
-  async checkPauseOrAbort(id: string): Promise<string> {
+  async checkPauseOrAbort(id: string): Promise<CacheDownloadMode> {
     const sets = await this.listRepositories();
     const index = sets.findIndex((p) => p.setId === id);
     if (index !== -1) {
       console.log('LOCAL FORAGE', sets[index].status);
 
-      if (sets[index].status === UserRecordCacheStatus.DELETING) return 'abort';
-      else if (sets[index].status === UserRecordCacheStatus.PAUSED) return 'pause';
+      if (sets[index].status === UserRecordCacheStatus.DELETING) return CacheDownloadMode.ABORT;
+      else if (sets[index].status === UserRecordCacheStatus.PAUSED) return CacheDownloadMode.PAUSE;
       // return (
       //   sets[index].status === UserRecordCacheStatus.DELETING || sets[index].status === UserRecordCacheStatus.PAUSED
       // );
     }
     // return true;
-    return '';
+    return CacheDownloadMode.DEFAULT;
   }
 
   async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {

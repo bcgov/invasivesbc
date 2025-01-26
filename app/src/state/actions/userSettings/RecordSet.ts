@@ -5,6 +5,7 @@ import { MOBILE } from 'state/build-time-config';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import RecordCache from '../cache/RecordCache';
+import { CacheDownloadMode } from 'utils/record-cache';
 
 export interface IUpdateFilter {
   setID: string | number;
@@ -104,8 +105,8 @@ class RecordSet {
       setId: '',
       message: '',
       aborted: false,
-      isAbortedOrPaused: '',
-      pausedCacheIdx: -1,
+      downloadMode: CacheDownloadMode.DEFAULT,
+      pausedActivityIdx: -1,
       normalizedProgress: 0,
       totalActivities: 0,
       processedActivities: 0

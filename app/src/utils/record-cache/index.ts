@@ -14,7 +14,7 @@ export enum IappRecordMode {
 }
 
 export enum CacheDownloadMode {
-  CONTINUE = '',
+  DEFAULT = '',
   PAUSE = 'pause',
   ABORT = 'abort'
 }
@@ -22,7 +22,7 @@ export interface RecordCacheDownloadRequestSpec {
   setId: string;
   API_BASE: string;
   idsToCache: string[];
-  pausedCacheIdx: number;
+  pausedActivityIdx: number;
   processedActivities: number;
 }
 /**
@@ -54,8 +54,8 @@ export interface RecordCacheProgressCallbackParameters {
   setId: string;
   message: string;
   aborted: boolean;
-  pausedCacheIdx: number;
-  isAbortedOrPaused: string;
+  pausedActivityIdx: number;
+  downloadMode: CacheDownloadMode;
   normalizedProgress: number;
   totalActivities: number; // is this needed?
   processedActivities: number; // is this needed?
@@ -68,7 +68,7 @@ export interface CacheDownloadSpec {
   API_BASE: string;
   recordSetType: RecordSetType;
   recordSetCacheStatus: UserRecordCacheStatus;
-  pausedCacheIdx: number;
+  pausedActivityIdx: number;
   processedActivities: number;
 }
 
@@ -122,7 +122,7 @@ abstract class RecordCacheService extends BaseCacheService<
 
   abstract checkForAbort(id: string): Promise<boolean>;
 
-  abstract checkPauseOrAbort(id: string): Promise<string>;
+  abstract checkPauseOrAbort(id: string): Promise<CacheDownloadMode>;
 
   public async download(
     spec: CacheDownloadSpec,
@@ -132,7 +132,7 @@ abstract class RecordCacheService extends BaseCacheService<
       idsToCache: spec.idsToCache,
       setId: spec.setId,
       API_BASE: spec.API_BASE,
-      pausedCacheIdx: spec.pausedCacheIdx,
+      pausedActivityIdx: spec.pausedActivityIdx,
       processedActivities: spec.processedActivities
     };
 
@@ -234,8 +234,8 @@ abstract class RecordCacheService extends BaseCacheService<
             setId: spec.setId,
             message: '',
             aborted: abort,
-            isAbortedOrPaused: '',
-            pausedCacheIdx: -1,
+            downloadMode: CacheDownloadMode.DEFAULT,
+            pausedActivityIdx: -1,
             normalizedProgress: processedCaches / totalRecordsToCache,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
@@ -255,12 +255,12 @@ abstract class RecordCacheService extends BaseCacheService<
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<string> {
     let abort = false;
-    let pauseOrAbort = '';
+    let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     let processedCaches = spec.processedActivities == -1 ? 0 : spec.processedActivities; // 0 or the value in spec
     let lastProgressCallback: null | number = null;
     let totalRecordsToCache = spec.idsToCache.length;
-    let startIdx = spec.pausedCacheIdx == -1 ? 0 : spec.pausedCacheIdx;
-    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === ''; i++) {
+    let startIdx = spec.pausedActivityIdx == -1 ? 0 : spec.pausedActivityIdx;
+    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
       const rez = await fetch(`${spec.API_BASE}/api/activity/${spec.idsToCache[i]}`, {
         headers: {
           Authorization: await getCurrentJWT()
@@ -287,8 +287,8 @@ abstract class RecordCacheService extends BaseCacheService<
             setId: spec.setId,
             message: '',
             aborted: abort,
-            isAbortedOrPaused: pauseOrAbort,
-            pausedCacheIdx: pauseOrAbort != 'pause' ? -1 : i + 1,
+            downloadMode: pauseOrAbort,
+            pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
             normalizedProgress: processedCaches / totalRecordsToCache,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches

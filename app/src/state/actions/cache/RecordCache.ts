@@ -58,7 +58,7 @@ class RecordCache {
           recordSetType: recordSet.recordSetType,
           recordSetCacheStatus: recordSet.cacheMetadataStatus,
           setId: spec.setId,
-          pausedCacheIdx: recordSet.cacheDownloadProgress.pausedCacheIdx,
+          pausedActivityIdx: recordSet.cacheDownloadProgress.pausedActivityIdx,
           processedActivities: recordSet.cacheDownloadProgress.processedActivities
           // pauseidx -1 if nothing, else the actual idx
           //processed caches, 0 if nothing, else the actual value

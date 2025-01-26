@@ -19,6 +19,7 @@ import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
+import { CacheDownloadMode } from 'utils/record-cache';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
@@ -214,8 +215,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           setId: '',
           message: '',
           aborted: false,
-          isAbortedOrPaused: '',
-          pausedCacheIdx: -1,
+          downloadMode: CacheDownloadMode.DEFAULT,
+          pausedActivityIdx: -1,
           normalizedProgress: 0,
           totalActivities: 0,
           processedActivities: 0
@@ -232,13 +233,13 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.recordSets[action.payload.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
         }
       } else if (RecordCache.downloadProgressEvent.match(action)) {
-        if (action.payload.normalizedProgress == 1 || action.payload.isAbortedOrPaused == 'abort') {
+        if (action.payload.normalizedProgress == 1 || action.payload.downloadMode === CacheDownloadMode.ABORT) {
           draftState.recordSets[action.payload.setId].cacheDownloadProgress = {
             setId: '',
             message: '',
             aborted: false,
-            isAbortedOrPaused: '',
-            pausedCacheIdx: -1,
+            downloadMode: CacheDownloadMode.DEFAULT,
+            pausedActivityIdx: -1,
             normalizedProgress: 0,
             totalActivities: 0,
             processedActivities: 0
