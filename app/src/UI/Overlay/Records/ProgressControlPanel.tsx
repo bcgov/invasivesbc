@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Grid, IconButton, LinearProgress, Typography } from '@mui/material';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';

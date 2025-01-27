@@ -16,16 +16,16 @@ interface PropTypes {
 const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const dispatch = useDispatch();
   const connected = useSelector((state) => state.Network.connected);
-  const [cacheActionEnabled, setCacheActionEnabled] = useState<boolean>(false);
-
   const downloadProgress = useSelector(
     (state) => state.UserSettings?.recordSets[setId].cacheDownloadProgress,
     shallowEqual
   );
+
   const activeDownloads = downloadProgress.normalizedProgress != 0;
 
+  const [cacheActionEnabled, setCacheActionEnabled] = useState<boolean>(false);
   // Ensure the pause/resume button reflects the correct state if the user refreshes after pausing
-  const [isPaused, setIsPaused] = useState(activeDownloads || false);
+  const [isPaused, setIsPaused] = useState<boolean>(activeDownloads);
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
