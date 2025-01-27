@@ -64,12 +64,15 @@ class RecordCache {
 
       return {
         setId: spec.setId,
-        status:
-          downloadMode === CacheDownloadMode.ABORT
-            ? UserRecordCacheStatus.NOT_CACHED
-            : downloadMode === CacheDownloadMode.PAUSE
-              ? UserRecordCacheStatus.PAUSED
-              : UserRecordCacheStatus.CACHED
+        status: (() => {
+          if (downloadMode === CacheDownloadMode.ABORT) {
+            return UserRecordCacheStatus.NOT_CACHED;
+          } else if (downloadMode === CacheDownloadMode.PAUSE) {
+            return UserRecordCacheStatus.PAUSED;
+          } else {
+            return UserRecordCacheStatus.CACHED;
+          }
+        })()
       };
     }
   );
