@@ -119,8 +119,6 @@ abstract class RecordCacheService extends BaseCacheService<
 
   protected abstract createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
-  abstract checkForAbort(id: string): Promise<boolean>;
-
   abstract checkPauseOrAbort(id: string): Promise<CacheDownloadMode>;
 
   public async download(
@@ -155,7 +153,10 @@ abstract class RecordCacheService extends BaseCacheService<
       !(downloadMode = await this.downloadActivity(args, progressCallback))
     ) {
       Object.assign(responseData, await this.createActivityRecordsetSourceMetadata(spec.idsToCache));
-    } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args, progressCallback))) {
+    } else if (
+      spec.recordSetType === RecordSetType.IAPP &&
+      !(downloadMode = await this.downloadIapp(args, progressCallback))
+    ) {
       Object.assign(responseData, await this.createIappRecordsetSourceMetadata(spec.idsToCache));
     } else {
       if (downloadMode == CacheDownloadMode.ABORT) {
@@ -185,11 +186,14 @@ abstract class RecordCacheService extends BaseCacheService<
   private async downloadIapp(
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
-  ): Promise<boolean> {
-    let abort = false;
-    let processedCaches = 0;
+  ): Promise<CacheDownloadMode> {
+    let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
+    let processedCaches = spec.processedActivities;
+
+    let lastProgressCallback: null | number = null;
     let totalRecordsToCache = spec.idsToCache.length;
-    for (let i = 0; i < spec.idsToCache.length && !abort; i++) {
+    let startIdx = spec.pausedActivityIdx == -1 ? 0 : spec.pausedActivityIdx;
+    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
       const authorization = await getCurrentJWT();
       const [iappRecord, tableRow] = await Promise.all([
         fetch(
@@ -220,19 +224,26 @@ abstract class RecordCacheService extends BaseCacheService<
         }).then(async (data) => await data.json())
       ]);
       await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
+
       processedCaches++;
-      if (i % this.RECORDS_BETWEEN_PROGRESS_UPDATES === 0 || i === spec.idsToCache.length - 1) {
-        abort = await this.checkForAbort(spec.setId);
-        /*
-          ProgressCallback Logic
-        */
-        console.log('IAPP', this.RECORDS_BETWEEN_PROGRESS_UPDATES, i, spec.idsToCache.length);
+      const currentProgress = processedCaches / totalRecordsToCache;
+
+      // trigger a callback on the first run, on the last run, every 3%
+      if (
+        lastProgressCallback == null ||
+        currentProgress - lastProgressCallback > 0.03 ||
+        processedCaches == totalRecordsToCache
+      ) {
+        pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
+
         if (progressCallback) {
           progressCallback({
             setId: spec.setId,
-            message: '',
-            downloadMode: CacheDownloadMode.DEFAULT,
-            pausedActivityIdx: -1,
+            message: !pauseOrAbort
+              ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
+              : '',
+            downloadMode: pauseOrAbort,
+            pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
             normalizedProgress: processedCaches / totalRecordsToCache,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
@@ -240,7 +251,7 @@ abstract class RecordCacheService extends BaseCacheService<
         }
       }
     }
-    return !abort;
+    return pauseOrAbort;
   }
 
   /**
@@ -264,12 +275,14 @@ abstract class RecordCacheService extends BaseCacheService<
         }
       });
       await this.saveActivity(spec.idsToCache[i], await rez.json());
+
       processedCaches++;
       const currentProgress = processedCaches / totalRecordsToCache;
 
+      // trigger a callback on the first run, on the last run, every 3%
       if (
         lastProgressCallback == null ||
-        currentProgress - lastProgressCallback > 0.01 ||
+        currentProgress - lastProgressCallback > 0.03 ||
         processedCaches == totalRecordsToCache
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
@@ -279,7 +292,7 @@ abstract class RecordCacheService extends BaseCacheService<
             setId: spec.setId,
             message: !pauseOrAbort
               ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
-              : `${pauseOrAbort.toLocaleString()} in-progress`,
+              : '',
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
             normalizedProgress: processedCaches / totalRecordsToCache,

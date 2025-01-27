@@ -73,26 +73,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
   }
 
-  async checkForAbort(id: string): Promise<boolean> {
-    const sets = await this.listRepositories();
-    const index = sets.findIndex((p) => p.setId === id);
-    if (index !== -1) {
-      return sets[index].status === UserRecordCacheStatus.DELETING;
-    }
-    return true;
-  }
-
   async checkPauseOrAbort(id: string): Promise<CacheDownloadMode> {
     const sets = await this.listRepositories();
     const index = sets.findIndex((p) => p.setId === id);
     if (index !== -1) {
       if (sets[index].status === UserRecordCacheStatus.DELETING) return CacheDownloadMode.ABORT;
       else if (sets[index].status === UserRecordCacheStatus.PAUSED) return CacheDownloadMode.PAUSE;
-      // return (
-      //   sets[index].status === UserRecordCacheStatus.DELETING || sets[index].status === UserRecordCacheStatus.PAUSED
-      // );
     }
-    // return true;
     return CacheDownloadMode.DEFAULT;
   }
 

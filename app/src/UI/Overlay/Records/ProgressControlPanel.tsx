@@ -1,12 +1,12 @@
 import React from 'react';
-import { Box, Grid, IconButton, LinearProgress } from '@mui/material';
+import { Box, Grid, IconButton, LinearProgress, Typography } from '@mui/material';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import CloseIcon from '@mui/icons-material/Close';
 
 interface ProgressControlPanelProps {
   isPaused: boolean;
-  downloadProgress: { normalizedProgress: number };
+  downloadProgress: { normalizedProgress: number; message: string };
   handlePauseResume: (e: React.MouseEvent<HTMLButtonElement>) => void;
   handleCancel: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
@@ -66,6 +66,13 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
             <CloseIcon />
           </IconButton>
         </Grid>
+      </Grid>
+      <Grid>
+        <Typography variant="caption">
+          {downloadProgress.normalizedProgress * 100 < 1
+            ? downloadProgress.message
+            : `${Math.round(downloadProgress.normalizedProgress * 100)} % completed`}
+        </Typography>
       </Grid>
     </Box>
   );

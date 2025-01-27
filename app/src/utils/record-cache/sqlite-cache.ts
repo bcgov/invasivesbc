@@ -236,12 +236,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     );
 
     const cacheStatus = metadata?.values?.[0]['STATUS'];
-    console.log('Inside CACHE STATUS', cacheStatus);
 
-    // if (cacheStatus) {
-    //   return cacheStatus === UserRecordCacheStatus.DELETING || cacheStatus === UserRecordCacheStatus.PAUSED;
-    // }
-    // return true;
     switch (cacheStatus) {
       case UserRecordCacheStatus.PAUSED:
         return CacheDownloadMode.PAUSE;
