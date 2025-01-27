@@ -71,7 +71,7 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
         <Typography variant="caption">
           {downloadProgress.normalizedProgress * 100 < 1
             ? downloadProgress.message
-            : `${Math.round(downloadProgress.normalizedProgress * 100)} % completed`}
+            : `${Math.round(downloadProgress.normalizedProgress * 100)}% completed`}
         </Typography>
       </Grid>
     </Box>

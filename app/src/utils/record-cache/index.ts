@@ -239,7 +239,7 @@ abstract class RecordCacheService extends BaseCacheService<
             setId: spec.setId,
             message: !pauseOrAbort
               ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
-              : '',
+              : `Mode: ${pauseOrAbort.toLocaleString().toUpperCase()} Caching`,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
             normalizedProgress: processedCaches / totalRecordsToCache,
@@ -290,7 +290,7 @@ abstract class RecordCacheService extends BaseCacheService<
             setId: spec.setId,
             message: !pauseOrAbort
               ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
-              : '',
+              : `Mode: ${pauseOrAbort.toLocaleString().toUpperCase()} Caching`,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
             normalizedProgress: processedCaches / totalRecordsToCache,
