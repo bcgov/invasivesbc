@@ -19,6 +19,7 @@ import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
+import { CacheDownloadMode } from 'utils/record-cache';
 
 export function getUuid() {
   return Math.random() + Date.now().toString();
@@ -198,7 +199,11 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
       } else if (RecordCache.requestCaching.pending.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
-      } else if (RecordCache.requestCaching.rejected.match(action) || RecordCache.deleteCache.rejected.match(action)) {
+      } else if (
+        RecordCache.requestCaching.rejected.match(action) ||
+        RecordCache.deleteCache.rejected.match(action) ||
+        RecordCache.pauseDownload.rejected.match(action)
+      ) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.ERROR;
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = action.payload.status;
@@ -206,6 +211,31 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DELETING;
       } else if (RecordCache.deleteCache.fulfilled.match(action)) {
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.NOT_CACHED;
+        draftState.recordSets[action.meta.arg.setId].cacheDownloadProgress = {
+          setId: '',
+          message: '',
+          downloadMode: CacheDownloadMode.DEFAULT,
+          pausedActivityIdx: -1,
+          normalizedProgress: 0,
+          totalActivities: 0,
+          processedActivities: 0
+        };
+      } else if (RecordCache.pauseDownload.pending.match(action)) {
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
+      } else if (RecordCache.downloadProgressEvent.match(action)) {
+        if (action.payload.normalizedProgress == 1 || action.payload.downloadMode === CacheDownloadMode.ABORT) {
+          draftState.recordSets[action.payload.setId].cacheDownloadProgress = {
+            setId: '',
+            message: '',
+            downloadMode: CacheDownloadMode.DEFAULT,
+            pausedActivityIdx: -1,
+            normalizedProgress: 0,
+            totalActivities: 0,
+            processedActivities: 0
+          };
+        } else {
+          draftState.recordSets[action.payload.setId].cacheDownloadProgress = action.payload;
+        }
       } else if (Activity.deleteSuccess.match(action)) {
         draftState.activeActivity = null;
         draftState.activeActivityDescription = null;

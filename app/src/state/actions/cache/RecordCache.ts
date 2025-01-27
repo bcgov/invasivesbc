@@ -1,7 +1,8 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import getBoundingBoxFromRecordsetFilters from 'utils/getBoundingBoxFromRecordsetFilters';
+import { CacheDownloadMode, RecordCacheProgressCallbackParameters } from 'utils/record-cache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 class RecordCache {
@@ -20,13 +21,21 @@ class RecordCache {
     await (await RecordCacheServiceFactory.getPlatformInstance()).stopDownload(spec.setId);
   });
 
+  static readonly downloadProgressEvent = createAction<RecordCacheProgressCallbackParameters>(
+    'RECORD_CACHE_DOWNLOAD_PROGRESS_EVENT'
+  );
+
+  static readonly pauseDownload = createAsyncThunk(`${this.PREFIX}/pauseDownload`, async (spec: { setId: string }) => {
+    await (await RecordCacheServiceFactory.getPlatformInstance()).pauseDownload(spec.setId);
+  });
+
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
     async (
       spec: {
         setId: string;
       },
-      { getState }
+      { getState, dispatch }
     ) => {
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const state: RootState = getState() as RootState;
@@ -37,17 +46,33 @@ class RecordCache {
       const recordSet = state.UserSettings.recordSets[spec.setId];
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
 
-      const downloadCompleted = await service.download({
-        API_BASE: state.Configuration.current.API_BASE,
-        bbox,
-        idsToCache,
-        recordSetType: recordSet.recordSetType,
-        setId: spec.setId
-      });
+      const downloadMode: CacheDownloadMode = await service.download(
+        {
+          API_BASE: state.Configuration.current.API_BASE,
+          bbox,
+          idsToCache,
+          recordSetType: recordSet.recordSetType,
+          recordSetCacheStatus: recordSet.cacheMetadataStatus,
+          setId: spec.setId,
+          pausedActivityIdx: recordSet.cacheDownloadProgress.pausedActivityIdx,
+          processedActivities: recordSet.cacheDownloadProgress.processedActivities
+        },
+        (p) => {
+          dispatch(RecordCache.downloadProgressEvent(p));
+        }
+      );
 
       return {
         setId: spec.setId,
-        status: downloadCompleted ? UserRecordCacheStatus.CACHED : UserRecordCacheStatus.NOT_CACHED
+        status: (() => {
+          if (downloadMode === CacheDownloadMode.ABORT) {
+            return UserRecordCacheStatus.NOT_CACHED;
+          } else if (downloadMode === CacheDownloadMode.PAUSE) {
+            return UserRecordCacheStatus.PAUSED;
+          } else {
+            return UserRecordCacheStatus.CACHED;
+          }
+        })()
       };
     }
   );

@@ -1,3 +1,5 @@
+import { CacheDownloadMode } from 'utils/record-cache';
+
 /**
  * @desc Generic Base Class for All Caching actions using SQLite or LocalForage ensuring consistency between all Database implementations
  * @property { RepoMetadata } _ All Details contained by a Metadata Entry
@@ -35,7 +37,7 @@ abstract class BaseCacheService<
   public abstract download(
     spec: RepositoryDownloadRequestSpec,
     progressCallback?: (currentProgress: ProgressCallbackParams) => void
-  ): Promise<boolean | void>;
+  ): Promise<CacheDownloadMode | void>;
 
   protected constructor() {}
 }

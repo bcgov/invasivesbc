@@ -10,7 +10,8 @@ import {
   IappRecordMode,
   RepositoryMetadata,
   RecordCacheService,
-  RecordSetSourceMetadata
+  RecordSetSourceMetadata,
+  CacheDownloadMode
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
@@ -80,6 +81,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
+
     try {
       await this.cacheDB.query(
         //language=SQLite`
@@ -219,6 +221,32 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return true;
   }
 
+  async checkPauseOrAbort(repositoryId: string): Promise<CacheDownloadMode> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const metadata = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT STATUS
+       FROM CACHE_METADATA
+       WHERE SET_ID = ?
+       LIMIT 1
+      `,
+      [repositoryId]
+    );
+
+    const cacheStatus = metadata?.values?.[0]['STATUS'];
+
+    switch (cacheStatus) {
+      case UserRecordCacheStatus.PAUSED:
+        return CacheDownloadMode.PAUSE;
+      case UserRecordCacheStatus.DELETING:
+        return CacheDownloadMode.ABORT;
+      default:
+        return CacheDownloadMode.DEFAULT;
+    }
+  }
+
   /**
    * @desc fetch `n` records for a given recordset, supporting pagination
    * @param recordSetID Recordset to filter from
@@ -322,6 +350,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
+
     const stringified = JSON.stringify(data);
     const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
     const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
