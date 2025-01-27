@@ -56,8 +56,6 @@ class RecordCache {
           setId: spec.setId,
           pausedActivityIdx: recordSet.cacheDownloadProgress.pausedActivityIdx,
           processedActivities: recordSet.cacheDownloadProgress.processedActivities
-          // pauseidx -1 if nothing, else the actual idx
-          //processed caches, 0 if nothing, else the actual value
         },
         (p) => {
           dispatch(RecordCache.downloadProgressEvent(p));

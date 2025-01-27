@@ -214,7 +214,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.meta.arg.setId].cacheDownloadProgress = {
           setId: '',
           message: '',
-          aborted: false,
           downloadMode: CacheDownloadMode.DEFAULT,
           pausedActivityIdx: -1,
           normalizedProgress: 0,
@@ -222,14 +221,12 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           processedActivities: 0
         };
       } else if (RecordCache.pauseDownload.pending.match(action)) {
-        // do you need this?
         draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
       } else if (RecordCache.downloadProgressEvent.match(action)) {
         if (action.payload.normalizedProgress == 1 || action.payload.downloadMode === CacheDownloadMode.ABORT) {
           draftState.recordSets[action.payload.setId].cacheDownloadProgress = {
             setId: '',
             message: '',
-            aborted: false,
             downloadMode: CacheDownloadMode.DEFAULT,
             pausedActivityIdx: -1,
             normalizedProgress: 0,
@@ -237,7 +234,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             processedActivities: 0
           };
         } else {
-          // paused idx gets updated
           draftState.recordSets[action.payload.setId].cacheDownloadProgress = action.payload;
         }
       } else if (Activity.deleteSuccess.match(action)) {

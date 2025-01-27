@@ -104,7 +104,6 @@ class RecordSet {
     cacheDownloadProgress: {
       setId: '',
       message: '',
-      aborted: false,
       downloadMode: CacheDownloadMode.DEFAULT,
       pausedActivityIdx: -1,
       normalizedProgress: 0,

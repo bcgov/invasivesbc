@@ -53,12 +53,11 @@ export interface RecordSetSourceMetadata {
 export interface RecordCacheProgressCallbackParameters {
   setId: string;
   message: string;
-  aborted: boolean;
   pausedActivityIdx: number;
   downloadMode: CacheDownloadMode;
   normalizedProgress: number;
-  totalActivities: number; // is this needed?
-  processedActivities: number; // is this needed?
+  totalActivities: number;
+  processedActivities: number;
 }
 
 export interface CacheDownloadSpec {
@@ -150,23 +149,21 @@ abstract class RecordCacheService extends BaseCacheService<
       bbox: spec.bbox
     });
 
-    let downloadCompleted = true;
-    let downloadmode: CacheDownloadMode = CacheDownloadMode.DEFAULT;
+    let downloadMode: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     if (
       spec.recordSetType === RecordSetType.Activity &&
-      !(downloadmode = await this.downloadActivity(args, progressCallback))
+      !(downloadMode = await this.downloadActivity(args, progressCallback))
     ) {
       Object.assign(responseData, await this.createActivityRecordsetSourceMetadata(spec.idsToCache));
     } else if (spec.recordSetType === RecordSetType.IAPP && (await this.downloadIapp(args, progressCallback))) {
       Object.assign(responseData, await this.createIappRecordsetSourceMetadata(spec.idsToCache));
     } else {
-      downloadCompleted = false;
-      if (downloadmode == CacheDownloadMode.ABORT) {
+      if (downloadMode == CacheDownloadMode.ABORT) {
         this.deleteRepository(spec.setId);
       }
     }
 
-    if (downloadCompleted) {
+    if (!downloadMode) {
       await this.addOrUpdateRepository({
         setId: spec.setId,
         cacheTime: new Date(),
@@ -178,8 +175,9 @@ abstract class RecordCacheService extends BaseCacheService<
         bbox: spec.bbox
       });
     }
-    return downloadmode;
+    return downloadMode;
   }
+
   /**
    * Download Records for IAPP Given a list of IDs
    * @returns { boolean } download was successful
@@ -233,7 +231,6 @@ abstract class RecordCacheService extends BaseCacheService<
           progressCallback({
             setId: spec.setId,
             message: '',
-            aborted: abort,
             downloadMode: CacheDownloadMode.DEFAULT,
             pausedActivityIdx: -1,
             normalizedProgress: processedCaches / totalRecordsToCache,
@@ -254,9 +251,9 @@ abstract class RecordCacheService extends BaseCacheService<
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<CacheDownloadMode> {
-    let abort = false;
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
-    let processedCaches = spec.processedActivities == -1 ? 0 : spec.processedActivities; // 0 or the value in spec
+    let processedCaches = spec.processedActivities;
+
     let lastProgressCallback: null | number = null;
     let totalRecordsToCache = spec.idsToCache.length;
     let startIdx = spec.pausedActivityIdx == -1 ? 0 : spec.pausedActivityIdx;
@@ -277,16 +274,10 @@ abstract class RecordCacheService extends BaseCacheService<
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
-        //if (isabortOrPaused == 'pause'){
-        // update database with pause idx
-        // await this.updateCachedRecordMetadata with pause idx
-        //}
-
         if (progressCallback) {
           progressCallback({
             setId: spec.setId,
             message: '',
-            aborted: abort,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
             normalizedProgress: processedCaches / totalRecordsToCache,
@@ -299,6 +290,7 @@ abstract class RecordCacheService extends BaseCacheService<
 
     return pauseOrAbort;
   }
+
   public async stopDownload(repositoryId: string): Promise<void> {
     const repositories = await this.listRepositories();
     const foundIndex = repositories.findIndex((repo) => repo.setId === repositoryId);
@@ -320,7 +312,7 @@ abstract class RecordCacheService extends BaseCacheService<
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);
 
     if (repositories[foundIndex].status === UserRecordCacheStatus.DOWNLOADING) {
-      await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.PAUSED); // paused from what record?
+      await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.PAUSED);
     }
   }
 }

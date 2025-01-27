@@ -7,15 +7,15 @@ import CloseIcon from '@mui/icons-material/Close';
 interface ProgressControlPanelProps {
   isPaused: boolean;
   downloadProgress: { normalizedProgress: number };
-  handlePausePlayClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
-  handleClick: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handlePauseResume: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  handleCancel: (e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
   isPaused,
   downloadProgress,
-  handlePausePlayClick,
-  handleClick
+  handlePauseResume,
+  handleCancel
 }) => {
   return (
     <Box
@@ -29,30 +29,38 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={2}>
           <IconButton
-            onClick={handlePausePlayClick}
+            onClick={handlePauseResume}
             color="primary"
             sx={{
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              width: '100%'
+              width: '100%',
+              padding: '0px'
             }}
           >
             {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
           </IconButton>
         </Grid>
-        <Grid item xs={8}>
+        <Grid
+          item
+          xs={8}
+          sx={{
+            width: '60px'
+          }}
+        >
           <LinearProgress variant="determinate" value={downloadProgress.normalizedProgress * 100} />
         </Grid>
         <Grid item xs={2}>
           <IconButton
             color="error"
-            onClick={handleClick}
+            onClick={handleCancel}
             sx={{
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              width: '100%'
+              width: '100%',
+              padding: '0px'
             }}
           >
             <CloseIcon />

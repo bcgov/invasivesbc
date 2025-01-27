@@ -32,22 +32,6 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const [isPaused, setIsPaused] = useState(activeDownloads ? activeDownloads : false);
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
-    /**
-     * Save -> Progress bar shows up
-     * For Progress bar:
-     * * Get the total no.of records in the recordset
-     * * Get the number of caches being downloaded and move the progress bar accordingly
-     * * Check how the system works when there are multiple progress bars
-     *
-     * Cancel:
-     * * Add the previous method to this button / prompts to be shown as before
-     *
-     * Pause/Play: Next iteration / brain storm all use cases
-     *
-     * UI clean up: Make the box look better
-     *
-     * Code refactor and optimization (?)
-     */
     e.stopPropagation();
     switch (recordSet.cacheMetadataStatus) {
       case UserRecordCacheStatus.NOT_CACHED:
@@ -124,14 +108,13 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
     return cacheStatus.replaceAll('_', ' ');
   };
 
-  const handlePausePlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+  const handlePauseResumeClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
 
-    if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.DOWNLOADING)
+    if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.DOWNLOADING) {
       dispatch(RecordCache.pauseDownload({ setId }));
-    else if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.PAUSED) downloadCache();
-
-    setIsPaused((prev) => !prev);
+      setIsPaused(true);
+    } else if (recordSet.cacheMetadataStatus == UserRecordCacheStatus.PAUSED) downloadCache();
   };
 
   useEffect(() => {
@@ -153,8 +136,8 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
           <ProgressControlPanel
             isPaused={isPaused}
             downloadProgress={downloadProgress}
-            handlePausePlayClick={handlePausePlayClick}
-            handleClick={handleClick}
+            handlePauseResume={handlePauseResumeClick}
+            handleCancel={handleClick}
           />
         ) : (
           <Button
