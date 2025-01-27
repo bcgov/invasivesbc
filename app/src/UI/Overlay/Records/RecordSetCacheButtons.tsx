@@ -1,10 +1,6 @@
 import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
-import { Button, Grid, IconButton, Tooltip, Typography } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
-import { LinearProgress, Box } from '@mui/material';
-import PauseCircleIcon from '@mui/icons-material/PauseCircle';
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import CloseIcon from '@mui/icons-material/Close';
 import { MouseEvent, useEffect, useState } from 'react';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { useDispatch, useSelector } from 'utils/use_selector';
