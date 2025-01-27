@@ -77,8 +77,6 @@ abstract class RecordCacheService extends BaseCacheService<
   RecordCacheProgressCallbackParameters,
   UserRecordCacheStatus
 > {
-  private readonly RECORDS_BETWEEN_PROGRESS_UPDATES = 10;
-
   protected constructor() {
     super();
   }
