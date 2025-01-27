@@ -25,7 +25,7 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
   const activeDownloads = downloadProgress.normalizedProgress != 0;
 
   // Ensure the pause/resume button reflects the correct state if the user refreshes after pausing
-  const [isPaused, setIsPaused] = useState(activeDownloads ? activeDownloads : false);
+  const [isPaused, setIsPaused] = useState(activeDownloads || false);
 
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();

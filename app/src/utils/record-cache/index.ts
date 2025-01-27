@@ -146,19 +146,15 @@ abstract class RecordCacheService extends BaseCacheService<
     });
 
     let downloadMode: CacheDownloadMode = CacheDownloadMode.DEFAULT;
-    if (
-      spec.recordSetType === RecordSetType.Activity &&
-      !(downloadMode = await this.downloadActivity(args, progressCallback))
-    ) {
-      Object.assign(responseData, await this.createActivityRecordsetSourceMetadata(spec.idsToCache));
-    } else if (
-      spec.recordSetType === RecordSetType.IAPP &&
-      !(downloadMode = await this.downloadIapp(args, progressCallback))
-    ) {
-      Object.assign(responseData, await this.createIappRecordsetSourceMetadata(spec.idsToCache));
-    } else {
-      if (downloadMode == CacheDownloadMode.ABORT) {
-        this.deleteRepository(spec.setId);
+    if (spec.recordSetType === RecordSetType.Activity) {
+      downloadMode = await this.downloadActivity(args, progressCallback);
+      if (!downloadMode) {
+        Object.assign(responseData, await this.createActivityRecordsetSourceMetadata(spec.idsToCache));
+      }
+    } else if (spec.recordSetType === RecordSetType.IAPP) {
+      downloadMode = await this.downloadIapp(args, progressCallback);
+      if (!downloadMode) {
+        Object.assign(responseData, await this.createIappRecordsetSourceMetadata(spec.idsToCache));
       }
     }
 
@@ -173,7 +169,10 @@ abstract class RecordCacheService extends BaseCacheService<
         cachedCentroid: responseData.cachedCentroid,
         bbox: spec.bbox
       });
+    } else if (downloadMode == CacheDownloadMode.ABORT) {
+      this.deleteRepository(spec.setId);
     }
+
     return downloadMode;
   }
 

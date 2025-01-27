@@ -65,9 +65,9 @@ class RecordCache {
       return {
         setId: spec.setId,
         status:
-          downloadMode == CacheDownloadMode.ABORT
+          downloadMode === CacheDownloadMode.ABORT
             ? UserRecordCacheStatus.NOT_CACHED
-            : downloadMode == CacheDownloadMode.PAUSE
+            : downloadMode === CacheDownloadMode.PAUSE
               ? UserRecordCacheStatus.PAUSED
               : UserRecordCacheStatus.CACHED
       };
