@@ -277,7 +277,9 @@ abstract class RecordCacheService extends BaseCacheService<
         if (progressCallback) {
           progressCallback({
             setId: spec.setId,
-            message: '',
+            message: !pauseOrAbort
+              ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
+              : `${pauseOrAbort.toLocaleString()} in-progress`,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
             normalizedProgress: processedCaches / totalRecordsToCache,

@@ -86,8 +86,6 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const sets = await this.listRepositories();
     const index = sets.findIndex((p) => p.setId === id);
     if (index !== -1) {
-      console.log('LOCAL FORAGE', sets[index].status);
-
       if (sets[index].status === UserRecordCacheStatus.DELETING) return CacheDownloadMode.ABORT;
       else if (sets[index].status === UserRecordCacheStatus.PAUSED) return CacheDownloadMode.PAUSE;
       // return (
