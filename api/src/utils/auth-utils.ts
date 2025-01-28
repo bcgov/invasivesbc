@@ -138,71 +138,73 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
         reject(rejectWithErr('Invalid token - Missing idir_userid or bceid_userid'));
       }
 
-      getUserByKeycloakID(accountType, id).then((user) => {
-        const createIfNeeded = new Promise((resolve: any) => {
-          if (!user) {
-            defaultLog.info({ label: 'authenticate', message: `first creating new user ${id}` });
-            createUser(decoded, accountType, id)
+      getUserByKeycloakID(accountType, id)
+        .then((user) => {
+          const createIfNeeded = new Promise((resolve: any) => {
+            if (!user) {
+              defaultLog.info({ label: 'authenticate', message: `first creating new user ${id}` });
+              createUser(decoded, accountType, id)
+                .then(() => {
+                  getUserByKeycloakID(accountType, id)
+                    .then((newUser) => {
+                      user = newUser;
+                      resolve();
+                    })
+                    .catch((err: Error) => {
+                      reject(err);
+                    });
+                })
+                .catch((err: Error) => reject(err));
+            }
+            resolve();
+          });
+
+          createIfNeeded.then(() => {
+            req.authContext = {
+              preferredUsername: null,
+              friendlyUsername: null,
+              user: null,
+              roles: [],
+              filterForSelectable: false
+            };
+            req.authContext.preferredUsername = decoded?.preferred_username;
+            if (decoded?.idir_username) {
+              req.authContext.friendlyUsername = decoded.idir_username.toLowerCase() + '@idir';
+            }
+            if (decoded?.bceid_username) {
+              req.authContext.friendlyUsername = decoded.bceid_username.toLowerCase() + '@bceid-business';
+            }
+
+            req.authContext.filterForSelectable = filterForSelectable;
+            req.authContext.user = user;
+
+            MDC.request.user = req.authContext.preferredUsername || 'unresolved';
+
+            getRolesForUser(user.user_id)
+              .then((roles) => {
+                req.authContext.roles = roles;
+                MDC.additionalContext.authContext = req.authContext;
+              })
+              .catch((error: Error) => {
+                defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
+                reject(error);
+              })
               .then(() => {
-                getUserByKeycloakID(accountType, id)
-                  .then((newUser) => {
-                    user = newUser;
+                // check if user has beta access
+                getV2BetaAccessForUser(user.user_id)
+                  .then((betaAccess) => {
+                    defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
+                    req.authContext.v2beta = betaAccess;
                     resolve();
                   })
-                  .catch((err: Error) => {
-                    reject(err);
+                  .catch((error: Error) => {
+                    defaultLog.error({ label: 'authenticate', message: 'failed looking up beta access', error });
+                    reject(error);
                   });
-              })
-              .catch((err: Error) => reject(err));
-          }
-          resolve();
-        });
-
-        createIfNeeded.then(() => {
-          req.authContext = {
-            preferredUsername: null,
-            friendlyUsername: null,
-            user: null,
-            roles: [],
-            filterForSelectable: false
-          };
-          req.authContext.preferredUsername = decoded?.preferred_username;
-          if (decoded?.idir_username) {
-            req.authContext.friendlyUsername = decoded.idir_username.toLowerCase() + '@idir';
-          }
-          if (decoded?.bceid_username) {
-            req.authContext.friendlyUsername = decoded.bceid_username.toLowerCase() + '@bceid-business';
-          }
-
-          req.authContext.filterForSelectable = filterForSelectable;
-          req.authContext.user = user;
-
-          MDC.request.user = req.authContext.preferredUsername || 'unresolved';
-
-          getRolesForUser(user.user_id)
-            .then((roles) => {
-              req.authContext.roles = roles;
-              MDC.additionalContext.authContext = req.authContext;
-            })
-            .catch((error: Error) => {
-              defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
-              reject(error);
-            })
-            .then(() => {
-              // check if user has beta access
-              getV2BetaAccessForUser(user.user_id)
-                .then((betaAccess) => {
-                  defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
-                  req.authContext.v2beta = betaAccess;
-                  resolve();
-                })
-                .catch((error: Error) => {
-                  defaultLog.error({ label: 'authenticate', message: 'failed looking up beta access', error });
-                  reject(error);
-                });
-            });
-        });
-      });
+              });
+          });
+        })
+        .catch((err: Error) => reject(err));
     });
   });
 };
