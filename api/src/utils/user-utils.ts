@@ -10,23 +10,22 @@ export enum KeycloakAccountType {
   idir = 'idir',
   bceid = 'bceid'
 }
-
-export async function createUser(keycloakToken: any, accountType, id): Promise<any> {
-  defaultLog.debug({
-    message: 'Keycloak token in user-utils',
-    params: {
-      keycloakToken
+const rejectWithErr = (issue: string, code: number = 401) =>
+  new Error(issue, {
+    cause: {
+      code: code,
+      message: issue,
+      namespace: 'user-utils'
     }
   });
 
+export async function createUser(keycloakToken: any, accountType, id): Promise<any> {
+  defaultLog.debug({ message: 'Keycloak token in user-utils', params: { keycloakToken } });
   const connection = await getDBConnection();
+
   if (!connection) {
     defaultLog.error({ message: 'No connection!' });
-    throw {
-      code: 503,
-      message: 'Failed to establish database connection',
-      namespace: 'user-utils'
-    };
+    throw rejectWithErr('Failed to establish database connection', 503);
   }
   try {
     const sqlStatement: SQLStatement = createUserSQL(
@@ -35,66 +34,37 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
       keycloakToken.preferred_username,
       keycloakToken.email
     );
-    defaultLog.debug({
-      message: 'SQL statement to create user',
-      sqlStatement
-    });
-    if (!sqlStatement) {
-      throw {
-        code: 500,
-        message: 'Failed to generate SQL statement',
-        namespace: 'user-utils'
-      };
-    }
+    defaultLog.debug({ message: 'SQL statement to create user', sqlStatement });
+    if (!sqlStatement) throw rejectWithErr('Failed to generate SQL statement', 500);
+
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
+
     return result;
   } catch (error) {
     defaultLog.debug({ label: 'create', message: 'error', error });
-    throw {
-      code: 500,
-      message: 'Failed to create user',
-      namespace: 'user-utils'
-    };
+    throw rejectWithErr('Failed to create user', 500);
   } finally {
     connection.release();
   }
 }
 
 export async function getUserByKeycloakID(accountType: KeycloakAccountType, id: string) {
-  defaultLog.debug({ label: '{' + accountType + '}', message: 'getUserByKeycloakID' });
+  defaultLog.debug({ label: `{${accountType}}`, message: 'getUserByKeycloakID' });
   const connection = await getDBConnection();
-  if (!connection) {
-    throw {
-      code: 503,
-      message: 'Failed to establish database connection',
-      namespace: 'user-utils'
-    };
-  }
+  if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
+
   try {
     const sqlStatement: SQLStatement =
       accountType === KeycloakAccountType.idir ? getUserByIDIRSQL(id) : getUserByBCEIDSQL(id);
-    if (!sqlStatement) {
-      throw {
-        code: 400,
-        message: 'Failed to build SQL statement',
-        namespace: 'user-utils'
-      };
-    }
+    if (!sqlStatement) throw rejectWithErr('Failed to build SQL statement', 400);
+
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
-    if (result) {
-      return result[0];
-    } else {
-      return null;
-    }
+    const result = response?.rows;
+    return result?.[0];
   } catch (error) {
     defaultLog.debug({ label: 'getUserByKeycloakID', message: 'error', error });
-    throw {
-      code: 500,
-      message: 'Failed to get user by Keycloak ID',
-      namespace: 'user-utils'
-    };
+    throw rejectWithErr('Failed to get user by Keycloak ID', 500);
   } finally {
     connection.release();
   }
@@ -102,32 +72,16 @@ export async function getUserByKeycloakID(accountType: KeycloakAccountType, id: 
 
 export async function getRolesForUser(userId) {
   const connection = await getDBConnection();
-  if (!connection) {
-    throw {
-      code: 503,
-      message: 'Failed to establish database connection',
-      namespace: 'user-utils'
-    };
-  }
+  if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
   try {
     const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
-    if (!sqlStatement) {
-      throw {
-        code: 400,
-        message: 'Failed to build SQL statement',
-        namespace: 'user-utils'
-      };
-    }
+    if (!sqlStatement) throw rejectWithErr('Failed to build SQL statement', 400);
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
+    const result = response?.rows;
     return result;
   } catch (error) {
     defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
-    throw {
-      code: 500,
-      message: 'Failed to get roles for user',
-      namespace: 'user-utils'
-    };
+    throw rejectWithErr('Failed to get roles for user', 500);
   } finally {
     connection.release();
   }
@@ -135,35 +89,19 @@ export async function getRolesForUser(userId) {
 
 export async function getV2BetaAccessForUser(userId) {
   const connection = await getDBConnection();
-  if (!connection) {
-    throw {
-      code: 503,
-      message: 'Failed to establish database connection',
-      namespace: 'user-utils'
-    };
-  }
+  if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
   try {
     const sqlStatement: SQLStatement = getBetaAccessForUserSQL(userId);
-    if (!sqlStatement) {
-      throw {
-        code: 400,
-        message: 'Failed to build SQL statement',
-        namespace: 'user-utils'
-      };
-    }
+    if (!sqlStatement) throw rejectWithErr('Failed to build SQL statement', 400);
+
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
     defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', response });
 
-    const result = (response?.rows?.[0]?.v2beta as unknown as boolean) || false;
-    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', result });
+    const result = !!response?.rows?.[0]?.v2beta;
     return result;
   } catch (error) {
     defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'error', error });
-    throw {
-      code: 500,
-      message: 'Failed getBetaAccessForUserSQL',
-      namespace: 'user-utils'
-    };
+    throw rejectWithErr('Failed getBetaAccessForUserSQL', 500);
   } finally {
     connection.release();
   }
