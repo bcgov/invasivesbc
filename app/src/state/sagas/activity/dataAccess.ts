@@ -321,9 +321,9 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal ||
       beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
     ) {
-      //auto fills total release quantity (only on biocontrol release activity)
+      // auto fills total release quantity (only on biocontrol release activity)
       updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
-      //auto fills total bioagent quantity (only on biocontrol release monitoring activity)
+      // auto fills total bioagent quantity (only on biocontrol release monitoring activity)
       updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
     }
 
@@ -332,8 +332,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     }
     let updatedActivity = populateSpeciesArrays({ ...beforeActivity, form_data: updatedFormData });
     updatedActivity = populateJurisdictionArray({ ...updatedActivity });
-
-    //handleRecordLinking(updatedFormData);
 
     yield put({
       type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
@@ -404,7 +402,7 @@ export function* handle_ACTIVITY_DELETE_REQUEST() {
   }
 }
 
-export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS(action) {
+export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
   try {
     const currentState = yield select(selectActivity);
     const currentActivity = currentState.activity;
@@ -500,7 +498,7 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
 
   const geometry = activityState?.activity?.geometry?.[0];
   if (geometry) {
-    const isPoint = geometry.geometry?.type === 'Point' ? true : false;
+    const isPoint = geometry.geometry?.type === 'Point';
     let target;
     if (isPoint) {
       target = geometry.geometry;
@@ -527,7 +525,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
 
     // needs to be latlng expression
-    const isGeo = action.payload?.geometry?.[0]?.geometry?.coordinates ? true : false;
+    const isGeo = !!action.payload?.geometry?.[0]?.geometry?.coordinates;
 
     let centerPoint;
     if (isGeo) {
