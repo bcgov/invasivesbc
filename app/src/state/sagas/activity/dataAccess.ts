@@ -556,11 +556,13 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
   }
 }
 
-export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(action) {
+export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(
+  eventFormData: PayloadAction<Record<PropertyKey, any>>
+) {
   try {
     yield put({
       type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-      payload: { eventFormData: action.payload.eventFormData }
+      payload: { eventFormData: eventFormData.payload }
     });
   } catch (e) {
     console.error(e);

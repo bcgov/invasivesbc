@@ -5,6 +5,7 @@ import Suggestions from './Suggestions';
 import AutoFill from './AutoFill';
 import GeoJson from './GeoJson';
 import { ActivityStatus } from 'sharedAPI';
+import ChemicalTreatments from './ChemicalTreatments';
 
 export interface INewActivity {
   type: string;
@@ -40,6 +41,7 @@ class Activity {
   static readonly Suggestions = Suggestions;
   static readonly Autofill = AutoFill;
   static readonly GeoJson = GeoJson;
+  static readonly ChemicalTreatments = ChemicalTreatments;
 
   static readonly createReq = createAction<INewActivity>(`${this.PREFIX}/createReq`);
   static readonly createNetwork = createAction<Record<string, any>>(`${this.PREFIX}/createNetwork`);
