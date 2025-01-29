@@ -39,11 +39,22 @@ td {
 #invasive_plants_section {
   display: flex;
   flex-direction: column;
+  padding: 10pt 0;
+  width: 100%;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  &:first-child {
+    margin-bottom: 5pt;
+  }
 }
 
 #invasive_plants_list {
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
+  width: 100%;
+  justify-content: flex-start;
 }
 
 .invasive_plant {
@@ -56,7 +67,12 @@ td {
 
 #herbicides_section {
   display: flex;
+  padding: 10pt 0;
   flex-direction: column;
+  & > h5 {
+    margin-top: 5pt;
+    margin-bottom: 10pt;
+  }
 }
 
 #herbicides_list {
@@ -65,8 +81,13 @@ td {
 }
 
 .herbicide_list_item {
-  min-width: 200px;
+  width: 30%;
   padding: 10px;
+  display: flex;
+  flex-direction: column;
+  .input-field {
+    margin-bottom: 5px;
+  }
 }
 
 .productApplicationRate {
@@ -83,6 +104,10 @@ td {
   display: flex;
   flex-direction: column;
   width: 100%;
+  &,
+  & > * {
+    padding: 5pt;
+  }
 }
 
 #delivery_rate_of_mix_tank_mix {
