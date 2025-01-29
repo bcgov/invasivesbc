@@ -196,7 +196,7 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
             break;
           }
           case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {
-            draftState.activity.form_data = action.payload.activity.form_data;
+            draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.activity.form_data));
             draftState.activity.species_positive = action.payload.activity.species_positive;
             draftState.activity.species_negative = action.payload.activity.species_negative;
             draftState.activity.species_treated = action.payload.activity.species_treated;
