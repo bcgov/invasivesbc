@@ -24,6 +24,7 @@ import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offl
 import { createTileCacheReducer } from 'state/reducers/tile_cache';
 import { MOBILE } from 'state/build-time-config';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { CacheDownloadMode } from 'utils/record-cache';
 
 // it will try indexdb first, then fall back to localstorage if not available.
 
@@ -60,6 +61,9 @@ const pauseDownloadOnRehydration = createTransform(
         // updates state correctly when page reloads during an active download
         if (outboundState[key]?.cacheMetadataStatus === UserRecordCacheStatus.DOWNLOADING) {
           outboundState[key].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
+          outboundState[key].cacheDownloadProgress.downloadMode = CacheDownloadMode.PAUSE;
+          outboundState[key].cacheDownloadProgress.message =
+            `Mode: ${CacheDownloadMode.PAUSE.toLocaleString().toUpperCase()} Caching`;
         }
       });
     }
