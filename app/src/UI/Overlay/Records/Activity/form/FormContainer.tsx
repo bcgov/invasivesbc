@@ -33,9 +33,6 @@ const FormContainer = () => {
 
   const dispatch = useDispatch();
 
-  const username = useSelector((state) => state.Auth.username);
-  const accessRoles = useSelector((state) => state.Auth.accessRoles);
-
   const formDataState = useSelector(
     (state) => state.ActivityPage.activity.form_data,
     (a, b) => {
@@ -51,19 +48,20 @@ const FormContainer = () => {
     }
   );
 
-  const pasteCount = useSelector((state) => state.ActivityPage.pasteCount);
-
-  const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
+  const accessRoles = useSelector((state) => state.Auth.accessRoles);
   const activity_ID = useSelector((state) => state.ActivityPage.activity.activity_id);
-  const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
-  const reported_area = useSelector((state) => state.ActivityPage.activity.form_data.activity_data?.reported_area);
-
+  const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
   const activitySchema = useSelector((state) => state.ActivityPage.schema);
   const activityUISchema = useSelector((state) => state.ActivityPage.uiSchema);
 
+  const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
+  const pasteCount = useSelector((state) => state.ActivityPage.pasteCount);
+  const reported_area = useSelector((state) => state.ActivityPage.activity.form_data.activity_data?.reported_area);
+  const username = useSelector((state) => state.Auth.username);
+
   const [createdByUser] = useState<boolean>(username === created_by);
-  const [userIsAdmin] = useState<boolean>(accessRoles?.some((role) => role.role_id === 18));
   const [isDisabled, setIsDisabled] = useState<boolean>(!createdByUser);
+  const [userIsAdmin] = useState<boolean>(accessRoles?.some((role) => role.role_id === 18));
 
   const debouncedFormChange = useCallback(
     debounce((event, _, lastField) => {
