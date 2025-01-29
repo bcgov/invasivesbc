@@ -81,9 +81,6 @@ const FormContainer = () => {
   const theme = createTheme(rjsfTheme as ThemeOptions);
 
   useEffect(() => {
-    if (isActivityChemTreatment()) {
-      formRef.current?.validateForm();
-    }
     const currentState = formRef.current?.state;
     dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
   }, [formRef]);
@@ -125,7 +122,6 @@ const FormContainer = () => {
             formData={formDataState}
             schema={activitySchema}
             uiSchema={activityUISchema}
-            onError={() => {}}
             liveValidate={true}
             customValidate={customValidators()}
             validator={validator}
