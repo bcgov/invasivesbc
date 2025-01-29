@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import localForage from 'localforage';
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-import { persistReducer } from 'redux-persist';
+import { persistReducer, createTransform } from 'redux-persist';
 import appMode from './appMode';
 import { ActivityState, createActivityReducer } from './activity';
 import { AuthState, createAuthReducer } from './auth';
@@ -23,6 +23,7 @@ import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { createTileCacheReducer } from 'state/reducers/tile_cache';
 import { MOBILE } from 'state/build-time-config';
+import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 
 // it will try indexdb first, then fall back to localstorage if not available.
 
@@ -48,6 +49,24 @@ const purgeOldStateOnVersionUpgrade = async (state: any) => {
     return state;
   }
 };
+
+// executes during app restart or when the page reloads
+const pauseDownloadOnRehydration = createTransform(
+  (inboundState) => inboundState,
+
+  (outboundState) => {
+    if (outboundState && typeof outboundState === 'object') {
+      Object.keys(outboundState).forEach((key) => {
+        // updates state correctly when page reloads during an active download
+        if (outboundState[key]?.cacheMetadataStatus === UserRecordCacheStatus.DOWNLOADING) {
+          outboundState[key].cacheMetadataStatus = UserRecordCacheStatus.PAUSED;
+        }
+      });
+    }
+    return outboundState;
+  },
+  { whitelist: ['recordSets'] }
+);
 
 function createRootReducer(config: AppConfig) {
   return combineReducers({
@@ -103,7 +122,8 @@ function createRootReducer(config: AppConfig) {
           'boundaries',
           'layerPickerIsAccordion',
           'mapCenter'
-        ]
+        ],
+        transforms: [pauseDownloadOnRehydration]
       },
       createUserSettingsReducer(config)
     ),
