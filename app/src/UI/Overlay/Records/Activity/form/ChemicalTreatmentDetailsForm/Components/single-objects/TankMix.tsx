@@ -1,12 +1,18 @@
 import { TextField, Tooltip } from '@mui/material';
-import { ChangeEvent, useContext, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from 'react';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import HerbicidesAccordion from '../accordions/HerbicidesAccordion';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import isNumber from 'is-number';
+import { RENDER_DEBUG } from 'UI/App';
 
-const TankMix = () => {
+const TankMix: FC = () => {
+  const ref = useRef(0);
+  ref.current += 1;
+  if (RENDER_DEBUG) {
+    console.log('%c FormCoTankMixntainer render:' + ref.current.toString(), 'color: yellow');
+  }
   const form_dataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = form_dataContext;
 
