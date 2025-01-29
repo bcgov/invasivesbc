@@ -147,7 +147,11 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
               ...form_data,
               activity_subtype_data: {
                 ...form_data.activity_subtype_data,
-                chemical_treatment_details: { ...formDetails.form_data, calculation_results: results, errors: false }
+                chemical_treatment_details: {
+                  ...formDetails.form_data,
+                  calculation_results: results,
+                  errors: Object.keys(results).length === 0
+                }
               }
             },
             null
