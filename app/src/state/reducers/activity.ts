@@ -3,7 +3,6 @@ import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
-  ACTIVITY_ERRORS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS
@@ -168,13 +167,10 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
       } else if (Activity.getFailure.match(action)) {
         draftState.loading = false;
         draftState.failCode = action.payload?.status ?? null;
+      } else if (Activity.setErrors.match(action)) {
+        draftState.activityErrors = getCustomErrorTransformer()(action.payload ?? []);
       } else {
         switch (action.type) {
-          case ACTIVITY_ERRORS: {
-            if (action.payload.errors !== undefined)
-              draftState.activityErrors = getCustomErrorTransformer()(action.payload.errors);
-            break;
-          }
           case ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS: {
             draftState.uiSchema = action.payload.uiSchema;
             draftState.schema = action.payload.schema;

@@ -6,6 +6,7 @@ import AutoFill from './AutoFill';
 import GeoJson from './GeoJson';
 import { ActivityStatus } from 'sharedAPI';
 import ChemicalTreatments from './ChemicalTreatments';
+import { FieldError } from '@rjsf/utils';
 
 export interface INewActivity {
   type: string;
@@ -26,7 +27,10 @@ export interface ActivityTableRowRequest {
   page: number;
   limit: number;
 }
-
+/** Errors used in RJSF Validation */
+export interface IActivityError {
+  [key: PropertyKey]: FieldError;
+}
 export interface ActivityTableRowGetRequest extends ActivityTableRowRequest {
   filterObj: Record<PropertyKey, any>;
 }
@@ -79,5 +83,7 @@ class Activity {
   static readonly getRows = createAction<ActivityTableRowRequest>(`${this.PREFIX}/getRows`);
   static readonly getRowsRequest = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
   static readonly getRowsSuccess = createAction<ActivityTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
+
+  static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);
 }
 export default Activity;

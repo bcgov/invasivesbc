@@ -13,7 +13,7 @@ import rjsfTheme from 'UI/Overlay/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from './ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { useSelector } from 'utils/use_selector';
 import { shallowEqual, useDispatch } from 'react-redux';
-import { ACTIVITY_ERRORS, ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
+import { ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
 import validator from '@rjsf/validator-ajv8';
 import 'UI/Overlay/Records/Activity/form/aditionalFormStyles.css';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
@@ -81,9 +81,8 @@ const FormContainer = () => {
   const theme = createTheme(rjsfTheme as ThemeOptions);
 
   useEffect(() => {
-    const currentState = formRef.current?.state;
-    dispatch({ type: ACTIVITY_ERRORS, payload: { errors: currentState?.errors } });
-  }, [formRef]);
+    dispatch(Activity.setErrors(formRef.current?.state?.errors ?? []));
+  }, [formDataState]);
 
   const isActivityChemTreatment = (): boolean =>
     activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
@@ -137,9 +136,12 @@ const FormContainer = () => {
 
           {isActivityChemTreatment() && (
             <ChemicalTreatmentDetailsForm
-              activitySubType={activity_subtype ?? null}
+              activitySubType={activity_subtype}
               disabled={isDisabled}
               onChange={(form_data, callback) => {
+                if (formRef.current?.onChange) {
+                  formRef.current.onChange(form_data);
+                }
                 dispatch(Activity.ChemicalTreatments.onChemicalTreatmentsUpdate(form_data));
                 if (callback) {
                   callback();
