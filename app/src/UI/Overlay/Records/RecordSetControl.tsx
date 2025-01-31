@@ -3,8 +3,7 @@ import { RecordSetCacheButtons } from './RecordSetCacheButtons';
 import { IconButton, Tooltip } from '@mui/material';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { ColorLens, Delete, Label, LabelOff, Layers, LayersClear } from '@mui/icons-material';
-import { MouseEvent } from 'react';
-
+import { MouseEvent, useState } from 'react';
 type PropTypes = {
   isDefaultRecordset: boolean;
   recordset: UserRecordSet;
@@ -31,40 +30,53 @@ const RecordSetControl = ({
   const DELETE_TIP =
     'Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration.';
 
+  const [isProgressBar, setIsProgressBar] = useState(false); // Track state of ProgressButtonPanel
+
+  const handleProgressStateChange = (state: boolean) => {
+    setIsProgressBar(state); // Update the state based on ProgressButtonPanel
+  };
   return (
-    <div className="record-set-control">
-      {!isDefaultRecordset && (
-        <MobileOnly>
-          <RecordSetCacheButtons recordSet={recordset} setId={recordsetKey} />
-        </MobileOnly>
-      )}
+    <div className={isProgressBar ? 'record-set-control record-set-progressbar' : 'record-set-control '}>
+      <div>
+        {!isDefaultRecordset && (
+          <MobileOnly>
+            <RecordSetCacheButtons
+              recordSet={recordset}
+              setId={recordsetKey}
+              onCacheStateChange={handleProgressStateChange}
+            />
+          </MobileOnly>
+        )}
+      </div>
 
-      <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
-        <IconButton onClick={(e) => onClickToggleLabel(recordsetKey, e)} color="primary">
-          {recordset?.labelToggle ? <Label /> : <LabelOff />}
-        </IconButton>
-      </Tooltip>
+      <div>
+        <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
+          <IconButton onClick={(e) => onClickToggleLabel(recordsetKey, e)} color="primary">
+            {recordset?.labelToggle ? <Label /> : <LabelOff />}
+          </IconButton>
+        </Tooltip>
 
-      <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
-        <IconButton onClick={(e) => onClickToggleLayer(recordsetKey, e)} color="primary">
-          {recordset?.mapToggle ? <Layers /> : <LayersClear />}
-        </IconButton>
-      </Tooltip>
+        <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
+          <IconButton onClick={(e) => onClickToggleLayer(recordsetKey, e)} color="primary">
+            {recordset?.mapToggle ? <Layers /> : <LayersClear />}
+          </IconButton>
+        </Tooltip>
 
-      {!isDefaultRecordset && (
-        <>
-          <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
-            <IconButton onClick={(e) => onClickCycleColour(recordsetKey, e)} color="primary">
-              <ColorLens />
-            </IconButton>
-          </Tooltip>
-          <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
-            <IconButton onClick={(e) => onClickDeleteRecordSet(recordsetKey, e)} color="primary">
-              <Delete />
-            </IconButton>
-          </Tooltip>
-        </>
-      )}
+        {!isDefaultRecordset && (
+          <>
+            <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
+              <IconButton onClick={(e) => onClickCycleColour(recordsetKey, e)} color="primary">
+                <ColorLens />
+              </IconButton>
+            </Tooltip>
+            <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
+              <IconButton onClick={(e) => onClickDeleteRecordSet(recordsetKey, e)} color="primary">
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
+      </div>
     </div>
   );
 };
