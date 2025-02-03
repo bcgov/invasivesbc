@@ -70,7 +70,7 @@ export const OfflineDataSyncTable = () => {
                           dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: false } });
                         }}
                       >
-                        <FileOpen></FileOpen>
+                        <FileOpen />
                       </IconButton>
                     </td>
                     <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
