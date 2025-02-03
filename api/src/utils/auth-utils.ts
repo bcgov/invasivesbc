@@ -117,6 +117,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
       if (!decoded || error) {
         if (error) defaultLog.error({ label: 'authenticate', message: 'token verification failure', error });
         reject(rejectWithErr('Token decode Failure'));
+        return;
       }
       req.keycloakToken = decoded;
 
@@ -125,17 +126,17 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
       if (decoded?.identity_provider === 'idir') {
         accountType = KeycloakAccountType.idir;
         if (!decoded?.idir_user_guid) {
-          reject(rejectWithErr('Invalid token - missing idir guid'));
+          return reject(rejectWithErr('Invalid token - missing idir guid'));
         }
         id = decoded.idir_user_guid;
       } else if (decoded.identity_provider === 'bceidbusiness') {
         accountType = KeycloakAccountType.bceid;
         if (!decoded?.bceid_user_guid) {
-          reject(rejectWithErr('Invalid token - missing bceid guid'));
+          return reject(rejectWithErr('Invalid token - missing bceid guid'));
         }
         id = decoded.bceid_user_guid;
       } else {
-        reject(rejectWithErr('Invalid token - Missing idir_userid or bceid_userid'));
+        return reject(rejectWithErr('Invalid token - Missing idir_userid or bceid_userid'));
       }
 
       getUserByKeycloakID(accountType, id)
@@ -187,7 +188,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
               })
               .catch((error: Error) => {
                 defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
-                reject(error);
+                return reject(error);
               })
               .then(() => {
                 // check if user has beta access
@@ -195,11 +196,11 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
                   .then((betaAccess) => {
                     defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
                     req.authContext.v2beta = betaAccess;
-                    resolve();
+                    return resolve();
                   })
                   .catch((error: Error) => {
                     defaultLog.error({ label: 'authenticate', message: 'failed looking up beta access', error });
-                    reject(error);
+                    return reject(error);
                   });
               });
           });

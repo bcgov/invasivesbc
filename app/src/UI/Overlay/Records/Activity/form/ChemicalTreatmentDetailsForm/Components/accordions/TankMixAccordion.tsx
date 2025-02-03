@@ -1,4 +1,4 @@
-import { Accordion, AccordionSummary, Typography, AccordionDetails, Box } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Typography } from '@mui/material';
 import { useContext, useRef } from 'react';
 import TankMix from '../single-objects/TankMix';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -12,20 +12,15 @@ const TankMixAccordion = () => {
     console.log('%c TankMixAccordion render:' + ref.current.toString(), 'color: yellow');
   }
   const formDataContext = useContext(ChemicalTreatmentDetailsContext);
-  const { formDetails } = formDataContext;
+  const tankMixOn = formDataContext?.formDetails?.form_data?.tank_mix;
 
-  const tankMixOn = formDetails.form_data.tank_mix;
   return (
     <Accordion expanded={tankMixOn} disabled={!tankMixOn}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="tank-mix-content" id="tank-mix-header">
-        <Typography style={{ width: '33%', flexShrink: 0 }} variant="h5">
-          Tank Mix
-        </Typography>
+        <Typography variant="h5">Tank Mix</Typography>
       </AccordionSummary>
       <AccordionDetails>
-        <Box>
-          <TankMix />
-        </Box>
+        <TankMix />
       </AccordionDetails>
     </Accordion>
   );
