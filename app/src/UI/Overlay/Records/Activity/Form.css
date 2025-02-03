@@ -78,10 +78,12 @@ td {
 #herbicides_list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
 }
 
 .herbicide_list_item {
-  width: 30%;
+  width: 45%;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -91,8 +93,11 @@ td {
 }
 
 .productApplicationRate {
-  padding: 10px;
+  padding: 10px 0;
   width: 100%;
+  & > * {
+    width: 100%;
+  }
 }
 
 .amountOfMix {

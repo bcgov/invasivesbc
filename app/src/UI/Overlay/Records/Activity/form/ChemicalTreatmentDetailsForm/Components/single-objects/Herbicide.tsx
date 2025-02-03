@@ -558,7 +558,8 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
           if (insideTankMix) {
             setFormDetails((prevDetails) => {
               const newHerbicidesArr = [...prevDetails.form_data.tank_mix_object.herbicides];
-              newHerbicidesArr.splice(index, 1);
+              const sliceIndex = newHerbicidesArr.findIndex((herb) => herb.index === herbicide.index);
+              newHerbicidesArr.splice(sliceIndex, 1);
               return {
                 ...prevDetails,
                 form_data: {
@@ -573,7 +574,8 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
           } else {
             setFormDetails((prevDetails) => {
               const newHerbicidesArr = [...prevDetails.form_data.herbicides];
-              newHerbicidesArr.splice(index, 1);
+              const sliceIndex = newHerbicidesArr.findIndex((herb) => herb.index === herbicide.index);
+              newHerbicidesArr.splice(sliceIndex, 1);
               return {
                 ...prevDetails,
                 form_data: { ...prevDetails.form_data, herbicides: newHerbicidesArr }
