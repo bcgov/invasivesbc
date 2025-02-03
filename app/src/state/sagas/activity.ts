@@ -2,7 +2,6 @@ import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redu
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
-  ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_RESTORE_OFFLINE,
@@ -427,7 +426,7 @@ function* activityPageSaga() {
     takeEvery(Activity.deleteFailure, handle_ACTIVITY_DELETE_FAILURE),
     takeEvery(ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
     takeEvery(
-      ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
+      Activity.ChemicalTreatments.onChemicalTreatmentsUpdate,
       handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST
     ),
     takeEvery(Activity.deleteReq, handle_ACTIVITY_DELETE_REQUEST),
