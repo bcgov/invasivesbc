@@ -128,7 +128,7 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
             id: hydrated.activity_id,
             sync_state: OfflineActivitySyncState.ERROR,
             error_detail: `HTTP response code ${networkReturn.status}`,
-            error_object: networkReturn.data
+            error_object: networkReturn.status < 500 ? networkReturn.data : 'Internal Server Error'
           }
         });
       }

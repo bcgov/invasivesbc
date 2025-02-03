@@ -100,7 +100,7 @@ export const OfflineDataSyncTable = () => {
                         <pre>
                           {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
                             ? JSON.stringify((value as OfflineActivityRecord).error_object.message)
-                            : 'Error'}
+                            : JSON.stringify((value as OfflineActivityRecord).error_object)}
                         </pre>
                       </td>
                     </tr>
