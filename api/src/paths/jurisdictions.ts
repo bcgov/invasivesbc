@@ -7,6 +7,7 @@ import { getDBConnection } from 'database/db';
 import { JurisdictionSearchCriteria } from 'models/jurisdiction';
 import { getJurisdictionsSQL } from 'queries/jurisdiction-queries';
 import { getLogger } from 'utils/logger';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('jurisdictions');
 
@@ -92,18 +93,18 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
     });
 
     const sanitizedSearchCriteria = new JurisdictionSearchCriteria(req.body);
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        error: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'jurisdictions',
-        code: 503
-      });
-    }
+    let connection: PoolClient = null;
 
     try {
+      connection = await getDBConnection();
+      if (!connection) {
+        return res.status(503).json({
+          error: 'Database connection unavailable',
+          request: req.body,
+          namespace: 'jurisdictions',
+          code: 503
+        });
+      }
       const sqlStatement: SQLStatement = getJurisdictionsSQL(sanitizedSearchCriteria);
 
       if (!sqlStatement) {

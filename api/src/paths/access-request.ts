@@ -17,6 +17,7 @@ import { getUserByBCEIDSQL, getUserByIDIRSQL } from 'queries/user-queries';
 import { getLogger } from 'utils/logger';
 import { buildMailer } from 'utils/mailer';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('access-request');
 
@@ -109,16 +110,17 @@ function getAccessRequests(): RequestHandler {
         code: 401
       });
     }
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'access-request',
-        code: 503
-      });
-    }
+    let connection: PoolClient = null;
     try {
+      connection = await getDBConnection();
+      if (!connection) {
+        return res.status(503).json({
+          message: 'Database connection unavailable',
+          request: req.body,
+          namespace: 'access-request',
+          code: 503
+        });
+      }
       const sqlStatement: SQLStatement = getAccessRequestsSQL();
       if (!sqlStatement) {
         return res.status(400).json({

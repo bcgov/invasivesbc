@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
+import { PoolClient, QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
 import geoJSON_Feature_Schema from 'sharedAPI/src/openapi/geojson-feature-doc.json';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
@@ -279,18 +279,19 @@ function createActivity(): RequestHandler {
     sanitizedActivityData.updated_by = req.authContext?.friendlyUsername;
     sanitizedActivityData.updated_by_with_guid = req.authContext?.preferredUsername;
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable.',
-        request: req.body,
-        namespace: 'activity',
-        code: 503
-      });
-    }
+    let connection: PoolClient = null;
 
     try {
+      connection = await getDBConnection();
+
+      if (!connection) {
+        return res.status(503).json({
+          message: 'Database connection unavailable.',
+          request: req.body,
+          namespace: 'activity',
+          code: 503
+        });
+      }
       const getActivitySQLStatement: SQLStatement = getActivitySQL(sanitizedActivityData.activity_id);
       const createActivitySQLStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
 

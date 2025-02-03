@@ -55,6 +55,7 @@ GET.apiDoc = {
 
 function getHandler() {
   return async (req, res, next) => {
+    defaultLog.debug({ label: 'getHandler', message: 'HEREEEE' });
     const bceid = req.query.bceid;
     const idir = req.query.idir;
     if (idir && bceid) {
@@ -67,7 +68,9 @@ function getHandler() {
     } else if (bceid) {
       return await getUserByBCEID(req, res, next, bceid);
     } else if (idir) {
-      return await getUserByIDIR(req, res, next, idir);
+      const result = await getUserByIDIR(req, res, next, idir);
+      defaultLog.debug({ label: 'IDIR', message: 'HEREEEE' });
+      return result;
     } else {
       // Fetch all application users
       return await getUsers(req, res, next);
@@ -81,7 +84,7 @@ function getHandler() {
  * @return {RequestHandler}
  */
 async function getUsers(req, res, next) {
-  const connection = await getDBConnection();
+  let connection: PoolClient = null;
   const userIsAdmin = isAdminFromAuthContext(req);
   const isAppUser = req?.authContext?.roles.length > 0;
 
@@ -94,15 +97,16 @@ async function getUsers(req, res, next) {
     });
   }
 
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Failed to establish database connection',
-      request: req.query,
-      namespace: 'application-user',
-      code: 503
-    });
-  }
   try {
+    connection = await getDBConnection();
+    if (!connection) {
+      return res.status(503).json({
+        message: 'Failed to establish database connection',
+        request: req.query,
+        namespace: 'application-user',
+        code: 503
+      });
+    }
     const sqlStatement: SQLStatement = userIsAdmin ? getUsersSQL() : getSanitizedUsersForAutofillSQL();
     if (!sqlStatement) {
       return res
