@@ -274,10 +274,19 @@ function createActivity(): RequestHandler {
     const data = { ...req.body, media_keys: req['media_keys'], user_role: req.authContext?.roles[0] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-    sanitizedActivityData.created_by = req.authContext?.friendlyUsername;
-    sanitizedActivityData.created_by_with_guid = req.authContext?.preferredUsername;
-    sanitizedActivityData.updated_by = req.authContext?.friendlyUsername;
-    sanitizedActivityData.updated_by_with_guid = req.authContext?.preferredUsername;
+
+    if (!(req.authContext && req.authContext.preferredUsername && req.authContext.friendlyUsername)) {
+      return res.status(401).json({
+        message: 'Invalid request, authContext provides insufficient data to complete record metadata',
+        request: req.body,
+        namespace: 'activity',
+        code: 401
+      });
+    }
+
+    sanitizedActivityData.created_by_with_guid = req.authContext.preferredUsername;
+    sanitizedActivityData.updated_by_with_guid = req.authContext.preferredUsername;
+    sanitizedActivityData.updated_by = req.authContext.friendlyUsername;
 
     const connection = await getDBConnection();
 
@@ -383,9 +392,19 @@ function updateActivity(): RequestHandler {
 
     const isAdmin = (req as any).authContext.roles.find((role) => role.role_id === 18);
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-    sanitizedActivityData.created_by_with_guid = req.authContext?.preferredUsername;
-    sanitizedActivityData.updated_by = req.authContext?.friendlyUsername;
-    sanitizedActivityData.updated_by_with_guid = req.authContext?.preferredUsername;
+
+    if (!(req.authContext && req.authContext.preferredUsername && req.authContext.friendlyUsername)) {
+      return res.status(401).json({
+        message: 'Invalid request, authContext provides insufficient data to complete record metadata',
+        request: req.body,
+        namespace: 'activity',
+        code: 401
+      });
+    }
+
+    sanitizedActivityData.created_by_with_guid = req.authContext.preferredUsername;
+    sanitizedActivityData.updated_by_with_guid = req.authContext.preferredUsername;
+    sanitizedActivityData.updated_by = req.authContext.friendlyUsername;
 
     const connection = await getDBConnection();
 
