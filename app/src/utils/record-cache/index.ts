@@ -121,30 +121,6 @@ abstract class RecordCacheService extends BaseCacheService<
 
   abstract checkPauseOrAbort(id: string): Promise<CacheDownloadMode>;
 
-  /**
-   * @desc Concurrency helper for downloading Activity/IAPP records.
-   *       If one call fails, makes a second attempt before failing over.
-   * @param executing Promises in progress
-   * @param promiseFn Promise to Execute (Network Calls and DB Transaction)
-   */
-  private async processNext(executing: Set<Promise<void>>, promiseFn: () => Promise<void>) {
-    const promise = promiseFn();
-    executing.add(promise);
-    try {
-      await promise;
-    } catch (e) {
-      console.error(e);
-      try {
-        await promise;
-      } catch (e) {
-        console.error('Failed second attempt at fetching record');
-        throw e;
-      }
-    } finally {
-      executing.delete(promise);
-    }
-  }
-
   public async download(
     spec: CacheDownloadSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
