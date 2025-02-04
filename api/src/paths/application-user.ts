@@ -10,6 +10,7 @@ import {
 } from 'queries/user-queries';
 import { getLogger } from 'utils/logger';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity/{activityId}');
 
@@ -54,8 +55,8 @@ GET.apiDoc = {
 };
 
 function getHandler() {
+  defaultLog.debug({ label: 'getHandler', message: 'HEREEEE' });
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'getHandler', message: 'HEREEEE' });
     const bceid = req.query.bceid;
     const idir = req.query.idir;
     if (idir && bceid) {

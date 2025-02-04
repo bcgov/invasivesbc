@@ -246,6 +246,8 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
   const url = new URL(API_BASE + endpoint);
 
   async function response_data(res: Response) {
+    console.log('RESPONSEEEEE', res);
+
     switch (dataAs) {
       case 'text':
         return await res.text();
@@ -259,14 +261,18 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     if (payloadData) {
       url.searchParams.set('query', JSON.stringify(payloadData));
     }
-
-    const res = yield fetch(url, {
-      method: method,
-      headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }
-    });
-    const data = yield response_data(res);
-    const status = res.status;
-    return { data, status, url };
+    try {
+      const res = yield fetch(url, {
+        method: method,
+        headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }
+      });
+      console.log('GET----HEREEE----', res);
+      const data = yield response_data(res);
+      const status = res.status;
+      return { data, status, url };
+    } catch (error) {
+      console.log(error);
+    }
   } else if (['PUT', 'POST'].includes(method)) {
     const res = yield fetch(url, {
       method: method,
@@ -275,6 +281,8 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     });
     const data = yield response_data(res);
     const status = res.status;
+    console.log('PUT----HEREEE----', status, res);
+
     return { data, status, url };
   } else if (method === 'DELETE') {
     const payloadOptions: { body?: string } = {};

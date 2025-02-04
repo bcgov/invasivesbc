@@ -406,78 +406,79 @@ function updateActivity(): RequestHandler {
     sanitizedActivityData.created_by_with_guid = req.authContext.preferredUsername;
     sanitizedActivityData.updated_by_with_guid = req.authContext.preferredUsername;
     sanitizedActivityData.updated_by = req.authContext.friendlyUsername;
+    let connection: PoolClient = null;
+    try {
+      connection = await getDBConnection();
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable.',
-        request: req.body,
-        namespace: 'activity',
-        code: 503
-      });
-    }
-
-    const sanitizedSearchCriteria: string = data.activity_id;
-    const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
-
-    if (!sqlStatementForCheck) {
-      return res.status(500).json({
-        message: 'Failed to build SQL statement.',
-        request: req.body,
-        namespace: 'activity',
-        code: 500
-      });
-    }
-
-    const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
-
-    if (!isAdmin) {
-      // some batch record guids don't have the suffix or id.  this will still work for the new ones though
-      const containsOldIDAndIsOK = sanitizedActivityData.updated_by_with_guid.includes(
-        response.rows[0]?.created_by_with_guid?.toLowerCase()
-      );
-
-      if (
-        sanitizedActivityData.updated_by_with_guid?.replace('bceid-business', 'bceidbusiness') !==
-          response.rows[0]?.created_by_with_guid.replace('bceid-business', 'bceidbusiness') &&
-        !containsOldIDAndIsOK &&
-        response.rows[0].created_by_with_guid !== null
-      ) {
-        // some old records are null
-        return res.status(401).json({
-          message: 'Invalid request, user is not authorized to update this record',
+      if (!connection) {
+        return res.status(503).json({
+          message: 'Database connection unavailable.',
           request: req.body,
           namespace: 'activity',
-          code: 401
+          code: 503
         });
       }
-    }
 
-    if (response.rows.length > 0) {
-      if (response.rows[0].activity_type === 'Monitoring' && req?.body?.form_data?.activity_type_data?.linked_id) {
-        const sqlStatementForCheck = getActivitySQL(req.body.form_data.activity_type_data.linked_id);
-        const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
-        const linked_species_treated = response.rows[0].species_treated;
+      const sanitizedSearchCriteria: string = data.activity_id;
+      const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
 
-        // make sure monitoring a subset
-        sanitizedActivityData.species_treated.forEach((species) => {
-          defaultLog.info({ message: 'species check', species });
-
-          if (linked_species_treated.includes(species) === false) {
-            defaultLog.debug({ message: 'linked_species_treated', linked_species_treated });
-            // otherwise throw 400
-            return res.status(400).json({
-              message: 'Invalid request, species in monitoring not included in linked treatment',
-              request: req.body,
-              namespace: 'activity',
-              code: 401
-            });
-          }
+      if (!sqlStatementForCheck) {
+        return res.status(500).json({
+          message: 'Failed to build SQL statement.',
+          request: req.body,
+          namespace: 'activity',
+          code: 500
         });
       }
-    }
-    /*
+
+      const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
+
+      if (!isAdmin) {
+        // some batch record guids don't have the suffix or id.  this will still work for the new ones though
+        const containsOldIDAndIsOK = sanitizedActivityData.updated_by_with_guid.includes(
+          response.rows[0]?.created_by_with_guid?.toLowerCase()
+        );
+
+        if (
+          sanitizedActivityData.updated_by_with_guid?.replace('bceid-business', 'bceidbusiness') !==
+            response.rows[0]?.created_by_with_guid.replace('bceid-business', 'bceidbusiness') &&
+          !containsOldIDAndIsOK &&
+          response.rows[0].created_by_with_guid !== null
+        ) {
+          // some old records are null
+          return res.status(401).json({
+            message: 'Invalid request, user is not authorized to update this record',
+            request: req.body,
+            namespace: 'activity',
+            code: 401
+          });
+        }
+      }
+
+      if (response.rows.length > 0) {
+        if (response.rows[0].activity_type === 'Monitoring' && req?.body?.form_data?.activity_type_data?.linked_id) {
+          const sqlStatementForCheck = getActivitySQL(req.body.form_data.activity_type_data.linked_id);
+          const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
+          const linked_species_treated = response.rows[0].species_treated;
+
+          // make sure monitoring a subset
+          sanitizedActivityData.species_treated.forEach((species) => {
+            defaultLog.info({ message: 'species check', species });
+
+            if (linked_species_treated.includes(species) === false) {
+              defaultLog.debug({ message: 'linked_species_treated', linked_species_treated });
+              // otherwise throw 400
+              return res.status(400).json({
+                message: 'Invalid request, species in monitoring not included in linked treatment',
+                request: req.body,
+                namespace: 'activity',
+                code: 401
+              });
+            }
+          });
+        }
+      }
+      /*
     if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
           return res.status(400).json({
             message: 'Invalid request, cannot convert back to draft from submitted',
@@ -487,14 +488,12 @@ function updateActivity(): RequestHandler {
           });
     }
     */
-    /* disabled for now
+      /* disabled for now
      if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
        req.body.form_status = 'Submitted'
        sanitizedActivityData.form_status = 'Submitted'
      }
      */
-
-    try {
       const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);
 
       if (!sqlStatements || !sqlStatements.createSQL) {
