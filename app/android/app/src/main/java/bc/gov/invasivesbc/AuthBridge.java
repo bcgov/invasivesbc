@@ -3,6 +3,7 @@ package bc.gov.invasivesbc;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultLauncher;
@@ -39,9 +40,16 @@ public class AuthBridge extends Plugin {
 
   @ActivityCallback()
   public void authCompleteCallback(PluginCall call, ActivityResult result) {
+    Log.d("auth", "authcomplete callback");
     AuthorizationResponse authorizationResponse = AuthorizationResponse.fromIntent(result.getData());
     AuthorizationException authorizationException = AuthorizationException.fromIntent(result.getData());
     authState.update(authorizationResponse, authorizationException);
+
+
+    if (authorizationException != null) {
+      Log.e("auth", authorizationException.toJsonString());
+    }
+
 
     if (authorizationResponse == null) {
       JSObject r = new JSObject();
@@ -79,6 +87,7 @@ public class AuthBridge extends Plugin {
       JSObject ret = new JSObject();
       ret.put("error", "no authstate");
       call.resolve(ret);
+      Log.e("auth", "no authstate");
       return;
     }
     this.authState.performActionWithFreshTokens(authService, new AuthState.AuthStateAction() {
@@ -87,6 +96,7 @@ public class AuthBridge extends Plugin {
         if (ex != null) {
           JSObject ret = new JSObject();
           ret.put("error", "error obtaining tokens");
+          Log.e("auth", "error obtaining tokens");
           call.resolve(ret);
           return;
         }
@@ -101,6 +111,7 @@ public class AuthBridge extends Plugin {
 
   @PluginMethod()
   public void authStart(PluginCall call) {
+
     if (this.authService == null) {
       initAuthService();
     }
@@ -116,7 +127,8 @@ public class AuthBridge extends Plugin {
         "invasives-bc-4565",
         ResponseTypeValues.CODE,
         Uri.parse("invasivesbc://callback")
-      ).build();
+      ).setScopes("openid")
+        .build();
 
 
     Intent authIntent = authService.getAuthorizationRequestIntent(req);
@@ -126,15 +138,22 @@ public class AuthBridge extends Plugin {
 
   @PluginMethod()
   public void authStatus(PluginCall call) {
+
     if (this.authState == null) {
+      Log.e("auth", "no authstate");
+
       JSObject ret = new JSObject();
       ret.put("error", "no authstate");
       call.resolve(ret);
+
       return;
     }
 
     JSObject ret = new JSObject();
     ret.put("authorized", this.authState.isAuthorized());
+
+    Log.d("auth", "authstate: " + this.authState.isAuthorized());
+
     call.resolve(ret);
   }
 
