@@ -287,6 +287,7 @@ function createActivity(): RequestHandler {
     sanitizedActivityData.created_by_with_guid = req.authContext.preferredUsername;
     sanitizedActivityData.updated_by_with_guid = req.authContext.preferredUsername;
     sanitizedActivityData.updated_by = req.authContext.friendlyUsername;
+    sanitizedActivityData.created_by = req.authContext.friendlyUsername;
 
     const connection = await getDBConnection();
 
