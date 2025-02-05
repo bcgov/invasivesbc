@@ -7,6 +7,7 @@ import { getLogger } from 'utils/logger';
 import { ErrorPostRequestBody } from 'models/error';
 import { saveErrorSQL } from 'queries/error-queries';
 import { InvasivesRequest } from 'utils/auth-utils';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('error');
 
@@ -70,19 +71,10 @@ function errorLog(): RequestHandler {
     const sanitizedSearchCriteria = new ErrorPostRequestBody(req.body);
     sanitizedSearchCriteria.created_by = req.authContext?.friendlyUsername;
     sanitizedSearchCriteria.created_by_with_guid = req.authContext?.preferredUsername;
-
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        error: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'error',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = saveErrorSQL(sanitizedSearchCriteria);
 
       if (!sqlStatement) {
@@ -113,7 +105,7 @@ function errorLog(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

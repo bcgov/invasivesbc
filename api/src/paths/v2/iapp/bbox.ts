@@ -5,6 +5,7 @@ import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
 import { getDBConnection } from 'database/db';
 import { getIAPPSQLv2, sanitizeIAPPFilterObject } from '../iapp';
+import { PoolClient } from 'pg';
 
 const NAMESPACE = 'IAPP-bbox';
 
@@ -59,15 +60,9 @@ POST.apiDoc = {
  */
 function postHandler(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        namespace: NAMESPACE,
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
     try {
+      connection = await getDBConnection();
       defaultLog.debug({ label: NAMESPACE, message: 'postHandler', body: req.body });
       if (req.body?.filterObjects?.[0]) {
         const filterObject = sanitizeIAPPFilterObject(req.body.filterObjects[0], req);
@@ -107,7 +102,7 @@ function postHandler(): RequestHandler {
         error
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

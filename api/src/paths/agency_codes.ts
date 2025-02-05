@@ -4,6 +4,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getFundingAgencyCodesSQL } from 'queries/code-queries';
+import { PoolClient } from 'pg';
 
 export const GET: Operation = [getAgencyCodes()];
 
@@ -47,17 +48,10 @@ GET.apiDoc = {
 
 function getAgencyCodes(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        error: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'agency-codes',
-        code: '503'
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = getFundingAgencyCodesSQL();
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -70,8 +64,16 @@ function getAgencyCodes(): RequestHandler {
         namespace: 'agency-codes',
         code: '200'
       });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Failed to fetch agency codes',
+        request: req.body,
+        error: error,
+        namespace: 'agency-codes',
+        code: 500
+      });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

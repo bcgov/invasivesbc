@@ -11,6 +11,7 @@ import {
 } from 'queries/role-queries';
 import { getLogger } from 'utils/logger';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('user-access');
 
@@ -184,16 +185,10 @@ function batchGrantRoleToUser(): RequestHandler {
       });
     }
     defaultLog.debug({ label: 'user-access', message: 'batch-grant', body: req.body });
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        error: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'user-access',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
+
     try {
+      connection = await getDBConnection();
       for (const userId of req.body.userIds) {
         const sqlStatement: SQLStatement = grantRoleToUserSQL(userId, req.body.roleId);
         if (!sqlStatement) {
@@ -225,7 +220,7 @@ function batchGrantRoleToUser(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
@@ -241,16 +236,10 @@ function revokeRoleFromUser(): RequestHandler {
       });
     }
     defaultLog.debug({ label: 'user-access', message: 'revoke', body: req.body });
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'user-access',
-        code: 503
-      });
-    }
+
+    let connection: PoolClient | undefined;
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = revokeRoleFromUserSQL(req.body.userId, req.body.roleId);
       if (!sqlStatement) {
         return res.status(500).json({
@@ -279,23 +268,16 @@ function revokeRoleFromUser(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
 
 async function getUsersForRole(req, res, next, roleId) {
   defaultLog.debug({ label: '{userId}', message: 'getUsersForRole', body: req.query });
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Database connection unavailable',
-      request: req.body,
-      namespace: 'user-access',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
   try {
+    connection = await getDBConnection();
     const sqlStatement: SQLStatement = getUsersForRoleSQL(roleId);
     if (!sqlStatement) {
       return res.status(500).json({
@@ -324,22 +306,15 @@ async function getUsersForRole(req, res, next, roleId) {
       code: 500
     });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
 async function getRolesForUser(req, res, next, userId) {
   defaultLog.debug({ label: '{userId}', message: 'getRolesForUser', body: req.query });
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Database connection unavailable',
-      request: req.body,
-      namespace: 'user-access',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
   try {
+    connection = await getDBConnection();
     const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
     if (!sqlStatement) {
       return res.status(500).json({
@@ -368,7 +343,7 @@ async function getRolesForUser(req, res, next, userId) {
       code: 500
     });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 

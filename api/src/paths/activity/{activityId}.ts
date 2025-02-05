@@ -9,6 +9,7 @@ import { getFileFromS3 } from 'utils/file-utils';
 import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from 'paths/media';
 import { InvasivesRequest } from 'utils/auth-utils';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity');
 
@@ -71,19 +72,10 @@ function getActivity(): RequestHandler {
     defaultLog.debug({ label: '{activityId}', message: 'getActivity', body: req.params });
 
     const activityId = req.params.activityId;
-
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable.',
-        request: req.body,
-        namespace: 'activity/{activityId}',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = getActivitySQL(activityId);
       const sqlStatement2: SQLStatement = getActivityHistorySQL(activityId);
 
@@ -117,7 +109,7 @@ function getActivity(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
 
     return next();

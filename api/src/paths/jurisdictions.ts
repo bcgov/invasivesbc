@@ -97,14 +97,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
 
     try {
       connection = await getDBConnection();
-      if (!connection) {
-        return res.status(503).json({
-          error: 'Database connection unavailable',
-          request: req.body,
-          namespace: 'jurisdictions',
-          code: 503
-        });
-      }
+
       const sqlStatement: SQLStatement = getJurisdictionsSQL(sanitizedSearchCriteria);
 
       if (!sqlStatement) {

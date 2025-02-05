@@ -5,6 +5,7 @@ import { renewUserSQL } from 'queries/user-queries';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getLogger } from 'utils/logger';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity/{activityId}');
 
@@ -50,11 +51,10 @@ POST.apiDoc = {
 
 function renewUser(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({ message: 'Database connection unavailable', request: req.body, code: 503 });
-    }
+    let connection: PoolClient | undefined;
+
     try {
+      connection = await getDBConnection();
       const userId = req.query.userId.toString();
       const sqlStatement: SQLStatement = renewUserSQL(userId);
       if (!sqlStatement) {
@@ -84,7 +84,7 @@ function renewUser(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

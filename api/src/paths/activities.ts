@@ -179,12 +179,6 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     let connection: PoolClient | undefined;
     try {
       connection = await getDBConnection();
-      if (!connection) {
-        defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
-        return res
-          .status(503)
-          .json({ message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503 });
-      }
     } catch (error) {
       defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
       return res.status(500).json({
@@ -320,8 +314,9 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  */
 function deleteActivitiesByIds(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const connection = await getDBConnection();
+    let connection: PoolClient | undefined;
     try {
+      connection = await getDBConnection();
       defaultLog.debug({ label: 'activity', message: '[deleteActivitiesByIds]', body: req.body });
 
       const isMasterAdmin = (req as any).authContext.roles.some((role: Record<string, any>) => role.role_id === 18);
@@ -343,14 +338,7 @@ function deleteActivitiesByIds(): RequestHandler {
 
       const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false);
       const deleteSQLStatement: SQLStatement = deleteActivitiesSQL(ids, req);
-      if (!connection) {
-        return res.status(503).json({
-          message: 'Database connection unavailable',
-          request: req.body,
-          namespace: 'activities',
-          code: 503
-        });
-      }
+
       if (!sqlStatement || !deleteSQLStatement) {
         return res.status(500).json({
           message: 'Unable to generate SQL Statement',
@@ -425,7 +413,7 @@ function deleteActivitiesByIds(): RequestHandler {
       });
       return res.status(500);
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

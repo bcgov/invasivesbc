@@ -18,6 +18,7 @@ import {
 import { getLogger } from 'utils/logger';
 import { getEmailTemplatesFromDB } from 'paths/email-templates';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('update-request');
 
@@ -99,16 +100,9 @@ GET.apiDoc = {
 
 function getUpdateRequests(): RequestHandler {
   return async (req, res, next) => {
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Failed to establish database connection',
-        req: req.body,
-        namespace: 'update-request',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = getUpdateRequestsSQL();
       if (!sqlStatement) {
         return res.status(500).json({
@@ -137,7 +131,7 @@ function getUpdateRequests(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
@@ -178,16 +172,9 @@ function postHandler(): RequestHandler {
  */
 async function createUpdateRequest(req, res, next, newUpdateRequest) {
   defaultLog.debug({ label: 'update-request', message: 'create', body: newUpdateRequest });
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Failed to establish database connection',
-      req: req.body,
-      namespace: 'update-request',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
   try {
+    connection = await getDBConnection();
     const tokenUser = req.authContext.friendlyUsername;
     const tokenUserIsRequestUser: boolean = [req.body.newUpdateRequest.idir, req.body.newUpdateRequest.bceid].includes(
       tokenUser.toLowerCase()
@@ -231,21 +218,14 @@ async function createUpdateRequest(req, res, next, newUpdateRequest) {
       code: 500
     });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
 async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests) {
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Failed to establish database connection',
-      req: req.body,
-      namespace: 'update-request',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
   try {
+    connection = await getDBConnection();
     const requests = approvedUpdateRequests;
     // for each request, approve it
     for (const request of requests) {
@@ -304,21 +284,14 @@ async function batchApproveUpdateRequests(req, res, next, approvedUpdateRequests
       code: 500
     });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
 async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Failed to establish database connection',
-      req: req.body,
-      namespace: 'update-request',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
   try {
+    connection = await getDBConnection();
     const request = declinedUpdateRequest;
     const sqlStatement: SQLStatement = updateAccessRequestStatusSQL(
       request.primary_email,
@@ -362,6 +335,6 @@ async function declineUpdateRequest(req, res, next, declinedUpdateRequest) {
       code: 500
     });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }

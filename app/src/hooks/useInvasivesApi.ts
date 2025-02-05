@@ -259,6 +259,7 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     if (payloadData) {
       url.searchParams.set('query', JSON.stringify(payloadData));
     }
+
     const res = yield fetch(url, {
       method: method,
       headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }

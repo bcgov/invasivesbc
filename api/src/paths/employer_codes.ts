@@ -4,6 +4,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getEmployerCodesSQL } from 'queries/code-queries';
+import { PoolClient } from 'pg';
 
 export const GET: Operation = [getEmployerCodes()];
 
@@ -47,17 +48,10 @@ GET.apiDoc = {
 
 function getEmployerCodes(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        error: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'employer_codes',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = getEmployerCodesSQL();
 
       if (!sqlStatement) {
@@ -79,8 +73,16 @@ function getEmployerCodes(): RequestHandler {
         namespace: 'employer_codes',
         code: 200
       });
+    } catch (error) {
+      return res.status(500).json({
+        message: 'Failed fetching employer codes',
+        request: req.body,
+        error: error,
+        namespace: 'employer_codes',
+        code: 500
+      });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

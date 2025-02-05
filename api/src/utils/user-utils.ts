@@ -22,13 +22,10 @@ const rejectWithErr = (issue: string, code: number = 401) =>
 
 export async function createUser(keycloakToken: any, accountType, id): Promise<any> {
   defaultLog.debug({ message: 'Keycloak token in user-utils', params: { keycloakToken } });
-  const connection = await getDBConnection();
+  let connection: PoolClient | undefined;
 
-  if (!connection) {
-    defaultLog.error({ message: 'No connection!' });
-    throw rejectWithErr('Failed to establish database connection', 503);
-  }
   try {
+    connection = await getDBConnection();
     const sqlStatement: SQLStatement = createUserSQL(
       accountType,
       id,
@@ -46,7 +43,7 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
     defaultLog.debug({ label: 'create', message: 'error', error });
     throw rejectWithErr('Failed to create user', 500);
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 

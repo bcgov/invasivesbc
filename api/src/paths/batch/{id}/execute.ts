@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
+import { PoolClient, QueryResult } from 'pg';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { InvasivesRequest } from 'utils/auth-utils';
@@ -67,21 +67,12 @@ const defaultLog = getLogger('batch');
 
 function execBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const connection = await getDBConnection();
     const id = req.params.id;
 
     const { desiredActivityState, treatmentOfErrorRows } = req.body;
-
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'batch',
-        code: 503
-      });
-    }
-
+    let connection: PoolClient | undefined;
     try {
+      connection = await getDBConnection();
       const response: QueryResult = await connection.query(
         `select id,
                 status,
@@ -164,7 +155,7 @@ function execBatch(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

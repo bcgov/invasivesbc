@@ -5,6 +5,7 @@ import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getJurisdictionsSQL } from 'queries/iapp-jurisdiction-queries';
 import { getLogger } from 'utils/logger';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('iapp-jurisdictions');
 
@@ -59,19 +60,10 @@ function getJurisdictions(): RequestHandler {
       message: 'getJurisdictions',
       body: req.body
     });
-
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable.',
-        request: req.body,
-        namespace: 'iapp-jurisdiction',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = getJurisdictionsSQL();
 
       if (!sqlStatement) {
@@ -115,7 +107,7 @@ function getJurisdictions(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

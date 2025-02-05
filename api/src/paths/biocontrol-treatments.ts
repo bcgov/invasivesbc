@@ -5,6 +5,7 @@ import SQL, { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getLogger } from 'utils/logger';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('biocontrol-treatments');
 
@@ -39,16 +40,10 @@ GET.apiDoc = {
 
 function getBiocontrolTreatments(): RequestHandler {
   return async (req, res, next) => {
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'biocontrol-treatments',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
+
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = SQL`SELECT plant_code_name, agent_code_name
                                              FROM plant_agent_treatment;`;
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -71,7 +66,7 @@ function getBiocontrolTreatments(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

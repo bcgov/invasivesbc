@@ -292,15 +292,6 @@ function createActivity(): RequestHandler {
 
     try {
       connection = await getDBConnection();
-
-      if (!connection) {
-        return res.status(503).json({
-          message: 'Database connection unavailable.',
-          request: req.body,
-          namespace: 'activity',
-          code: 503
-        });
-      }
       const getActivitySQLStatement: SQLStatement = getActivitySQL(sanitizedActivityData.activity_id);
       const createActivitySQLStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
 
@@ -410,15 +401,6 @@ function updateActivity(): RequestHandler {
     let connection: PoolClient | undefined;
     try {
       connection = await getDBConnection();
-
-      if (!connection) {
-        return res.status(503).json({
-          message: 'Database connection unavailable.',
-          request: req.body,
-          namespace: 'activity',
-          code: 503
-        });
-      }
 
       const sanitizedSearchCriteria: string = data.activity_id;
       const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);

@@ -113,14 +113,7 @@ function getAccessRequests(): RequestHandler {
     let connection: PoolClient | undefined;
     try {
       connection = await getDBConnection();
-      if (!connection) {
-        return res.status(503).json({
-          message: 'Database connection unavailable',
-          request: req.body,
-          namespace: 'access-request',
-          code: 503
-        });
-      }
+
       const sqlStatement: SQLStatement = getAccessRequestsSQL();
       if (!sqlStatement) {
         return res.status(400).json({
@@ -192,16 +185,11 @@ function postHandler(): RequestHandler {
  */
 async function createAccessRequest(req, res, next, newAccessRequest) {
   defaultLog.debug({ label: 'access-request', message: 'create', body: newAccessRequest });
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Database connection unavailable',
-      request: req.body,
-      namespace: 'access-request',
-      code: 503
-    });
-  }
+
+  let connection: PoolClient | undefined;
+
   try {
+    connection = await getDBConnection();
     const { bceid, idir } = newAccessRequest;
     const pendingRequestSQL = userHasPendingAccessRequestSQL(bceid ?? idir);
     const pendingRequestSQLResponse = await connection.query(pendingRequestSQL.text, pendingRequestSQL.values);
@@ -238,21 +226,15 @@ async function createAccessRequest(req, res, next, newAccessRequest) {
       code: 500
     });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
 async function batchApproveAccessRequests(req, res, next, approvedAccessRequests) {
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Database connection unavailable',
-      request: req.body,
-      namespace: 'access-request',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
+
   try {
+    connection = await getDBConnection();
     const requests = approvedAccessRequests;
     for (const request of requests) {
       if (!request.requested_roles) continue;
@@ -331,30 +313,31 @@ async function batchApproveAccessRequests(req, res, next, approvedAccessRequests
         defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'database encountered an error', error });
       }
     }
+    return res.status(201).json({
+      message: 'Acccess requests processed',
+      request: req.body,
+      namespace: 'access-request',
+      code: 201
+    });
   } catch (error) {
     defaultLog.debug({ label: 'batchApproveAccessRequests', message: 'error', error });
+    return res.status(500).json({
+      message: 'Acccess requests failed',
+      request: req.body,
+      error: error,
+      namespace: 'access-request',
+      code: 500
+    });
   } finally {
-    connection.release();
+    connection?.release();
   }
-  return res.status(201).json({
-    message: 'Acccess requests processed',
-    request: req.body,
-    namespace: 'access-request',
-    code: 201
-  });
 }
 
 async function declineAccessRequest(req, res, next, declinedAccessRequest) {
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Database connection unavailable',
-      request: req.body,
-      namespace: 'access-request',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
+
   try {
+    connection = await getDBConnection();
     const request = declinedAccessRequest;
     const sqlStatement: SQLStatement = updateAccessRequestStatusSQL(
       request.primary_email,
@@ -398,6 +381,6 @@ async function declineAccessRequest(req, res, next, declinedAccessRequest) {
       code: 500
     });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }

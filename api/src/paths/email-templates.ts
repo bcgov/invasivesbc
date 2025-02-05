@@ -6,6 +6,7 @@ import { getDBConnection } from 'database/db';
 import { getEmailTemplatesSQL, updateEmailTemplatesSQL } from 'queries/email-templates-queries';
 import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('email-templates');
 
@@ -89,15 +90,10 @@ GET.apiDoc = {
 };
 
 export async function getEmailTemplatesFromDB() {
-  const connection = await getDBConnection();
-  if (!connection) {
-    return {
-      message: 'Database connection unavailable',
-      namespace: 'email-templates',
-      code: 503
-    };
-  }
+  let connection: PoolClient | undefined;
+
   try {
+    connection = await getDBConnection();
     const sqlStatement: SQLStatement = getEmailTemplatesSQL();
     if (!sqlStatement) {
       return {
@@ -123,7 +119,7 @@ export async function getEmailTemplatesFromDB() {
       code: 500
     };
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
@@ -147,16 +143,10 @@ function updateEmailTemplates(): RequestHandler {
       });
     }
     const data = { ...req.body, user_role: req.authContext?.roles[0] };
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable.',
-        request: req.body,
-        namespace: 'email-templates',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
+
     try {
+      connection = await getDBConnection();
       const sqlStatement = updateEmailTemplatesSQL(data.fromemail, data.emailsubject, data.emailbody, data.id);
       if (!sqlStatement) {
         return res.status(500).json({
@@ -183,7 +173,7 @@ function updateEmailTemplates(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
