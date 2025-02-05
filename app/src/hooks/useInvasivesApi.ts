@@ -259,17 +259,13 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     if (payloadData) {
       url.searchParams.set('query', JSON.stringify(payloadData));
     }
-    try {
-      const res = yield fetch(url, {
-        method: method,
-        headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }
-      });
-      const data = yield response_data(res);
-      const status = res.status;
-      return { data, status, url };
-    } catch (error) {
-      console.log(error);
-    }
+    const res = yield fetch(url, {
+      method: method,
+      headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }
+    });
+    const data = yield response_data(res);
+    const status = res.status;
+    return { data, status, url };
   } else if (['PUT', 'POST'].includes(method)) {
     const res = yield fetch(url, {
       method: method,
