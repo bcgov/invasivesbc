@@ -13,12 +13,13 @@ class WellCache {
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
 
-    async (bounds: RepositoryBoundingBoxSpec, { getState }) => {
+    async (spec: { bounds: RepositoryBoundingBoxSpec; id: string }, { getState }) => {
       const state: RootState = getState() as RootState;
       const wellService = await WellCacheServiceFactory.getPlatformInstance();
       await wellService.download({
         API_BASE: state.Configuration.current.API_BASE,
-        bounds
+        bounds: spec.bounds,
+        id: spec.id
       });
     }
   );
