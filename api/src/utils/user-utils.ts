@@ -3,6 +3,7 @@ import { getLogger } from 'utils/logger';
 import { getBetaAccessForUserSQL, getRolesForUserSQL } from 'queries/role-queries';
 import { getDBConnection } from 'database/db';
 import { createUserSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from 'queries/user-queries';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('user-utils');
 
@@ -51,10 +52,12 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
 
 export async function getUserByKeycloakID(accountType: KeycloakAccountType, id: string) {
   defaultLog.debug({ label: `{${accountType}}`, message: 'getUserByKeycloakID' });
-  const connection = await getDBConnection();
-  if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
+  let connection: PoolClient | undefined;
 
   try {
+    connection = await getDBConnection();
+    if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
+
     const sqlStatement: SQLStatement =
       accountType === KeycloakAccountType.idir ? getUserByIDIRSQL(id) : getUserByBCEIDSQL(id);
     if (!sqlStatement) throw rejectWithErr('Failed to build SQL statement', 400);
@@ -64,16 +67,18 @@ export async function getUserByKeycloakID(accountType: KeycloakAccountType, id: 
     return result?.[0];
   } catch (error) {
     defaultLog.debug({ label: 'getUserByKeycloakID', message: 'error', error });
-    throw rejectWithErr('Failed to get user by Keycloak ID', 500);
+    return rejectWithErr('Failed to get user by Keycloak ID', 500);
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
 export async function getRolesForUser(userId) {
-  const connection = await getDBConnection();
-  if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
+  let connection: PoolClient | undefined;
+
   try {
+    connection = await getDBConnection();
+    if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
     const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
     if (!sqlStatement) throw rejectWithErr('Failed to build SQL statement', 400);
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -81,16 +86,17 @@ export async function getRolesForUser(userId) {
     return result;
   } catch (error) {
     defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
-    throw rejectWithErr('Failed to get roles for user', 500);
+    return rejectWithErr('Failed to get roles for user', 500);
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
 export async function getV2BetaAccessForUser(userId) {
-  const connection = await getDBConnection();
-  if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
+  let connection: PoolClient | undefined;
   try {
+    connection = await getDBConnection();
+    if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
     const sqlStatement: SQLStatement = getBetaAccessForUserSQL(userId);
     if (!sqlStatement) throw rejectWithErr('Failed to build SQL statement', 400);
 
@@ -101,8 +107,8 @@ export async function getV2BetaAccessForUser(userId) {
     return result;
   } catch (error) {
     defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'error', error });
-    throw rejectWithErr('Failed getBetaAccessForUserSQL', 500);
+    return rejectWithErr('Failed getBetaAccessForUserSQL', 500);
   } finally {
-    connection.release();
+    connection?.release();
   }
 }

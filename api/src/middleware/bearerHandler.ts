@@ -4,7 +4,7 @@ import { authenticate, InvasivesRequest } from 'utils/auth-utils';
 import { getLogger } from 'utils/logger';
 
 const bearerHandler = async (req: Request) => {
-  const logger = getLogger('Error');
+  const logger = getLogger('bearerHandler');
   try {
     let mdc = MDCAsyncLocal.getStore();
     if (!mdc) {

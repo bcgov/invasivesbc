@@ -122,9 +122,13 @@ async function getUsers(req, res, next) {
     });
   } catch (error) {
     defaultLog.debug({ label: 'getUsers', message: 'error', error });
-    return res
-      .status(500)
-      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
+    return res.status(500).json({
+      message: 'Failed to fetch users',
+      error,
+      request: req.query,
+      namespace: 'application-user',
+      code: 500
+    });
   } finally {
     connection?.release();
   }
@@ -172,16 +176,18 @@ async function getUserByBCEID(req, res, next, bceid) {
 
 async function getUserByIDIR(req, res, next, idir) {
   defaultLog.debug({ label: '{bceid}', message: 'getUserByIDIR', body: req.query });
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Failed to establish database connection',
-      request: req.query,
-      namespace: 'application-user',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
+
   try {
+    connection = await getDBConnection();
+    if (!connection) {
+      return res.status(503).json({
+        message: 'Failed to establish database connection',
+        request: req.query,
+        namespace: 'application-user',
+        code: 503
+      });
+    }
     const sqlStatement: SQLStatement = getUserByIDIRSQL(idir);
     if (!sqlStatement) {
       return res.status(500).json({
@@ -202,10 +208,14 @@ async function getUserByIDIR(req, res, next, idir) {
     });
   } catch (error) {
     defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
-    return res
-      .status(500)
-      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
+    return res.status(500).json({
+      message: 'Failed to fetch users',
+      error,
+      request: req.query,
+      namespace: 'application-user',
+      code: 500
+    });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }

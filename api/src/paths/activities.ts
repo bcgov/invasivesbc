@@ -17,6 +17,7 @@ import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
 import cacheService from 'utils/cache/cache-service';
 import { versionedKey } from 'utils/cache/cache-utils';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = 'Activities - Fat';
@@ -175,12 +176,25 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       sanitizedSearchCriteria.updated_by = [];
     }
 
-    const connection = await getDBConnection();
-    if (!connection) {
-      defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
-      return res
-        .status(503)
-        .json({ message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503 });
+    let connection: PoolClient | undefined;
+    try {
+      connection = await getDBConnection();
+      if (!connection) {
+        defaultLog.error({ label: 'activity', message: 'getActivitiesBySearchFilterCriteria', body: criteria });
+        return res
+          .status(503)
+          .json({ message: 'Database connection unavailable', request: criteria, namespace: 'activities', code: 503 });
+      }
+    } catch (error) {
+      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'error', error });
+      return res.status(500).json({
+        message: 'Error getting activities by search filter criteria',
+        error,
+        namespace: 'activities',
+        code: 500
+      });
+    } finally {
+      connection?.release();
     }
 
     // we'll send it later, overriding cache headers as appropriate

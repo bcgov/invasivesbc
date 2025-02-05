@@ -9,7 +9,7 @@ export class CustomError extends Error {
   }
 }
 const globalErrorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-  const logger = getLogger('Error');
+  const logger = getLogger('globalErrorHandler');
   const code = err instanceof CustomError ? err.code : 500;
   const errorResponse = {
     req: req.body,

@@ -534,6 +534,7 @@ function updateActivity(): RequestHandler {
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.debug({ label: 'updateActivity', message: 'error', error });
+
       return res.status(500).json({
         message: 'Error updating activity.',
         request: req.body,
