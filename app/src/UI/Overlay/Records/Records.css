@@ -58,11 +58,7 @@
   flex-direction: column;
 }
 
-.record-set-buttons {
-  flex-direction: column;
-}
-
-@media screen and (min-width: 930px) {
+@media screen and (min-width: 915px) {
   .record-set-option {
     flex-direction: row;
   }
@@ -77,9 +73,5 @@
   .record-set-control {
     justify-content: flex-end;
     align-items: center;
-  }
-
-  .record-set-buttons {
-    flex-direction: row;
   }
 }
