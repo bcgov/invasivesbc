@@ -39,6 +39,29 @@ abstract class BaseCacheService<
     progressCallback?: (currentProgress: ProgressCallbackParams) => void
   ): Promise<CacheDownloadMode | void>;
 
+  /**
+   * @desc Concurrency helper. If one call fails, makes a second attempt before failing over.
+   * @param executing Promises in progress
+   * @param promiseFn Promises to Execute
+   */
+  protected async processNext(executing: Set<Promise<void>>, promiseFn: () => Promise<void>) {
+    const promise = promiseFn();
+    executing.add(promise);
+    try {
+      await promise;
+    } catch (e) {
+      console.error(e);
+      try {
+        await promise;
+      } catch (e) {
+        console.error('Failed second attempt at Promise');
+        throw e;
+      }
+    } finally {
+      executing.delete(promise);
+    }
+  }
+
   protected constructor() {}
 }
 

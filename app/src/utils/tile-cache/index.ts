@@ -126,23 +126,6 @@ abstract class TileCacheService extends BaseCacheService<
     spec: RepositoryDownloadRequestSpec,
     progressCallback?: (currentProgress: TileCacheProgressCallbackParameters) => void
   ): Promise<void> {
-    const processNext = async (promiseFn) => {
-      const promise = promiseFn();
-      executing.add(promise);
-      try {
-        await promise;
-      } catch (e) {
-        console.error(e);
-        try {
-          await promise;
-        } catch (e) {
-          console.error('Failed second attempt at fetching tile');
-        }
-      } finally {
-        executing.delete(promise);
-      }
-    };
-
     const CONCURRENCY_LIMIT = 10;
     const totalTiles = TileCacheService.computeTileCount(spec.bounds, spec.maxZoom);
     let abort = false;
@@ -150,7 +133,7 @@ abstract class TileCacheService extends BaseCacheService<
     let lastProgressCallback: null | number = null;
     let lastProgressCallbackTimestamp: number | null = null;
     const tileUrls: TilePromise[] = [];
-    const executing = new Set();
+    const executing = new Set<Promise<void>>();
 
     try {
       await this.addOrUpdateRepository({
@@ -180,7 +163,7 @@ abstract class TileCacheService extends BaseCacheService<
           await Promise.race(executing);
         }
 
-        processNext(promises[i]);
+        this.processNext(executing, promises[i]);
         processedTiles++;
         const currentProgress = processedTiles / totalTiles;
         const currTime = Date.now();
