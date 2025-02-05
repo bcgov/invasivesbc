@@ -20,7 +20,7 @@ const rejectWithErr = (issue: string, code: number = 401) =>
   });
 
 export async function createUser(keycloakToken: any, accountType, id): Promise<any> {
-  // defaultLog.debug({ message: 'Keycloak token in user-utils', params: { keycloakToken } });
+  defaultLog.debug({ message: 'Keycloak token in user-utils', params: { keycloakToken } });
   const connection = await getDBConnection();
 
   if (!connection) {
@@ -34,7 +34,7 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
       keycloakToken.preferred_username,
       keycloakToken.email
     );
-    // defaultLog.debug({ message: 'SQL statement to create user', sqlStatement });
+    defaultLog.debug({ message: 'SQL statement to create user', sqlStatement });
     if (!sqlStatement) throw rejectWithErr('Failed to generate SQL statement', 500);
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -50,7 +50,7 @@ export async function createUser(keycloakToken: any, accountType, id): Promise<a
 }
 
 export async function getUserByKeycloakID(accountType: KeycloakAccountType, id: string) {
-  // defaultLog.debug({ label: `{${accountType}}`, message: 'getUserByKeycloakID' });
+  defaultLog.debug({ label: `{${accountType}}`, message: 'getUserByKeycloakID' });
   const connection = await getDBConnection();
   if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
 
@@ -95,12 +95,12 @@ export async function getV2BetaAccessForUser(userId) {
     if (!sqlStatement) throw rejectWithErr('Failed to build SQL statement', 400);
 
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    // defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', response });
+    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'v2access', response });
 
     const result = !!response?.rows?.[0]?.v2beta;
     return result;
   } catch (error) {
-    // defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'error', error });
+    defaultLog.debug({ label: 'getBetaAccessForUserSQL', message: 'error', error });
     throw rejectWithErr('Failed getBetaAccessForUserSQL', 500);
   } finally {
     connection.release();

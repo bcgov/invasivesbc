@@ -49,7 +49,7 @@ const jwks = jwksRsa({
 
 function retrieveKey(header, callback) {
   jwks.getSigningKey(header.kid, function (err, key) {
-    // defaultLog.debug({ label: 'authenticate', message: 'retrieve signing key' });
+    defaultLog.debug({ label: 'authenticate', message: 'retrieve signing key' });
 
     if (err) {
       defaultLog.error({ label: 'authenticate', message: 'error retrieving key', error: err });
@@ -69,7 +69,7 @@ function retrieveKey(header, callback) {
 export const authenticate = async (req: InvasivesRequest): Promise<void> => {
   const MDC = MDCAsyncLocal.getStore();
 
-  // defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
+  defaultLog.debug({ label: 'authenticate', message: 'authenticating user' });
 
   const filterForSelectable = req.header('filterforselectable') === 'true';
   const authHeader = req.header('Authorization');
@@ -88,7 +88,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
   try {
     token = authHeader.split(/\s/)[1];
   } catch (error) {
-    // defaultLog.info({ label: 'authenticate', message: 'malformed auth token received' });
+    defaultLog.info({ label: 'authenticate', message: 'malformed auth token received' });
 
     throw rejectWithErr('Authorization header parse failure', 400);
   }
@@ -108,7 +108,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
   }
 
   if (!token) {
-    // defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
+    defaultLog.info({ label: 'authenticate', message: 'missing or malformed auth token received' });
     throw rejectWithErr('Authorization header parse failure');
   }
 
@@ -143,7 +143,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
         .then((user) => {
           const createIfNeeded = new Promise((resolve: any) => {
             if (!user) {
-              // defaultLog.info({ label: 'authenticate', message: `first creating new user ${id}` });
+              defaultLog.info({ label: 'authenticate', message: `first creating new user ${id}` });
               createUser(decoded, accountType, id)
                 .then(() => {
                   getUserByKeycloakID(accountType, id)
@@ -194,7 +194,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
                 // check if user has beta access
                 getV2BetaAccessForUser(user.user_id)
                   .then((betaAccess) => {
-                    // defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
+                    defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
                     req.authContext.v2beta = betaAccess;
                     return resolve();
                   })

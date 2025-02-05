@@ -55,7 +55,6 @@ GET.apiDoc = {
 };
 
 function getHandler() {
-  defaultLog.debug({ label: 'getHandler', message: 'HEREEEE' });
   return async (req, res, next) => {
     const bceid = req.query.bceid;
     const idir = req.query.idir;
@@ -69,9 +68,7 @@ function getHandler() {
     } else if (bceid) {
       return await getUserByBCEID(req, res, next, bceid);
     } else if (idir) {
-      const result = await getUserByIDIR(req, res, next, idir);
-      defaultLog.debug({ label: 'IDIR', message: 'HEREEEE' });
-      return result;
+      return await getUserByIDIR(req, res, next, idir);
     } else {
       // Fetch all application users
       return await getUsers(req, res, next);
