@@ -1,4 +1,3 @@
-import { nanoid } from '@reduxjs/toolkit';
 import booleanIntersects from '@turf/boolean-intersects';
 import { Feature, FeatureCollection } from '@turf/helpers';
 import WellData from 'interfaces/WellData';
@@ -16,8 +15,9 @@ export interface IWellRepositoryMetadata {
 }
 
 export interface IWellRepositoryDownloadRequestSpec {
-  bounds: RepositoryBoundingBoxSpec;
   API_BASE: string;
+  bounds: RepositoryBoundingBoxSpec;
+  id: string;
 }
 
 export interface IWellCacheProgressCallbackParameters {
@@ -97,7 +97,6 @@ abstract class WellCacheService extends BaseCacheService<
     spec: IWellRepositoryDownloadRequestSpec,
     progressCallback?: ((currentProgress: IWellCacheProgressCallbackParameters) => void) | undefined
   ): Promise<void> {
-    const id = `well-records-${nanoid()}`;
     const WELL_WFS_LAYER = 'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW';
     const url = encodeURIComponent(buildURLForDataBC(WELL_WFS_LAYER, bboxToPolygon(spec.bounds), true));
     const response = await (await fetch(`${spec.API_BASE}/api/map-shaper?url=${url}&percentage=0.02`)).json();
@@ -110,16 +109,16 @@ abstract class WellCacheService extends BaseCacheService<
 
     await this.addOrUpdateRepository({
       bounds: spec.bounds,
-      id: id,
+      id: spec.id,
       status: WellRepositoryStatus.DOWNLOADING,
       wellTagNumbers: wellTagNumbers
     });
 
     await this.saveWells(wellsToCache, progressCallback);
-    const featureCollection = await this.createFeatureCollectionFromMetadata(id);
+    const featureCollection = await this.createFeatureCollectionFromMetadata(spec.id);
     await this.addOrUpdateRepository({
       bounds: spec.bounds,
-      id: id,
+      id: spec.id,
       status: WellRepositoryStatus.CACHED,
       wellTagNumbers: wellTagNumbers,
       cachedGeoJson: featureCollection
