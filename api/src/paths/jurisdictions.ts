@@ -93,7 +93,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
     });
 
     const sanitizedSearchCriteria = new JurisdictionSearchCriteria(req.body);
-    let connection: PoolClient = null;
+    let connection: PoolClient | undefined;
 
     try {
       connection = await getDBConnection();
@@ -136,7 +136,7 @@ function getJurisdictionsBySearchFilterCriteria(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

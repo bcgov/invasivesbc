@@ -110,7 +110,7 @@ function getAccessRequests(): RequestHandler {
         code: 401
       });
     }
-    let connection: PoolClient = null;
+    let connection: PoolClient | undefined;
     try {
       connection = await getDBConnection();
       if (!connection) {
@@ -149,7 +149,7 @@ function getAccessRequests(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

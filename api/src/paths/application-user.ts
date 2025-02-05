@@ -85,7 +85,7 @@ function getHandler() {
  * @return {RequestHandler}
  */
 async function getUsers(req, res, next) {
-  let connection: PoolClient = null;
+  let connection: PoolClient | undefined;
   const userIsAdmin = isAdminFromAuthContext(req);
   const isAppUser = req?.authContext?.roles.length > 0;
 
@@ -129,7 +129,7 @@ async function getUsers(req, res, next) {
       .status(500)
       .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 

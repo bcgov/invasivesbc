@@ -288,7 +288,7 @@ function createActivity(): RequestHandler {
     sanitizedActivityData.updated_by_with_guid = req.authContext.preferredUsername;
     sanitizedActivityData.updated_by = req.authContext.friendlyUsername;
 
-    let connection: PoolClient = null;
+    let connection: PoolClient | undefined;
 
     try {
       connection = await getDBConnection();
@@ -373,7 +373,7 @@ function createActivity(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
@@ -406,7 +406,8 @@ function updateActivity(): RequestHandler {
     sanitizedActivityData.created_by_with_guid = req.authContext.preferredUsername;
     sanitizedActivityData.updated_by_with_guid = req.authContext.preferredUsername;
     sanitizedActivityData.updated_by = req.authContext.friendlyUsername;
-    let connection: PoolClient = null;
+
+    let connection: PoolClient | undefined;
     try {
       connection = await getDBConnection();
 
@@ -541,7 +542,7 @@ function updateActivity(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
