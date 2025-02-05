@@ -14,7 +14,7 @@ class WellCache {
     `${this.PREFIX}/requestCaching`,
 
     async (spec: { bounds: RepositoryBoundingBoxSpec; id?: string }, { getState }) => {
-      const id = spec.id ?? nanoid();
+      const id = spec.id ?? `well-records-${nanoid()}`;
       const state: RootState = getState() as RootState;
       const wellService = await WellCacheServiceFactory.getPlatformInstance();
 

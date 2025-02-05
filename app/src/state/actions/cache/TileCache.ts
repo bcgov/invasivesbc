@@ -44,7 +44,7 @@ class TileCache {
       { dispatch }
     ) => {
       const service = await TileCacheServiceFactory.getPlatformInstance();
-      const id = spec.id ?? nanoid();
+      const id = spec.id ?? `well-cache-${nanoid()}`;
 
       await service.download(
         {

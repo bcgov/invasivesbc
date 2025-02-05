@@ -6,12 +6,12 @@ import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 /**
  * @desc Parameters for a user planning their trip
- * @property { boolean } [activities] include download for Activity records
- * @property { boolean } [iapp] include download for IAPP records
+ * @property { boolean } [ activities ] include download for Activity records
+ * @property { boolean } [ iapp ] include download for IAPP records
  * @property { string } name non-unique user friendly identifier
- * @property { number } [zoom] Zoom level for caching Map tile data
- * @property { boolean } [wellData] include Well Data for area.
- * @property { boolean } [wmsLayers] include currently toggled WMS layers in dataset.
+ * @property { boolean } [ wellData ] include Well Data for area.
+ * @property { boolean } [ wmsLayers ] include currently toggled WMS layers in dataset.
+ * @property { number } [ zoom ] Zoom level for caching Map tile data
  */
 export interface ICreateMyTrip {
   activities?: boolean;
