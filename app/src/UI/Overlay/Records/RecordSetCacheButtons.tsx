@@ -45,8 +45,9 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
     }
   };
 
+  // inform parent when state changes
   useEffect(() => {
-    onCacheStateChange(activeDownloads); // Inform parent when state changes
+    onCacheStateChange(activeDownloads);
   }, [activeDownloads, onCacheStateChange]);
 
   const cancelCacheDownload = () => {

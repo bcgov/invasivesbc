@@ -30,11 +30,12 @@ const RecordSetControl = ({
   const DELETE_TIP =
     'Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration.';
 
-  const [isProgressBar, setIsProgressBar] = useState(false); // Track state of ProgressButtonPanel
+  const [isProgressBar, setIsProgressBar] = useState(false);
 
   const handleProgressStateChange = (state: boolean) => {
-    setIsProgressBar(state); // Update the state based on ProgressButtonPanel
+    setIsProgressBar(state);
   };
+
   return (
     <div className={isProgressBar ? 'record-set-control record-set-progressbar' : 'record-set-control '}>
       <div>
