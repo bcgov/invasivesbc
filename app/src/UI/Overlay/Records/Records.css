@@ -62,7 +62,7 @@
   flex-direction: column;
 }
 
-@media screen and (min-width: 500px) {
+@media screen and (min-width: 930px) {
   .record-set-option {
     flex-direction: row;
   }
