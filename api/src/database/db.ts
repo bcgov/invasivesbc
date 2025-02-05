@@ -51,5 +51,6 @@ export const getDBConnection = async function (): Promise<PoolClient> {
     defaultLog.error({ label: 'getDBConnection', message: 'error', error });
     throw error;
   }
+
   return client;
 };
