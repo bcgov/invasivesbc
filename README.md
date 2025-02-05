@@ -1,18 +1,8 @@
 # Invasive Species BC
 
-
-
-
-
-
-
-[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
-[![Dev Build Successful](https://github.com/bcgov/invasivesbc/actions/workflows/deploy.yml/badge.svg)](https://github.com/bcgov/invasivesbc/actions/workflows/deploy.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_invasivesbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_invasivesbc) [![codecov](https://codecov.io/gh/bcgov/invasivesbc/branch/dev/graph/badge.svg)](https://codecov.io/gh/bcgov/invasivesbc)
+[![img](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=bcgov_invasivesbc&metric=alert_status)](https://sonarcloud.io/dashboard?id=bcgov_invasivesbc) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=bcgov_invasivesbc&metric=coverage)](https://sonarcloud.io/summary/new_code?id=bcgov_invasivesbc) [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=bcgov_invasivesbc&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=bcgov_invasivesbc)
 
 ## Introduction
-
-
 
 Invasive species are non-native plants and animals whose introduction and spread in British Columbia cause significant economic, social or environmental damage. This application tracks the observation, treatment, and monitoring of invasive species in the Province of British Columbia.
 
@@ -43,10 +33,10 @@ Anyone with a valid IDIR or BCeID login may access the application to view data 
 
 In addition, the application is intended for use by:
 
-* Surveyors who observe and record the absence, presence, and spread of invasive species
-* Subject matter experts who perform a variety of duties, including to record and analyze data and create action plans
-* Contractors who implement recommended treatments for observed invasive species
-* Administrators who manage the application and its users
+- Surveyors who observe and record the absence, presence, and spread of invasive species
+- Subject matter experts who perform a variety of duties, including to record and analyze data and create action plans
+- Contractors who implement recommended treatments for observed invasive species
+- Administrators who manage the application and its users
 
 ## Features
 
@@ -80,10 +70,11 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
 
     .config/                   - Common application configuration
     .github/                   - Github actions
-    .docker/                   - Common Dockerfiles 
+    .docker/                   - Common Dockerfiles
     .vscode/                   - IDE config for Visual Studio Code
     api/                       - API codebase
-    app/                       - Ionic APP Codebase
+    app/                       - Capacitor APP Codebase
+    sharedapi/                 - Files shared between App and API (enums, RJSF Schemas, etc)
     database/                  - Database Codebase
     env_config/                - ENV config files
     testing/                   - Test scripts, in particular Postman configs
@@ -93,19 +84,17 @@ This application uses PostgreSQL (with PostGIS), Ionic/React (for Web, IOS and A
 
 ## Documentation
 
+For additional Documentation about the InvasivesBC Application, see the [Wiki](https://github.com/bcgov/invasivesbc/wiki)
+
 ## Requirements
 
-We are using Visual Code for our IDE due to the excellent integration of our tolls and utilities.
+- XCode\* (for iOS builds only)
+- Android Studio\* (for Android Builds only)
+- Node >=20.0 or Docker
 
 ### Development
 
-Ionic/React
-
-```
-npm install -g @ionic/cli native-run cordova-res
-```
-
-The ideal multi-platform supporting machine is the Mac, But Windows and Linus work very well for Web and Android as well.
+The ideal multi-platform supporting machine is the Mac, But Windows and Linux work for Web and Android development.
 
 ### Android Development
 
@@ -115,50 +104,51 @@ Install AndroidStudio and the Android SDK.
 
 On MacOS: Install xCode.
 
-
 ## Setup Instructions
 
 Clone the repository to your own machine and follow instructions below.
 
-## Run the app locally (web)
+### Run the app locally (terminal)
 
 In the app directory:
 
-```
-npm install
+1. `npm ci`
+2. `npm start`
 
-ionic serve
-```
+In the `api` directory:
 
-## Run the app on mobile
+1. `npm ci`
+2. `npm run dev`
 
-### Android
+### Run the app locally (docker)
+
+In the root directory
+
+1. `make docker`
+
+### Run the app on mobile
+
+#### Android
 
 On MacOS, Windows or Linux, in the app directory:
 
 1. `npm install`
-2. `ionic build`
-3. `ionic cap add android` (Only the first time, does not need to be repeated after)
-4. `ionic cap copy`
-5. `ionic cap sync`
-6. `npx cap open Android`
+2. `npm run build:android`
+3. `cd ..`
+4. `make run-android`
 
-Android Studio will open and, after a short delay, will allow you to run the application in the simulator.
+Android Studio will open and, after a short delay, will allow you to run the application in the simulator or a connected device.
 
-
-### IOS
+#### IOS
 
 On MacOS, in the app directory:
 
 1. `npm install`
-2. `ionic build`
-3. `ionic cap add android` (Only the first time, does not need to be repeated after)
-4. `ionic cap copy`
-5. `ionic cap sync`
-6. `npx cap open ios`
+2. `npm run build:ios`
+3. `cd ..`
+4. `make run-ios`
 
-xCode will open and, after a short delay, will allow you to run the application in the simulator.
-
+Xcode will open and, after a short delay, will allow you to run the application in the simulator or a connected device.
 
 ## Acknowledgements
 
