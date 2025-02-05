@@ -48,7 +48,7 @@ export const getDBConnection = async function (): Promise<PoolClient> {
 
     await client.query(`SET search_path TO ${client.escapeLiteral(DB_SCHEMA)}, public;`);
   } catch (error) {
-    defaultLog.error({ label: 'GETDBCONNECTION', message: 'error', error });
+    defaultLog.error({ label: 'getDBConnection', message: 'error', error });
     throw error;
   }
   return client;
