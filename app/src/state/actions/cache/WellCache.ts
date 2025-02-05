@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { RootState } from 'state/reducers/rootReducer';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { WellCacheServiceFactory } from 'utils/well-cache/context';
@@ -13,13 +13,15 @@ class WellCache {
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
 
-    async (spec: { bounds: RepositoryBoundingBoxSpec; id: string }, { getState }) => {
+    async (spec: { bounds: RepositoryBoundingBoxSpec; id?: string }, { getState }) => {
+      const id = spec.id ?? nanoid();
       const state: RootState = getState() as RootState;
       const wellService = await WellCacheServiceFactory.getPlatformInstance();
+
       await wellService.download({
         API_BASE: state.Configuration.current.API_BASE,
         bounds: spec.bounds,
-        id: spec.id
+        id: id
       });
     }
   );
