@@ -302,15 +302,19 @@ abstract class RecordCacheService extends BaseCacheService<
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
+        let normalizedProgress = processedCaches / totalRecordsToCache;
+        let progressLabel =
+          normalizedProgress * 100 < 1
+            ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
+            : `${Math.round(normalizedProgress * 100)}% completed`;
+
         if (progressCallback) {
           progressCallback({
             setId: spec.setId,
-            message: !pauseOrAbort
-              ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
-              : `Mode: ${pauseOrAbort.toLocaleString().toUpperCase()} Caching`,
+            message: !pauseOrAbort ? progressLabel : `Mode: ${pauseOrAbort.toLocaleString().toUpperCase()} Caching`,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
-            normalizedProgress: processedCaches / totalRecordsToCache,
+            normalizedProgress: normalizedProgress,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
           });

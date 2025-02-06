@@ -11,9 +11,10 @@ import ProgressControlPanel from './ProgressControlPanel';
 interface PropTypes {
   recordSet: UserRecordSet;
   setId: string;
+  onCacheStateChange: (isProgressBar: boolean) => void;
 }
 
-const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
+const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTypes) => {
   const dispatch = useDispatch();
   const connected = useSelector((state) => state.Network.connected);
   const downloadProgress = useSelector(
@@ -43,6 +44,11 @@ const RecordSetCacheButtons = ({ recordSet, setId }: PropTypes) => {
         break;
     }
   };
+
+  // inform parent when state changes
+  useEffect(() => {
+    onCacheStateChange(activeDownloads);
+  }, [activeDownloads, onCacheStateChange]);
 
   const cancelCacheDownload = () => {
     const callback = (confirmation: boolean) => {

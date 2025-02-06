@@ -21,7 +21,8 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
       sx={{
         border: '1px solid #1976d2',
         borderRadius: '8px',
-        padding: 2
+        padding: '10px',
+        minWidth: '230px'
       }}
       onClick={(e) => e.stopPropagation()}
     >
@@ -41,13 +42,7 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
             {isPaused ? <PlayCircleIcon /> : <PauseCircleIcon />}
           </IconButton>
         </Grid>
-        <Grid
-          item
-          xs={8}
-          sx={{
-            width: '60px'
-          }}
-        >
+        <Grid item xs={8}>
           <LinearProgress variant="determinate" value={downloadProgress.normalizedProgress * 100} />
         </Grid>
         <Grid item xs={2}>
@@ -67,11 +62,7 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
         </Grid>
       </Grid>
       <Grid>
-        <Typography variant="caption">
-          {downloadProgress.normalizedProgress * 100 < 1
-            ? downloadProgress.message
-            : `${Math.round(downloadProgress.normalizedProgress * 100)}% completed`}
-        </Typography>
+        <Typography variant="caption">{downloadProgress.message}</Typography>
       </Grid>
     </Box>
   );
