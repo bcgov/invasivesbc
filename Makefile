@@ -92,15 +92,21 @@ api: ## Executes into the workspace container.
 
 build-ios: ## Builds the app for mobile
 	@echo "==============================================="
-	@echo "Make: build-mobile - building app for mobile"
+	@echo "Make: build-ios - building app for ios"
 	@echo "==============================================="
 	@cd app && npm install && npm run build:ios && cd ..
 
 run-ios: ## Runs the app for mobile
 	@echo "==============================================="
-	@echo "Make: run-mobile - running app for mobile"
+	@echo "Make: run-ios - running app for ios"
 	@echo "==============================================="
 	@cd app && npx cap sync ios && npx cap open ios && cd ..
+
+run-android: ## Runs the app for mobile
+	@echo "==============================================="
+	@echo "Make: run-android - running app for android"
+	@echo "==============================================="
+	@cd app && npx cap sync android && npx cap open android && cd ..
 
 log: ## Prints the logs of the local development containers
 	@echo "==============================================="

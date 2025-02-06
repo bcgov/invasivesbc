@@ -1,14 +1,13 @@
 import { TextField, Tooltip } from '@mui/material';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from 'react';
 import CustomAutoComplete from '../../CustomAutoComplete';
 import HerbicidesAccordion from '../accordions/HerbicidesAccordion';
 import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsContext';
-//import { useFormStyles } from '../../formStyles';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import isNumber from 'is-number';
 import { RENDER_DEBUG } from 'UI/App';
 
-const TankMix: React.FC = (props) => {
+const TankMix: FC = () => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) {
@@ -17,12 +16,11 @@ const TankMix: React.FC = (props) => {
   const form_dataContext = useContext(ChemicalTreatmentDetailsContext);
   const { formDetails, setFormDetails } = form_dataContext;
 
-  //const classes = useFormStyles();
-  const businessCodes = formDetails.businessCodes;
+  const [currentTankMix, setCurrentTankMix] = useState<Record<PropertyKey, any>>(formDetails.form_data.tank_mix_object);
+  const [amountOfMixUsedKey, setAmountOfMixUsedKey] = useState<string>();
+  const [deliveryRateOfMixKey, setDeliveryRateOfMixKey] = useState<string>();
 
-  const [currentTankMix, setCurrentTankMix] = useState(formDetails.form_data.tank_mix_object);
-  const [amountOfMixUsedKey, setAmountOfMixUsedKey] = useState(undefined);
-  const [deliveryRateOfMixKey, setDeliveryRateOfMixKey] = useState(undefined);
+  const businessCodes = formDetails.businessCodes;
 
   //when tank mix object changes, update it in context
   useEffect(() => {
@@ -40,10 +38,8 @@ const TankMix: React.FC = (props) => {
     }));
   }, [currentTankMix]);
 
-  const [calculationTypeChoices, setCalculationTypeChoices] = useState<any[]>(
-    businessCodes['calculation_type_code'].filter((herb) => {
-      return herb.value === 'PAR';
-    })
+  const [calculationTypeChoices] = useState<Record<PropertyKey, any>[]>(
+    businessCodes?.calculation_type_code.filter((herb) => herb.value === 'PAR')
   );
 
   return (
@@ -59,19 +55,16 @@ const TankMix: React.FC = (props) => {
         disabled={formDetails.disabled}
         choices={calculationTypeChoices}
         className={'inputField'}
-        //classes={classes}
         id={'calculation_type'}
         key={'calculation_type'}
         label={'Calculation Type'}
         actualValue={formDetails.form_data?.tank_mix_object?.calculation_type}
         parentState={{ currentTankMix, setCurrentTankMix }}
-        onChange={(event, value) => {
+        onChange={(_: ChangeEvent, value: Record<PropertyKey, any>) => {
           if (value === null) {
             return;
           }
-          setCurrentTankMix((prevTankMix) => {
-            return { ...prevTankMix, calculation_type: (value as any).value };
-          });
+          setCurrentTankMix((prevTankMix) => ({ ...prevTankMix, calculation_type: value.value }));
         }}
       />
 
@@ -88,10 +81,9 @@ const TankMix: React.FC = (props) => {
           </Tooltip>
           <TextField
             disabled={formDetails.disabled}
-            ///  className={classes.inputField}
             type="text"
             label="Amount of Mix Used (L)"
-            value={currentTankMix?.amount_of_mix}
+            value={currentTankMix?.amount_of_mix ?? ''}
             variant="outlined"
             key={amountOfMixUsedKey}
             onChange={(event) => {
@@ -125,16 +117,15 @@ const TankMix: React.FC = (props) => {
           </Tooltip>
           <TextField
             disabled={formDetails.disabled}
-            //        className={classes.inputField}
             type="text"
             label="Delivery Rate of Mix (L/ha)"
-            value={currentTankMix?.delivery_rate_of_mix || ''}
+            value={currentTankMix?.delivery_rate_of_mix ?? ''}
             variant="outlined"
             key={deliveryRateOfMixKey}
             onChange={(event) => {
               const input = event.target.value;
               if (input === '') {
-                setCurrentTankMix((prevFields) => ({
+                setCurrentTankMix((prevFields: Record<PropertyKey, any>) => ({
                   ...prevFields,
                   delivery_rate_of_mix: Number(input)
                 }));

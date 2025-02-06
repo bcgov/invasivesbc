@@ -13,7 +13,7 @@ import {
   Tooltip,
   Typography
 } from '@mui/material';
-import React, { useEffect, useRef, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import CustomAutoComplete from './CustomAutoComplete';
 import {
@@ -23,44 +23,43 @@ import {
 import HerbicidesAccordion from './Components/accordions/HerbicidesAccordion';
 import TankMixAccordion from './Components/accordions/TankMixAccordion';
 import InvasivePlantsAccordion from './Components/accordions/InvasivePlantsAccordion';
-import { runValidation } from 'sharedAPI';
-import { performCalculation } from 'sharedAPI';
+import { performCalculation, runValidation } from 'sharedAPI';
 import { GeneralDialog, IGeneralDialog } from 'UI/Overlay/GeneralDialog';
 import CalculationResultsTable from './Components/single-objects/CalculationResultsTable';
-import { RENDER_DEBUG } from 'UI/App';
 import { useSelector } from 'react-redux';
 
-const ChemicalTreatmentDetailsForm = (props) => {
-  const ref = useRef(0);
-  ref.current += 1;
-  if (RENDER_DEBUG) {
-    console.log('%cChemTreatmentDetailsForm:' + ref.current.toString(), 'color: yellow');
-  }
+type PropTypes = {
+  activitySubType: Record<PropertyKey, any>;
+  disabled: boolean;
+  form_data: Record<PropertyKey, any>;
+  onChange: (form_data: Record<PropertyKey, any>, callback: Function | null) => void;
+};
 
+const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, onChange }: PropTypes) => {
   const [warningDialog, setWarningDialog] = useState<IGeneralDialog>({
     dialogActions: [],
     dialogOpen: false,
     dialogTitle: '',
     dialogContentText: undefined
   });
-  const [calculationResults, setCalculationResults] = useState(null);
-  const [localErrors, setLocalErrors] = useState([]);
+  const [calculationResults, setCalculationResults] = useState<Record<PropertyKey, any> | null>();
+  const [localErrors, setLocalErrors] = useState<any[]>([]);
   const [reportedArea, setReportedArea] = useState(0);
-  const [formDetails, setFormDetails] = React.useState<IChemicalDetailsContextformDetails>({
-    form_data: { ...props.form_data.activity_subtype_data.chemical_treatment_details }
+  const [formDetails, setFormDetails] = useState<IChemicalDetailsContextformDetails>({
+    form_data: { ...form_data.activity_subtype_data.chemical_treatment_details }
   });
-  const [tankMixOn, setTankMixOn] = useState(formDetails.form_data.tank_mix);
+  const [tankMixOn, setTankMixOn] = useState<boolean>(formDetails.form_data.tank_mix);
   const [chemicalApplicationMethod, setChemicalApplicationMethod] = useState(
     formDetails.form_data.chemical_application_method
   );
 
   /**
    * @desc Grabs codes from the apiSpec tailored to ChemicalTreatmentDetails sections
-   * @returns {Record<string, any>[]}
+   * @returns {Record<PropertyKey, any>[]}
    */
-  const createCodes = () => {
+  const createCodes = (): Record<PropertyKey, any[]> => {
     const sharedcodes = apiDocsWithViewOptions;
-    const newCodes: Record<string, any> = {};
+    const newCodes: Record<PropertyKey, any> = {};
     for (let key of Object.keys(sharedcodes)) {
       newCodes[key] = sharedcodes[key].options.map(({ value, label }) => ({
         value,
@@ -72,10 +71,10 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   /**
    * @desc Creates an object containing all codesets used by the component
-   * @returns {Record<string, any>}
+   * @returns {Record<PropertyKey, any>}
    */
-  const createDictionary = (): Record<string, any> => {
-    const herbicideDictionary: Record<string, any> = {};
+  const createDictionary = (): Record<PropertyKey, any> => {
+    const herbicideDictionary: Record<PropertyKey, any> = {};
     [...codes.liquid_herbicide_code, ...codes.granular_herbicide_code].forEach(
       (item) => (herbicideDictionary[item.value] = item.label)
     );
@@ -95,34 +94,34 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   const subtypeSchema = 'ChemicalTreatment_Species_Codes';
   const apiDocsWithViewOptions = useSelector(
-    (state: Record<string, any>) =>
+    (state: Record<PropertyKey, any>) =>
       state.UserSettings.apiDocsWithViewOptions.components?.schemas[subtypeSchema].properties
   );
-  const codes: Record<string, any> = createCodes();
-  const codeDictionary: Record<string, any[]> = createDictionary();
+  const codes: Record<PropertyKey, any> = createCodes();
+  const codeDictionary: Record<PropertyKey, any[]> = createDictionary();
 
   // After initial load, setFormDetails to contain all needed keys
   useEffect(() => {
     setFormDetails({
-      form_data: { ...props.form_data.activity_subtype_data.chemical_treatment_details },
+      form_data: { ...form_data.activity_subtype_data.chemical_treatment_details },
       businessCodes: codes,
       herbicideDictionary: codes?.herbicideDictionary,
-      activitySubType: props.activitySubType,
-      disabled: props.disabled,
+      activitySubType: activitySubType,
+      disabled: disabled,
       errors: []
     });
   }, []);
 
   useEffect(() => {
-    setReportedArea(props.form_data.activity_data.reported_area);
-  }, [props.form_data]);
+    setReportedArea(form_data.activity_data.reported_area);
+  }, [form_data]);
 
   useEffect(() => {
-    props.onChange(
+    onChange(
       {
-        ...props.form_data,
+        ...form_data,
         activity_subtype_data: {
-          ...props.form_data.activity_subtype_data,
+          ...form_data.activity_subtype_data,
           chemical_treatment_details: { ...formDetails.form_data }
         }
       },
@@ -134,7 +133,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
           formDetails.form_data,
           lerrors,
           codes,
-          codeDictionary!?.herbicideDictionary,
+          codeDictionary?.herbicideDictionary,
           formDetails.form_data.skipAppRateValidation
         );
         setLocalErrors([...newErr]);
@@ -142,23 +141,27 @@ const ChemicalTreatmentDetailsForm = (props) => {
         //if no errors, perform calculations
         if (newErr.length < 1) {
           const results = performCalculation(reportedArea, formDetails.form_data, codes);
-          setCalculationResults(results as any);
-          props.onChange(
+          setCalculationResults(results);
+          onChange(
             {
-              ...props.form_data,
+              ...form_data,
               activity_subtype_data: {
-                ...props.form_data.activity_subtype_data,
-                chemical_treatment_details: { ...formDetails.form_data, calculation_results: results, errors: false }
+                ...form_data.activity_subtype_data,
+                chemical_treatment_details: {
+                  ...formDetails.form_data,
+                  calculation_results: results,
+                  errors: Object.keys(results).length === 0
+                }
               }
             },
             null
           );
         } else {
-          props.onChange(
+          onChange(
             {
-              ...props.form_data,
+              ...form_data,
               activity_subtype_data: {
-                ...props.form_data.activity_subtype_data,
+                ...form_data.activity_subtype_data,
                 chemical_treatment_details: {
                   ...formDetails.form_data,
                   errors: true,
@@ -176,7 +179,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
 
   //when we get application rate error, display warning dialog and if user presses yes, delete this error
   useEffect(() => {
-    localErrors.forEach((err, index) => {
+    localErrors.forEach((err) => {
       if (err.includes('exceeds maximum applicable rate of')) {
         setWarningDialog({
           dialogOpen: true,
@@ -185,18 +188,13 @@ const ChemicalTreatmentDetailsForm = (props) => {
           dialogActions: [
             {
               actionName: 'No',
-              actionOnClick: async () => {
-                setWarningDialog({ ...warningDialog, dialogOpen: false });
-              }
+              actionOnClick: () => setWarningDialog({ ...warningDialog, dialogOpen: false })
             },
             {
               actionName: 'Yes',
-              actionOnClick: async () => {
+              actionOnClick: () => {
                 setWarningDialog({ ...warningDialog, dialogOpen: false });
-
-                setFormDetails((prev) => {
-                  return { ...prev, form_data: { ...prev.form_data, skipAppRateValidation: true } };
-                });
+                setFormDetails((prev) => ({ ...prev, form_data: { ...prev.form_data, skipAppRateValidation: true } }));
               },
               autoFocus: true
             }
@@ -225,17 +223,17 @@ const ChemicalTreatmentDetailsForm = (props) => {
     }));
   }, [tankMixOn, chemicalApplicationMethod]);
 
-  if (!formDetails.activitySubType) {
+  if (!formDetails.activitySubType || !formDetails?.form_data) {
     return <CircularProgress />;
   }
   return (
     <ChemicalTreatmentDetailsContextProvider value={{ formDetails, setFormDetails }}>
       <Typography variant="h5">Chemical Treatment Details</Typography>
       <Divider />
-      <FormControl>
+      <FormControl sx={{ width: '100%' }}>
         <InvasivePlantsAccordion />
         <Box>
-          <Box>
+          <Box sx={{ width: '100%', maxWidth: '350px' }}>
             <Tooltip
               classes={{ tooltip: 'toolTip' }}
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
@@ -244,24 +242,21 @@ const ChemicalTreatmentDetailsForm = (props) => {
             >
               <HelpOutlineIcon />
             </Tooltip>
-            <FormLabel style={{ marginTop: '25px' }} component="legend">
+            <FormLabel style={{ marginTop: '25px', textAlign: 'left' }} component="legend">
               Tank Mix
             </FormLabel>
 
             <RadioGroup
-              onChange={() => {
-                setTankMixOn((prevState) => !prevState);
-              }}
+              onChange={() => setTankMixOn((prevState) => !prevState)}
               value={tankMixOn}
               aria-label="tank_mix"
-              //className={classes.tankMixRadioGroup}
               name="tank_mix"
             >
-              <FormControlLabel value={true} control={<Radio disabled={props.disabled} />} label="On" />
-              <FormControlLabel value={false} control={<Radio disabled={props.disabled} />} label="Off" />
+              <FormControlLabel value={true} control={<Radio disabled={disabled} />} label="On" />
+              <FormControlLabel value={false} control={<Radio disabled={disabled} />} label="Off" />
             </RadioGroup>
           </Box>
-          <Box>
+          <Box sx={{ width: '100%', maxWidth: '350px' }}>
             <Tooltip
               classes={{ tooltip: 'toolTip' }}
               style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
@@ -274,13 +269,13 @@ const ChemicalTreatmentDetailsForm = (props) => {
             <CustomAutoComplete
               choices={codeDictionary.chemicalApplicationMethodChoices}
               className={null}
-              disabled={props.disabled}
+              disabled={disabled}
               actualValue={chemicalApplicationMethod}
               key={'chemical-application-method'}
               id={'chemical-application-method'}
               label={'Chemical Application Method'}
               parentState={{ chemicalApplicationMethod, setChemicalApplicationMethod }}
-              onChange={(event, value) => {
+              onChange={(_: ChangeEvent, value) => {
                 if (value === null) {
                   return;
                 }
@@ -319,7 +314,7 @@ const ChemicalTreatmentDetailsForm = (props) => {
           </Typography>
           <List dense={true}>
             {localErrors.map((err, index) => (
-              <ListItem key={index}>
+              <ListItem key={err}>
                 <ListItemText
                   style={{ color: '#ff000' }}
                   primary={

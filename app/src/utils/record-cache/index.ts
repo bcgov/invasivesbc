@@ -77,6 +77,8 @@ abstract class RecordCacheService extends BaseCacheService<
   RecordCacheProgressCallbackParameters,
   UserRecordCacheStatus
 > {
+  private readonly CONCURRENCY_LIMIT = 4;
+
   protected constructor() {
     super();
   }
@@ -172,7 +174,6 @@ abstract class RecordCacheService extends BaseCacheService<
     } else if (downloadMode == CacheDownloadMode.ABORT) {
       this.deleteRepository(spec.setId);
     }
-
     return downloadMode;
   }
 
@@ -184,44 +185,53 @@ abstract class RecordCacheService extends BaseCacheService<
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<CacheDownloadMode> {
+    // IAPP Records use O(n*2) Requests compared to activities.
+    const IAPP_CONCURRENCY_LIMIT = Math.ceil(this.CONCURRENCY_LIMIT / 2);
+    const executing: Set<Promise<void>> = new Set();
+
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     let processedCaches = spec.processedActivities;
 
     let lastProgressCallback: null | number = null;
     let totalRecordsToCache = spec.idsToCache.length;
     let startIdx = spec.pausedActivityIdx == -1 ? 0 : spec.pausedActivityIdx;
-    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
-      const authorization = await getCurrentJWT();
-      const [iappRecord, tableRow] = await Promise.all([
-        fetch(
-          `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${spec.idsToCache[i]}","isIAPP":true,"site_id_only":false}`,
-          { headers: { authorization } }
-        ).then(async (data) => await data.json()),
-        fetch(`${spec.API_BASE}/api/v2/IAPP/`, {
-          method: 'POST',
-          headers: { authorization, 'Content-type': 'application/json' },
-          body: JSON.stringify({
-            filterObjects: [
-              {
-                limit: 1,
-                recordSetType: RecordSetType.IAPP,
-                selectColumns: getSelectColumnsByRecordSetType(RecordSetType.IAPP),
-                tableFilters: [
-                  {
-                    field: 'site_id',
-                    filter: spec.idsToCache[i],
-                    filterType: 'tableFilter',
-                    operator: 'CONTAINS',
-                    operator2: 'AND'
-                  }
-                ]
-              }
-            ]
-          })
-        }).then(async (data) => await data.json())
-      ]);
-      await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
 
+    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
+      if (executing.size >= IAPP_CONCURRENCY_LIMIT) {
+        await Promise.race(executing);
+      }
+      this.processNext(executing, async () => {
+        const authorization = await getCurrentJWT();
+        const [iappRecord, tableRow] = await Promise.all([
+          fetch(
+            `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${spec.idsToCache[i]}","isIAPP":true,"site_id_only":false}`,
+            { headers: { authorization } }
+          ).then(async (data) => await data.json()),
+          fetch(`${spec.API_BASE}/api/v2/IAPP/`, {
+            method: 'POST',
+            headers: { authorization, 'Content-type': 'application/json' },
+            body: JSON.stringify({
+              filterObjects: [
+                {
+                  limit: 1,
+                  recordSetType: RecordSetType.IAPP,
+                  selectColumns: getSelectColumnsByRecordSetType(RecordSetType.IAPP),
+                  tableFilters: [
+                    {
+                      field: 'site_id',
+                      filter: spec.idsToCache[i],
+                      filterType: 'tableFilter',
+                      operator: 'CONTAINS',
+                      operator2: 'AND'
+                    }
+                  ]
+                }
+              ]
+            })
+          }).then(async (data) => await data.json())
+        ]);
+        await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
+      });
       processedCaches++;
       const currentProgress = processedCaches / totalRecordsToCache;
 
@@ -248,6 +258,7 @@ abstract class RecordCacheService extends BaseCacheService<
         }
       }
     }
+    await Promise.all(executing);
     return pauseOrAbort;
   }
 
@@ -265,14 +276,21 @@ abstract class RecordCacheService extends BaseCacheService<
     let lastProgressCallback: null | number = null;
     let totalRecordsToCache = spec.idsToCache.length;
     let startIdx = spec.pausedActivityIdx == -1 ? 0 : spec.pausedActivityIdx;
-    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
-      const rez = await fetch(`${spec.API_BASE}/api/activity/${spec.idsToCache[i]}`, {
-        headers: {
-          Authorization: await getCurrentJWT()
-        }
-      });
-      await this.saveActivity(spec.idsToCache[i], await rez.json());
+    const executing: Set<Promise<void>> = new Set();
 
+    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
+      if (executing.size >= this.CONCURRENCY_LIMIT) {
+        await Promise.race(executing);
+      }
+
+      this.processNext(executing, async () => {
+        const rez = await fetch(`${spec.API_BASE}/api/activity/${spec.idsToCache[i]}`, {
+          headers: {
+            Authorization: await getCurrentJWT()
+          }
+        });
+        await this.saveActivity(spec.idsToCache[i], await rez.json());
+      });
       processedCaches++;
       const currentProgress = processedCaches / totalRecordsToCache;
 
@@ -299,7 +317,7 @@ abstract class RecordCacheService extends BaseCacheService<
         }
       }
     }
-
+    await Promise.all(executing);
     return pauseOrAbort;
   }
 
