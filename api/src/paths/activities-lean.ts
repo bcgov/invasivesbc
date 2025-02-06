@@ -9,6 +9,7 @@ import { getActivitiesSQL, deleteActivitiesSQL } from 'queries/activity-queries'
 import { getLogger } from 'utils/logger';
 import { getS3SignedURL } from 'utils/file-utils';
 import { InvasivesRequest } from 'utils/auth-utils';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity');
 
@@ -169,18 +170,10 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
     }
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'activities-lean',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       if (sanitizedSearchCriteria.s3SignedUrlRequest) {
         const signedURL = await getS3SignedURL('activities_private_geojson.json');
         return res.status(200).json({ signedURL: signedURL });
@@ -229,7 +222,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
@@ -251,17 +244,10 @@ function deleteActivitiesByIds(): RequestHandler {
         .json({ message: 'No ids provided', request: req.body, namespace: 'activities-lean', code: 400 });
     }
 
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'activities-lean',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = deleteActivitiesSQL(ids);
 
       if (!sqlStatement) {
@@ -293,7 +279,7 @@ function deleteActivitiesByIds(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

@@ -5,6 +5,7 @@ import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getAllRolesSQL } from 'queries/role-queries';
 import { getLogger } from 'utils/logger';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('roles');
 
@@ -53,16 +54,10 @@ GET.apiDoc = {
 //
 function getRoles(): RequestHandler {
   return async (req, res, next) => {
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        error: 'Database connection unavailable.',
-        request: req.body,
-        namespace: 'roles',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
+
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = getAllRolesSQL();
       if (!sqlStatement) {
         return res.status(500).json({
@@ -91,7 +86,7 @@ function getRoles(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

@@ -10,6 +10,7 @@ import { getPointsOfInterestSQL, getSpeciesMapSQL } from 'queries/point-of-inter
 import { getLogger } from 'utils/logger';
 import { versionedKey } from 'utils/cache/cache-utils';
 import { InvasivesRequest } from 'utils/auth-utils';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -155,18 +156,10 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
       res.status(200);
       await streamIAPPResult(sanitizedSearchCriteria, res);
     } else {
-      const connection = await getDBConnection();
-
-      if (!connection) {
-        return res.status(503).json({
-          message: 'Database connection unavailable.',
-          request: criteria,
-          namespace: 'points-of-interest',
-          code: 503
-        });
-      }
+      let connection: PoolClient | undefined;
 
       try {
+        connection = await getDBConnection();
         const sqlStatement: SQLStatement = getPointsOfInterestSQL(sanitizedSearchCriteria);
 
         if (!sqlStatement) {
@@ -207,7 +200,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
           code: 500
         });
       } finally {
-        connection.release();
+        connection?.release();
       }
     }
   };

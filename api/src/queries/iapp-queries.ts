@@ -2,6 +2,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
 import { getDBConnection } from 'database/db';
 import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
 import { getLogger } from 'utils/logger';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('point-of-interest');
 /**
@@ -413,17 +414,10 @@ export const iapp_extract_sql = (site_id: number[], extractName: string): SQLSta
 };
 
 export const getIappExtractFromDB = async (site_ids: number[], extractName: string) => {
-  const connection = await getDBConnection();
-
-  if (!connection) {
-    throw {
-      code: 503,
-      message: 'Failed to establish database connection',
-      namespace: 'iapp-queries'
-    };
-  }
+  let connection: PoolClient | undefined;
 
   try {
+    connection = await getDBConnection();
     const sqlStatement: SQLStatement = iapp_extract_sql(site_ids, extractName);
 
     if (!sqlStatement) {
@@ -441,6 +435,6 @@ export const getIappExtractFromDB = async (site_ids: number[], extractName: stri
     defaultLog.debug(e);
     throw 'Unable to get iapp extract ' + extractName + ' for sites ' + site_ids;
   } finally {
-    connection.release();
+    connection?.release();
   }
 };

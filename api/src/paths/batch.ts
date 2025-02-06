@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
+import { PoolClient, QueryResult } from 'pg';
 import csvParser from 'csv-parser';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
@@ -84,18 +84,10 @@ const defaultLog = getLogger('batch');
 
 function listBatches(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'batch',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const response: QueryResult = await connection.query(
         `select id, status, template, created_at, created_by
          from batch_uploads
@@ -120,20 +112,20 @@ function listBatches(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
 
 function createBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const connection = await getDBConnection();
-
-    const data = { ...req.body };
-    const decoded = atob(data['csvData']);
-    const template = data['template'];
-
-    if (!connection) {
+    let connection: PoolClient | undefined;
+    try {
+      connection = await getDBConnection();
+    } catch (error) {
+      if (connection) {
+        connection.release();
+      }
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
@@ -141,6 +133,10 @@ function createBatch(): RequestHandler {
         code: 503
       });
     }
+
+    const data = { ...req.body };
+    const decoded = atob(data['csvData']);
+    const template = data['template'];
 
     const parser = csvParser({
       mapHeaders: ({ header }) => header.trim()
@@ -199,7 +195,7 @@ function createBatch(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
     return res.status(201).json({
       message: 'Upload successful',

@@ -1,7 +1,7 @@
 import { Readable } from 'stream';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { QueryResult } from 'pg';
+import { PoolClient, QueryResult } from 'pg';
 import csvParser from 'csv-parser';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
@@ -85,19 +85,12 @@ const defaultLog = getLogger('batch');
 
 function getBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const connection = await getDBConnection();
     const id = req.params.id;
 
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'batch',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const response: QueryResult = await connection.query(
         `select id,
                 status,
@@ -177,26 +170,30 @@ function getBatch(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
 
 function updateBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const connection = await getDBConnection();
-
     const data = { ...req.body };
     const id = req.params.id;
 
     const decoded = atob(data['csvData']);
-
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
+    let connection: PoolClient | undefined;
+    try {
+      connection = await getDBConnection();
+    } catch (error) {
+      if (connection) {
+        connection.release();
+      }
+      return res.status(500).json({
+        message: 'Error updating batch upload',
         request: req.body,
+        error: error,
         namespace: 'batch',
-        code: 503
+        code: 500
       });
     }
 
@@ -332,20 +329,11 @@ DELETE.apiDoc = {
 
 function deleteBatch(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
-    const connection = await getDBConnection();
-
+    let connection: PoolClient | undefined;
     const id = req.params.id;
 
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'batch',
-        code: 503
-      });
-    }
-
     try {
+      connection = await getDBConnection();
       const rereadResponse: QueryResult = await connection.query(
         `delete from batch_uploads
          where status = 'NEW' and id = $1 and created_by = $2`,
@@ -377,7 +365,7 @@ function deleteBatch(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

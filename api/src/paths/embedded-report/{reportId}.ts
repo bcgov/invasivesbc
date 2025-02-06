@@ -5,6 +5,7 @@ import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
 import { getDBConnection } from 'database/db';
 import { getEmbeddedReport } from 'queries/embedded-report-queries';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('metabase-query');
 
@@ -66,18 +67,10 @@ GET.apiDoc = {
 function getMetabaseEmbeddedReport(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: '{reportId}', message: 'getMetabaseEmbeddedReport', body: req.params });
-
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        error: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'embedded-report',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const reportId: number = ~~req?.params?.reportId;
 
       if (!reportId) {
@@ -125,7 +118,7 @@ function getMetabaseEmbeddedReport(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

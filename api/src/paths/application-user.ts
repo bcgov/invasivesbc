@@ -10,6 +10,7 @@ import {
 } from 'queries/user-queries';
 import { getLogger } from 'utils/logger';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity/{activityId}');
 
@@ -81,7 +82,7 @@ function getHandler() {
  * @return {RequestHandler}
  */
 async function getUsers(req, res, next) {
-  const connection = await getDBConnection();
+  let connection: PoolClient | undefined;
   const userIsAdmin = isAdminFromAuthContext(req);
   const isAppUser = req?.authContext?.roles.length > 0;
 
@@ -94,15 +95,9 @@ async function getUsers(req, res, next) {
     });
   }
 
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Failed to establish database connection',
-      request: req.query,
-      namespace: 'application-user',
-      code: 503
-    });
-  }
   try {
+    connection = await getDBConnection();
+
     const sqlStatement: SQLStatement = userIsAdmin ? getUsersSQL() : getSanitizedUsersForAutofillSQL();
     if (!sqlStatement) {
       return res
@@ -120,26 +115,24 @@ async function getUsers(req, res, next) {
     });
   } catch (error) {
     defaultLog.debug({ label: 'getUsers', message: 'error', error });
-    return res
-      .status(500)
-      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
+    return res.status(500).json({
+      message: 'Failed to fetch users',
+      error,
+      request: req.query,
+      namespace: 'application-user',
+      code: 500
+    });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
 async function getUserByBCEID(req, res, next, bceid) {
   defaultLog.debug({ label: '{bceid}', message: 'getUserByBCEID', body: req.query });
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Failed to establish database connection',
-      request: req.query,
-      namespace: 'application-user',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
+
   try {
+    connection = await getDBConnection();
     const sqlStatement: SQLStatement = getUserByBCEIDSQL(bceid);
     if (!sqlStatement) {
       return res.status(500).json({
@@ -164,22 +157,17 @@ async function getUserByBCEID(req, res, next, bceid) {
       .status(500)
       .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }
 
 async function getUserByIDIR(req, res, next, idir) {
   defaultLog.debug({ label: '{bceid}', message: 'getUserByIDIR', body: req.query });
-  const connection = await getDBConnection();
-  if (!connection) {
-    return res.status(503).json({
-      message: 'Failed to establish database connection',
-      request: req.query,
-      namespace: 'application-user',
-      code: 503
-    });
-  }
+  let connection: PoolClient | undefined;
+
   try {
+    connection = await getDBConnection();
+
     const sqlStatement: SQLStatement = getUserByIDIRSQL(idir);
     if (!sqlStatement) {
       return res.status(500).json({
@@ -200,10 +188,14 @@ async function getUserByIDIR(req, res, next, idir) {
     });
   } catch (error) {
     defaultLog.debug({ label: 'getUserByIDIR', message: 'error', error });
-    return res
-      .status(500)
-      .json({ message: 'Failed to fetch users', error, request: req.query, namespace: 'application-user', code: 500 });
+    return res.status(500).json({
+      message: 'Failed to fetch users',
+      error,
+      request: req.query,
+      namespace: 'application-user',
+      code: 500
+    });
   } finally {
-    connection.release();
+    connection?.release();
   }
 }

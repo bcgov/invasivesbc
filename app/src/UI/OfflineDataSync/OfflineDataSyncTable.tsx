@@ -70,7 +70,7 @@ export const OfflineDataSyncTable = () => {
                           dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: false } });
                         }}
                       >
-                        <FileOpen></FileOpen>
+                        <FileOpen />
                       </IconButton>
                     </td>
                     <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
@@ -97,7 +97,11 @@ export const OfflineDataSyncTable = () => {
                           : 'Error'}
                       </td>
                       <td colSpan={3}>
-                        <pre>{JSON.stringify((value as OfflineActivityRecord).error_object, null, 2)}</pre>
+                        <pre>
+                          {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
+                            ? JSON.stringify((value as OfflineActivityRecord).error_object.message)
+                            : JSON.stringify((value as OfflineActivityRecord).error_object)}
+                        </pre>
                       </td>
                     </tr>
                   )}

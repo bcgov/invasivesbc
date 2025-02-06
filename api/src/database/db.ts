@@ -41,16 +41,12 @@ try {
  * @returns {Promise<PoolClient>}
  */
 export const getDBConnection = async function (): Promise<PoolClient> {
-  let client: PoolClient = null;
-
   try {
-    client = await pool.connect();
-
+    const client = await pool.connect();
     await client.query(`SET search_path TO ${client.escapeLiteral(DB_SCHEMA)}, public;`);
+    return client;
   } catch (error) {
     defaultLog.error({ label: 'getDBConnection', message: 'error', error });
     throw error;
   }
-
-  return client;
 };

@@ -4,6 +4,7 @@ import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { fetchCodeTablesSQL } from 'queries/code-queries';
+import { PoolClient } from 'pg';
 
 export const GET: Operation = [getCodeTableValues()];
 
@@ -28,18 +29,11 @@ GET.apiDoc = {
 
 function getCodeTableValues(): RequestHandler {
   return async (req, res) => {
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable.',
-        request: req.body,
-        namespace: 'code_tables/{codeHeaderName}',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     const codeHeaderName = req.params.codeHeaderName;
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = fetchCodeTablesSQL(codeHeaderName);
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
       if (!req.headers.accept || req.headers.accept === 'application/json' || req.headers.accept === '*/*') {
@@ -81,7 +75,7 @@ function getCodeTableValues(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

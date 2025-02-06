@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
-import { QueryResult } from 'pg';
+import { PoolClient, QueryResult } from 'pg';
 import { FeatureCollection } from 'geojson';
 import {
   deleteAdministrativelyDefinedShapesSQL,
@@ -142,18 +142,10 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     const user_id = req.authContext.user.user_id;
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(503).json({
-        error: 'Failed to establish database connection',
-        request: req.body,
-        namespace: 'admin-defined-shapes',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = getAdministrativelyDefinedShapesSQL(user_id);
 
       if (!sqlStatement) {
@@ -251,7 +243,7 @@ function getAdministrativelyDefinedShapes(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
@@ -363,18 +355,10 @@ function deleteShape(): RequestHandler {
     const user_id = req.authContext.user.user_id;
     const server_id = req.body.server_id;
 
-    const connection = await getDBConnection();
-
-    if (!connection) {
-      return res.status(500).json({
-        message: 'Failed to establish database connection',
-        request: req.body,
-        namespace: 'admin-defined-shapes',
-        code: 500
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = deleteAdministrativelyDefinedShapesSQL(user_id, server_id);
       if (!sqlStatement) {
         return res.status(500).json({
@@ -405,7 +389,7 @@ function deleteShape(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }

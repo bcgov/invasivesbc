@@ -4,6 +4,7 @@ import booleanOverlap from '@turf/boolean-overlap';
 import booleanWithin from '@turf/boolean-within';
 import { getDBConnection } from 'database/db';
 import { getLogger } from 'utils/logger';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('batch');
 
@@ -57,12 +58,9 @@ export const parseGeoJSONasWKT = (input: any) => {
  * @return Record with 'activity_payload' removed to reduce size
  */
 export const getRecordFromShort = async (shortId: string): Promise<Record<string, any>> => {
-  const connection = await getDBConnection();
-  if (!connection) {
-    throw new Error('Could not get a DB Connection');
-  }
-
+  let connection: PoolClient | undefined;
   try {
+    connection = await getDBConnection();
     const res = await connection.query({
       text: `
         SELECT *,
@@ -84,7 +82,7 @@ export const getRecordFromShort = async (shortId: string): Promise<Record<string
       error: e
     });
   } finally {
-    connection.release();
+    connection?.release();
   }
 };
 /**
@@ -93,12 +91,10 @@ export const getRecordFromShort = async (shortId: string): Promise<Record<string
  * @returns UUID - Longform ID of record (activity_id)
  */
 export const getLongIDFromShort = async (shortId: string): Promise<string> => {
-  const connection = await getDBConnection();
-  if (!connection) {
-    throw new Error('Could not get a DB Connection');
-  }
+  let connection: PoolClient | undefined;
 
   try {
+    connection = await getDBConnection();
     const res = await connection.query({
       text: `
         SELECT activity_id
@@ -117,7 +113,7 @@ export const getLongIDFromShort = async (shortId: string): Promise<string> => {
     });
     throw new Error('Error validating geometry in the database' + e.message);
   } finally {
-    connection.release();
+    connection?.release();
   }
 };
 
@@ -127,12 +123,10 @@ export const getLongIDFromShort = async (shortId: string): Promise<string> => {
  * @returns UUID - Longform ID of record (activity_id)
  */
 export const getRecordTypeFromShort = async (shortId: string): Promise<string> => {
-  const connection = await getDBConnection();
-  if (!connection) {
-    throw new Error('Could not get a DB Connection');
-  }
+  let connection: PoolClient | undefined;
 
   try {
+    connection = await getDBConnection();
     const res = await connection.query({
       text: `
         SELECT activity_id
@@ -151,17 +145,15 @@ export const getRecordTypeFromShort = async (shortId: string): Promise<string> =
     });
     throw new Error('Error validating geometry in the database' + e.message);
   } finally {
-    connection.release();
+    connection?.release();
   }
 };
 
 export const getGeometryAsGeoJSONFromShort = async (shortId: string): Promise<string> => {
-  const connection = await getDBConnection();
-  if (!connection) {
-    throw new Error('Could not get a DB Connection');
-  }
+  let connection: PoolClient | undefined;
 
   try {
+    connection = await getDBConnection();
     const res = await connection.query({
       text: `select geog
                from activity_incoming_data
@@ -173,17 +165,14 @@ export const getGeometryAsGeoJSONFromShort = async (shortId: string): Promise<st
     console.error('error in getGeometryAsGeoJSONFromShort', e);
     throw new Error('Error validating geometry in the database' + e.message);
   } finally {
-    connection.release();
+    connection?.release();
   }
 };
 
 export const autofillFromPostGIS = async (input: string, inputArea?: number): Promise<parsedGeoType> => {
-  const connection = await getDBConnection();
-
-  if (!connection) {
-    throw new Error('Could not get a DB Connection');
-  }
+  let connection: PoolClient | undefined;
   try {
+    connection = await getDBConnection();
     const res = await connection.query({
       text: `select latitude,
                     longitude,
@@ -212,7 +201,7 @@ export const autofillFromPostGIS = async (input: string, inputArea?: number): Pr
     console.error('error in autofillFromPostGIS', e);
     throw new Error('Error validating geometry in the database' + e.message);
   } finally {
-    connection.release();
+    connection?.release();
   }
 };
 

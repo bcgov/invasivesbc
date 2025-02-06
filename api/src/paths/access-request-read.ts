@@ -5,6 +5,7 @@ import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getAccessRequestForUserSQL } from 'queries/access-request-queries';
 import { getLogger } from 'utils/logger';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('access-request');
 
@@ -60,17 +61,10 @@ function getAccessRequestData(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'access-request', message: 'create', body: req.body });
 
-    const connection = await getDBConnection();
-    if (!connection) {
-      return res.status(503).json({
-        message: 'Database connection unavailable',
-        request: req.body,
-        namespace: 'access-request-read',
-        code: 503
-      });
-    }
+    let connection: PoolClient | undefined;
 
     try {
+      connection = await getDBConnection();
       const sqlStatement: SQLStatement = getAccessRequestForUserSQL(req.body.username, req.body.email);
       if (!sqlStatement) {
         return res.status(400).json({
@@ -107,7 +101,7 @@ function getAccessRequestData(): RequestHandler {
         code: 500
       });
     } finally {
-      connection.release();
+      connection?.release();
     }
   };
 }
