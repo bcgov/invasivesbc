@@ -4,19 +4,12 @@ import { Router } from 'react-router-dom';
 import setupStore, { historySingleton } from 'state/store';
 import { PersistGate } from 'redux-persist/integration/react';
 import App from './UI/App';
-import { defineCustomElements as pwaLoader } from '@ionic/pwa-elements/loader';
 import { PersistorContext } from 'utils/PersistorContext';
 import { TileCacheService } from 'utils/tile-cache';
 import { Context, TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { MOBILE } from 'state/build-time-config';
 import TileCache from 'state/actions/cache/TileCache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register(import.meta.env.MODE === 'production' ? '/worker.js' : '/dev-sw.js?dev-sw', {
-    type: import.meta.env.MODE === 'production' ? 'classic' : 'module'
-  });
-}
 
 async function mountApp(CONFIG) {
   const { store, persistor } = setupStore(CONFIG);
@@ -50,8 +43,6 @@ async function mountApp(CONFIG) {
         </PersistGate>
       );
     }
-
-    pwaLoader(window);
   }
 }
 
