@@ -54,11 +54,12 @@
   flex-direction: row;
   align-items: flex-start;
 }
+
 .record-set-progressbar {
   flex-direction: column;
 }
 
-@media screen and (min-width: 915px) {
+@media screen and (min-width: 500px) {
   .record-set-option {
     flex-direction: row;
   }
@@ -70,6 +71,17 @@
   .record-set-details {
     margin-bottom: 0;
   }
+}
+@media screen and (min-width: 500px) and (max-width: 1000px) {
+  .record-set-progressbar {
+    flex-direction: column !important;
+  }
+  .record-set-control {
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+}
+@media screen and (min-width: 1000px) {
   .record-set-control {
     justify-content: flex-end;
     align-items: center;

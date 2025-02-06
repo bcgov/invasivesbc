@@ -22,7 +22,7 @@ const ProgressControlPanel: React.FC<ProgressControlPanelProps> = ({
         border: '1px solid #1976d2',
         borderRadius: '8px',
         padding: '10px',
-        minWidth: '300px'
+        minWidth: '230px'
       }}
       onClick={(e) => e.stopPropagation()}
     >
