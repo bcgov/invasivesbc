@@ -39,15 +39,16 @@ class TileCache {
         description: string;
         maxZoom: number;
         bounds: RepositoryBoundingBoxSpec;
+        id?: string;
       },
       { dispatch }
     ) => {
       const service = await TileCacheServiceFactory.getPlatformInstance();
-      const name = `cache-${nanoid()}`;
+      const id = spec.id ?? `well-cache-${nanoid()}`;
 
       await service.download(
         {
-          id: name,
+          id: id,
           maxZoom: spec.maxZoom,
           bounds: spec.bounds,
           description: spec.description,

@@ -7,19 +7,12 @@ import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
 import CacheFileSize from './CacheFileSize';
 import { useTileSizeThresholds } from './tileSizeHook';
 import { APPROX_SIZE_PER_TILE, AVAILABLE_ZOOMS } from './constants';
-import WellCache from 'state/actions/cache/WellCache';
+import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 const TileCacheCreationPanel = () => {
   const handleDownload = () => {
-    if (!drawnShape) return;
-    dispatch(
-      TileCache.requestCaching({
-        description: cacheName ?? '',
-        bounds: drawnShape,
-        maxZoom: zoom
-      })
-    );
-    dispatch(WellCache.requestCaching(drawnShape));
+    if (!drawnShape || !cacheName) return;
+    dispatch(PlanMyTrip.create({ wellData: true, zoom: zoom, name: cacheName }));
     setCacheName('');
     setTimeout(() => {
       dispatch(TileCache.clearTileCacheShape());

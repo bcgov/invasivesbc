@@ -22,7 +22,6 @@
     "@capacitor/core": "^6.1.2",
     "@capacitor/geolocation": "^6.0.1",
     "@capacitor/ios": "^6.1.2",
-    "@ionic/pwa-elements": "^3.3.0",
     "@mapbox/mapbox-gl-draw": "^1.5.0",
     "@mui/icons-material": "^5.16.7",
     "@mui/material": "^5.16.7",
@@ -87,10 +86,7 @@
     "typescript": "5.5.4",
     "urlencode": "^2.0.0",
     "uuid": "^9.0.1",
-    "wkt": "^0.1.1",
-    "workbox-precaching": "^7.1.0",
-    "workbox-strategies": "^7.1.0",
-    "workbox-window": "^7.1.0"
+    "wkt": "^0.1.1"
   },
   "devDependencies": {
     "@capacitor/assets": "^3.0.5",

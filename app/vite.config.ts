@@ -5,7 +5,6 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import { visualizer } from 'rollup-plugin-visualizer';
-import { VitePWA } from 'vite-plugin-pwa';
 
 // sets up constants in the code, based on build environment
 function buildSpecificDefines() {
@@ -117,21 +116,6 @@ export default defineConfig({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}',
       ...reactDevOptions()
-    }),
-    VitePWA({
-      srcDir: '.',
-      filename: 'worker.ts',
-      strategies: 'injectManifest',
-      injectRegister: false,
-      //manifest: true,
-      injectManifest: {
-        maximumFileSizeToCacheInBytes: 20 * 1024 * 1024,
-        globPatterns: ['**/*.{js,css,svg,gif,png,jpg}']
-      },
-      devOptions: {
-        enabled: true,
-        type: 'module'
-      }
     })
   ],
   optimizeDeps: {
