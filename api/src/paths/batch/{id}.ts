@@ -185,6 +185,9 @@ function updateBatch(): RequestHandler {
     try {
       connection = await getDBConnection();
     } catch (error) {
+      if (connection) {
+        connection.release();
+      }
       return res.status(500).json({
         message: 'Error updating batch upload',
         request: req.body,
@@ -192,8 +195,6 @@ function updateBatch(): RequestHandler {
         namespace: 'batch',
         code: 500
       });
-    } finally {
-      connection?.release();
     }
 
     const parser = csvParser({

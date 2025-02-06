@@ -123,14 +123,15 @@ function createBatch(): RequestHandler {
     try {
       connection = await getDBConnection();
     } catch (error) {
+      if (connection) {
+        connection.release();
+      }
       return res.status(503).json({
         message: 'Database connection unavailable',
         request: req.body,
         namespace: 'batch',
         code: 503
       });
-    } finally {
-      connection?.release();
     }
 
     const data = { ...req.body };
