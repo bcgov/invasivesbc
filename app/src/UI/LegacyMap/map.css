@@ -3,6 +3,18 @@
   height: 64px;
   width: 64px;
   border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & > img {
+    height: 32px;
+    width: 32px;
+    filter: drop-shadow(1px 1px 1px black);
+  }
+}
+
+.userTrackingMarkerCone {
   background-image: conic-gradient(
     #00b0ff20 0deg,
     #00b0ff95 60deg,
@@ -11,14 +23,6 @@
     #00b0ff95 300deg,
     #00b0ff20 360deg
   );
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  & > img {
-    height: 32px;
-    width: 32px;
-    filter: drop-shadow(1px 1px 1px black);
-  }
 }
 
 .whatsHereMarkerEl {

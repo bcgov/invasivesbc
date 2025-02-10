@@ -7,6 +7,7 @@ import { useSelector } from 'utils/use_selector';
 import circle from '@turf/circle';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { handlePositionTracking } from 'UI/LegacyMap/helpers/functional/position-tracking';
+import { MOBILE } from 'state/build-time-config';
 
 const PositionMarkers = ({ mapReady }) => {
   const map = useContext(MapContext);
@@ -30,7 +31,7 @@ const PositionMarkers = ({ mapReady }) => {
   // Draw tools - determine who needs edit and where the geos get dispatched, what tools to display etc
   const whatsHereFeature = useSelector((state) => state.Map.whatsHere?.feature);
   const whatsHereMarker = new maplibregl.Marker({ element: whatsHereMarkerEl });
-  
+
   const appModeUrl = useSelector((state) => state.AppMode.url);
   // also used with current marker below:
   const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry);
@@ -121,7 +122,7 @@ const PositionMarkers = ({ mapReady }) => {
 };
 
 const positionMarkerEl = document.createElement('div');
-positionMarkerEl.className = 'userTrackingMarker';
+positionMarkerEl.className = MOBILE ? 'userTrackingMarker userTrackingMarkerCone' : 'userTrackingMarker';
 positionMarkerEl.innerHTML = `<img src='/assets/icon/circle.svg' />`;
 
 const activityMarkerEl = document.createElement('div');
