@@ -114,6 +114,8 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
 }
 
 function* handle_URL_CHANGE(action) {
+  console.log('Here?');
+
   const activityPageState = yield select(selectActivity);
   const isActivityURL = action.payload.url.includes('/Records/Activity:');
   if (isActivityURL) {
@@ -122,6 +124,8 @@ function* handle_URL_CHANGE(action) {
     if (afterColon) {
       id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
     }
+    console.log('After colon', activityPageState?.activity?.activity_id, id);
+
     if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(Activity.get(id));
   }
 }

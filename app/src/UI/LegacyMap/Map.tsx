@@ -43,6 +43,7 @@ import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
+import { AllOfflineActivitiesLayer } from 'UI/LegacyMap/helpers/components/AllOfflineActivitiesLayer';
 
 /*
 
@@ -335,7 +336,8 @@ export const Map = ({ children }) => {
           <DrawControls />
           <ReactiveLayers mapReady={mapReady} />
           <PositionMarkers mapReady={mapReady} />
-          <CurrentActivityLayer mapReady={mapReady} />
+          {/* <CurrentActivityLayer mapReady={mapReady} /> */}
+          <AllOfflineActivitiesLayer mapReady={mapReady} />
         </MapContext.Provider>
 
         {children}

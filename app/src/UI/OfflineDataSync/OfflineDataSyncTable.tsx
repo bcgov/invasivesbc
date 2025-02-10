@@ -14,7 +14,6 @@ import moment from 'moment';
 import { FileOpen } from '@mui/icons-material';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { useHistory } from 'react-router-dom';
-import Activity from 'state/actions/activity/Activity';
 
 export const OfflineDataSyncTable = () => {
   const { working, serializedActivities } = useSelector(selectOfflineActivity);

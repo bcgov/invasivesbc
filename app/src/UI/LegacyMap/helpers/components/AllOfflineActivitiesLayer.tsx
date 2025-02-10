@@ -1,27 +1,26 @@
 import { useContext, useEffect, useState } from 'react';
-import { selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { useSelector } from 'utils/use_selector';
 
-const CurrentActivityLayer = ({ mapReady }) => {
+const AllOfflineActivitiesLayer = ({ mapReady }) => {
   const map = useContext(MapContext);
-  const [geo, setGeo] = useState(null);
   console.log('MAp ready', mapReady);
 
-  const activityGeometryArray = useSelector((state) => state.ActivityPage.activity?.geometry);
   const { url } = useSelector((state) => state.AppMode);
-  console.log('Activty geo', activityGeometryArray);
-  const { working, serializedActivities } = useSelector(selectOfflineActivity);
-  // react to changes in the geometry or current page and set our rendered geo appropriately
-  // render if a) we're on the Activity page and b) There is a geo object in the Activity
-  useEffect(() => {
-    if (activityGeometryArray && activityGeometryArray[0] && url?.includes('Activity')) {
-      setGeo(activityGeometryArray[0]);
-    } else {
-      setGeo(null);
-    }
-  }, [activityGeometryArray, url]);
+
+  const { serializedActivities } = useSelector(selectOfflineActivity);
+  console.log(serializedActivities);
+
+  const geometryList = Object.values(serializedActivities).map(
+    (item) => JSON.parse((item as OfflineActivityRecord).data).geometry[0]
+  );
+  let geojsonData = {
+    type: 'FeatureCollection',
+    features: geometryList || [] // This will hold multiple shapes
+  };
+  console.log('Key value pair', geometryList);
 
   useEffect(() => {
     if (!map) return;
@@ -34,14 +33,13 @@ const CurrentActivityLayer = ({ mapReady }) => {
     const SHAPE_LAYER = `${LAYER_ID}-shape`;
     const OUTLINE_LAYER = `${LAYER_ID}-outline`;
     const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
-    console.log('Inside Current Activity Layer', geo);
     console.log(LAYER_ID, SHAPE_LAYER);
 
-    if (geo) {
+    if (geojsonData.features) {
       map
         .addSource(LAYER_ID, {
           type: 'geojson',
-          data: geo
+          data: geojsonData
         })
         .addLayer(
           {
@@ -49,8 +47,8 @@ const CurrentActivityLayer = ({ mapReady }) => {
             source: LAYER_ID,
             type: 'fill',
             paint: {
-              'fill-color': 'white',
-              'fill-outline-color': 'black',
+              'fill-color': 'blue',
+              'fill-outline-color': 'blue',
               'fill-opacity': 0.7
             },
             minzoom: 0,
@@ -64,7 +62,7 @@ const CurrentActivityLayer = ({ mapReady }) => {
             source: LAYER_ID,
             type: 'line',
             paint: {
-              'line-color': 'black',
+              'line-color': 'blue',
               'line-opacity': 1,
               'line-width': 3
             },
@@ -96,9 +94,9 @@ const CurrentActivityLayer = ({ mapReady }) => {
         map.removeSource(LAYER_ID);
       };
     }
-  }, [geo]);
+  }, [geometryList]);
 
   return null;
 };
 
-export { CurrentActivityLayer };
+export { AllOfflineActivitiesLayer };

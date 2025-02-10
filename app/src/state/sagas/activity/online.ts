@@ -131,6 +131,8 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
     const userOnline = !(yield select(selectAuth)).workingOffline;
     const searchFeature = action.payload?.[0] ?? null;
     if (searchFeature && userOnline) {
+      console.log('Search feature', searchFeature);
+
       const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
         search_feature: { ...searchFeature, properties: {} }
       });
