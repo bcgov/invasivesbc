@@ -193,7 +193,7 @@ abstract class RecordCacheService extends BaseCacheService<
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     const lengthDifference = spec.idsToCache.length - uncachedRecords.length;
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
-    let processedCaches = spec.processedActivities;
+    let processedCaches = lengthDifference;
     const lastProgressCallback: null | number = null;
     const totalRecordsToCache = uncachedRecords.length;
 
@@ -248,11 +248,11 @@ abstract class RecordCacheService extends BaseCacheService<
           progressCallback({
             setId: spec.setId,
             message: !pauseOrAbort
-              ? `${(processedCaches + lengthDifference).toLocaleString()}/${(totalRecordsToCache + lengthDifference).toLocaleString()} Records`
+              ? `${processedCaches.toLocaleString()}/${(totalRecordsToCache + lengthDifference).toLocaleString()} Records`
               : `Mode: ${pauseOrAbort.toLocaleString().toUpperCase()} Caching`,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
-            normalizedProgress: (processedCaches + lengthDifference) / (totalRecordsToCache + lengthDifference),
+            normalizedProgress: processedCaches / (totalRecordsToCache + lengthDifference),
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
           });
@@ -274,9 +274,8 @@ abstract class RecordCacheService extends BaseCacheService<
     const executing: Set<Promise<void>> = new Set();
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     const lengthDifference = spec.idsToCache.length - uncachedRecords.length;
-
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
-    let processedCaches = spec.processedActivities;
+    let processedCaches = lengthDifference;
     const lastProgressCallback: null | number = null;
     const totalRecordsToCache = uncachedRecords.length;
 
@@ -287,9 +286,7 @@ abstract class RecordCacheService extends BaseCacheService<
 
       this.processNext(executing, async () => {
         const rez = await fetch(`${spec.API_BASE}/api/activity/${uncachedRecords[i]}`, {
-          headers: {
-            Authorization: await getCurrentJWT()
-          }
+          headers: { Authorization: await getCurrentJWT() }
         });
         await this.saveActivity(uncachedRecords[i], await rez.json());
       });
@@ -304,10 +301,10 @@ abstract class RecordCacheService extends BaseCacheService<
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
-        const normalizedProgress = (processedCaches + lengthDifference) / (totalRecordsToCache + lengthDifference);
+        const normalizedProgress = processedCaches / (totalRecordsToCache + lengthDifference);
         const progressLabel =
           normalizedProgress * 100 < 1
-            ? `${(processedCaches + lengthDifference).toLocaleString()}/${(totalRecordsToCache + lengthDifference).toLocaleString()} Records`
+            ? `${processedCaches.toLocaleString()}/${(totalRecordsToCache + lengthDifference).toLocaleString()} Records`
             : `${Math.round(normalizedProgress * 100)}% completed`;
 
         if (progressCallback) {
