@@ -13,7 +13,7 @@ class TileCache {
   static readonly clearTileCacheShape = createAction(`${this.PREFIX}/clearShape`);
 
   static readonly downloadProgressEvent = createAction<TileCacheProgressCallbackParameters>(
-    'TILE_CACHE_DOWNLOAD_PROGRESS_EVENT'
+    `${this.PREFIX}/downloadProgressEvent`
   );
 
   static readonly repositoryList = createAsyncThunk(`${this.PREFIX}/repoList`, async () => {

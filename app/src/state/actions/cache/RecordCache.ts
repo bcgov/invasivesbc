@@ -22,7 +22,7 @@ class RecordCache {
   });
 
   static readonly downloadProgressEvent = createAction<RecordCacheProgressCallbackParameters>(
-    'RECORD_CACHE_DOWNLOAD_PROGRESS_EVENT'
+    `${this.PREFIX}/downloadProgressEvent`
   );
 
   static readonly pauseDownload = createAsyncThunk(`${this.PREFIX}/pauseDownload`, async (spec: { setId: string }) => {
