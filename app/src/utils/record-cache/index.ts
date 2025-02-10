@@ -1,8 +1,8 @@
+import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
-import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
@@ -111,6 +111,8 @@ abstract class RecordCacheService extends BaseCacheService<
     limit: number
   ): Promise<IappRecord[]>;
 
+  protected abstract getAllCachedIds(): Promise<string[]>;
+
   public abstract isCached(repositoryId: string): Promise<boolean>;
 
   public abstract getIdList(repositoryId: string): Promise<string[]>;
@@ -133,7 +135,7 @@ abstract class RecordCacheService extends BaseCacheService<
       processedActivities: spec.processedActivities
     };
 
-    let responseData: Record<PropertyKey, any> = {
+    const responseData: Record<PropertyKey, any> = {
       cachedGeoJSON: null,
       cachedCentroid: null
     };
@@ -188,15 +190,14 @@ abstract class RecordCacheService extends BaseCacheService<
     // IAPP Records use O(n*2) Requests compared to activities.
     const IAPP_CONCURRENCY_LIMIT = Math.ceil(this.CONCURRENCY_LIMIT / 2);
     const executing: Set<Promise<void>> = new Set();
-
+    const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
+    const lengthDifference = spec.idsToCache.length - uncachedRecords.length;
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     let processedCaches = spec.processedActivities;
+    const lastProgressCallback: null | number = null;
+    const totalRecordsToCache = uncachedRecords.length;
 
-    let lastProgressCallback: null | number = null;
-    let totalRecordsToCache = spec.idsToCache.length;
-    let startIdx = spec.pausedActivityIdx == -1 ? 0 : spec.pausedActivityIdx;
-
-    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
+    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
       if (executing.size >= IAPP_CONCURRENCY_LIMIT) {
         await Promise.race(executing);
       }
@@ -204,7 +205,7 @@ abstract class RecordCacheService extends BaseCacheService<
         const authorization = await getCurrentJWT();
         const [iappRecord, tableRow] = await Promise.all([
           fetch(
-            `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${spec.idsToCache[i]}","isIAPP":true,"site_id_only":false}`,
+            `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${uncachedRecords[i]}","isIAPP":true,"site_id_only":false}`,
             { headers: { authorization } }
           ).then(async (data) => await data.json()),
           fetch(`${spec.API_BASE}/api/v2/IAPP/`, {
@@ -219,7 +220,7 @@ abstract class RecordCacheService extends BaseCacheService<
                   tableFilters: [
                     {
                       field: 'site_id',
-                      filter: spec.idsToCache[i],
+                      filter: uncachedRecords[i],
                       filterType: 'tableFilter',
                       operator: 'CONTAINS',
                       operator2: 'AND'
@@ -230,7 +231,7 @@ abstract class RecordCacheService extends BaseCacheService<
             })
           }).then(async (data) => await data.json())
         ]);
-        await this.saveIapp(spec.idsToCache[i].toString(), iappRecord, tableRow);
+        await this.saveIapp(uncachedRecords[i].toString(), iappRecord, tableRow);
       });
       processedCaches++;
       const currentProgress = processedCaches / totalRecordsToCache;
@@ -247,11 +248,11 @@ abstract class RecordCacheService extends BaseCacheService<
           progressCallback({
             setId: spec.setId,
             message: !pauseOrAbort
-              ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
+              ? `${(processedCaches + lengthDifference).toLocaleString()}/${(totalRecordsToCache + lengthDifference).toLocaleString()} Records`
               : `Mode: ${pauseOrAbort.toLocaleString().toUpperCase()} Caching`,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
-            normalizedProgress: processedCaches / totalRecordsToCache,
+            normalizedProgress: (processedCaches + lengthDifference) / (totalRecordsToCache + lengthDifference),
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
           });
@@ -270,26 +271,27 @@ abstract class RecordCacheService extends BaseCacheService<
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<CacheDownloadMode> {
+    const executing: Set<Promise<void>> = new Set();
+    const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
+    const lengthDifference = spec.idsToCache.length - uncachedRecords.length;
+
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     let processedCaches = spec.processedActivities;
+    const lastProgressCallback: null | number = null;
+    const totalRecordsToCache = uncachedRecords.length;
 
-    let lastProgressCallback: null | number = null;
-    let totalRecordsToCache = spec.idsToCache.length;
-    let startIdx = spec.pausedActivityIdx == -1 ? 0 : spec.pausedActivityIdx;
-    const executing: Set<Promise<void>> = new Set();
-
-    for (let i = startIdx; i < spec.idsToCache.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
+    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
       if (executing.size >= this.CONCURRENCY_LIMIT) {
         await Promise.race(executing);
       }
 
       this.processNext(executing, async () => {
-        const rez = await fetch(`${spec.API_BASE}/api/activity/${spec.idsToCache[i]}`, {
+        const rez = await fetch(`${spec.API_BASE}/api/activity/${uncachedRecords[i]}`, {
           headers: {
             Authorization: await getCurrentJWT()
           }
         });
-        await this.saveActivity(spec.idsToCache[i], await rez.json());
+        await this.saveActivity(uncachedRecords[i], await rez.json());
       });
       processedCaches++;
       const currentProgress = processedCaches / totalRecordsToCache;
@@ -302,10 +304,10 @@ abstract class RecordCacheService extends BaseCacheService<
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
-        let normalizedProgress = processedCaches / totalRecordsToCache;
-        let progressLabel =
+        const normalizedProgress = (processedCaches + lengthDifference) / (totalRecordsToCache + lengthDifference);
+        const progressLabel =
           normalizedProgress * 100 < 1
-            ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
+            ? `${(processedCaches + lengthDifference).toLocaleString()}/${(totalRecordsToCache + lengthDifference).toLocaleString()} Records`
             : `${Math.round(normalizedProgress * 100)}% completed`;
 
         if (progressCallback) {
@@ -323,6 +325,25 @@ abstract class RecordCacheService extends BaseCacheService<
     }
     await Promise.all(executing);
     return pauseOrAbort;
+  }
+
+  /**
+   * @desc compare list of Ids against currently stored keys
+   * @param filterMode if response should contain list of supplied Ids
+   * @param idsToCache Ids to be measured against the database
+   * @returns List of IDs [not] currently contained stored the local database
+   */
+  protected async filterIds(filterMode: 'inclusive' | 'exclusive', idsToCache: Array<string>) {
+    const ids: Record<PropertyKey, number> = {};
+    (await this.getAllCachedIds()).forEach((id) => {
+      ids[id] ??= 0;
+      ids[id]++;
+    });
+
+    if (filterMode === 'inclusive') {
+      return idsToCache.filter((id) => !!ids[id]);
+    }
+    return idsToCache.filter((id) => !ids[id]);
   }
 
   public async stopDownload(repositoryId: string): Promise<void> {
