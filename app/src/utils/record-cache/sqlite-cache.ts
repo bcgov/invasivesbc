@@ -519,14 +519,14 @@ class SQLiteRecordCacheService extends RecordCacheService {
         await this.cacheDB.query(
           //language=SQLite
           `SELECT ID
-      FROM CACHED_RECORDS`
+           FROM CACHED_RECORDS`
         )
       )?.values ?? [],
       (
         await this.cacheDB.query(
           //language=SQLite
           `SELECT ID
-      FROM CACHED_IAPP_RECORDS`
+           FROM CACHED_IAPP_RECORDS`
         )
       )?.values ?? []
     ]);
