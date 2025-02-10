@@ -1,11 +1,11 @@
 import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import centroid from '@turf/centroid';
 import { Feature } from '@turf/helpers';
+import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
-import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import {
   IappRecordMode,
   RepositoryMetadata,
@@ -508,6 +508,29 @@ class SQLiteRecordCacheService extends RecordCacheService {
       await this.cacheDB.rollbackTransaction();
       throw e;
     }
+  }
+
+  protected async getAllCachedIds(): Promise<string[]> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const [act, iapp] = await Promise.all([
+      (
+        await this.cacheDB.query(
+          //language=SQLite
+          `SELECT ID
+      FROM CACHED_RECORDS`
+        )
+      )?.values ?? [],
+      (
+        await this.cacheDB.query(
+          //language=SQLite
+          `SELECT ID
+      FROM CACHED_IAPP_RECORDS`
+        )
+      )?.values ?? []
+    ]);
+    return [act, iapp].flatMap((id) => id['ID']);
   }
 
   private async initializeRecordCache(sqlite: SQLiteConnection) {
