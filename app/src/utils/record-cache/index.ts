@@ -191,11 +191,10 @@ abstract class RecordCacheService extends BaseCacheService<
     const IAPP_CONCURRENCY_LIMIT = Math.ceil(this.CONCURRENCY_LIMIT / 2);
     const executing: Set<Promise<void>> = new Set();
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
-    const lengthDifference = spec.idsToCache.length - uncachedRecords.length;
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
-    let processedCaches = lengthDifference;
+    let processedCaches = spec.idsToCache.length - uncachedRecords.length;
     const lastProgressCallback: null | number = null;
-    const totalRecordsToCache = uncachedRecords.length;
+    const totalRecordsToCache = spec.idsToCache.length;
 
     for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
       if (executing.size >= IAPP_CONCURRENCY_LIMIT) {
@@ -248,11 +247,11 @@ abstract class RecordCacheService extends BaseCacheService<
           progressCallback({
             setId: spec.setId,
             message: !pauseOrAbort
-              ? `${processedCaches.toLocaleString()}/${(totalRecordsToCache + lengthDifference).toLocaleString()} Records`
+              ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
               : `Mode: ${pauseOrAbort.toLocaleString().toUpperCase()} Caching`,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
-            normalizedProgress: processedCaches / (totalRecordsToCache + lengthDifference),
+            normalizedProgress: processedCaches / totalRecordsToCache,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
           });
@@ -273,11 +272,10 @@ abstract class RecordCacheService extends BaseCacheService<
   ): Promise<CacheDownloadMode> {
     const executing: Set<Promise<void>> = new Set();
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
-    const lengthDifference = spec.idsToCache.length - uncachedRecords.length;
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
-    let processedCaches = lengthDifference;
+    let processedCaches = spec.idsToCache.length - uncachedRecords.length;
     const lastProgressCallback: null | number = null;
-    const totalRecordsToCache = uncachedRecords.length;
+    const totalRecordsToCache = spec.idsToCache.length;
 
     for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
       if (executing.size >= this.CONCURRENCY_LIMIT) {
@@ -301,10 +299,10 @@ abstract class RecordCacheService extends BaseCacheService<
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
-        const normalizedProgress = processedCaches / (totalRecordsToCache + lengthDifference);
+        const normalizedProgress = processedCaches / totalRecordsToCache;
         const progressLabel =
           normalizedProgress * 100 < 1
-            ? `${processedCaches.toLocaleString()}/${(totalRecordsToCache + lengthDifference).toLocaleString()} Records`
+            ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
             : `${Math.round(normalizedProgress * 100)}% completed`;
 
         if (progressCallback) {
