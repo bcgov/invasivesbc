@@ -63,6 +63,7 @@ import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
+import { RECORD_COLOURS } from 'constants/colors';
 
 export enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -744,7 +745,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers[index].loading = true;
             if (!draftState.layers[index].layerState) {
               draftState.layers[index].layerState = {
-                color: 'blue',
+                color: RECORD_COLOURS[0],
                 drawOrder: 0,
                 mapToggle: false
               };
@@ -761,7 +762,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers[index].loading = true;
             if (!draftState.layers[index].layerState) {
               draftState.layers[index].layerState = {
-                color: 'blue',
+                color: RECORD_COLOURS[0],
                 drawOrder: 0,
                 mapToggle: false
               };
