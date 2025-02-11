@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, IconButton, LinearProgress } from '@mui/material';
+import { Button, IconButton, LinearProgress, Tooltip } from '@mui/material';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
@@ -131,18 +131,23 @@ export const OfflineDataSyncTable = () => {
            */}
 
         {!connected && (
-          <IconButton
-            onClick={() => {
-              dispatch({
-                type: ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE,
-                payload: { toggle: !offlineActivitiesVisibility }
-              });
-            }}
-            color="primary"
-          >
-            {offlineActivitiesVisibility ? <Layers /> : <LayersClear />}
-          </IconButton>
+          <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle to view all offline activities on the map">
+            <div style={{ paddingRight: '5px' }}>
+              <IconButton
+                onClick={() => {
+                  dispatch({
+                    type: ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE,
+                    payload: { toggle: !offlineActivitiesVisibility }
+                  });
+                }}
+                color="primary"
+              >
+                {offlineActivitiesVisibility ? <Layers /> : <LayersClear />}
+              </IconButton>
+            </div>
+          </Tooltip>
         )}
+
         <Button
           disabled={syncDisabled}
           variant={'contained'}

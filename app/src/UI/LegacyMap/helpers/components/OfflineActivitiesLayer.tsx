@@ -99,7 +99,7 @@ const OfflineActivitiesMapLayer = ({ mapReady }) => {
         map.removeSource(LAYER_ID);
       };
     }
-  }, [geometryList]);
+  }, [geometryList, offlineActivitiesVisibility]);
 
   return null;
 };
