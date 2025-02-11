@@ -1,4 +1,6 @@
-import { useContext, useEffect, useState } from 'react';
+import { FeatureCollection } from 'geojson';
+import { useContext, useEffect } from 'react';
+import { selectNetworkConnected } from 'state/reducers/network';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/functional/layer-definitions';
@@ -8,15 +10,13 @@ const AllOfflineActivitiesLayer = ({ mapReady }) => {
   const map = useContext(MapContext);
   console.log('MAp ready', mapReady);
 
-  const { url } = useSelector((state) => state.AppMode);
-
   const { serializedActivities } = useSelector(selectOfflineActivity);
   console.log(serializedActivities);
-
+  const connected = useSelector(selectNetworkConnected);
   const geometryList = Object.values(serializedActivities).map(
     (item) => JSON.parse((item as OfflineActivityRecord).data).geometry[0]
   );
-  let geojsonData = {
+  let geojsonData: FeatureCollection = {
     type: 'FeatureCollection',
     features: geometryList || [] // This will hold multiple shapes
   };
@@ -25,7 +25,7 @@ const AllOfflineActivitiesLayer = ({ mapReady }) => {
   useEffect(() => {
     if (!map) return;
     if (!mapReady) return;
-
+    if (connected) return;
     // add the layer if needed
 
     const LAYER_ID = 'current-activity-';
@@ -77,7 +77,7 @@ const AllOfflineActivitiesLayer = ({ mapReady }) => {
             source: LAYER_ID,
             type: 'circle',
             paint: {
-              'circle-color': 'white',
+              'circle-color': 'blue',
               'circle-radius': 3
             },
             minzoom: 0,

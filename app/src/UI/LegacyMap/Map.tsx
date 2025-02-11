@@ -337,7 +337,7 @@ export const Map = ({ children }) => {
           <ReactiveLayers mapReady={mapReady} />
           <PositionMarkers mapReady={mapReady} />
           {/* <CurrentActivityLayer mapReady={mapReady} /> */}
-          <AllOfflineActivitiesLayer mapReady={mapReady} />
+          {!connectedToNetwork && <AllOfflineActivitiesLayer mapReady={mapReady} />}
         </MapContext.Provider>
 
         {children}
