@@ -151,8 +151,8 @@
   "scripts": {
     "pre-commit": "lint-staged",
     "post-install": "patch-package",
-    "build:android": "CONFIGURATION_SOURCE=Provided VITE_DEBUG=FALSE VITE_MOBILE=TRUE VITE_TARGET_PLATFORM=android vite build",
-    "build:ios": "CONFIGURATION_SOURCE=Provided VITE_DEBUG=FALSE VITE_MOBILE=TRUE VITE_TARGET_PLATFORM=ios vite build",
+    "build:android": "CONFIGURATION_SOURCE=Provided VITE_DEBUG=FALSE VITE_MOBILE=TRUE VITE_TARGET_PLATFORM=android vite build --emptyOutDir",
+    "build:ios": "CONFIGURATION_SOURCE=Provided VITE_DEBUG=FALSE VITE_MOBILE=TRUE VITE_TARGET_PLATFORM=ios vite build --emptyOutDir",
     "test": "CONFIGURATION_SOURCE=Provided VITE_MOBILE=FALSE vitest --config vitest.config.ts",
     "state_test_coverage": "CONFIGURATION_SOURCE=Provided vitest run --coverage --coverage.include=state/**/*.ts --config vitest.config.ts",
     "state_test_coverage_gh": "CONFIGURATION_SOURCE=Provided vitest run --coverage --coverage.include=state/**/*.ts  --coverage.reporter=json-summary --coverage.reporter=json --config vitest.config.ts",
