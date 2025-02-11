@@ -48,7 +48,7 @@ const LpRecordSetOption = ({
             </Tooltip>
           )}
         </div>
-        <p>{recordSet?.recordSetName ?? 'Recordset name is null'}</p>
+        <p>{recordSet?.recordSetName || `New Recordset - ${recordSet.recordSetType}`}</p>
       </li>
       {!lastChild && (
         <li>
