@@ -6,26 +6,29 @@ import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { useSelector } from 'utils/use_selector';
 
-const AllOfflineActivitiesLayer = ({ mapReady }) => {
+const OfflineActivitiesMapLayer = ({ mapReady }) => {
   const map = useContext(MapContext);
   console.log('MAp ready', mapReady);
 
-  const { serializedActivities } = useSelector(selectOfflineActivity);
-  console.log(serializedActivities);
+  const { serializedActivities, offlineActivitiesVisibility } = useSelector(selectOfflineActivity);
   const connected = useSelector(selectNetworkConnected);
-  const geometryList = Object.values(serializedActivities).map(
-    (item) => JSON.parse((item as OfflineActivityRecord).data).geometry[0]
-  );
+
+  // const geometryList = Object.values(serializedActivities).map(
+  //   (item) => JSON.parse((item as OfflineActivityRecord).data).geometry[0]
+  // );
+  const geometryList = Object.values(serializedActivities).map((item) => {
+    const parsedData = JSON.parse((item as OfflineActivityRecord).data);
+    return parsedData.geometry ? parsedData.geometry[0] : null; // Add check here
+  });
   let geojsonData: FeatureCollection = {
     type: 'FeatureCollection',
     features: geometryList || [] // This will hold multiple shapes
   };
-  console.log('Key value pair', geometryList);
 
   useEffect(() => {
-    if (!map) return;
-    if (!mapReady) return;
-    if (connected) return;
+    if (!map || !mapReady || connected || !offlineActivitiesVisibility) return;
+    console.log('Inside useeffext');
+
     // add the layer if needed
 
     const LAYER_ID = 'current-activity-';
@@ -87,6 +90,8 @@ const AllOfflineActivitiesLayer = ({ mapReady }) => {
         );
 
       return () => {
+        console.log('CLEANING CALLED');
+
         // cleanup effect -- remove created entries in reverse
         map.removeLayer(ZOOM_CIRCLE_LAYER);
         map.removeLayer(OUTLINE_LAYER);
@@ -99,4 +104,4 @@ const AllOfflineActivitiesLayer = ({ mapReady }) => {
   return null;
 };
 
-export { AllOfflineActivitiesLayer };
+export { OfflineActivitiesMapLayer };

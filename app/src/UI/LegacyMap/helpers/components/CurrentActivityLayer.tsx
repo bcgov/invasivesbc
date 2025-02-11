@@ -90,6 +90,8 @@ const CurrentActivityLayer = ({ mapReady }) => {
 
       return () => {
         // cleanup effect -- remove created entries in reverse
+        console.log('CURRENT CLEANING CALLED');
+
         map.removeLayer(ZOOM_CIRCLE_LAYER);
         map.removeLayer(OUTLINE_LAYER);
         map.removeLayer(SHAPE_LAYER);

@@ -43,7 +43,8 @@ import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
-import { AllOfflineActivitiesLayer } from 'UI/LegacyMap/helpers/components/AllOfflineActivitiesLayer';
+import { OfflineActivitiesMapLayer } from 'UI/LegacyMap/helpers/components/OfflineActivitiesLayer';
+import { selectOfflineActivity } from 'state/reducers/offlineActivity';
 
 /*
 
@@ -83,7 +84,7 @@ export const Map = ({ children }) => {
   const baseMapLayer = useSelector((state) => state.Map.baseMapLayer);
 
   const [map, setMap] = useState<InvasivesMap>();
-
+  const { offlineActivitiesVisibility } = useSelector(selectOfflineActivity);
   useEffect(() => {
     if (!mapContainer.current) {
       console.error('Mapinit invoked with invalid reference');
@@ -336,8 +337,12 @@ export const Map = ({ children }) => {
           <DrawControls />
           <ReactiveLayers mapReady={mapReady} />
           <PositionMarkers mapReady={mapReady} />
+          {offlineActivitiesVisibility ? (
+            <OfflineActivitiesMapLayer mapReady={mapReady} />
+          ) : (
+            <CurrentActivityLayer mapReady={mapReady} />
+          )}
           {/* <CurrentActivityLayer mapReady={mapReady} /> */}
-          {!connectedToNetwork && <AllOfflineActivitiesLayer mapReady={mapReady} />}
         </MapContext.Provider>
 
         {children}

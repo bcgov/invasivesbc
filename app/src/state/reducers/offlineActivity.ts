@@ -2,6 +2,7 @@ import { createNextState } from '@reduxjs/toolkit';
 import moment from 'moment';
 import { AppConfig } from '../config';
 import {
+  ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE,
   ACTIVITY_OFFLINE_DELETE_ITEM,
   ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
   ACTIVITY_RUN_OFFLINE_SYNC,
@@ -37,6 +38,7 @@ export interface OfflineActivityState {
   serializedActivities: {
     [id: string]: OfflineActivityRecord;
   };
+  offlineActivitiesVisibility: boolean;
 }
 
 const initialState: OfflineActivityState = {
@@ -44,7 +46,8 @@ const initialState: OfflineActivityState = {
   working: false,
   statusDialogOpen: false,
   serial: moment.now(),
-  serializedActivities: {}
+  serializedActivities: {},
+  offlineActivitiesVisibility: false
 };
 
 function createOfflineActivityReducer(
@@ -107,6 +110,10 @@ function createOfflineActivityReducer(
           }
           case ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE: {
             draftState.statusDialogOpen = action.payload.open;
+            break;
+          }
+          case ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE: {
+            draftState.offlineActivitiesVisibility = action.payload.toggle;
             break;
           }
           case ACTIVITY_OFFLINE_DELETE_ITEM: {
