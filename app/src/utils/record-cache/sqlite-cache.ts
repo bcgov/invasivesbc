@@ -530,7 +530,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
         )
       )?.values ?? []
     ]);
-    return [act, iapp].flatMap((id) => id['ID']);
+    return act.concat(iapp).map((set) => set['ID']);
   }
 
   private async initializeRecordCache(sqlite: SQLiteConnection) {
