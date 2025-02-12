@@ -1,4 +1,4 @@
-import { createNextState } from '@reduxjs/toolkit';
+import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
 import {
@@ -20,10 +20,6 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
 import { CacheDownloadMode } from 'utils/record-cache';
-
-export function getUuid() {
-  return Math.random() + Date.now().toString();
-}
 
 export interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
@@ -265,7 +261,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
                   draftState.recordSets[action.payload.setID].tableFilters = [];
                 }
                 draftState.recordSets[action.payload.setID]?.tableFilters.push({
-                  id: getUuid(),
+                  id: nanoid(),
                   field: action.payload.field,
                   filterType: action.payload.filterType,
                   operator: action.payload.operator ? action.payload.operator : 'CONTAINS',
@@ -308,7 +304,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
             break;
           }
           case RECORDSET_CLEAR_FILTERS: {
-            if (!(action.payload.setID === '1')) {
+            if (action.payload.setID !== '1') {
               draftState.recordSets[action.payload.setID].tableFilters = [];
             } else {
               draftState.recordSets[action.payload.setID].tableFilters = [

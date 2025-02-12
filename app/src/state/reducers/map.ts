@@ -1,4 +1,4 @@
-import { createNextState } from '@reduxjs/toolkit';
+import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
@@ -50,7 +50,6 @@ import {
   USER_TOUCHED_RECORD
 } from '../actions';
 import { AppConfig } from '../config';
-import { getUuid } from './userSettings';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -832,7 +831,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           case CUSTOM_LAYER_DRAWN: {
             draftState.drawingCustomLayer = false;
             draftState.clientBoundaries.push({
-              id: getUuid(),
+              id: nanoid(),
               title: draftState?.workingLayerName,
               geojson: action.payload,
               toggle: true
