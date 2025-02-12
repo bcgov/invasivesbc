@@ -101,71 +101,26 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
         });
       } else if (UserSettings.RecordSet.updateFilter.match(action)) {
-        draftState.recordSets[action.payload.setID].tableFilters ??= [];
+        const { setID, filterType, filterID } = action.payload;
+        const recordSet = draftState.recordSets[setID];
+        const tableFilter = recordSet?.tableFilters.find((filter) => filter.id === filterID);
+        if (!tableFilter) return;
 
-        const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-          (filter) => filter.id === action.payload.filterID
-        );
-        if (index !== -1) {
-          if (action.payload.filterType) {
-            draftState.recordSets[action.payload.setID].tableFilters[index].filterType = action.payload.filterType;
+        Object.keys(action.payload).forEach((key) => {
+          if (tableFilter[key] != undefined) {
+            tableFilter[key] = action.payload[key];
           }
-        }
-        if (
-          action.payload.filterType === 'spatialFilterDrawn' ||
-          action.payload.filterType === 'spatialFilterUploaded'
-        ) {
-          delete draftState.recordSets[action.payload.setID].tableFilters[index].field;
-          if (!action.payload.operator) {
-            draftState.recordSets[action.payload.setID].tableFilters[index].operator = 'CONTAINED IN';
-          }
-          if (!action.payload.filter) {
-            delete draftState.recordSets[action.payload.setID].tableFilters[index].filter;
-          }
+        });
+
+        if (action.payload?.filterType === 'spatialFilterDrawn' || filterType === 'spatialFilterUploaded') {
+          tableFilter.field = '';
+          tableFilter.operator ??= 'CONTAINED IN';
+          tableFilter.filter ??= '';
         }
 
-        if (action.payload.field) {
-          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-            (filter) => filter.id === action.payload.filterID
-          );
-          if (index !== -1)
-            draftState.recordSets[action.payload.setID].tableFilters[index].field = action.payload.field;
-        }
-
-        if (action.payload.operator) {
-          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-            (filter) => filter.id === action.payload.filterID
-          );
-          if (index !== -1)
-            draftState.recordSets[action.payload.setID].tableFilters[index].operator = action.payload.operator;
-        }
-        if (action.payload.operator2) {
-          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-            (filter) => filter.id === action.payload.filterID
-          );
-          if (index !== -1)
-            draftState.recordSets[action.payload.setID].tableFilters[index].operator2 = action.payload.operator2;
-        }
-
-        //re used for spatial filters
-        if (action.payload.filter !== undefined) {
-          const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
-            (filter) => filter.id === action.payload.filterID
-          );
-          if (index !== -1) {
-            draftState.recordSets[action.payload.setID].tableFilters[index].filter = action.payload.filter;
-          }
-        }
-
-        const tableFiltersNotBlank = draftState.recordSets[action.payload.setID]?.tableFilters.filter(
-          (filter) => filter.filter !== ''
-        );
-
-        draftState.recordSets[action.payload.setID].tableFiltersPreviousHash =
-          draftState.recordSets[action.payload.setID]?.tableFiltersHash;
-        draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
-          JSON.stringify(tableFiltersNotBlank)
-        );
+        const tableFiltersNotBlank = recordSet?.tableFilters.filter((filter) => !!filter.filter);
+        recordSet.tableFiltersPreviousHash = recordSet?.tableFiltersHash;
+        recordSet.tableFiltersHash = Md5.hashStr(JSON.stringify(tableFiltersNotBlank));
       } else if (UserSettings.RecordSet.removeFilter.match(action)) {
         const index = draftState.recordSets[action.payload.setID]?.tableFilters.findIndex(
           (filter) => filter.id === action.payload.filterID
@@ -238,7 +193,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           draftState.recordSets[setID].tableFilters ??= [];
           draftState.recordSets[setID]?.tableFilters.push({
             id: nanoid(),
-            field: field,
+            field: field ?? '',
             filterType: filterType,
             operator: operator ?? 'CONTAINS',
             operator2: operator2 ?? 'AND',
@@ -255,7 +210,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               field: 'form_status',
               filterType: 'tableFilter',
               filter: 'Draft',
-              operator1: 'CONTAINS',
+              operator: 'CONTAINS',
               operator2: 'AND'
             }
           ];

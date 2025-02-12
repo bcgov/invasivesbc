@@ -7,14 +7,9 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import RecordCache from '../cache/RecordCache';
 import { CacheDownloadMode } from 'utils/record-cache';
 
-export interface IUpdateFilter {
+export interface IUpdateFilter extends Partial<IFilter> {
   setID: string | number;
   filterID: string | number;
-  field?: string;
-  filterType?: string;
-  filter?: string;
-  operator?: string;
-  operator2?: string;
 }
 
 export interface IRemoveFilter {
@@ -22,9 +17,16 @@ export interface IRemoveFilter {
   setID: string | number;
   filterID: string | number;
 }
-export interface IFilter extends Partial<IUpdateFilter> {
-  setID: string | number;
+export interface IFilter {
+  id: string;
+  field: string;
   filterType: string;
+  filter: string;
+  operator: string;
+  operator2: string;
+}
+export interface IAddFilter extends Partial<IFilter> {
+  setID: string | number;
 }
 class RecordSet {
   private static readonly PREFIX = `UserSettings/RecordSet`;
@@ -84,7 +86,7 @@ class RecordSet {
     }
   );
 
-  static readonly addFilter = createAction<IFilter>(`${this.PREFIX}/addFilter`);
+  static readonly addFilter = createAction<IAddFilter>(`${this.PREFIX}/addFilter`);
   static readonly clearFilters = createAction<{ setID: number | string }>(`${this.PREFIX}/clearFilters`);
   static readonly updateFilter = createAction<IUpdateFilter>(`${this.PREFIX}/updateFilter`);
   static readonly removeFilter = createAction<IRemoveFilter>(`${this.PREFIX}/removeFilter`);
