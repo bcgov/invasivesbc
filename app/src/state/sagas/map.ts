@@ -534,7 +534,6 @@ function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
 function* handle_URL_CHANGE(action) {
   const url = action.payload.url;
   const isRecordSet = url.split(':')?.[0]?.includes('/Records/List/Local');
-  console.log('HERE?', isRecordSet);
   if (isRecordSet) {
     const id = url.split(':')[1].split('/')[0];
     yield put({

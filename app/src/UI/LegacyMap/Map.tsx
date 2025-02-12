@@ -342,7 +342,6 @@ export const Map = ({ children }) => {
           ) : (
             <CurrentActivityLayer mapReady={mapReady} />
           )}
-          {/* <CurrentActivityLayer mapReady={mapReady} /> */}
         </MapContext.Provider>
 
         {children}

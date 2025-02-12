@@ -45,12 +45,10 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
   const activityID = action.payload;
 
   const found = serializedActivities[activityID];
+
   if (found) {
-    console.log('handle_ACTIVITY_GET_LOCAL_REQUEST found');
     yield put(Activity.getSuccess(JSON.parse(found.data)));
   } else if (connected) {
-    console.log('handle_ACTIVITY_GET_LOCAL_REQUEST connected');
-
     // not locally, maybe we can get it from the server if we're online
     try {
       const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);

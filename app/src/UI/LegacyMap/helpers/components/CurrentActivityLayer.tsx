@@ -7,11 +7,10 @@ import { useSelector } from 'utils/use_selector';
 const CurrentActivityLayer = ({ mapReady }) => {
   const map = useContext(MapContext);
   const [geo, setGeo] = useState(null);
-  console.log('MAp ready', mapReady);
 
   const activityGeometryArray = useSelector((state) => state.ActivityPage.activity?.geometry);
   const { url } = useSelector((state) => state.AppMode);
-  console.log('Activty geo', activityGeometryArray);
+
   // react to changes in the geometry or current page and set our rendered geo appropriately
   // render if a) we're on the Activity page and b) There is a geo object in the Activity
   useEffect(() => {
@@ -33,8 +32,6 @@ const CurrentActivityLayer = ({ mapReady }) => {
     const SHAPE_LAYER = `${LAYER_ID}-shape`;
     const OUTLINE_LAYER = `${LAYER_ID}-outline`;
     const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
-    console.log('Inside Current Activity Layer', geo);
-    console.log(LAYER_ID, SHAPE_LAYER);
 
     if (geo) {
       map
@@ -89,8 +86,6 @@ const CurrentActivityLayer = ({ mapReady }) => {
 
       return () => {
         // cleanup effect -- remove created entries in reverse
-        console.log('CURRENT CLEANING CALLED');
-
         map.removeLayer(ZOOM_CIRCLE_LAYER);
         map.removeLayer(OUTLINE_LAYER);
         map.removeLayer(SHAPE_LAYER);

@@ -68,11 +68,6 @@ export const OfflineDataSyncTable = () => {
                         onClick={() => {
                           history.push(`/Records/Activity:${key}/form`);
                           dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: false } });
-                          // add conditions, dont want to fire it all the time
-                          // dispatch({
-                          //   type: ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE,
-                          //   payload: { toggle: false }
-                          // });
                         }}
                       >
                         <FileOpen />
@@ -122,14 +117,6 @@ export const OfflineDataSyncTable = () => {
 
       {working && <LinearProgress className={'progressBar'} />}
       <div className="control">
-        {/* * Check if mobile
-              * Check if offline / offline user 
-              * Toggle on/off to display all offline activites on the map
-              * Toggle off if a new record is being created
-              * Toggle off if a specific activity is selected
-               
-           */}
-
         {!connected && (
           <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle to view all offline activities on the map">
             <div style={{ paddingRight: '5px' }}>
