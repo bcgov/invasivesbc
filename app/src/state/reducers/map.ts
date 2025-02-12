@@ -33,7 +33,6 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  RECORDSETS_TOGGLE_VIEW_FILTER,
   REMOVE_CLIENT_BOUNDARY,
   SET_CURRENT_OPEN_SET,
   SET_TOO_MANY_LABELS_DIALOG,
@@ -694,6 +693,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.recordTables[recordSetID] = { rows };
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
+      } else if (UserSettings.RecordSet.hideFilters.match(action)) {
+        draftState.viewFilters = !draftState.viewFilters;
       } else {
         switch (action.type) {
           case TOGGLE_LAYER_PICKER_OPEN:
@@ -999,10 +1000,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           case PAGE_OR_LIMIT_UPDATE: {
             draftState.recordTables[action.payload.setID].page = action.payload.page;
             draftState.recordTables[action.payload.setID].limit = action.payload.limit;
-            break;
-          }
-          case RECORDSETS_TOGGLE_VIEW_FILTER: {
-            draftState.viewFilters = !draftState.viewFilters;
             break;
           }
           case RECORD_SET_TO_EXCEL_FAILURE: {

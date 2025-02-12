@@ -7,8 +7,6 @@ import { RecordTable } from './RecordTable';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
-import { RECORDSET_ADD_FILTER, RECORDSET_CLEAR_FILTERS, RECORDSETS_TOGGLE_VIEW_FILTER } from 'state/actions';
-
 import { OverlayHeader } from '../../OverlayHeader';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
@@ -18,8 +16,12 @@ import Filter from './Filter';
 import { useSelector } from 'utils/use_selector';
 import { MOBILE } from 'state/build-time-config';
 import { useEffect, useState } from 'react';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
-export const RecordSet = (props) => {
+type PropTypes = { setID: string };
+
+export const RecordSet = ({ setID }: PropTypes) => {
   const viewFilters = useSelector((state) => state.Map.viewFilters);
   const connected = useSelector((state) => state.Network.connected);
   const history = useHistory();
@@ -29,7 +31,7 @@ export const RecordSet = (props) => {
     history.push('/Records');
   };
   const [userOfflineMobile, setUserOfflineMobile] = useState<boolean>(!connected && MOBILE);
-  const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[props.setID]);
+  const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
   const tableType = recordSet?.recordSetType;
 
   useEffect(() => {
@@ -62,14 +64,7 @@ export const RecordSet = (props) => {
               <Button
                 size={'small'}
                 disabled={userOfflineMobile}
-                onClick={() => {
-                  dispatch({
-                    type: RECORDSET_CLEAR_FILTERS,
-                    payload: {
-                      setID: props.setID
-                    }
-                  });
-                }}
+                onClick={() => dispatch(UserSettings.RecordSet.clearFilters({ setID }))}
                 variant="contained"
               >
                 Clear Filters
@@ -84,11 +79,7 @@ export const RecordSet = (props) => {
               <Button
                 size={'small'}
                 disabled={userOfflineMobile}
-                onClick={() => {
-                  dispatch({
-                    type: RECORDSETS_TOGGLE_VIEW_FILTER
-                  });
-                }}
+                onClick={() => dispatch(UserSettings.RecordSet.hideFilters())}
                 variant="contained"
               >
                 {viewFilters ? (
@@ -120,20 +111,17 @@ export const RecordSet = (props) => {
               <Button
                 size={'small'}
                 disabled={userOfflineMobile}
-                onClick={() => {
-                  dispatch({
-                    type: RECORDSET_ADD_FILTER,
-                    payload: {
+                onClick={() =>
+                  dispatch(
+                    UserSettings.RecordSet.addFilter({
+                      field: tableType === RecordSetType.Activity ? 'short_id' : 'site_id',
                       filterType: 'tableFilter',
-                      // short id if activity record set otherwise site_ID
-                      field: tableType === 'Activity' ? 'short_id' : 'site_id',
-                      setID: props.setID,
                       operator: 'CONTAINS',
                       operator2: 'AND',
-                      blockFetchForNow: true
-                    }
-                  });
-                }}
+                      setID: setID
+                    })
+                  )
+                }
                 variant="contained"
               >
                 Add Filter + <FilterAltIcon />
@@ -156,25 +144,21 @@ export const RecordSet = (props) => {
                 </tr>
               </thead>
               <tbody>
-                {recordSet?.tableFilters.map((filter: any, i) => {
-                  if (filter.field !== 'form_status')
+                {recordSet?.tableFilters.map((filter: any) => {
+                  if (filter.field !== 'form_status') {
                     return (
-                      <Filter
-                        key={'filterIndex' + i}
-                        setID={props.setID}
-                        id={filter.id}
-                        userOfflineMobile={userOfflineMobile}
-                      />
+                      <Filter key={filter.id} setID={setID} id={filter.id} userOfflineMobile={userOfflineMobile} />
                     );
+                  }
                 })}
               </tbody>
             </table>
           )}
-          <ExcelExporter setName={props.setID} />
+          <ExcelExporter setName={setID} />
         </div>
       </div>
-      <RecordTable setID={props.setID} userOfflineMobile={userOfflineMobile} />
-      <RecordSetFooter setID={props.setID} />
+      <RecordTable setID={setID} userOfflineMobile={userOfflineMobile} />
+      <RecordSetFooter setID={setID} />
     </div>
   );
 };

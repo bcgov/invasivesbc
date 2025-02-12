@@ -22,6 +22,10 @@ export interface IRemoveFilter {
   setID: string | number;
   filterID: string | number;
 }
+export interface IFilter extends Partial<IUpdateFilter> {
+  setID: string | number;
+  filterType: string;
+}
 class RecordSet {
   private static readonly PREFIX = `UserSettings/RecordSet`;
 
@@ -80,8 +84,11 @@ class RecordSet {
     }
   );
 
+  static readonly addFilter = createAction<IFilter>(`${this.PREFIX}/addFilter`);
+  static readonly clearFilters = createAction<{ setID: number | string }>(`${this.PREFIX}/clearFilters`);
   static readonly updateFilter = createAction<IUpdateFilter>(`${this.PREFIX}/updateFilter`);
   static readonly removeFilter = createAction<IRemoveFilter>(`${this.PREFIX}/removeFilter`);
+  static readonly hideFilters = createAction(`${this.PREFIX}/hideFilters`);
 
   private static readonly createDefaultRecordset = (type: RecordSetType): UserRecordSet => ({
     tableFilters: [],

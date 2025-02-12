@@ -1,14 +1,7 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
-import {
-  CLOSE_NEW_RECORD_MENU,
-  GET_API_DOC_SUCCESS,
-  OPEN_NEW_RECORD_MENU,
-  RECORDSET_ADD_FILTER,
-  RECORDSET_CLEAR_FILTERS,
-  RECORDSET_SET_SORT
-} from '../actions';
+import { CLOSE_NEW_RECORD_MENU, GET_API_DOC_SUCCESS, OPEN_NEW_RECORD_MENU, RECORDSET_SET_SORT } from '../actions';
 
 import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -239,6 +232,37 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.activeActivity = action.payload;
       } else if (IappActions.getSuccess.match(action)) {
         draftState.activeIAPP = action.payload.iapp?.site_id;
+      } else if (UserSettings.RecordSet.addFilter.match(action)) {
+        const { filterType, setID, field, operator, operator2, filter } = action.payload;
+        if (filterType === 'tableFilter') {
+          draftState.recordSets[setID].tableFilters ??= [];
+          draftState.recordSets[setID]?.tableFilters.push({
+            id: nanoid(),
+            field: field,
+            filterType: filterType,
+            operator: operator ?? 'CONTAINS',
+            operator2: operator2 ?? 'AND',
+            filter: filter ?? ''
+          });
+        }
+      } else if (UserSettings.RecordSet.clearFilters.match(action)) {
+        if (action.payload.setID !== '1') {
+          draftState.recordSets[action.payload.setID].tableFilters = [];
+        } else {
+          draftState.recordSets[action.payload.setID].tableFilters = [
+            {
+              id: '1',
+              field: 'form_status',
+              filterType: 'tableFilter',
+              filter: 'Draft',
+              operator1: 'CONTAINS',
+              operator2: 'AND'
+            }
+          ];
+        }
+        // clear sort:
+        delete draftState.recordSets[action.payload.setID].sortOrder;
+        delete draftState.recordSets[action.payload.setID].sortColumn;
       } else {
         switch (action.type) {
           case GET_API_DOC_SUCCESS: {
@@ -252,26 +276,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           }
           case CLOSE_NEW_RECORD_MENU: {
             draftState.newRecordDialogueOpen = false;
-            break;
-          }
-          case RECORDSET_ADD_FILTER: {
-            switch (action.payload.filterType) {
-              case 'tableFilter':
-                if (!draftState.recordSets[action.payload.setID]?.tableFilters) {
-                  draftState.recordSets[action.payload.setID].tableFilters = [];
-                }
-                draftState.recordSets[action.payload.setID]?.tableFilters.push({
-                  id: nanoid(),
-                  field: action.payload.field,
-                  filterType: action.payload.filterType,
-                  operator: action.payload.operator ? action.payload.operator : 'CONTAINS',
-                  operator2: action.payload.operator2 ? action.payload.operator2 : 'AND',
-                  filter: action.payload.filter ? action.payload.filter : ''
-                });
-                break;
-              default:
-                break;
-            }
             break;
           }
           case RECORDSET_SET_SORT: {
@@ -301,26 +305,6 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               delete draftState.recordSets[action.payload.setID].sortColumn;
             }
 
-            break;
-          }
-          case RECORDSET_CLEAR_FILTERS: {
-            if (action.payload.setID !== '1') {
-              draftState.recordSets[action.payload.setID].tableFilters = [];
-            } else {
-              draftState.recordSets[action.payload.setID].tableFilters = [
-                {
-                  id: '1',
-                  field: 'form_status',
-                  filterType: 'tableFilter',
-                  filter: 'Draft',
-                  operator1: 'CONTAINS',
-                  operator2: 'AND'
-                }
-              ];
-            }
-            // clear sort:
-            delete draftState.recordSets[action.payload.setID].sortOrder;
-            delete draftState.recordSets[action.payload.setID].sortColumn;
             break;
           }
           default:
