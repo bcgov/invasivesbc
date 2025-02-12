@@ -43,7 +43,7 @@ import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
-import { OfflineActivitiesMapLayer } from 'UI/LegacyMap/helpers/components/OfflineActivitiesLayer';
+import { OfflineActivitiesLayer } from 'UI/LegacyMap/helpers/components/OfflineActivitiesLayer';
 import { selectOfflineActivity } from 'state/reducers/offlineActivity';
 
 /*
@@ -338,7 +338,7 @@ export const Map = ({ children }) => {
           <ReactiveLayers mapReady={mapReady} />
           <PositionMarkers mapReady={mapReady} />
           {offlineActivitiesVisibility ? (
-            <OfflineActivitiesMapLayer mapReady={mapReady} />
+            <OfflineActivitiesLayer mapReady={mapReady} />
           ) : (
             <CurrentActivityLayer mapReady={mapReady} />
           )}

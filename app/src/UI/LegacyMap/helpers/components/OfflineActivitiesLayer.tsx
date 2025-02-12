@@ -6,7 +6,7 @@ import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { useSelector } from 'utils/use_selector';
 
-const OfflineActivitiesMapLayer = ({ mapReady }) => {
+const OfflineActivitiesLayer = ({ mapReady }) => {
   const map = useContext(MapContext);
 
   const { serializedActivities, offlineActivitiesVisibility } = useSelector(selectOfflineActivity);
@@ -34,7 +34,6 @@ const OfflineActivitiesMapLayer = ({ mapReady }) => {
     const SHAPE_LAYER = `${LAYER_ID}-shape`;
     const OUTLINE_LAYER = `${LAYER_ID}-outline`;
     const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
-    console.log(LAYER_ID, SHAPE_LAYER);
 
     if (geojsonData.features) {
       map
@@ -100,4 +99,4 @@ const OfflineActivitiesMapLayer = ({ mapReady }) => {
   return null;
 };
 
-export { OfflineActivitiesMapLayer };
+export { OfflineActivitiesLayer };
