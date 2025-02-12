@@ -1,6 +1,7 @@
-import UserRecord from 'interfaces/UserRecord';
 import localForage from 'localforage';
 import centroid from '@turf/centroid';
+import { Feature } from '@turf/helpers';
+import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import {
   IappRecordMode,
   RepositoryMetadata,
@@ -8,11 +9,10 @@ import {
   RecordSetSourceMetadata,
   CacheDownloadMode
 } from 'utils/record-cache/index';
-import { Feature } from '@turf/helpers';
-import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -221,7 +221,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return { cachedCentroid, cachedGeoJson };
   }
 
-  async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
+  override async deleteCachedRecordsFromIds(idsToDelete: string[]): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
@@ -255,11 +255,18 @@ class LocalForageRecordCacheService extends RecordCacheService {
         ids[id]++;
       });
     const recordsToErase = deleteList.filter((id) => ids[id] === 1);
-    this.deleteCachedRecordsFromIds(recordsToErase, cachedSets[foundIndex].recordSetType);
+    this.deleteCachedRecordsFromIds(recordsToErase);
     cachedSets.splice(foundIndex, 1);
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
+  protected async getAllCachedIds(): Promise<string[]> {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+    const keys = (await this.store.keys()) ?? [];
+    return keys.filter((key) => key !== LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY);
+  }
   /**
    * @desc Create or Update an entry in the cachedSet Repository
    * @param newSet Data to update

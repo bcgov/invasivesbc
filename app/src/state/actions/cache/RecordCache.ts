@@ -1,6 +1,7 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
+import { getRecordFilterObjectFromStateForAPI } from 'state/sagas/map/dataAccess';
 import getBoundingBoxFromRecordsetFilters from 'utils/getBoundingBoxFromRecordsetFilters';
 import { CacheDownloadMode, RecordCacheProgressCallbackParameters } from 'utils/record-cache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
@@ -22,7 +23,7 @@ class RecordCache {
   });
 
   static readonly downloadProgressEvent = createAction<RecordCacheProgressCallbackParameters>(
-    'RECORD_CACHE_DOWNLOAD_PROGRESS_EVENT'
+    `${this.PREFIX}/downloadProgressEvent`
   );
 
   static readonly pauseDownload = createAsyncThunk(`${this.PREFIX}/pauseDownload`, async (spec: { setId: string }) => {
@@ -42,8 +43,14 @@ class RecordCache {
       const idsToCache: string[] =
         state.Map.layers.find((l) => l.recordSetID == spec.setId)?.IDList.map((id: string | number) => id.toString()) ??
         [];
+      const recordSet = JSON.parse(JSON.stringify(state.UserSettings.recordSets[spec.setId]));
 
-      const recordSet = state.UserSettings.recordSets[spec.setId];
+      recordSet.tableFilters = getRecordFilterObjectFromStateForAPI(
+        spec.setId,
+        state.UserSettings,
+        state.Map.clientBoundaries
+      );
+
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
 
       const downloadMode: CacheDownloadMode = await service.download(

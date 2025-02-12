@@ -172,7 +172,26 @@ class SQLiteTileCacheService extends TileCacheService {
   }
 
   async getRepositoryStatistics(id: string): Promise<RepositoryStatistics> {
-    throw new Error('unimplemented');
+    if (this.cacheDB == null) {
+      throw new Error('cache not available');
+    }
+
+    const results = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT DATA
+      FROM CACHED_TILES
+      WHERE TILESET = ?`,
+      [id]
+    );
+    let sizeInBytes = 0;
+    const numberOfTiles = results?.values?.length ?? 0;
+    results?.values?.forEach((tile) => {
+      sizeInBytes += tile['DATA'].length ?? 0;
+    });
+    return {
+      sizeInBytes: sizeInBytes,
+      tileCount: numberOfTiles
+    };
   }
 
   public async updateDescription(repository: string, newDescription: string) {
