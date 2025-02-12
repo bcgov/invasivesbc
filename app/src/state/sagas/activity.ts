@@ -2,6 +2,7 @@ import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redu
 import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
+  ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_RESTORE_OFFLINE,
@@ -64,6 +65,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import { selectMap } from 'state/reducers/map';
+import { selectOfflineActivity } from 'state/reducers/offlineActivity';
 
 function* handle_ACTIVITY_DELETE_SUCCESS(action) {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -114,9 +116,8 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
 }
 
 function* handle_URL_CHANGE(action) {
-  console.log('Here?');
-
   const activityPageState = yield select(selectActivity);
+  const { offlineActivitiesVisibility } = yield select(selectOfflineActivity);
   const isActivityURL = action.payload.url.includes('/Records/Activity:');
   if (isActivityURL) {
     const afterColon = action.payload.url.split(':')?.[1];
@@ -124,7 +125,14 @@ function* handle_URL_CHANGE(action) {
     if (afterColon) {
       id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
     }
-    console.log('After colon', activityPageState?.activity?.activity_id, id);
+
+    if (offlineActivitiesVisibility) {
+      // turn this off when the user creates new records or checks for current activity while offline
+      yield put({
+        type: ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE,
+        payload: { toggle: false }
+      });
+    }
 
     if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(Activity.get(id));
   }

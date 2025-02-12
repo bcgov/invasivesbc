@@ -8,26 +8,24 @@ import { useSelector } from 'utils/use_selector';
 
 const OfflineActivitiesMapLayer = ({ mapReady }) => {
   const map = useContext(MapContext);
-  console.log('MAp ready', mapReady);
 
   const { serializedActivities, offlineActivitiesVisibility } = useSelector(selectOfflineActivity);
   const connected = useSelector(selectNetworkConnected);
 
-  // const geometryList = Object.values(serializedActivities).map(
-  //   (item) => JSON.parse((item as OfflineActivityRecord).data).geometry[0]
-  // );
-  const geometryList = Object.values(serializedActivities).map((item) => {
-    const parsedData = JSON.parse((item as OfflineActivityRecord).data);
-    return parsedData.geometry ? parsedData.geometry[0] : null; // Add check here
-  });
+  const geometryList = Object.values(serializedActivities)
+    .map((item) => {
+      const parsedData = JSON.parse((item as OfflineActivityRecord).data);
+      return parsedData.geometry ? parsedData.geometry[0] : null;
+    })
+    .filter((geometry) => geometry !== null);
+
   let geojsonData: FeatureCollection = {
     type: 'FeatureCollection',
-    features: geometryList || [] // This will hold multiple shapes
+    features: geometryList || []
   };
 
   useEffect(() => {
     if (!map || !mapReady || connected || !offlineActivitiesVisibility) return;
-    console.log('Inside useeffext');
 
     // add the layer if needed
 
@@ -90,8 +88,6 @@ const OfflineActivitiesMapLayer = ({ mapReady }) => {
         );
 
       return () => {
-        console.log('CLEANING CALLED');
-
         // cleanup effect -- remove created entries in reverse
         map.removeLayer(ZOOM_CIRCLE_LAYER);
         map.removeLayer(OUTLINE_LAYER);
@@ -99,7 +95,7 @@ const OfflineActivitiesMapLayer = ({ mapReady }) => {
         map.removeSource(LAYER_ID);
       };
     }
-  }, [geometryList, offlineActivitiesVisibility]);
+  }, [geometryList]);
 
   return null;
 };

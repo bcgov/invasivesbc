@@ -749,12 +749,14 @@ function* handle_CUSTOM_LAYER_DRAWN() {
 function* handle_MAP_ON_SHAPE_CREATE(action) {
   const callback = (width: number) => {
     const newGeo = buffer(action.payload.geometry, width / 10000) ?? action.payload;
+
     if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
       return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
     }
   };
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
+
   if (action?.payload?.geometry?.type === 'LineString') {
     yield put(
       Prompt.number({

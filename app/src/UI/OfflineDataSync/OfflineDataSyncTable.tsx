@@ -69,10 +69,10 @@ export const OfflineDataSyncTable = () => {
                           history.push(`/Records/Activity:${key}/form`);
                           dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: false } });
                           // add conditions, dont want to fire it all the time
-                          dispatch({
-                            type: ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE,
-                            payload: { toggle: false }
-                          });
+                          // dispatch({
+                          //   type: ACTIVITY_OFFLINE_ALL_SHAPE_VISIBILITY_STATE,
+                          //   payload: { toggle: false }
+                          // });
                         }}
                       >
                         <FileOpen />

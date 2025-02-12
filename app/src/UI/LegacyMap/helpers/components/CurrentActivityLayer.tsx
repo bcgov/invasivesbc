@@ -12,7 +12,6 @@ const CurrentActivityLayer = ({ mapReady }) => {
   const activityGeometryArray = useSelector((state) => state.ActivityPage.activity?.geometry);
   const { url } = useSelector((state) => state.AppMode);
   console.log('Activty geo', activityGeometryArray);
-  const { working, serializedActivities } = useSelector(selectOfflineActivity);
   // react to changes in the geometry or current page and set our rendered geo appropriately
   // render if a) we're on the Activity page and b) There is a geo object in the Activity
   useEffect(() => {
