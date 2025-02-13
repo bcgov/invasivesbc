@@ -178,19 +178,15 @@ class SQLiteTileCacheService extends TileCacheService {
 
     const results = await this.cacheDB.query(
       //language=SQLite
-      `SELECT DATA
-      FROM CACHED_TILES
-      WHERE TILESET = ?`,
+      `SELECT SUM(LENGTH(DATA)) AS SIZE_IN_BYTES,
+       COUNT(*) AS TOTAL_TILES
+       FROM CACHED_TILES
+       WHERE TILESET = ?`,
       [id]
     );
-    let sizeInBytes = 0;
-    const numberOfTiles = results?.values?.length ?? 0;
-    results?.values?.forEach((tile) => {
-      sizeInBytes += tile['DATA'].length ?? 0;
-    });
     return {
-      sizeInBytes: sizeInBytes,
-      tileCount: numberOfTiles
+      sizeInBytes: results.values?.[0]['SIZE_IN_BYTES'],
+      tileCount: results.values?.[0]['TOTAL_TILES']
     };
   }
 
