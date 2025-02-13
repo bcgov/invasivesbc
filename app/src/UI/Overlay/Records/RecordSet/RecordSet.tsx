@@ -144,10 +144,16 @@ export const RecordSet = ({ setID }: PropTypes) => {
                 </tr>
               </thead>
               <tbody>
-                {recordSet?.tableFilters.map((filter: any) => {
+                {recordSet.tableFilters.map((filter) => {
                   if (filter.field !== 'form_status') {
                     return (
-                      <Filter key={filter.id} setID={setID} id={filter.id} userOfflineMobile={userOfflineMobile} />
+                      <Filter
+                        key={filter.id}
+                        recordSetType={recordSet.recordSetType}
+                        setID={setID}
+                        filterSet={filter}
+                        userOfflineMobile={userOfflineMobile}
+                      />
                     );
                   }
                 })}
