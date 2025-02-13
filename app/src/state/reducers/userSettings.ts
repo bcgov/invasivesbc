@@ -201,9 +201,7 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
           });
         }
       } else if (UserSettings.RecordSet.clearFilters.match(action)) {
-        if (action.payload.setID !== '1') {
-          draftState.recordSets[action.payload.setID].tableFilters = [];
-        } else {
+        if (action.payload.setID === '1') {
           draftState.recordSets[action.payload.setID].tableFilters = [
             {
               id: '1',
@@ -214,6 +212,8 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
               operator2: 'AND'
             }
           ];
+        } else {
+          draftState.recordSets[action.payload.setID].tableFilters = [];
         }
         // clear sort:
         delete draftState.recordSets[action.payload.setID].sortOrder;
