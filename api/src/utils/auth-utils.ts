@@ -154,8 +154,9 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
                     .catch((err: Error) => reject(err));
                 })
                 .catch((err: Error) => reject(err));
+            } else {
+              resolve();
             }
-            resolve();
           });
 
           createIfNeeded.then(() => {
