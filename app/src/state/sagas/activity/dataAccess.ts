@@ -11,6 +11,7 @@ import {
 } from 'sharedAPI';
 import { FeatureCollection, kinks } from '@turf/turf';
 
+import { PayloadAction } from '@reduxjs/toolkit';
 import {
   autoFillNameByPAC,
   autoFillSlopeAspect,
@@ -48,7 +49,6 @@ import Prompt from 'state/actions/prompts/Prompt';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Activity, { INewActivity } from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
-import { PayloadAction } from '@reduxjs/toolkit';
 
 export function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -278,12 +278,15 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivi
   try {
     const authState = yield select(selectAuth);
 
+    const username = authState.username;
+    const displayName = authState.displayName;
+  
     const newActivity = yield call(
       activity_create_function,
       action.payload.type,
       action.payload.subType,
-      authState.username,
-      authState.displayName,
+      username,
+      displayName,
       authState.extendedInfo.pac_number
     );
 
