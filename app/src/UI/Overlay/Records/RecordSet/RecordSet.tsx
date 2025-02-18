@@ -7,7 +7,6 @@ import { RecordTable } from './RecordTable';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 
-import { OverlayHeader } from '../../OverlayHeader';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import ExcelExporter from '../ExcelExporter';
@@ -44,7 +43,6 @@ export const RecordSet = ({ setID }: PropTypes) => {
   }
   return (
     <div className="recordSet_container">
-      <OverlayHeader />
       <div className="stickyHeader">
         <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
           <div className="recordSet_back_button">
