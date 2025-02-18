@@ -1,3 +1,9 @@
+.no-records {
+  border: 1pt solid black;
+  border-radius: 10pt;
+  padding: 15pt;
+}
+
 .record_table_container {
   display: flex;
   width: 100%;

@@ -48,7 +48,13 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
 
   const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
   const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
-
+  if (mappedRows?.length === 0) {
+    return (
+      <div className="no-records">
+        <p>There are no records matching your current filters.</p>
+      </div>
+    );
+  }
   return (
     <div className="record_table_container">
       <table className="record_table">
