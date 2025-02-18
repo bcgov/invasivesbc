@@ -41,6 +41,8 @@ body {
   overflow: hidden;
   height: 100svh;
 
+  --record-table-footer-height: 2rem;
+
   /* set by compilation flag */
 
   &.is-mobile {
@@ -110,7 +112,7 @@ body {
   --overlay-grip-height: 25px; /* grab handle */
   --extra-top-padding: 0px;
   --extra-bottom-padding: 0px;
-  --bc-blue: #003366;
+  --bc-blue: #036;
   --error-red: #f44336;
   --deep-red: #b2102f;
   --success-green: #357a38;
@@ -136,6 +138,7 @@ body {
 .orange {
   color: var(--warning-orange);
 }
+
 @media only screen and (width <= 800px) {
   :root {
     .App {
