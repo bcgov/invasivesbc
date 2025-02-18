@@ -1,7 +1,6 @@
 .recordSet_container {
   max-width: 100%;
   display: flex;
-  padding: 10pt;
   flex-direction: column;
 
   .content-container {
@@ -123,7 +122,7 @@
   height: var(--record-table-footer-height);
   width: 100%;
   background-color: #036;
-  align-items: center;
+  align-items: top;
   display: flex;
   position: fixed;
 
