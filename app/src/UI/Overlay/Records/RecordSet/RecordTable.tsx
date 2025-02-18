@@ -120,7 +120,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                 }}
                 onMouseOver={() => onUserHoveredRecord(row)}
                 onFocus={() => onUserHoveredRecord(row)}
-                onTouchStart={(e) => {
+                onTouchStart={() => {
                   dispatch({
                     type: USER_TOUCHED_RECORD,
                     payload: {
@@ -135,7 +135,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
               >
                 {isTouch && (
                   <td
-                    onTouchStart={(e) => {
+                    onTouchStart={() => {
                       dispatch({
                         type: USER_CLICKED_RECORD,
                         payload: {
@@ -159,7 +159,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                         </td>
                       );
                     })
-                  : iappColumnsToDisplay.map((col, j) => {
+                  : iappColumnsToDisplay.map((col) => {
                       return (
                         <td className="record_table_row_column" key={col.key + col.name}>
                           {row[col.key]}
