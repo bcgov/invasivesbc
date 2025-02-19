@@ -6,10 +6,12 @@ import { useSelector } from 'utils/use_selector';
 const RecordSetFooter = (props) => {
   const layer = useSelector((state: any) => state.Map.layers?.filter((layer) => layer.recordSetID === props.setID)[0]);
   const recordTable = useSelector((state: any) => state.Map.recordTables?.[props.setID]);
+  console.log('Layer', layer);
+  console.log('Record Table', recordTable);
 
   const loading = layer?.loading || recordTable?.loading;
 
-  const totalRecords = layer?.IDList?.length;
+  const totalRecords = recordTable?.rows?.length;
   const loaded = !loading;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
@@ -27,6 +29,7 @@ const RecordSetFooter = (props) => {
   const shouldDisplayPreviousButton = firstRowIndex > 0 && !loading;
 
   const dispatch = useDispatch();
+  console.log('Inside footer', layer);
 
   const onClickPrevious = () => {
     dispatch({

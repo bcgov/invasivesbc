@@ -33,6 +33,8 @@ export const FormMenuButtons = (props) => {
   }, [accessRoles, username, activityCreatedBy]);
 
   const handleSaveDraft = () => {
+    console.log('SAVE REQUEST');
+
     dispatch(Activity.save());
     dispatch({ type: OVERLAY_MENU_TOGGLE });
   };

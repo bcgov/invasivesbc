@@ -644,6 +644,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.track_me_draw_geo.drawingShape = true;
       } else if (IappActions.getRows.match(action) || Activity.getRows.match(action)) {
         const { recordSetID, page, limit, tableFiltersHash } = action.payload;
+        console.log('Table filter', tableFiltersHash);
+        console.log('What is this', action.payload);
         draftState.recordTables[recordSetID] ??= {};
         Object.assign(draftState.recordTables[recordSetID], {
           loading: true,
@@ -651,6 +653,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           limit: limit,
           tableFiltersHash: tableFiltersHash
         });
+        console.log('What is this', draftState.recordTables[recordSetID]);
       } else if (IappActions.getRowsSuccess.match(action)) {
         // the hash, page, and limit all need to line up
         const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
@@ -676,6 +679,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
       } else if (Activity.getRowsSuccess.match(action)) {
         // the hash, page, and limit all need to line up
         const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
+        console.log('How many rows', rows);
+
         const recordTable = draftState.recordTables?.[recordSetID];
         if (recordTable?.tableFiltersHash !== tableFiltersHash) {
           console.warn('hash mismatch', recordTable?.tableFiltersHash, tableFiltersHash);

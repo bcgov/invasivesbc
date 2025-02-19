@@ -100,6 +100,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   const connected = yield select((state) => state.Network.connected);
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
+  console.log('====> ', action.payload);
 
   try {
     // if mobile or web
@@ -249,6 +250,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
         })
       );
     } else {
+      console.log('this is the record set id', recordSetID, mapState?.recordTables?.[recordSetID]);
+
       yield put(
         Activity.getRowsRequest({
           filterObj: filterObject,

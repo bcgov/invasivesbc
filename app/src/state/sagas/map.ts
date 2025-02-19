@@ -560,9 +560,18 @@ function* handle_URL_CHANGE(action) {
       page: page,
       limit: limit
     };
+
     if (recordSetType === RecordSetType.Activity) {
+      // yield put({
+      //   type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+      //   payload: { recordSetID: id, tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash }
+      // });
       yield put(Activity.getRows(actionArg));
     } else if (recordSetType === RecordSetType.IAPP) {
+      // yield put({
+      //   type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
+      //   payload: { recordSetID: id, tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash }
+      // });
       yield put(IappActions.getRows(actionArg));
     }
   }
@@ -677,6 +686,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
       });
     }
     if (layer.recordSetType === RecordSetType.Activity) {
+      console.log('Is this called2');
       actionsToPut.push({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }

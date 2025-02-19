@@ -143,6 +143,8 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
   }
 
   if (networkReturn.data.result) {
+    console.log('How many rows?', networkReturn.data.result);
+
     yield put(
       Activity.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
@@ -218,6 +220,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     if (!tableFiltersHash === action.payload.tableFiltersHash) {
       return;
     }
+    console.log('ID LIST', IDList, action.payload);
 
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,

@@ -52,6 +52,8 @@ import { PayloadAction } from '@reduxjs/toolkit';
 
 export function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
+    console.log('Does this get called?', action.payload);
+
     if (MOBILE) {
       yield put(Activity.getLocal(action.payload));
     } else {
@@ -264,7 +266,7 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
     try {
       yield put(
         Activity.saveNetworkRequest({
-          activity_id: activityState.activity_id,
+          activity_id: activityState?.activity_id,
           updatedFormData: action.payload?.updatedFormData
         })
       );
@@ -372,6 +374,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
 
 export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
+  console.log('Is this here?');
 
   if (MOBILE) {
     yield put({
