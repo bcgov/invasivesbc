@@ -277,6 +277,7 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
 export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivity>) {
   try {
     const authState = yield select(selectAuth);
+    const connected = yield select(selectNetworkConnected);
 
     const newActivity = yield call(
       activity_create_function,
@@ -287,7 +288,7 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivi
       authState.extendedInfo.pac_number
     );
 
-    if (MOBILE) {
+    if (MOBILE && !connected) {
       yield put(Activity.createLocal({ id: newActivity.activity_id, data: newActivity }));
     } else {
       yield put(Activity.createNetwork(newActivity));
