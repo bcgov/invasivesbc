@@ -12,7 +12,12 @@ import { MOBILE } from 'state/build-time-config';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 
 export const Records = () => {
-  const DEFAULT_RECORD_TYPES = ['All InvasivesBC Activities', 'All IAPP Records', 'My Drafts'];
+  const DEFAULT_RECORD_TYPES = [
+    'All InvasivesBC Activities',
+    'All IAPP Records',
+    'My Drafts',
+    'All Offline Activities'
+  ];
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
   const connected = useSelector((state) => state.Network.connected);
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
