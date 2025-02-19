@@ -560,7 +560,6 @@ function* handle_URL_CHANGE(action) {
       page: page,
       limit: limit
     };
-
     if (recordSetType === RecordSetType.Activity) {
       yield put(Activity.getRows(actionArg));
     } else if (recordSetType === RecordSetType.IAPP) {
