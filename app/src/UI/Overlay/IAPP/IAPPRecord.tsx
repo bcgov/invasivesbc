@@ -3,7 +3,6 @@ import { useEffect } from 'react';
 import './IAPPRecords.css';
 import { Route, useHistory, useParams } from 'react-router';
 import { useDispatch, useSelector } from 'react-redux';
-import { OverlayHeader } from '../OverlayHeader';
 import { Button } from '@mui/material';
 import { Summary } from './Summary';
 import { Photos } from './Photos';
@@ -26,7 +25,6 @@ export const IAPPRecord = () => {
 
   return (
     <div className="records__activity">
-      <OverlayHeader></OverlayHeader>
       <div className="records__activity__header">
         <div className="records__activity_buttons">
           <Button

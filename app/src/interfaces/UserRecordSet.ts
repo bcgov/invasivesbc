@@ -1,3 +1,4 @@
+import { IFilter } from 'state/actions/userSettings/RecordSet';
 import { RecordCacheProgressCallbackParameters } from 'utils/record-cache';
 
 export enum RecordSetType {
@@ -16,7 +17,7 @@ export enum UserRecordCacheStatus {
 }
 
 export interface UserRecordSet {
-  tableFilters?: any;
+  tableFilters: IFilter[];
   id?: string;
   color: string;
   drawOrder: number;
@@ -34,4 +35,8 @@ export interface UserRecordSet {
   };
   cacheMetadataStatus: UserRecordCacheStatus;
   cacheDownloadProgress: RecordCacheProgressCallbackParameters;
+  tableFiltersHash?: string;
+  tableFiltersPreviousHash?: string;
+  sortOrder?: 'ASC' | 'DESC';
+  sortColumn?: string;
 }
