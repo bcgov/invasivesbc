@@ -1,3 +1,4 @@
+import { DEBUG } from 'state/build-time-config';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { base64toBuffer, lat2tile, long2tile } from 'utils/tile-cache/helpers';
 
@@ -71,6 +72,7 @@ abstract class TileCacheService extends BaseCacheService<
   TileCacheProgressCallbackParameters,
   RepositoryStatus
 > {
+  CONCURRENCY_LIMIT = DEBUG ? 10 : 6; // Throttle for Mobile launches, boost for development.
   protected constructor() {
     super();
   }
@@ -126,7 +128,6 @@ abstract class TileCacheService extends BaseCacheService<
     spec: RepositoryDownloadRequestSpec,
     progressCallback?: (currentProgress: TileCacheProgressCallbackParameters) => void
   ): Promise<void> {
-    const CONCURRENCY_LIMIT = 10;
     const totalTiles = TileCacheService.computeTileCount(spec.bounds, spec.maxZoom);
     let abort = false;
     let processedTiles = 0;
@@ -159,7 +160,7 @@ abstract class TileCacheService extends BaseCacheService<
       const promises = tileUrls.map((config) => () => this.downloadTile(config));
 
       for (let i = 0; i < promises.length && !abort; i++) {
-        if (executing.size >= CONCURRENCY_LIMIT) {
+        if (executing.size >= this.CONCURRENCY_LIMIT) {
           await Promise.race(executing);
         }
 
