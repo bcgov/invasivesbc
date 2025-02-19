@@ -254,8 +254,8 @@ export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
 
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   const activityState = yield select(selectActivity);
-
-  if (MOBILE) {
+  const connected = yield select(selectNetworkConnected);
+  if (MOBILE && !connected) {
     yield put({
       type: ACTIVITY_SAVE_OFFLINE,
       payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }

@@ -109,7 +109,7 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
     const hydrated = JSON.parse(activity.data);
 
     try {
-      const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
+      const networkReturn = yield InvasivesAPI_Call('POST', `/api/activity/`, {
         ...hydrated,
         form_status: ActivityStatus.DRAFT
       });
