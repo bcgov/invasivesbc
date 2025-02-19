@@ -13,6 +13,7 @@ import Spinner from 'UI/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Overlay/WhatsHere/WhatsHereTable';
 import { RENDER_DEBUG } from 'UI/App';
 import { OverlayHeader } from 'UI/Overlay/OverlayHeader';
+import { OfflineRecordSet } from 'UI/Overlay/Records/RecordSet/OfflineRecordSet';
 
 const UserAccessPage = React.lazy(() => import('UI/Overlay/Admin/userAccess/UserAccessPage'));
 const EmbeddedReportsPage = React.lazy(() => import('UI/Overlay/Reports/EmbeddedReportsPage'));
@@ -114,7 +115,9 @@ const OverlayContent = () => {
           path="/Records/List/Local:id"
           render={(props) => (
             <>
-              {!userRecordOnClickMenuOpen ? (
+              {props.match.params.id.split(':')[1] === '4' ? (
+                <OfflineRecordSet setID={props.match.params.id.split(':')[1]} />
+              ) : !userRecordOnClickMenuOpen ? (
                 <RecordSet setID={props.match.params.id.split(':')[1]} />
               ) : (
                 <OverlayMenu>

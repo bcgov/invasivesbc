@@ -16,7 +16,7 @@ export const Records = () => {
     'All InvasivesBC Activities',
     'All IAPP Records',
     'My Drafts',
-    'All Offline Activities'
+    'All Unsynced Offline Activities'
   ];
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
   const connected = useSelector((state) => state.Network.connected);

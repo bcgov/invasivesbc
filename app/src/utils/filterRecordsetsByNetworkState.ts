@@ -8,7 +8,11 @@ import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
  */
 const filterRecordsetsByNetworkState = (recordSets: Record<string, UserRecordSet>, userOffline: boolean): string[] =>
   Object.keys(recordSets).filter((set) => {
-    return !userOffline || recordSets[set].cacheMetadataStatus === UserRecordCacheStatus.CACHED;
+    return (
+      !userOffline ||
+      recordSets[set].cacheMetadataStatus === UserRecordCacheStatus.CACHED ||
+      recordSets[set].recordSetName === 'All Unsynced Offline Activities'
+    );
   });
 
 export default filterRecordsetsByNetworkState;

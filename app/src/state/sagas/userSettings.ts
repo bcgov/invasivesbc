@@ -137,7 +137,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     },
     '4': {
       recordSetType: RecordSetType.Activity,
-      recordSetName: 'All Offline Activities',
+      recordSetName: 'All Unsynced Offline Activities',
       // add draft key
       tableFilters: [
         {
