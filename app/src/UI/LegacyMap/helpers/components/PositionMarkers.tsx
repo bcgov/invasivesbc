@@ -10,6 +10,8 @@ import { handlePositionTracking } from 'UI/LegacyMap/helpers/functional/position
 import { MOBILE } from 'state/build-time-config';
 
 const PositionMarkers = ({ mapReady }) => {
+  const LATITUDE = 1;
+  const LAT_OFFSET = -0.00325;
   const map = useContext(MapContext);
 
   // User tracking coords jump and markers/indicators
@@ -76,6 +78,7 @@ const PositionMarkers = ({ mapReady }) => {
         if (userRecordOnHoverRecordRow.geometry) {
           const c = centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates as LngLatLike;
           if (c) {
+            c[LATITUDE] += LAT_OFFSET;
             map.jumpTo({ center: c, zoom: 15 });
           }
         }
@@ -84,6 +87,7 @@ const PositionMarkers = ({ mapReady }) => {
         if (userRecordOnHoverRecordRow.geometry?.[0]) {
           const c = centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates as LngLatLike;
           if (c) {
+            c[LATITUDE] += LAT_OFFSET;
             map.jumpTo({
               center: c,
               zoom: 15
