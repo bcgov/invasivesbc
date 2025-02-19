@@ -354,9 +354,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const stringified = JSON.stringify(data);
     const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
     const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
+    const map_symbol = (data as Record<PropertyKey, Feature[]>)?.map_symbol;
     geometry.forEach((_, i) => {
       geometry[i].properties = {
-        name: short_id,
+        name: short_id + `${map_symbol ? '\n' + map_symbol : ''}`,
         description: id
       };
     });
@@ -376,8 +377,9 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
     try {
       const geojson = iappTableRow.result[0].geojson;
+      const map_symbol = geojson?.properties?.map_symbol;
       geojson.properties = {
-        name: `${id} ${geojson.properties.map_symbol ?? ''}`,
+        name: id + (map_symbol ? '\n' + map_symbol : ''),
         description: id
       };
       const stringRecord = JSON.stringify(iappRecord.result.rows[0]);
