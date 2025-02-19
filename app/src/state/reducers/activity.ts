@@ -127,7 +127,6 @@ function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => A
         });
       } else if (Activity.saveSuccess.match(action)) {
         draftState.activity = { ...action.payload };
-        console.log('In the reducer', draftState.activity);
       } else if (Activity.setSavedHashSuccess.match(action)) {
         draftState.saved_activity_hash = action.payload;
       } else if (Activity.createSuccess.match(action)) {
