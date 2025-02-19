@@ -48,7 +48,13 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
 
   const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
   const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
-
+  if (mappedRows?.length === 0) {
+    return (
+      <div className="no-records">
+        <p>There are no records matching your current filters.</p>
+      </div>
+    );
+  }
   return (
     <div className="record_table_container">
       <table className="record_table">
@@ -114,7 +120,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                 }}
                 onMouseOver={() => onUserHoveredRecord(row)}
                 onFocus={() => onUserHoveredRecord(row)}
-                onTouchStart={(e) => {
+                onTouchStart={() => {
                   dispatch({
                     type: USER_TOUCHED_RECORD,
                     payload: {
@@ -129,7 +135,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
               >
                 {isTouch && (
                   <td
-                    onTouchStart={(e) => {
+                    onTouchStart={() => {
                       dispatch({
                         type: USER_CLICKED_RECORD,
                         payload: {
@@ -153,7 +159,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                         </td>
                       );
                     })
-                  : iappColumnsToDisplay.map((col, j) => {
+                  : iappColumnsToDisplay.map((col) => {
                       return (
                         <td className="record_table_row_column" key={col.key + col.name}>
                           {row[col.key]}
