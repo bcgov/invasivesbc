@@ -77,8 +77,8 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     }}
                   >
                     {col.name}{' '}
-                    {activitySortColumns.includes(sortColumn!) &&
-                      sortColumn === col.key &&
+                    {sortColumn === col.key &&
+                      activitySortColumns.includes(sortColumn) &&
                       (sortOrder === 'ASC' ? '▲' : '▼')}
                   </th>
                 ))
@@ -93,8 +93,8 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     }}
                   >
                     {col.name}{' '}
-                    {iappSortColumns.includes(sortColumn!) &&
-                      sortColumn === col.key &&
+                    {sortColumn === col.key &&
+                      iappSortColumns.includes(sortColumn) &&
                       (sortOrder === 'ASC' ? '▲' : '▼')}
                   </th>
                 ))}
