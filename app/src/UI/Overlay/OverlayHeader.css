@@ -23,14 +23,10 @@
   }
 
   .left {
-    height: var(--overlay-grip-height);
     width: 30%;
   }
 
   .center {
-    height: var(--overlay-grip-height);
-
-    /* flex-grow: 1; */
     place-items: center center;
     justify-content: center;
     display: flex;
@@ -56,6 +52,5 @@
     justify-content: right;
     display: flex;
     flex-direction: row;
-    height: var(--overlay-grip-height);
   }
 }

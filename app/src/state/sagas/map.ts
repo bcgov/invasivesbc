@@ -32,7 +32,6 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  RECORDSET_CLEAR_FILTERS,
   RECORDSET_SET_SORT,
   REFETCH_SERVER_BOUNDARIES,
   REMOVE_CLIENT_BOUNDARY,
@@ -87,7 +86,7 @@ import IappRecord from 'interfaces/IappRecord';
 import { RepositoryMetadata } from 'utils/record-cache';
 import NetworkActions from 'state/actions/network/NetworkActions';
 
-function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS(action) {
+function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
 }
 
@@ -434,7 +433,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
   }
 }
 
-function* handle_WHATS_HERE_PAGE_ACTIVITY(action) {
+function* handle_WHATS_HERE_PAGE_ACTIVITY() {
   yield put(WhatsHere.activity_rows_request());
 }
 
@@ -825,7 +824,7 @@ function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
     debounce(500, UserSettings.RecordSet.updateFilter, handle_UserFilterChange),
-    takeEvery(RECORDSET_CLEAR_FILTERS, handle_UserFilterChange),
+    takeEvery(UserSettings.RecordSet.clearFilters, handle_UserFilterChange),
     takeEvery(UserSettings.RecordSet.removeFilter, handle_UserFilterChange),
 
     takeEvery(REMOVE_CLIENT_BOUNDARY, handle_REMOVE_CLIENT_BOUNDARY),

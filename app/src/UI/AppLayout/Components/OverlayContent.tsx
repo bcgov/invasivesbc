@@ -12,6 +12,7 @@ import { Button } from '@mui/material';
 import Spinner from 'UI/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Overlay/WhatsHere/WhatsHereTable';
 import { RENDER_DEBUG } from 'UI/App';
+import { OverlayHeader } from 'UI/Overlay/OverlayHeader';
 
 const UserAccessPage = React.lazy(() => import('UI/Overlay/Admin/userAccess/UserAccessPage'));
 const EmbeddedReportsPage = React.lazy(() => import('UI/Overlay/Reports/EmbeddedReportsPage'));
@@ -84,120 +85,116 @@ const OverlayContent = () => {
   const userRecordOnClickRecordID = useSelector((state) => state.Map.userRecordOnClickRecordID);
 
   return (
-    <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
-      <Route exact path="/">
-        <Redirect to="/Landing" />
-      </Route>
-      <Route path="/Map" render={() => <></>} />
-      <Route path="/Landing" render={() => <LandingComponent />} />
-      <Route exact={true} path="/Records" render={() => <Records />} />
-      <Route
-        path="/Records/Activity:id"
-        render={() => (
-          <>
-            {!overlayMenuOpen ? (
-              <Activity />
-            ) : (
-              <OverlayMenu>
-                <FormMenuButtons />
-              </OverlayMenu>
-            )}
-          </>
-        )}
-      />
-      <Route
-        path="/Records/IAPP/:id"
-        render={() => (
-          <>
-            <IAPPRecord />
-          </>
-        )}
-      />
-      <Route
-        exact={true}
-        path="/Records/List/Local:id"
-        render={(props) => (
-          <>
-            {!userRecordOnClickMenuOpen ? (
-              <RecordSet setID={props.match.params.id.split(':')[1]} />
-            ) : (
-              <OverlayMenu>
-                <Button
-                  onClick={() => {
-                    const url =
-                      userRecordOnClickRecordType === 'Activity'
-                        ? '/Records/Activity:' + userRecordOnClickRecordID + '/form'
-                        : '/Records/IAPP/' + userRecordOnClickRecordID + '/summary';
-                    history.push(url);
-                  }}
-                  variant="contained"
-                >
-                  Open
-                </Button>
-              </OverlayMenu>
-            )}
-          </>
-        )}
-      />
-      <BatchRoutes />
-      <Route
-        path="/Reports"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <EmbeddedReportsPage />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/News"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <NewsPage />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/Training"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <TrainingPage />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/Legend"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <LegendsPopup />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/AccessRequest"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <AccessRequestPage />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/Admin"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <UserAccessPage />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/OfflineTiles"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <TileCachePanel />
-          </Suspense>
-        )}
-      />
-      <Route path="/WhatsHere" render={() => <WhatsHereTable />} />
-    </div>
+    <>
+      {!fullScreen && <OverlayHeader />}
+      <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
+        <Route exact path="/">
+          <Redirect to="/Landing" />
+        </Route>
+        <Route path="/Map" render={() => <></>} />
+        <Route path="/Landing" render={() => <LandingComponent />} />
+        <Route exact={true} path="/Records" render={() => <Records />} />
+        <Route
+          path="/Records/Activity:id"
+          render={() => (
+            <>
+              {!overlayMenuOpen ? (
+                <Activity />
+              ) : (
+                <OverlayMenu>
+                  <FormMenuButtons />
+                </OverlayMenu>
+              )}
+            </>
+          )}
+        />
+        <Route path="/Records/IAPP/:id" render={() => <IAPPRecord />} />
+        <Route
+          exact={true}
+          path="/Records/List/Local:id"
+          render={(props) => (
+            <>
+              {!userRecordOnClickMenuOpen ? (
+                <RecordSet setID={props.match.params.id.split(':')[1]} />
+              ) : (
+                <OverlayMenu>
+                  <Button
+                    onClick={() => {
+                      const url =
+                        userRecordOnClickRecordType === 'Activity'
+                          ? '/Records/Activity:' + userRecordOnClickRecordID + '/form'
+                          : '/Records/IAPP/' + userRecordOnClickRecordID + '/summary';
+                      history.push(url);
+                    }}
+                    variant="contained"
+                  >
+                    Open
+                  </Button>
+                </OverlayMenu>
+              )}
+            </>
+          )}
+        />
+        <BatchRoutes />
+        <Route
+          path="/Reports"
+          render={() => (
+            <Suspense fallback={<Spinner />}>
+              <EmbeddedReportsPage />
+            </Suspense>
+          )}
+        />
+        <Route
+          path="/News"
+          render={() => (
+            <Suspense fallback={<Spinner />}>
+              <NewsPage />
+            </Suspense>
+          )}
+        />
+        <Route
+          path="/Training"
+          render={() => (
+            <Suspense fallback={<Spinner />}>
+              <TrainingPage />
+            </Suspense>
+          )}
+        />
+        <Route
+          path="/Legend"
+          render={() => (
+            <Suspense fallback={<Spinner />}>
+              <LegendsPopup />
+            </Suspense>
+          )}
+        />
+        <Route
+          path="/AccessRequest"
+          render={() => (
+            <Suspense fallback={<Spinner />}>
+              <AccessRequestPage />
+            </Suspense>
+          )}
+        />
+        <Route
+          path="/Admin"
+          render={() => (
+            <Suspense fallback={<Spinner />}>
+              <UserAccessPage />
+            </Suspense>
+          )}
+        />
+        <Route
+          path="/OfflineTiles"
+          render={() => (
+            <Suspense fallback={<Spinner />}>
+              <TileCachePanel />
+            </Suspense>
+          )}
+        />
+        <Route path="/WhatsHere" render={() => <WhatsHereTable />} />
+      </div>
+    </>
   );
 };
 

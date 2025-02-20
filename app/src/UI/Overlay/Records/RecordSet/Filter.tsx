@@ -5,14 +5,16 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import debounce from 'lodash.debounce';
+import { IFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 
 type PropTypes = {
   setID: string;
-  id: string;
   userOfflineMobile: boolean;
+  filterSet: IFilter;
+  recordSetType: RecordSetType;
 };
 
-const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
+const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropTypes) => {
   const TIME_TO_AUTO_UPDATE_IN_SECONDS = 0.75;
 
   /**
@@ -20,35 +22,33 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
    *       Sets/refreshes timeouts so updates won't fire until user finishes typing.
    */
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const newVal = event.target.value;
-    setInputValue(newVal);
-    debouncedFormChange(newVal);
+    setInputValue(event.target.value);
+    debouncedFormChange(event.target.value);
   };
 
   const debouncedFormChange = useCallback(
     debounce((value: string) => {
-      if (value !== valueInState) {
-        dispatch(
-          UserSettings.RecordSet.updateFilter({
-            filterType: 'tableFilter',
-            setID: setID,
-            filterID: id,
-            filter: value
-          })
-        );
-      }
+      dispatch(
+        UserSettings.RecordSet.updateFilter({
+          filterType: 'tableFilter',
+          setID: setID,
+          filterID: filterSet.id,
+          filter: value
+        })
+      );
     }, TIME_TO_AUTO_UPDATE_IN_SECONDS * 1000),
     []
   );
+
   /**
    * Update the Recordsets filters
    * @param newVal additional object keys
    */
-  const updateFilter = (newVal: Record<string, any>) => {
+  const updateFilter = (newVal: Partial<IUpdateFilter>) => {
     dispatch(
       UserSettings.RecordSet.updateFilter({
         setID: setID,
-        filterID: id,
+        filterID: filterSet.id,
         ...newVal
       })
     );
@@ -61,14 +61,14 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
     dispatch(
       UserSettings.RecordSet.removeFilter({
         setID: setID,
-        filterID: id,
+        filterID: filterSet.id,
         filterType: filterType
       })
     );
   };
 
-  const getFilterType = (filterTypeInState: string) => {
-    switch (filterTypeInState) {
+  const getFilterType = (filterType: string) => {
+    switch (filterType) {
       case 'tableFilter':
         return (
           <input
@@ -85,7 +85,7 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
             className="filterSelect"
             disabled={userOfflineMobile}
             onChange={(e) => updateFilter({ filter: e.target.value })}
-            value={valueInState}
+            value={filterSet.filter}
           >
             {serverBoundariesToDisplay?.map((option) => (
               <option key={option.value + option.label} value={option.value}>
@@ -100,7 +100,7 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
             className="filterSelect"
             disabled={userOfflineMobile}
             onChange={(e) => updateFilter({ filter: e.target.value })}
-            value={valueInState}
+            value={filterSet.filter}
           >
             {clientBoundariesToDisplay?.map((option) => (
               <option key={option.value + option.label} value={option.value}>
@@ -115,7 +115,7 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
   };
 
   const dispatch = useDispatch();
-  const userSettingsState = useSelector((state) => state.UserSettings);
+
   const serverBoundariesToDisplay = useSelector((state) => state.Map.serverBoundaries)?.map((boundary) => ({
     label: boundary.title,
     value: boundary.id
@@ -124,22 +124,11 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
     label: boundary.title,
     value: boundary.id
   }));
-
-  const filterColumns =
-    userSettingsState?.recordSets?.[setID].recordSetType === RecordSetType.Activity
-      ? activityColumnsToDisplay
-      : iappColumnsToDisplay;
+  const filterColumns = recordSetType === RecordSetType.Activity ? activityColumnsToDisplay : iappColumnsToDisplay;
   const filterOptions = filterColumns.map((option) => ({ label: option.name, value: option.key }));
 
-  const filterByPropId = userSettingsState?.recordSets?.[setID]?.tableFilters.find((filter) => filter.id === id);
-  const filterTypeInState = filterByPropId?.filterType;
-  const valueInState = filterByPropId?.filter;
-  const typeInState = filterByPropId?.field;
-  const operatorInState = filterByPropId?.operator;
-  const operator2InState = filterByPropId?.operator2;
-  const [inputValue, setInputValue] = useState<string>(valueInState);
-  const input = getFilterType(filterTypeInState);
-
+  const [inputValue, setInputValue] = useState<string>(filterSet.filter);
+  const input = getFilterType(filterSet.filterType);
   return (
     <tr>
       <td>
@@ -147,7 +136,7 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
           className="filterSelect"
           disabled={userOfflineMobile}
           onChange={(e) => updateFilter({ operator2: e.target.value })}
-          value={operator2InState}
+          value={filterSet.operator2}
         >
           {
             {
@@ -181,7 +170,7 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
                   </option>
                 </>
               )
-            }[filterTypeInState]
+            }[filterSet.filterType]
           }
         </select>
       </td>
@@ -190,7 +179,7 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
           className="filterSelect"
           disabled={userOfflineMobile}
           onChange={(e) => updateFilter({ operator: e.target.value })}
-          value={operatorInState}
+          value={filterSet.operator}
         >
           {
             {
@@ -224,7 +213,7 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
                   </option>
                 </>
               )
-            }[filterTypeInState]
+            }[filterSet.filterType]
           }
         </select>
       </td>
@@ -233,21 +222,20 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
           className="filterTypeSelect"
           disabled={userOfflineMobile}
           onChange={(e) => {
-            const payload = {
+            const payload: Partial<IUpdateFilter> = {
               filterType: e.target.value,
               setID: setID,
-              filterID: id
-            } as any;
+              filterID: filterSet.id
+            };
 
             if (e.target.value === 'spatialFilterUploaded') {
               payload.filter = serverBoundariesToDisplay[0].value;
-            }
-            if (e.target.value === 'spatialFilterDrawn') {
+            } else if (e.target.value === 'spatialFilterDrawn') {
               payload.filter = clientBoundariesToDisplay[0].value;
             }
-            updateFilter({ ...payload });
+            updateFilter(payload);
           }}
-          value={filterTypeInState}
+          value={filterSet.filterType}
         >
           <option value={'tableFilter'} label={'Field/Column'}>
             Field/Column
@@ -272,17 +260,17 @@ const Filter = ({ setID, id, userOfflineMobile }: PropTypes) => {
         <select
           className="filterSelect"
           disabled={userOfflineMobile}
-          value={typeInState}
-          onChange={(e) => updateFilter({ filterID: id, field: e.target.value, filterType: 'tableFilter' })}
+          value={filterSet.field}
+          onChange={(e) => updateFilter({ filterID: filterSet.id, field: e.target.value, filterType: 'tableFilter' })}
         >
-          {filterTypeInState === 'tableFilter' ? (
+          {filterSet.filterType === 'tableFilter' ? (
             filterOptions.map((option) => (
               <option key={option.value + option.label} value={option.value}>
                 {option.label}
               </option>
             ))
           ) : (
-            <option key={id + 'SHAPEOPTION'} value={'SHAPE'}>
+            <option key={filterSet.id + 'SHAPEOPTION'} value={'SHAPE'}>
               SHAPE
             </option>
           )}

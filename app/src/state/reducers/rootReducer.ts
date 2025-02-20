@@ -19,6 +19,7 @@ import { createUserInfoReducer } from './userInfo';
 import { errorHandlerReducer } from './error_handler';
 import { createOfflineActivityReducer, OfflineActivityState } from './offlineActivity';
 import { createAlertsAndPromptsReducer } from './alertsAndPrompts';
+import { createDownloadStateReducer } from './downloads';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { createTileCacheReducer } from 'state/reducers/tile_cache';
@@ -77,6 +78,7 @@ function createRootReducer(config: AppConfig) {
     AppMode: appMode,
     AlertsAndPrompts: createAlertsAndPromptsReducer(config),
     Configuration: createConfigurationReducerWithDefaultState(config),
+    DownloadState: createDownloadStateReducer,
     Auth: persistReducer<AuthState>(
       {
         key: 'auth',

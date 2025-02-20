@@ -170,7 +170,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const geoJsonArr: any[] = [];
     for (const id of ids) {
       const data: IappRecord = await this.loadIapp(id, IappRecordMode.Row);
-      const label = `${id} ${data.geojson.properties.map_symbol ?? ''}`;
+      const label = `${id}\n${data.geojson.properties.map_symbol ?? ''}`;
       const feature = data.geojson;
       feature.properties = { name: label, description: id };
       geoJsonArr.push(feature);
@@ -199,7 +199,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
       const label = data.short_id;
       const features = data.geometry ?? [];
       features.forEach((feature: Feature) => {
-        feature.properties = { name: label, description: id };
+        feature.properties = { name: label + '\n' + data.map_symbol, description: id };
         centroidArr.push(centroid(feature));
         geoJsonArr.push(feature);
       });

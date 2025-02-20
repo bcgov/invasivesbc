@@ -6,7 +6,6 @@ import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import { useHistory } from 'react-router';
 
-import { OverlayHeader } from '../OverlayHeader';
 import RenderTableActivity from './Subcomponents/RenderTableActivity';
 import RenderTablePOI from './Subcomponents/RenderTablePOI';
 import { useSelector } from 'utils/use_selector';
@@ -51,7 +50,6 @@ export const WhatsHereTable = () => {
 
   return (
     <div className="whatshere-container">
-      <OverlayHeader />
       {whatsHere?.section && (
         <div className="whatshere-table-container">
           <div className="whatshere_back_button">
