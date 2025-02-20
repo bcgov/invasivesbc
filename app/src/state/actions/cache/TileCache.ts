@@ -1,5 +1,6 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { GeoJSON } from 'geojson';
+import DownloadActions from '../downloads/DownloadActions';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { TileCacheProgressCallbackParameters, RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
@@ -43,9 +44,9 @@ class TileCache {
       },
       { dispatch }
     ) => {
+      await dispatch(DownloadActions.request());
       const service = await TileCacheServiceFactory.getPlatformInstance();
-      const id = spec.id ?? `well-cache-${nanoid()}`;
-
+      const id = spec.id ?? `tile-cache-${nanoid()}`;
       await service.download(
         {
           id: id,
