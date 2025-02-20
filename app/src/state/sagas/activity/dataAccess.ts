@@ -51,9 +51,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import Activity, { INewActivity } from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import { RepositoryMetadata } from 'utils/record-cache';
-import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
-import bboxToPolygon from 'utils/bboxToPolygon';
+import UserRecord from 'interfaces/UserRecord';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -498,28 +496,22 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
         );
       } else {
         const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        const repos = yield service.listRepositories();
-        const recordSetsInBoundingBox = repos.filter((repo: RepositoryMetadata) => {
-          const { status, bbox } = repo;
-          return (
-            status === UserRecordCacheStatus.CACHED &&
-            bbox &&
-            booleanIntersects(search_feature.features[0], bboxToPolygon(bbox))
-          );
-        });
-        const treatmentIds: string[] = [];
-        recordSetsInBoundingBox.flatMap((set) =>
+        const overlappingRecords: string[] = [];
+
+        (yield service.getOverlappingRepositories(search_feature.features[0])).flatMap((set) =>
           set.cachedGeoJson.data.features.forEach((shape: Feature) => {
             if (booleanIntersects(search_feature.features[0], shape)) {
-              treatmentIds.push(shape?.properties?.description);
+              overlappingRecords.push(shape?.properties?.description);
             }
           })
         );
-        const records = yield service.getPaginatedCachedActivityRecords(treatmentIds, 0, treatmentIds.length);
-        console.log(records);
+        const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(
+          overlappingRecords
+        )).filter((record: UserRecord) => record.activity_type === ActivityType.Treatment);
+
         yield put(
           Activity.Suggestions.treatmentIdsSuccess(
-            records.map((record, i) => ({
+            treatmentRecords.map((record, i) => ({
               label: record.short_id,
               title: record.short_id,
               value: record.activity_id,
@@ -527,7 +519,6 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
             }))
           )
         );
-        // yield put(Activity.Suggestions.treatmentIdsSuccess())
       }
     }
   } catch (e) {
