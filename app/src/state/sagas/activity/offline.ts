@@ -1,5 +1,5 @@
 import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
-import { ActivityStatus } from 'sharedAPI';
+import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
   ACTIVITY_RUN_OFFLINE_SYNC,
@@ -109,10 +109,17 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
     const hydrated = JSON.parse(activity.data);
 
     try {
-      const networkReturn = yield InvasivesAPI_Call('POST', `/api/activity/`, {
-        ...hydrated,
-        form_status: ActivityStatus.DRAFT
-      });
+      const networkReturn =
+        hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE
+          ? yield InvasivesAPI_Call('POST', `/api/activity/`, {
+              ...hydrated,
+              form_status: ActivityStatus.DRAFT,
+              sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE // saved to db but only visible to user
+            })
+          : yield InvasivesAPI_Call('PUT', `/api/activity/`, {
+              ...hydrated,
+              form_status: ActivityStatus.DRAFT
+            });
       if (networkReturn.status >= 200 && networkReturn.status < 300) {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE,
