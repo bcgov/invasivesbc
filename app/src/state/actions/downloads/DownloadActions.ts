@@ -18,7 +18,9 @@ class DownloadActions {
       }
       while (state.semaphores <= 0 || state.queue?.[0] !== requestId) {
         state = (getState() as RootState).DownloadState;
-        await new Promise((resolve) => setTimeout(resolve, DownloadActions.BASE_DELAY_IN_MS * state.queue.length));
+        await new Promise((resolve) =>
+          setTimeout(resolve, DownloadActions.BASE_DELAY_IN_MS * (state.queue?.[0] === requestId ? 1 : 3))
+        );
       }
     }
   );
