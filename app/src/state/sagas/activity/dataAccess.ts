@@ -1,4 +1,4 @@
-import { call, put, select, take } from 'redux-saga/effects';
+import { all, call, put, select, take } from 'redux-saga/effects';
 import center from '@turf/center';
 import centroid from '@turf/centroid';
 import {
@@ -9,9 +9,10 @@ import {
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
-import { FeatureCollection, kinks } from '@turf/turf';
+import { Feature, FeatureCollection, kinks } from '@turf/turf';
 
 import { PayloadAction } from '@reduxjs/toolkit';
+import booleanIntersects from '@turf/boolean-intersects';
 import {
   autoFillNameByPAC,
   autoFillSlopeAspect,
@@ -38,7 +39,7 @@ import { getClosestWells } from 'utils/closestWellsHelpers';
 import { calc_utm } from 'utils/utm';
 import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { selectNetworkConnected } from 'state/reducers/network';
+import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
@@ -49,8 +50,12 @@ import Prompt from 'state/actions/prompts/Prompt';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Activity, { INewActivity } from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { RepositoryMetadata } from 'utils/record-cache';
+import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import bboxToPolygon from 'utils/bboxToPolygon';
 
-export function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
+function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
     if (MOBILE) {
       yield put(Activity.getLocal(action.payload));
@@ -63,7 +68,7 @@ export function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   }
 }
 
-export function* handle_ACTIVITY_COPY_REQUEST() {
+function* handle_ACTIVITY_COPY_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
     const activityData = { ...activityState.activity.form_data.activity_data };
@@ -233,7 +238,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
   }
 }
 
-export function* handle_ACTIVITY_SAVE_SUCCESS(action) {
+export function* handle_ACTIVITY_SAVE_SUCCESS() {
   const activity_id = yield select((state) => state.ActivityPage.activity.activity_id);
   try {
     yield put(Activity.get(activity_id));
@@ -280,7 +285,7 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivi
 
     const username = authState.username;
     const displayName = authState.displayName;
-  
+
     const newActivity = yield call(
       activity_create_function,
       action.payload.type,
@@ -444,7 +449,7 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
   }
 }
 
-export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
+export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST() {
   const connected = yield select(selectNetworkConnected);
 
   try {
@@ -459,7 +464,8 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST(action) {
 
 export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
   const payloadActivity = action.payload;
-  const AuthState = yield select(selectAuth);
+  const [AuthState, networkState] = yield all([yield select(selectAuth), yield select(selectNetworkState)]);
+
   try {
     // filter Treatments and/or Biocontrol
     const linkedActivitySubtypes: ActivitySubtype[] = (() => {
@@ -482,13 +488,47 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
       : false;
 
     if (linkedActivitySubtypes.length > 0 && search_feature) {
-      yield put(
-        Activity.Suggestions.treatmentIdsRequestOnline({
-          activity_subtype: linkedActivitySubtypes,
-          user_roles: AuthState.accessRoles,
-          search_feature
-        })
-      );
+      if (networkState.connected) {
+        yield put(
+          Activity.Suggestions.treatmentIdsRequestOnline({
+            activity_subtype: linkedActivitySubtypes,
+            user_roles: AuthState.accessRoles,
+            search_feature
+          })
+        );
+      } else {
+        const service = yield RecordCacheServiceFactory.getPlatformInstance();
+        const repos = yield service.listRepositories();
+        const recordSetsInBoundingBox = repos.filter((repo: RepositoryMetadata) => {
+          const { status, bbox } = repo;
+          return (
+            status === UserRecordCacheStatus.CACHED &&
+            bbox &&
+            booleanIntersects(search_feature.features[0], bboxToPolygon(bbox))
+          );
+        });
+        const treatmentIds: string[] = [];
+        recordSetsInBoundingBox.flatMap((set) =>
+          set.cachedGeoJson.data.features.forEach((shape: Feature) => {
+            if (booleanIntersects(search_feature.features[0], shape)) {
+              treatmentIds.push(shape?.properties?.description);
+            }
+          })
+        );
+        const records = yield service.getPaginatedCachedActivityRecords(treatmentIds, 0, treatmentIds.length);
+        console.log(records);
+        yield put(
+          Activity.Suggestions.treatmentIdsSuccess(
+            records.map((record, i) => ({
+              label: record.short_id,
+              title: record.short_id,
+              value: record.activity_id,
+              'x-code_sort_order': i + 1
+            }))
+          )
+        );
+        // yield put(Activity.Suggestions.treatmentIdsSuccess())
+      }
     }
   } catch (e) {
     console.error(e);
@@ -496,12 +536,12 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
   }
 }
 
-export function* handle_PAN_AND_ZOOM_TO_ACTIVITY(action) {
+export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
   const activityState = yield select(selectActivity);
 
   const geometry = activityState?.activity?.geometry?.[0];
   if (geometry) {
-    const isPoint = geometry.geometry?.type === 'Point';
+    const isPoint = geometry.geometry?.type === GeoShapes.Point;
     let target;
     if (isPoint) {
       target = geometry.geometry;
@@ -642,3 +682,5 @@ export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
     yield put(Activity.Photo.editFailure);
   }
 }
+
+export { handle_ACTIVITY_GET_REQUEST, handle_ACTIVITY_COPY_REQUEST };
