@@ -46,9 +46,9 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
     return mappedRow;
   });
 
-  const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
-  const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
-  if (mappedRows?.length === 0) {
+  const sortColumn = useSelector((state) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
+  const sortOrder = useSelector((state) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
+  if (!mappedRows || mappedRows?.length === 0) {
     return (
       <div className="no-records">
         <p>There are no records matching your current filters.</p>
@@ -66,7 +66,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
               </th>
             )}
             {tableType === RecordSetType.Activity
-              ? activityColumnsToDisplay.map((col: any) => (
+              ? activityColumnsToDisplay.map((col) => (
                   <th
                     className={'record_table_header_column'}
                     key={col.key}
@@ -77,12 +77,12 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     }}
                   >
                     {col.name}{' '}
-                    {activitySortColumns.includes(sortColumn) &&
+                    {activitySortColumns.includes(sortColumn!) &&
                       sortColumn === col.key &&
                       (sortOrder === 'ASC' ? '▲' : '▼')}
                   </th>
                 ))
-              : iappColumnsToDisplay.map((col: any) => (
+              : iappColumnsToDisplay.map((col) => (
                   <th
                     className="record_table_header_column"
                     key={col.key}
@@ -93,7 +93,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     }}
                   >
                     {col.name}{' '}
-                    {iappSortColumns.includes(sortColumn) &&
+                    {iappSortColumns.includes(sortColumn!) &&
                       sortColumn === col.key &&
                       (sortOrder === 'ASC' ? '▲' : '▼')}
                   </th>
