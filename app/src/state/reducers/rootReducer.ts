@@ -53,7 +53,7 @@ const purgeOldStateOnVersionUpgrade = async (state: any) => {
 };
 
 // executes during app restart or when the page reloads
-const pauseDownloadOnRehydration = createTransform(
+const handleActiveDownloadsOnRehydration = createTransform(
   (inboundState) => inboundState,
 
   (outboundState) => {
@@ -131,7 +131,7 @@ function createRootReducer(config: AppConfig) {
           'layerPickerIsAccordion',
           'mapCenter'
         ],
-        transforms: [pauseDownloadOnRehydration]
+        transforms: [handleActiveDownloadsOnRehydration]
       },
       createUserSettingsReducer(config)
     ),
