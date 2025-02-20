@@ -247,3 +247,97 @@ export const iappColumnsToDisplay = [
     name: 'Invasive Plant Management Area'
   }
 ];
+
+export const offlineActivityColumnsToDisplay = [
+  {
+    key: 'short_id',
+    name: 'Activity ID',
+    displayWidget: 'div'
+  },
+  {
+    key: 'activity_type',
+    name: 'Activity Type'
+  },
+  {
+    key: 'activity_subtype',
+    name: 'Activity Sub Type'
+  },
+  {
+    key: 'date_created',
+    name: 'Activity Date'
+  },
+  // {
+  //   key: 'project_code',
+  //   name: 'Project Code'
+  // },
+  {
+    key: 'jurisdiction', // give a display name
+    name: 'Jurisdiction'
+  },
+  {
+    key: 'invasive_plant',
+    name: 'Invasive Plant'
+  },
+  {
+    key: 'species_positive',
+    name: 'All Positive'
+  },
+  {
+    key: 'species_negative',
+    name: 'All Negative'
+  },
+  {
+    key: 'has_current_positive',
+    name: 'Has Current Positive'
+  },
+  {
+    key: 'current_positive_species',
+    name: 'Current Positive Species'
+  },
+  {
+    key: 'has_current_negative',
+    name: 'Has Current Negative'
+  },
+  {
+    key: 'current_negative_species',
+    name: 'Current Negative Species'
+  },
+  {
+    key: 'species_treated',
+    name: 'Species Treated'
+  },
+  {
+    key: 'species_biocontrol',
+    name: 'Biocontrol Species'
+  },
+  { key: 'created_by', name: 'Created By' },
+  { key: 'updated_by', name: 'Updated By' },
+  {
+    key: 'agency',
+    name: 'Agency'
+  },
+  {
+    key: 'regional_invasive_species_organization_areas',
+    name: 'Regional Invasive Species Organization Areas'
+  },
+  {
+    key: 'regional_districts',
+    name: 'Regional Districts'
+  },
+  {
+    key: 'invasive_plant_management_areas',
+    name: 'Invasive Plant Management Areas'
+  },
+  {
+    key: 'biogeoclimatic_zones',
+    name: 'Bio Geo Climatic Zones'
+  },
+  {
+    key: 'elevation',
+    name: 'Elevation'
+  },
+  {
+    key: 'batch_id',
+    name: 'Batch ID'
+  }
+];

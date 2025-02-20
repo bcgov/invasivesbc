@@ -1,12 +1,11 @@
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import './RecordSet.css';
-import Button from '@mui/material/Button';
 import { useHistory } from 'react-router';
 import { Tooltip } from '@mui/material';
-import { RecordTable } from './RecordTable';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
+import { Button, IconButton } from '@mui/material';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import ExcelExporter from '../ExcelExporter';
@@ -14,12 +13,16 @@ import RecordSetFooter from './RecordSetFooter';
 import Filter from './Filter';
 import { useSelector } from 'utils/use_selector';
 import { MOBILE } from 'state/build-time-config';
-import { useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { OfflineDataSyncTable } from 'UI/OfflineDataSync/OfflineDataSyncTable';
-
+import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import moment from 'moment';
+import { detectTouchDevice } from 'utils/detectTouch';
+import { activityColumnsToDisplay, offlineActivityColumnsToDisplay } from './RecordTableHelpers';
+import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
+import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
 type PropTypes = { setID: string };
 
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
@@ -34,6 +37,17 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const [userOfflineMobile, setUserOfflineMobile] = useState<boolean>(!connected && MOBILE);
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
   const { working, serializedActivities } = useSelector(selectOfflineActivity);
+  const isTouch = detectTouchDevice();
+  const activitySortColumns = userOfflineMobile ? [] : validActivitySortColumns;
+  const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
+  const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
+  const parsedObj = Object.fromEntries(
+    Object.entries(serializedActivities).map(([key, value]) => {
+      const typedValue = value as OfflineActivityRecord;
+      return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
+    })
+  );
+
   const tableType = recordSet?.recordSetType;
 
   useEffect(() => {
@@ -165,7 +179,131 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
           </div>
           <ExcelExporter setName={setID} />
         </div>
-        <OfflineDataSyncTable />
+
+        {/* {Object.entries(serializedActivities).map(([key, value]) => {
+          return (
+            <React.Fragment key={`${key}`}>
+              <tr>
+                <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
+                <td>{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
+                <td>{`${moment((value as Offlin eActivityRecord).saved_at)}`}</td>
+                <td>{`${(value as OfflineActivityRecord).sync_state}`}</td>
+              </tr>
+              {(value as OfflineActivityRecord).sync_state == 'Error' && (
+                <tr>
+                  <td></td>
+                  <td>
+                    {(value as OfflineActivityRecord).error_detail
+                      ? (value as OfflineActivityRecord).error_detail
+                      : 'Error'}
+                  </td>
+                  <td colSpan={3}>
+                    <pre>
+                      {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
+                        ? JSON.stringify((value as OfflineActivityRecord).error_object.message)
+                        : JSON.stringify((value as OfflineActivityRecord).error_object)}
+                    </pre>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
+          );
+        })} */}
+        <div className="record_table_container">
+          <table className="record_table">
+            <tbody>
+              <tr className="record_table_header">
+                {isTouch && (
+                  <th className="record_table_header_column" style={{ width: '50px' }}>
+                    View/Edit
+                  </th>
+                )}
+                {offlineActivityColumnsToDisplay.map((col: any) => (
+                  <th
+                    className={'record_table_header_column'}
+                    key={col.key}
+                    // onClick={() => {
+                    //   if (activitySortColumns.includes(col.key)) {
+                    //     dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
+                    //   }
+                    // }}
+                  >
+                    {col.name}{' '}
+                    {/* {activitySortColumns.includes(sortColumn) &&
+                      sortColumn === col.key &&
+                      (sortOrder === 'ASC' ? '▲' : '▼')} */}
+                  </th>
+                ))}
+              </tr>
+              {Object.entries(parsedObj).map(([key, value]) => {
+                console.log(key, value.data);
+
+                return (
+                  <tr
+                    onContextMenu={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }}
+                    onClick={() => {
+                      if (!isTouch) {
+                        dispatch({
+                          type: USER_CLICKED_RECORD,
+                          payload: {
+                            recordType: tableType,
+                            id: key,
+                            row: value.data
+                          }
+                        });
+                      }
+                    }}
+                    // onMouseOver={() => onUserHoveredRecord(value)}
+                    // onFocus={() => onUserHoveredRecord(value)}
+                    onTouchStart={() => {
+                      dispatch({
+                        type: USER_TOUCHED_RECORD,
+                        payload: {
+                          recordType: tableType,
+                          id: key,
+                          row: value.data
+                        }
+                      });
+                    }}
+                    className="record_table_row"
+                    key={value?.data?.activity_id}
+                  >
+                    {isTouch && (
+                      <td
+                        onTouchStart={() => {
+                          dispatch({
+                            type: USER_CLICKED_RECORD,
+                            payload: {
+                              recordType: tableType,
+                              id: key,
+                              row: value.data
+                            }
+                          });
+                        }}
+                        className="record_table_row_column"
+                        style={{ width: '50px' }}
+                      >
+                        <VisibilityIcon />
+                      </td>
+                    )}
+                    {offlineActivityColumnsToDisplay.map((col) => {
+                      console.log(value.data[col.key], col.key);
+
+                      return (
+                        <td className="record_table_row_column" key={col.key + col.name}>
+                          {value.data[col.key]}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
       <RecordSetFooter setID={setID} />
     </>

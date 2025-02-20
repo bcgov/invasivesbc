@@ -138,17 +138,6 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     '4': {
       recordSetType: RecordSetType.Activity,
       recordSetName: 'All Unsynced Offline Activities',
-      // add draft key
-      tableFilters: [
-        {
-          id: '1',
-          field: 'form_status',
-          filterType: 'tableFilter',
-          filter: ActivityStatus.DRAFT,
-          operator: 'CONTAINS',
-          operator2: 'AND'
-        }
-      ],
       colorScheme: {
         Activity_Biocontrol_Collection: '#845ec2',
         Activity_Biocontrol_Release: '#845ec2',
