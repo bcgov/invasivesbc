@@ -65,6 +65,8 @@ const pauseDownloadOnRehydration = createTransform(
           outboundState[key].cacheDownloadProgress.downloadMode = CacheDownloadMode.PAUSE;
           outboundState[key].cacheDownloadProgress.message =
             `Mode: ${CacheDownloadMode.PAUSE.toLocaleString().toUpperCase()} Caching`;
+        } else if (outboundState[key].cacheMetadataStatus === UserRecordCacheStatus.QUEUED) {
+          outboundState[key].cacheMetadataStatus = UserRecordCacheStatus.NOT_CACHED;
         }
       });
     }
