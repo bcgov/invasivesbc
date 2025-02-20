@@ -31,6 +31,8 @@ class RecordCache {
     await (await RecordCacheServiceFactory.getPlatformInstance()).pauseDownload(spec.setId);
   });
 
+  static readonly startDownload = createAction<string | number>(`${this.PREFIX}/startDownload`);
+
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
     async (
@@ -43,12 +45,13 @@ class RecordCache {
       const state: RootState = getState() as RootState;
       const currStatus = state.UserSettings.recordSets?.[spec.setId].cacheMetadataStatus;
       // Check if cancelled while in queue
-      if (currStatus !== UserRecordCacheStatus.DOWNLOADING) {
+      if (currStatus !== UserRecordCacheStatus.QUEUED) {
         return {
           status: UserRecordCacheStatus.NOT_CACHED,
           setId: spec.setId
         };
       }
+      dispatch(RecordCache.startDownload(spec.setId));
 
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const idsToCache: string[] =
