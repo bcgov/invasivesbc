@@ -31,7 +31,7 @@ class RecordCache {
     await (await RecordCacheServiceFactory.getPlatformInstance()).pauseDownload(spec.setId);
   });
 
-  static readonly startDownload = createAction<string | number>(`${this.PREFIX}/startDownload`);
+  static readonly startDownload = createAction<PropertyKey>(`${this.PREFIX}/startDownload`);
 
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
