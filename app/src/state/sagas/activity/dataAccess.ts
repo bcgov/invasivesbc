@@ -277,7 +277,6 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
 export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivity>) {
   try {
     const authState = yield select(selectAuth);
-    const connected = yield select(selectNetworkConnected);
 
     const newActivity = yield call(
       activity_create_function,

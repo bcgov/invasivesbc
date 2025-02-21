@@ -97,6 +97,8 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
 
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
+  console.log('1--->', serializedActivities);
+
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) =>
       typeof s === 'object' &&
@@ -109,22 +111,28 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
     const hydrated = JSON.parse(activity.data);
 
     try {
+      console.log('2--->', hydrated, hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE);
+      // const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
+      //   ...hydrated,
+      //   form_status: ActivityStatus.DRAFT
+      // });
       const networkReturn =
         hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE
-          ? yield InvasivesAPI_Call('POST', `/api/activity/`, {
+          ? yield InvasivesAPI_Call('PUT', `/api/activity/`, {
+              ...hydrated,
+              form_status: ActivityStatus.DRAFT
+            })
+          : yield InvasivesAPI_Call('POST', `/api/activity/`, {
               ...hydrated,
               form_status: ActivityStatus.DRAFT,
               sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE // saved to db but only visible to user
-            })
-          : yield InvasivesAPI_Call('PUT', `/api/activity/`, {
-              ...hydrated,
-              form_status: ActivityStatus.DRAFT
             });
       if (networkReturn.status >= 200 && networkReturn.status < 300) {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE,
           payload: {
             id: hydrated.activity_id,
+            data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE },
             sync_state: OfflineActivitySyncState.SYNCHRONIZED
           }
         });
