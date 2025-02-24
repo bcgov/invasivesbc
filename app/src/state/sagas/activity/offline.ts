@@ -14,7 +14,6 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import { RecordCacheService } from 'utils/record-cache';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
@@ -29,6 +28,7 @@ export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
 
   // trigger a sync if we're online
   const connected = yield select(selectNetworkConnected);
+
   if (connected) {
     yield delay(500);
     yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC });
@@ -97,7 +97,6 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
 
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
-  console.log('1--->', serializedActivities);
 
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) =>
@@ -111,11 +110,6 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
     const hydrated = JSON.parse(activity.data);
 
     try {
-      console.log('2--->', hydrated, hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE);
-      // const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
-      //   ...hydrated,
-      //   form_status: ActivityStatus.DRAFT
-      // });
       const networkReturn =
         hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE
           ? yield InvasivesAPI_Call('PUT', `/api/activity/`, {
@@ -136,6 +130,7 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
             sync_state: OfflineActivitySyncState.SYNCHRONIZED
           }
         });
+        yield put(Activity.getSuccess({ ...hydrated, sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE }));
       } else {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE,
