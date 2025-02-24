@@ -16,8 +16,6 @@ def capacitor_pods
   pod 'CapacitorApp', :path => '../../node_modules/@capacitor/app'
   pod 'CapacitorCamera', :path => '../../node_modules/@capacitor/camera'
   pod 'CapacitorGeolocation', :path => '../../node_modules/@capacitor/geolocation'
-  pod 'CordovaPlugins', :path => '../capacitor-cordova-ios-plugins'
-  pod 'CordovaPluginsResources', :path => '../capacitor-cordova-ios-plugins'
 end
 
 target 'App' do

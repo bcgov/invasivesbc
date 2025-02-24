@@ -5,7 +5,6 @@ import { Route, useHistory } from 'react-router';
 import { useSelector } from 'utils/use_selector';
 import { ActivityForm } from './Activity/Form';
 import { ActivityPhotos } from './Activity/Photos';
-import { OverlayHeader } from '../OverlayHeader';
 import { Button } from '@mui/material';
 import { RENDER_DEBUG } from 'UI/App';
 
@@ -28,7 +27,6 @@ export const Activity = (props) => {
 
   return (
     <div className="records__activity">
-      <OverlayHeader />
       <div className="records__activity__header">
         <div className="records__activity_buttons">
           <Button

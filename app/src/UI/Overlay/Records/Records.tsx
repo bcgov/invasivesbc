@@ -1,7 +1,6 @@
 import { MouseEvent, useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import './Records.css';
-import { OverlayHeader } from '../OverlayHeader';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -71,60 +70,57 @@ export const Records = () => {
     return;
   }
   return (
-    <>
-      <OverlayHeader />
-      <div id="records-container">
-        <ul>
-          {filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).map((set) => (
-            <li
-              key={set}
-              onClick={() => history.push('/Records/List/Local:' + set)}
-              onMouseOver={highlightSet.bind(this, set)}
-              onFocus={highlightSet.bind(this, set)}
-              onMouseOut={unHighlightSet}
-              onBlur={unHighlightSet}
-              className="record-set-option"
-              style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
-            >
-              <RecordSetDetails
-                name={recordSets[set]?.recordSetName}
-                isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
-                handleNameChange={handleNameChange}
-                recordSetType={recordSets[set].recordSetType}
-                recordsetKey={set}
-              ></RecordSetDetails>
+    <div id="records-container">
+      <ul>
+        {filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).map((set) => (
+          <li
+            key={set}
+            onClick={() => history.push('/Records/List/Local:' + set)}
+            onMouseOver={highlightSet.bind(this, set)}
+            onFocus={highlightSet.bind(this, set)}
+            onMouseOut={unHighlightSet}
+            onBlur={unHighlightSet}
+            className="record-set-option"
+            style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
+          >
+            <RecordSetDetails
+              name={recordSets[set]?.recordSetName}
+              isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+              handleNameChange={handleNameChange}
+              recordSetType={recordSets[set].recordSetType}
+              recordsetKey={set}
+            ></RecordSetDetails>
 
-              <RecordSetControl
-                isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
-                recordset={recordSets[set]}
-                recordsetKey={set}
-                onClickToggleLabel={handleToggleLabel}
-                onClickToggleLayer={handleToggleLayer}
-                onClickCycleColour={handleCycleColour}
-                onClickDeleteRecordSet={handleDeleteRecordSet}
-              />
-            </li>
-          ))}
-        </ul>
-        {userIsMobileAndOffline ? (
-          <p>Any recordsets that haven't been saved for offline use will not be accessible when you're offline.</p>
-        ) : (
-          <div className="records-control">
-            <Button
-              onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.Activity))}
-              className={'new-recordset-button'}
-            >
-              Add Layer of Records
-            </Button>
-            <Button
-              onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.IAPP))}
-              className={'new-recordset-button'}
-            >
-              Add IAPP Layer of Records
-            </Button>
-          </div>
-        )}
-      </div>
-    </>
+            <RecordSetControl
+              isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+              recordset={recordSets[set]}
+              recordsetKey={set}
+              onClickToggleLabel={handleToggleLabel}
+              onClickToggleLayer={handleToggleLayer}
+              onClickCycleColour={handleCycleColour}
+              onClickDeleteRecordSet={handleDeleteRecordSet}
+            />
+          </li>
+        ))}
+      </ul>
+      {userIsMobileAndOffline ? (
+        <p>Any recordsets that haven't been saved for offline use will not be accessible when you're offline.</p>
+      ) : (
+        <div className="records-control">
+          <Button
+            onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.Activity))}
+            className={'new-recordset-button'}
+          >
+            Add Layer of Records
+          </Button>
+          <Button
+            onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.IAPP))}
+            className={'new-recordset-button'}
+          >
+            Add IAPP Layer of Records
+          </Button>
+        </div>
+      )}
+    </div>
   );
 };

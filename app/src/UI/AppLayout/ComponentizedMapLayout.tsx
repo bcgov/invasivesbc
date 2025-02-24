@@ -6,7 +6,7 @@ import { LayerPicker } from 'UI/LegacyMap/LayerPicker/LayerPicker';
 import { Map } from 'UI/LegacyMap/Map';
 import { useSelector } from 'utils/use_selector';
 import { OverlayContent } from 'UI/AppLayout/Components/OverlayContent';
-import { MapProvider } from 'react-map-gl';
+import { MapProvider } from 'react-map-gl/maplibre';
 import CommonPrefixComponents from 'UI/AppLayout/Components/CommonPrefixComponents';
 import CommonPostfixComponents from 'UI/AppLayout/Components/CommonPostfixComponents';
 
