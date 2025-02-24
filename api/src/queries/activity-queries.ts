@@ -772,19 +772,26 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
   `;
 };
 
+/**
+ * @desc Fetch Records matching list of ID's
+ * @param { string } recordIds Records Ids (UUID format) to fetch
+ */
+export const getCacheActivitiesSQL = (recordIds: string[]): SQLStatement => SQL`
+  SELECT a.*
+  FROM activity_incoming_data a
+  WHERE a.iscurrent = true 
+    and a.activity_id = ANY(${recordIds});
+`;
+
 export const getActivityHistorySQL = (activityId: string): SQLStatement => {
   return SQL`
-
-
-;with activity_version_history as (
-   select updated_by, created_timestamp, form_status, iscurrent, ROW_NUMBER() OVER (ORDER BY activity_incoming_data_id asc) AS Version
-   from activity_incoming_data
-	where activity_id = ${activityId}
-
-  )
+  ; WITH activity_version_history AS (
+      SELECT updated_by, created_timestamp, form_status, iscurrent, ROW_NUMBER() OVER (ORDER BY activity_incoming_data_id asc) AS Version
+      FROM activity_incoming_data
+	    WHERE activity_id = ${activityId}
+    )
     SELECT a.*
-    FROM activity_version_history a;
-
+    FROM activity_version_history a; 
   `;
 };
 
