@@ -9,7 +9,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
-import bboxToPolygon from 'utils/bboxToPolygon';
+import { DEBUG } from 'state/build-time-config';
 
 export enum IappRecordMode {
   Record = 'record',
@@ -80,8 +80,8 @@ abstract class RecordCacheService extends BaseCacheService<
   RecordCacheProgressCallbackParameters,
   UserRecordCacheStatus
 > {
-  private readonly CONCURRENCY_LIMIT = 4;
-
+  private readonly CONCURRENCY_LIMIT = DEBUG ? 10 : 4;
+  private readonly BATCH_AMOUNT = DEBUG ? 40 : 20;
   protected constructor() {
     super();
   }
@@ -280,18 +280,29 @@ abstract class RecordCacheService extends BaseCacheService<
     const lastProgressCallback: null | number = null;
     const totalRecordsToCache = spec.idsToCache.length;
 
-    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
+    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += this.BATCH_AMOUNT) {
       if (executing.size >= this.CONCURRENCY_LIMIT) {
         await Promise.race(executing);
       }
 
       this.processNext(executing, async () => {
-        const rez = await fetch(`${spec.API_BASE}/api/activity/${uncachedRecords[i]}`, {
-          headers: { Authorization: await getCurrentJWT() }
+        const rez = await fetch(`${spec.API_BASE}/api/record-caching`, {
+          method: 'POST',
+          headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
+
+          body: JSON.stringify({
+            recordType: RecordSetType.Activity,
+            recordIds: uncachedRecords.slice(i, i + this.BATCH_AMOUNT)
+          })
         });
-        await this.saveActivity(uncachedRecords[i], await rez.json());
+        if (rez.ok) {
+          const response = await rez.json();
+          Object.keys(response).forEach(async (key) => {
+            await this.saveActivity(key, response[key]);
+          });
+        }
       });
-      processedCaches++;
+      processedCaches += this.BATCH_AMOUNT;
       const currentProgress = processedCaches / totalRecordsToCache;
 
       // trigger a callback on the first run, on the last run, every 3%
@@ -302,7 +313,7 @@ abstract class RecordCacheService extends BaseCacheService<
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
-        const normalizedProgress = processedCaches / totalRecordsToCache;
+        const normalizedProgress = Math.min(processedCaches / totalRecordsToCache, 1);
         const progressLabel =
           normalizedProgress * 100 < 1
             ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
