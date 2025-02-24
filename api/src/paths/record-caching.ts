@@ -96,9 +96,10 @@ function postActivity(): RequestHandler {
             try {
               const response = await Promise.all(a?.media_keys?.map(async (key: string) => getFileFromS3(key)));
               resObj[a.activity_id].media = getMediaItemsList(response, a.media_keys);
-            } catch (ex) {
+            } catch (error) {
               defaultLog.error({
                 label: NAMESPACE,
+                error: error,
                 message: 'Error occured while fetching media from bucket',
                 body: req.body.idList
               });
@@ -116,6 +117,7 @@ function postActivity(): RequestHandler {
         namespace: NAMESPACE
       });
     } catch (error) {
+      defaultLog.debug({ label: NAMESPACE, error: error, body: req.body });
       return res.status(500).json({
         message: 'Unable to fetch ids in list.',
         request: req.body,
