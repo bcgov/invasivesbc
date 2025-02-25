@@ -12,6 +12,8 @@ import { InvasivesRequest } from 'utils/auth-utils';
 import { getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
 import { mapSitesRowsToJSON } from 'utils/iapp-json-utils';
 import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
+import { getIAPPSQLv2, sanitizeIAPPFilterObject } from './v2/iapp';
+import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 
 const NAMESPACE = 'record-caching';
 const defaultLog = getLogger(NAMESPACE);
@@ -115,11 +117,18 @@ function postActivity(): RequestHandler {
         }
         return res.status(200).json(resObj);
       } else if (recordType === 'IAPP') {
+        const filterObject = { ids_to_filter: recordIds, selectColumns: getSelectColumnsByRecordSetType('IAPP') };
+        const sql = getIAPPSQLv2(sanitizeIAPPFilterObject(filterObject, req));
+        const tableResult = await connection.query(sql.text, sql.values);
+        for (const result of tableResult.rows) {
+          resObj[result.site_id] = { row: result };
+        }
+
         for (const id of recordIds) {
           const search = new PointOfInterestSearchCriteria({ iappSiteID: id.toString() });
           const firstPass = getSitesBasedOnSearchCriteriaSQL(search);
           const query = await connection.query(firstPass.text, firstPass.values);
-          resObj[id] = { record: await mapSitesRowsToJSON(query, search) };
+          resObj[id].record = await mapSitesRowsToJSON(query, search);
         }
 
         return res.status(200).json(resObj);
