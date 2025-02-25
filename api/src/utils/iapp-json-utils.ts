@@ -140,7 +140,7 @@ export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_re
   });
 }; //todo: filter based on species (group 1) and genus (group 0)
 
-const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
+export const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
   const species_ref: any[] = await getSpeciesRef();
   defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites to grab site_id' });
   const site_ids: [] = site_extract_table_response.rows.map((row) => {
@@ -220,30 +220,34 @@ const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriter
       if (returnVal) return returnVal;
       else return [];
     });
-    (iapp_site as any).point_of_interest_payload.form_data.biological_treatments =
-      relevant_biological_treatment_extracts.map((x) => {
+    (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = relevant_biological_treatment_extracts.map(
+      (x) => {
         const returnVal = biologicalTreatmentsJSON(x, relevant_biological_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
-      });
-    (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals =
-      relevant_biological_dispersal_extracts.map((x) => {
+      }
+    );
+    (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals = relevant_biological_dispersal_extracts.map(
+      (x) => {
         const returnVal = biologicalDispersalJSON(x);
         if (returnVal) return returnVal;
         else return [];
-      });
-    (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments =
-      relevant_chemical_treatment_extracts.map((x) => {
+      }
+    );
+    (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments = relevant_chemical_treatment_extracts.map(
+      (x) => {
         const returnVal = chemicalTreatmentJSON(x, relevant_chemical_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
-      });
-    (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments =
-      relevant_mechanical_treatment_extracts.map((x) => {
+      }
+    );
+    (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments = relevant_mechanical_treatment_extracts.map(
+      (x) => {
         const returnVal = mechanicalTreatmenntsJSON(x, relevant_mechanical_monitoring_extracts);
         if (returnVal) return returnVal;
         else return [];
-      });
+      }
+    );
 
     // monitored flag
     const monitored =
