@@ -142,7 +142,9 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
       } else if (WhatsHere.toggle.match(action)) {
         draftState.recordsExpanded = action.payload ? false : draftState.recordsExpanded;
       } else if (RecordCache.requestCaching.pending.match(action)) {
-        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
+        draftState.recordSets[action.meta.arg.setId].cacheMetadataStatus = UserRecordCacheStatus.QUEUED;
+      } else if (RecordCache.startDownload.match(action)) {
+        draftState.recordSets[action.payload].cacheMetadataStatus = UserRecordCacheStatus.DOWNLOADING;
       } else if (
         RecordCache.requestCaching.rejected.match(action) ||
         RecordCache.deleteCache.rejected.match(action) ||

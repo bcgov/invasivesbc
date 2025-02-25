@@ -7,13 +7,14 @@ export enum RecordSetType {
 }
 
 export enum UserRecordCacheStatus {
+  CACHED = 'CACHED',
+  DELETING = 'DELETING',
+  DOWNLOADING = 'DOWNLOADING',
+  ERROR = 'ERROR',
   NOT_CACHED = 'NOT_CACHED',
   NOT_ELIGIBLE = 'NOT_ELIGIBLE',
-  DOWNLOADING = 'DOWNLOADING',
   PAUSED = 'PAUSED',
-  ERROR = 'ERROR',
-  CACHED = 'CACHED',
-  DELETING = 'DELETING'
+  QUEUED = 'QUEUED'
 }
 
 export interface UserRecordSet {

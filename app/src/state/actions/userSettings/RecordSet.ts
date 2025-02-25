@@ -1,10 +1,10 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
+import RecordCache from '../cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import RecordCache from '../cache/RecordCache';
 import { CacheDownloadMode } from 'utils/record-cache';
 
 export interface IUpdateFilter extends Partial<IFilter> {
@@ -73,7 +73,7 @@ class RecordSet {
       const { recordSets } = state.UserSettings;
       if (
         MOBILE &&
-        [UserRecordCacheStatus.CACHED, UserRecordCacheStatus.DOWNLOADING].includes(
+        [UserRecordCacheStatus.CACHED, UserRecordCacheStatus.DOWNLOADING, UserRecordCacheStatus.QUEUED].includes(
           recordSets[spec.setId].cacheMetadataStatus
         )
       ) {
