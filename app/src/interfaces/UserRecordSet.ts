@@ -6,6 +6,12 @@ export enum RecordSetType {
   Activity = 'Activity'
 }
 
+export enum RecordSetId {
+  Drafts = '1',
+  Activity = '2',
+  IAPP = '3'
+}
+
 export enum UserRecordCacheStatus {
   NOT_CACHED = 'NOT_CACHED',
   NOT_ELIGIBLE = 'NOT_ELIGIBLE',

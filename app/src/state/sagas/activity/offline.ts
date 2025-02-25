@@ -15,6 +15,7 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { RecordSetId } from 'interfaces/UserRecordSet';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
@@ -135,7 +136,7 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
         yield put(Activity.getSuccess({ ...hydrated, sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE }));
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-          payload: { recordSetID: layers[0].recordSetID, tableFiltersHash: layers[0].tableFiltersHash } //update My Drafts
+          payload: { recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }
         });
       } else {
         yield put({
