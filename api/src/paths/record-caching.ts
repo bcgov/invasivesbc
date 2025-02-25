@@ -9,6 +9,9 @@ import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from 'paths/media';
 import { PoolClient } from 'pg';
 import { InvasivesRequest } from 'utils/auth-utils';
+import { getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
+import { mapSitesRowsToJSON } from 'utils/iapp-json-utils';
+import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
 
 const NAMESPACE = 'record-caching';
 const defaultLog = getLogger(NAMESPACE);
@@ -110,6 +113,15 @@ function postActivity(): RequestHandler {
           const sql = getActivityHistorySQL(id);
           resObj[id].activity_history = (await connection.query(sql.text, sql.values)).rows;
         }
+        return res.status(200).json(resObj);
+      } else if (recordType === 'IAPP') {
+        for (const id of recordIds) {
+          const search = new PointOfInterestSearchCriteria({ iappSiteID: id.toString() });
+          const firstPass = getSitesBasedOnSearchCriteriaSQL(search);
+          const query = await connection.query(firstPass.text, firstPass.values);
+          resObj[id] = { record: await mapSitesRowsToJSON(query, search) };
+        }
+
         return res.status(200).json(resObj);
       }
       return res.status(400).json({
