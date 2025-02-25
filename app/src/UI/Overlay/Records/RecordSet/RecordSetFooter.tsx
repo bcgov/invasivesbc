@@ -9,7 +9,7 @@ const RecordSetFooter = (props) => {
 
   const loading = layer?.loading || recordTable?.loading;
 
-  const totalRecords = recordTable?.rows?.length;
+  const totalRecords = layer?.IDList?.length;
   const loaded = !loading;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =

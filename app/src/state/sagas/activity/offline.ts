@@ -2,6 +2,7 @@ import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
 import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
@@ -97,6 +98,7 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
 
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
+  const layers = yield select((state) => state.Map.layers);
 
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) =>
@@ -131,6 +133,10 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
           }
         });
         yield put(Activity.getSuccess({ ...hydrated, sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE }));
+        yield put({
+          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+          payload: { recordSetID: layers[0].recordSetID, tableFiltersHash: layers[0].tableFiltersHash } //update My Drafts
+        });
       } else {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE,
