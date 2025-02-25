@@ -1,4 +1,6 @@
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import booleanIntersects from '@turf/boolean-intersects';
+import { Feature } from '@turf/helpers';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
@@ -7,6 +9,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import bboxToPolygon from 'utils/bboxToPolygon';
 
 export enum IappRecordMode {
   Record = 'record',
@@ -365,6 +368,18 @@ abstract class RecordCacheService extends BaseCacheService<
     if (repositories[foundIndex].status === UserRecordCacheStatus.DOWNLOADING) {
       await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.PAUSED);
     }
+  }
+
+  /**
+   * @desc Get repositories filtered to a geographic area
+   * @param geom Area of target
+   * @returns Repositories overlapping with target area
+   */
+  public async getOverlappingRepositories(geom: Feature): Promise<RepositoryMetadata[]> {
+    return (await this.listRepositories()).filter(
+      (r) =>
+        r.status === UserRecordCacheStatus.CACHED && r.cachedGeoJson && booleanIntersects(bboxToPolygon(r.bbox!), geom)
+    );
   }
 }
 
