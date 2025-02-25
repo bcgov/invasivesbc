@@ -350,8 +350,9 @@ abstract class RecordCacheService extends BaseCacheService<
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);
 
     if (
-      repositories[foundIndex].status === UserRecordCacheStatus.DOWNLOADING ||
-      repositories[foundIndex].status === UserRecordCacheStatus.PAUSED
+      [UserRecordCacheStatus.DOWNLOADING, UserRecordCacheStatus.PAUSED, UserRecordCacheStatus.QUEUED].includes(
+        repositories[foundIndex].status
+      )
     ) {
       await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
     } else if (repositories[foundIndex].status === UserRecordCacheStatus.CACHED) {

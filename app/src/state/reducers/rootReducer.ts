@@ -53,7 +53,7 @@ const purgeOldStateOnVersionUpgrade = async (state: any) => {
 };
 
 // executes during app restart or when the page reloads
-const pauseDownloadOnRehydration = createTransform(
+const handleActiveDownloadsOnRehydration = createTransform(
   (inboundState) => inboundState,
 
   (outboundState) => {
@@ -65,6 +65,8 @@ const pauseDownloadOnRehydration = createTransform(
           outboundState[key].cacheDownloadProgress.downloadMode = CacheDownloadMode.PAUSE;
           outboundState[key].cacheDownloadProgress.message =
             `Mode: ${CacheDownloadMode.PAUSE.toLocaleString().toUpperCase()} Caching`;
+        } else if (outboundState[key].cacheMetadataStatus === UserRecordCacheStatus.QUEUED) {
+          outboundState[key].cacheMetadataStatus = UserRecordCacheStatus.NOT_CACHED;
         }
       });
     }
@@ -129,7 +131,7 @@ function createRootReducer(config: AppConfig) {
           'layerPickerIsAccordion',
           'mapCenter'
         ],
-        transforms: [pauseDownloadOnRehydration]
+        transforms: [handleActiveDownloadsOnRehydration]
       },
       createUserSettingsReducer(config)
     ),
