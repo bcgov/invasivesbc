@@ -84,12 +84,13 @@ function createOfflineActivityReducer(
           }
           case ACTIVITY_UPDATE_SYNC_STATE: {
             const found = draftState.serializedActivities[payload.id];
+
             if (found) {
               draftState.serializedActivities[payload.id] = {
                 ...found,
+                data: JSON.stringify(payload.data, null, 2),
                 sync_state: payload.sync_state
               };
-
               if (payload.error_detail) {
                 draftState.serializedActivities[payload.id].error_detail = payload.error_detail;
               } else {

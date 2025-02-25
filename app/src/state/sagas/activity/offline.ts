@@ -1,7 +1,8 @@
 import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
-import { ActivityStatus } from 'sharedAPI';
+import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
@@ -14,7 +15,7 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import { RecordCacheService } from 'utils/record-cache';
+import { RecordSetId } from 'interfaces/UserRecordSet';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
@@ -29,6 +30,7 @@ export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
 
   // trigger a sync if we're online
   const connected = yield select(selectNetworkConnected);
+
   if (connected) {
     yield delay(500);
     yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC });
@@ -97,6 +99,8 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
 
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
+  const layers = yield select((state) => state.Map.layers);
+
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) =>
       typeof s === 'object' &&
@@ -109,17 +113,30 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
     const hydrated = JSON.parse(activity.data);
 
     try {
-      const networkReturn = yield InvasivesAPI_Call('PUT', `/api/activity/`, {
-        ...hydrated,
-        form_status: ActivityStatus.DRAFT
-      });
+      const networkReturn =
+        hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE
+          ? yield InvasivesAPI_Call('PUT', `/api/activity/`, {
+              ...hydrated,
+              form_status: ActivityStatus.DRAFT
+            })
+          : yield InvasivesAPI_Call('POST', `/api/activity/`, {
+              ...hydrated,
+              form_status: ActivityStatus.DRAFT,
+              sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE // saved to db but only visible to user
+            });
       if (networkReturn.status >= 200 && networkReturn.status < 300) {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE,
           payload: {
             id: hydrated.activity_id,
+            data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE },
             sync_state: OfflineActivitySyncState.SYNCHRONIZED
           }
+        });
+        yield put(Activity.getSuccess({ ...hydrated, sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE }));
+        yield put({
+          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+          payload: { recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }
         });
       } else {
         yield put({
