@@ -137,6 +137,8 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
 
   if (searchCriteria.iappSiteID) {
     sqlStatement.append(SQL` AND i.site_id = ${parseInt(searchCriteria.iappSiteID)}`);
+  } else if (searchCriteria.point_of_interest_ids) {
+    sqlStatement.append(SQL` AND i.site_id = ANY(${searchCriteria.point_of_interest_ids})`);
   }
   if (searchCriteria.pointOfInterest_subtype) {
     sqlStatement.append(SQL` AND point_of_interest_subtype = ${searchCriteria.pointOfInterest_subtype}`);
