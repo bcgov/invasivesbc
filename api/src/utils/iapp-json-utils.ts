@@ -13,9 +13,10 @@ import { generateSitesCSV } from './iapp-csv-utils';
 import { getS3SignedURL } from './file-utils';
 import { getLogger } from 'utils/logger';
 import { getActivitiesSQL } from 'queries/activity-queries';
-import { getIappExtractFromDB, getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
+import { getIappExtractsFromDB, getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
 import { getDBConnection } from 'database/db';
 import { speciesRefSql } from 'queries/species_ref';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -55,7 +56,7 @@ const getSurveyObj = (row: any, map_code: any) => {
     other_surveyors: row.other_surveyors,
     survey_paper_file_id: row.survey_paper_file_id,
     survey_date: row.survey_date,
-    weeds_found: row.estimated_area > 0 ? true : false,
+    weeds_found: row.estimated_area > 0,
     distribution: row.distribution,
     project_code: [
       {
@@ -81,49 +82,20 @@ const getSurveyObj = (row: any, map_code: any) => {
   };
 };
 
-export const getSpeciesRef = async () => {
-  let connection;
-  try {
-    connection = await getDBConnection();
-  } catch (e) {
-    throw {
-      message: 'Error connecting to database',
-      code: 500,
-      namespace: 'iapp-json-utils'
-    };
-  }
-
-  if (!connection) {
-    throw {
-      code: 503,
-      message: 'Failed to establish database connection',
-      namespace: 'iapp-json-utils'
-    };
-  }
-
+export const getSpeciesRef = async (connection: PoolClient) => {
   try {
     const sqlStatement: SQLStatement = speciesRefSql();
-
-    if (!sqlStatement) {
-      throw {
-        code: 400,
-        message: 'Failed to build SQL statement',
-        namespace: 'iapp-json-utils'
-      };
-    }
-
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
     return response.rows;
   } catch (error) {
     defaultLog.debug({ label: 'iapp_species_ref', message: 'error', error });
-    throw {
-      code: 500,
-      message: 'Failed to get species ref',
-      namespace: 'iapp-json-utils'
-    };
-  } finally {
-    connection.release();
+    throw new Error('Failed to get species ref', {
+      cause: {
+        code: 500,
+        message: 'Failed to get species ref',
+        namespace: 'iapp-json-utils'
+      }
+    });
   }
 };
 
@@ -141,126 +113,85 @@ export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_re
 }; //todo: filter based on species (group 1) and genus (group 0)
 
 export const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
-  const species_ref: any[] = await getSpeciesRef();
-  defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites to grab site_id' });
-  const site_ids: [] = site_extract_table_response.rows.map((row) => {
-    return parseInt(row['site_id']);
-  });
+  let connection: PoolClient;
+  try {
+    connection = await getDBConnection();
+    const species_ref: any[] = await getSpeciesRef(connection);
+    defaultLog.debug({ label: 'getIAPPjson', message: 'about to map over sites to grab site_id' });
+    const site_ids: [] = site_extract_table_response.rows.map((row) => {
+      return parseInt(row['site_id']);
+    });
 
-  // get all of them for all the above site ids, vs doing many queries (while looping over sites)
-  let all_site_selection_extracts = [];
-  let all_biological_dispersal_extracts = [];
-  let all_biological_monitoring_extracts = [];
-  let all_biological_treatment_extracts = [];
-  let all_chemical_monitoring_extracts = [];
-  let all_chemical_treatment_extracts = [];
-  let all_mechanical_monitoring_extracts = [];
-  let all_mechanical_treatment_extracts = [];
-  let all_survey_extracts = [];
-
-  if (!searchCriteria.site_id_only) {
     // get all of them for all the above site ids, vs doing many queries (while looping over sites)
-    all_site_selection_extracts = await getIappExtractFromDB(site_ids, 'site_selection_extract');
-    all_biological_dispersal_extracts = await getIappExtractFromDB(site_ids, 'biological_dispersal_extract');
-    all_biological_monitoring_extracts = await getIappExtractFromDB(site_ids, 'biological_monitoring_extract');
-    all_biological_treatment_extracts = await getIappExtractFromDB(site_ids, 'biological_treatment_extract');
-    all_chemical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'chemical_monitoring_extract');
-    all_chemical_treatment_extracts = await getIappExtractFromDB(site_ids, 'chemical_treatment_extract');
-    all_mechanical_monitoring_extracts = await getIappExtractFromDB(site_ids, 'mechanical_monitoring_extract');
-    all_mechanical_treatment_extracts = await getIappExtractFromDB(site_ids, 'mechanical_treatment_extract');
-    all_survey_extracts = await getIappExtractFromDB(site_ids, 'survey_extract');
-  }
-
-  return site_extract_table_response.rows.map((row) => {
-    // Fetching site selection extract
-    const relevant_site_selection_extracts = all_site_selection_extracts.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    // Setting iapp site object
-    const iapp_site = getIAPPjson(row, relevant_site_selection_extracts[0], searchCriteria);
-    if (searchCriteria.site_id_only) {
-      return iapp_site;
+    const sitesMap = {
+      site_selection_extract: [],
+      biological_dispersal_extract: [],
+      biological_monitoring_extract: [],
+      biological_treatment_extract: [],
+      chemical_monitoring_extract: [],
+      chemical_treatment_extract: [],
+      mechanical_monitoring_extract: [],
+      mechanical_treatment_extract: [],
+      survey_extract: []
+    };
+    if (!searchCriteria.site_id_only) {
+      await getIappExtractsFromDB(site_ids, sitesMap, connection);
     }
-    defaultLog.debug({
-      label: 'getIAPPjson',
-      message: 'getting species codes'
-    });
-    (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(
-      row['all_species_on_site'],
-      species_ref
-    );
-    // Fetching Extracts
-    const relevant_biological_dispersal_extracts = all_biological_dispersal_extracts?.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    const relevant_biological_monitoring_extracts = all_biological_monitoring_extracts?.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    const relevant_biological_treatment_extracts = all_biological_treatment_extracts?.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    const relevant_chemical_monitoring_extracts = all_chemical_monitoring_extracts?.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    const relevant_chemical_treatment_extracts = all_chemical_treatment_extracts?.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    const relevant_mechanical_monitoring_extracts = all_mechanical_monitoring_extracts?.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    const relevant_mechanical_treatment_extracts = all_mechanical_treatment_extracts?.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    const relevant_survey_extracts = all_survey_extracts.filter((r) => {
-      return r.site_id === row.site_id;
-    });
-    // Assigning extracts into form_data
-    (iapp_site as any).point_of_interest_payload.form_data.surveys = relevant_survey_extracts?.map((x) => {
-      const returnVal = getSurveyObj(x, row['map_symbol']);
-      if (returnVal) return returnVal;
-      else return [];
-    });
-    (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = relevant_biological_treatment_extracts.map(
-      (x) => {
-        const returnVal = biologicalTreatmentsJSON(x, relevant_biological_monitoring_extracts);
-        if (returnVal) return returnVal;
-        else return [];
-      }
-    );
-    (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals = relevant_biological_dispersal_extracts.map(
-      (x) => {
-        const returnVal = biologicalDispersalJSON(x);
-        if (returnVal) return returnVal;
-        else return [];
-      }
-    );
-    (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments = relevant_chemical_treatment_extracts.map(
-      (x) => {
-        const returnVal = chemicalTreatmentJSON(x, relevant_chemical_monitoring_extracts);
-        if (returnVal) return returnVal;
-        else return [];
-      }
-    );
-    (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments = relevant_mechanical_treatment_extracts.map(
-      (x) => {
-        const returnVal = mechanicalTreatmenntsJSON(x, relevant_mechanical_monitoring_extracts);
-        if (returnVal) return returnVal;
-        else return [];
-      }
-    );
 
-    // monitored flag
-    const monitored =
-      row['has_biological_treatment_monitorings'] ||
-      row['has_chemical_treatment_monitorings'] ||
-      row['has_mechanical_treatment_monitorings']
-        ? 'Yes'
-        : 'No';
+    return site_extract_table_response.rows.map((row) => {
+      // Fetching Extracts
+      Object.keys(sitesMap).forEach((key) => {
+        sitesMap[key].filter((r: any) => r.site_id === row.site_id);
+      });
 
-    (iapp_site as any).point_of_interest_payload.form_data.monitored = monitored;
+      // Setting iapp site object
+      const iapp_site = getIAPPjson(row, sitesMap.site_selection_extract[0], searchCriteria);
+      if (searchCriteria.site_id_only) {
+        return iapp_site;
+      }
+      defaultLog.debug({
+        label: 'getIAPPjson',
+        message: 'getting species codes'
+      });
+      (iapp_site as any).species_on_site = getSpeciesCodesFromIAPPDescriptionList(
+        row['all_species_on_site'],
+        species_ref
+      );
 
-    return iapp_site;
-  });
+      // Assigning extracts into form_data
+      (iapp_site as any).point_of_interest_payload.form_data.surveys = sitesMap.survey_extract?.map(
+        (x) => getSurveyObj(x, row['map_symbol']) ?? []
+      );
+      (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = sitesMap.biological_treatment_extract.map(
+        (x) => biologicalTreatmentsJSON(x, sitesMap.biological_monitoring_extract) ?? []
+      );
+      (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals = sitesMap.biological_dispersal_extract.map(
+        (x) => biologicalDispersalJSON(x) ?? []
+      );
+      (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments = sitesMap.chemical_treatment_extract.map(
+        (x) => chemicalTreatmentJSON(x, sitesMap.chemical_monitoring_extract) ?? []
+      );
+      (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments = sitesMap.mechanical_treatment_extract.map(
+        (x) => mechanicalTreatmenntsJSON(x, sitesMap.mechanical_monitoring_extract) ?? []
+      );
+
+      // monitored flag
+      const monitored =
+        row['has_biological_treatment_monitorings'] ||
+        row['has_chemical_treatment_monitorings'] ||
+        row['has_mechanical_treatment_monitorings']
+          ? 'Yes'
+          : 'No';
+
+      (iapp_site as any).point_of_interest_payload.form_data.monitored = monitored;
+
+      return iapp_site;
+    });
+  } catch (ex) {
+    defaultLog.error(ex);
+  } finally {
+    connection?.release();
+  }
 };
 
 const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
@@ -354,7 +285,7 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
       }
     };
   } catch (e) {
-    throw 'error mapping iapp site to point of interest (at site level)';
+    throw new Error('error mapping iapp site to point of interest (at site level)');
   }
 };
 

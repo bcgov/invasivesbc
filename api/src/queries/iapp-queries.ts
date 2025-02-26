@@ -396,7 +396,7 @@ export const iapp_extract_sql = (site_id: number[], extractName: string): SQLSta
       break;
   }
 
-  if (site_id && site_id.length) {
+  if (site_id?.length) {
     sqlStatement.append(SQL` where site_id IN (`);
 
     // add the first activity subtype, which does not get a comma prefix
@@ -415,28 +415,20 @@ export const iapp_extract_sql = (site_id: number[], extractName: string): SQLSta
   return sqlStatement;
 };
 
-export const getIappExtractFromDB = async (site_ids: number[], extractName: string) => {
-  let connection: PoolClient | undefined;
-
-  try {
-    connection = await getDBConnection();
-    const sqlStatement: SQLStatement = iapp_extract_sql(site_ids, extractName);
-
-    if (!sqlStatement) {
-      throw {
-        code: 400,
-        message: 'Failed to build SQL statement',
-        namespace: 'iapp-queries'
-      };
+export const getIappExtractsFromDB = async (
+  site_ids: number[],
+  extracts: Record<PropertyKey, any>,
+  connection: PoolClient
+) => {
+  for (const extract of Object.keys(extracts)) {
+    try {
+      const sql: SQLStatement = iapp_extract_sql(site_ids, extract);
+      const responseIAPP = await connection.query(sql.text, sql.values);
+      extracts[extract] = responseIAPP.rows ?? [];
+    } catch (e) {
+      defaultLog.debug(e);
+      throw new Error('Unable to get iapp extract ' + extract + ' for sites ' + site_ids);
     }
-
-    const responseIAPP = await connection.query(sqlStatement.text, sqlStatement.values);
-    if (responseIAPP.rows) return responseIAPP.rows;
-    else return [];
-  } catch (e) {
-    defaultLog.debug(e);
-    throw 'Unable to get iapp extract ' + extractName + ' for sites ' + site_ids;
-  } finally {
-    connection?.release();
   }
+  return extracts;
 };
