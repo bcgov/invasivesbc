@@ -1,5 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getDBConnection } from 'database/db';
 import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
 import { getLogger } from 'utils/logger';
 import { PoolClient } from 'pg';
