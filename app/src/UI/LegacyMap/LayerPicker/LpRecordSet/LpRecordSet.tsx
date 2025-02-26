@@ -6,6 +6,7 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import { MOBILE } from 'state/build-time-config';
+import { LpOfflineActivitiesLayer } from './LpOfflineActivitiesLayer';
 
 type PropTypes = {
   closePicker: () => void;
@@ -50,7 +51,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
           />
         ))}
       </ul>
-      <h3>Custom Recordsets</h3>
+      {customRecordSets.length > 0 && <h3>Custom Recordsets</h3>}
       <ul>
         {customRecordSets.map((recordSet, index) => (
           <LpRecordSetOption
@@ -63,6 +64,10 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
             toggleVisibility={handleToggleVisibility}
           />
         ))}
+      </ul>
+      <h3>Unsyced Recordsets</h3>
+      <ul>
+        <LpOfflineActivitiesLayer />
       </ul>
       <div className="guide">
         <p>You can modify or create new Recordsets from the Records page. </p>

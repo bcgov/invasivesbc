@@ -12,6 +12,7 @@ import {
 } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
 import {
+  createOfflineActivitiesLayer,
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshVisibilityOnToggleUpdate,
@@ -43,6 +44,8 @@ import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
+import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { FeatureCollection } from 'geojson';
 
 /*
 
@@ -66,6 +69,9 @@ export const Map = ({ children }) => {
 
   // RecordSet Layers
   const storeLayers = useSelector((state) => state.Map.layers);
+
+  // Offline Activity layers
+  const { serializedActivities, visibility } = useSelector(selectOfflineActivity);
 
   // WMS Layers
   const simplePickerLayers2 = useSelector((state) => state.Map.simplePickerLayers2);
@@ -266,6 +272,91 @@ export const Map = ({ children }) => {
     refreshColoursOnColourUpdate(storeLayers, map);
     refreshVisibilityOnToggleUpdate(storeLayers, map);
   }, [storeLayers, map, mapReady, connectedToNetwork, loggedInOrWorkingOffline]);
+
+  // Offline Activities Layer:
+  useEffect(() => {
+    if (!map || !mapReady || !visibility) return;
+
+    const geometryList = Object.values(serializedActivities)
+      .map((item) => {
+        const parsedData = JSON.parse((item as OfflineActivityRecord).data);
+        return parsedData.geometry ? parsedData.geometry[0] : null;
+      })
+      .filter((geometry) => geometry !== null);
+
+    let geojsonData: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: geometryList || []
+    };
+    // createOfflineActivitiesLayer(map, visibility, geojsonData);
+    const LAYER_ID = 'offline-activity-';
+
+    const SHAPE_LAYER = `${LAYER_ID}-shape`;
+    const OUTLINE_LAYER = `${LAYER_ID}-outline`;
+    const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
+
+    if (geojsonData.features) {
+      map
+        .addSource(LAYER_ID, {
+          type: 'geojson',
+          data: geojsonData
+        })
+        .addLayer(
+          {
+            id: SHAPE_LAYER,
+            source: LAYER_ID,
+            type: 'fill',
+            paint: {
+              'fill-color': 'blue',
+              'fill-outline-color': 'blue',
+              'fill-opacity': 0.7
+            },
+            minzoom: 0,
+            maxzoom: 24
+          },
+          LAYER_Z_FOREGROUND
+        )
+        .addLayer(
+          {
+            id: OUTLINE_LAYER,
+            source: LAYER_ID,
+            type: 'line',
+            paint: {
+              'line-color': 'blue',
+              'line-opacity': 1,
+              'line-width': 3
+            },
+            minzoom: 0,
+            maxzoom: 24
+          },
+          LAYER_Z_FOREGROUND
+        )
+        .addLayer(
+          {
+            id: ZOOM_CIRCLE_LAYER,
+            source: LAYER_ID,
+            type: 'circle',
+            paint: {
+              'circle-color': 'blue',
+              'circle-radius': 3
+            },
+            minzoom: 0,
+            maxzoom: 24
+          },
+          LAYER_Z_FOREGROUND
+        );
+
+      return () => {
+        console.log('CAll clean up');
+
+        // cleanup effect -- remove created entries in reverse
+        map.removeLayer(ZOOM_CIRCLE_LAYER);
+        map.removeLayer(OUTLINE_LAYER);
+        map.removeLayer(SHAPE_LAYER);
+        map.removeSource(LAYER_ID);
+      };
+    }
+  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, visibility]);
 
   // Layer picker:
   useEffect(() => {
