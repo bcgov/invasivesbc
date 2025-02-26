@@ -18,9 +18,9 @@ import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRec
 const NAMESPACE = 'record-caching';
 const defaultLog = getLogger(NAMESPACE);
 
-const POST: Operation = [postActivity()];
+const GET: Operation = [getActivity()];
 
-POST.apiDoc = {
+GET.apiDoc = {
   description: 'Fetches a single activity based on its primary key.',
   tags: ['activity'],
   security: SECURITY_ON
@@ -81,11 +81,13 @@ POST.apiDoc = {
  * @desc Fetch a batch of records for caching via their IDs
  * @return { RequestHandler }
  */
-function postActivity(): RequestHandler {
+function getActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     if (req.authContext.roles.length === 0) return res.status(401).json({ message: 'No Role for user' });
+    if (!req.query.recordIds || !req.query.recordType) return res.status(400).send('Bad request, missing query params');
 
-    const { recordIds, recordType } = req.body;
+    const recordIds: string[] = JSON.parse(req.query.recordIds as string);
+    const recordType = req.query.recordType;
     let connection: PoolClient;
 
     try {
@@ -119,18 +121,20 @@ function postActivity(): RequestHandler {
       } else if (recordType === 'IAPP') {
         const filterObject = { ids_to_filter: recordIds, selectColumns: getSelectColumnsByRecordSetType('IAPP') };
         const sql = getIAPPSQLv2(sanitizeIAPPFilterObject(filterObject, req));
-        const tableResult = await connection.query(sql.text, sql.values);
+        const search = new PointOfInterestSearchCriteria({
+          point_of_interest_ids: recordIds
+        });
+        const initialRecordSQL = getSitesBasedOnSearchCriteriaSQL(search);
+        const [initialRecordResult, tableResult] = await Promise.all([
+          connection.query(initialRecordSQL.text, initialRecordSQL.values),
+          connection.query(sql.text, sql.values)
+        ]);
         for (const result of tableResult.rows) {
           resObj[result.site_id] = { row: result };
         }
-
-        for (const id of recordIds) {
-          const search = new PointOfInterestSearchCriteria({ iappSiteID: id.toString() });
-          const firstPass = getSitesBasedOnSearchCriteriaSQL(search);
-          const query = await connection.query(firstPass.text, firstPass.values);
-          resObj[id].record = await mapSitesRowsToJSON(query, search);
+        for (const result of initialRecordResult.rows) {
+          resObj[result.site_id].record = await mapSitesRowsToJSON(initialRecordResult, search);
         }
-
         return res.status(200).json(resObj);
       }
       return res.status(400).json({
@@ -152,4 +156,4 @@ function postActivity(): RequestHandler {
   };
 }
 
-export { POST };
+export { GET };
