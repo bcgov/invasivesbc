@@ -6,10 +6,9 @@ import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
-import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
-import { DEBUG } from 'state/build-time-config';
+import bboxToPolygon from 'utils/bboxToPolygon';
 
 export enum IappRecordMode {
   Record = 'record',
@@ -80,8 +79,7 @@ abstract class RecordCacheService extends BaseCacheService<
   RecordCacheProgressCallbackParameters,
   UserRecordCacheStatus
 > {
-  private readonly CONCURRENCY_LIMIT = DEBUG ? 10 : 4;
-  private readonly BATCH_AMOUNT = DEBUG ? 40 : 20;
+  private readonly CONCURRENCY_LIMIT = 4;
   protected constructor() {
     super();
   }
@@ -190,8 +188,7 @@ abstract class RecordCacheService extends BaseCacheService<
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<CacheDownloadMode> {
-    // IAPP Records use O(n*2) Requests compared to activities.
-    const IAPP_CONCURRENCY_LIMIT = Math.ceil(this.CONCURRENCY_LIMIT / 2);
+    const BATCH_AMOUNT = 9; // Use odd number increments so more digits update, appearing faster.
     const executing: Set<Promise<void>> = new Set();
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
@@ -199,43 +196,27 @@ abstract class RecordCacheService extends BaseCacheService<
     const lastProgressCallback: null | number = null;
     const totalRecordsToCache = spec.idsToCache.length;
 
-    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i++) {
-      if (executing.size >= IAPP_CONCURRENCY_LIMIT) {
+    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += BATCH_AMOUNT) {
+      if (executing.size >= this.CONCURRENCY_LIMIT) {
         await Promise.race(executing);
       }
+
+      const ids = uncachedRecords.slice(i, i + BATCH_AMOUNT);
+
       this.processNext(executing, async () => {
-        const authorization = await getCurrentJWT();
-        const [iappRecord, tableRow] = await Promise.all([
-          fetch(
-            `${spec.API_BASE}/api/points-of-interest/?query={"iappSiteID":"${uncachedRecords[i]}","isIAPP":true,"site_id_only":false}`,
-            { headers: { authorization } }
-          ).then(async (data) => await data.json()),
-          fetch(`${spec.API_BASE}/api/v2/IAPP/`, {
-            method: 'POST',
-            headers: { authorization, 'Content-type': 'application/json' },
-            body: JSON.stringify({
-              filterObjects: [
-                {
-                  limit: 1,
-                  recordSetType: RecordSetType.IAPP,
-                  selectColumns: getSelectColumnsByRecordSetType(RecordSetType.IAPP),
-                  tableFilters: [
-                    {
-                      field: 'site_id',
-                      filter: uncachedRecords[i],
-                      filterType: 'tableFilter',
-                      operator: 'CONTAINS',
-                      operator2: 'AND'
-                    }
-                  ]
-                }
-              ]
-            })
-          }).then(async (data) => await data.json())
-        ]);
-        await this.saveIapp(uncachedRecords[i].toString(), iappRecord, tableRow);
+        const url = `${spec.API_BASE}/api/record-caching?recordType=${RecordSetType.IAPP}&recordIds=${JSON.stringify(ids)}`;
+        const rez = await fetch(url, {
+          headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
+        });
+        if (rez.ok) {
+          const response = await rez.json();
+          Object.keys(response).forEach(async (key) => {
+            await this.saveIapp(key.toString(), response[key].record, response[key].row);
+          });
+        }
       });
-      processedCaches++;
+
+      processedCaches += ids.length;
       const currentProgress = processedCaches / totalRecordsToCache;
 
       // trigger a callback on the first run, on the last run, every 3%
@@ -254,7 +235,7 @@ abstract class RecordCacheService extends BaseCacheService<
               : `Mode: ${pauseOrAbort.toLocaleString().toUpperCase()} Caching`,
             downloadMode: pauseOrAbort,
             pausedActivityIdx: pauseOrAbort !== CacheDownloadMode.PAUSE ? -1 : i + 1,
-            normalizedProgress: processedCaches / totalRecordsToCache,
+            normalizedProgress: currentProgress,
             totalActivities: totalRecordsToCache,
             processedActivities: processedCaches
           });
@@ -273,6 +254,7 @@ abstract class RecordCacheService extends BaseCacheService<
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<CacheDownloadMode> {
+    const BATCH_AMOUNT = 21; // Use odd number increments so more digits update, appearing faster.
     const executing: Set<Promise<void>> = new Set();
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
@@ -280,20 +262,16 @@ abstract class RecordCacheService extends BaseCacheService<
     const lastProgressCallback: null | number = null;
     const totalRecordsToCache = spec.idsToCache.length;
 
-    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += this.BATCH_AMOUNT) {
+    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += BATCH_AMOUNT) {
       if (executing.size >= this.CONCURRENCY_LIMIT) {
         await Promise.race(executing);
       }
+      const ids = uncachedRecords.slice(i, i + BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
-        const rez = await fetch(`${spec.API_BASE}/api/record-caching`, {
-          method: 'POST',
-          headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
-
-          body: JSON.stringify({
-            recordType: RecordSetType.Activity,
-            recordIds: uncachedRecords.slice(i, i + this.BATCH_AMOUNT)
-          })
+        const url = `${spec.API_BASE}/api/record-caching?recordType=${RecordSetType.Activity}&recordIds=${JSON.stringify(ids)}`;
+        const rez = await fetch(url, {
+          headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
         });
         if (rez.ok) {
           const response = await rez.json();
@@ -302,18 +280,19 @@ abstract class RecordCacheService extends BaseCacheService<
           });
         }
       });
-      processedCaches += this.BATCH_AMOUNT;
+
+      processedCaches += ids.length;
       const currentProgress = processedCaches / totalRecordsToCache;
 
       // trigger a callback on the first run, on the last run, every 3%
       if (
         lastProgressCallback == null ||
         currentProgress - lastProgressCallback > 0.03 ||
-        processedCaches == totalRecordsToCache
+        processedCaches === totalRecordsToCache
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
-        const normalizedProgress = Math.min(processedCaches / totalRecordsToCache, 1);
+        const normalizedProgress = currentProgress;
         const progressLabel =
           normalizedProgress * 100 < 1
             ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
