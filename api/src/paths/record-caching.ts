@@ -121,19 +121,17 @@ function getActivity(): RequestHandler {
       } else if (recordType === 'IAPP') {
         const filterObject = { ids_to_filter: recordIds, selectColumns: getSelectColumnsByRecordSetType('IAPP') };
         const sql = getIAPPSQLv2(sanitizeIAPPFilterObject(filterObject, req));
-        const search = new PointOfInterestSearchCriteria({
-          point_of_interest_ids: recordIds
-        });
-        const initialRecordSQL = getSitesBasedOnSearchCriteriaSQL(search);
-        const [initialRecordResult, tableResult] = await Promise.all([
-          connection.query(initialRecordSQL.text, initialRecordSQL.values),
+        const search = new PointOfInterestSearchCriteria({ point_of_interest_ids: recordIds });
+        const baseIappRecordSQL = getSitesBasedOnSearchCriteriaSQL(search);
+        const [iappRecordResult, iappTableResult] = await Promise.all([
+          mapSitesRowsToJSON(await connection.query(baseIappRecordSQL.text, baseIappRecordSQL.values), search),
           connection.query(sql.text, sql.values)
         ]);
-        for (const result of tableResult.rows) {
+        for (const result of iappTableResult.rows) {
           resObj[result.site_id] = { row: result };
         }
-        for (const result of initialRecordResult.rows) {
-          resObj[result.site_id].record = await mapSitesRowsToJSON(initialRecordResult, search);
+        for (const result of iappRecordResult) {
+          resObj[result.site_id].record = result;
         }
         return res.status(200).json(resObj);
       }
@@ -146,7 +144,7 @@ function getActivity(): RequestHandler {
       return res.status(500).json({
         message: 'Unable to fetch ids in list.',
         request: req.body,
-        error: error,
+        error: JSON.stringify(error),
         namespace: NAMESPACE,
         code: 500
       });
