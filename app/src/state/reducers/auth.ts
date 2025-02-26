@@ -1,23 +1,8 @@
 import { Draft } from 'immer';
-import { createNextState } from '@reduxjs/toolkit';
-import {
-  AUTH_CLEAR_ROLES,
-  AUTH_FORGET_OFFLINE_USER,
-  AUTH_INITIALIZE_COMPLETE,
-  AUTH_MAKE_OFFLINE_USER_CURRENT,
-  AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
-  AUTH_REFRESH_ROLES_COMPLETE,
-  AUTH_REFRESH_ROLES_ERROR,
-  AUTH_REFRESH_ROLES_REQUEST,
-  AUTH_REQUEST_COMPLETE,
-  AUTH_SAVE_CURRENT_TO_OFFLINE,
-  AUTH_SET_DISRUPTED,
-  AUTH_SET_RECOVERED_FROM_DISRUPTION,
-  AUTH_SIGNOUT_COMPLETE,
-  AUTH_UPDATE_TOKEN_STATE
-} from '../actions';
+import { Action, createNextState } from '@reduxjs/toolkit';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 interface OfflineUserState {
   roles: { role_id: number; role_name: string }[];
@@ -92,7 +77,7 @@ function computeAccessRoles(
   all_roles: { role_id: number; role_name: string }[],
   roles: { role_id: number; role_name: string }[]
 ): { role_id: number; role_name: string }[] {
-  const accessRoles = [];
+  const accessRoles: { role_id: number; role_name: string }[] = [];
 
   for (const role of roles) {
     accessRoles.push(role);
@@ -152,7 +137,7 @@ const initialState: AuthState = {
   v2BetaAccess: false
 };
 
-function loadCurrentStateFromIdToken(idToken): object {
+function loadCurrentStateFromIdToken(idToken: string): object {
   let displayName = 'User';
   let username: string | null = null;
   let email = '';
@@ -211,28 +196,33 @@ function loadCurrentStateFromIdToken(idToken): object {
   };
 }
 
-function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => AuthState {
-  return (state: AuthState = initialState, action) => {
+function createAuthReducer(_configuration: AppConfig) {
+  return (state: AuthState = initialState, action: Action) => {
     return createNextState(state, (draftState: Draft<AuthState>) => {
-      switch (action.type) {
-        case AUTH_SIGNOUT_COMPLETE: {
-          draftState.initialized = true;
-          draftState.authenticated = false;
-          draftState.disrupted = false;
-          draftState.roles = [];
-          draftState.accessRoles = [];
-          draftState.rolesInitialized = false;
-          draftState.extendedInfo = null;
-          draftState.displayName = null;
-          draftState.email = null;
-          draftState.username = 'loggedOut';
-          draftState.loggedInOrWorkingOffline = false;
-          break;
-        }
-        case AUTH_SAVE_CURRENT_TO_OFFLINE: {
-          if (!draftState.authenticated) {
-            break;
-          }
+      if (AuthActions.signoutComplete.match(action)) {
+        draftState.initialized = true;
+        draftState.authenticated = false;
+        draftState.disrupted = false;
+        draftState.roles = [];
+        draftState.accessRoles = [];
+        draftState.rolesInitialized = false;
+        draftState.extendedInfo = {
+          account_status: 0,
+          activation_status: 0,
+          employer: null,
+          funding_agencies: [],
+          pac_number: null,
+          pac_service_number_1: null,
+          pac_service_number_2: null,
+          user_id: null,
+          work_phone_number: null
+        };
+        draftState.displayName = null;
+        draftState.email = null;
+        draftState.username = 'loggedOut';
+        draftState.loggedInOrWorkingOffline = false;
+      } else if (AuthActions.saveCurrentToOffline.match(action)) {
+        if (draftState.authenticated) {
           const found = draftState.offlineUsers.find((o) => o.displayName === draftState.displayName);
           if (found) {
             found.roles = draftState.roles;
@@ -257,25 +247,17 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
               username: draftState.username
             });
           }
-          break;
         }
-        case AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG:
-          draftState.offlineUserDialogOpen = action.payload.state;
-          break;
-
-        case AUTH_FORGET_OFFLINE_USER: {
-          const foundIndex = draftState.offlineUsers.findIndex((o) => o.displayName === action.payload.displayName);
-          if (foundIndex == -1) {
-            break;
-          }
+      } else if (AuthActions.openOfflineUserSelectionDialog.match(action)) {
+        draftState.offlineUserDialogOpen = action.payload;
+      } else if (AuthActions.forgetOfflineUser.match(action)) {
+        const foundIndex = draftState.offlineUsers.findIndex((o) => o.displayName === action.payload.displayName);
+        if (foundIndex != -1) {
           draftState.offlineUsers.splice(foundIndex, 1);
-          break;
         }
-        case AUTH_MAKE_OFFLINE_USER_CURRENT: {
-          const found = draftState.offlineUsers.find((o) => o.displayName === action.payload.displayName);
-          if (!found) {
-            break;
-          }
+      } else if (AuthActions.makeOfflineUserCurrent.match(action)) {
+        const found = draftState.offlineUsers.find((o) => o.displayName === action.payload.displayName);
+        if (found) {
           draftState.roles = found.roles;
           draftState.extendedInfo = found.extendedInfo;
           draftState.email = found.email;
@@ -287,74 +269,84 @@ function createAuthReducer(configuration: AppConfig): (AuthState, AnyAction) => 
           draftState.displayName = found.displayName;
           draftState.workingOffline = true;
           draftState.loggedInOrWorkingOffline = true;
-          break;
         }
-        case AUTH_INITIALIZE_COMPLETE: {
-          draftState.initialized = true;
-          draftState.disrupted = false;
-          const currentIdToken = action.payload.idToken;
+      } else if (AuthActions.initializeComplete.match(action)) {
+        draftState.initialized = true;
+        draftState.disrupted = false;
+        const currentIdToken = action.payload.idToken;
+        if (currentIdToken) {
           Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
             draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
           });
-          draftState.workingOffline = draftState.authenticated ? false : draftState.workingOffline;
-
-          break;
         }
-        case AUTH_REQUEST_COMPLETE: {
-          const currentIdToken = action.payload.idToken;
-          Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
-            draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
-          });
-          break;
-        }
-        case AUTH_UPDATE_TOKEN_STATE: {
-          const currentIdToken = action.payload.idToken;
-          Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
-            draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
-          });
-          draftState.disrupted = false;
-          break;
-        }
-        case AUTH_SET_DISRUPTED: {
-          draftState.disrupted = true;
-          break;
-        }
-        case AUTH_SET_RECOVERED_FROM_DISRUPTION: {
-          draftState.disrupted = false;
-          break;
-        }
-        case AUTH_REFRESH_ROLES_REQUEST: {
-          draftState.rolesInitialized = false;
-          draftState.roles = [];
-          draftState.accessRoles = [];
-          draftState.extendedInfo = null;
-          break;
-        }
-        case AUTH_CLEAR_ROLES: {
-          draftState.rolesInitialized = false;
-          draftState.roles = [];
-          draftState.accessRoles = [];
-          draftState.extendedInfo = null;
-          break;
-        }
-        case AUTH_REFRESH_ROLES_COMPLETE: {
-          const { all_roles, roles, extendedInfo, v2BetaAccess } = action.payload;
-          draftState.roles = roles;
-          draftState.accessRoles = computeAccessRoles(all_roles, roles);
-          draftState.extendedInfo = extendedInfo;
-          draftState.rolesInitialized = true;
-          draftState.v2BetaAccess = v2BetaAccess;
-          break;
-        }
-        case AUTH_REFRESH_ROLES_ERROR: {
-          draftState.rolesInitialized = false;
-          draftState.roles = [];
-          draftState.accessRoles = [];
-          draftState.extendedInfo = null;
-          break;
-        }
-        default:
-          break;
+        draftState.workingOffline = draftState.authenticated ? false : draftState.workingOffline;
+      } else if (AuthActions.requestComplete.match(action)) {
+        const currentIdToken = action.payload.idToken;
+        Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
+          draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
+        });
+      } else if (AuthActions.updateTokenState.match(action)) {
+        const currentIdToken = action.payload.idToken;
+        Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
+          draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
+        });
+        draftState.disrupted = false;
+      } else if (AuthActions.disrupted.match(action)) {
+        draftState.disrupted = true;
+      } else if (AuthActions.recovered.match(action)) {
+        draftState.disrupted = false;
+      } else if (AuthActions.refreshRolesRequest.match(action)) {
+        draftState.rolesInitialized = false;
+        draftState.roles = [];
+        draftState.accessRoles = [];
+        draftState.extendedInfo = {
+          account_status: 0,
+          activation_status: 0,
+          employer: null,
+          funding_agencies: [],
+          pac_number: null,
+          pac_service_number_1: null,
+          pac_service_number_2: null,
+          user_id: null,
+          work_phone_number: null
+        };
+      } else if (AuthActions.clearRoles.match(action)) {
+        draftState.rolesInitialized = false;
+        draftState.roles = [];
+        draftState.accessRoles = [];
+        draftState.extendedInfo = {
+          account_status: 0,
+          activation_status: 0,
+          employer: null,
+          funding_agencies: [],
+          pac_number: null,
+          pac_service_number_1: null,
+          pac_service_number_2: null,
+          user_id: null,
+          work_phone_number: null
+        };
+      } else if (AuthActions.refreshRolesComplete.match(action)) {
+        const { all_roles, roles, extendedInfo, v2BetaAccess } = action.payload;
+        draftState.roles = roles;
+        draftState.accessRoles = computeAccessRoles(all_roles, roles);
+        draftState.extendedInfo = extendedInfo;
+        draftState.rolesInitialized = true;
+        draftState.v2BetaAccess = v2BetaAccess;
+      } else if (AuthActions.refreshRolesError.match(action)) {
+        draftState.rolesInitialized = false;
+        draftState.roles = [];
+        draftState.accessRoles = [];
+        draftState.extendedInfo = {
+          account_status: 0,
+          activation_status: 0,
+          employer: null,
+          funding_agencies: [],
+          pac_number: null,
+          pac_service_number_1: null,
+          pac_service_number_2: null,
+          user_id: null,
+          work_phone_number: null
+        };
       }
     });
   };

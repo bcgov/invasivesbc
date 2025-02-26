@@ -1,9 +1,9 @@
-import { createNextState, nanoid } from '@reduxjs/toolkit';
+import { Action, createNextState, nanoid } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
-import { CLOSE_NEW_RECORD_MENU, GET_API_DOC_SUCCESS, OPEN_NEW_RECORD_MENU, RECORDSET_SET_SORT } from '../actions';
+import { AppConfig } from 'state/config';
+import { CLOSE_NEW_RECORD_MENU, OPEN_NEW_RECORD_MENU, RECORDSET_SET_SORT } from 'state/actions';
 
-import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -13,6 +13,7 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
 import { CacheDownloadMode } from 'utils/record-cache';
+import { APIDocs } from 'state/actions/userSettings/APIDocs';
 
 export interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
@@ -37,6 +38,8 @@ export interface UserSettingsState {
   boundaries: Boundary[];
   layerPickerIsAccordion: boolean;
   darkTheme: boolean;
+
+  offlineDocs: { displayName: string; apiDocsWithViewOptions: object; apiDocsWithSelectOptions: object }[];
 }
 
 const initialState: UserSettingsState = {
@@ -61,10 +64,13 @@ const initialState: UserSettingsState = {
     recordCategory: '',
     recordType: '',
     recordSubtype: ''
-  }
+  },
+  offlineDocs: []
 };
 
-function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
+function createUserSettingsReducer(
+  _configuration: AppConfig
+): (state: UserSettingsState, action: Action) => UserSettingsState {
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<UserSettingsState>) => {
       if (UserSettings.toggleRecordExpandSuccess.match(action)) {
@@ -220,13 +226,36 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         // clear sort:
         delete draftState.recordSets[action.payload.setID].sortOrder;
         delete draftState.recordSets[action.payload.setID].sortColumn;
+      } else if (APIDocs.set.match(action)) {
+        draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
+        draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
+      } else if (APIDocs.load.match(action)) {
+        const found = draftState.offlineDocs.find((o) => o.displayName === action.payload.displayName);
+        if (found) {
+          draftState.apiDocsWithSelectOptions = found.apiDocsWithSelectOptions;
+          draftState.apiDocsWithViewOptions = found.apiDocsWithViewOptions;
+        }
+      } else if (APIDocs.save.match(action)) {
+        const found = draftState.offlineDocs.find((o) => o.displayName === action.payload.displayName);
+        if (draftState.apiDocsWithViewOptions && draftState.apiDocsWithSelectOptions) {
+          if (found) {
+            found.apiDocsWithViewOptions = draftState.apiDocsWithViewOptions;
+            found.apiDocsWithSelectOptions = draftState.apiDocsWithSelectOptions;
+          } else {
+            draftState.offlineDocs.push({
+              apiDocsWithViewOptions: draftState.apiDocsWithViewOptions,
+              apiDocsWithSelectOptions: draftState.apiDocsWithSelectOptions,
+              displayName: action.payload.displayName
+            });
+          }
+        }
+      } else if (APIDocs.forgetSaved.match(action)) {
+        const foundIndex = draftState.offlineDocs.findIndex((o) => o.displayName === action.payload.displayName);
+        if (foundIndex != -1) {
+          draftState.offlineDocs.splice(foundIndex, 1);
+        }
       } else {
         switch (action.type) {
-          case GET_API_DOC_SUCCESS: {
-            draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
-            draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
-            break;
-          }
           case OPEN_NEW_RECORD_MENU: {
             draftState.newRecordDialogueOpen = true;
             break;
