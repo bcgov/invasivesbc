@@ -382,8 +382,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
         name: id + (map_symbol ? '\n' + map_symbol : ''),
         description: id
       };
-      const stringRecord = JSON.stringify(iappRecord.result.rows[0]);
-      const stringRow = JSON.stringify(iappTableRow.result[0]);
+      const stringRecord = JSON.stringify(iappRecord);
+      const stringRow = JSON.stringify(iappTableRow);
       const stringGeo = JSON.stringify(geojson);
       await this.cacheDB.query(
         //language=SQLite

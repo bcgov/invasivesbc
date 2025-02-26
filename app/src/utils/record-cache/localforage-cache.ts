@@ -87,7 +87,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    const data = { record: iappRecord.result.rows[0], row: iappTableRow.result[0] };
+    const data = { record: iappRecord, row: iappTableRow };
     await this.store.setItem(id.toString(), data);
   }
 
