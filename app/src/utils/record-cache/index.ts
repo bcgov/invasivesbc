@@ -188,7 +188,7 @@ abstract class RecordCacheService extends BaseCacheService<
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<CacheDownloadMode> {
-    const BATCH_AMOUNT = 9; // Use odd number increments so more digits update, appearing faster.
+    const BATCH_AMOUNT = 19; // Use odd number increments so more digits update, appearing faster.
     const executing: Set<Promise<void>> = new Set();
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
