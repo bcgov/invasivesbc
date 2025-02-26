@@ -13,12 +13,7 @@ import {
   MenuItem,
   Switch
 } from '@mui/material';
-import {
-  AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
-  AUTH_SIGNIN_REQUEST,
-  AUTH_SIGNOUT_REQUEST,
-  TOGGLE_PANEL
-} from 'state/actions';
+import { TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -45,6 +40,7 @@ import RefreshButton from './RefreshButton';
 import { MOBILE } from 'state/build-time-config';
 import NetworkActions from 'state/actions/network/NetworkActions';
 import MapActions from 'state/actions/map';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 type TabPredicate =
   | 'authenticated_any'
@@ -172,7 +168,7 @@ const LoginButton = ({ labelText = 'Login' }) => {
   return (
     <MenuItem
       onClick={() => {
-        dispatch({ type: AUTH_SIGNIN_REQUEST });
+        dispatch(AuthActions.signinRequest());
       }}
     >
       <ListItemIcon>
@@ -191,7 +187,7 @@ const LogoutButton = () => {
         type: TOGGLE_PANEL,
         payload: { panelOpen: false }
       });
-      dispatch({ type: AUTH_SIGNOUT_REQUEST });
+      dispatch(AuthActions.signoutRequest());
       dispatch(MapActions.toggleOverlay('public_layer'));
     };
   };
@@ -316,7 +312,7 @@ const LoginOrOutMemo = React.memo(() => {
 
   const requestAccess = async () => {
     if (!authenticated) {
-      dispatch({ type: AUTH_SIGNIN_REQUEST });
+      dispatch(AuthActions.signinRequest());
     } else {
       history.push('/AccessRequest');
       dispatch({
@@ -364,10 +360,7 @@ const LoginOrOutMemo = React.memo(() => {
             onClick={() => {
               setAnchorEl(null);
 
-              dispatch({
-                type: AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG,
-                payload: { state: true }
-              });
+              dispatch(AuthActions.openOfflineUserSelectionDialog(true));
             }}
           >
             <ListItemIcon>

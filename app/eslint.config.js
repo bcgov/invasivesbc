@@ -22,6 +22,14 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
   },
   rules: {
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'error',
+      {
+        vars: 'all',
+        args: 'after-used',
+        argsIgnorePattern: '^_' /* prefix a function argument with _ to indicate it is intentionally unused */
+      }
+    ],
     '@typescript-eslint/ban-types': ['error', { types: { object: false, extendDefaults: true } }],
     'import/no-unresolved': 'error',
     'import/no-duplicates': 'error',

@@ -3,24 +3,9 @@ import Keycloak from 'keycloak-js';
 import { AppConfig } from 'state/config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { historySingleton } from 'state/store';
-import {
-  AUTH_INITIALIZE_COMPLETE,
-  AUTH_INITIALIZE_REQUEST,
-  AUTH_REFRESH_ROLES_REQUEST,
-  AUTH_REFRESH_TOKEN,
-  AUTH_REINIT,
-  AUTH_REQUEST_COMPLETE,
-  AUTH_REQUEST_ERROR,
-  AUTH_SET_DISRUPTED,
-  AUTH_SET_RECOVERED_FROM_DISRUPTION,
-  AUTH_SIGNIN_REQUEST,
-  AUTH_SIGNOUT_COMPLETE,
-  AUTH_SIGNOUT_REQUEST,
-  AUTH_UPDATE_TOKEN_STATE,
-  TABS_GET_INITIAL_STATE_REQUEST,
-  USERINFO_CLEAR_REQUEST
-} from 'state/actions';
+import { TABS_GET_INITIAL_STATE_REQUEST, USERINFO_CLEAR_REQUEST } from 'state/actions';
 import { selectAuth } from 'state/reducers/auth';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 let keycloakInstance: Keycloak | null = null;
 
@@ -38,15 +23,10 @@ function* handleSigninRequest() {
       redirectUri: config.REDIRECT_URI
     });
 
-    yield put({
-      type: AUTH_REQUEST_COMPLETE,
-      payload: {
-        idToken: keycloakInstance.idToken
-      }
-    });
+    yield put(AuthActions.requestComplete({ idToken: keycloakInstance.idToken }));
   } catch (e) {
     console.error(e);
-    yield put({ type: AUTH_REQUEST_ERROR });
+    yield put(AuthActions.requestError());
   }
 }
 
@@ -57,11 +37,11 @@ function* handleSignoutRequest() {
 
   try {
     yield keycloakInstance.logout();
-    yield put({ type: AUTH_SIGNOUT_COMPLETE });
+    yield put(AuthActions.signoutComplete());
     yield put({ type: USERINFO_CLEAR_REQUEST });
   } catch (e) {
     console.error(e);
-    yield put({ type: AUTH_REQUEST_ERROR });
+    yield put(AuthActions.requestError());
   }
 }
 
@@ -89,22 +69,22 @@ function* keepTokenFresh() {
         if (keycloakInstance.isTokenExpired(MIN_TOKEN_FRESHNESS)) {
           const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
           if (refreshed) {
-            yield put({ type: AUTH_UPDATE_TOKEN_STATE, payload: { idToken: keycloakInstance.idToken } });
+            yield put(AuthActions.updateTokenState({ idToken: keycloakInstance.idToken }));
           }
           if (disrupted) {
-            yield put({ type: AUTH_SET_RECOVERED_FROM_DISRUPTION });
+            yield put(AuthActions.recovered());
             refreshRetryCount = 0;
           }
         }
       } catch (e) {
         console.error(e);
         if (!disrupted) {
-          yield put({ type: AUTH_SET_DISRUPTED });
+          yield put(AuthActions.disrupted());
         }
 
         refreshRetryCount++;
         if (refreshRetryCount >= RETRY_LIMIT) {
-          put({ type: AUTH_SIGNOUT_REQUEST });
+          put(AuthActions.signoutRequest());
         }
       } finally {
         yield delay(TOKEN_REFRESH_INTERVAL);
@@ -161,27 +141,26 @@ function* reinitAuth() {
     } catch (e) {
       console.dir(e);
       if (failCount >= FAIL_LIMIT) {
-        yield put({ type: AUTH_SIGNOUT_REQUEST });
+        yield put(AuthActions.signoutRequest());
       }
       failCount++;
       yield delay(1000);
     }
   }
 
-  yield put({
-    type: AUTH_INITIALIZE_COMPLETE,
-    payload: {
+  yield put(
+    AuthActions.initializeComplete({
       authenticated: keycloakInstance.authenticated,
       idToken: keycloakInstance.idToken
-    }
-  });
+    })
+  );
 
   if (keycloakInstance.authenticated) {
     // we are already logged in
     // schedule our refresh
     // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
-    yield put({ type: AUTH_REFRESH_TOKEN });
-    yield put({ type: AUTH_REFRESH_ROLES_REQUEST });
+    yield put(AuthActions.refreshToken());
+    yield put(AuthActions.refreshRolesRequest());
     if (postAuthNavigate) {
       sessionStorage.removeItem('_invasivesbc_auth_target');
       historySingleton.push(postAuthNavigate);
@@ -207,16 +186,14 @@ function* initializeAuthentication() {
     url: config.KEYCLOAK_URL
   });
 
-  yield put({
-    type: AUTH_REINIT
-  });
+  yield put(AuthActions.reinit());
 }
 
 const keycloakAuthEffects = [
-  takeLatest(AUTH_INITIALIZE_REQUEST, initializeAuthentication),
-  takeLatest(AUTH_SIGNIN_REQUEST, handleSigninRequest),
-  takeLatest(AUTH_SIGNOUT_REQUEST, handleSignoutRequest),
-  takeLatest(AUTH_REINIT, reinitAuth),
+  takeLatest(AuthActions.initializeRequest.type, initializeAuthentication),
+  takeLatest(AuthActions.signinRequest.type, handleSigninRequest),
+  takeLatest(AuthActions.signoutRequest.type, handleSignoutRequest),
+  takeLatest(AuthActions.reinit.type, reinitAuth),
   fork(keepTokenFresh)
 ];
 

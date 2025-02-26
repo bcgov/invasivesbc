@@ -3,18 +3,12 @@ import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
-import {
-  AUTH_MAKE_OFFLINE_USER_CURRENT,
-  AUTH_REFRESH_ROLES_COMPLETE,
-  AUTH_REFRESH_ROLES_ERROR,
-  AUTH_REFRESH_ROLES_REQUEST,
-  AUTH_SAVE_CURRENT_TO_OFFLINE,
-  TABS_GET_INITIAL_STATE_REQUEST,
-  USERINFO_LOAD_COMPLETE
-} from 'state/actions';
+import { TABS_GET_INITIAL_STATE_REQUEST, USERINFO_LOAD_COMPLETE } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import NetworkActions from 'state/actions/network/NetworkActions';
+import { AuthActions } from 'state/actions/auth/Auth';
+import { APIDocs } from 'state/actions/userSettings/APIDocs';
 
 // not a saga, but an exported convenience function
 type withCurrentJWTCallback = (header: string) => Promise<any>;
@@ -63,15 +57,14 @@ function* refreshRoles() {
       return { userData: await userAccessResponse.json(), rolesData: await rolesResponse.json() };
     });
 
-    yield put({
-      type: AUTH_REFRESH_ROLES_COMPLETE,
-      payload: {
+    yield put(
+      AuthActions.refreshRolesComplete({
         all_roles: rolesData.result,
         roles: userData.result.roles,
         extendedInfo: userData.result.extendedInfo,
         v2BetaAccess: userData.result.v2BetaAccess
-      }
-    });
+      })
+    );
 
     yield put({
       type: USERINFO_LOAD_COMPLETE,
@@ -80,9 +73,7 @@ function* refreshRoles() {
       }
     });
 
-    yield put({
-      type: AUTH_SAVE_CURRENT_TO_OFFLINE
-    });
+    yield put(AuthActions.saveCurrentToOffline());
 
     yield put({
       type: TABS_GET_INITIAL_STATE_REQUEST,
@@ -92,18 +83,31 @@ function* refreshRoles() {
       }
     });
   } catch (e) {
-    yield put({ type: AUTH_REFRESH_ROLES_ERROR });
+    yield put(AuthActions.refreshRolesError());
   }
 }
 
-function* handle_AUTH_MAKE_OFFLINE_USER_CURRENT() {
-  yield all([put(NetworkActions.setAdministrativeStatus(false)), put(UserSettings.InitState.get())]);
+function* handle_AUTH_FORGET_OFFLINE_USER(action) {
+  if (AuthActions.forgetOfflineUser.match(action)) {
+    yield put(APIDocs.forgetSaved({ displayName: action.payload.displayName })); // also forget api-docs for this user
+  }
+}
+
+function* handle_AUTH_MAKE_OFFLINE_USER_CURRENT(action) {
+  if (AuthActions.makeOfflineUserCurrent.match(action)) {
+    yield all([
+      put(NetworkActions.setAdministrativeStatus(false)),
+      put(UserSettings.InitState.get({ offlineAPIDocsDisplayName: action.payload.displayName }))
+      // put(APIDocs.load({ displayName: action.payload.displayName })) // load previously-persisted api-docs
+    ]);
+  }
 }
 
 function* authenticationSaga() {
   const baseSaga = [
-    takeLatest(AUTH_REFRESH_ROLES_REQUEST, refreshRoles),
-    takeLatest(AUTH_MAKE_OFFLINE_USER_CURRENT, handle_AUTH_MAKE_OFFLINE_USER_CURRENT)
+    takeLatest(AuthActions.refreshRolesRequest.type, refreshRoles),
+    takeLatest(AuthActions.makeOfflineUserCurrent.type, handle_AUTH_MAKE_OFFLINE_USER_CURRENT),
+    takeLatest(AuthActions.forgetOfflineUser.type, handle_AUTH_FORGET_OFFLINE_USER)
   ];
   if (MOBILE && [Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
     // use native authentication bridge for better user experience

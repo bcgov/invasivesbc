@@ -129,7 +129,8 @@ function createRootReducer(config: AppConfig) {
           'darkTheme',
           'boundaries',
           'layerPickerIsAccordion',
-          'mapCenter'
+          'mapCenter',
+          'offlineDocs'
         ],
         transforms: [handleActiveDownloadsOnRehydration]
       },
