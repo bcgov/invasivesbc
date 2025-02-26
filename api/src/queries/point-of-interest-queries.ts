@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PointOfInterestPostRequestBody, PointOfInterestSearchCriteria } from 'models/point-of-interest';
+import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
 
 /**
  * SQL query to fetch point_of_interest records based on search criteria.
@@ -18,7 +18,7 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   —where ot.iapp_type = ‘survey’ and ot.survey_date > ‘inputdate1’ and ot.survey_date < ‘input_date2’
   */
 
-  if (searchCriteria.column_names && searchCriteria.column_names.length) {
+  if (searchCriteria?.column_names.length) {
     // do not include the `SQL` template string prefix, as column names can not be parameterized
     sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
   } else {
@@ -48,6 +48,8 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   if (searchCriteria.iappType) {
     if (searchCriteria.iappSiteID) {
       sqlStatement.append(SQL` AND iapp_site_summary_and_geojson.id = ${searchCriteria.iappSiteID}`);
+    } else if (searchCriteria.point_of_interest_ids) {
+      sqlStatement.append(SQL` AND iapp_site_summary_and_geojson.id = ANY(${searchCriteria.point_of_interest_ids}) `);
     }
     if (searchCriteria.date_range_start) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -80,7 +82,7 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
     }
   }
 
-  if (searchCriteria.point_of_interest_ids && searchCriteria.point_of_interest_ids.length) {
+  if (searchCriteria?.point_of_interest_ids.length) {
     sqlStatement.append(SQL` AND point_of_interest_id IN (`);
     sqlStatement.append(SQL`${searchCriteria.point_of_interest_ids[0]}`);
     for (let idx = 1; idx < searchCriteria.point_of_interest_ids.length; idx++) {
@@ -90,29 +92,13 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   }
 
   // search intersects with some species codes
-  if (searchCriteria.species_positive && searchCriteria.species_positive.length) {
+  if (searchCriteria?.species_positive.length) {
     sqlStatement.append(SQL` AND ARRAY[`);
     sqlStatement.append(SQL`${searchCriteria.species_positive[0]}`);
     for (let idx = 1; idx < searchCriteria.species_positive.length; idx++)
       sqlStatement.append(SQL`, ${searchCriteria.species_positive[idx]}`);
     sqlStatement.append(SQL`]::varchar[] && species_positive`);
   }
-
-  // if (searchCriteria.search_feature) {     doesn't appear to be used, see iapp-queries.ts
-  //   sqlStatement.append(SQL`
-  //     AND public.ST_INTERSECTS(
-  //       geog,
-  //       public.geography(
-  //         public.ST_Force2D(
-  //           public.ST_SetSRID(
-  //             public.ST_GeomFromGeoJSON(${searchCriteria.search_feature.geometry}),
-  //             4326
-  //           )
-  //         )
-  //       )
-  //     )
-  //   `);
-  // }
 
   if (searchCriteria.order?.length) {
     sqlStatement.append(SQL` ORDER BY ${searchCriteria.order.join(', ')}`);
