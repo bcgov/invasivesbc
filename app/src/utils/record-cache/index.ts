@@ -204,7 +204,7 @@ abstract class RecordCacheService extends BaseCacheService<
       const ids = uncachedRecords.slice(i, i + BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
-        const url = `${spec.API_BASE}/api/record-caching?recordType=${RecordSetType.IAPP}&recordIds=${JSON.stringify(ids)}`;
+        const url = `${spec.API_BASE}/api/v2/iapp/batch-request?idList=${JSON.stringify(ids)}`;
         const rez = await fetch(url, {
           headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
         });
@@ -269,7 +269,7 @@ abstract class RecordCacheService extends BaseCacheService<
       const ids = uncachedRecords.slice(i, i + BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
-        const url = `${spec.API_BASE}/api/record-caching?recordType=${RecordSetType.Activity}&recordIds=${JSON.stringify(ids)}`;
+        const url = `${spec.API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
         const rez = await fetch(url, {
           headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
         });

@@ -776,7 +776,7 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
  * @desc Fetch Records matching list of ID's
  * @param { string } recordIds Records Ids (UUID format) to fetch
  */
-export const getCacheActivitiesSQL = (recordIds: string[]): SQLStatement => SQL`
+export const getActivitiesByIdsSQL = (recordIds: string[]): SQLStatement => SQL`
   SELECT a.*
   FROM activity_incoming_data a
   WHERE a.iscurrent = true 
