@@ -94,7 +94,7 @@ function getActivity(): RequestHandler {
               label: NAMESPACE,
               error: error,
               message: 'Error occured while fetching media from bucket',
-              body: req.body.idList
+              req: req.query
             });
           }
         }
@@ -108,7 +108,7 @@ function getActivity(): RequestHandler {
       defaultLog.debug({ label: NAMESPACE, error: error, body: req.body });
       return res.status(500).json({
         message: 'Unable to fetch ids in list.',
-        request: req.body,
+        request: req.query,
         error: JSON.stringify(error),
         namespace: NAMESPACE,
         code: 500
