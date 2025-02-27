@@ -153,6 +153,9 @@ function createTileCacheReducer() {
 
       if (TileCache.deleteRepository.pending.match(action)) {
         draft.loading = true;
+        if (Object.prototype.hasOwnProperty.call(draft.downloadProgress, action.meta.arg)) {
+          delete draft.downloadProgress[action.meta.arg];
+        }
       } else if (TileCache.deleteRepository.fulfilled.match(action)) {
         draft.loading = false;
         draft.repositories = action.payload;
