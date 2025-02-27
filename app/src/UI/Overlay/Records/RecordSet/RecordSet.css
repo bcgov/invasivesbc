@@ -27,7 +27,8 @@
 
 .stickyHeader {
   position: sticky;
-  top: calc(var(--overlay-grip-height) - 1px);
+  top: 0;
+  left: 0;
   background-color: white;
   z-index: 9999;
 }
