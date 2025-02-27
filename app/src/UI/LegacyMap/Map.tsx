@@ -16,7 +16,8 @@ import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshVisibilityOnToggleUpdate,
-  removeLayersOnNetworkConnectivityChange
+  removeLayersOnNetworkConnectivityChange,
+  removeOfflineActivitiesLayer
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
 import {
   addWMSLayersIfNotExist,
@@ -275,7 +276,12 @@ export const Map = ({ children }) => {
 
   // Offline Activities Layer:
   useEffect(() => {
-    if (!map || !mapReady || !visibility) return;
+    if (!map || !mapReady) return;
+
+    if (!visibility) {
+      removeOfflineActivitiesLayer(map);
+      return;
+    }
 
     const geometryList = Object.values(serializedActivities)
       .map((item) => {
@@ -288,74 +294,77 @@ export const Map = ({ children }) => {
       type: 'FeatureCollection',
       features: geometryList || []
     };
-    // createOfflineActivitiesLayer(map, visibility, geojsonData);
-    const LAYER_ID = 'offline-activity-';
+    console.log('Offline activities called');
 
-    const SHAPE_LAYER = `${LAYER_ID}-shape`;
-    const OUTLINE_LAYER = `${LAYER_ID}-outline`;
-    const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
+    createOfflineActivitiesLayer(map, visibility, geojsonData);
+    // const LAYER_ID = 'offline-activity-';
 
-    if (geojsonData.features) {
-      map
-        .addSource(LAYER_ID, {
-          type: 'geojson',
-          data: geojsonData
-        })
-        .addLayer(
-          {
-            id: SHAPE_LAYER,
-            source: LAYER_ID,
-            type: 'fill',
-            paint: {
-              'fill-color': 'blue',
-              'fill-outline-color': 'blue',
-              'fill-opacity': 0.7
-            },
-            minzoom: 0,
-            maxzoom: 24
-          },
-          LAYER_Z_FOREGROUND
-        )
-        .addLayer(
-          {
-            id: OUTLINE_LAYER,
-            source: LAYER_ID,
-            type: 'line',
-            paint: {
-              'line-color': 'blue',
-              'line-opacity': 1,
-              'line-width': 3
-            },
-            minzoom: 0,
-            maxzoom: 24
-          },
-          LAYER_Z_FOREGROUND
-        )
-        .addLayer(
-          {
-            id: ZOOM_CIRCLE_LAYER,
-            source: LAYER_ID,
-            type: 'circle',
-            paint: {
-              'circle-color': 'blue',
-              'circle-radius': 3
-            },
-            minzoom: 0,
-            maxzoom: 24
-          },
-          LAYER_Z_FOREGROUND
-        );
+    // const SHAPE_LAYER = `${LAYER_ID}-shape`;
+    // const OUTLINE_LAYER = `${LAYER_ID}-outline`;
+    // const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
 
-      return () => {
-        console.log('CAll clean up');
+    // if (geojsonData.features) {
+    //   map
+    //     .addSource(LAYER_ID, {
+    //       type: 'geojson',
+    //       data: geojsonData
+    //     })
+    //     .addLayer(
+    //       {
+    //         id: SHAPE_LAYER,
+    //         source: LAYER_ID,
+    //         type: 'fill',
+    //         paint: {
+    //           'fill-color': 'blue',
+    //           'fill-outline-color': 'blue',
+    //           'fill-opacity': 0.7
+    //         },
+    //         minzoom: 0,
+    //         maxzoom: 24
+    //       },
+    //       LAYER_Z_FOREGROUND
+    //     )
+    //     .addLayer(
+    //       {
+    //         id: OUTLINE_LAYER,
+    //         source: LAYER_ID,
+    //         type: 'line',
+    //         paint: {
+    //           'line-color': 'blue',
+    //           'line-opacity': 1,
+    //           'line-width': 3
+    //         },
+    //         minzoom: 0,
+    //         maxzoom: 24
+    //       },
+    //       LAYER_Z_FOREGROUND
+    //     )
+    //     .addLayer(
+    //       {
+    //         id: ZOOM_CIRCLE_LAYER,
+    //         source: LAYER_ID,
+    //         type: 'circle',
+    //         paint: {
+    //           'circle-color': 'blue',
+    //           'circle-radius': 3
+    //         },
+    //         minzoom: 0,
+    //         maxzoom: 24
+    //       },
+    //       LAYER_Z_FOREGROUND
+    //     );
+    //   const allLayersOnMap = map.getLayersOrder();
+    //   console.log('====>', allLayersOnMap);
+    //   return () => {
+    //     console.log('CAll clean up');
 
-        // cleanup effect -- remove created entries in reverse
-        map.removeLayer(ZOOM_CIRCLE_LAYER);
-        map.removeLayer(OUTLINE_LAYER);
-        map.removeLayer(SHAPE_LAYER);
-        map.removeSource(LAYER_ID);
-      };
-    }
+    //     // cleanup effect -- remove created entries in reverse
+    //     map.removeLayer(ZOOM_CIRCLE_LAYER);
+    //     map.removeLayer(OUTLINE_LAYER);
+    //     map.removeLayer(SHAPE_LAYER);
+    //     map.removeSource(LAYER_ID);
+    //   };
+    // }
   }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, visibility]);
 
   // Layer picker:

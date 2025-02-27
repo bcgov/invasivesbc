@@ -293,13 +293,26 @@ export const createOfflineActivitiesLayer = (
   geoJsonData: FeatureCollection
 ) => {
   if (!map || !visibility) return;
-  const LAYER_ID = 'offline-activity-';
+  const allLayersOnMap = map.getLayersOrder();
+
+  const LAYER_ID = LAYER_ID_PREFIX + 'offline-';
 
   const SHAPE_LAYER = `${LAYER_ID}-shape`;
   const OUTLINE_LAYER = `${LAYER_ID}-outline`;
   const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
+  const recordSetOfflineLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID));
+
+  if (recordSetOfflineLayers.length > 0) {
+    // not working as expected
+
+    map.removeLayer(ZOOM_CIRCLE_LAYER);
+    map.removeLayer(OUTLINE_LAYER);
+    map.removeLayer(SHAPE_LAYER);
+    map.removeSource(LAYER_ID);
+  }
 
   if (geoJsonData.features) {
+    console.log('----->');
     map
       .addSource(LAYER_ID, {
         type: 'geojson',
@@ -350,27 +363,34 @@ export const createOfflineActivitiesLayer = (
         LAYER_Z_FOREGROUND
       );
 
-    return () => {
-      console.log('CAll clean up');
+    // return () => {
+    //   console.log('CAll clean up');
 
-      // cleanup effect -- remove created entries in reverse
-      map.removeLayer(ZOOM_CIRCLE_LAYER);
-      map.removeLayer(OUTLINE_LAYER);
-      map.removeLayer(SHAPE_LAYER);
-      map.removeSource(LAYER_ID);
-    };
+    //   // cleanup effect -- remove created entries in reverse
+    //   map.removeLayer(ZOOM_CIRCLE_LAYER);
+    //   map.removeLayer(OUTLINE_LAYER);
+    //   map.removeLayer(SHAPE_LAYER);
+    //   map.removeSource(LAYER_ID);
+    // };
   }
 };
 
-export const removeOfflineActivitiesLayer = (layer, map) => {
-  console.log(layer);
+export const removeOfflineActivitiesLayer = (map) => {
+  const allLayersOnMap = map.getLayersOrder();
 
-  // layer.map((layer) => {
-  //   if (map.getLayer(layer.url)) {
-  //     map.removeLayer(layer.url);
-  //     map.removeSource(layer.url);
-  //   }
-  // });
+  const LAYER_ID = LAYER_ID_PREFIX + 'offline-';
+
+  const SHAPE_LAYER = `${LAYER_ID}-shape`;
+  const OUTLINE_LAYER = `${LAYER_ID}-outline`;
+  const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
+  const recordSetOfflineLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID));
+
+  if (recordSetOfflineLayers.length > 0) {
+    map.removeLayer(ZOOM_CIRCLE_LAYER);
+    map.removeLayer(OUTLINE_LAYER);
+    map.removeLayer(SHAPE_LAYER);
+    map.removeSource(LAYER_ID);
+  }
 };
 
 export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
