@@ -5,7 +5,7 @@ import { AppConfig } from 'state/config';
 import { CLOSE_NEW_RECORD_MENU, OPEN_NEW_RECORD_MENU, RECORDSET_SET_SORT } from 'state/actions';
 
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -14,6 +14,7 @@ import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
 import { CacheDownloadMode } from 'utils/record-cache';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
+import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
 
 export interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
@@ -38,7 +39,10 @@ export interface UserSettingsState {
   boundaries: Boundary[];
   layerPickerIsAccordion: boolean;
   darkTheme: boolean;
-
+  tableColumns: {
+    [RecordSetType.IAPP]: Array<{ key: string; name: string; displayWidget?: string; hide: boolean }>;
+    [RecordSetType.Activity]: Array<{ key: string; name: string; displayWidget?: string; hide: boolean }>;
+  };
   offlineDocs: { displayName: string; apiDocsWithViewOptions: object; apiDocsWithSelectOptions: object }[];
 }
 
@@ -64,6 +68,10 @@ const initialState: UserSettingsState = {
     recordCategory: '',
     recordType: '',
     recordSubtype: ''
+  },
+  tableColumns: {
+    [RecordSetType.Activity]: activityColumnsToDisplay,
+    [RecordSetType.IAPP]: iappColumnsToDisplay
   },
   offlineDocs: []
 };
@@ -143,6 +151,17 @@ function createUserSettingsReducer(
         draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
           JSON.stringify(tableFiltersNotBlank)
         );
+      } else if (UserSettings.RecordSet.toggleRecordColumn.match(action)) {
+        const { recordType, key } = action.payload;
+        const index = draftState.tableColumns[recordType].findIndex((item) => item.key === key);
+        draftState.tableColumns[recordType][index].hide = !draftState.tableColumns[recordType][index].hide;
+        draftState.tableColumns[recordType] = [...draftState.tableColumns[recordType]];
+      } else if (UserSettings.RecordSet.toggleAllRecordColumns.match(action)) {
+        const { recordType, hide } = action.payload;
+        draftState.tableColumns[recordType] = draftState.tableColumns[recordType].map((row) => {
+          row.hide = hide;
+          return row;
+        });
       } else if (UserSettings.toggleLayerPickerAccordion.match(action)) {
         draftState.layerPickerIsAccordion = !draftState.layerPickerIsAccordion;
       } else if (WhatsHere.toggle.match(action)) {
