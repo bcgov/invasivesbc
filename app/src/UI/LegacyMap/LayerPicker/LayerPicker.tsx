@@ -12,9 +12,7 @@ import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
 import Accordion from 'UI/Accordion/Accordion';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-
 import './LayerPicker.css';
-import { LpOfflineActivitiesLayer } from './LpRecordSet/LpOfflineActivitiesLayer';
 
 export const LayerPicker = () => {
   const closeLayerPicker = () => {
@@ -29,7 +27,6 @@ export const LayerPicker = () => {
   const isAuth = useSelector((state) => state.Auth.authenticated);
   const accordionMode = useSelector((state) => state.UserSettings.layerPickerIsAccordion);
   const dispatch = useDispatch();
-  console.log('Checking ', recordsets, recordsetsLayers);
 
   if (!isAuth) {
     return;

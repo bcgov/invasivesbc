@@ -14,6 +14,8 @@ import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { FeatureCollection } from 'geojson';
+import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { useSelector } from 'utils/use_selector';
 
 const LAYER_ID_PREFIX = 'recordset-layer-';
 /** DRY Handler for formatting LayerIDs */
@@ -287,32 +289,26 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode,
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 };
 
-export const createOfflineActivitiesLayer = (
-  map: maplibregl.Map,
-  visibility: boolean,
-  geoJsonData: FeatureCollection
-) => {
-  if (!map || !visibility) return;
-  const allLayersOnMap = map.getLayersOrder();
+const createOfflineActivitiesLayer = async (map: maplibregl.Map, serializedActivities: OfflineActivityRecord) => {
+  const geometryList = Object.values(serializedActivities)
+    .map((item) => {
+      const parsedData = JSON.parse((item as OfflineActivityRecord).data);
+      return parsedData.geometry ? parsedData.geometry[0] : null;
+    })
+    .filter((geometry) => geometry !== null);
 
-  const LAYER_ID = LAYER_ID_PREFIX + 'offline-';
+  let geoJsonData: FeatureCollection = {
+    type: 'FeatureCollection',
+    features: geometryList || []
+  };
+
+  const LAYER_ID = 'offline-activity-';
 
   const SHAPE_LAYER = `${LAYER_ID}-shape`;
   const OUTLINE_LAYER = `${LAYER_ID}-outline`;
   const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
-  const recordSetOfflineLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID));
-
-  if (recordSetOfflineLayers.length > 0) {
-    // not working as expected
-
-    map.removeLayer(ZOOM_CIRCLE_LAYER);
-    map.removeLayer(OUTLINE_LAYER);
-    map.removeLayer(SHAPE_LAYER);
-    map.removeSource(LAYER_ID);
-  }
 
   if (geoJsonData.features) {
-    console.log('----->');
     map
       .addSource(LAYER_ID, {
         type: 'geojson',
@@ -362,27 +358,15 @@ export const createOfflineActivitiesLayer = (
         },
         LAYER_Z_FOREGROUND
       );
-
-    // return () => {
-    //   console.log('CAll clean up');
-
-    //   // cleanup effect -- remove created entries in reverse
-    //   map.removeLayer(ZOOM_CIRCLE_LAYER);
-    //   map.removeLayer(OUTLINE_LAYER);
-    //   map.removeLayer(SHAPE_LAYER);
-    //   map.removeSource(LAYER_ID);
-    // };
   }
 };
-
-export const removeOfflineActivitiesLayer = (map) => {
-  const allLayersOnMap = map.getLayersOrder();
-
-  const LAYER_ID = LAYER_ID_PREFIX + 'offline-';
+export const deleteOfflineActivitiesLayer = async (map: maplibregl.Map) => {
+  const LAYER_ID = 'offline-activity-';
 
   const SHAPE_LAYER = `${LAYER_ID}-shape`;
   const OUTLINE_LAYER = `${LAYER_ID}-outline`;
   const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
+  const allLayersOnMap = map.getLayersOrder();
   const recordSetOfflineLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID));
 
   if (recordSetOfflineLayers.length > 0) {
@@ -391,6 +375,16 @@ export const removeOfflineActivitiesLayer = (map) => {
     map.removeLayer(SHAPE_LAYER);
     map.removeSource(LAYER_ID);
   }
+};
+
+export const refreshOfflineActivitiesLayer = async (
+  map: maplibregl.Map,
+  visibility: boolean,
+  serializedActivities: OfflineActivityRecord
+) => {
+  if (!map || !visibility) return;
+  await deleteOfflineActivitiesLayer(map);
+  await createOfflineActivitiesLayer(map, serializedActivities);
 };
 
 export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
