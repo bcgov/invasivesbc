@@ -14,8 +14,7 @@ import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { FeatureCollection } from 'geojson';
-import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
-import { useSelector } from 'utils/use_selector';
+import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
 
 const LAYER_ID_PREFIX = 'recordset-layer-';
 const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
