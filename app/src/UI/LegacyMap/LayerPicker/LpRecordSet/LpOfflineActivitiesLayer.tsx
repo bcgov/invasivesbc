@@ -8,7 +8,7 @@ const LpOfflineActivitiesLayer = () => {
   const map = useContext(MapContext);
 
   const dispatch = useDispatch();
-  const { visibility } = useSelector(selectOfflineActivity);
+  const { mapToggle } = useSelector(selectOfflineActivity);
   const handleToggleVisibility = () => {
     dispatch(Activity.Offline.setAllShapeVisibility());
   };
@@ -17,7 +17,7 @@ const LpOfflineActivitiesLayer = () => {
     <div id="lp-layers">
       <ul className="layersList">
         <li className="lp-layers-item">
-          <button onClick={handleToggleVisibility}>{visibility ? <Visibility /> : <VisibilityOff />}</button>
+          <button onClick={handleToggleVisibility}>{mapToggle ? <Visibility /> : <VisibilityOff />}</button>
           <p>All Locally Stored Activities</p>
         </li>
       </ul>

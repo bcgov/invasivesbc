@@ -37,7 +37,7 @@ export interface OfflineActivityState {
   serializedActivities: {
     [id: string]: OfflineActivityRecord;
   };
-  visibility: boolean;
+  mapToggle: boolean;
 }
 
 const initialState: OfflineActivityState = {
@@ -46,7 +46,7 @@ const initialState: OfflineActivityState = {
   statusDialogOpen: false,
   serial: moment.now(),
   serializedActivities: {},
-  visibility: true // visibility "on" by default
+  mapToggle: true // visibility "on" by default
 };
 
 function createOfflineActivityReducer(
@@ -65,7 +65,7 @@ function createOfflineActivityReducer(
         };
         draftState.serial = moment.now();
       } else if (Activity.Offline.setAllShapeVisibility.match(action)) {
-        draftState.visibility = !draftState.visibility;
+        draftState.mapToggle = !draftState.mapToggle;
       } else {
         switch (type) {
           case ACTIVITY_SAVE_OFFLINE:

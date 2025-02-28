@@ -45,7 +45,6 @@ import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
-import { selectOfflineActivity } from 'state/reducers/offlineActivity';
 
 /*
 
@@ -71,7 +70,7 @@ export const Map = ({ children }) => {
   const storeLayers = useSelector((state) => state.Map.layers);
 
   // Offline Activity layers
-  const { serializedActivities, visibility } = useSelector((state) => state.OfflineActivity);
+  const { serializedActivities, mapToggle } = useSelector((state) => state.OfflineActivity);
 
   // WMS Layers
   const simplePickerLayers2 = useSelector((state) => state.Map.simplePickerLayers2);
@@ -276,13 +275,12 @@ export const Map = ({ children }) => {
   // Offline Activities Layer:
   useEffect(() => {
     if (!map || !mapReady) return;
-
-    if (!visibility) {
+    if (!mapToggle) {
       removeOfflineActivitiesLayer(map);
     } else {
-      refreshOfflineActivitiesLayer(map, visibility, serializedActivities);
+      refreshOfflineActivitiesLayer(map, mapToggle, serializedActivities);
     }
-  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, visibility]);
+  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, mapToggle]);
 
   // Layer picker:
   useEffect(() => {
