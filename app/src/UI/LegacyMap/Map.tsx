@@ -35,7 +35,7 @@ import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
 import { PositionMarkers } from 'UI/LegacyMap/helpers/components/PositionMarkers';
 import maplibregl, { LngLatBoundsLike } from 'maplibre-gl';
-import { MOBILE } from 'state/build-time-config';
+import { MEMORY_CONSTRAINED_DEVICE, MOBILE } from 'state/build-time-config';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
 import { Coordinates } from 'UI/LegacyMap/helpers/components/Coordinates';
@@ -136,11 +136,20 @@ export const Map = ({ children }) => {
       return {};
     })();
 
+    const tileCacheSettings = (() => {
+      if (MEMORY_CONSTRAINED_DEVICE) {
+        // disable maplibre's builtin tile cache
+        return { maxTileCacheSize: 0, minTileCacheSize: 0 };
+      }
+      return {};
+    })();
+
     setMap(
       new InvasivesMap({
         ...platformOptions,
         container: mapContainer.current,
         maxZoom: 24,
+        ...tileCacheSettings,
         zoom: 3,
         minZoom: 0,
         transformRequest: (url) => {

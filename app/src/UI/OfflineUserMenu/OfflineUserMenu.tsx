@@ -4,13 +4,9 @@ import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
 import { Button, Dialog, DialogContent, DialogTitle, Typography } from '@mui/material';
 import { useDispatch } from 'react-redux';
-import {
-  AUTH_FORGET_OFFLINE_USER,
-  AUTH_MAKE_OFFLINE_USER_CURRENT,
-  AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG
-} from 'state/actions';
 
 import './OfflineUserMenu.css';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 const UserSelection = ({ user, handleClose }) => {
   const dispatch = useDispatch();
@@ -21,7 +17,7 @@ const UserSelection = ({ user, handleClose }) => {
         variant={'outlined'}
         className={'userButton'}
         onClick={() => {
-          dispatch({ type: AUTH_MAKE_OFFLINE_USER_CURRENT, payload: { displayName: user.displayName } });
+          dispatch(AuthActions.makeOfflineUserCurrent({ displayName: user.displayName }));
           handleClose();
         }}
       >
@@ -30,7 +26,7 @@ const UserSelection = ({ user, handleClose }) => {
       <Button
         variant={'text'}
         onClick={() => {
-          dispatch({ type: AUTH_FORGET_OFFLINE_USER, payload: { displayName: user.displayName } });
+          dispatch(AuthActions.forgetOfflineUser({ displayName: user.displayName }));
           handleClose();
         }}
       >
@@ -45,7 +41,7 @@ export const OfflineUserMenu: React.FC = () => {
   const dispatch = useDispatch();
 
   const closeHandler = () => {
-    dispatch({ type: AUTH_OPEN_OFFLINE_USER_SELECTION_DIALOG, payload: { state: false } });
+    dispatch(AuthActions.openOfflineUserSelectionDialog(false));
   };
 
   return (

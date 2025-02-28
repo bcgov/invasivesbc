@@ -1,21 +1,23 @@
 import { all, put, select, take, takeEvery } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
-import { AUTH_INITIALIZE_COMPLETE, GET_API_DOC_ONLINE, GET_API_DOC_REQUEST, GET_API_DOC_SUCCESS } from '../actions';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
+import { AuthActions } from 'state/actions/auth/Auth';
+import { APIDocs } from 'state/actions/userSettings/APIDocs';
+import { selectAuth } from 'state/reducers/auth';
+import { selectNetworkConnected } from 'state/reducers/network';
 
-function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST(action) {
+function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
 }
 
-function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST(action) {
+function* handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST() {
   try {
     const userSettings = yield select(selectUserSettings);
     const sets = userSettings.recordSets;
-    const current = sets[action.payload.setName];
 
     yield put(UserSettings.Boundaries.removeFromSetSuccess(sets));
   } catch (e) {
@@ -75,6 +77,9 @@ function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   const { recordSets } = yield select(selectUserSettings);
+  if (!UserSettings.InitState.get.match(action)) {
+    return;
+  }
 
   const defaultRecordSet = {
     '1': {
@@ -157,8 +162,12 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     }
   };
 
-  yield put({ type: GET_API_DOC_REQUEST });
-  yield take(GET_API_DOC_SUCCESS);
+  if (action.payload && action.payload.offlineAPIDocsDisplayName) {
+    yield put(APIDocs.load({ displayName: action.payload.offlineAPIDocsDisplayName }));
+  } else {
+    yield put(APIDocs.getRequest());
+  }
+  yield take(APIDocs.set.type);
   yield put(Activity.Suggestions.biocontrolOnline());
   yield put(UserSettings.InitState.getSuccess({ ...defaultRecordSet, ...recordSets }));
 }
@@ -188,35 +197,34 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
   }
 }
 
-function* handle_GET_API_DOC_REQUEST(action) {
-  yield put({ type: GET_API_DOC_ONLINE });
-}
+function* handle_GET_API_DOC_REQUEST() {
+  const { displayName } = yield select(selectAuth);
 
-function* handle_GET_API_DOC_ONLINE(action) {
-  try {
-    const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call(
-      'GET',
-      '/api/api-docs/',
-      {},
-      { filterForSelectable: 'true' }
-    );
-    const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
-    const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
-    const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
-    yield put({
-      type: GET_API_DOC_SUCCESS,
-      payload: { apiDocsWithViewOptions: apiDocsWithViewOptions, apiDocsWithSelectOptions: apiDocsWithSelectOptions }
-    });
-  } catch (e) {
-    console.dir(e);
+  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call(
+    'GET',
+    '/api/api-docs/',
+    {},
+    { filterForSelectable: 'true' }
+  );
+  const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
+  const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
+  const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
+
+  yield put(
+    APIDocs.set({
+      apiDocsWithViewOptions: apiDocsWithViewOptions,
+      apiDocsWithSelectOptions: apiDocsWithSelectOptions
+    })
+  );
+  if (displayName) {
+    yield put(APIDocs.save({ displayName }));
   }
 }
 
 function* userSettingsSaga() {
   yield all([
-    takeEvery(AUTH_INITIALIZE_COMPLETE, handle_APP_AUTH_READY),
-    takeEvery(GET_API_DOC_REQUEST, handle_GET_API_DOC_REQUEST),
-    takeEvery(GET_API_DOC_ONLINE, handle_GET_API_DOC_ONLINE),
+    takeEvery(AuthActions.initializeComplete.type, handle_APP_AUTH_READY),
+    takeEvery(APIDocs.getRequest.type, handle_GET_API_DOC_REQUEST),
     takeEvery(UserSettings.InitState.get, handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
     takeEvery(UserSettings.Activity.setActiveActivityId, handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
     takeEvery(UserSettings.IAPP.setActive, handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST),

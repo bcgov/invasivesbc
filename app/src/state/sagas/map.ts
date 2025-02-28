@@ -67,7 +67,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -80,10 +80,8 @@ import { selectNetworkConnected, selectNetworkState } from 'state/reducers/netwo
 import UserRecord from 'interfaces/UserRecord';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import bboxToPolygon from 'utils/bboxToPolygon';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
-import { RepositoryMetadata } from 'utils/record-cache';
 import NetworkActions from 'state/actions/network/NetworkActions';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
@@ -160,19 +158,8 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
     } else {
       // Get IDs from Offline Caches
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const repos = yield service.listRepositories();
-
-      const recordSetsInBoundingBox = repos.filter((repo: RepositoryMetadata) => {
-        const { status, bbox } = repo;
-        return (
-          status === UserRecordCacheStatus.CACHED &&
-          bbox &&
-          booleanIntersects(whatsHereFeature.payload, bboxToPolygon(bbox))
-        );
-      });
-
       const overlappingRecords: string[] = [];
-      recordSetsInBoundingBox.flatMap((set) =>
+      (yield service.getOverlappingRepositories(whatsHereFeature.payload)).flatMap((set) =>
         set.cachedGeoJson.data.features.forEach((shape: Feature) => {
           if (booleanIntersects(whatsHereFeature.payload, shape)) {
             overlappingRecords.push(shape?.properties?.description);

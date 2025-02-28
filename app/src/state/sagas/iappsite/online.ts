@@ -1,14 +1,14 @@
 import { put, select, take } from 'redux-saga/effects';
-import { selectAuth } from '../../reducers/auth';
-import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { AUTH_INITIALIZE_COMPLETE } from 'state/actions';
-import IappActions from 'state/actions/activity/Iapp';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { selectAuth } from 'state/reducers/auth';
+import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
+import IappActions from 'state/actions/activity/Iapp';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 export function* handle_IAPP_GET_NETWORK_REQUEST(iappId: PayloadAction<string>) {
   const { authenticated } = yield select(selectAuth);
   if (!authenticated) {
-    yield take(AUTH_INITIALIZE_COMPLETE);
+    yield take(AuthActions.initializeComplete.type);
   }
 
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/points-of-interest/`, {

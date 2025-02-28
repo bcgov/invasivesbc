@@ -19,6 +19,7 @@ import { createUserInfoReducer } from './userInfo';
 import { errorHandlerReducer } from './error_handler';
 import { createOfflineActivityReducer, OfflineActivityState } from './offlineActivity';
 import { createAlertsAndPromptsReducer } from './alertsAndPrompts';
+import { createDownloadStateReducer } from './downloads';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { createTileCacheReducer } from 'state/reducers/tile_cache';
@@ -52,7 +53,7 @@ const purgeOldStateOnVersionUpgrade = async (state: any) => {
 };
 
 // executes during app restart or when the page reloads
-const pauseDownloadOnRehydration = createTransform(
+const handleActiveDownloadsOnRehydration = createTransform(
   (inboundState) => inboundState,
 
   (outboundState) => {
@@ -64,6 +65,8 @@ const pauseDownloadOnRehydration = createTransform(
           outboundState[key].cacheDownloadProgress.downloadMode = CacheDownloadMode.PAUSE;
           outboundState[key].cacheDownloadProgress.message =
             `Mode: ${CacheDownloadMode.PAUSE.toLocaleString().toUpperCase()} Caching`;
+        } else if (outboundState[key].cacheMetadataStatus === UserRecordCacheStatus.QUEUED) {
+          outboundState[key].cacheMetadataStatus = UserRecordCacheStatus.NOT_CACHED;
         }
       });
     }
@@ -77,6 +80,7 @@ function createRootReducer(config: AppConfig) {
     AppMode: appMode,
     AlertsAndPrompts: createAlertsAndPromptsReducer(config),
     Configuration: createConfigurationReducerWithDefaultState(config),
+    DownloadState: createDownloadStateReducer,
     Auth: persistReducer<AuthState>(
       {
         key: 'auth',
@@ -122,12 +126,13 @@ function createRootReducer(config: AppConfig) {
           'recordSets',
           'recordsExpanded',
           'newRecordDialogState',
-          'darkTheme',
           'boundaries',
           'layerPickerIsAccordion',
-          'mapCenter'
+          'mapCenter',
+          'offlineDocs',
+          'tableColumns'
         ],
-        transforms: [pauseDownloadOnRehydration]
+        transforms: [handleActiveDownloadsOnRehydration]
       },
       createUserSettingsReducer(config)
     ),

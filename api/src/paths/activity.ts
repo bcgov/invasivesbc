@@ -68,7 +68,7 @@ const post_put_apiDoc = {
               description: 'ID of the author of the activity.'
             },
             sync_status: {
-              enum: ['Save Successful', 'Not Saved', 'Saving Failed'],
+              enum: ['Save Successful', 'Save Successful Private', 'Not Saved', 'Saving Failed'],
               type: 'string',
               title: 'Save status',
               description: 'Whether the activity was saved or not, or had a saving error'
@@ -149,7 +149,7 @@ const post_put_apiDoc = {
                       description: 'ID of the author of the activity.'
                     },
                     sync_status: {
-                      enum: ['Not Saved', 'Saving Failed', 'Save Successful'],
+                      enum: ['Not Saved', 'Saving Failed', 'Save Successful', 'Save Successful Private'],
                       type: 'string',
                       title: 'Saving status',
                       description: 'Whether the activity was saved or not, or had a saving error'

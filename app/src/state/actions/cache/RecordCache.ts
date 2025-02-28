@@ -1,4 +1,5 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
+import DownloadActions from '../downloads/DownloadActions';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import { getRecordFilterObjectFromStateForAPI } from 'state/sagas/map/dataAccess';
@@ -30,6 +31,8 @@ class RecordCache {
     await (await RecordCacheServiceFactory.getPlatformInstance()).pauseDownload(spec.setId);
   });
 
+  static readonly startDownload = createAction<PropertyKey>(`${this.PREFIX}/startDownload`);
+
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
     async (
@@ -38,8 +41,19 @@ class RecordCache {
       },
       { getState, dispatch }
     ) => {
-      const service = await RecordCacheServiceFactory.getPlatformInstance();
+      await dispatch(DownloadActions.request());
       const state: RootState = getState() as RootState;
+      const currStatus = state.UserSettings.recordSets?.[spec.setId].cacheMetadataStatus;
+      // Check if cancelled while in queue
+      if (currStatus !== UserRecordCacheStatus.QUEUED) {
+        return {
+          status: UserRecordCacheStatus.NOT_CACHED,
+          setId: spec.setId
+        };
+      }
+      dispatch(RecordCache.startDownload(spec.setId));
+
+      const service = await RecordCacheServiceFactory.getPlatformInstance();
       const idsToCache: string[] =
         state.Map.layers.find((l) => l.recordSetID == spec.setId)?.IDList.map((id: string | number) => id.toString()) ??
         [];

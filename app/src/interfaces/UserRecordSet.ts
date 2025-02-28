@@ -6,14 +6,21 @@ export enum RecordSetType {
   Activity = 'Activity'
 }
 
+export enum RecordSetId {
+  Drafts = '1',
+  Activity = '2',
+  IAPP = '3'
+}
+
 export enum UserRecordCacheStatus {
+  CACHED = 'CACHED',
+  DELETING = 'DELETING',
+  DOWNLOADING = 'DOWNLOADING',
+  ERROR = 'ERROR',
   NOT_CACHED = 'NOT_CACHED',
   NOT_ELIGIBLE = 'NOT_ELIGIBLE',
-  DOWNLOADING = 'DOWNLOADING',
   PAUSED = 'PAUSED',
-  ERROR = 'ERROR',
-  CACHED = 'CACHED',
-  DELETING = 'DELETING'
+  QUEUED = 'QUEUED'
 }
 
 export interface UserRecordSet {

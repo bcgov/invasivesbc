@@ -51,7 +51,6 @@
     border-collapse: collapse;
     border: 1pt solid lightgray;
     border-radius: 5pt;
-    table-layout: fixed;
     word-wrap: break-word;
 
     tbody tr:nth-child(odd) {

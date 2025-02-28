@@ -31,6 +31,12 @@ const cacheAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Success,
     subject: AlertSubjects.Cache,
     autoClose: 4
+  },
+  addedToQueue: {
+    content: 'Download added to queue',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Cache,
+    autoClose: 3
   }
 };
 

@@ -1,8 +1,8 @@
 import { createAction } from '@reduxjs/toolkit';
+import RecordSet from './RecordSet';
 import Boundary from 'interfaces/Boundary';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { INewRecordDialogState } from 'UI/Overlay/Records/NewRecordDialog';
-import RecordSet from './RecordSet';
 
 class Boundaries {
   private static readonly PREFIX = `UserSettings/Boundaries`;
@@ -35,7 +35,7 @@ class KML {
 class InitState {
   private static readonly PREFIX = `UserSettings/InitState`;
 
-  static readonly get = createAction(`${this.PREFIX}/get`);
+  static readonly get = createAction<{ offlineAPIDocsDisplayName?: string } | undefined>(`${this.PREFIX}/get`);
   static readonly getSuccess = createAction(
     `${this.PREFIX}/getSuccess`,
     (recordSets: { [key: PropertyKey]: UserRecordSet }) => ({

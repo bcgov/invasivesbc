@@ -19,7 +19,6 @@ const TileCacheDownloadProgress = () => {
       </section>
     );
   }
-
   return (
     <section>
       <table>
@@ -34,7 +33,7 @@ const TileCacheDownloadProgress = () => {
         <tbody>
           {Object.keys(downloadProgress).map((k) => (
             <tr key={k}>
-              <td>{downloadProgress[k].repository}</td>
+              <td>{downloadProgress[k].description ?? downloadProgress[k].repository}</td>
               <td>{downloadProgress[k].message}</td>
               <td>
                 <LinearProgress variant={'determinate'} value={downloadProgress[k].normalizedProgress * 100} />

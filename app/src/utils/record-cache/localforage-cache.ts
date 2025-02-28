@@ -144,8 +144,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
    */
   async getPaginatedCachedActivityRecords(
     recordSetIdList: string[],
-    page: number,
-    limit: number
+    page: number = 0,
+    limit: number = recordSetIdList.length
   ): Promise<UserRecord[]> {
     if (recordSetIdList?.length === 0) {
       return [];

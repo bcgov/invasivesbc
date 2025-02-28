@@ -88,256 +88,51 @@ export const getUnnestedFieldsForIAPP = (record) => {
 };
 
 export const activityColumnsToDisplay = [
-  {
-    key: 'short_id',
-    name: 'Activity ID',
-    displayWidget: 'div'
-  },
-  {
-    key: 'activity_type',
-    name: 'Activity Type'
-  },
-  {
-    key: 'activity_subtype',
-    name: 'Activity Sub Type'
-  },
-  {
-    key: 'activity_date',
-    name: 'Activity Date'
-  },
-  {
-    key: 'project_code',
-    name: 'Project Code'
-  },
-  {
-    key: 'jurisdiction_display',
-    name: 'Jurisdiction'
-  },
-  {
-    key: 'invasive_plant',
-    name: 'Invasive Plant'
-  },
-  {
-    key: 'species_positive_full',
-    name: 'All Positive'
-  },
-  {
-    key: 'species_negative_full',
-    name: 'All Negative'
-  },
-  {
-    key: 'has_current_positive',
-    name: 'Has Current Positive'
-  },
-  {
-    key: 'current_positive_species',
-    name: 'Current Positive Species'
-  },
-  {
-    key: 'has_current_negative',
-    name: 'Has Current Negative'
-  },
-  {
-    key: 'current_negative_species',
-    name: 'Current Negative Species'
-  },
-  {
-    key: 'species_treated_full',
-    name: 'Species Treated'
-  },
-  {
-    key: 'species_biocontrol_full',
-    name: 'Biocontrol Species'
-  },
-  { key: 'created_by', name: 'Created By' },
-  { key: 'updated_by', name: 'Updated By' },
-  {
-    key: 'agency',
-    name: 'Agency'
-  },
+  { key: 'short_id', name: 'Activity ID', displayWidget: 'div', hide: false },
+  { key: 'activity_type', name: 'Activity Type', hide: false },
+  { key: 'activity_subtype', name: 'Activity Sub Type', hide: false },
+  { key: 'activity_date', name: 'Activity Date', hide: false },
+  { key: 'project_code', name: 'Project Code', hide: false },
+  { key: 'jurisdiction_display', name: 'Jurisdiction', hide: false },
+  { key: 'invasive_plant', name: 'Invasive Plant', hide: false },
+  { key: 'species_positive_full', name: 'All Positive', hide: false },
+  { key: 'species_negative_full', name: 'All Negative', hide: false },
+  { key: 'has_current_positive', name: 'Has Current Positive', hide: false },
+  { key: 'current_positive_species', name: 'Current Positive Species', hide: false },
+  { key: 'has_current_negative', name: 'Has Current Negative', hide: false },
+  { key: 'current_negative_species', name: 'Current Negative Species', hide: false },
+  { key: 'species_treated_full', name: 'Species Treated', hide: false },
+  { key: 'species_biocontrol_full', name: 'Biocontrol Species', hide: false },
+  { key: 'created_by', name: 'Created By', hide: false },
+  { key: 'updated_by', name: 'Updated By', hide: false },
+  { key: 'agency', name: 'Agency', hide: false },
   {
     key: 'regional_invasive_species_organization_areas',
-    name: 'Regional Invasive Species Organization Areas'
+    name: 'Regional Invasive Species Organization Areas',
+    hide: false
   },
-  {
-    key: 'regional_districts',
-    name: 'Regional Districts'
-  },
-  {
-    key: 'invasive_plant_management_areas',
-    name: 'Invasive Plant Management Areas'
-  },
-  {
-    key: 'biogeoclimatic_zones',
-    name: 'Bio Geo Climatic Zones'
-  },
-  {
-    key: 'elevation',
-    name: 'Elevation'
-  },
-  {
-    key: 'batch_id',
-    name: 'Batch ID'
-  }
-];
+  { key: 'regional_districts', name: 'Regional Districts', hide: false },
+  { key: 'invasive_plant_management_areas', name: 'Invasive Plant Management Areas', hide: false },
+  { key: 'biogeoclimatic_zones', name: 'Bio Geo Climatic Zones', hide: false },
+  { key: 'elevation', name: 'Elevation', hide: false },
+  { key: 'batch_id', name: 'Batch ID', hide: false }
+].sort((a, b) => a.name.localeCompare(b.name));
 
 export const iappColumnsToDisplay = [
-  {
-    key: 'site_id',
-    name: 'Site ID'
-  },
-  {
-    key: 'site_paper_file_id',
-    name: 'Site Paper File ID'
-  },
-  {
-    key: 'jurisdictions_flattened',
-    name: 'Jurisdictions'
-  },
-  {
-    key: 'min_survey',
-    name: 'Site Create Date'
-  },
-  {
-    key: 'all_species_on_site',
-    name: 'Invasive Plants'
-  },
-  {
-    key: 'biological_agent',
-    name: 'Biological Agent'
-  },
-  {
-    key: 'max_survey',
-    name: 'Last Surveyed Date'
-  },
-  {
-    key: 'agencies',
-    name: 'Agencies'
-  },
-  {
-    key: 'has_biological_treatments',
-    name: 'Biocontrol Release'
-  },
-  {
-    key: 'has_chemical_treatments',
-    name: 'Chemical Treatment'
-  },
-  {
-    key: 'has_mechanical_treatments',
-    name: 'Mechanical Treatment'
-  },
-  {
-    key: 'has_biological_dispersals',
-    name: 'Biocontrol Dispersal'
-  },
-  {
-    key: 'monitored',
-    name: 'Monitored'
-  },
-  {
-    key: 'regional_district',
-    name: 'Regional District'
-  },
-  {
-    key: 'regional_invasive_species_organization',
-    name: 'Regional Invasive Species Organization'
-  },
-  {
-    key: 'invasive_plant_management_area',
-    name: 'Invasive Plant Management Area'
-  }
-];
-
-export const offlineActivityColumnsToDisplay = [
-  {
-    key: 'short_id',
-    name: 'Activity ID',
-    displayWidget: 'div'
-  },
-  {
-    key: 'activity_type',
-    name: 'Activity Type'
-  },
-  {
-    key: 'activity_subtype',
-    name: 'Activity Sub Type'
-  },
-  {
-    key: 'date_created',
-    name: 'Activity Date'
-  },
-  // {
-  //   key: 'project_code',
-  //   name: 'Project Code'
-  // },
-  {
-    key: 'jurisdiction', // give a display name
-    name: 'Jurisdiction'
-  },
-  {
-    key: 'invasive_plant',
-    name: 'Invasive Plant'
-  },
-  {
-    key: 'species_positive',
-    name: 'All Positive'
-  },
-  {
-    key: 'species_negative',
-    name: 'All Negative'
-  },
-  {
-    key: 'has_current_positive',
-    name: 'Has Current Positive'
-  },
-  {
-    key: 'current_positive_species',
-    name: 'Current Positive Species'
-  },
-  {
-    key: 'has_current_negative',
-    name: 'Has Current Negative'
-  },
-  {
-    key: 'current_negative_species',
-    name: 'Current Negative Species'
-  },
-  {
-    key: 'species_treated',
-    name: 'Species Treated'
-  },
-  {
-    key: 'species_biocontrol',
-    name: 'Biocontrol Species'
-  },
-  { key: 'created_by', name: 'Created By' },
-  { key: 'updated_by', name: 'Updated By' },
-  {
-    key: 'agency',
-    name: 'Agency'
-  },
-  {
-    key: 'regional_invasive_species_organization_areas',
-    name: 'Regional Invasive Species Organization Areas'
-  },
-  {
-    key: 'regional_districts',
-    name: 'Regional Districts'
-  },
-  {
-    key: 'invasive_plant_management_areas',
-    name: 'Invasive Plant Management Areas'
-  },
-  {
-    key: 'biogeoclimatic_zones',
-    name: 'Bio Geo Climatic Zones'
-  },
-  {
-    key: 'elevation',
-    name: 'Elevation'
-  },
-  {
-    key: 'batch_id',
-    name: 'Batch ID'
-  }
-];
+  { key: 'site_id', name: 'Site ID', hide: false },
+  { key: 'site_paper_file_id', name: 'Site Paper File ID', hide: false },
+  { key: 'jurisdictions_flattened', name: 'Jurisdictions', hide: false },
+  { key: 'min_survey', name: 'Site Create Date', hide: false },
+  { key: 'all_species_on_site', name: 'Invasive Plants', hide: false },
+  { key: 'biological_agent', name: 'Biological Agent', hide: false },
+  { key: 'max_survey', name: 'Last Surveyed Date', hide: false },
+  { key: 'agencies', name: 'Agencies', hide: false },
+  { key: 'has_biological_treatments', name: 'Biocontrol Release', hide: false },
+  { key: 'has_chemical_treatments', name: 'Chemical Treatment', hide: false },
+  { key: 'has_mechanical_treatments', name: 'Mechanical Treatment', hide: false },
+  { key: 'has_biological_dispersals', name: 'Biocontrol Dispersal', hide: false },
+  { key: 'monitored', name: 'Monitored', hide: false },
+  { key: 'regional_district', name: 'Regional District', hide: false },
+  { key: 'regional_invasive_species_organization', name: 'Regional Invasive Species Organization', hide: false },
+  { key: 'invasive_plant_management_area', name: 'Invasive Plant Management Area', hide: false }
+].sort((a, b) => a.name.localeCompare(b.name));

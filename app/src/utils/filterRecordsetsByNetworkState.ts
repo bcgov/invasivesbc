@@ -11,7 +11,7 @@ const filterRecordsetsByNetworkState = (recordSets: Record<string, UserRecordSet
     return (
       !userOffline ||
       recordSets[set].cacheMetadataStatus === UserRecordCacheStatus.CACHED ||
-      recordSets[set].recordSetName === 'All Unsynced Offline Activities'
+      recordSets[set].recordSetName === 'All Unsynced Offline Activities' // change this
     );
   });
 

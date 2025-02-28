@@ -196,6 +196,7 @@ export enum ActivityStatus {
 export enum ActivitySyncStatus {
   NOT_SAVED = 'Not Saved',
   SAVE_SUCCESSFUL = 'Save Successful',
+  SAVE_SUCCESSFUL_PRIVATE = 'Save Successful Private',
   SAVE_FAILED = 'Saving Failed'
 }
 

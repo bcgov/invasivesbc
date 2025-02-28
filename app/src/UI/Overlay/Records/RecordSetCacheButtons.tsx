@@ -31,16 +31,18 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
   const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     switch (recordSet.cacheMetadataStatus) {
-      case UserRecordCacheStatus.NOT_CACHED:
-        downloadCache();
-        break;
       case UserRecordCacheStatus.DOWNLOADING:
+      case UserRecordCacheStatus.QUEUED:
         cancelCacheDownload();
         break;
-      case UserRecordCacheStatus.ERROR:
       case UserRecordCacheStatus.CACHED:
+      case UserRecordCacheStatus.DELETING:
+      case UserRecordCacheStatus.ERROR:
       case UserRecordCacheStatus.PAUSED:
         deleteCache();
+        break;
+      case UserRecordCacheStatus.NOT_CACHED:
+        downloadCache();
         break;
     }
   };
@@ -126,7 +128,9 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
           UserRecordCacheStatus.CACHED,
           UserRecordCacheStatus.NOT_CACHED,
           UserRecordCacheStatus.ERROR,
-          UserRecordCacheStatus.DOWNLOADING
+          UserRecordCacheStatus.DOWNLOADING,
+          UserRecordCacheStatus.QUEUED,
+          UserRecordCacheStatus.PAUSED
         ].includes(recordSet.cacheMetadataStatus)
     );
   }, [recordSet.cacheMetadataStatus, connected]);

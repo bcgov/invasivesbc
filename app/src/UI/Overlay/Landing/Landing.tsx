@@ -5,10 +5,11 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectUserInfo } from 'state/reducers/userInfo';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
-import { AUTH_SIGNIN_REQUEST, TOGGLE_PANEL } from 'state/actions';
+import { TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router';
 import { INFORMATIONAL_LINKS } from 'constants/links';
 import { MobileOnly } from 'UI/Predicates/MobileOnly';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 const InformationalLinkBox = () => {
   return (
@@ -35,7 +36,7 @@ export const LandingComponent = (props) => {
 
   const requestAccess = async () => {
     if (connected && !authenticated) {
-      dispatch({ type: AUTH_SIGNIN_REQUEST });
+      dispatch(AuthActions.signinRequest());
     } else {
       history.push('/AccessRequest');
       dispatch({

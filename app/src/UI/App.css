@@ -91,7 +91,9 @@ body {
 }
 
 .overlay-content {
+  height: calc(100% - var(--overlay-grip-height));
   position: sticky;
+  overflow: auto;
   width: 100%;
   box-sizing: border-box;
 }
