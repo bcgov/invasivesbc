@@ -12,6 +12,7 @@ import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
 import Accordion from 'UI/Accordion/Accordion';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+
 import './LayerPicker.css';
 
 export const LayerPicker = () => {
@@ -20,8 +21,6 @@ export const LayerPicker = () => {
     setPickerPath(LpModules.Init);
   };
   const toggleLayerPickerAccordion = () => dispatch(UserSettings.toggleLayerPickerAccordion());
-  const recordsets = useSelector((state) => state.UserSettings);
-  const recordsetsLayers = useSelector((state) => state.Map.layers);
   const [pickerPath, setPickerPath] = useState<LpModules>(LpModules.Init);
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
   const isAuth = useSelector((state) => state.Auth.authenticated);

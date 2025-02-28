@@ -289,8 +289,11 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode,
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 };
 
-const createOfflineActivitiesLayer = async (map: maplibregl.Map, serializedActivities: OfflineActivityRecord) => {
-  const geometryList = Object.values(serializedActivities)
+const createOfflineActivitiesLayer = async (
+  map: maplibregl.Map,
+  locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
+) => {
+  const geometryList = Object.values(locallyStoredActivities)
     .map((item) => {
       const parsedData = JSON.parse((item as OfflineActivityRecord).data);
       return parsedData.geometry ? parsedData.geometry[0] : null;
@@ -360,7 +363,7 @@ const createOfflineActivitiesLayer = async (map: maplibregl.Map, serializedActiv
       );
   }
 };
-export const deleteOfflineActivitiesLayer = async (map: maplibregl.Map) => {
+export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
   const LAYER_ID = 'offline-activity-';
 
   const SHAPE_LAYER = `${LAYER_ID}-shape`;
@@ -380,11 +383,11 @@ export const deleteOfflineActivitiesLayer = async (map: maplibregl.Map) => {
 export const refreshOfflineActivitiesLayer = async (
   map: maplibregl.Map,
   visibility: boolean,
-  serializedActivities: OfflineActivityRecord
+  locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
 ) => {
   if (!map || !visibility) return;
-  await deleteOfflineActivitiesLayer(map);
-  await createOfflineActivitiesLayer(map, serializedActivities);
+  await removeOfflineActivitiesLayer(map);
+  await createOfflineActivitiesLayer(map, locallyStoredActivities);
 };
 
 export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {

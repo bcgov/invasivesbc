@@ -12,7 +12,7 @@ import {
 } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
 import {
-  deleteOfflineActivitiesLayer,
+  removeOfflineActivitiesLayer,
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshOfflineActivitiesLayer,
@@ -278,7 +278,7 @@ export const Map = ({ children }) => {
     if (!map || !mapReady) return;
 
     if (!visibility) {
-      deleteOfflineActivitiesLayer(map);
+      removeOfflineActivitiesLayer(map);
     } else {
       refreshOfflineActivitiesLayer(map, visibility, serializedActivities);
     }
