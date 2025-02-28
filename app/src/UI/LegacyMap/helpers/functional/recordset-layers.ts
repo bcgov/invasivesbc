@@ -18,6 +18,7 @@ import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/off
 import { useSelector } from 'utils/use_selector';
 
 const LAYER_ID_PREFIX = 'recordset-layer-';
+const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
 /** DRY Handler for formatting LayerIDs */
 const formatLayerID = (recordSetID: string, tableFiltersHash: string): string =>
   `${LAYER_ID_PREFIX}${recordSetID}-hash-${tableFiltersHash}`;
@@ -305,78 +306,42 @@ const createOfflineActivitiesLayer = async (
     features: geometryList || []
   };
 
-  const LAYER_ID = 'offline-activity-';
-
-  const SHAPE_LAYER = `${LAYER_ID}-shape`;
-  const OUTLINE_LAYER = `${LAYER_ID}-outline`;
-  const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
-
   if (geoJsonData.features) {
     map
-      .addSource(LAYER_ID, {
+      .addSource(OFFLINE_ACTIVITIES_LAYER_ID, {
         type: 'geojson',
         data: geoJsonData
       })
       .addLayer(
-        {
-          id: SHAPE_LAYER,
-          source: LAYER_ID,
-          type: 'fill',
-          paint: {
-            'fill-color': 'blue',
-            'fill-outline-color': 'blue',
-            'fill-opacity': 0.7
-          },
-          minzoom: 0,
-          maxzoom: 24
-        },
+        getFillLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }),
+
         LAYER_Z_FOREGROUND
       )
       .addLayer(
-        {
-          id: OUTLINE_LAYER,
-          source: LAYER_ID,
-          type: 'line',
-          paint: {
-            'line-color': 'blue',
-            'line-opacity': 1,
-            'line-width': 3
-          },
-          minzoom: 0,
-          maxzoom: 24
-        },
+        getBorderLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }),
+
         LAYER_Z_FOREGROUND
       )
       .addLayer(
-        {
-          id: ZOOM_CIRCLE_LAYER,
-          source: LAYER_ID,
-          type: 'circle',
-          paint: {
-            'circle-color': 'blue',
-            'circle-radius': 3
-          },
-          minzoom: 0,
-          maxzoom: 24
-        },
+        getCircleMarkerZoomedOutLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }),
+
         LAYER_Z_FOREGROUND
       );
   }
 };
 export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
-  const LAYER_ID = 'offline-activity-';
-
-  const SHAPE_LAYER = `${LAYER_ID}-shape`;
-  const OUTLINE_LAYER = `${LAYER_ID}-outline`;
-  const ZOOM_CIRCLE_LAYER = `${LAYER_ID}-zoomoutcircle`;
   const allLayersOnMap = map.getLayersOrder();
-  const recordSetOfflineLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID));
+  const recordSetOfflineLayers = allLayersOnMap.filter((layer) => layer.includes(OFFLINE_ACTIVITIES_LAYER_ID));
 
   if (recordSetOfflineLayers.length > 0) {
-    map.removeLayer(ZOOM_CIRCLE_LAYER);
-    map.removeLayer(OUTLINE_LAYER);
-    map.removeLayer(SHAPE_LAYER);
-    map.removeSource(LAYER_ID);
+    recordSetOfflineLayers.forEach((layer) => {
+      try {
+        map.removeLayer(layer);
+      } catch (e) {
+        console.error('error removing layer', e);
+      }
+    });
+    map.removeSource(OFFLINE_ACTIVITIES_LAYER_ID);
   }
 };
 
