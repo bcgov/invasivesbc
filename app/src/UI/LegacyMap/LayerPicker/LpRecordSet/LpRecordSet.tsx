@@ -12,7 +12,7 @@ type PropTypes = {
 };
 
 const LpRecordSet = ({ closePicker }: PropTypes) => {
-  const DEFAULT_RECORD_TYPES = ['1', '2', '3'];
+  const DEFAULT_RECORD_TYPES = ['1', '2', '3', '4']; // change this
   const handleGoToRecords = () => {
     closePicker();
   };

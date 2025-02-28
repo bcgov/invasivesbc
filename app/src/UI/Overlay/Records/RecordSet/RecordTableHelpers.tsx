@@ -136,3 +136,33 @@ export const iappColumnsToDisplay = [
   { key: 'regional_invasive_species_organization', name: 'Regional Invasive Species Organization', hide: false },
   { key: 'invasive_plant_management_area', name: 'Invasive Plant Management Area', hide: false }
 ].sort((a, b) => a.name.localeCompare(b.name));
+
+export const offlineActivityColumnsToDisplay = [
+  { key: 'short_id', name: 'Activity ID', displayWidget: 'div', hide: false },
+  { key: 'activity_type', name: 'Activity Type', hide: false },
+  { key: 'activity_subtype', name: 'Activity Sub Type', hide: false },
+  { key: 'activity_date', name: 'Activity Date', hide: false },
+  { key: 'project_code', name: 'Project Code', hide: false },
+  { key: 'jurisdiction_display', name: 'Jurisdiction', hide: false },
+  { key: 'invasive_plant', name: 'Invasive Plant', hide: false },
+  { key: 'species_positive_full', name: 'All Positive', hide: false },
+  { key: 'species_negative_full', name: 'All Negative', hide: false },
+  { key: 'has_current_positive', name: 'Has Current Positive', hide: false },
+  { key: 'current_positive_species', name: 'Current Positive Species', hide: false },
+  { key: 'has_current_negative', name: 'Has Current Negative', hide: false },
+  { key: 'current_negative_species', name: 'Current Negative Species', hide: false },
+  { key: 'species_treated_full', name: 'Species Treated', hide: false },
+  { key: 'species_biocontrol_full', name: 'Biocontrol Species', hide: false },
+  { key: 'created_by', name: 'Created By', hide: false },
+  { key: 'agency', name: 'Agency', hide: false },
+  {
+    key: 'regional_invasive_species_organization_areas',
+    name: 'Regional Invasive Species Organization Areas',
+    hide: false
+  },
+  { key: 'regional_districts', name: 'Regional Districts', hide: false },
+  { key: 'invasive_plant_management_areas', name: 'Invasive Plant Management Areas', hide: false },
+  { key: 'biogeoclimatic_zones', name: 'Bio Geo Climatic Zones', hide: false },
+  { key: 'elevation', name: 'Elevation', hide: false },
+  { key: 'batch_id', name: 'Batch ID', hide: false }
+].sort((a, b) => a.name.localeCompare(b.name));

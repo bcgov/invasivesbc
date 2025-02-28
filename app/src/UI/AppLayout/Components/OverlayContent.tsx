@@ -115,10 +115,12 @@ const OverlayContent = () => {
           path="/Records/List/Local:id"
           render={(props) => (
             <>
-              {props.match.params.id.split(':')[1] === '4' ? (
-                <OfflineRecordSet setID={props.match.params.id.split(':')[1]} />
-              ) : !userRecordOnClickMenuOpen ? (
-                <RecordSet setID={props.match.params.id.split(':')[1]} />
+              {!userRecordOnClickMenuOpen ? (
+                props.match.params.id.split(':')[1] === '4' ? (
+                  <OfflineRecordSet setID={props.match.params.id.split(':')[1]} />
+                ) : (
+                  <RecordSet setID={props.match.params.id.split(':')[1]} />
+                )
               ) : (
                 <OverlayMenu>
                   <Button

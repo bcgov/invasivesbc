@@ -16,16 +16,27 @@ import { MOBILE } from 'state/build-time-config';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
-import { OfflineDataSyncTable } from 'UI/OfflineDataSync/OfflineDataSyncTable';
-import { ActivitySubtypeShortLabels } from 'sharedAPI';
-import moment from 'moment';
 import { detectTouchDevice } from 'utils/detectTouch';
-import { activityColumnsToDisplay, offlineActivityColumnsToDisplay } from './RecordTableHelpers';
+import { offlineActivityColumnsToDisplay } from './RecordTableHelpers';
 import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
-import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
+import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
+import UserRecord from 'interfaces/UserRecord';
+import { ActivitySubtypeShortLabels } from 'sharedAPI/src/constants';
+import moment from 'moment';
 type PropTypes = { setID: string };
 
+// display only locally modified/stored ones, if synchronized dont display (?)
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
+  const onUserHoveredRecord = (row: UserRecord) => {
+    dispatch({
+      type: USER_HOVERED_RECORD,
+      payload: {
+        recordType: RecordSetType.Activity,
+        id: row.activity_id,
+        row: row
+      }
+    });
+  };
   const viewFilters = useSelector((state) => state.Map.viewFilters);
   const connected = useSelector((state) => state.Network.connected);
   const history = useHistory();
@@ -47,16 +58,48 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
     })
   );
+  console.log(parsedObj);
+  const updatedObject = Object.fromEntries(
+    Object.entries(parsedObj).map(([key, value]) => [
+      key,
+      {
+        ...value,
+        data: {
+          ...value.data,
+          activity_subtype: `${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`,
+          activity_date: new Date(
+            value.data?.form_data?.activity_data?.activity_date_time ??
+              value.data?.form_data?.activity_data?.activity_date_time ??
+              null
+          )
+            .toISOString()
+            .substring(0, 10)
+        }
+      }
+    ])
+  );
+  // Object.keys(parsedObj).forEach((key) => {
+  //   parsedObj[key].data.a = `Updated ${myObject[key].data.a}`;
+  //   parsedObj[key].data.b = `Updated ${myObject[key].data.b}`;
+  // });
 
   const tableType = recordSet?.recordSetType;
 
   useEffect(() => {
     setUserOfflineMobile(MOBILE && !connected);
   }, [connected]);
+
   const onlyFilterIsForDrafts =
     recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
   if (!recordSet) {
     return;
+  }
+  if (!updatedObject) {
+    return (
+      <div className="no-records">
+        <p>There are no records matching your current filters.</p>
+      </div>
+    );
   }
   return (
     <>
@@ -180,35 +223,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
           <ExcelExporter setName={setID} />
         </div>
 
-        {/* {Object.entries(serializedActivities).map(([key, value]) => {
-          return (
-            <React.Fragment key={`${key}`}>
-              <tr>
-                <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
-                <td>{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
-                <td>{`${moment((value as Offlin eActivityRecord).saved_at)}`}</td>
-                <td>{`${(value as OfflineActivityRecord).sync_state}`}</td>
-              </tr>
-              {(value as OfflineActivityRecord).sync_state == 'Error' && (
-                <tr>
-                  <td></td>
-                  <td>
-                    {(value as OfflineActivityRecord).error_detail
-                      ? (value as OfflineActivityRecord).error_detail
-                      : 'Error'}
-                  </td>
-                  <td colSpan={3}>
-                    <pre>
-                      {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
-                        ? JSON.stringify((value as OfflineActivityRecord).error_object.message)
-                        : JSON.stringify((value as OfflineActivityRecord).error_object)}
-                    </pre>
-                  </td>
-                </tr>
-              )}
-            </React.Fragment>
-          );
-        })} */}
         <div className="record_table_container">
           <table className="record_table">
             <tbody>
@@ -222,21 +236,21 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
                   <th
                     className={'record_table_header_column'}
                     key={col.key}
-                    // onClick={() => {
-                    //   if (activitySortColumns.includes(col.key)) {
-                    //     dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
-                    //   }
-                    // }}
+                    onClick={() => {
+                      if (activitySortColumns.includes(col.key)) {
+                        dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
+                      }
+                    }}
                   >
                     {col.name}{' '}
-                    {/* {activitySortColumns.includes(sortColumn) &&
+                    {activitySortColumns.includes(sortColumn) &&
                       sortColumn === col.key &&
-                      (sortOrder === 'ASC' ? '▲' : '▼')} */}
+                      (sortOrder === 'ASC' ? '▲' : '▼')}
                   </th>
                 ))}
               </tr>
-              {Object.entries(parsedObj).map(([key, value]) => {
-                console.log(key, value.data);
+              {Object.entries(updatedObject).map(([key, value]) => {
+                console.log('--->', key, value.data);
 
                 return (
                   <tr
@@ -256,8 +270,8 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
                         });
                       }
                     }}
-                    // onMouseOver={() => onUserHoveredRecord(value)}
-                    // onFocus={() => onUserHoveredRecord(value)}
+                    onMouseOver={() => onUserHoveredRecord(value.data)}
+                    onFocus={() => onUserHoveredRecord(value.data)}
                     onTouchStart={() => {
                       dispatch({
                         type: USER_TOUCHED_RECORD,
