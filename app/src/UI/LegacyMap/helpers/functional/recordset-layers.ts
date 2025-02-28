@@ -308,25 +308,10 @@ const createOfflineActivitiesLayer = async (
 
   if (geoJsonData.features) {
     map
-      .addSource(OFFLINE_ACTIVITIES_LAYER_ID, {
-        type: 'geojson',
-        data: geoJsonData
-      })
-      .addLayer(
-        getFillLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }),
-
-        LAYER_Z_FOREGROUND
-      )
-      .addLayer(
-        getBorderLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }),
-
-        LAYER_Z_FOREGROUND
-      )
-      .addLayer(
-        getCircleMarkerZoomedOutLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }),
-
-        LAYER_Z_FOREGROUND
-      );
+      .addSource(OFFLINE_ACTIVITIES_LAYER_ID, { type: 'geojson', data: geoJsonData })
+      .addLayer(getFillLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
+      .addLayer(getBorderLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
+      .addLayer(getCircleMarkerZoomedOutLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND);
   }
 };
 export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
