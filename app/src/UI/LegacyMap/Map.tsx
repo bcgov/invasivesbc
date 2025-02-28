@@ -69,7 +69,7 @@ export const Map = ({ children }) => {
   // RecordSet Layers
   const storeLayers = useSelector((state) => state.Map.layers);
 
-  // Offline Activity layers
+  // Offline Activities layer
   const { serializedActivities, mapToggle } = useSelector((state) => state.OfflineActivity);
 
   // WMS Layers
@@ -274,7 +274,8 @@ export const Map = ({ children }) => {
 
   // Offline Activities Layer:
   useEffect(() => {
-    if (!map || !mapReady) return;
+    if (!map || !mapReady || !MOBILE) return;
+
     if (!mapToggle) {
       removeOfflineActivitiesLayer(map);
     } else {
