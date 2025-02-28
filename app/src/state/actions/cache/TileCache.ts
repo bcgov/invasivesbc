@@ -2,7 +2,8 @@ import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { GeoJSON } from 'geojson';
 import DownloadActions from '../downloads/DownloadActions';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
-import { TileCacheProgressCallbackParameters, RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import { TileCacheProgressCallbackParameters, RepositoryBoundingBoxSpec, RepositoryStatus } from 'utils/tile-cache';
+import { RootState } from 'state/reducers/rootReducer';
 
 class TileCache {
   static readonly PREFIX = 'TileCache';
@@ -42,25 +43,38 @@ class TileCache {
         bounds: RepositoryBoundingBoxSpec;
         id?: string;
       },
-      { dispatch }
+      { dispatch, getState }
     ) => {
-      await dispatch(DownloadActions.request());
-      const service = await TileCacheServiceFactory.getPlatformInstance();
       const id = spec.id ?? `tile-cache-${nanoid()}`;
-      await service.download(
-        {
-          id: id,
-          maxZoom: spec.maxZoom,
-          bounds: spec.bounds,
+      dispatch(
+        TileCache.downloadProgressEvent({
+          repository: id,
           description: spec.description,
-          tileURL: (x, y, z) =>
-            `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`
-        },
-        (p) => {
-          dispatch(TileCache.downloadProgressEvent(p));
-        }
+          message: RepositoryStatus.QUEUED,
+          aborted: false,
+          normalizedProgress: 0,
+          totalTiles: 0,
+          processedTiles: 0
+        })
       );
-
+      await dispatch(DownloadActions.request());
+      const downloadInQueue = !!(getState() as RootState)?.TileCache?.downloadProgress?.[id];
+      const service = await TileCacheServiceFactory.getPlatformInstance();
+      if (downloadInQueue) {
+        await service.download(
+          {
+            id: id,
+            maxZoom: spec.maxZoom,
+            bounds: spec.bounds,
+            description: spec.description,
+            tileURL: (x, y, z) =>
+              `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`
+          },
+          (p) => {
+            dispatch(TileCache.downloadProgressEvent(p));
+          }
+        );
+      }
       return await service.listRepositories();
     }
   );

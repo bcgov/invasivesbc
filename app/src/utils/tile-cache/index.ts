@@ -40,8 +40,9 @@ export interface RepositoryMetadata {
 enum RepositoryStatus {
   DOWNLOADING = 'DOWNLOADING',
   DELETING = 'DELETING',
-  READY = 'READY',
   FAILED = 'FAILED',
+  READY = 'READY',
+  QUEUED = 'QUEUED',
   UNKNOWN = 'UNKNOWN'
 }
 interface TilePromise {
@@ -53,12 +54,13 @@ interface TilePromise {
 }
 
 export interface TileCacheProgressCallbackParameters {
-  repository: string;
-  message: string;
   aborted: boolean;
+  description?: string;
+  message: string;
   normalizedProgress: number;
-  totalTiles: number;
   processedTiles: number;
+  repository: string;
+  totalTiles: number;
 }
 
 export interface RepositoryStatistics {
@@ -189,6 +191,7 @@ abstract class TileCacheService extends BaseCacheService<
           if (progressCallback) {
             progressCallback({
               repository: spec.id,
+              description: spec.description,
               message: abort ? `Aborting` : `${processedTiles.toLocaleString()}/${totalTiles.toLocaleString()} Tiles`,
               aborted: abort,
               normalizedProgress: processedTiles / totalTiles,
