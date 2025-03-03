@@ -66,7 +66,7 @@ function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
       server_id: action.payload
     });
 
-    if (networkReturn) {
+    if (networkReturn.ok) {
       yield put(UserSettings.KML.deleteSuccess(action.payload));
     }
   } catch (e) {
