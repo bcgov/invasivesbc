@@ -67,7 +67,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
       </ul>
       {MOBILE && (
         <>
-          <h3>Unsyced Recordsets</h3>
+          <h3>Unsynced Recordsets</h3>
           <ul>
             <LpOfflineActivitiesLayer />
           </ul>
