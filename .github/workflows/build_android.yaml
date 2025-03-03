@@ -7,7 +7,7 @@ on:
       - mobile-android
 jobs:
   build-android:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     env:
       EXPORT_DIR: ${{ 'export' }}
     steps:
@@ -22,7 +22,7 @@ jobs:
         name: Setup Java
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
           #
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3

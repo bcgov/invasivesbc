@@ -126,10 +126,11 @@ function createRootReducer(config: AppConfig) {
           'recordSets',
           'recordsExpanded',
           'newRecordDialogState',
-          'darkTheme',
           'boundaries',
           'layerPickerIsAccordion',
-          'mapCenter'
+          'mapCenter',
+          'offlineDocs',
+          'tableColumns'
         ],
         transforms: [handleActiveDownloadsOnRehydration]
       },

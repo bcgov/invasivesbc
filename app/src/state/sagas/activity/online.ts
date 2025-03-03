@@ -1,15 +1,16 @@
 import { put, select, take } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
+import { PayloadAction } from '@reduxjs/toolkit';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
-import { ACTIVITIES_GEOJSON_REFETCH_ONLINE, AUTH_INITIALIZE_COMPLETE } from 'state/actions';
+import { ACTIVITIES_GEOJSON_REFETCH_ONLINE } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
-import { PayloadAction } from '@reduxjs/toolkit';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
@@ -35,7 +36,7 @@ export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
 export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
   const authState = yield select(selectAuth);
   if (!authState.authenticated) {
-    yield take(AUTH_INITIALIZE_COMPLETE);
+    yield take(AuthActions.initializeComplete.type);
   }
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
 

@@ -1,11 +1,11 @@
-import { createNextState, nanoid } from '@reduxjs/toolkit';
+import { Action, createNextState, nanoid } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
-import { CLOSE_NEW_RECORD_MENU, GET_API_DOC_SUCCESS, OPEN_NEW_RECORD_MENU, RECORDSET_SET_SORT } from '../actions';
+import { AppConfig } from 'state/config';
+import { CLOSE_NEW_RECORD_MENU, OPEN_NEW_RECORD_MENU, RECORDSET_SET_SORT } from 'state/actions';
 
-import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -13,6 +13,8 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
 import { CacheDownloadMode } from 'utils/record-cache';
+import { APIDocs } from 'state/actions/userSettings/APIDocs';
+import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
 
 export interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
@@ -37,6 +39,11 @@ export interface UserSettingsState {
   boundaries: Boundary[];
   layerPickerIsAccordion: boolean;
   darkTheme: boolean;
+  tableColumns: {
+    [RecordSetType.IAPP]: Array<{ key: string; name: string; displayWidget?: string; hide: boolean }>;
+    [RecordSetType.Activity]: Array<{ key: string; name: string; displayWidget?: string; hide: boolean }>;
+  };
+  offlineDocs: { displayName: string; apiDocsWithViewOptions: object; apiDocsWithSelectOptions: object }[];
 }
 
 const initialState: UserSettingsState = {
@@ -61,10 +68,17 @@ const initialState: UserSettingsState = {
     recordCategory: '',
     recordType: '',
     recordSubtype: ''
-  }
+  },
+  tableColumns: {
+    [RecordSetType.Activity]: activityColumnsToDisplay,
+    [RecordSetType.IAPP]: iappColumnsToDisplay
+  },
+  offlineDocs: []
 };
 
-function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState, AnyAction) => UserSettingsState {
+function createUserSettingsReducer(
+  _configuration: AppConfig
+): (state: UserSettingsState, action: Action) => UserSettingsState {
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<UserSettingsState>) => {
       if (UserSettings.toggleRecordExpandSuccess.match(action)) {
@@ -137,6 +151,17 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         draftState.recordSets[action.payload.setID].tableFiltersHash = Md5.hashStr(
           JSON.stringify(tableFiltersNotBlank)
         );
+      } else if (UserSettings.RecordSet.toggleRecordColumn.match(action)) {
+        const { recordType, key } = action.payload;
+        const index = draftState.tableColumns[recordType].findIndex((item) => item.key === key);
+        draftState.tableColumns[recordType][index].hide = !draftState.tableColumns[recordType][index].hide;
+        draftState.tableColumns[recordType] = [...draftState.tableColumns[recordType]];
+      } else if (UserSettings.RecordSet.toggleAllRecordColumns.match(action)) {
+        const { recordType, hide } = action.payload;
+        draftState.tableColumns[recordType] = draftState.tableColumns[recordType].map((row) => {
+          row.hide = hide;
+          return row;
+        });
       } else if (UserSettings.toggleLayerPickerAccordion.match(action)) {
         draftState.layerPickerIsAccordion = !draftState.layerPickerIsAccordion;
       } else if (WhatsHere.toggle.match(action)) {
@@ -220,13 +245,36 @@ function createUserSettingsReducer(configuration: AppConfig): (UserSettingsState
         // clear sort:
         delete draftState.recordSets[action.payload.setID].sortOrder;
         delete draftState.recordSets[action.payload.setID].sortColumn;
+      } else if (APIDocs.set.match(action)) {
+        draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
+        draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
+      } else if (APIDocs.load.match(action)) {
+        const found = draftState.offlineDocs.find((o) => o.displayName === action.payload.displayName);
+        if (found) {
+          draftState.apiDocsWithSelectOptions = found.apiDocsWithSelectOptions;
+          draftState.apiDocsWithViewOptions = found.apiDocsWithViewOptions;
+        }
+      } else if (APIDocs.save.match(action)) {
+        const found = draftState.offlineDocs.find((o) => o.displayName === action.payload.displayName);
+        if (draftState.apiDocsWithViewOptions && draftState.apiDocsWithSelectOptions) {
+          if (found) {
+            found.apiDocsWithViewOptions = draftState.apiDocsWithViewOptions;
+            found.apiDocsWithSelectOptions = draftState.apiDocsWithSelectOptions;
+          } else {
+            draftState.offlineDocs.push({
+              apiDocsWithViewOptions: draftState.apiDocsWithViewOptions,
+              apiDocsWithSelectOptions: draftState.apiDocsWithSelectOptions,
+              displayName: action.payload.displayName
+            });
+          }
+        }
+      } else if (APIDocs.forgetSaved.match(action)) {
+        const foundIndex = draftState.offlineDocs.findIndex((o) => o.displayName === action.payload.displayName);
+        if (foundIndex != -1) {
+          draftState.offlineDocs.splice(foundIndex, 1);
+        }
       } else {
         switch (action.type) {
-          case GET_API_DOC_SUCCESS: {
-            draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
-            draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;
-            break;
-          }
           case OPEN_NEW_RECORD_MENU: {
             draftState.newRecordDialogueOpen = true;
             break;

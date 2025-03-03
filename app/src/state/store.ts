@@ -5,7 +5,7 @@ import { createBrowserHistory } from 'history';
 import { persistStore } from 'redux-persist';
 import { Store } from 'redux';
 import { createRootReducer } from './reducers/rootReducer';
-import { AUTH_INITIALIZE_REQUEST, URL_CHANGE } from './actions';
+import { URL_CHANGE } from './actions';
 import activityPageSaga from './sagas/activity';
 import authenticationSaga from './sagas/auth/auth';
 import batchSaga from './sagas/batch';
@@ -20,6 +20,7 @@ import { createSagaCrashHandler } from './sagas/error_handler';
 import { AppConfig } from './config';
 import { DEBUG } from './build-time-config';
 import NetworkActions from './actions/network/NetworkActions';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 const historySingleton = createBrowserHistory();
 
@@ -81,7 +82,7 @@ export function setupStore(configuration: AppConfig) {
   sagaMiddleware.run(networkSaga);
 
   store.dispatch(NetworkActions.checkInitConnection());
-  store.dispatch({ type: AUTH_INITIALIZE_REQUEST });
+  store.dispatch(AuthActions.initializeRequest());
 
   historySingleton.listen((location) => {
     store.dispatch({
