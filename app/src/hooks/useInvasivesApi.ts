@@ -257,27 +257,22 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     }
   }
 
-  let res;
+  let res: Response;
   try {
     if (method === 'GET') {
       if (payloadData) {
         url.searchParams.set('query', JSON.stringify(payloadData));
       }
-
       res = yield fetch(url, {
         method: method,
         headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }
       });
-      const data = yield response_data(res);
-      return { data, status: res.status, url, ok: res.ok };
     } else if (['PUT', 'POST'].includes(method)) {
       res = yield fetch(url, {
         method: method,
         headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
         body: JSON.stringify(payloadData)
       });
-      const data = yield response_data(res);
-      return { data, status: res.status, url, ok: res.ok };
     } else if (method === 'DELETE') {
       const payloadOptions: { body?: string } = {};
       if (payloadData) {
@@ -288,19 +283,16 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
         headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
         ...payloadOptions
       });
-      const data = yield response_data(res);
-      return { data, status: res.status, url, ok: res.ok };
     } else {
       res = yield fetch(url, {
         method: method,
         headers: { Authorization: yield getCurrentJWT() }
       });
-      const data = yield response_data(res);
-      return { data, status: res.status, url, ok: res.ok };
     }
+    const data = yield response_data(res);
+    return { data, status: res.status, url, ok: res.ok };
   } catch (ex) {
     yield put(Alerts.create(networkAlertMessages.fetchFailed));
-    return res;
   }
 }
 
