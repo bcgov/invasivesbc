@@ -8,6 +8,7 @@ import { streamIAPPResult } from 'utils/iapp-json-utils';
 import { getDBConnection } from 'database/db';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('IAPP');
 
@@ -92,11 +93,9 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     sanitizedSearchCriteria.z = req.params.z;
   }
 
-  const roleName = (req as any).authContext.roles[0]?.role_name;
-  //const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
-  // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
-  const isAuth = req.authContext?.user !== null ? true : false;
-  const user_role = (req as any).authContext?.roles?.[0]?.role_id;
+  const roleName = req.authContext.roles?.[0]?.role_name;
+  const isAuth = req.authContext?.user !== null;
+  const user_role = req.authContext?.roles?.[0]?.role_id;
   if (user_role) {
     const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
     sanitizedSearchCriteria.user_roles = user_roles;
@@ -138,12 +137,8 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     filterObject.selectColumns.forEach((column) => {
       if (acceptableColumns.includes(column)) {
         switch (column) {
-          case 'created_by':
-            if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
-              selectColumns.push(column);
-            }
-            break;
           case 'updated_by':
+          case 'created_by':
             if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
               selectColumns.push(column);
             }
@@ -191,10 +186,6 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
         case 'tableFilter':
           switch (filter.field) {
             case 'created_by':
-              if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
-                sanitizedTableFilters.push(filter);
-              }
-              break;
             case 'updated_by':
               if (!sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields) {
                 sanitizedTableFilters.push(filter);
@@ -278,8 +269,8 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
     const filterObject = sanitizeIAPPFilterObject(rawBodyCriteria?.[0], req);
     defaultLog.debug({ label: 'v2/IAPP', message: 'getIAPPBySearchFilterCriteria v2', body: '' });
 
-    let connection;
-    let sql;
+    let connection: PoolClient;
+    let sql: SQLStatement;
 
     try {
       connection = await getDBConnection();
@@ -456,18 +447,6 @@ sites as (
   b.geog as geog
 
   `);
-
-  /*if (filterObject?.serverFilterGeometries?.length > 0) {
-    sqlStatement.append(`
-    ,case when ServerBoundariesToIntersect.geog is null then false else true end as intersects_server_boundary
-    `);
-  }
-  if (filterObject?.clientFilterGeometries?.length > 0) {
-    sqlStatement.append(`
-    ,case when ClientBoundariesToIntersect.geog is null then false else true end as intersects_client_boundary
-    `);
-  }
-  */
 
   sqlStatement.append(`
     from iapp_site_summary_and_geojson b
