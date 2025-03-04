@@ -13,13 +13,16 @@ import { MOBILE } from 'state/build-time-config';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { FeatureCollection } from 'geojson';
+import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
 
 const LAYER_ID_PREFIX = 'recordset-layer-';
+const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
 /** DRY Handler for formatting LayerIDs */
 const formatLayerID = (recordSetID: string, tableFiltersHash: string): string =>
   `${LAYER_ID_PREFIX}${recordSetID}-hash-${tableFiltersHash}`;
 
-export const createOfflineIappLayer = async (map: maplibregl.Map, layer: any) => {
+export const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => {
   if (layer?.layerState?.cacheMetadataStatus !== UserRecordCacheStatus.CACHED || !layer.layerState.mapToggle) {
     return;
   }
@@ -187,7 +190,7 @@ const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpeci
  * @desc Uses the device's recordset Cache data to display geoJson Layers on the map when offline
  *       Displays two layers: Points at high levels, and shapes at lower
  */
-export const createOfflineActivityLayer = async (map: maplibregl.Map, layer: any) => {
+export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any) => {
   if (layer?.layerState?.cacheMetadataStatus !== UserRecordCacheStatus.CACHED || !layer.layerState.mapToggle) {
     return;
   }
@@ -284,6 +287,56 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode,
   map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
   map.addLayer(circleMarkerZoomedOutLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
+};
+
+const createOfflineActivitiesLayer = async (
+  map: maplibregl.Map,
+  locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
+) => {
+  const geometryList = Object.values(locallyStoredActivities)
+    .map((item) => {
+      const parsedData = JSON.parse((item as OfflineActivityRecord).data);
+      return parsedData.geometry ? parsedData.geometry[0] : null;
+    })
+    .filter((geometry) => geometry !== null);
+
+  let geoJsonData: FeatureCollection = {
+    type: 'FeatureCollection',
+    features: geometryList || []
+  };
+
+  if (geoJsonData.features) {
+    map
+      .addSource(OFFLINE_ACTIVITIES_LAYER_ID, { type: 'geojson', data: geoJsonData })
+      .addLayer(getFillLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
+      .addLayer(getBorderLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
+      .addLayer(getCircleMarkerZoomedOutLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND);
+  }
+};
+export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
+  const allLayersOnMap = map.getLayersOrder();
+  const recordSetOfflineLayers = allLayersOnMap.filter((layer) => layer.includes(OFFLINE_ACTIVITIES_LAYER_ID));
+
+  if (recordSetOfflineLayers.length > 0) {
+    recordSetOfflineLayers.forEach((layer) => {
+      try {
+        map.removeLayer(layer);
+      } catch (e) {
+        console.error('error removing layer', e);
+      }
+    });
+    map.removeSource(OFFLINE_ACTIVITIES_LAYER_ID);
+  }
+};
+
+export const refreshOfflineActivitiesLayer = async (
+  map: maplibregl.Map,
+  visibility: boolean,
+  locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
+) => {
+  if (!map || !visibility) return;
+  await removeOfflineActivitiesLayer(map);
+  await createOfflineActivitiesLayer(map, locallyStoredActivities);
 };
 
 export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
@@ -414,13 +467,13 @@ const createMapLayer = async (
 ): Promise<void> => {
   if (layer.type === RecordSetType.Activity) {
     if (isOfflineLayer) {
-      await createOfflineActivityLayer(map, layer);
+      await createCachedActivityLayer(map, layer);
     } else {
       createOnlineActivityLayer(map, layer, mapMode, apiBase);
     }
   } else if (layer.type === RecordSetType.IAPP) {
     if (isOfflineLayer) {
-      await createOfflineIappLayer(map, layer);
+      await createCachedIappLayer(map, layer);
     } else {
       createOnlineIappLayer(map, layer, mapMode, apiBase);
     }

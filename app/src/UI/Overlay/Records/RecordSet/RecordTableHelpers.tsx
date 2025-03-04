@@ -116,7 +116,7 @@ export const activityColumnsToDisplay = [
   { key: 'biogeoclimatic_zones', name: 'Bio Geo Climatic Zones', hide: false },
   { key: 'elevation', name: 'Elevation', hide: false },
   { key: 'batch_id', name: 'Batch ID', hide: false }
-].sort((a, b) => a.name.localeCompare(b.name));
+];
 
 export const iappColumnsToDisplay = [
   { key: 'site_id', name: 'Site ID', hide: false },
@@ -135,7 +135,7 @@ export const iappColumnsToDisplay = [
   { key: 'regional_district', name: 'Regional District', hide: false },
   { key: 'regional_invasive_species_organization', name: 'Regional Invasive Species Organization', hide: false },
   { key: 'invasive_plant_management_area', name: 'Invasive Plant Management Area', hide: false }
-].sort((a, b) => a.name.localeCompare(b.name));
+];
 
 export const offlineActivityColumnsToDisplay = [
   { key: 'short_id', name: 'Activity ID', displayWidget: 'div', hide: false },

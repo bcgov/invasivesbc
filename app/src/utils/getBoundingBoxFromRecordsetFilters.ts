@@ -1,7 +1,7 @@
 import bbox from '@turf/bbox';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
-import { getSelectColumnsByRecordSetType } from 'state/sagas/map/dataAccess';
+import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { parse } from 'wkt';
 import { RepositoryBoundingBoxSpec } from './tile-cache';
 

@@ -41,12 +41,10 @@ export class PointOfInterestPostRequestBody {
       ...obj,
       // Strip out any media base64 strings which would convolute the record
       media:
-        (obj.media &&
-          obj.media.map((item: IMediaItem) => {
-            delete item.encoded_file;
-            return item;
-          })) ||
-        []
+        obj?.media?.map((item: IMediaItem) => {
+          delete item.encoded_file;
+          return item;
+        }) ?? []
     };
 
     this.pointOfInterest_type = obj?.pointOfInterest_type || obj?.point_of_interest_type || null;
@@ -120,32 +118,32 @@ export class PointOfInterestSearchCriteria {
   //NOSONAR
   constructor(obj?: any) {
     //csv export stuff:
-    this.isCSV = (obj && obj.isCSV) || false;
-    this.CSVType = (obj && obj.CSVType) || null;
+    this.isCSV = obj.isCSV ?? false;
+    this.CSVType = obj.CSVType ?? null;
 
-    this.page = (obj && obj.page && this.setPage(obj.page)) || 0;
-    this.limit = (obj && obj.limit && this.setLimit(obj.limit)) || SEARCH_LIMIT_MAX;
+    this.page = this.setPage(obj.page ?? 0);
+    this.limit = this.setLimit(obj.limit ?? SEARCH_LIMIT_MAX);
 
-    this.pointOfInterest_type = (obj && obj.pointOfInterest_type) || null;
-    this.pointOfInterest_subtype = (obj && obj.pointOfInterest_subtype) || null;
-    this.iappType = (obj && obj.iappType) || null;
-    this.isIAPP = (obj && obj.isIAPP) || false;
-    this.iappSiteID = (obj && obj.iappSiteID) || null;
-    this.point_of_interest_ids = (obj && obj.point_of_interest_ids) || [];
-    // this.species_positive = obj?.species_positive || [];
-    this.site_id_only = (obj && obj.site_id_only) || null;
+    this.pointOfInterest_type = obj.pointOfInterest_type ?? null;
+    this.pointOfInterest_subtype = obj.pointOfInterest_subtype ?? null;
+    this.iappType = obj.iappType ?? null;
+    this.isIAPP = obj.isIAPP ?? false;
+    this.iappSiteID = obj.iappSiteID ?? null;
+    this.point_of_interest_ids = obj.point_of_interest_ids ?? [];
 
-    this.date_range_start = (obj && obj.date_range_start) || null;
-    this.date_range_end = (obj && obj.date_range_end) || null;
+    this.site_id_only = obj.site_id_only ?? null;
 
-    this.grid_filters = (obj && obj.grid_filters) || null;
+    this.date_range_start = obj.date_range_start ?? null;
+    this.date_range_end = obj.date_range_end ?? null;
 
-    this.search_feature = (obj && obj.search_feature) || null;
-    this.search_feature_server_id = (obj && obj.search_feature_server_id) || null;
+    this.grid_filters = obj.grid_filters ?? null;
 
-    this.column_names = (obj && obj.column_names) || [];
+    this.search_feature = obj.search_feature ?? null;
+    this.search_feature_server_id = obj.search_feature_server_id ?? null;
 
-    this.order = (obj && obj.order) || [];
+    this.column_names = obj.column_names ?? [];
+
+    this.order = obj.order ?? [];
 
     this.jurisdiction = obj.jurisdiction || [];
     this.species_positive = obj?.species_positive || [];
