@@ -242,6 +242,7 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
 
   // may be explicitly set to true by calling function
   sanitizedSearchCriteria.boundingBoxOnly = false;
+  sanitizedSearchCriteria.cacheUpdate = false;
 
   defaultLog.debug({
     label: 'getActivitiesBySearchFilterCriteria',
@@ -268,7 +269,7 @@ function getActivitiesSQLv2(filterObject: any) {
     sqlStatement = groupByStatement(sqlStatement, filterObject);
     if (filterObject.vt_request) {
       sqlStatement.append(` ) SELECT ST_AsMVT(mvtgeom.*, 'data', 4096, 'geom', 'feature_id') as data from mvtgeom`);
-    } else if (!filterObject.boundingBoxOnly) {
+    } else if (!filterObject.boundingBoxOnly && !filterObject.updateCache) {
       // we don't want limits or offsets when computing the bounding box
       sqlStatement = orderByStatement(sqlStatement, filterObject);
       sqlStatement = limitStatement(sqlStatement, filterObject);
@@ -286,6 +287,17 @@ function getActivitiesSQLv2(filterObject: any) {
 
       defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: wrappedStatement });
 
+      return wrappedStatement;
+    } else if (filterObject.updateCache) {
+      const wrappedStatement = SQL` WITH userQuery AS ( `.append(sqlStatement.text).append(` ) 
+        SELECT array_agg(activity_id::text) as ids
+        FROM invasivesbc.activity_incoming_data
+        WHERE iscurrent = true
+          AND form_status = 'Submitted'
+          AND created_timestamp >= '${filterObject.timestamp}'::date
+          AND activity_id in (SELECT activity_id FROM userQuery)
+      `);
+      defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: wrappedStatement });
       return wrappedStatement;
     } else {
       defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
