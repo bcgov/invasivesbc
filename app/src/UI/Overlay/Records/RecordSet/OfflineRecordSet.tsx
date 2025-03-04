@@ -37,8 +37,38 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       }
     });
   };
+
+  const mapFieldsToTheirCodes = (dictionary, schema) => {
+    // console.log('Inside mapfields', dictionary, schema); // edit dictionary.data
+    //ChemicalTreatment_Species_Codes.properties.invasive_plant_aquatic_code.options
+    //ChemicalTreatment_Species_Codes.properties.invasive_plant_code.options
+    Object.entries(dictionary).forEach(([key, value]) => {
+      console.log(`${key}: ${value}`);
+    });
+  };
+
+  const returnInvasivesPlantType = (activity_subtype) => {
+    // console.log(activity_subtype);
+
+    switch (activity_subtype) {
+      case 'Activity_Observation_PlantAquatic':
+      case 'Activity_Treatment_ChemicalPlantAquatic':
+      case 'Activity_Treatment_MechanicalPlantAquatic':
+        return ['invasive_plant_aquatic_code', 'AquaticPlants'];
+      case 'Activity_Observation_PlantTerrestrial':
+      case 'Activity_Treatment_ChemicalPlantTerrestrial':
+      case 'Activity_Treatment_MechanicalPlantTerrestrial':
+      case 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant':
+      default:
+        return ['invasive_plant_code', 'TerrestrialPlants'];
+    }
+  };
   const viewFilters = useSelector((state) => state.Map.viewFilters);
   const connected = useSelector((state) => state.Network.connected);
+  const listOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions); // listOptions.components.schemas
+  // console.log('Do they have options1?', listOptions);
+  console.log('Do they have options?', listOptions?.components?.schemas);
+
   const history = useHistory();
   const dispatch = useDispatch();
 
@@ -52,13 +82,15 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const activitySortColumns = userOfflineMobile ? [] : validActivitySortColumns;
   const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
   const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
-  const parsedObj = Object.fromEntries(
+  let parsedObj = Object.fromEntries(
     Object.entries(serializedActivities).map(([key, value]) => {
       const typedValue = value as OfflineActivityRecord;
       return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
     })
   );
-  console.log(parsedObj);
+
+  console.log('---> parsed obj', parsedObj);
+
   const updatedObject = Object.fromEntries(
     Object.entries(parsedObj).map(([key, value]) => [
       key,
@@ -67,6 +99,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
         data: {
           ...value.data,
           activity_subtype: `${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`,
+          // activity_subtype: `${listOptions?.components?.schemas.activity_subtype_data.properties.TerrestrialPlants.items.properties.invasive_plant_code.options[0]['label']}`,
           activity_date: new Date(
             value.data?.form_data?.activity_data?.activity_date_time ??
               value.data?.form_data?.activity_data?.activity_date_time ??
@@ -74,10 +107,85 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
           )
             .toISOString()
             .substring(0, 10)
+          /**
+           * state.UserSettings.apiDocsWithViewOptions
+           *
+           *
+           *
+           * Agency: activity_data.properties.activity_data.invasive_species_agency_code.options[value:"aafc", label:"actual label"]
+           * Jurisdiction: properties.activity_data.jurisdictions.items.properties.jurisdiction_code.options [value:"aafc", label:"actual label"]
+           * Invasive plants: activity_subtype_data.properties.TerrestrialPlants.items.properties.invasive_plant_code.options[value:"aafc", label:"actual label"]
+           */
         }
       }
     ])
   );
+
+  Object.entries(parsedObj).forEach(([key, value]) => {
+    const plantType = returnInvasivesPlantType(parsedObj[key].record_type);
+    console.log(plantType);
+
+    parsedObj[key].data.activity_date = new Date(
+      value.data?.form_data?.activity_data?.activity_date_time ??
+        value.data?.form_data?.activity_data?.activity_date_time ??
+        null
+    )
+      .toISOString()
+      .substring(0, 10);
+    parsedObj[key].data.activity_subtype =
+      ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown';
+    // parsedObj[key].data.invasive_plant = parsedObj[key].data.form_data.activity_subtype_data[plantType[1]];
+    parsedObj[key].data.invasive_plant = parsedObj[key].data.form_data.activity_subtype_data[plantType[1]]
+      .map(
+        // only if positive
+        (x) =>
+          listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties[plantType[0]].options.find(
+            (a) => a.value === x.invasive_plant_code && x.observation_type.includes('Positive')
+          )?.label
+      )
+      .filter((label) => label)
+      .join(', ');
+    parsedObj[key].data.jurisdiction_display = parsedObj[key].data.jurisdiction
+      .map(
+        (val) =>
+          listOptions?.components?.schemas[
+            (value as OfflineActivityRecord).record_type
+          ].properties.activity_data.properties.jurisdictions.items.properties.jurisdiction_code.options.find(
+            (item) => item.value === val
+          )?.label
+      )
+      .filter((label) => label)
+      .join(', ');
+    parsedObj[key].data.agency =
+      listOptions?.components?.schemas[
+        (value as OfflineActivityRecord).record_type
+      ].properties.activity_data.properties.invasive_species_agency_code.options.find(
+        (item) => item.value === parsedObj[key].data.form_data.activity_data.invasive_species_agency_code
+      )?.label || '';
+    parsedObj[key].data.reported_area = parsedObj[key].data.form_data.activity_data.reported_area;
+
+    // const match = listOptions?.components?.schemas[
+    //   (value as OfflineActivityRecord).record_type
+    // ].properties.activity_data.properties.invasive_species_agency_code.options.find(
+    //   (item) => item.value === parsedObj[key].data.form_data.activity_data.invasive_species_agency_code
+    // );
+    console.log(
+      '====>options',
+      // `${returnInvasivesPlantType(parsedObj[key].record_type)}`
+      // listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties[plantType[0]].options,
+      // parsedObj[key].data.form_data.activity_subtype_data[plantType[1]]
+      // listOptions?.components?.schemas[(value as OfflineActivityRecord).record_type].properties.activity_data.properties
+      //   .jurisdictions.items.properties.jurisdiction_code.options,
+      // listOptions?.components?.schemas[(value as OfflineActivityRecord).record_type].properties.activity_data.properties
+      //   .invasive_species_agency_code.options,
+      listOptions?.components?.schemas[
+        (value as OfflineActivityRecord).record_type
+      ].properties.activity_data.properties.invasive_species_agency_code.options.find(
+        (item) => item.value === parsedObj[key].data.form_data.activity_data.invasive_species_agency_code
+      )?.label
+    );
+  });
+
   // Object.keys(parsedObj).forEach((key) => {
   //   parsedObj[key].data.a = `Updated ${myObject[key].data.a}`;
   //   parsedObj[key].data.b = `Updated ${myObject[key].data.b}`;
@@ -249,8 +357,8 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
                   </th>
                 ))}
               </tr>
-              {Object.entries(updatedObject).map(([key, value]) => {
-                console.log('--->', key, value.data);
+              {Object.entries(parsedObj).map(([key, value]) => {
+                // console.log('--->', key, value.data);
 
                 return (
                   <tr
@@ -304,8 +412,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
                       </td>
                     )}
                     {offlineActivityColumnsToDisplay.map((col) => {
-                      console.log(value.data[col.key], col.key);
-
                       return (
                         <td className="record_table_row_column" key={col.key + col.name}>
                           {value.data[col.key]}
