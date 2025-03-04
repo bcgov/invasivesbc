@@ -66,7 +66,7 @@ function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
       server_id: action.payload
     });
 
-    if (networkReturn) {
+    if (networkReturn?.ok) {
       yield put(UserSettings.KML.deleteSuccess(action.payload));
     }
   } catch (e) {
@@ -187,17 +187,19 @@ function* handle_GET_API_DOC_REQUEST() {
     { filterForSelectable: 'true' }
   );
   const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
-  const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
-  const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
+  if (apiDocsWithViewOptionsResponse?.ok) {
+    const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
+    const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
 
-  yield put(
-    APIDocs.set({
-      apiDocsWithViewOptions: apiDocsWithViewOptions,
-      apiDocsWithSelectOptions: apiDocsWithSelectOptions
-    })
-  );
-  if (displayName) {
-    yield put(APIDocs.save({ displayName }));
+    yield put(
+      APIDocs.set({
+        apiDocsWithViewOptions: apiDocsWithViewOptions,
+        apiDocsWithSelectOptions: apiDocsWithSelectOptions
+      })
+    );
+    if (displayName) {
+      yield put(APIDocs.save({ displayName }));
+    }
   }
 }
 
