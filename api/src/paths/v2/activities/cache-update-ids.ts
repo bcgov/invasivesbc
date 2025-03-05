@@ -87,7 +87,7 @@ function getUpdatedActivities(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       console.log(error);
-      defaultLog.debug({ label: NAMESPACE, error: error, body: req.body, method: 'POST' });
+      defaultLog.debug({ label: NAMESPACE, error: error, body: req.body });
       return res.sendStatus(500).json({
         message: 'Unable to provide list of ids.',
         request: req.query,

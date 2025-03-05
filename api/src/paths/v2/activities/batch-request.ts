@@ -105,7 +105,7 @@ function getActivity(): RequestHandler {
       }
       return res.status(200).json(resObj);
     } catch (error) {
-      defaultLog.debug({ label: NAMESPACE, error: error, body: req.body, method: 'GET' });
+      defaultLog.debug({ label: NAMESPACE, error: error, body: req.body });
       return res.status(500).json({
         message: 'Unable to fetch ids in list.',
         request: req.query,
