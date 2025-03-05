@@ -68,6 +68,7 @@ import { MOBILE } from 'state/build-time-config';
 import isSameDay from 'utils/isSameDay';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
+import RecordCache from 'state/actions/cache/RecordCache';
 
 function* handle_ACTIVITY_DELETE_SUCCESS(action) {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -405,6 +406,7 @@ function* handle_UPDATE_CACHED_RECORDS() {
         yield Alerts.create(cacheAlertMessages.updateCachesSuccess);
       }
     }
+    yield put(RecordCache.cacheUpdateSuccessful());
   } catch (ex) {
     yield Alerts.create(cacheAlertMessages.updateCachesFailed);
   }

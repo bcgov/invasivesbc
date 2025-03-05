@@ -247,6 +247,8 @@ function createUserSettingsReducer(
         // clear sort:
         delete draftState.recordSets[action.payload.setID].sortOrder;
         delete draftState.recordSets[action.payload.setID].sortColumn;
+      } else if (RecordCache.cacheUpdateSuccessful.match(action)) {
+        draftState.timeSinceLastCacheUpdateCheck = new Date();
       } else if (APIDocs.set.match(action)) {
         draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
         draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;

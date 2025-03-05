@@ -416,8 +416,10 @@ abstract class RecordCacheService extends BaseCacheService<
             await this.saveActivity(key, newRecords[key]);
           });
         }
+        const updatedShapes = await this.createActivityRecordsetSourceMetadata([...r.cachedIds, ...newIds]);
         this.addOrUpdateRepository({
           ...r,
+          ...updatedShapes,
           cachedIds: [...r.cachedIds, ...newIds],
           cacheTime: currentTime
         });
