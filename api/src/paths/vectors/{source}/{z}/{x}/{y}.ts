@@ -29,7 +29,7 @@ function tile(): RequestHandler {
     if (req.authContext.roles.length === 0) {
       res.status(401).json({ message: 'No Role for user' });
     }
-    const rawBodyCriteria = JSON.parse(decodeURI(req.query.filterObject as string));
+    const rawBodyCriteria = JSON.parse(req.query.filterObject as string);
     const { source } = req.params;
     let filterObj = null;
     if (source === 'activities') {
@@ -37,10 +37,8 @@ function tile(): RequestHandler {
     } else {
       filterObj = sanitizeIAPPFilterObject(rawBodyCriteria, req);
     }
-
     //@todo validate source, tile bounds
     const tileData = await PostgresTileService.tile(source, filterObj);
-
     res.setHeader('content-type', 'application/vnd.mapbox-vector-tile');
     res.status(200).send(tileData);
   };
