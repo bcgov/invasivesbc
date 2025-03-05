@@ -779,8 +779,9 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
 export const getActivitiesByIdsSQL = (recordIds: string[]): SQLStatement => SQL`
   SELECT a.*
   FROM activity_incoming_data a
-  WHERE a.iscurrent = true 
-    and a.activity_id = ANY(${recordIds});
+  WHERE a.iscurrent = true
+    AND a.form_status = 'Submitted'
+    AND a.activity_id = ANY(${recordIds});
 `;
 
 export const getActivityHistorySQL = (activityId: string): SQLStatement => {
