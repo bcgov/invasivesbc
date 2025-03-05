@@ -43,6 +43,7 @@ export interface UserSettingsState {
     [RecordSetType.IAPP]: Array<{ key: string; name: string; displayWidget?: string; hide: boolean }>;
     [RecordSetType.Activity]: Array<{ key: string; name: string; displayWidget?: string; hide: boolean }>;
   };
+  timeSinceLastCacheUpdateCheck: Date;
   offlineDocs: { displayName: string; apiDocsWithViewOptions: object; apiDocsWithSelectOptions: object }[];
 }
 
@@ -73,6 +74,7 @@ const initialState: UserSettingsState = {
     [RecordSetType.Activity]: activityColumnsToDisplay,
     [RecordSetType.IAPP]: iappColumnsToDisplay
   },
+  timeSinceLastCacheUpdateCheck: new Date(),
   offlineDocs: []
 };
 
