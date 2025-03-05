@@ -130,7 +130,8 @@ function createRootReducer(config: AppConfig) {
           'layerPickerIsAccordion',
           'mapCenter',
           'offlineDocs',
-          'tableColumns'
+          'tableColumns',
+          'timeSinceLastCacheUpdateCheck'
         ],
         transforms: [handleActiveDownloadsOnRehydration]
       },
