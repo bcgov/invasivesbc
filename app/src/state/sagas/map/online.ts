@@ -16,6 +16,7 @@ import { selectConfiguration, selectRootConfiguration } from 'state/reducers/con
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
+import UserRecord from 'interfaces/UserRecord';
 
 function* refreshExportConfigIfRequired(action?: AnyAction) {
   const config = yield select(selectRootConfiguration);
@@ -142,7 +143,7 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
     return;
   }
 
-  if (networkReturn.data.result) {
+  if (networkReturn?.ok && networkReturn.data.result) {
     yield put(
       Activity.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
@@ -167,7 +168,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
     return;
   }
 
-  if (networkReturn.data.result) {
+  if (networkReturn?.ok && networkReturn?.data?.result) {
     yield put(
       IappActions.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
@@ -181,7 +182,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
     put(
       IappActions.getRowsFailure({
         recordSetID: action.payload.recordSetID,
-        error: networkReturn.data,
+        error: networkReturn?.data,
         tableFiltersHash: action.payload.tableFiltersHash,
         page: action.payload.page,
         limit: action.payload.limit
@@ -203,21 +204,16 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     return;
   }
 
-  if (networkReturn.data.result || networkReturn.data?.data?.result) {
-    const list = networkReturn.data?.data?.result ? networkReturn.data?.data?.result : networkReturn.data?.result;
-    const IDList = list.map((row) => {
-      return row.activity_id;
-    });
+  if (networkReturn?.ok && (networkReturn?.data?.result || networkReturn.data?.data?.result)) {
+    const list = networkReturn.data?.data?.result ?? networkReturn.data?.result;
+    const IDList = list.map((row: UserRecord) => row.activity_id);
 
     // check again after the network call
     const mapState = yield select((state) => state.Map);
-    const tableFiltersHash = mapState?.layers?.filter((layer) => {
-      return layer?.recordSetID === action.payload.recordSetID;
-    })?.[0]?.tableFiltersHash;
+    const tableFiltersHash = mapState?.layers?.filter((layer) => layer?.recordSetID === action.payload.recordSetID)?.[0]
+      ?.tableFiltersHash;
 
-    if (!tableFiltersHash === action.payload.tableFiltersHash) {
-      return;
-    }
+    if (tableFiltersHash !== action.payload.tableFiltersHash) return;
 
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
@@ -241,7 +237,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     return;
   }
 
-  if (networkReturn.data.result || networkReturn.data?.data?.result) {
+  if (networkReturn?.ok && (networkReturn.data.result || networkReturn.data?.data?.result)) {
     const list = networkReturn.data?.data?.result ? networkReturn.data?.data?.result : networkReturn.data?.result;
     const IDList = list?.map((row) => {
       return row.site_id;

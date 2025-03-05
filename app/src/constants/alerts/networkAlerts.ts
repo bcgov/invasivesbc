@@ -42,6 +42,12 @@ const networkAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Warning,
     subject: AlertSubjects.Network,
     autoClose: 8
+  },
+  fetchFailed: {
+    content: 'An error occured while attempting to fetch resources. Please try again later.',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Network,
+    autoClose: 5
   }
 };
 

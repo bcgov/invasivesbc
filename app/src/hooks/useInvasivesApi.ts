@@ -1,7 +1,9 @@
-import { select } from 'redux-saga/effects';
+import { put, select } from 'redux-saga/effects';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
+import networkAlertMessages from 'constants/alerts/networkAlerts';
+import Alerts from 'state/actions/alerts/Alerts';
 
 export const useInvasivesApi = () => {
   const { API_BASE } = useSelector(selectConfiguration);
@@ -255,48 +257,42 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     }
   }
 
-  if (method === 'GET') {
-    if (payloadData) {
-      url.searchParams.set('query', JSON.stringify(payloadData));
+  let res: Response;
+  try {
+    if (method === 'GET') {
+      if (payloadData) {
+        url.searchParams.set('query', JSON.stringify(payloadData));
+      }
+      res = yield fetch(url, {
+        method: method,
+        headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }
+      });
+    } else if (['PUT', 'POST'].includes(method)) {
+      res = yield fetch(url, {
+        method: method,
+        headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(payloadData)
+      });
+    } else if (method === 'DELETE') {
+      const payloadOptions: { body?: string } = {};
+      if (payloadData) {
+        payloadOptions.body = JSON.stringify(payloadData);
+      }
+      res = yield fetch(url, {
+        method: method,
+        headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
+        ...payloadOptions
+      });
+    } else {
+      res = yield fetch(url, {
+        method: method,
+        headers: { Authorization: yield getCurrentJWT() }
+      });
     }
-
-    const res = yield fetch(url, {
-      method: method,
-      headers: { Authorization: yield getCurrentJWT(), ...additionalHeaders }
-    });
     const data = yield response_data(res);
-    const status = res.status;
-    return { data, status, url };
-  } else if (['PUT', 'POST'].includes(method)) {
-    const res = yield fetch(url, {
-      method: method,
-      headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
-      body: JSON.stringify(payloadData)
-    });
-    const data = yield response_data(res);
-    const status = res.status;
-    return { data, status, url };
-  } else if (method === 'DELETE') {
-    const payloadOptions: { body?: string } = {};
-    if (payloadData) {
-      payloadOptions.body = JSON.stringify(payloadData);
-    }
-    const res = yield fetch(url, {
-      method: method,
-      headers: { Authorization: yield getCurrentJWT(), 'Content-Type': 'application/json' },
-      ...payloadOptions
-    });
-    const data = yield response_data(res);
-    const status = res.status;
-    return { data, status, url };
-  } else {
-    const res = yield fetch(url, {
-      method: method,
-      headers: { Authorization: yield getCurrentJWT() }
-    });
-    const data = yield response_data(res);
-    const status = res.status;
-    return { data, status, url };
+    return { data, status: res.status, url, ok: res.ok };
+  } catch (ex) {
+    yield put(Alerts.create(networkAlertMessages.fetchFailed));
   }
 }
 
