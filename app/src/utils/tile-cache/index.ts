@@ -1,4 +1,3 @@
-import { DEBUG } from 'state/build-time-config';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { base64toBuffer, lat2tile, long2tile } from 'utils/tile-cache/helpers';
 
@@ -74,7 +73,7 @@ abstract class TileCacheService extends BaseCacheService<
   TileCacheProgressCallbackParameters,
   RepositoryStatus
 > {
-  CONCURRENCY_LIMIT = DEBUG ? 10 : 6; // Throttle for Mobile launches, boost for development.
+  CONCURRENCY_LIMIT = 5; // Throttle for Mobile launches, boost for development.
   protected constructor() {
     super();
   }

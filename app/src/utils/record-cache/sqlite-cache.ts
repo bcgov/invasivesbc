@@ -376,7 +376,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       throw new Error(CACHE_UNAVAILABLE);
     }
     try {
-      const geojson = iappTableRow.result[0].geojson;
+      const geojson = iappTableRow.geojson;
       const map_symbol = geojson?.properties?.map_symbol;
       geojson.properties = {
         name: id + (map_symbol ? '\n' + map_symbol : ''),

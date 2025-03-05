@@ -79,7 +79,7 @@ abstract class RecordCacheService extends BaseCacheService<
   RecordCacheProgressCallbackParameters,
   UserRecordCacheStatus
 > {
-  private readonly CONCURRENCY_LIMIT = 4;
+  private readonly CONCURRENCY_LIMIT = 3;
   protected constructor() {
     super();
   }
