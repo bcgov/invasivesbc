@@ -22,7 +22,6 @@ import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
 import UserRecord from 'interfaces/UserRecord';
 import { ActivitySubtypeShortLabels } from 'sharedAPI/src/constants';
-import moment from 'moment';
 type PropTypes = { setID: string };
 
 // display only locally modified/stored ones, if synchronized dont display (?)
@@ -38,35 +37,132 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     });
   };
 
-  const mapFieldsToTheirCodes = (dictionary, schema) => {
-    // console.log('Inside mapfields', dictionary, schema); // edit dictionary.data
-    //ChemicalTreatment_Species_Codes.properties.invasive_plant_aquatic_code.options
-    //ChemicalTreatment_Species_Codes.properties.invasive_plant_code.options
-    Object.entries(dictionary).forEach(([key, value]) => {
-      console.log(`${key}: ${value}`);
-    });
-  };
+  function findCodesFromKey(obj: any, targetKey: string, keysToFind: string[], properties: any): string {
+    let result: Record<string, string[]> = {
+      invasive_plant_code: [],
+      invasive_plant_aquatic_code: []
+    };
 
-  const returnInvasivesPlantType = (activity_subtype) => {
-    // console.log(activity_subtype);
+    function search(obj: any): any {
+      if (Array.isArray(obj)) {
+        obj.forEach((item) => search(item));
+      } else if (typeof obj === 'object' && obj !== null) {
+        for (const key in obj) {
+          if (key === targetKey) {
+            extractCodes(obj[key]);
+          } else {
+            search(obj[key]);
+          }
+        }
+      }
+    }
+
+    function extractCodes(obj: any) {
+      if (Array.isArray(obj)) {
+        obj.forEach((item) => extractCodes(item));
+      } else if (typeof obj === 'object' && obj !== null) {
+        for (const key in obj) {
+          if (keysToFind.includes(key) && obj[key]) {
+            let value = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
+            result[key] = result[key].concat(value);
+          } else {
+            extractCodes(obj[key]);
+          }
+        }
+      }
+    }
+    function getLabels(): string {
+      let labels: string[] = [];
+
+      for (const key of keysToFind) {
+        if (result[key].length > 0 && properties[key]?.options) {
+          let options = properties[key].options;
+          console.log('1-->', key, result[key], targetKey);
+          result[key].forEach((value) => {
+            let found = options.find((option: { value: string; label: string }) => option.value === value);
+            if (found) labels.push(found.label);
+          });
+        }
+      }
+
+      return labels.join(', ');
+    }
+
+    // function getLabels(): string {
+    //   let labels: string[] = [];
+
+    //   for (const key of keysToFind) {
+    //     // Special case: if targetKey is 'chemical_treatment_details', switch between invasive_plant_code and invasive_plant_aquatic_code
+    //     let propertyKey = targetKey === 'chemical_treatment_details' ? 'invasive_plant_aquatic_code' : key;
+    //     console.log('1-->', key, propertyKey, result[key]);
+
+    //     if (result[key]?.length > 0 && properties[propertyKey]?.options) {
+    //       let options = properties[propertyKey].options;
+    //       result[key].forEach((value) => {
+    //         let found = options.find((option: { value: string; label: string }) => option.value === value);
+    //         if (found) labels.push(found.label);
+    //       });
+    //     }
+    //   }
+
+    //   return labels.join(', ');
+    // }
+
+    search(obj);
+    const l = getLabels();
+    return l;
+  }
+
+  const convertCodeToLabelUsingRecordType = (activity_subtype, activity_subtype_data, properties) => {
+    let target_key: string;
+    const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
 
     switch (activity_subtype) {
-      case 'Activity_Observation_PlantAquatic':
-      case 'Activity_Treatment_ChemicalPlantAquatic':
-      case 'Activity_Treatment_MechanicalPlantAquatic':
-        return ['invasive_plant_aquatic_code', 'AquaticPlants'];
       case 'Activity_Observation_PlantTerrestrial':
+        target_key = 'TerrestrialPlants'; //invasive_plant_code
+        break;
+      case 'Activity_Observation_PlantAquatic':
+        target_key = 'AquaticPlants'; //invasive_plant_aquatic_code
+        break;
+      case 'Activity_Treatment_ChemicalPlantAquatic':
+        target_key = 'chemical_treatment_details'; //, 'invasive_plants'; //invasive_plant_code
+        break;
       case 'Activity_Treatment_ChemicalPlantTerrestrial':
+        target_key = 'chemical_treatment_details'; //, 'invasive_plants']; //invasive_plant_code
+        break;
+      case 'Activity_Treatment_MechanicalPlantAquatic':
+        target_key = 'Treatment_MechanicalPlant_Information'; // invasive_plant_code
+        break;
       case 'Activity_Treatment_MechanicalPlantTerrestrial':
+        target_key = 'Treatment_MechanicalPlant_Information'; // invasive_plant_code
+        break;
+      case 'Activity_Biocontrol_Release':
+        target_key = 'Biocontrol_Release_Information'; //invasive_plant_code
+        break;
+      case 'Activity_Biocontrol_Collection':
+        target_key = 'Biocontrol_Collection_Information'; // invasive_plant_code
+        break;
       case 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant':
+        target_key = 'Monitoring_BiocontrolDispersal_Information'; //invasive_plant_code
+        break;
+      case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
+        target_key = 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'; // invasive_plant_code,invasive_plant_aquatic_code
+        break;
+      case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
+        target_key = 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'; // invasive_plant_code,invasive_plant_aquatic_code
+        break;
+      case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
+        target_key = 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'; // invasive_plant_code
+        break;
       default:
-        return ['invasive_plant_code', 'TerrestrialPlants'];
+        target_key = '';
     }
+    const plantCodes = findCodesFromKey(activity_subtype_data, target_key, keysToFind, properties);
+    return plantCodes;
   };
   const viewFilters = useSelector((state) => state.Map.viewFilters);
   const connected = useSelector((state) => state.Network.connected);
   const listOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions); // listOptions.components.schemas
-  // console.log('Do they have options1?', listOptions);
   console.log('Do they have options?', listOptions?.components?.schemas);
 
   const history = useHistory();
@@ -91,105 +187,62 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
 
   console.log('---> parsed obj', parsedObj);
 
-  const updatedObject = Object.fromEntries(
-    Object.entries(parsedObj).map(([key, value]) => [
-      key,
-      {
-        ...value,
-        data: {
-          ...value.data,
-          activity_subtype: `${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`,
-          // activity_subtype: `${listOptions?.components?.schemas.activity_subtype_data.properties.TerrestrialPlants.items.properties.invasive_plant_code.options[0]['label']}`,
-          activity_date: new Date(
-            value.data?.form_data?.activity_data?.activity_date_time ??
-              value.data?.form_data?.activity_data?.activity_date_time ??
-              null
-          )
-            .toISOString()
-            .substring(0, 10)
-          /**
-           * state.UserSettings.apiDocsWithViewOptions
-           *
-           *
-           *
-           * Agency: activity_data.properties.activity_data.invasive_species_agency_code.options[value:"aafc", label:"actual label"]
-           * Jurisdiction: properties.activity_data.jurisdictions.items.properties.jurisdiction_code.options [value:"aafc", label:"actual label"]
-           * Invasive plants: activity_subtype_data.properties.TerrestrialPlants.items.properties.invasive_plant_code.options[value:"aafc", label:"actual label"]
-           */
-        }
-      }
-    ])
-  );
+  try {
+    Object.entries(parsedObj).forEach(([key, value]) => {
+      const concatenatedLabels = convertCodeToLabelUsingRecordType(
+        parsedObj[key].record_type,
+        parsedObj[key].data.form_data.activity_subtype_data,
+        listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties
+      );
 
-  Object.entries(parsedObj).forEach(([key, value]) => {
-    const plantType = returnInvasivesPlantType(parsedObj[key].record_type);
-    console.log(plantType);
-
-    parsedObj[key].data.activity_date = new Date(
-      value.data?.form_data?.activity_data?.activity_date_time ??
+      parsedObj[key].data.activity_date = new Date(
         value.data?.form_data?.activity_data?.activity_date_time ??
-        null
-    )
-      .toISOString()
-      .substring(0, 10);
-    parsedObj[key].data.activity_subtype =
-      ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown';
-    // parsedObj[key].data.invasive_plant = parsedObj[key].data.form_data.activity_subtype_data[plantType[1]];
-    parsedObj[key].data.invasive_plant = parsedObj[key].data.form_data.activity_subtype_data[plantType[1]]
-      .map(
-        // only if positive
-        (x) =>
-          listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties[plantType[0]].options.find(
-            (a) => a.value === x.invasive_plant_code && x.observation_type.includes('Positive')
-          )?.label
+          value.data?.form_data?.activity_data?.activity_date_time ??
+          null
       )
-      .filter((label) => label)
-      .join(', ');
-    parsedObj[key].data.jurisdiction_display = parsedObj[key].data.jurisdiction
-      .map(
-        (val) =>
-          listOptions?.components?.schemas[
-            (value as OfflineActivityRecord).record_type
-          ].properties.activity_data.properties.jurisdictions.items.properties.jurisdiction_code.options.find(
-            (item) => item.value === val
-          )?.label
-      )
-      .filter((label) => label)
-      .join(', ');
-    parsedObj[key].data.agency =
-      listOptions?.components?.schemas[
+        .toISOString()
+        .substring(0, 10);
+      parsedObj[key].data.activity_subtype =
+        ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown';
+      parsedObj[key].data.invasive_plant = concatenatedLabels;
+      // parsedObj[key].data.invasive_plant = parsedObj[key].data.form_data.activity_subtype_data[plantType[1]]
+      //   .map(
+      //     // only if positive
+      //     (x) =>
+      //       listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties[plantType[0]].options.find(
+      //         (a) => a.value === x.invasive_plant_code && x.observation_type.includes('Positive')
+      //       )?.label
+      //   )
+      //   .filter((label) => label)
+      //   .join(', ');
+      parsedObj[key].data.jurisdiction_display = parsedObj[key].data.jurisdiction
+        .map(
+          (val) =>
+            listOptions?.components?.schemas[
+              (value as OfflineActivityRecord).record_type
+            ].properties.activity_data.properties.jurisdictions.items.properties.jurisdiction_code.options.find(
+              (item) => item.value === val
+            )?.label
+        )
+        .filter((label) => label)
+        .join(', ');
+      parsedObj[key].data.agency =
+        listOptions?.components?.schemas[
+          (value as OfflineActivityRecord).record_type
+        ].properties.activity_data.properties.invasive_species_agency_code.options.find(
+          (item) => item.value === parsedObj[key].data.form_data.activity_data.invasive_species_agency_code
+        )?.label || '';
+      parsedObj[key].data.reported_area = parsedObj[key].data.form_data.activity_data.reported_area;
+
+      const match = listOptions?.components?.schemas[
         (value as OfflineActivityRecord).record_type
       ].properties.activity_data.properties.invasive_species_agency_code.options.find(
         (item) => item.value === parsedObj[key].data.form_data.activity_data.invasive_species_agency_code
-      )?.label || '';
-    parsedObj[key].data.reported_area = parsedObj[key].data.form_data.activity_data.reported_area;
-
-    // const match = listOptions?.components?.schemas[
-    //   (value as OfflineActivityRecord).record_type
-    // ].properties.activity_data.properties.invasive_species_agency_code.options.find(
-    //   (item) => item.value === parsedObj[key].data.form_data.activity_data.invasive_species_agency_code
-    // );
-    console.log(
-      '====>options',
-      // `${returnInvasivesPlantType(parsedObj[key].record_type)}`
-      // listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties[plantType[0]].options,
-      // parsedObj[key].data.form_data.activity_subtype_data[plantType[1]]
-      // listOptions?.components?.schemas[(value as OfflineActivityRecord).record_type].properties.activity_data.properties
-      //   .jurisdictions.items.properties.jurisdiction_code.options,
-      // listOptions?.components?.schemas[(value as OfflineActivityRecord).record_type].properties.activity_data.properties
-      //   .invasive_species_agency_code.options,
-      listOptions?.components?.schemas[
-        (value as OfflineActivityRecord).record_type
-      ].properties.activity_data.properties.invasive_species_agency_code.options.find(
-        (item) => item.value === parsedObj[key].data.form_data.activity_data.invasive_species_agency_code
-      )?.label
-    );
-  });
-
-  // Object.keys(parsedObj).forEach((key) => {
-  //   parsedObj[key].data.a = `Updated ${myObject[key].data.a}`;
-  //   parsedObj[key].data.b = `Updated ${myObject[key].data.b}`;
-  // });
+      );
+    });
+  } catch (error) {
+    console.log(error);
+  }
 
   const tableType = recordSet?.recordSetType;
 
@@ -202,7 +255,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   if (!recordSet) {
     return;
   }
-  if (!updatedObject) {
+  if (!parsedObj) {
     return (
       <div className="no-records">
         <p>There are no records matching your current filters.</p>
