@@ -9,6 +9,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import bboxToPolygon from 'utils/bboxToPolygon';
+import FilterObjects from 'interfaces/FilterObjects';
 
 export enum IappRecordMode {
   Record = 'record',
@@ -45,6 +46,7 @@ export interface RepositoryMetadata {
   cachedCentroid?: GeoJSONSourceSpecification;
   bbox?: RepositoryBoundingBoxSpec;
   status: UserRecordCacheStatus;
+  filterObjects: FilterObjects;
 }
 
 export interface RecordSetSourceMetadata {
@@ -71,6 +73,7 @@ export interface CacheDownloadSpec {
   recordSetCacheStatus: UserRecordCacheStatus;
   pausedActivityIdx: number;
   processedActivities: number;
+  filterObjects: FilterObjects;
 }
 
 abstract class RecordCacheService extends BaseCacheService<
@@ -80,6 +83,7 @@ abstract class RecordCacheService extends BaseCacheService<
   UserRecordCacheStatus
 > {
   private readonly CONCURRENCY_LIMIT = 3;
+  private readonly BATCH_AMOUNT = 19; // Use odd number increments so more digits update, appearing faster.
   protected constructor() {
     super();
   }
@@ -133,7 +137,8 @@ abstract class RecordCacheService extends BaseCacheService<
       setId: spec.setId,
       API_BASE: spec.API_BASE,
       pausedActivityIdx: spec.pausedActivityIdx,
-      processedActivities: spec.processedActivities
+      processedActivities: spec.processedActivities,
+      filterObjects: spec.filterObjects
     };
 
     const responseData: Record<PropertyKey, any> = {
@@ -147,7 +152,8 @@ abstract class RecordCacheService extends BaseCacheService<
       cachedIds: spec.idsToCache,
       recordSetType: spec.recordSetType,
       status: UserRecordCacheStatus.DOWNLOADING,
-      bbox: spec.bbox
+      bbox: spec.bbox,
+      filterObjects: spec.filterObjects
     });
 
     let downloadMode: CacheDownloadMode = CacheDownloadMode.DEFAULT;
@@ -172,7 +178,8 @@ abstract class RecordCacheService extends BaseCacheService<
         status: UserRecordCacheStatus.CACHED,
         cachedGeoJson: responseData.cachedGeoJson,
         cachedCentroid: responseData.cachedCentroid,
-        bbox: spec.bbox
+        bbox: spec.bbox,
+        filterObjects: spec.filterObjects
       });
     } else if (downloadMode == CacheDownloadMode.ABORT) {
       this.deleteRepository(spec.setId);
@@ -188,7 +195,6 @@ abstract class RecordCacheService extends BaseCacheService<
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<CacheDownloadMode> {
-    const BATCH_AMOUNT = 19; // Use odd number increments so more digits update, appearing faster.
     const executing: Set<Promise<void>> = new Set();
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
@@ -196,12 +202,12 @@ abstract class RecordCacheService extends BaseCacheService<
     const lastProgressCallback: null | number = null;
     const totalRecordsToCache = spec.idsToCache.length;
 
-    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += BATCH_AMOUNT) {
+    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += this.BATCH_AMOUNT) {
       if (executing.size >= this.CONCURRENCY_LIMIT) {
         await Promise.race(executing);
       }
 
-      const ids = uncachedRecords.slice(i, i + BATCH_AMOUNT);
+      const ids = uncachedRecords.slice(i, i + this.BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
         const url = `${spec.API_BASE}/api/v2/iapp/batch-request?idList=${JSON.stringify(ids)}`;
@@ -254,7 +260,6 @@ abstract class RecordCacheService extends BaseCacheService<
     spec: RecordCacheDownloadRequestSpec,
     progressCallback?: (currentProgress: RecordCacheProgressCallbackParameters) => void
   ): Promise<CacheDownloadMode> {
-    const BATCH_AMOUNT = 21; // Use odd number increments so more digits update, appearing faster.
     const executing: Set<Promise<void>> = new Set();
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
@@ -262,11 +267,11 @@ abstract class RecordCacheService extends BaseCacheService<
     const lastProgressCallback: null | number = null;
     const totalRecordsToCache = spec.idsToCache.length;
 
-    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += BATCH_AMOUNT) {
+    for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += this.BATCH_AMOUNT) {
       if (executing.size >= this.CONCURRENCY_LIMIT) {
         await Promise.race(executing);
       }
-      const ids = uncachedRecords.slice(i, i + BATCH_AMOUNT);
+      const ids = uncachedRecords.slice(i, i + this.BATCH_AMOUNT);
 
       this.processNext(executing, async () => {
         const url = `${spec.API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
@@ -370,6 +375,54 @@ abstract class RecordCacheService extends BaseCacheService<
       (r) =>
         r.status === UserRecordCacheStatus.CACHED && r.cachedGeoJson && booleanIntersects(bboxToPolygon(r.bbox!), geom)
     );
+  }
+
+  /**
+   * @desc Get list of IDs that have had updates or been created since last update.
+   * @param filterObjects Filters used at time of Cache
+   * @param cacheTime Time of last Cache
+   * @returns
+   */
+  private async getListOfNewIds(filterObjects: FilterObjects, cacheTime: Date): Promise<string[]> {
+    const rez = await fetch(
+      `${CONFIGURATION_API_BASE}/api/v2/activities/cache-update-ids?filterObjects=${JSON.stringify([filterObjects])}&lastUpdated=${cacheTime.toISOString()}`,
+      { headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' } }
+    );
+    return (await rez.json()) ?? [];
+  }
+
+  /**
+   * @desc Iterate Record repositories and update/download any new or changed records.
+   */
+  public async updateActivityCaches(): Promise<void> {
+    const currentTime = new Date();
+    const repositories = await this.listRepositories();
+    const updatedRecords: string[] = []; // don't re-download records that crossover other recordsets
+    for (const r of repositories) {
+      if (r.recordSetType === RecordSetType.Activity && r.status === UserRecordCacheStatus.CACHED) {
+        const idList = (await this.getListOfNewIds(r.filterObjects, r.cacheTime)).filter(
+          (id) => !updatedRecords.includes(id)
+        );
+        const newIds = idList.filter((id) => !r.cachedIds.includes(id)); // Filter out IDs not already in cache to add later
+        for (let i = 0; i < idList.length; i += this.BATCH_AMOUNT) {
+          const ids = idList.slice(i, i + this.BATCH_AMOUNT);
+          const url = `${CONFIGURATION_API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
+          const rez = await fetch(url, {
+            headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
+          });
+          const newRecords = (await rez.json()) ?? {};
+          Object.keys(newRecords).forEach(async (key) => {
+            await this.saveActivity(key, newRecords[key]);
+          });
+        }
+        this.addOrUpdateRepository({
+          ...r,
+          cachedIds: [...r.cachedIds, ...newIds],
+          cacheTime: currentTime
+        });
+        updatedRecords.push(...newIds);
+      }
+    }
   }
 }
 
