@@ -381,7 +381,7 @@ abstract class RecordCacheService extends BaseCacheService<
    * @desc Get list of IDs that have had updates or been created since last update.
    * @param filterObjects Filters used at time of Cache
    * @param cacheTime Time of last Cache
-   * @returns
+   * @returns { string[] } new Records or IDs updated since provided date.
    */
   private async getListOfNewIds(filterObjects: FilterObjects, cacheTime: Date): Promise<string[]> {
     const rez = await fetch(
@@ -393,8 +393,9 @@ abstract class RecordCacheService extends BaseCacheService<
 
   /**
    * @desc Iterate Record repositories and update/download any new or changed records.
+   * @returns {boolean} New records were added / updated
    */
-  public async updateActivityCaches(): Promise<void> {
+  public async updateActivityCaches(): Promise<boolean> {
     const currentTime = new Date();
     const repositories = await this.listRepositories();
     const updatedRecords: string[] = []; // don't re-download records that crossover other recordsets
@@ -423,6 +424,7 @@ abstract class RecordCacheService extends BaseCacheService<
         updatedRecords.push(...newIds);
       }
     }
+    return updatedRecords.length > 0;
   }
 }
 

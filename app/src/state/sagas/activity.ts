@@ -67,6 +67,7 @@ import { selectMap } from 'state/reducers/map';
 import { MOBILE } from 'state/build-time-config';
 import isSameDay from 'utils/isSameDay';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import cacheAlertMessages from 'constants/alerts/cacheAlerts';
 
 function* handle_ACTIVITY_DELETE_SUCCESS(action) {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -390,13 +391,22 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
   }
 }
 
+/**
+ * @desc Once per day, synchronize Activity record caches.
+ */
 function* handle_UPDATE_CACHED_RECORDS() {
-  const { connected } = yield select(selectNetworkState);
-  const { timeSinceLastCacheUpdateCheck } = yield select(selectUserSettings);
-  const checkedForUpdateToday = isSameDay(new Date(), timeSinceLastCacheUpdateCheck);
-  if (MOBILE && connected && !checkedForUpdateToday) {
-    const service = yield RecordCacheServiceFactory.getPlatformInstance();
-    yield service.updateActivityCaches();
+  try {
+    const { connected } = yield select(selectNetworkState);
+    const { timeSinceLastCacheUpdateCheck } = yield select(selectUserSettings);
+    const checkedForUpdateToday = isSameDay(new Date(), timeSinceLastCacheUpdateCheck);
+    if (MOBILE && connected && !checkedForUpdateToday) {
+      const recordsWereUpdated = yield (yield RecordCacheServiceFactory.getPlatformInstance()).updateActivityCaches();
+      if (recordsWereUpdated) {
+        yield Alerts.create(cacheAlertMessages.updateCachesSuccess);
+      }
+    }
+  } catch (ex) {
+    yield Alerts.create(cacheAlertMessages.updateCachesFailed);
   }
 }
 
