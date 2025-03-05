@@ -9,13 +9,11 @@ import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from 'paths/media';
 import { PoolClient } from 'pg';
 import { InvasivesRequest } from 'utils/auth-utils';
-import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
 
 const NAMESPACE = '/v2/activities/batch-request';
 const defaultLog = getLogger(NAMESPACE);
 
 const GET: Operation = [getActivity()];
-const POST: Operation = [getUpdatedActivities()];
 
 GET.apiDoc = {
   description: 'Returns multiple Activity Records for device caching',
@@ -121,99 +119,4 @@ function getActivity(): RequestHandler {
   };
 }
 
-POST.apiDoc = {
-  description: 'Returns activity records that have received updates since time of caching',
-  tags: ['activity'],
-  security: SECURITY_ON
-    ? [
-        {
-          Bearer: ALL_ROLES
-        }
-      ]
-    : [],
-  requestBody: {
-    description: 'Request parameters',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            lastUpdated: {
-              type: 'string',
-              description: 'Date of last cache',
-              example: '2025-03-04T15:20:22.765Z',
-              pattern: '^[\\d]{4}-[\\d]{2}-[\\d]{2}T[\\d]{2}:[\\d]{2}:[\\d]{2}\\.[\\d]{3}Z$'
-            },
-            filterObjects: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {}
-              }
-            }
-          },
-          required: ['lastUpdated', 'filterObjects']
-        }
-      }
-    }
-  },
-  responses: {
-    200: {
-      description: 'Activity Ids with records more recent than cached.',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'array',
-            items: {
-              type: 'string',
-              description: 'activity_id',
-              example: 'a1b2a1b2-c3d4-e5f6-g7h8g7h8g7h8',
-              pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
-            }
-          }
-        }
-      }
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
-
-function getUpdatedActivities(): RequestHandler {
-  return async (req: InvasivesRequest, res) => {
-    if (req.authContext.roles.length === 0) return res.status(401).json({ message: 'No Role for user' });
-
-    let connection: PoolClient;
-    try {
-      connection = await getDBConnection();
-      const { filterObjects, lastUpdated } = req.body;
-      const sanitizedFilters = sanitizeActivityFilterObject(filterObjects?.[0], req);
-      sanitizedFilters.timestamp = lastUpdated;
-      sanitizedFilters.updateCache = true;
-
-      const { text, values } = getActivitiesSQLv2(sanitizedFilters);
-      const response = (await connection.query(text, values)).rows[0].ids ?? [];
-
-      return res.status(200).json(response);
-    } catch (error) {
-      defaultLog.debug({ label: NAMESPACE, error: error, body: req.body, method: 'POST' });
-      return res.sendStatus(500).json({
-        message: 'Unable to provide list of ids.',
-        request: req.body,
-        error: JSON.stringify(error),
-        namespace: NAMESPACE,
-        code: 500
-      });
-    } finally {
-      connection?.release();
-    }
-  };
-}
-
-export { GET, POST };
+export { GET };
