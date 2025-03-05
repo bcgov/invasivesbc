@@ -37,47 +37,111 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     });
   };
 
-  function findCodesFromKey(obj: any, targetKey: string, keysToFind: string[], properties: any): string {
-    let result: Record<string, string[]> = {
-      invasive_plant_code: [],
-      invasive_plant_aquatic_code: []
+  // function findCodesFromKey(obj: any, targetKey: string, properties: any, specialCase: boolean): string {
+  //   let result: Record<string, string[]> = {
+  //     invasive_plant_code: [],
+  //     invasive_plant_aquatic_code: []
+  //   };
+  //   const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
+  //   function search(obj: any): any {
+  //     if (Array.isArray(obj)) {
+  //       obj.forEach((item) => search(item));
+  //     } else if (typeof obj === 'object' && obj !== null) {
+  //       for (const key in obj) {
+  //         if (key === targetKey) {
+  //           extractCodes(obj[key]);
+  //         } else {
+  //           search(obj[key]);
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   function extractCodes(obj: any) {
+  //     if (Array.isArray(obj)) {
+  //       obj.forEach((item) => extractCodes(item));
+  //     } else if (typeof obj === 'object' && obj !== null) {
+  //       for (const key in obj) {
+  //         if (keysToFind.includes(key) && obj[key]) {
+  //           let value = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
+  //           result[key] = result[key].concat(value);
+  //         } else {
+  //           extractCodes(obj[key]);
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   function getLabels(): string {
+  //     let labels: string[] = [];
+
+  //     for (const key of keysToFind) {
+  //       let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
+
+  //       if (result[key]?.length > 0 && properties[propertyKey]?.options) {
+  //         let options = properties[propertyKey].options;
+  //         result[key].forEach((value) => {
+  //           let found = options.find((option: { value: string; label: string }) => option.value === value);
+  //           if (found) labels.push(found.label);
+  //         });
+  //       }
+  //     }
+
+  //     return labels.join(', ');
+  //   }
+
+  //   search(obj);
+  //   return getLabels();
+  // }
+
+  function findCodesFromKey(obj: any, targetKey: string, properties: any, specialCase: boolean): string {
+    const result: Record<string, Set<string>> = {
+      invasive_plant_code: new Set(),
+      invasive_plant_aquatic_code: new Set()
     };
 
-    function search(obj: any): any {
+    const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
+
+    // Function to recursively search through the object
+    function search(obj: any): void {
       if (Array.isArray(obj)) {
-        obj.forEach((item) => search(item));
-      } else if (typeof obj === 'object' && obj !== null) {
-        for (const key in obj) {
+        obj.forEach(search); // Recursively search array items
+      } else if (obj !== null && typeof obj === 'object') {
+        Object.keys(obj).forEach((key) => {
           if (key === targetKey) {
             extractCodes(obj[key]);
           } else {
             search(obj[key]);
           }
-        }
+        });
       }
     }
 
-    function extractCodes(obj: any) {
+    // Function to extract the codes
+    function extractCodes(obj: any): void {
       if (Array.isArray(obj)) {
-        obj.forEach((item) => extractCodes(item));
-      } else if (typeof obj === 'object' && obj !== null) {
-        for (const key in obj) {
+        obj.forEach(extractCodes);
+      } else if (obj !== null && typeof obj === 'object') {
+        Object.keys(obj).forEach((key) => {
           if (keysToFind.includes(key) && obj[key]) {
-            let value = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
-            result[key] = result[key].concat(value);
+            const values = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
+            values.forEach((value) => result[key].add(value));
           } else {
             extractCodes(obj[key]);
           }
-        }
+        });
       }
     }
+
+    // Function to retrieve labels
     function getLabels(): string {
       let labels: string[] = [];
 
       for (const key of keysToFind) {
-        if (result[key].length > 0 && properties[key]?.options) {
-          let options = properties[key].options;
-          console.log('1-->', key, result[key], targetKey);
+        let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
+
+        if (result[key] && properties[propertyKey]?.options) {
+          let options = properties[propertyKey].options;
           result[key].forEach((value) => {
             let found = options.find((option: { value: string; label: string }) => option.value === value);
             if (found) labels.push(found.label);
@@ -88,34 +152,12 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       return labels.join(', ');
     }
 
-    // function getLabels(): string {
-    //   let labels: string[] = [];
-
-    //   for (const key of keysToFind) {
-    //     // Special case: if targetKey is 'chemical_treatment_details', switch between invasive_plant_code and invasive_plant_aquatic_code
-    //     let propertyKey = targetKey === 'chemical_treatment_details' ? 'invasive_plant_aquatic_code' : key;
-    //     console.log('1-->', key, propertyKey, result[key]);
-
-    //     if (result[key]?.length > 0 && properties[propertyKey]?.options) {
-    //       let options = properties[propertyKey].options;
-    //       result[key].forEach((value) => {
-    //         let found = options.find((option: { value: string; label: string }) => option.value === value);
-    //         if (found) labels.push(found.label);
-    //       });
-    //     }
-    //   }
-
-    //   return labels.join(', ');
-    // }
-
     search(obj);
-    const l = getLabels();
-    return l;
+    return getLabels();
   }
 
   const convertCodeToLabelUsingRecordType = (activity_subtype, activity_subtype_data, properties) => {
     let target_key: string;
-    const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
 
     switch (activity_subtype) {
       case 'Activity_Observation_PlantTerrestrial':
@@ -157,7 +199,14 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       default:
         target_key = '';
     }
-    const plantCodes = findCodesFromKey(activity_subtype_data, target_key, keysToFind, properties);
+    const plantCodes = findCodesFromKey(
+      activity_subtype_data,
+      target_key,
+      properties,
+      ['Activity_Treatment_MechanicalPlantAquatic', 'Activity_Treatment_ChemicalPlantAquatic'].includes(
+        activity_subtype // Special case: if subtype in this list, switch between invasive_plant_code and invasive_plant_aquatic_code
+      )
+    );
     return plantCodes;
   };
   const viewFilters = useSelector((state) => state.Map.viewFilters);
