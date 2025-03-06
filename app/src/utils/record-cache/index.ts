@@ -102,6 +102,8 @@ abstract class RecordCacheService extends BaseCacheService<
 
   protected abstract saveActivity(id: string, data: unknown): Promise<void>;
 
+  protected abstract dateOfMostRecentRecord();
+
   protected abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
 
   public abstract getPaginatedCachedActivityRecords(
@@ -397,11 +399,14 @@ abstract class RecordCacheService extends BaseCacheService<
    */
   public async updateActivityCaches(): Promise<boolean> {
     const currentTime = new Date();
-    const repositories = await this.listRepositories();
+    const [newestRecordDate, repositories] = await Promise.all([
+      await this.dateOfMostRecentRecord(),
+      await this.listRepositories()
+    ]);
     const updatedRecords: string[] = []; // don't re-download records that crossover other recordsets
     for (const r of repositories) {
       if (r.recordSetType === RecordSetType.Activity && r.status === UserRecordCacheStatus.CACHED) {
-        const idList = (await this.getListOfNewIds(r.filterObjects, r.cacheTime)).filter(
+        const idList = (await this.getListOfNewIds(r.filterObjects, newestRecordDate)).filter(
           (id) => !updatedRecords.includes(id)
         );
         const newIds = idList.filter((id) => !r.cachedIds.includes(id)); // Filter out IDs not already in cache to add later
