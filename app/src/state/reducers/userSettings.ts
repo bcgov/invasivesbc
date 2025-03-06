@@ -43,7 +43,6 @@ export interface UserSettingsState {
     [RecordSetType.IAPP]: Array<{ key: string; name: string; displayWidget?: string; hide: boolean }>;
     [RecordSetType.Activity]: Array<{ key: string; name: string; displayWidget?: string; hide: boolean }>;
   };
-  timeSinceLastCacheUpdateCheck: Date;
   offlineDocs: { displayName: string; apiDocsWithViewOptions: object; apiDocsWithSelectOptions: object }[];
 }
 
@@ -74,7 +73,6 @@ const initialState: UserSettingsState = {
     [RecordSetType.Activity]: activityColumnsToDisplay,
     [RecordSetType.IAPP]: iappColumnsToDisplay
   },
-  timeSinceLastCacheUpdateCheck: new Date(),
   offlineDocs: []
 };
 
@@ -247,8 +245,6 @@ function createUserSettingsReducer(
         // clear sort:
         delete draftState.recordSets[action.payload.setID].sortOrder;
         delete draftState.recordSets[action.payload.setID].sortColumn;
-      } else if (RecordCache.cacheUpdateSuccessful.match(action)) {
-        draftState.timeSinceLastCacheUpdateCheck = new Date();
       } else if (APIDocs.set.match(action)) {
         draftState.apiDocsWithViewOptions = action.payload.apiDocsWithViewOptions;
         draftState.apiDocsWithSelectOptions = action.payload.apiDocsWithSelectOptions;

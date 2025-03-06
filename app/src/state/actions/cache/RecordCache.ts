@@ -33,8 +33,6 @@ class RecordCache {
 
   static readonly startDownload = createAction<PropertyKey>(`${this.PREFIX}/startDownload`);
 
-  static readonly cacheUpdateSuccessful = createAction(`${this.PREFIX}/cacheUpdateSuccessful`);
-
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
     async (
