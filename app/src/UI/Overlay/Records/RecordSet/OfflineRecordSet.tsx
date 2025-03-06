@@ -37,63 +37,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     });
   };
 
-  // function findCodesFromKey(obj: any, targetKey: string, properties: any, specialCase: boolean): string {
-  //   let result: Record<string, string[]> = {
-  //     invasive_plant_code: [],
-  //     invasive_plant_aquatic_code: []
-  //   };
-  //   const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
-  //   function search(obj: any): any {
-  //     if (Array.isArray(obj)) {
-  //       obj.forEach((item) => search(item));
-  //     } else if (typeof obj === 'object' && obj !== null) {
-  //       for (const key in obj) {
-  //         if (key === targetKey) {
-  //           extractCodes(obj[key]);
-  //         } else {
-  //           search(obj[key]);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   function extractCodes(obj: any) {
-  //     if (Array.isArray(obj)) {
-  //       obj.forEach((item) => extractCodes(item));
-  //     } else if (typeof obj === 'object' && obj !== null) {
-  //       for (const key in obj) {
-  //         if (keysToFind.includes(key) && obj[key]) {
-  //           let value = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
-  //           result[key] = result[key].concat(value);
-  //         } else {
-  //           extractCodes(obj[key]);
-  //         }
-  //       }
-  //     }
-  //   }
-
-  //   function getLabels(): string {
-  //     let labels: string[] = [];
-
-  //     for (const key of keysToFind) {
-  //       let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
-
-  //       if (result[key]?.length > 0 && properties[propertyKey]?.options) {
-  //         let options = properties[propertyKey].options;
-  //         result[key].forEach((value) => {
-  //           let found = options.find((option: { value: string; label: string }) => option.value === value);
-  //           if (found) labels.push(found.label);
-  //         });
-  //       }
-  //     }
-
-  //     return labels.join(', ');
-  //   }
-
-  //   search(obj);
-  //   return getLabels();
-  // }
-
   function findCodesFromKey(obj: any, targetKey: string, properties: any, specialCase: boolean): string {
     const result: Record<string, Set<string>> = {
       invasive_plant_code: new Set(),
@@ -105,7 +48,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     // Function to recursively search through the object
     function search(obj: any): void {
       if (Array.isArray(obj)) {
-        obj.forEach(search); // Recursively search array items
+        obj.forEach(search);
       } else if (obj !== null && typeof obj === 'object') {
         Object.keys(obj).forEach((key) => {
           if (key === targetKey) {
@@ -140,9 +83,10 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       for (const key of keysToFind) {
         let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
 
-        if (result[key] && properties[propertyKey]?.options) {
+        if (result[key].size > 0 && properties[propertyKey]?.options) {
           let options = properties[propertyKey].options;
           result[key].forEach((value) => {
+            // change this to Map for O(1)
             let found = options.find((option: { value: string; label: string }) => option.value === value);
             if (found) labels.push(found.label);
           });
@@ -203,7 +147,11 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       activity_subtype_data,
       target_key,
       properties,
-      ['Activity_Treatment_MechanicalPlantAquatic', 'Activity_Treatment_ChemicalPlantAquatic'].includes(
+      [
+        'Activity_Treatment_MechanicalPlantAquatic',
+        'Activity_Treatment_ChemicalPlantAquatic',
+        'Activity_Observation_PlantAquatic'
+      ].includes(
         activity_subtype // Special case: if subtype in this list, switch between invasive_plant_code and invasive_plant_aquatic_code
       )
     );
@@ -254,16 +202,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       parsedObj[key].data.activity_subtype =
         ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown';
       parsedObj[key].data.invasive_plant = concatenatedLabels;
-      // parsedObj[key].data.invasive_plant = parsedObj[key].data.form_data.activity_subtype_data[plantType[1]]
-      //   .map(
-      //     // only if positive
-      //     (x) =>
-      //       listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties[plantType[0]].options.find(
-      //         (a) => a.value === x.invasive_plant_code && x.observation_type.includes('Positive')
-      //       )?.label
-      //   )
-      //   .filter((label) => label)
-      //   .join(', ');
+
       parsedObj[key].data.jurisdiction_display = parsedObj[key].data.jurisdiction
         .map(
           (val) =>
