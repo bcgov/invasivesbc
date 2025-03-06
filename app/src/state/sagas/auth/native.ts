@@ -26,9 +26,9 @@ function* handleSigninRequest() {
   }
 }
 
-function* handleSignoutRequest(_action) {
-  const { error } = yield AuthBridge.logout({});
-  if (error) {
+function* handleSignoutRequest() {
+  const authResult = yield AuthBridge.logout({});
+  if (authResult?.error) {
     yield put(AuthActions.requestError());
     return;
   }
