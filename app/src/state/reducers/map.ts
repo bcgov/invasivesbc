@@ -422,14 +422,17 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers.splice(index, 1);
         }
       } else if (UserSettings.RecordSet.set.match(action)) {
-        const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
-        Object.keys(action.payload.updatedSet).forEach((key) => {
-          if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
-            draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
+        if (action.payload.setName !== '4') {
+          const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
+          // only online / synced records
+          Object.keys(action.payload.updatedSet).forEach((key) => {
+            if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
+              draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
+            }
+          });
+          if (draftState.layers[layerIndex].layerState.mapToggle === false) {
+            draftState.layers[layerIndex].layerState.labelToggle = false;
           }
-        });
-        if (draftState.layers[layerIndex].layerState.mapToggle === false) {
-          draftState.layers[layerIndex].layerState.labelToggle = false;
         }
       } else if (
         UserSettings.RecordSet.updateFilter.match(action) ||

@@ -108,7 +108,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
         target_key = 'TerrestrialPlants'; //invasive_plant_code
         break;
       case 'Activity_Observation_PlantAquatic':
-        target_key = 'AquaticPlants'; //invasive_plant_aquatic_code
+        target_key = 'AquaticPlants'; //invasive_plant_code
         break;
       case 'Activity_Treatment_ChemicalPlantAquatic':
         target_key = 'chemical_treatment_details'; //, 'invasive_plants'; //invasive_plant_code
@@ -240,16 +240,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
 
   const onlyFilterIsForDrafts =
     recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
-  if (!recordSet) {
-    return;
-  }
-  if (!parsedObj) {
-    return (
-      <div className="no-records">
-        <p>There are no records matching your current filters.</p>
-      </div>
-    );
-  }
+
   return (
     <>
       <div className="stickyHeader">
@@ -265,180 +256,177 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
         </div>
       </div>
       <div className="recordSet_container">
-        <div className="recordSet_filter_buttons_container">
-          <div className="recordSet_clear_filter_button">
-            <Tooltip classes={{ tooltip: 'toolTip' }} title="Clear all filters and refetch all data for this layer.">
-              <span>
-                <Button
-                  size={'small'}
-                  disabled={userOfflineMobile}
-                  onClick={() => dispatch(UserSettings.RecordSet.clearFilters({ setID }))}
-                  variant="contained"
+        {Object.keys(parsedObj).length === 0 ? (
+          <div className="no-records">
+            <p>There are no locally stored unsynced activities.</p>
+          </div>
+        ) : (
+          <>
+            <div className="recordSet_filter_buttons_container">
+              <div className="recordSet_clear_filter_button">
+                <Tooltip
+                  classes={{ tooltip: 'toolTip' }}
+                  title="Clear all filters and refetch all data for this layer."
                 >
-                  Clear Filters
-                  <FilterAltOffIcon />
-                </Button>
-              </span>
-            </Tooltip>
-          </div>
-          <div className="recordSet_toggleView_filter_button">
-            <Tooltip classes={{ tooltip: 'toolTip' }} title="Toggle hiding filters - does not toggle applying them.">
-              <span>
-                <Button
-                  size={'small'}
-                  disabled={userOfflineMobile}
-                  onClick={() => dispatch(UserSettings.RecordSet.hideFilters())}
-                  variant="contained"
+                  <span>
+                    <Button
+                      size={'small'}
+                      disabled={userOfflineMobile}
+                      onClick={() => dispatch(UserSettings.RecordSet.clearFilters({ setID }))}
+                      variant="contained"
+                    >
+                      Clear Filters
+                      <FilterAltOffIcon />
+                    </Button>
+                  </span>
+                </Tooltip>
+              </div>
+              <div className="recordSet_toggleView_filter_button">
+                <Tooltip
+                  classes={{ tooltip: 'toolTip' }}
+                  title="Toggle hiding filters - does not toggle applying them."
                 >
-                  {viewFilters ? (
-                    <>
-                      Hide Filters
-                      <VisibilityOffIcon />
-                      <FilterAltIcon />
-                    </>
-                  ) : (
-                    <>
-                      Show Filters{' '}
-                      {(recordSet?.tableFilters?.length || 0) > 0 &&
-                        !onlyFilterIsForDrafts &&
-                        `(${recordSet?.tableFilters?.length})`}
-                      <VisibilityIcon />
-                      <FilterAltIcon />
-                    </>
-                  )}
-                </Button>
-              </span>
-            </Tooltip>
-          </div>
-          <div className="recordSet_new_filter_button">
-            <Tooltip
-              classes={{ tooltip: 'toolTip' }}
-              title="Add a new filter, drawn, uploaded KML, or just text search on a field."
-            >
-              <span>
-                <Button
-                  size={'small'}
-                  disabled={userOfflineMobile}
-                  onClick={() =>
-                    dispatch(
-                      UserSettings.RecordSet.addFilter({
-                        field: tableType === RecordSetType.Activity ? 'short_id' : 'site_id',
-                        filterType: 'tableFilter',
-                        operator: 'CONTAINS',
-                        operator2: 'AND',
-                        setID: setID
-                      })
-                    )
-                  }
-                  variant="contained"
+                  <span>
+                    <Button
+                      size={'small'}
+                      disabled={userOfflineMobile}
+                      onClick={() => dispatch(UserSettings.RecordSet.hideFilters())}
+                      variant="contained"
+                    >
+                      {viewFilters ? (
+                        <>
+                          Hide Filters
+                          <VisibilityOffIcon />
+                          <FilterAltIcon />
+                        </>
+                      ) : (
+                        <>
+                          Show Filters{' '}
+                          {(recordSet?.tableFilters?.length || 0) > 0 &&
+                            !onlyFilterIsForDrafts &&
+                            `(${recordSet?.tableFilters?.length})`}
+                          <VisibilityIcon />
+                          <FilterAltIcon />
+                        </>
+                      )}
+                    </Button>
+                  </span>
+                </Tooltip>
+              </div>
+              <div className="recordSet_new_filter_button">
+                <Tooltip
+                  classes={{ tooltip: 'toolTip' }}
+                  title="Add a new filter, drawn, uploaded KML, or just text search on a field."
                 >
-                  Add Filter + <FilterAltIcon />
-                </Button>
-              </span>
-            </Tooltip>
-          </div>
-        </div>
-        <div className="recordSet_filters_container">
-          <div className="recordSet_filters">
-            {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters && (
-              <table className="recordSetFilterTable">
-                <thead>
-                  <tr>
-                    <th>Operator 1</th>
-                    <th>Operator 2</th>
-                    <th>Filter type</th>
-                    <th>Filter On</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recordSet.tableFilters.map((filter) => {
-                    if (filter.field !== 'form_status') {
-                      return (
-                        <Filter
-                          key={filter.id}
-                          recordSetType={recordSet.recordSetType}
-                          setID={setID}
-                          filterSet={filter}
-                          userOfflineMobile={userOfflineMobile}
-                        />
-                      );
-                    }
-                  })}
-                </tbody>
-              </table>
-            )}
-          </div>
-          <ExcelExporter setName={setID} />
-        </div>
-
-        <div className="record_table_container">
-          <table className="record_table">
-            <tbody>
-              <tr className="record_table_header">
-                {isTouch && (
-                  <th className="record_table_header_column" style={{ width: '50px' }}>
-                    View/Edit
-                  </th>
-                )}
-                {offlineActivityColumnsToDisplay.map((col: any) => (
-                  <th
-                    className={'record_table_header_column'}
-                    key={col.key}
-                    onClick={() => {
-                      if (activitySortColumns.includes(col.key)) {
-                        dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
+                  <span>
+                    <Button
+                      size={'small'}
+                      disabled={userOfflineMobile}
+                      onClick={() =>
+                        dispatch(
+                          UserSettings.RecordSet.addFilter({
+                            field: tableType === RecordSetType.Activity ? 'short_id' : 'site_id',
+                            filterType: 'tableFilter',
+                            operator: 'CONTAINS',
+                            operator2: 'AND',
+                            setID: setID
+                          })
+                        )
                       }
-                    }}
-                  >
-                    {col.name}{' '}
-                    {activitySortColumns.includes(sortColumn) &&
-                      sortColumn === col.key &&
-                      (sortOrder === 'ASC' ? '▲' : '▼')}
-                  </th>
-                ))}
-              </tr>
-              {Object.entries(parsedObj).map(([key, value]) => {
-                // console.log('--->', key, value.data);
-
-                return (
-                  <tr
-                    onContextMenu={(event) => {
-                      event.preventDefault();
-                      event.stopPropagation();
-                    }}
-                    onClick={() => {
-                      if (!isTouch) {
-                        dispatch({
-                          type: USER_CLICKED_RECORD,
-                          payload: {
-                            recordType: tableType,
-                            id: key,
-                            row: value.data
-                          }
-                        });
-                      }
-                    }}
-                    onMouseOver={() => onUserHoveredRecord(value.data)}
-                    onFocus={() => onUserHoveredRecord(value.data)}
-                    onTouchStart={() => {
-                      dispatch({
-                        type: USER_TOUCHED_RECORD,
-                        payload: {
-                          recordType: tableType,
-                          id: key,
-                          row: value.data
+                      variant="contained"
+                    >
+                      Add Filter + <FilterAltIcon />
+                    </Button>
+                  </span>
+                </Tooltip>
+              </div>
+            </div>
+            <div className="recordSet_filters_container">
+              <div className="recordSet_filters">
+                {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters && (
+                  <table className="recordSetFilterTable">
+                    <thead>
+                      <tr>
+                        <th>Operator 1</th>
+                        <th>Operator 2</th>
+                        <th>Filter type</th>
+                        <th>Filter On</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {recordSet.tableFilters.map((filter) => {
+                        if (filter.field !== 'form_status') {
+                          return (
+                            <Filter
+                              key={filter.id}
+                              recordSetType={recordSet.recordSetType}
+                              setID={setID}
+                              filterSet={filter}
+                              userOfflineMobile={userOfflineMobile}
+                            />
+                          );
                         }
-                      });
-                    }}
-                    className="record_table_row"
-                    key={value?.data?.activity_id}
-                  >
+                      })}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+              <ExcelExporter setName={setID} />
+            </div>
+
+            <div className="record_table_container">
+              <table className="record_table">
+                <tbody>
+                  <tr className="record_table_header">
                     {isTouch && (
-                      <td
+                      <th className="record_table_header_column" style={{ width: '50px' }}>
+                        View/Edit
+                      </th>
+                    )}
+                    {offlineActivityColumnsToDisplay.map((col: any) => (
+                      <th
+                        className={'record_table_header_column'}
+                        key={col.key}
+                        onClick={() => {
+                          if (activitySortColumns.includes(col.key)) {
+                            dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
+                          }
+                        }}
+                      >
+                        {col.name}{' '}
+                        {activitySortColumns.includes(sortColumn) &&
+                          sortColumn === col.key &&
+                          (sortOrder === 'ASC' ? '▲' : '▼')}
+                      </th>
+                    ))}
+                  </tr>
+                  {Object.entries(parsedObj).map(([key, value]) => {
+                    // console.log('--->', key, value.data);
+
+                    return (
+                      <tr
+                        onContextMenu={(event) => {
+                          event.preventDefault();
+                          event.stopPropagation();
+                        }}
+                        onClick={() => {
+                          if (!isTouch) {
+                            dispatch({
+                              type: USER_CLICKED_RECORD,
+                              payload: {
+                                recordType: tableType,
+                                id: key,
+                                row: value.data
+                              }
+                            });
+                          }
+                        }}
+                        onMouseOver={() => onUserHoveredRecord(value.data)}
+                        onFocus={() => onUserHoveredRecord(value.data)}
                         onTouchStart={() => {
                           dispatch({
-                            type: USER_CLICKED_RECORD,
+                            type: USER_TOUCHED_RECORD,
                             payload: {
                               recordType: tableType,
                               id: key,
@@ -446,25 +434,42 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
                             }
                           });
                         }}
-                        className="record_table_row_column"
-                        style={{ width: '50px' }}
+                        className="record_table_row"
+                        key={value?.data?.activity_id}
                       >
-                        <VisibilityIcon />
-                      </td>
-                    )}
-                    {offlineActivityColumnsToDisplay.map((col) => {
-                      return (
-                        <td className="record_table_row_column" key={col.key + col.name}>
-                          {value.data[col.key]}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+                        {isTouch && (
+                          <td
+                            onTouchStart={() => {
+                              dispatch({
+                                type: USER_CLICKED_RECORD,
+                                payload: {
+                                  recordType: tableType,
+                                  id: key,
+                                  row: value.data
+                                }
+                              });
+                            }}
+                            className="record_table_row_column"
+                            style={{ width: '50px' }}
+                          >
+                            <VisibilityIcon />
+                          </td>
+                        )}
+                        {offlineActivityColumnsToDisplay.map((col) => {
+                          return (
+                            <td className="record_table_row_column" key={col.key + col.name}>
+                              {value.data[col.key]}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
       </div>
       <RecordSetFooter setID={setID} />
     </>

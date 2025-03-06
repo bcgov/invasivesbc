@@ -142,7 +142,7 @@ export const offlineActivityColumnsToDisplay = [
   { key: 'activity_type', name: 'Activity Type', hide: false },
   { key: 'activity_subtype', name: 'Activity Sub Type', hide: false },
   { key: 'activity_date', name: 'Activity Date', hide: false },
-  { key: 'reported_area', name: 'Estimated Area (ha)', hide: false },
+  { key: 'reported_area', name: 'Area (m²)', hide: false },
   { key: 'jurisdiction_display', name: 'Jurisdiction', hide: false },
   { key: 'invasive_plant', name: 'Invasive Plant', hide: false },
   { key: 'created_by', name: 'Created By', hide: false },

@@ -10,7 +10,7 @@ import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
 import { MOBILE } from 'state/build-time-config';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
-
+import Activity from 'state/actions/activity/Activity';
 export const Records = () => {
   const DEFAULT_RECORD_TYPES = [
     'All InvasivesBC Activities',
@@ -41,6 +41,10 @@ export const Records = () => {
 
   const handleToggleLayer = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    // offline activities
+    if (set === '4') {
+      dispatch(Activity.Offline.setAllShapeVisibility());
+    }
     dispatch(UserSettings.RecordSet.toggleVisibility(set));
   };
 
@@ -71,6 +75,8 @@ export const Records = () => {
   const highlightSet = (set: string) => setHighlightedSet(set);
   const unHighlightSet = () => setHighlightedSet(null);
   const userIsMobileAndOffline = MOBILE && !connected;
+  console.log('-->', recordSets);
+
   if (!recordSets) {
     return;
   }
