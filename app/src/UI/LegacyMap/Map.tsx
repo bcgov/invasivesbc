@@ -17,7 +17,8 @@ import {
   refreshColoursOnColourUpdate,
   refreshOfflineActivitiesLayer,
   refreshVisibilityOnToggleUpdate,
-  removeLayersOnNetworkConnectivityChange
+  removeLayersOnNetworkConnectivityChange,
+  toggleOfflineActivityLabels
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
 import {
   addWMSLayersIfNotExist,
@@ -70,7 +71,7 @@ export const Map = ({ children }) => {
   const storeLayers = useSelector((state) => state.Map.layers);
 
   // Offline Activities layer
-  const { serializedActivities, mapToggle } = useSelector((state) => state.OfflineActivity);
+  const { serializedActivities, mapToggle, labelToggle } = useSelector((state) => state.OfflineActivity);
 
   // WMS Layers
   const simplePickerLayers2 = useSelector((state) => state.Map.simplePickerLayers2);
@@ -279,9 +280,16 @@ export const Map = ({ children }) => {
     if (!mapToggle) {
       removeOfflineActivitiesLayer(map);
     } else {
-      refreshOfflineActivitiesLayer(map, mapToggle, serializedActivities);
+      refreshOfflineActivitiesLayer(map, mapToggle, labelToggle, serializedActivities);
     }
   }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, mapToggle]);
+
+  // Offline Activities Label:
+  useEffect(() => {
+    if (!map || !mapReady || !MOBILE) return;
+
+    toggleOfflineActivityLabels(map, labelToggle);
+  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, labelToggle]);
 
   // Layer picker:
   useEffect(() => {

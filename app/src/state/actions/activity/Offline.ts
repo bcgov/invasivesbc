@@ -19,5 +19,6 @@ class Offline {
   static readonly delete = createAction(ACTIVITY_OFFLINE_DELETE_ITEM);
 
   static readonly setAllShapeVisibility = createAction(`${this.PREFIX}/setAllShapeVisibility`);
+  static readonly setLabelVisibility = createAction(`${this.PREFIX}/setLabelVisibility`);
 }
 export default Offline;

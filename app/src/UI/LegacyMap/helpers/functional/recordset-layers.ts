@@ -291,7 +291,8 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode,
 
 const createOfflineActivitiesLayer = async (
   map: maplibregl.Map,
-  locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
+  locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>,
+  labelVisibility: boolean
 ) => {
   const geometryList = Object.values(locallyStoredActivities)
     .map((item) => {
@@ -314,7 +315,6 @@ const createOfflineActivitiesLayer = async (
     type: 'FeatureCollection',
     features: geometryList || []
   };
-  console.log(geoJsonData);
 
   if (geoJsonData.features) {
     map
@@ -330,28 +330,10 @@ const createOfflineActivitiesLayer = async (
         }),
         LAYER_Z_FOREGROUND
       );
+    if (!labelVisibility) {
+      map.setLayoutProperty('label-' + OFFLINE_ACTIVITIES_LAYER_ID, 'visibility', 'none');
+    }
   }
-  // console.log(map.queryRenderedFeatures({ layers: ['label-offline-activity'] }));
-  // const source = map.getSource(OFFLINE_ACTIVITIES_LAYER_ID);
-
-  // if (source) {
-  //   source.serialize(); // To inspect source structure
-  //   console.log('Source exists:', source);
-
-  //   // Fetch GeoJSON data if applicable
-  //   if (source.type === 'geojson') {
-  //     console.log('GeoJSON Data:', source._data);
-  //     const hasNameProperty = source._data.features.some((feature) => feature.properties && feature.properties.name);
-
-  //     if (hasNameProperty) {
-  //       console.log("The data source contains 'name' property.");
-  //     } else {
-  //       console.log("No 'name' property found in the data source.");
-  //     }
-  //   }
-  // } else {
-  //   console.log('Source not found!');
-  // }
 };
 export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
   const allLayersOnMap = map.getLayersOrder();
@@ -372,11 +354,29 @@ export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
 export const refreshOfflineActivitiesLayer = async (
   map: maplibregl.Map,
   visibility: boolean,
+  labelVisibility: boolean,
   locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
 ) => {
   if (!map || !visibility) return;
   await removeOfflineActivitiesLayer(map);
-  await createOfflineActivitiesLayer(map, locallyStoredActivities);
+  await createOfflineActivitiesLayer(map, locallyStoredActivities, labelVisibility);
+};
+
+export const toggleOfflineActivityLabels = async (map: maplibregl.Map, labelVisibility: boolean) => {
+  const allLayersOnMap = map.getLayersOrder();
+  const recordSetOfflineLabelLayer = allLayersOnMap.filter((layer) =>
+    layer.includes('label-' + OFFLINE_ACTIVITIES_LAYER_ID)
+  );
+
+  recordSetOfflineLabelLayer.map((layer) => {
+    const visibility = map.getLayoutProperty(layer, 'visibility');
+    if (visibility !== 'none' && !labelVisibility) {
+      map.setLayoutProperty(layer, 'visibility', 'none');
+    }
+    if (visibility !== 'visible' && labelVisibility) {
+      map.setLayoutProperty(layer, 'visibility', 'visible');
+    }
+  });
 };
 
 export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {

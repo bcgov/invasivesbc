@@ -36,6 +36,9 @@ export const Records = () => {
   //Record set handlers:
   const handleToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    if (set === '4') {
+      dispatch(Activity.Offline.setLabelVisibility());
+    }
     dispatch(UserSettings.RecordSet.toggleLabelVisibility(set));
   };
 
