@@ -296,7 +296,17 @@ const createOfflineActivitiesLayer = async (
   const geometryList = Object.values(locallyStoredActivities)
     .map((item) => {
       const parsedData = JSON.parse((item as OfflineActivityRecord).data);
-      return parsedData.geometry ? parsedData.geometry[0] : null;
+      // return parsedData.geometry ? parsedData.geometry[0] : null;
+      if (parsedData.geometry && parsedData.geometry[0]) {
+        return {
+          ...parsedData.geometry[0],
+          properties: {
+            short_id: parsedData.short_id
+          }
+        };
+      }
+
+      return null;
     })
     .filter((geometry) => geometry !== null);
 
@@ -304,14 +314,44 @@ const createOfflineActivitiesLayer = async (
     type: 'FeatureCollection',
     features: geometryList || []
   };
+  console.log(geoJsonData);
 
   if (geoJsonData.features) {
     map
       .addSource(OFFLINE_ACTIVITIES_LAYER_ID, { type: 'geojson', data: geoJsonData })
       .addLayer(getFillLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
       .addLayer(getBorderLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
-      .addLayer(getCircleMarkerZoomedOutLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND);
+      .addLayer(getCircleMarkerZoomedOutLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
+      .addLayer(
+        getLabelLayer(OFFLINE_ACTIVITIES_LAYER_ID, {
+          color: 'black',
+          get_tag: 'short_id',
+          minzoom: 4
+        }),
+        LAYER_Z_FOREGROUND
+      );
   }
+  // console.log(map.queryRenderedFeatures({ layers: ['label-offline-activity'] }));
+  // const source = map.getSource(OFFLINE_ACTIVITIES_LAYER_ID);
+
+  // if (source) {
+  //   source.serialize(); // To inspect source structure
+  //   console.log('Source exists:', source);
+
+  //   // Fetch GeoJSON data if applicable
+  //   if (source.type === 'geojson') {
+  //     console.log('GeoJSON Data:', source._data);
+  //     const hasNameProperty = source._data.features.some((feature) => feature.properties && feature.properties.name);
+
+  //     if (hasNameProperty) {
+  //       console.log("The data source contains 'name' property.");
+  //     } else {
+  //       console.log("No 'name' property found in the data source.");
+  //     }
+  //   }
+  // } else {
+  //   console.log('Source not found!');
+  // }
 };
 export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
   const allLayersOnMap = map.getLayersOrder();

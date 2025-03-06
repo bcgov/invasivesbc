@@ -38,6 +38,7 @@ export interface OfflineActivityState {
     [id: string]: OfflineActivityRecord;
   };
   mapToggle: boolean;
+  labelToggle: boolean;
 }
 
 const initialState: OfflineActivityState = {
@@ -46,7 +47,8 @@ const initialState: OfflineActivityState = {
   statusDialogOpen: false,
   serial: moment.now(),
   serializedActivities: {},
-  mapToggle: true // visibility "on" by default
+  mapToggle: true, // visibility "on" by default
+  labelToggle: false
 };
 
 function createOfflineActivityReducer(
