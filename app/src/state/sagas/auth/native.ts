@@ -1,5 +1,5 @@
 import { put, takeLatest } from 'redux-saga/effects';
-import { TABS_GET_INITIAL_STATE_REQUEST, USERINFO_CLEAR_REQUEST } from 'state/actions';
+import { USERINFO_CLEAR_REQUEST } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
 import { AuthActions } from 'state/actions/auth/Auth';
 
@@ -22,15 +22,7 @@ function* handleSigninRequest() {
     );
     yield put(AuthActions.refreshRolesRequest());
   } else {
-    //not logged in
-
-    yield put({
-      type: TABS_GET_INITIAL_STATE_REQUEST,
-      payload: {
-        authenticated: false,
-        activated: false
-      }
-    });
+    yield put(AuthActions.requestError());
   }
 }
 
@@ -46,14 +38,6 @@ function* handleSignoutRequest(_action) {
 }
 
 function* initializeAuthentication() {
-  yield put({
-    type: TABS_GET_INITIAL_STATE_REQUEST,
-    payload: {
-      authenticated: false,
-      activated: false
-    }
-  });
-
   yield put(
     AuthActions.initializeComplete({
       idToken: undefined
