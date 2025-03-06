@@ -293,10 +293,7 @@ abstract class RecordCacheService extends BaseCacheService<
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
 
         const normalizedProgress = currentProgress;
-        const progressLabel =
-          normalizedProgress * 100 < 1
-            ? `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`
-            : `${Math.round(normalizedProgress * 100)}% completed`;
+        const progressLabel = `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`;
 
         if (progressCallback) {
           progressCallback({
