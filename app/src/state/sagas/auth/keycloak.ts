@@ -3,7 +3,7 @@ import Keycloak from 'keycloak-js';
 import { AppConfig } from 'state/config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { historySingleton } from 'state/store';
-import { TABS_GET_INITIAL_STATE_REQUEST, USERINFO_CLEAR_REQUEST } from 'state/actions';
+import { USERINFO_CLEAR_REQUEST } from 'state/actions';
 import { selectAuth } from 'state/reducers/auth';
 import { AuthActions } from 'state/actions/auth/Auth';
 
@@ -166,14 +166,7 @@ function* reinitAuth() {
       historySingleton.push(postAuthNavigate);
     }
   } else {
-    // we are not logged in
-    yield put({
-      type: TABS_GET_INITIAL_STATE_REQUEST,
-      payload: {
-        authenticated: false,
-        activated: false
-      }
-    });
+    yield put(AuthActions.requestError());
   }
 }
 

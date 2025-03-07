@@ -3,7 +3,7 @@ import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
-import { TABS_GET_INITIAL_STATE_REQUEST, USERINFO_LOAD_COMPLETE } from 'state/actions';
+import { USERINFO_LOAD_COMPLETE } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import NetworkActions from 'state/actions/network/NetworkActions';
@@ -74,14 +74,6 @@ function* refreshRoles() {
     });
 
     yield put(AuthActions.saveCurrentToOffline());
-
-    yield put({
-      type: TABS_GET_INITIAL_STATE_REQUEST,
-      payload: {
-        authenticated: true,
-        activated: userData.result.extendedInfo.activation_status === 1
-      }
-    });
   } catch (e) {
     yield put(AuthActions.refreshRolesError());
   }
