@@ -146,7 +146,7 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   const uiSchema = RootUISchemas[activity_subtype];
 
   let apiSpec;
-  var userSettings = yield select(selectUserSettings);
+  let userSettings = yield select(selectUserSettings);
   if (!userSettings?.apiDocsWithViewOptions?.components) {
     yield take(UserSettings.InitState.getSuccess);
     userSettings = yield select(selectUserSettings);

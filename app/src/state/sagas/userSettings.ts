@@ -178,27 +178,30 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
 }
 
 function* handle_GET_API_DOC_REQUEST() {
-  const { displayName } = yield select(selectAuth);
-
-  const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call(
-    'GET',
-    '/api/api-docs/',
-    {},
-    { filterForSelectable: 'true' }
-  );
-  const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
-  if (apiDocsWithViewOptionsResponse?.ok) {
-    const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
-    const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
-
-    yield put(
-      APIDocs.set({
-        apiDocsWithViewOptions: apiDocsWithViewOptions,
-        apiDocsWithSelectOptions: apiDocsWithSelectOptions
-      })
+  const connected = yield select(selectNetworkConnected);
+  if (connected) {
+    const { displayName } = yield select(selectAuth);
+    const apiDocsWithSelectOptionsResponse = yield InvasivesAPI_Call(
+      'GET',
+      '/api/api-docs/',
+      {},
+      { filterForSelectable: 'true' }
     );
-    if (displayName) {
-      yield put(APIDocs.save({ displayName }));
+    const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
+
+    if (apiDocsWithViewOptionsResponse?.ok) {
+      const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
+      const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
+
+      yield put(
+        APIDocs.set({
+          apiDocsWithViewOptions: apiDocsWithViewOptions,
+          apiDocsWithSelectOptions: apiDocsWithSelectOptions
+        })
+      );
+      if (displayName) {
+        yield put(APIDocs.save({ displayName }));
+      }
     }
   }
 }
