@@ -9,9 +9,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
   const IDList = Object.values(serializedActivities).filter(
     (value) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED
   );
-  // const IDList = Object.keys(serializedActivities);
-  console.log('Map Toggle 24', Object.entries(serializedActivities).length); // filter out synchronized
-  // const IDList = list.map((row: UserRecord) => row.activity_id);
+
   yield put({
     type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS,
     payload: {
@@ -35,9 +33,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
     })
   );
   const dataArray = Object.values(parsedObj).map((value) => value.data);
-  // const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-  //   filterObjects: [action.payload.filterObj]
-  // });
 
   mapState = yield select((state) => state.Map);
   tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
@@ -46,15 +41,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   }
 
   console.log('Map Toggle 26.1', dataArray);
-
-  // if (networkReturn?.ok && networkReturn.data.result) {
-  //   console.log('Map Toggle 26.1', {
-  //     recordSetID: action.payload.recordSetID,
-  //     rows: networkReturn.data.result,
-  //     tableFiltersHash: action.payload.tableFiltersHash,
-  //     page: action.payload.page,
-  //     limit: action.payload.limit
-  //   });
 
   yield put(
     Activity.getRowsSuccess({

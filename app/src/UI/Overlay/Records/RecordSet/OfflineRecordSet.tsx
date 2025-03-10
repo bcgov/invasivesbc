@@ -2,18 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import './RecordSet.css';
 import { useHistory } from 'react-router';
-import { Tooltip } from '@mui/material';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { Button, IconButton } from '@mui/material';
-import FilterAltIcon from '@mui/icons-material/FilterAlt';
-import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
-import ExcelExporter from '../ExcelExporter';
+import { Button } from '@mui/material';
+
 import RecordSetFooter from './RecordSetFooter';
-import Filter from './Filter';
 import { useSelector } from 'utils/use_selector';
 import { MOBILE } from 'state/build-time-config';
-import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { detectTouchDevice } from 'utils/detectTouch';
@@ -264,119 +258,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
           </div>
         ) : (
           <>
-            <div className="recordSet_filter_buttons_container">
-              <div className="recordSet_clear_filter_button">
-                <Tooltip
-                  classes={{ tooltip: 'toolTip' }}
-                  title="Clear all filters and refetch all data for this layer."
-                >
-                  <span>
-                    <Button
-                      size={'small'}
-                      disabled={userOfflineMobile}
-                      onClick={() => dispatch(UserSettings.RecordSet.clearFilters({ setID }))}
-                      variant="contained"
-                    >
-                      Clear Filters
-                      <FilterAltOffIcon />
-                    </Button>
-                  </span>
-                </Tooltip>
-              </div>
-              <div className="recordSet_toggleView_filter_button">
-                <Tooltip
-                  classes={{ tooltip: 'toolTip' }}
-                  title="Toggle hiding filters - does not toggle applying them."
-                >
-                  <span>
-                    <Button
-                      size={'small'}
-                      disabled={userOfflineMobile}
-                      onClick={() => dispatch(UserSettings.RecordSet.hideFilters())}
-                      variant="contained"
-                    >
-                      {viewFilters ? (
-                        <>
-                          Hide Filters
-                          <VisibilityOffIcon />
-                          <FilterAltIcon />
-                        </>
-                      ) : (
-                        <>
-                          Show Filters{' '}
-                          {(recordSet?.tableFilters?.length || 0) > 0 &&
-                            !onlyFilterIsForDrafts &&
-                            `(${recordSet?.tableFilters?.length})`}
-                          <VisibilityIcon />
-                          <FilterAltIcon />
-                        </>
-                      )}
-                    </Button>
-                  </span>
-                </Tooltip>
-              </div>
-              <div className="recordSet_new_filter_button">
-                <Tooltip
-                  classes={{ tooltip: 'toolTip' }}
-                  title="Add a new filter, drawn, uploaded KML, or just text search on a field."
-                >
-                  <span>
-                    <Button
-                      size={'small'}
-                      disabled={userOfflineMobile}
-                      onClick={() =>
-                        dispatch(
-                          UserSettings.RecordSet.addFilter({
-                            field: tableType === RecordSetType.Activity ? 'short_id' : 'site_id',
-                            filterType: 'tableFilter',
-                            operator: 'CONTAINS',
-                            operator2: 'AND',
-                            setID: setID
-                          })
-                        )
-                      }
-                      variant="contained"
-                    >
-                      Add Filter + <FilterAltIcon />
-                    </Button>
-                  </span>
-                </Tooltip>
-              </div>
-            </div>
-            <div className="recordSet_filters_container">
-              <div className="recordSet_filters">
-                {recordSet?.tableFilters?.length > 0 && !onlyFilterIsForDrafts && viewFilters && (
-                  <table className="recordSetFilterTable">
-                    <thead>
-                      <tr>
-                        <th>Operator 1</th>
-                        <th>Operator 2</th>
-                        <th>Filter type</th>
-                        <th>Filter On</th>
-                        <th>Value</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {recordSet.tableFilters.map((filter) => {
-                        if (filter.field !== 'form_status') {
-                          return (
-                            <Filter
-                              key={filter.id}
-                              recordSetType={recordSet.recordSetType}
-                              setID={setID}
-                              filterSet={filter}
-                              userOfflineMobile={userOfflineMobile}
-                            />
-                          );
-                        }
-                      })}
-                    </tbody>
-                  </table>
-                )}
-              </div>
-              <ExcelExporter setName={setID} />
-            </div>
-
+            <div style={{ margin: '8px', padding: '8px' }}></div>
             <div className="record_table_container">
               <table className="record_table">
                 <tbody>
