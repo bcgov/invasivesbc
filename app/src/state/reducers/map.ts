@@ -2,6 +2,7 @@ import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
@@ -425,20 +426,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         // called when toggling
         console.log('Map Toggle 7', action.payload);
 
-        if (action.payload.setName !== RecordSetId.OfflineActivities) {
-          const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
-          // only online / synced records
-          Object.keys(action.payload.updatedSet).forEach((key) => {
-            if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
-              draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
-            }
-          });
-          console.log('Map Toggle 1', draftState.layers[layerIndex].layerState.mapToggle); // for layer picker
-
-          if (draftState.layers[layerIndex].layerState.mapToggle === false) {
-            draftState.layers[layerIndex].layerState.labelToggle = false;
+        // if (action.payload.setName !== RecordSetId.OfflineActivities) {
+        const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
+        // only online / synced records
+        Object.keys(action.payload.updatedSet).forEach((key) => {
+          if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
+            draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
           }
+        });
+
+        if (draftState.layers[layerIndex].layerState.mapToggle === false) {
+          draftState.layers[layerIndex].layerState.labelToggle = false;
         }
+        console.log(
+          'Map Toggle 1',
+          draftState.layers[layerIndex].layerState.mapToggle,
+          draftState.layers[layerIndex].layerState.labelToggle
+        ); // for layer picker
+        // }
       } else if (
         UserSettings.RecordSet.updateFilter.match(action) ||
         UserSettings.RecordSet.removeFilter.match(action)
@@ -685,6 +690,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         } // set defaults
         draftState.recordTables[recordSetID].loading = false;
       } else if (Activity.getRowsSuccess.match(action)) {
+        console.log('Map toggle 26', action.payload);
+
         // the hash, page, and limit all need to line up
         const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
         const recordTable = draftState.recordTables?.[recordSetID];
@@ -753,24 +760,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             if (!draftState.layers[index]) {
               draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
               index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-              console.log('Map Toggle 9', action.payload);
             }
+
             draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
             draftState.layers[index].loading = true;
-
-            if (action.payload.recordSetID == RecordSetId.OfflineActivities) {
-              console.log(
-                'Map Toggle 2',
-                draftState.layers[index],
-                action.payload.recordSetID,
-                typeof action.payload.recordSetID,
-                typeof RecordSetId.OfflineActivities
-              );
-              draftState.layers[index].layerState = {
-                ...draftState.layers[index].layerState,
-                mapToggle: true
-              };
-            } // toggled the activity layer
+            console.log('Map Toggle 9', action.payload, draftState.layers[index].tableFiltersHash);
             if (!draftState.layers[index].layerState) {
               draftState.layers[index].layerState = {
                 color: RECORD_COLOURS[0],
@@ -799,9 +793,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+            console.log('Map Toggle 6', draftState.layers);
             if (!draftState.layers[index]) {
-              console.log('Map Toggle 6', draftState.layers);
-
               draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
             }
 
@@ -810,7 +803,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
               break;
             }
+
             draftState.layers[index].IDList = action.payload.IDList;
+            console.log('Map Toggle 18', draftState.layers[index], action.payload);
             if (draftState.MapMode === 'VECTOR_ENDPOINT') {
               draftState.layers[index].loading = false;
             }
@@ -825,6 +820,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             break;
           }
+          case ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS:
+            let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+            if (!draftState.layers[index]) {
+              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+            }
+            draftState.layers[index].IDList = action.payload.IDList;
+            draftState.layers[index].loading = false;
+            console.log('Map Toggle 25', draftState.layers[index].IDList, action.payload);
+            break;
           case MAP_MODE_SET:
             draftState.MapMode = action.payload;
             switch (action.payload) {

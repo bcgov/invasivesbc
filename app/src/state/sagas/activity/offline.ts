@@ -2,7 +2,9 @@ import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
 import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
@@ -16,6 +18,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RecordSetId } from 'interfaces/UserRecordSet';
+import UserRecord from 'interfaces/UserRecord';
 
 export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
@@ -99,7 +102,6 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
 
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
-  const layers = yield select((state) => state.Map.layers);
 
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) =>

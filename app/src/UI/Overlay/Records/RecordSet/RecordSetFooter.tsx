@@ -10,11 +10,13 @@ const RecordSetFooter = (props) => {
   const loading = layer?.loading || recordTable?.loading;
 
   const totalRecords = layer?.IDList?.length;
+  console.log('Map Toggle 19', recordTable, props.setID, totalRecords);
   const loaded = !loading;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
     totalRecords < firstRowIndex + recordTable?.limit ? totalRecords : firstRowIndex + recordTable?.limit;
   let recordDisplayString = 'Loading...';
+
   if (loaded) {
     if (totalRecords !== undefined && totalRecords > 0 && !isNaN(firstRowIndex) && !isNaN(lastRowIndex)) {
       recordDisplayString = `${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords} records`;
@@ -22,7 +24,15 @@ const RecordSetFooter = (props) => {
       recordDisplayString = 'No records found';
     }
   }
-
+  console.log('Map Toggle 19.1', firstRowIndex, lastRowIndex, layer.IDList, totalRecords);
+  console.log(
+    'Map Toggle 19.2',
+    totalRecords !== undefined,
+    totalRecords > 0,
+    !isNaN(firstRowIndex),
+    !isNaN(lastRowIndex),
+    loaded
+  );
   const shouldDisplayNextButton = totalRecords > lastRowIndex && !loading;
   const shouldDisplayPreviousButton = firstRowIndex > 0 && !loading;
 

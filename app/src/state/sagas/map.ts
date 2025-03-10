@@ -7,6 +7,7 @@ import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
@@ -44,7 +45,7 @@ import {
   getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_GEOJSON_GET_REQUEST,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+  handle_ACTIVITIES_TABLE_GET_ROWS,
   handle_IAPP_GEOJSON_GET_REQUEST,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
@@ -83,6 +84,10 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
 import NetworkActions from 'state/actions/network/NetworkActions';
+import {
+  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+  handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
+} from './map/offline';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -581,7 +586,7 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
   };
   if (recordSetType === RecordSetType.Activity) {
     if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
-    console.log('Map Toggle 3');
+    console.log('Map Toggle 3', action.payload.setID);
 
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -606,6 +611,7 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   const recordSetsState = yield select(selectUserSettings);
   const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
   const mapState = yield select(selectMap);
+  console.log('Map Toggle 20', recordSetsState);
 
   const page = !Number.isNaN(action.payload.page)
     ? action.payload.page
@@ -643,15 +649,13 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   console.log('Map Toggle 10', layerIDs, layers, recordSets);
   // current but unintialized:
   const currentUninitializedLayers = layers
-    .filter((layer) => !layer?.IDList && layer?.recordSetID !== RecordSetId.OfflineActivities)
+    .filter((layer) => !layer?.IDList)
     .map((layer) => {
       return { recordSetID: layer.recordSetID, recordSetType: layer.type };
     });
 
   // in record set but not in layers
-  const newLayerIDs = recordSets.filter(
-    (recordSet) => !layerIDs.includes(recordSet) && recordSet !== RecordSetId.OfflineActivities
-  );
+  const newLayerIDs = recordSets.filter((recordSet) => !layerIDs.includes(recordSet));
   const newUninitializedLayers = newLayerIDs.map((layer) => {
     return { recordSetID: layer, recordSetType: userSettingsState.recordSets[layer].recordSetType };
   });
@@ -662,7 +666,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   const actionsToPut: ActionType[] = [];
   allUninitializedLayers.forEach((layer) => {
     console.log('Map Toggle 14', layer);
-    if (mapMode === 'VECTOR_ENDPOINT') {
+    if (mapMode === 'VECTOR_ENDPOINT' && layer.recordSetID !== RecordSetId.OfflineActivities) {
       actionsToPut.push({
         type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
@@ -817,6 +821,13 @@ function* handle_RECORDSET_SET_SORT(action) {
   }
 }
 
+export function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
+  console.log('Map toggle 28', action.payload);
+  if (action.payload.recordSetID === RecordSetId.OfflineActivities) yield put(Activity.getRowsOffline(action.payload));
+  else yield put(Activity.getRowsOnline(action.payload));
+  // if serialized -> go to offline // else go to online
+}
+
 function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
@@ -853,10 +864,14 @@ function* activitiesPageSaga() {
     takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
+    takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
-    takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
+    takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_GET_ROWS),
+    takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST),
+    takeEvery(Activity.getRowsOnline, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
+    takeEvery(Activity.getRowsOffline, handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE),
+
     takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IappActions.getRowsRequest, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),

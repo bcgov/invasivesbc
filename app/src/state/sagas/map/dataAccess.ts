@@ -5,6 +5,7 @@ import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf'
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
@@ -16,7 +17,7 @@ import {
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { RecordSetType, UserRecordSet, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet, UserRecordCacheStatus, RecordSetId } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
@@ -106,15 +107,32 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     // if mobile or web
     if (connected && !workingOffline) {
       console.log('Map Toggle 5', filterObject, action.payload.recordSetID, action.payload.tableFiltersHash);
+      if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+        console.log(
+          'Map Toggle 5.1',
+          action.payload.recordSetID === RecordSetId.OfflineActivities,
+          action.payload.recordSetID,
+          RecordSetId.OfflineActivities
+        );
 
-      yield put({
-        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-        payload: {
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        }
-      });
+        yield put({
+          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+          payload: {
+            filterObj: filterObject,
+            recordSetID: action.payload.recordSetID,
+            tableFiltersHash: action.payload.tableFiltersHash
+          }
+        });
+      } else {
+        yield put({
+          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+          payload: {
+            filterObj: filterObject,
+            recordSetID: action.payload.recordSetID,
+            tableFiltersHash: action.payload.tableFiltersHash
+          }
+        });
+      }
     } else {
       const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
       if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
@@ -214,7 +232,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
   } as any;
 };
 
-export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
+export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
   try {
     const currentState = yield select(selectUserSettings);
     const connected = yield select(selectNetworkConnected);
@@ -242,6 +260,14 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const recordSetIdList = yield service.getIdList(recordSetID);
       const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
+      console.log('Map toggle 27.1', {
+        recordSetID: recordSetID,
+        rows: records,
+        tableFiltersHash: tableFiltersHash,
+        page: page,
+        limit: limit
+      });
+
       yield put(
         Activity.getRowsSuccess({
           recordSetID: recordSetID,
@@ -252,6 +278,13 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
         })
       );
     } else {
+      console.log('Map toggle 27.2', {
+        filterObj: filterObject,
+        recordSetID: recordSetID,
+        tableFiltersHash: tableFiltersHash,
+        page: page,
+        limit: limit
+      });
       yield put(
         Activity.getRowsRequest({
           filterObj: filterObject,
