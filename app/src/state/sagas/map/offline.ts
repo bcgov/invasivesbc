@@ -1,12 +1,14 @@
 import { put, select } from 'redux-saga/effects';
 import { ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS } from 'state/actions';
-import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import Activity from 'state/actions/activity/Activity';
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
   console.log('Map Toggle 22', action.payload);
   const { serializedActivities } = yield select(selectOfflineActivity);
 
-  const IDList = Object.values(serializedActivities).filter((value) => value.sync_state !== 'Synchronized');
+  const IDList = Object.values(serializedActivities).filter(
+    (value) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED
+  );
   // const IDList = Object.keys(serializedActivities);
   console.log('Map Toggle 24', Object.entries(serializedActivities).length); // filter out synchronized
   // const IDList = list.map((row: UserRecord) => row.activity_id);

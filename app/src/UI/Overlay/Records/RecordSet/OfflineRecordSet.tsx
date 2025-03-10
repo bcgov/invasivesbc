@@ -15,7 +15,7 @@ import { useSelector } from 'utils/use_selector';
 import { MOBILE } from 'state/build-time-config';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { detectTouchDevice } from 'utils/detectTouch';
 import { offlineActivityColumnsToDisplay } from './RecordTableHelpers';
 import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
@@ -177,7 +177,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
   let parsedObj = Object.fromEntries(
     Object.entries(serializedActivities)
-      .filter(([_, value]) => value.sync_state !== 'Synchronized')
+      .filter(([_, value]) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED)
       .map(([key, value]) => {
         const typedValue = value as OfflineActivityRecord;
         return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
