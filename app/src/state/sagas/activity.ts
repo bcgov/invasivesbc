@@ -56,7 +56,7 @@ import { calculateGeometryArea } from 'utils/geometryHelpers';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import AlertMessage from 'interfaces/AlertMessage';
-import { selectNetworkConnected } from 'state/reducers/network';
+import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -64,6 +64,9 @@ import Alerts from 'state/actions/alerts/Alerts';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import { selectMap } from 'state/reducers/map';
+import { MOBILE } from 'state/build-time-config';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import cacheAlertMessages from 'constants/alerts/cacheAlerts';
 
 function* handle_ACTIVITY_DELETE_SUCCESS(action) {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -387,8 +390,26 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
   }
 }
 
+/**
+ * @desc Once per day, synchronize Activity record caches.
+ */
+function* handle_UPDATE_CACHED_RECORDS() {
+  try {
+    const { connected } = yield select(selectNetworkState);
+    if (MOBILE && connected) {
+      const recordsWereUpdated = yield (yield RecordCacheServiceFactory.getPlatformInstance()).updateActivityCaches();
+      if (recordsWereUpdated) {
+        yield Alerts.create(cacheAlertMessages.updateCachesSuccess);
+      }
+    }
+  } catch (ex) {
+    yield Alerts.create(cacheAlertMessages.updateCachesFailed);
+  }
+}
+
 function* activityPageSaga() {
   yield all([
+    takeEvery(UserSettings.InitState.get, handle_UPDATE_CACHED_RECORDS),
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),

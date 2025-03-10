@@ -76,7 +76,8 @@ class RecordCache {
           recordSetCacheStatus: recordSet.cacheMetadataStatus,
           setId: spec.setId,
           pausedActivityIdx: recordSet.cacheDownloadProgress.pausedActivityIdx,
-          processedActivities: recordSet.cacheDownloadProgress.processedActivities
+          processedActivities: recordSet.cacheDownloadProgress.processedActivities,
+          filterObjects: recordSet.tableFilters
         },
         (p) => {
           dispatch(RecordCache.downloadProgressEvent(p));

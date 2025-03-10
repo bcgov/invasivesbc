@@ -260,6 +260,19 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
+  protected async dateOfMostRecentRecord() {
+    if (this.store == null) {
+      throw new Error('cache not available');
+    }
+    let maxDate = new Date(0);
+    await this.store.iterate((value: Record<PropertyKey, any>) => {
+      const recordDate = new Date(value?.date_created);
+      if (recordDate > maxDate) {
+        maxDate = recordDate;
+      }
+    });
+    return maxDate;
+  }
   protected async getAllCachedIds(): Promise<string[]> {
     if (this.store == null) {
       throw new Error('cache not available');

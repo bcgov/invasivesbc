@@ -1,0 +1,75 @@
+const RECORD_CACHE_DB_MIGRATIONS_1 = [
+  `CREATE TABLE CACHE_METADATA
+   (
+     SET_ID VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY
+   );`,
+  `CREATE TABLE CACHED_RECORDS
+   (
+     ID   VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
+     DATA TEXT        NOT NULL -- store the stringified json
+   );`,
+  `CREATE TABLE CACHED_RECORD_TO_CACHE_METADATA
+   (
+     RECORD_ID         VARCHAR(64) NOT NULL,
+     CACHE_METADATA_ID VARCHAR(64) NOT NULL,
+     PRIMARY KEY (RECORD_ID, CACHE_METADATA_ID)
+   );`
+];
+
+const RECORD_CACHE_DB_MIGRATIONS_2 = [
+  `ALTER TABLE CACHED_RECORDS
+   ADD COLUMN GEOJSON TEXT;`,
+  `ALTER TABLE CACHED_RECORDS
+   ADD COLUMN SHORT_ID TEXT;`
+];
+
+const RECORD_CACHE_DB_MIGRATIONS_3 = [
+  `CREATE TABLE CACHED_IAPP_RECORDS
+  (
+    ID          VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
+    TABLE_DATA  TEXT NOT NULL,
+    RECORD_DATA TEXT NOT NULL,
+    GEOJSON     TEXT NOT NULL
+  );`
+];
+
+const RECORD_CACHE_DB_MIGRATIONS_4 = [
+  `ALTER TABLE CACHE_METADATA
+    ADD COLUMN CACHE_TIME TEXT NOT NULL;`,
+  `ALTER TABLE CACHE_METADATA
+    ADD COLUMN STATUS TEXT NOT NULL;`,
+  `ALTER TABLE CACHE_METADATA
+    ADD COLUMN DATA TEXT NOT NULL;`
+];
+
+const RECORD_CACHE_DB_MIGRATIONS_5 = [
+  `ALTER TABLE CACHED_RECORDS
+    ADD COLUMN DATE_CREATED TEXT;`
+];
+
+// Hold Migrations as named variable so we can use length to update the Db version automagically
+// Note: toVersion must be an integer.
+const MIGRATIONS = [
+  {
+    toVersion: 1,
+    statements: RECORD_CACHE_DB_MIGRATIONS_1
+  },
+  {
+    toVersion: 2,
+    statements: RECORD_CACHE_DB_MIGRATIONS_2
+  },
+  {
+    toVersion: 3,
+    statements: RECORD_CACHE_DB_MIGRATIONS_3
+  },
+  {
+    toVersion: 4,
+    statements: RECORD_CACHE_DB_MIGRATIONS_4
+  },
+  {
+    toVersion: 5,
+    statements: RECORD_CACHE_DB_MIGRATIONS_5
+  }
+];
+
+export default MIGRATIONS;

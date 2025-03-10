@@ -37,6 +37,24 @@ const cacheAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Info,
     subject: AlertSubjects.Cache,
     autoClose: 3
+  },
+  updateCaches: {
+    content: 'Updating cached recordsets',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.Cache,
+    autoClose: 3
+  },
+  updateCachesSuccess: {
+    content: 'Cached recordsets updated successfully',
+    severity: AlertSeverity.Success,
+    subject: AlertSubjects.Cache,
+    autoClose: 3
+  },
+  updateCachesFailed: {
+    content: 'Cached recordsets failed to update',
+    severity: AlertSeverity.Error,
+    subject: AlertSubjects.Cache,
+    autoClose: 3
   }
 };
 
