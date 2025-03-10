@@ -153,8 +153,8 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   };
   const viewFilters = useSelector((state) => state.Map.viewFilters);
   const connected = useSelector((state) => state.Network.connected);
-  const listOptions = useSelector((state) => state.UserSettings.apiDocsWithViewOptions); // listOptions.components.schemas
-  console.log('Do they have options?', listOptions?.components?.schemas);
+  const offlineDocs = useSelector((state) => state.UserSettings.offlineDocs);
+  const listOptions = offlineDocs[0]?.apiDocsWithViewOptions;
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -246,9 +246,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
               {'< Back'}
             </Button>
           </div>
-          <div className="recordSet_header_name">
-            {recordSet?.recordSetName || `New Recordset - ${recordSet?.recordSetType}`}
-          </div>
+          <div className="recordSet_header_name">{recordSet?.recordSetName}</div>
         </div>
       </div>
       <div className="recordSet_container">
@@ -258,7 +256,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
           </div>
         ) : (
           <>
-            <div style={{ margin: '8px', padding: '8px' }}></div>
+            <div style={{ margin: '8px', padding: '8px' }} />
             <div className="record_table_container">
               <table className="record_table">
                 <tbody>
