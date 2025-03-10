@@ -176,10 +176,12 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const sortColumn = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
   const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
   let parsedObj = Object.fromEntries(
-    Object.entries(serializedActivities).map(([key, value]) => {
-      const typedValue = value as OfflineActivityRecord;
-      return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
-    })
+    Object.entries(serializedActivities)
+      .filter(([_, value]) => value.sync_state !== 'Synchronized')
+      .map(([key, value]) => {
+        const typedValue = value as OfflineActivityRecord;
+        return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
+      })
   );
 
   console.log('---> parsed obj', parsedObj);

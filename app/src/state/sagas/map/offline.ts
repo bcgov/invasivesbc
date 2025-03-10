@@ -6,8 +6,8 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
   console.log('Map Toggle 22', action.payload);
   const { serializedActivities } = yield select(selectOfflineActivity);
 
-  // const IDList = Object.values(serializedActivities).filter((value) => value.sync_state !== 'Synchronized').length;
-  const IDList = Object.keys(serializedActivities);
+  const IDList = Object.values(serializedActivities).filter((value) => value.sync_state !== 'Synchronized');
+  // const IDList = Object.keys(serializedActivities);
   console.log('Map Toggle 24', Object.entries(serializedActivities).length); // filter out synchronized
   // const IDList = list.map((row: UserRecord) => row.activity_id);
   yield put({
