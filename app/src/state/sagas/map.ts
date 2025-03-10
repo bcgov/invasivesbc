@@ -67,7 +67,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -581,6 +581,8 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
   };
   if (recordSetType === RecordSetType.Activity) {
     if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
+    console.log('Map Toggle 3');
+
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
       payload: {
@@ -638,24 +640,28 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   // current layers
   const layers = yield select((state) => state.Map.layers);
   const layerIDs = layers.map((layer) => layer.recordSetID);
-
+  console.log('Map Toggle 10', layerIDs, layers, recordSets);
   // current but unintialized:
   const currentUninitializedLayers = layers
-    .filter((layer) => !layer?.IDList)
+    .filter((layer) => !layer?.IDList && layer?.recordSetID !== RecordSetId.OfflineActivities)
     .map((layer) => {
       return { recordSetID: layer.recordSetID, recordSetType: layer.type };
     });
 
   // in record set but not in layers
-  const newLayerIDs = recordSets.filter((recordSet) => !layerIDs.includes(recordSet));
+  const newLayerIDs = recordSets.filter(
+    (recordSet) => !layerIDs.includes(recordSet) && recordSet !== RecordSetId.OfflineActivities
+  );
   const newUninitializedLayers = newLayerIDs.map((layer) => {
     return { recordSetID: layer, recordSetType: userSettingsState.recordSets[layer].recordSetType };
   });
   // combined:
   const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
+  console.log('Map Toggle 11', allUninitializedLayers, newLayerIDs, currentUninitializedLayers, newUninitializedLayers);
 
   const actionsToPut: ActionType[] = [];
   allUninitializedLayers.forEach((layer) => {
+    console.log('Map Toggle 14', layer);
     if (mapMode === 'VECTOR_ENDPOINT') {
       actionsToPut.push({
         type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
@@ -663,6 +669,8 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
       });
     }
     if (layer.recordSetType === RecordSetType.Activity) {
+      console.log('Map Toggle 4');
+
       actionsToPut.push({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
@@ -674,6 +682,8 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
       });
     }
   });
+  console.log('Map Toggle 12', actionsToPut);
+
   yield all(actionsToPut.map((action) => put(action)));
 }
 

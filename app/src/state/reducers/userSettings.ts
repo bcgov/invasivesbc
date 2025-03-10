@@ -5,7 +5,7 @@ import { AppConfig } from 'state/config';
 import { CLOSE_NEW_RECORD_MENU, OPEN_NEW_RECORD_MENU, RECORDSET_SET_SORT } from 'state/actions';
 
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -104,9 +104,13 @@ function createUserSettingsReducer(
         draftState.activeIAPP = action.payload;
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         draftState.recordSets = { ...action.payload.recordSets };
+        // draftState.recordSets[4].mapToggle = true;
+        console.log('Map Toggle 17', draftState.recordSets, action.payload.recordSets);
       } else if (UserSettings.Map.setCenterSuccess.match(action)) {
         draftState.mapCenter = action.payload as [number, number];
       } else if (UserSettings.RecordSet.add.match(action)) {
+        console.log('Map Toggle 8', action.payload);
+
         draftState.recordSets[Date.now().toString()] ??= action.payload;
       } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
         delete draftState.recordSets[action.payload];

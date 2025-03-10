@@ -52,7 +52,7 @@ import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
@@ -422,7 +422,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers.splice(index, 1);
         }
       } else if (UserSettings.RecordSet.set.match(action)) {
-        if (action.payload.setName !== '4') {
+        // called when toggling
+        console.log('Map Toggle 7', action.payload);
+
+        if (action.payload.setName !== RecordSetId.OfflineActivities) {
           const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
           // only online / synced records
           Object.keys(action.payload.updatedSet).forEach((key) => {
@@ -430,6 +433,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
             }
           });
+          console.log('Map Toggle 1', draftState.layers[layerIndex].layerState.mapToggle); // for layer picker
+
           if (draftState.layers[layerIndex].layerState.mapToggle === false) {
             draftState.layers[layerIndex].layerState.labelToggle = false;
           }
@@ -476,14 +481,19 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
         }
       } else if (UserSettings.InitState.getSuccess.match(action)) {
+        console.log('Map Toggle 15', action.payload);
+
         Object.keys(action.payload.recordSets).forEach((setID) => {
-          let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-          if (!draftState.layers[layerIndex]) {
-            draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
-            layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+          if (setID !== RecordSetId.OfflineActivities) {
+            let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+            if (!draftState.layers[layerIndex]) {
+              draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
+              layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+            }
+            draftState.layers[layerIndex].layerState = {};
+            Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
+            console.log(console.log('Map Toggle 15.1', draftState.layers[layerIndex]));
           }
-          draftState.layers[layerIndex].layerState = {};
-          Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
         });
       } else if (WhatsHere.map_init_get_poi_ids_fetched.match(action)) {
         Object.assign(draftState.whatsHere, {
@@ -743,9 +753,24 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             if (!draftState.layers[index]) {
               draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
               index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+              console.log('Map Toggle 9', action.payload);
             }
             draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
             draftState.layers[index].loading = true;
+
+            if (action.payload.recordSetID == RecordSetId.OfflineActivities) {
+              console.log(
+                'Map Toggle 2',
+                draftState.layers[index],
+                action.payload.recordSetID,
+                typeof action.payload.recordSetID,
+                typeof RecordSetId.OfflineActivities
+              );
+              draftState.layers[index].layerState = {
+                ...draftState.layers[index].layerState,
+                mapToggle: true
+              };
+            } // toggled the activity layer
             if (!draftState.layers[index].layerState) {
               draftState.layers[index].layerState = {
                 color: RECORD_COLOURS[0],
@@ -774,8 +799,12 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            if (!draftState.layers[index])
+            if (!draftState.layers[index]) {
+              console.log('Map Toggle 6', draftState.layers);
+
               draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+            }
+
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
             if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {

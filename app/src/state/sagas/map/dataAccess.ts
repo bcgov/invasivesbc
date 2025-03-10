@@ -105,6 +105,8 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
     // if mobile or web
     if (connected && !workingOffline) {
+      console.log('Map Toggle 5', filterObject, action.payload.recordSetID, action.payload.tableFiltersHash);
+
       yield put({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
         payload: {

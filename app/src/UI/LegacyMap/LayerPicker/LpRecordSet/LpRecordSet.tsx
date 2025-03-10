@@ -7,7 +7,7 @@ import { UserRecordSet } from 'interfaces/UserRecordSet';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import { MOBILE } from 'state/build-time-config';
 import { LpOfflineActivitiesLayer } from './LpOfflineActivitiesLayer';
-
+import Activity from 'state/actions/activity/Activity';
 type PropTypes = {
   closePicker: () => void;
 };
@@ -17,9 +17,20 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
   const handleGoToRecords = () => {
     closePicker();
   };
-  const handleToggleVisibility = (id: string) => dispatch(UserSettings.RecordSet.toggleVisibility(id));
+  const handleToggleVisibility = (id: string) => {
+    if (id === '4') {
+      dispatch(Activity.Offline.setAllShapeVisibility());
+    }
+
+    dispatch(UserSettings.RecordSet.toggleVisibility(id));
+  };
   const handleCycleColour = (id: string) => dispatch(UserSettings.RecordSet.cycleColourById(id));
-  const handleToggleLabels = (id: string) => dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
+  const handleToggleLabels = (id: string) => {
+    if (id === '4') {
+      dispatch(Activity.Offline.setLabelVisibility());
+    }
+    dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
+  };
   const connected = useSelector((state) => state.Network.connected);
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
   const defaultRecordSets: UserRecordSet[] = [];
@@ -65,14 +76,14 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
           />
         ))}
       </ul>
-      {MOBILE && (
+      {/* {MOBILE && (
         <>
           <h3>Unsynced Recordsets</h3>
           <ul>
             <LpOfflineActivitiesLayer />
           </ul>
         </>
-      )}
+      )} */}
 
       <div className="guide">
         <p>You can modify or create new Recordsets from the Records page. </p>

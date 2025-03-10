@@ -9,7 +9,8 @@ export enum RecordSetType {
 export enum RecordSetId {
   Drafts = '1',
   Activity = '2',
-  IAPP = '3'
+  IAPP = '3',
+  OfflineActivities = '4'
 }
 
 export enum UserRecordCacheStatus {
