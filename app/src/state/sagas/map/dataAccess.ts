@@ -134,19 +134,37 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
         });
       }
     } else {
-      const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
-      if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
-        const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        const ids = yield service.getIdList(action.payload.recordSetID);
+      if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+        console.log(
+          'Map Toggle 5.4',
+          action.payload.recordSetID === RecordSetId.OfflineActivities,
+          action.payload.recordSetID,
+          RecordSetId.OfflineActivities
+        );
 
         yield put({
-          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
           payload: {
+            filterObj: filterObject,
             recordSetID: action.payload.recordSetID,
-            IDList: ids ?? [],
             tableFiltersHash: action.payload.tableFiltersHash
           }
         });
+      } else {
+        const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
+        if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
+          const service = yield RecordCacheServiceFactory.getPlatformInstance();
+          const ids = yield service.getIdList(action.payload.recordSetID);
+
+          yield put({
+            type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+            payload: {
+              recordSetID: action.payload.recordSetID,
+              IDList: ids ?? [],
+              tableFiltersHash: action.payload.tableFiltersHash
+            }
+          });
+        }
       }
     }
   } catch (e) {
@@ -257,26 +275,39 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
     }
 
     if (userMobileOffline) {
-      const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const recordSetIdList = yield service.getIdList(recordSetID);
-      const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
-      console.log('Map toggle 27.1', {
-        recordSetID: recordSetID,
-        rows: records,
-        tableFiltersHash: tableFiltersHash,
-        page: page,
-        limit: limit
-      });
-
-      yield put(
-        Activity.getRowsSuccess({
+      console.log('Map toggle 27.3', userMobileOffline, recordSetID, page, limit, tableFiltersHash);
+      if (recordSetID === RecordSetId.OfflineActivities) {
+        yield put(
+          Activity.getRowsRequest({
+            filterObj: filterObject,
+            recordSetID: recordSetID,
+            tableFiltersHash: tableFiltersHash,
+            page: page,
+            limit: limit
+          })
+        );
+      } else {
+        const service = yield RecordCacheServiceFactory.getPlatformInstance();
+        const recordSetIdList = yield service.getIdList(recordSetID);
+        const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
+        console.log('Map toggle 27.1', {
           recordSetID: recordSetID,
           rows: records,
           tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit
-        })
-      );
+        });
+
+        yield put(
+          Activity.getRowsSuccess({
+            recordSetID: recordSetID,
+            rows: records,
+            tableFiltersHash: tableFiltersHash,
+            page: page,
+            limit: limit
+          })
+        );
+      }
     } else {
       console.log('Map toggle 27.2', {
         filterObj: filterObject,
