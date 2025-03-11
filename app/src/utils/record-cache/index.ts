@@ -104,7 +104,7 @@ abstract class RecordCacheService extends BaseCacheService<
 
   protected abstract dateOfMostRecentRecord();
 
-  protected abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
+  protected abstract saveIapp(data: Record<PropertyKey, IappRecord | IappTableRow>): Promise<void>;
 
   public abstract getPaginatedCachedActivityRecords(
     recordSetIdList: string[],
@@ -218,9 +218,7 @@ abstract class RecordCacheService extends BaseCacheService<
         });
         if (rez.ok) {
           const response = await rez.json();
-          Object.keys(response).forEach(async (key) => {
-            await this.saveIapp(key.toString(), response[key].record, response[key].row);
-          });
+          await this.saveIapp(response);
         }
       });
 
@@ -230,7 +228,7 @@ abstract class RecordCacheService extends BaseCacheService<
       // trigger a callback on the first run, on the last run, every 3%
       if (
         lastProgressCallback == null ||
-        currentProgress - lastProgressCallback > 0.005 ||
+        currentProgress - lastProgressCallback > 0.003 ||
         processedCaches == totalRecordsToCache
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
@@ -281,7 +279,8 @@ abstract class RecordCacheService extends BaseCacheService<
           headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
         });
         if (rez.ok) {
-          this.saveActivity(await rez.json());
+          const response = await rez.json();
+          await this.saveActivity(response);
         }
       });
 
