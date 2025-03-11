@@ -27,7 +27,7 @@ const CACHE_UNAVAILABLE = 'cache not available';
 */
 class SQLiteRecordCacheService extends RecordCacheService {
   private static _instance: SQLiteRecordCacheService;
-  private QUERY_LIMIT: number = 50000;
+  private readonly QUERY_LIMIT: number = 50000;
   private cacheDB: SQLiteDBConnection | null = null;
   protected constructor() {
     super();
@@ -360,30 +360,31 @@ class SQLiteRecordCacheService extends RecordCacheService {
       console.error(e);
     }
   }
-  async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
+
+  private transformIapp(id: string, iappRecord: IappRecord, iappRow: IappTableRow): Array<any> {
+    const geojson = iappRow.geojson;
+    const map_symbol = geojson?.properties?.map_symbol;
+    geojson.properties = {
+      name: id + (map_symbol ? '\n' + map_symbol : ''),
+      description: id
+    };
+    const stringRecord = JSON.stringify(iappRecord);
+    const stringRow = JSON.stringify(iappRow);
+    const stringGeo = JSON.stringify(geojson);
+    return [id.toString(), stringRecord, stringRow, stringGeo];
+  }
+
+  async saveIapp(data: Record<PropertyKey, { record: IappRecord; row: IappTableRow }>): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    try {
-      const geojson = iappTableRow.geojson;
-      const map_symbol = geojson?.properties?.map_symbol;
-      geojson.properties = {
-        name: id + (map_symbol ? '\n' + map_symbol : ''),
-        description: id
-      };
-      const stringRecord = JSON.stringify(iappRecord);
-      const stringRow = JSON.stringify(iappTableRow);
-      const stringGeo = JSON.stringify(geojson);
-      await this.cacheDB.query(
-        //language=SQLite
-        `INSERT INTO CACHED_IAPP_RECORDS(ID, RECORD_DATA, TABLE_DATA, GEOJSON)
-         VALUES ( ?, ?, ?, ? )
-         ON CONFLICT (ID) DO NOTHING;`, // IAPP is static, no update needed.
-        [id.toString(), stringRecord, stringRow, stringGeo]
-      );
-    } catch (e) {
-      console.error(e);
-    }
+    const entry = ` ( ?, ?, ?, ? ) `;
+    const values: Array<any> = [];
+    Object.keys(data).forEach((id) => values.push(this.transformIapp(id, data[id].record, data[id].row)));
+    let query = 'INSERT INTO CACHED_IAPP_RECORDS(ID, RECORD_DATA, TABLE_DATA, GEOJSON) VALUES ';
+    query += values.map(() => entry).join(', ');
+    query += 'ON CONFLICT (ID) DO NOTHING';
+    await this.cacheDB.run(query, values.flat(), false);
   }
 
   async loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow> {
@@ -409,15 +410,20 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const results = await this.cacheDB?.query(
-      // language SQLite
-      `SELECT GEOJSON
-      FROM CACHED_IAPP_RECORDS
-      WHERE ID IN (${ids.map(() => '?').join(', ')})
-      AND GEOJSON NOT NULL`,
-      [...ids]
-    );
-    const geojson = results?.values?.map((item) => JSON.parse(item['GEOJSON']));
+    const geojson: Array<Feature> = [];
+    for (let i = 0; i < ids.length; i += this.QUERY_LIMIT) {
+      const slice = ids.slice(i, i + this.QUERY_LIMIT);
+      const results = await this.cacheDB.query(
+        //language SQLite
+        `SELECT GEOJSON
+         FROM CACHED_IAPP_RECORDS
+         WHERE ID IN (${slice.map(() => '?').join(', ')})
+         AND GEOJSON NOT NULL`,
+        [...slice]
+      );
+      results?.values?.forEach((item) => geojson.push(JSON.parse(item['GEOJSON'])));
+    }
+
     const cachedGeoJson: GeoJSONSourceSpecification = {
       type: 'geojson',
       data: {
