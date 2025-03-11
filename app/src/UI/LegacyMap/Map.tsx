@@ -12,12 +12,12 @@ import {
 } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
 import {
-  removeOfflineActivitiesLayer,
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshOfflineActivitiesLayer,
   refreshVisibilityOnToggleUpdate,
-  removeLayersOnNetworkConnectivityChange
+  removeLayersOnNetworkConnectivityChange,
+  removeOfflineActivitiesLayer
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
 import {
   addWMSLayersIfNotExist,
@@ -36,7 +36,7 @@ import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
 import { PositionMarkers } from 'UI/LegacyMap/helpers/components/PositionMarkers';
-import maplibregl, { LngLatBoundsLike } from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import { MEMORY_CONSTRAINED_DEVICE, MOBILE } from 'state/build-time-config';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
@@ -123,12 +123,8 @@ export const Map = ({ children }) => {
         try {
           const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
 
-          console.log('waiting for tile');
-          const t = await tileCache.getTile(repository, Number(z), Number(x), Number(y));
-          console.log('got it');
-          return t;
+          return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
         } catch (e) {
-          console.error(e);
           // this is a blank 256x256 image
           return TileCacheService.generateFallbackTile();
         }
