@@ -5,9 +5,9 @@ import { base64toBuffer, lat2tile, long2tile } from 'utils/tile-cache/helpers';
 const FALLBACK_IMAGE =
   'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg==';
 
-// base64 encoded transparent image (for overlays)
+// base64 encoded transparent image with diagonal stripe (for overlays)
 const TRANSPARENT_FALLBACK_IMAGE =
-  'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAQAAAD2e2DtAAABu0lEQVR42u3SQREAAAzCsOHf9F6oIJXQS07TxQIABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAgAACwAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAAsAEAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAKg9kK0BATSHu+YAAAAASUVORK5CYII=';
+  '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';
 
 export type TileData = {
   data: ArrayBufferLike;
@@ -44,6 +44,7 @@ enum RepositoryStatus {
   QUEUED = 'QUEUED',
   UNKNOWN = 'UNKNOWN'
 }
+
 interface TilePromise {
   id: string;
   url: string;
@@ -116,14 +117,6 @@ abstract class TileCacheService extends BaseCacheService<
   abstract getTile(repository: string, z: number, x: number, y: number): Promise<TileData>;
 
   abstract setTile(repository: string, z: number, x: number, y: number, tileData: Uint8Array): Promise<void>;
-
-  protected abstract addOrUpdateRepository(spec: RepositoryMetadata): Promise<void>;
-
-  private async downloadTile(tileDetails: TilePromise): Promise<void> {
-    const { id, url, x, y, z } = tileDetails;
-    const responseData = await fetch(url).then(async (r) => await r.arrayBuffer());
-    await this.setTile(id, z, x, y, new Uint8Array(responseData));
-  }
 
   async download(
     spec: RepositoryDownloadRequestSpec,
@@ -221,7 +214,15 @@ abstract class TileCacheService extends BaseCacheService<
 
   public abstract updateDescription(repository: string, newDescription: string): Promise<void>;
 
+  protected abstract addOrUpdateRepository(spec: RepositoryMetadata): Promise<void>;
+
   protected abstract cleanupOrphanTiles(): Promise<void>;
+
+  private async downloadTile(tileDetails: TilePromise): Promise<void> {
+    const { id, url, x, y, z } = tileDetails;
+    const responseData = await fetch(url).then(async (r) => await r.arrayBuffer());
+    await this.setTile(id, z, x, y, new Uint8Array(responseData));
+  }
 }
 
 export { TileCacheService, FALLBACK_IMAGE, RepositoryStatus };

@@ -123,8 +123,12 @@ export const Map = ({ children }) => {
         try {
           const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
 
-          return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
+          console.log('waiting for tile');
+          const t = await tileCache.getTile(repository, Number(z), Number(x), Number(y));
+          console.log('got it');
+          return t;
         } catch (e) {
+          console.error(e);
           // this is a blank 256x256 image
           return TileCacheService.generateFallbackTile();
         }
@@ -133,11 +137,6 @@ export const Map = ({ children }) => {
 
     /* map can have platform-specific options */
     const platformOptions = (() => {
-      if (MOBILE) {
-        return {
-          maxBounds: [-141.7761, 46.41459, -114.049, 60.00678] as LngLatBoundsLike
-        };
-      }
       return {};
     })();
 
