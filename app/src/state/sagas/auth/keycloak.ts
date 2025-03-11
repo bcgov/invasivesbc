@@ -31,12 +31,16 @@ function* handleSigninRequest() {
 }
 
 function* handleSignoutRequest() {
+  const config: AppConfig = yield select(selectConfiguration);
   if (!keycloakInstance) {
     return;
   }
 
   try {
-    yield keycloakInstance.logout();
+    yield call(keycloakInstance.logout, {
+      id_token_hint: keycloakInstance.idToken,
+      post_logout_redirect_uri: config.REDIRECT_URI
+    });
     yield put(AuthActions.signoutComplete());
     yield put({ type: USERINFO_CLEAR_REQUEST });
   } catch (e) {
