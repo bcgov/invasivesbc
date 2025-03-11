@@ -551,8 +551,6 @@ function* handle_URL_CHANGE(action) {
       page: page,
       limit: limit
     };
-    console.log('Map Toggle 30', actionArg);
-
     if (recordSetType === RecordSetType.Activity) {
       yield put(Activity.getRows(actionArg));
     } else if (recordSetType === RecordSetType.IAPP) {
@@ -588,8 +586,6 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
   };
   if (recordSetType === RecordSetType.Activity) {
     if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
-    console.log('Map Toggle 3', action.payload.setID);
-
     yield put({
       type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
       payload: {
@@ -613,7 +609,6 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   const recordSetsState = yield select(selectUserSettings);
   const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
   const mapState = yield select(selectMap);
-  console.log('Map Toggle 20', recordSetsState);
 
   const page = !Number.isNaN(action.payload.page)
     ? action.payload.page
@@ -648,7 +643,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   // current layers
   const layers = yield select((state) => state.Map.layers);
   const layerIDs = layers.map((layer) => layer.recordSetID);
-  console.log('Map Toggle 10', layerIDs, layers, recordSets);
+
   // current but unintialized:
   const currentUninitializedLayers = layers
     .filter((layer) => !layer?.IDList)
@@ -663,11 +658,9 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   });
   // combined:
   const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
-  console.log('Map Toggle 11', allUninitializedLayers, newLayerIDs, currentUninitializedLayers, newUninitializedLayers);
 
   const actionsToPut: ActionType[] = [];
   allUninitializedLayers.forEach((layer) => {
-    console.log('Map Toggle 14', layer);
     if (mapMode === 'VECTOR_ENDPOINT' && layer.recordSetID !== RecordSetId.OfflineActivities) {
       actionsToPut.push({
         type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
@@ -675,8 +668,6 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
       });
     }
     if (layer.recordSetType === RecordSetType.Activity) {
-      console.log('Map Toggle 4');
-
       actionsToPut.push({
         type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
@@ -688,8 +679,6 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
       });
     }
   });
-  console.log('Map Toggle 12', actionsToPut);
-
   yield all(actionsToPut.map((action) => put(action)));
 }
 
@@ -824,10 +813,8 @@ function* handle_RECORDSET_SET_SORT(action) {
 }
 
 export function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
-  console.log('Map toggle 28', action.payload);
   if (action.payload.recordSetID === RecordSetId.OfflineActivities) yield put(Activity.getRowsOffline(action.payload));
   else yield put(Activity.getRowsOnline(action.payload));
-  // if serialized -> go to offline // else go to online
 }
 
 function* activitiesPageSaga() {

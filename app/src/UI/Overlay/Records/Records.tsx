@@ -78,7 +78,6 @@ export const Records = () => {
   const highlightSet = (set: string) => setHighlightedSet(set);
   const unHighlightSet = () => setHighlightedSet(null);
   const userIsMobileAndOffline = MOBILE && !connected;
-  console.log('-->', recordSets);
 
   if (!recordSets) {
     return;

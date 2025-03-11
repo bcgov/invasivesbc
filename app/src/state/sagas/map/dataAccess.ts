@@ -106,15 +106,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
     // if mobile or web
     if (connected && !workingOffline) {
-      console.log('Map Toggle 5', filterObject, action.payload.recordSetID, action.payload.tableFiltersHash);
       if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-        console.log(
-          'Map Toggle 5.1',
-          action.payload.recordSetID === RecordSetId.OfflineActivities,
-          action.payload.recordSetID,
-          RecordSetId.OfflineActivities
-        );
-
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
           payload: {
@@ -135,13 +127,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       }
     } else {
       if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-        console.log(
-          'Map Toggle 5.4',
-          action.payload.recordSetID === RecordSetId.OfflineActivities,
-          action.payload.recordSetID,
-          RecordSetId.OfflineActivities
-        );
-
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
           payload: {
@@ -290,13 +275,6 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
         const service = yield RecordCacheServiceFactory.getPlatformInstance();
         const recordSetIdList = yield service.getIdList(recordSetID);
         const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
-        console.log('Map toggle 27.1', {
-          recordSetID: recordSetID,
-          rows: records,
-          tableFiltersHash: tableFiltersHash,
-          page: page,
-          limit: limit
-        });
 
         yield put(
           Activity.getRowsSuccess({
@@ -309,13 +287,6 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
         );
       }
     } else {
-      console.log('Map toggle 27.2', {
-        filterObj: filterObject,
-        recordSetID: recordSetID,
-        tableFiltersHash: tableFiltersHash,
-        page: page,
-        limit: limit
-      });
       yield put(
         Activity.getRowsRequest({
           filterObj: filterObject,

@@ -297,7 +297,7 @@ const createOfflineActivitiesLayer = async (
   const geometryList = Object.values(locallyStoredActivities)
     .map((item) => {
       const parsedData = JSON.parse((item as OfflineActivityRecord).data);
-      // return parsedData.geometry ? parsedData.geometry[0] : null;
+
       if (parsedData.geometry && parsedData.geometry[0]) {
         return {
           ...parsedData.geometry[0],

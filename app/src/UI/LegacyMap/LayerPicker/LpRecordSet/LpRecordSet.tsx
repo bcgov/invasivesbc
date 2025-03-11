@@ -76,14 +76,6 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
           />
         ))}
       </ul>
-      {/* {MOBILE && (
-        <>
-          <h3>Unsynced Recordsets</h3>
-          <ul>
-            <LpOfflineActivitiesLayer />
-          </ul>
-        </>
-      )} */}
 
       <div className="guide">
         <p>You can modify or create new Recordsets from the Records page. </p>

@@ -144,14 +144,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
   }
 
   if (networkReturn?.ok && networkReturn.data.result) {
-    console.log('Map Toggle 26.1', {
-      recordSetID: action.payload.recordSetID,
-      rows: networkReturn.data.result,
-      tableFiltersHash: action.payload.tableFiltersHash,
-      page: action.payload.page,
-      limit: action.payload.limit
-    });
-
     yield put(
       Activity.getRowsSuccess({
         recordSetID: action.payload.recordSetID,
@@ -211,12 +203,11 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
   if (!tableFiltersHash === action.payload.tableFiltersHash) {
     return;
   }
-  console.log('Map toggle 21', networkReturn.data?.data?.result, action.payload);
 
   if (networkReturn?.ok && (networkReturn?.data?.result || networkReturn.data?.data?.result)) {
     const list = networkReturn.data?.data?.result ?? networkReturn.data?.result;
     const IDList = list.map((row: UserRecord) => row.activity_id);
-    console.log('Map toggle 23');
+
     // check again after the network call
     const mapState = yield select((state) => state.Map);
     const tableFiltersHash = mapState?.layers?.filter((layer) => layer?.recordSetID === action.payload.recordSetID)?.[0]

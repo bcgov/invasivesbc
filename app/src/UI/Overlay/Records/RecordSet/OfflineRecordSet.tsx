@@ -18,7 +18,6 @@ import UserRecord from 'interfaces/UserRecord';
 import { ActivitySubtypeShortLabels } from 'sharedAPI/src/constants';
 type PropTypes = { setID: string };
 
-// display only locally modified/stored ones, if synchronized dont display (?)
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const onUserHoveredRecord = (row: UserRecord) => {
     dispatch({
@@ -178,8 +177,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       })
   );
 
-  console.log('---> parsed obj', parsedObj);
-
   try {
     Object.entries(parsedObj).forEach(([key, value]) => {
       const concatenatedLabels = convertCodeToLabelUsingRecordType(
@@ -284,8 +281,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
                     ))}
                   </tr>
                   {Object.entries(parsedObj).map(([key, value]) => {
-                    // console.log('--->', key, value.data);
-
                     return (
                       <tr
                         onContextMenu={(event) => {

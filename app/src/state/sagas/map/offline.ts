@@ -7,7 +7,6 @@ import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity 
 import Activity from 'state/actions/activity/Activity';
 import { getRecordFilterObjectFromStateForAPI } from './dataAccess';
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
-  console.log('Map Toggle 22', action.payload);
   const { serializedActivities } = yield select(selectOfflineActivity);
 
   const IDList = Object.values(serializedActivities).filter(
@@ -25,7 +24,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
 }
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
-  console.log('Map Toggle 29', action.payload);
   const { serializedActivities } = yield select(selectOfflineActivity);
   let mapState = yield select((state) => state.Map);
   let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;

@@ -104,13 +104,9 @@ function createUserSettingsReducer(
         draftState.activeIAPP = action.payload;
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         draftState.recordSets = { ...action.payload.recordSets };
-        // draftState.recordSets[4].mapToggle = true;
-        console.log('Map Toggle 17', draftState.recordSets, action.payload.recordSets);
       } else if (UserSettings.Map.setCenterSuccess.match(action)) {
         draftState.mapCenter = action.payload as [number, number];
       } else if (UserSettings.RecordSet.add.match(action)) {
-        console.log('Map Toggle 8', action.payload);
-
         draftState.recordSets[Date.now().toString()] ??= action.payload;
       } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
         delete draftState.recordSets[action.payload];

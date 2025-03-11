@@ -424,7 +424,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
       } else if (UserSettings.RecordSet.set.match(action)) {
         // called when toggling
-        console.log('Map Toggle 7', action.payload);
 
         // if (action.payload.setName !== RecordSetId.OfflineActivities) {
         const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
@@ -438,11 +437,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         if (draftState.layers[layerIndex].layerState.mapToggle === false) {
           draftState.layers[layerIndex].layerState.labelToggle = false;
         }
-        console.log(
-          'Map Toggle 1',
-          draftState.layers[layerIndex].layerState.mapToggle,
-          draftState.layers[layerIndex].layerState.labelToggle
-        ); // for layer picker
         // }
       } else if (
         UserSettings.RecordSet.updateFilter.match(action) ||
@@ -486,8 +480,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
         }
       } else if (UserSettings.InitState.getSuccess.match(action)) {
-        console.log('Map Toggle 15', action.payload);
-
         Object.keys(action.payload.recordSets).forEach((setID) => {
           if (setID !== RecordSetId.OfflineActivities) {
             let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
@@ -497,7 +489,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             draftState.layers[layerIndex].layerState = {};
             Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
-            console.log(console.log('Map Toggle 15.1', draftState.layers[layerIndex]));
           }
         });
       } else if (WhatsHere.map_init_get_poi_ids_fetched.match(action)) {
@@ -667,7 +658,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           limit: limit,
           tableFiltersHash: tableFiltersHash
         });
-        console.log('Map Toggle 31', draftState.recordTables[recordSetID]);
       } else if (IappActions.getRowsSuccess.match(action)) {
         // the hash, page, and limit all need to line up
         const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
@@ -691,8 +681,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         } // set defaults
         draftState.recordTables[recordSetID].loading = false;
       } else if (Activity.getRowsSuccess.match(action)) {
-        console.log('Map toggle 26', action.payload);
-
         // the hash, page, and limit all need to line up
         const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;
         const recordTable = draftState.recordTables?.[recordSetID];
@@ -762,10 +750,8 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
               draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
               index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             }
-
             draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
             draftState.layers[index].loading = true;
-            console.log('Map Toggle 9', action.payload, draftState.layers[index].tableFiltersHash);
             if (!draftState.layers[index].layerState) {
               draftState.layers[index].layerState = {
                 color: RECORD_COLOURS[0],
@@ -794,7 +780,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            console.log('Map Toggle 6', draftState.layers);
             if (!draftState.layers[index]) {
               draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
             }
@@ -804,9 +789,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
               break;
             }
-
             draftState.layers[index].IDList = action.payload.IDList;
-            console.log('Map Toggle 18', draftState.layers[index], action.payload);
             if (draftState.MapMode === 'VECTOR_ENDPOINT') {
               draftState.layers[index].loading = false;
             }
@@ -828,7 +811,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             draftState.layers[index].IDList = action.payload.IDList;
             draftState.layers[index].loading = false;
-            console.log('Map Toggle 25', draftState.layers[index].IDList, action.payload);
             break;
           case MAP_MODE_SET:
             draftState.MapMode = action.payload;
