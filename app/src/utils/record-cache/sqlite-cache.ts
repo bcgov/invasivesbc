@@ -1,4 +1,4 @@
-import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { DBSQLiteValues, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import centroid from '@turf/centroid';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
@@ -19,9 +19,15 @@ import MIGRATIONS from './migrations';
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
 
+/*
+  To avoid hitting SQLite variable limits (That crashes the DB)
+  SQLiteRecordCacheService uses the class member QUERY_LIMIT to break up larger queries.
+  These errors can become noticeable when dealing with recordsets in the hundred thousands.
+  Example Error: "Query: Failed in selectSQL : Error: querySQL prepare failed rc: 1 message: too many SQL variables"
+*/
 class SQLiteRecordCacheService extends RecordCacheService {
   private static _instance: SQLiteRecordCacheService;
-
+  private QUERY_LIMIT: number = 50000;
   private cacheDB: SQLiteDBConnection | null = null;
   protected constructor() {
     super();
@@ -222,13 +228,13 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
 
     const startPos = page * limit;
+    const subset = recordSetIdList.slice(startPos, startPos + limit);
     const results = await this.cacheDB?.query(
       // language=SQLite
       `SELECT DATA
        FROM CACHED_RECORDS
-       WHERE ID IN (${recordSetIdList.map(() => '?').join(', ')})
-       LIMIT ?, ?`,
-      [...recordSetIdList, startPos, limit]
+       WHERE ID IN (${subset.map(() => '?').join(', ')})`,
+      [...subset]
     );
 
     if (!results?.values || results.values?.length === 0) {
@@ -303,12 +309,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
     return JSON.parse(result.values[0]['DATA']);
   }
-
-  async saveActivity(id: string, data: unknown): Promise<void> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-
+  private transformActivity(id: string, data: UserRecord): Array<any> {
     const stringified = JSON.stringify(data);
     const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
     const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
@@ -321,17 +322,26 @@ class SQLiteRecordCacheService extends RecordCacheService {
       };
     });
     const geojson = JSON.stringify(geometry) ?? null;
-    await this.cacheDB.query(
-      //language=SQLite
-      `INSERT INTO CACHED_RECORDS(ID, DATA, GEOJSON, SHORT_ID, DATE_CREATED)
-        VALUES (?, ?, ?, ?, ?)
-        ON CONFLICT (ID)
-        DO UPDATE SET
-        DATA = excluded.DATA,
-        DATE_CREATED = excluded.DATE_CREATED,
-        GEOJSON = excluded.GEOJSON`,
-      [id, stringified, geojson, short_id, activityDate]
-    );
+    return [id, stringified, geojson, short_id, activityDate];
+  }
+
+  async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const entry = `( ?, ?, ?, ?, ? )`;
+    const values: Array<any> = [];
+    Object.keys(data).forEach((key) => values.push(this.transformActivity(key, data[key])));
+    let query = 'INSERT INTO CACHED_RECORDS(ID, DATA, GEOJSON, SHORT_ID, DATE_CREATED) VALUES ';
+    query += values.map(() => entry).join(', ');
+    query += `
+      ON CONFLICT (ID)
+      DO UPDATE SET
+      DATA = excluded.DATA,
+      DATE_CREATED = excluded.DATE_CREATED,
+      GEOJSON = excluded.GEOJSON`;
+
+    await this.cacheDB.run(query, values.flat(), false);
   }
   protected async dateOfMostRecentRecord() {
     if (this.cacheDB == null) {
@@ -424,25 +434,31 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
     const centroidArr: any[] = [];
     const geoJsonArr: any[] = [];
-    const results = await this.cacheDB?.query(
-      // language=SQLite
-      `SELECT GEOJSON, SHORT_ID
-       FROM CACHED_RECORDS
-       WHERE ID IN (${ids.map(() => '?').join(', ')})
-       AND GEOJSON NOT NULL`,
-      [...ids]
-    );
 
-    results?.values?.forEach((item) => {
-      try {
-        JSON.parse(item['GEOJSON'])?.forEach((feature: Feature) => {
-          centroidArr.push(centroid(feature));
-          geoJsonArr.push(feature);
-        });
-      } catch (e) {
-        console.error('Error parsing record:', e);
-      }
-    });
+    let results: DBSQLiteValues;
+
+    for (let i = 0; i < ids.length; i += this.QUERY_LIMIT) {
+      const slice = ids.slice(i, i + this.QUERY_LIMIT);
+      results = await this.cacheDB?.query(
+        // language=SQLite
+        `SELECT GEOJSON, SHORT_ID
+       FROM CACHED_RECORDS
+       WHERE ID IN (${slice.map(() => '?').join(', ')})
+       AND GEOJSON NOT NULL`,
+        [...slice]
+      );
+
+      results?.values?.forEach((item) => {
+        try {
+          JSON.parse(item['GEOJSON'])?.forEach((feature: Feature) => {
+            centroidArr.push(centroid(feature));
+            geoJsonArr.push(feature);
+          });
+        } catch (e) {
+          console.error('Error parsing record:', e);
+        }
+      });
+    }
 
     const cachedCentroid: GeoJSONSourceSpecification = {
       type: 'geojson',
@@ -495,23 +511,42 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const [act, iapp] = await Promise.all([
-      (
-        await this.cacheDB.query(
-          //language=SQLite
-          `SELECT ID
-           FROM CACHED_RECORDS`
-        )
-      )?.values ?? [],
-      (
-        await this.cacheDB.query(
-          //language=SQLite
-          `SELECT ID
-           FROM CACHED_IAPP_RECORDS`
-        )
-      )?.values ?? []
-    ]);
-    return act.concat(iapp).map((set) => set['ID']);
+    const idList: string[] = [];
+    let moreRows = true;
+    let offsetMultiplier = 0;
+    do {
+      const act =
+        (
+          await this.cacheDB.query(
+            //language=SQLite
+            `SELECT ID
+           FROM CACHED_RECORDS
+           ORDER BY ID ASC
+           LIMIT ?
+           OFFSET ?`,
+            [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
+          )
+        )?.values ?? [];
+      const iapp =
+        (
+          await this.cacheDB.query(
+            //language=SQLite
+            `SELECT ID
+           FROM CACHED_IAPP_RECORDS
+           ORDER BY ID ASC
+           LIMIT ?
+           OFFSET ?`,
+            [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
+          )
+        )?.values ?? [];
+
+      offsetMultiplier++;
+      moreRows = act.length + iapp.length !== 0;
+      act.forEach((set) => idList.push(set['ID']));
+      iapp.forEach((set) => idList.push(set['ID']));
+    } while (moreRows);
+
+    return idList;
   }
 
   private async initializeRecordCache(sqlite: SQLiteConnection) {
