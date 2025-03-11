@@ -3,19 +3,22 @@ import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity 
 import Activity from 'state/actions/activity/Activity';
 import { getRecordFilterObjectFromStateForAPI } from './dataAccess';
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
-  const { serializedActivities } = yield select(selectOfflineActivity);
+  try {
+    const { serializedActivities } = yield select(selectOfflineActivity);
 
-  const IDList = Object.values(serializedActivities).filter(
-    (value) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED
-  );
-
-  yield put(
-    Activity.Offline.getIdsForRecordsetSuccess({
-      recordSetID: action.payload.recordSetID,
-      IDList: IDList,
-      tableFiltersHash: action.payload.tableFiltersHash
-    })
-  );
+    const IDList = Object.values(serializedActivities).filter(
+      (value) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED
+    );
+    yield put(
+      Activity.Offline.getIdsForRecordsetSuccess({
+        recordSetID: action.payload.recordSetID,
+        IDList: IDList,
+        tableFiltersHash: action.payload.tableFiltersHash
+      })
+    );
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
@@ -42,22 +45,26 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
 
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
+  try {
+    yield put(
+      Activity.Offline.getIdsForRecordset({
+        filterObj: filterObject,
+        recordSetID: action.payload.recordSetID,
+        tableFiltersHash: action.payload.tableFiltersHash
+      })
+    );
+    yield put(
+      Activity.getRowsSuccess({
+        recordSetID: action.payload.recordSetID,
+        rows: dataArray,
+        tableFiltersHash: action.payload.tableFiltersHash,
+        page: action.payload.page,
+        limit: action.payload.limit
+      })
+    );
+  } catch (e) {
+    console.error(e);
+  }
 
-  yield put(
-    Activity.Offline.getIdsForRecordset({
-      filterObj: filterObject,
-      recordSetID: action.payload.recordSetID,
-      tableFiltersHash: action.payload.tableFiltersHash
-    })
-  );
-  yield put(
-    Activity.getRowsSuccess({
-      recordSetID: action.payload.recordSetID,
-      rows: dataArray,
-      tableFiltersHash: action.payload.tableFiltersHash,
-      page: action.payload.page,
-      limit: action.payload.limit
-    })
-  );
   // }
 }

@@ -4,6 +4,7 @@ import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
@@ -703,11 +704,21 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.recordTables[action.payload.recordSetID].loading = false;
       } else if (Activity.Offline.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+
         if (!draftState.layers[index]) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
         }
-        draftState.layers[index].IDList = action.payload.IDList;
-        draftState.layers[index].loading = false;
+
+        draftState.layers?.filter((layer) => {
+          console.log(action.payload?.IDList, layer.IDList);
+          return layer.IDList?.length !== undefined;
+        }); // why is layer.IDList undefined?
+
+        if (draftState.layers?.filter((layer) => layer.IDList?.length !== undefined).length > 0) {
+          draftState.layers[index].IDList = action.payload?.IDList ?? [];
+          draftState.layers[index].loading = false;
+        }
+        // }
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
       } else {
@@ -795,7 +806,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
               break;
             }
-            draftState.layers[index].IDList = action.payload.IDList;
+            draftState.layers[index].IDList = action.payload?.IDList ?? [];
             if (draftState.MapMode === 'VECTOR_ENDPOINT') {
               draftState.layers[index].loading = false;
             }

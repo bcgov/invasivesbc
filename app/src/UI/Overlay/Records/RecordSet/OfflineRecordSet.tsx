@@ -15,7 +15,7 @@ import { offlineActivityColumnsToDisplay } from './RecordTableHelpers';
 import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
 import UserRecord from 'interfaces/UserRecord';
-import { ActivitySubtypeShortLabels } from 'sharedAPI/src/constants';
+import { ActivitySubtypeShortLabels, ActivitySubtypeTargetKey } from 'sharedAPI/src/constants';
 type PropTypes = { setID: string };
 
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
@@ -94,51 +94,9 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   }
 
   const convertCodeToLabelUsingRecordType = (activity_subtype, activity_subtype_data, properties) => {
-    let target_key: string;
-
-    switch (activity_subtype) {
-      case 'Activity_Observation_PlantTerrestrial':
-        target_key = 'TerrestrialPlants'; //invasive_plant_code
-        break;
-      case 'Activity_Observation_PlantAquatic':
-        target_key = 'AquaticPlants'; //invasive_plant_code
-        break;
-      case 'Activity_Treatment_ChemicalPlantAquatic':
-        target_key = 'chemical_treatment_details'; //, 'invasive_plants'; //invasive_plant_code
-        break;
-      case 'Activity_Treatment_ChemicalPlantTerrestrial':
-        target_key = 'chemical_treatment_details'; //, 'invasive_plants']; //invasive_plant_code
-        break;
-      case 'Activity_Treatment_MechanicalPlantAquatic':
-        target_key = 'Treatment_MechanicalPlant_Information'; // invasive_plant_code
-        break;
-      case 'Activity_Treatment_MechanicalPlantTerrestrial':
-        target_key = 'Treatment_MechanicalPlant_Information'; // invasive_plant_code
-        break;
-      case 'Activity_Biocontrol_Release':
-        target_key = 'Biocontrol_Release_Information'; //invasive_plant_code
-        break;
-      case 'Activity_Biocontrol_Collection':
-        target_key = 'Biocontrol_Collection_Information'; // invasive_plant_code
-        break;
-      case 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant':
-        target_key = 'Monitoring_BiocontrolDispersal_Information'; //invasive_plant_code
-        break;
-      case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
-        target_key = 'Monitoring_ChemicalTerrestrialAquaticPlant_Information'; // invasive_plant_code,invasive_plant_aquatic_code
-        break;
-      case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
-        target_key = 'Monitoring_MechanicalTerrestrialAquaticPlant_Information'; // invasive_plant_code,invasive_plant_aquatic_code
-        break;
-      case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
-        target_key = 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'; // invasive_plant_code
-        break;
-      default:
-        target_key = '';
-    }
     const plantCodes = findCodesFromKey(
       activity_subtype_data,
-      target_key,
+      ActivitySubtypeTargetKey[activity_subtype],
       properties,
       [
         'Activity_Treatment_MechanicalPlantAquatic',

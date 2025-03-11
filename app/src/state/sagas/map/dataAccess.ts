@@ -257,7 +257,6 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
     }
 
     if (userMobileOffline) {
-      console.log('Map toggle 27.3', userMobileOffline, recordSetID, page, limit, tableFiltersHash);
       if (recordSetID === RecordSetId.OfflineActivities) {
         yield put(
           Activity.getRowsRequest({
