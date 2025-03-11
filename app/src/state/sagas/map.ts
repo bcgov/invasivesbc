@@ -853,13 +853,14 @@ function* activitiesPageSaga() {
     takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
+
     takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_GET_ROWS),
     takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST),
     takeEvery(Activity.getRowsOnline, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(Activity.getRowsOffline, handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE),
+    takeEvery(Activity.Offline.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE),
 
     takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IappActions.getRowsRequest, handle_IAPP_TABLE_ROWS_GET_ONLINE),

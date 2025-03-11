@@ -5,7 +5,6 @@ import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf'
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
@@ -107,14 +106,13 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     // if mobile or web
     if (connected && !workingOffline) {
       if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-        yield put({
-          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
-          payload: {
+        yield put(
+          Activity.Offline.getIdsForRecordset({
             filterObj: filterObject,
             recordSetID: action.payload.recordSetID,
             tableFiltersHash: action.payload.tableFiltersHash
-          }
-        });
+          })
+        );
       } else {
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
@@ -127,14 +125,13 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       }
     } else {
       if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-        yield put({
-          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
-          payload: {
+        yield put(
+          Activity.Offline.getIdsForRecordset({
             filterObj: filterObject,
             recordSetID: action.payload.recordSetID,
             tableFiltersHash: action.payload.tableFiltersHash
-          }
-        });
+          })
+        );
       } else {
         const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
         if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {

@@ -1,8 +1,4 @@
 import { put, select } from 'redux-saga/effects';
-import {
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS
-} from 'state/actions';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import Activity from 'state/actions/activity/Activity';
 import { getRecordFilterObjectFromStateForAPI } from './dataAccess';
@@ -13,14 +9,13 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
     (value) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED
   );
 
-  yield put({
-    type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS,
-    payload: {
+  yield put(
+    Activity.Offline.getIdsForRecordsetSuccess({
       recordSetID: action.payload.recordSetID,
       IDList: IDList,
       tableFiltersHash: action.payload.tableFiltersHash
-    }
-  });
+    })
+  );
 }
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
@@ -47,14 +42,14 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
 
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
-  yield put({
-    type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
-    payload: {
+
+  yield put(
+    Activity.Offline.getIdsForRecordset({
       filterObj: filterObject,
       recordSetID: action.payload.recordSetID,
       tableFiltersHash: action.payload.tableFiltersHash
-    }
-  });
+    })
+  );
   yield put(
     Activity.getRowsSuccess({
       recordSetID: action.payload.recordSetID,

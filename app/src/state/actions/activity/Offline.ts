@@ -20,5 +20,10 @@ class Offline {
 
   static readonly setAllShapeVisibility = createAction(`${this.PREFIX}/setAllShapeVisibility`);
   static readonly setLabelVisibility = createAction(`${this.PREFIX}/setLabelVisibility`);
+
+  static readonly getIdsForRecordset = createAction<Record<PropertyKey, any>>(`${this.PREFIX}/getIdsForRecordset`);
+  static readonly getIdsForRecordsetSuccess = createAction<Record<PropertyKey, any>>(
+    `${this.PREFIX}/getIdsForRecordsetSuccess`
+  );
 }
 export default Offline;

@@ -2,7 +2,6 @@ import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
@@ -702,6 +701,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.recordTables[recordSetID] = { rows };
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
+      } else if (Activity.Offline.getIdsForRecordsetSuccess.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+        }
+        draftState.layers[index].IDList = action.payload.IDList;
+        draftState.layers[index].loading = false;
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
       } else {
@@ -804,14 +810,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             break;
           }
-          case ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS:
-            let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            if (!draftState.layers[index]) {
-              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
-            }
-            draftState.layers[index].IDList = action.payload.IDList;
-            draftState.layers[index].loading = false;
-            break;
           case MAP_MODE_SET:
             draftState.MapMode = action.payload;
             switch (action.payload) {
