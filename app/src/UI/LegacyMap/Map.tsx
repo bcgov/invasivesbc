@@ -12,12 +12,12 @@ import {
 } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { Context } from 'utils/tile-cache/context';
 import {
-  removeOfflineActivitiesLayer,
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshOfflineActivitiesLayer,
   refreshVisibilityOnToggleUpdate,
   removeLayersOnNetworkConnectivityChange,
+  removeOfflineActivitiesLayer,
   toggleOfflineActivityLabels
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
 import {
@@ -37,7 +37,7 @@ import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
 import { PositionMarkers } from 'UI/LegacyMap/helpers/components/PositionMarkers';
-import maplibregl, { LngLatBoundsLike } from 'maplibre-gl';
+import maplibregl from 'maplibre-gl';
 import { MEMORY_CONSTRAINED_DEVICE, MOBILE } from 'state/build-time-config';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
@@ -134,11 +134,6 @@ export const Map = ({ children }) => {
 
     /* map can have platform-specific options */
     const platformOptions = (() => {
-      if (MOBILE) {
-        return {
-          maxBounds: [-141.7761, 46.41459, -114.049, 60.00678] as LngLatBoundsLike
-        };
-      }
       return {};
     })();
 

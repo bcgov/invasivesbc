@@ -101,3 +101,7 @@
     transition: bottom 0.1s ease 0.3s;
   }
 }
+
+.map-containing-block {
+  background: #999;
+}

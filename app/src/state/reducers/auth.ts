@@ -55,6 +55,7 @@ export interface AuthState {
   offlineUsers: OfflineUserState[];
   workingOffline: boolean;
   loggedInOrWorkingOffline: boolean;
+  loginInProgress: boolean;
 
   roles: { role_id: number; role_name: string }[];
   accessRoles: { role_id: number; role_name: string }[];
@@ -117,6 +118,7 @@ const initialState: AuthState = {
   offlineUsers: [],
   workingOffline: false,
   loggedInOrWorkingOffline: false,
+  loginInProgress: false,
   extendedInfo: {
     account_status: 0,
     activation_status: 0,
@@ -280,11 +282,16 @@ function createAuthReducer(_configuration: AppConfig) {
           });
         }
         draftState.workingOffline = draftState.authenticated ? false : draftState.workingOffline;
+      } else if (AuthActions.signinRequest.match(action)) {
+        draftState.loginInProgress = true;
       } else if (AuthActions.requestComplete.match(action)) {
+        draftState.loginInProgress = false;
         const currentIdToken = action.payload.idToken;
         Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {
           draftState[key] = loadCurrentStateFromIdToken(currentIdToken)[key];
         });
+      } else if (AuthActions.requestError.match(action)) {
+        draftState.loginInProgress = false;
       } else if (AuthActions.updateTokenState.match(action)) {
         const currentIdToken = action.payload.idToken;
         Object.keys(loadCurrentStateFromIdToken(currentIdToken)).forEach((key) => {

@@ -165,8 +165,10 @@ const ButtonWrapper = ({ children }) => {
 
 const LoginButton = ({ labelText = 'Login' }) => {
   const dispatch = useDispatch();
+  const loginInProgress = useSelector((state) => state.Auth.loginInProgress);
   return (
     <MenuItem
+      disabled={loginInProgress}
       onClick={() => {
         dispatch(AuthActions.signinRequest());
       }}
