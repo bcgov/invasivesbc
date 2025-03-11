@@ -667,6 +667,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           limit: limit,
           tableFiltersHash: tableFiltersHash
         });
+        console.log('Map Toggle 31', draftState.recordTables[recordSetID]);
       } else if (IappActions.getRowsSuccess.match(action)) {
         // the hash, page, and limit all need to line up
         const { recordSetID, tableFiltersHash, limit, page, rows } = action.payload;

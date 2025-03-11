@@ -1,7 +1,11 @@
 import { put, select } from 'redux-saga/effects';
-import { ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS } from 'state/actions';
+import {
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+  ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE_SUCCESS
+} from 'state/actions';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import Activity from 'state/actions/activity/Activity';
+import { getRecordFilterObjectFromStateForAPI } from './dataAccess';
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
   console.log('Map Toggle 22', action.payload);
   const { serializedActivities } = yield select(selectOfflineActivity);
@@ -39,9 +43,20 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
   }
+  const currentState = yield select((state) => state.UserSettings);
+  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
+  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
 
-  console.log('Map Toggle 26.1', dataArray);
-
+  filterObject.limit = 200000;
+  filterObject.selectColumns = ['activity_id'];
+  yield put({
+    type: ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+    payload: {
+      filterObj: filterObject,
+      recordSetID: action.payload.recordSetID,
+      tableFiltersHash: action.payload.tableFiltersHash
+    }
+  });
   yield put(
     Activity.getRowsSuccess({
       recordSetID: action.payload.recordSetID,
