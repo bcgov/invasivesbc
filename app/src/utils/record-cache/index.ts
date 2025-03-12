@@ -83,7 +83,7 @@ abstract class RecordCacheService extends BaseCacheService<
   UserRecordCacheStatus
 > {
   private readonly CONCURRENCY_LIMIT = 3;
-  private readonly BATCH_AMOUNT = 19; // Use odd number increments so more digits update, appearing faster.
+  private readonly BATCH_AMOUNT = 20;
   protected constructor() {
     super();
   }
@@ -100,11 +100,11 @@ abstract class RecordCacheService extends BaseCacheService<
 
   public abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
 
-  protected abstract saveActivity(id: string, data: unknown): Promise<void>;
+  protected abstract saveActivity(data: unknown): Promise<void>;
 
   protected abstract dateOfMostRecentRecord();
 
-  protected abstract saveIapp(id: string, iappRecord: unknown, iappTableRow: unknown): Promise<void>;
+  protected abstract saveIapp(data: Record<PropertyKey, IappRecord | IappTableRow>): Promise<void>;
 
   public abstract getPaginatedCachedActivityRecords(
     recordSetIdList: string[],
@@ -201,7 +201,7 @@ abstract class RecordCacheService extends BaseCacheService<
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     let processedCaches = spec.idsToCache.length - uncachedRecords.length;
-    const lastProgressCallback: null | number = null;
+    let lastProgressCallback: null | number = null;
     const totalRecordsToCache = spec.idsToCache.length;
 
     for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += this.BATCH_AMOUNT) {
@@ -218,9 +218,7 @@ abstract class RecordCacheService extends BaseCacheService<
         });
         if (rez.ok) {
           const response = await rez.json();
-          Object.keys(response).forEach(async (key) => {
-            await this.saveIapp(key.toString(), response[key].record, response[key].row);
-          });
+          await this.saveIapp(response);
         }
       });
 
@@ -230,11 +228,11 @@ abstract class RecordCacheService extends BaseCacheService<
       // trigger a callback on the first run, on the last run, every 3%
       if (
         lastProgressCallback == null ||
-        currentProgress - lastProgressCallback > 0.03 ||
+        currentProgress - lastProgressCallback > 0.003 ||
         processedCaches == totalRecordsToCache
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
-
+        lastProgressCallback = currentProgress;
         if (progressCallback) {
           progressCallback({
             setId: spec.setId,
@@ -266,7 +264,7 @@ abstract class RecordCacheService extends BaseCacheService<
     const uncachedRecords = await this.filterIds('exclusive', spec.idsToCache);
     let pauseOrAbort: CacheDownloadMode = CacheDownloadMode.DEFAULT;
     let processedCaches = spec.idsToCache.length - uncachedRecords.length;
-    const lastProgressCallback: null | number = null;
+    let lastProgressCallback: null | number = null;
     const totalRecordsToCache = spec.idsToCache.length;
 
     for (let i = 0; i < uncachedRecords.length && pauseOrAbort === CacheDownloadMode.DEFAULT; i += this.BATCH_AMOUNT) {
@@ -282,9 +280,7 @@ abstract class RecordCacheService extends BaseCacheService<
         });
         if (rez.ok) {
           const response = await rez.json();
-          Object.keys(response).forEach(async (key) => {
-            await this.saveActivity(key, response[key]);
-          });
+          await this.saveActivity(response);
         }
       });
 
@@ -294,11 +290,11 @@ abstract class RecordCacheService extends BaseCacheService<
       // trigger a callback on the first run, on the last run, every 3%
       if (
         lastProgressCallback == null ||
-        currentProgress - lastProgressCallback > 0.03 ||
+        currentProgress - lastProgressCallback > 0.005 ||
         processedCaches === totalRecordsToCache
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
-
+        lastProgressCallback = currentProgress;
         const normalizedProgress = currentProgress;
         const progressLabel = `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`;
 
@@ -414,9 +410,7 @@ abstract class RecordCacheService extends BaseCacheService<
             headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' }
           });
           const newRecords = (await rez.json()) ?? {};
-          Object.keys(newRecords).forEach(async (key) => {
-            await this.saveActivity(key, newRecords[key]);
-          });
+          await this.saveActivity(newRecords);
         }
         const updatedShapes = await this.createActivityRecordsetSourceMetadata([...r.cachedIds, ...newIds]);
         this.addOrUpdateRepository({
