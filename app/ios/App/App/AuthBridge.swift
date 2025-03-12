@@ -59,8 +59,85 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
     
     
     @objc func logout(_ call: CAPPluginCall) {
-        self.authState = nil
-        call.resolve([:])
+        guard let idTokenHint = call.getString("id_token_hint") else {
+            call.reject("id_token_hint parameter is missing.")
+            return
+        }
+
+        guard let postLogoutRedirectUri = call.getString("post_logout_redirect_uri") else {
+            call.reject("post_logout_redirect_uri parameter is missing.")
+            return
+        }
+
+        guard let SSO_BASE_URL = Bundle.main.infoDictionary?["SSO_BASE_URL"] as? String else {
+            call.reject("No SSO base URL configured")
+            return
+        }
+
+        guard let SSO_CLIENT_ID = Bundle.main.infoDictionary?["SSO_CLIENT_ID"] as? String else {
+            call.reject("No SSO client id configured")
+            return
+        }
+
+        guard let endsessionEndpoint = URL(string: "\(SSO_BASE_URL)/protocol/openid-connect/logout") else {
+            call.reject("Invalid logout endpoint URL")
+            return
+        }
+
+        guard let postLogoutRedirectURL = URL(string: "invasivesbc://callback") else {
+            call.reject("Invalid redirect URI")
+            return
+        }
+
+        let clientID = SSO_CLIENT_ID
+        var request = URLRequest(url: endsessionEndpoint)
+        request.httpMethod = "POST"
+        let bodyParams: [String: String] = [
+            "id_token_hint": idTokenHint,
+            "post_logout_redirect_uri": postLogoutRedirectURL.absoluteString,
+            "client_id": clientID
+        ]
+
+        do {
+            let bodyData = try JSONSerialization.data(withJSONObject: bodyParams, options: [])
+            request.httpBody = bodyData
+        } catch {
+            print("Error serializing JSON body: \(error.localizedDescription)")
+            call.reject("Failed to serialize JSON body")
+            return
+        }
+
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error logging out: \(error.localizedDescription)")
+                call.reject("Logout failed: \(error.localizedDescription)")
+                return
+            }
+
+            if let httpResponse = response as? HTTPURLResponse {
+                if httpResponse.statusCode == 200 {
+                    print("Successfully logged out")
+
+                    self.authState = nil
+                    call.resolve([
+                        "authorized": false,
+                        "accessToken": nil,
+                        "idToken": nil
+                    ])
+                } else {
+                    print("Logout failed with status code: \(httpResponse.statusCode)")
+                    if let data = data, let responseString = String(data: data, encoding: .utf8) {
+                        print("Response: \(responseString)")
+                    }
+                    call.reject("Logout failed with status code: \(httpResponse.statusCode)")
+                }
+            } else {
+                call.reject("No response received")
+            }
+        }
+
+        task.resume()
+        
     }
     
     @objc func authStart(_ call: CAPPluginCall) {
