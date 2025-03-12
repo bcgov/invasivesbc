@@ -12,6 +12,7 @@ import maplibregl, { IControl } from 'maplibre-gl';
 import { createRoot, Root } from 'react-dom/client';
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -109,10 +110,23 @@ const DrawControls = () => {
     }
   }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, appModeURL]);
 
-  const drawShapeUpdate = useCallback((event) => {
+  /**
+   * @desc Update the Drawn Shape.
+   * Temporarily add reference to map in the callback function due to an issue with current mapbox-draw-gl
+   * This allows us to make sure that the dragPan functionality is enabled after shape creation.
+   * @link https://github.com/mapbox/mapbox-gl-draw/issues/1366
+   */
+  const drawShapeUpdate = useCallback((event, map: InvasivesMap | undefined) => {
     if (!drawInstance.current) return;
 
-    if (!['direct_select', 'simple_select'].includes(drawInstance.current.getMode())) {
+    const currentMode = drawInstance.current.getMode();
+
+    if ('direct_select' === currentMode) {
+      map?.touchZoomRotate.disable();
+    } else if ('simple_select' === currentMode) {
+      map?.touchZoomRotate.enable();
+      map?.dragPan.enable();
+    } else {
       // we're not done drawing until we revert to one of these modes
       return;
     }
@@ -146,8 +160,6 @@ const DrawControls = () => {
         default:
           break;
       }
-
-      //drawInstance.current.changeMode('whats_here_box_mode');
     }
   }, [mode]);
 
@@ -158,6 +170,7 @@ const DrawControls = () => {
 
     drawInstance.current = new MapboxDraw({
       displayControlsDefault: true,
+      touchEnabled: true,
       controls: {
         combine_features: false,
         uncombine_features: false
@@ -173,7 +186,6 @@ const DrawControls = () => {
         {
           id: 'gl-draw-line',
           type: 'line',
-          // filter: ['all', ['==', '$type', 'LineString']],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
@@ -183,6 +195,16 @@ const DrawControls = () => {
             'line-dasharray': [0.2, 2],
             'line-width': 3
           }
+        },
+        {
+          id: 'gl-draw-polygon-point',
+          type: 'circle',
+          paint: {
+            'circle-radius': 3,
+            'circle-color': '#f00',
+            'circle-stroke-width': 1,
+            'circle-stroke-color': '#fff'
+          }
         }
       ]
     });
@@ -190,7 +212,7 @@ const DrawControls = () => {
     drawModeDisplay.current = new DrawModeDisplay(mode);
 
     map.on('draw.create', drawCreate);
-    map.on('draw.selectionchange', drawShapeUpdate);
+    map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
@@ -202,7 +224,7 @@ const DrawControls = () => {
       }
 
       map.off('draw.create', drawCreate);
-      map.off('draw.selectionChange', drawShapeUpdate);
+      map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
 
       if (drawInstance.current) {
         (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
