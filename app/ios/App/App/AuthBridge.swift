@@ -57,15 +57,61 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         ])
     }
     
-    
+
     @objc func logout(_ call: CAPPluginCall) {
-        guard let idTokenHint = call.getString("id_token_hint") else {
-            call.reject("id_token_hint parameter is missing.")
+
+        guard let SSO_BASE_URL = Bundle.main.infoDictionary?["SSO_BASE_URL"] as? String else {
+            call.reject("No SSO base URL configured")
             return
         }
 
-        guard let postLogoutRedirectUri = call.getString("post_logout_redirect_uri") else {
-            call.reject("post_logout_redirect_uri parameter is missing.")
+        guard let SSO_CLIENT_ID = Bundle.main.infoDictionary?["SSO_CLIENT_ID"] as? String else {
+            call.reject("No SSO client ID configured")
+            return
+        }
+
+        guard let refreshToken = authState?.lastTokenResponse?.refreshToken else {
+            call.reject("No refresh token available")
+            return
+        }
+
+        let revokeEndpoint = "\(SSO_BASE_URL)/protocol/openid-connect/revoke"
+
+        let session = URLSession.shared
+
+        // revoke refresh token
+        var revokeRequest = URLRequest(url: URL(string: revokeEndpoint)!)
+        revokeRequest.httpMethod = "POST"
+        revokeRequest.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+
+        let revokeBodyParams = [
+            "client_id": SSO_CLIENT_ID,
+            "token": refreshToken,
+            "token_type_hint": "refresh_token"
+        ]
+        
+        let revokeBodyString = revokeBodyParams.map { "\($0.key)=\($0.value)" }.joined(separator: "&")
+        revokeRequest.httpBody = revokeBodyString.data(using: .utf8)
+
+        let revokeTask = session.dataTask(with: revokeRequest) { data, response, error in
+            if let error = error {
+                print("Error revoking token: \(error.localizedDescription)")
+            } else if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                print("Successfully revoked refresh token")
+            } else {
+                print("Failed to revoke token")
+            }
+
+            // call keycloak logout endpoint
+            self.performLogout(call)
+        }
+        
+        revokeTask.resume()
+    }
+    
+    @objc func performLogout(_ call: CAPPluginCall) {
+        guard let idTokenHint = call.getString("id_token_hint") else {
+            call.reject("id_token_hint parameter is missing.")
             return
         }
 
@@ -79,24 +125,31 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
             return
         }
 
-        guard let endsessionEndpoint = URL(string: "\(SSO_BASE_URL)/protocol/openid-connect/logout") else {
-            call.reject("Invalid logout endpoint URL")
-            return
-        }
+        let endsessionEndpoint = "\(SSO_BASE_URL)/protocol/openid-connect/logout"
+
+        // guard let postLogoutRedirectUri = call.getString("post_logout_redirect_uri") else {
+        //     call.reject("post_logout_redirect_uri parameter is missing.")
+        //     return
+        // }
 
         guard let postLogoutRedirectURL = URL(string: "invasivesbc://callback") else {
             call.reject("Invalid redirect URI")
             return
         }
 
-        var request = URLRequest(url: endsessionEndpoint)
+        guard let refreshToken = authState?.lastTokenResponse?.refreshToken else {
+            call.reject("No refresh token available")
+            return
+        }
+        var request = URLRequest(url: URL(string: endsessionEndpoint)!)
         request.httpMethod = "POST"
         let bodyParams: [String: String] = [
             "id_token_hint": idTokenHint,
             "post_logout_redirect_uri": postLogoutRedirectURL.absoluteString,
-            "client_id": SSO_CLIENT_ID
+            "client_id": SSO_CLIENT_ID,
+            "refresh_token":refreshToken
         ]
-
+        print("-->", bodyParams)
         do {
             let bodyData = try JSONSerialization.data(withJSONObject: bodyParams, options: [])
             request.httpBody = bodyData
@@ -138,6 +191,8 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         task.resume()
         
     }
+
+
     
     @objc func authStart(_ call: CAPPluginCall) {
         guard let SSO_BASE_URL = Bundle.main.infoDictionary?["SSO_BASE_URL"] as? String else {
