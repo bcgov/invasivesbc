@@ -709,16 +709,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
         }
 
-        draftState.layers?.filter((layer) => {
-          console.log(action.payload?.IDList, layer.IDList);
-          return layer.IDList?.length !== undefined;
-        }); // why is layer.IDList undefined?
-
-        if (draftState.layers?.filter((layer) => layer.IDList?.length !== undefined).length > 0) {
+        if ('IDList' in draftState.layers[index]) {
           draftState.layers[index].IDList = action.payload?.IDList ?? [];
           draftState.layers[index].loading = false;
+        } else {
+          draftState.layers[index] = {
+            ...draftState.layers[index],
+            IDList: action.payload?.IDList ?? [],
+            loading: false
+          };
         }
-        // }
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
       } else {

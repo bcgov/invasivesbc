@@ -103,50 +103,42 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   filterObject.selectColumns = ['activity_id'];
 
   try {
+    // offline activities
+    if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+      yield put(
+        Activity.Offline.getIdsForRecordset({
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID,
+          tableFiltersHash: action.payload.tableFiltersHash
+        })
+      );
+      return; // early return
+    }
+
     // if mobile or web
     if (connected && !workingOffline) {
-      if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-        yield put(
-          Activity.Offline.getIdsForRecordset({
-            filterObj: filterObject,
-            recordSetID: action.payload.recordSetID,
-            tableFiltersHash: action.payload.tableFiltersHash
-          })
-        );
-      } else {
+      yield put({
+        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+        payload: {
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID,
+          tableFiltersHash: action.payload.tableFiltersHash
+        }
+      });
+    } else {
+      const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
+      if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
+        const service = yield RecordCacheServiceFactory.getPlatformInstance();
+        const ids = yield service.getIdList(action.payload.recordSetID);
+
         yield put({
-          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
           payload: {
-            filterObj: filterObject,
             recordSetID: action.payload.recordSetID,
+            IDList: ids ?? [],
             tableFiltersHash: action.payload.tableFiltersHash
           }
         });
-      }
-    } else {
-      if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-        yield put(
-          Activity.Offline.getIdsForRecordset({
-            filterObj: filterObject,
-            recordSetID: action.payload.recordSetID,
-            tableFiltersHash: action.payload.tableFiltersHash
-          })
-        );
-      } else {
-        const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
-        if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
-          const service = yield RecordCacheServiceFactory.getPlatformInstance();
-          const ids = yield service.getIdList(action.payload.recordSetID);
-
-          yield put({
-            type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-            payload: {
-              recordSetID: action.payload.recordSetID,
-              IDList: ids ?? [],
-              tableFiltersHash: action.payload.tableFiltersHash
-            }
-          });
-        }
       }
     }
   } catch (e) {
@@ -256,37 +248,27 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
       return;
     }
 
-    if (userMobileOffline) {
-      if (recordSetID === RecordSetId.OfflineActivities) {
-        yield put(
-          Activity.getRowsRequest({
-            filterObj: filterObject,
-            recordSetID: recordSetID,
-            tableFiltersHash: tableFiltersHash,
-            page: page,
-            limit: limit
-          })
-        );
-      } else {
-        const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        const recordSetIdList = yield service.getIdList(recordSetID);
-        const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
-
-        yield put(
-          Activity.getRowsSuccess({
-            recordSetID: recordSetID,
-            rows: records,
-            tableFiltersHash: tableFiltersHash,
-            page: page,
-            limit: limit
-          })
-        );
-      }
-    } else {
+    // user online or offline activities fetched from persisted store
+    if (recordSetID === RecordSetId.OfflineActivities || !userMobileOffline) {
       yield put(
         Activity.getRowsRequest({
           filterObj: filterObject,
           recordSetID: recordSetID,
+          tableFiltersHash: tableFiltersHash,
+          page: page,
+          limit: limit
+        })
+      );
+    } else {
+      // user offline: fetch from cache
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const recordSetIdList = yield service.getIdList(recordSetID);
+      const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
+
+      yield put(
+        Activity.getRowsSuccess({
+          recordSetID: recordSetID,
+          rows: records,
           tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit

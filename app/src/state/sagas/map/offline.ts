@@ -6,9 +6,10 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
   try {
     const { serializedActivities } = yield select(selectOfflineActivity);
 
-    const IDList = Object.values(serializedActivities).filter(
-      (value) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED
-    );
+    const IDList =
+      Object.values(serializedActivities).filter(
+        (value) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED
+      ) ?? [];
     yield put(
       Activity.Offline.getIdsForRecordsetSuccess({
         recordSetID: action.payload.recordSetID,
@@ -65,6 +66,4 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   } catch (e) {
     console.error(e);
   }
-
-  // }
 }
