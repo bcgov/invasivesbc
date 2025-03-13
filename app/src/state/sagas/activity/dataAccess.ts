@@ -352,15 +352,23 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     const linked_id = updatedFormData.activity_type_data?.linked_id;
     const oldLinkedId = beforeActivity.form_data.activity_type_data?.linked_id;
     const oldCopyGeometry = beforeActivity.form_data.activity_type_data?.copy_geometry;
-
-    if (
+    const requestGeometryFromExistingRecord =
       updatedFormData.activity_type_data?.copy_geometry === 'Yes' &&
       linked_id &&
-      (oldLinkedId !== linked_id || oldCopyGeometry !== 'Yes')
-    ) {
-      const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
-      const linked_geo = networkReturn.data.geometry[0];
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [linked_geo] } });
+      (oldLinkedId !== linked_id || oldCopyGeometry !== 'Yes');
+
+    if (requestGeometryFromExistingRecord) {
+      const { connected } = yield select(selectNetworkState);
+      let linked_geo;
+      if (connected) {
+        const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
+        linked_geo = networkReturn.data.geometry;
+      } else {
+        const service = yield RecordCacheServiceFactory.getPlatformInstance();
+        const record = yield service.loadActivity(linked_id);
+        linked_geo = record.geometry;
+      }
+      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: linked_geo } });
       yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
     } else if (
       beforeActivity.form_data.activity_type_data?.copy_geometry === 'Yes' &&
