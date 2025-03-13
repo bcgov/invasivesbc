@@ -384,7 +384,7 @@ abstract class RecordCacheService extends BaseCacheService<
 
     // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
     repos.forEach((repo) => {
-      (repo.cachedGeoJson?.data as any).features.map(
+      (repo.cachedGeoJson?.data as any).features.forEach(
         (feature: Feature, i: number) => (featureMap[feature?.properties?.name + i] ??= feature)
       );
     });
