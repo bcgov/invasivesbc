@@ -115,7 +115,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     );
     return plantCodes;
   };
-  const viewFilters = useSelector((state) => state.Map.viewFilters);
   const connected = useSelector((state) => state.Network.connected);
   const offlineDocs = useSelector((state) => state.UserSettings.offlineDocs);
   const listOptions = offlineDocs[0]?.apiDocsWithViewOptions;
@@ -135,7 +134,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const sortOrder = useSelector((state: any) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
   let parsedObj = Object.fromEntries(
     Object.entries(serializedActivities)
-      .filter(([_, value]) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED)
+      .filter(([_, value]) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED)
       .map(([key, value]) => {
         const typedValue = value as OfflineActivityRecord;
         return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];

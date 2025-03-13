@@ -15,7 +15,6 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { FeatureCollection } from 'geojson';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
-
 const LAYER_ID_PREFIX = 'recordset-layer-';
 const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
 /** DRY Handler for formatting LayerIDs */
@@ -359,6 +358,9 @@ export const refreshOfflineActivitiesLayer = async (
 ) => {
   if (!map || !visibility) return;
   await removeOfflineActivitiesLayer(map);
+
+  if (Object.keys(locallyStoredActivities).length === 0) return;
+
   await createOfflineActivitiesLayer(map, locallyStoredActivities, labelVisibility);
 };
 

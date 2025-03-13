@@ -46,7 +46,7 @@ import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
-
+import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -275,7 +275,12 @@ export const Map = ({ children }) => {
     if (!mapToggle) {
       removeOfflineActivitiesLayer(map);
     } else {
-      refreshOfflineActivitiesLayer(map, mapToggle, labelToggle, serializedActivities);
+      const unsyncedOfflineActivities = Object.fromEntries(
+        Object.entries(serializedActivities).filter(
+          ([_, value]) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED
+        )
+      );
+      refreshOfflineActivitiesLayer(map, mapToggle, labelToggle, unsyncedOfflineActivities);
     }
   }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, mapToggle]);
 
