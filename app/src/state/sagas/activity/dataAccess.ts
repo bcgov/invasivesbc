@@ -470,7 +470,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST() {
 
 export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
   const payloadActivity = action.payload;
-  const [AuthState, networkState] = yield all([yield select(selectAuth), yield select(selectNetworkState)]);
+  const [AuthState, networkState] = yield all([select(selectAuth), select(selectNetworkState)]);
 
   try {
     // filter Treatments and/or Biocontrol
@@ -504,18 +504,11 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
         );
       } else {
         const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        const overlappingRecords: string[] = [];
+        const overlappingRecords = yield service.getRecordIdsOverlappingFeature(search_feature);
 
-        (yield service.getOverlappingRepositories(search_feature.features[0])).flatMap((set) =>
-          set.cachedGeoJson.data.features.forEach((shape: Feature) => {
-            if (booleanIntersects(search_feature.features[0], shape)) {
-              overlappingRecords.push(shape?.properties?.description);
-            }
-          })
-        );
         const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(
           overlappingRecords
-        )).filter((record: UserRecord) => record.activity_type === ActivityType.Treatment);
+        )).filter((record: UserRecord) => linkedActivitySubtypes.includes(record.activity_subtype));
 
         yield put(
           Activity.Suggestions.treatmentIdsSuccess(
