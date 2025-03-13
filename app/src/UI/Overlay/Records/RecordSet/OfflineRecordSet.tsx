@@ -13,9 +13,7 @@ import { detectTouchDevice } from 'utils/detectTouch';
 import { offlineActivityColumnsToDisplay } from './RecordTableHelpers';
 import { USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
 import UserRecord from 'interfaces/UserRecord';
-import { ActivitySubtypeShortLabels, ActivitySubtypeTargetKey } from 'sharedAPI/src/constants';
-import { findSpeciesCodesAndConcatenateLabels } from 'utils/addActivity';
-import { ActivitySubtype } from 'sharedAPI';
+import { transformOfflineActivitiesForRecordTable } from 'utils/addActivity';
 type PropTypes = { setID: string };
 
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
@@ -31,7 +29,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   };
 
   const offlineDocs = useSelector((state) => state.UserSettings.offlineDocs);
-  const listOptions = offlineDocs[0]?.apiDocsWithViewOptions;
+  const listOptions: any = offlineDocs[0]?.apiDocsWithViewOptions;
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -54,55 +52,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   );
 
   try {
-    Object.entries(unsyncedOfflineActivities).forEach(([key, value]) => {
-      unsyncedOfflineActivities[key].data.activity_date = new Date(
-        value.data?.form_data?.activity_data?.activity_date_time ??
-          value.data?.form_data?.activity_data?.activity_date_time ??
-          null
-      )
-        .toISOString()
-        .substring(0, 10);
-
-      unsyncedOfflineActivities[key].data.activity_subtype =
-        ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown';
-
-      unsyncedOfflineActivities[key].data.invasive_plant = findSpeciesCodesAndConcatenateLabels(
-        unsyncedOfflineActivities[key].data.form_data.activity_subtype_data,
-        ActivitySubtypeTargetKey[unsyncedOfflineActivities[key].record_type],
-        listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties,
-        [
-          // Special case: if activity_subtype is in this list, switch between invasive_plant_code and invasive_plant_aquatic_code when searching api docs
-          ActivitySubtype.Treatment_MechanicalPlantAquatic,
-          ActivitySubtype.Treatment_ChemicalPlantAquatic,
-          ActivitySubtype.Observation_PlantAquatic
-        ].includes(unsyncedOfflineActivities[key].record_type as ActivitySubtype)
-      );
-
-      unsyncedOfflineActivities[key].data.jurisdiction_display = (
-        unsyncedOfflineActivities[key].data?.jurisdiction ?? []
-      )
-        .map(
-          (val) =>
-            listOptions?.components?.schemas[
-              (value as OfflineActivityRecord).record_type
-            ].properties.activity_data.properties.jurisdictions.items.properties.jurisdiction_code.options.find(
-              (item) => item.value === val
-            )?.label
-        )
-        .filter((label) => label)
-        .join(', ');
-
-      unsyncedOfflineActivities[key].data.agency =
-        listOptions?.components?.schemas[
-          (value as OfflineActivityRecord).record_type
-        ].properties.activity_data.properties.invasive_species_agency_code.options.find(
-          (item) =>
-            item.value === unsyncedOfflineActivities[key].data.form_data.activity_data.invasive_species_agency_code
-        )?.label || '';
-
-      unsyncedOfflineActivities[key].data.reported_area =
-        unsyncedOfflineActivities[key].data.form_data.activity_data.reported_area;
-    });
+    unsyncedOfflineActivities = transformOfflineActivitiesForRecordTable(unsyncedOfflineActivities, listOptions);
   } catch (error) {
     console.log(error);
   }

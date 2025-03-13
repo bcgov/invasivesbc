@@ -2,6 +2,7 @@ import { put, select } from 'redux-saga/effects';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import Activity from 'state/actions/activity/Activity';
 import { getRecordFilterObjectFromStateForAPI } from './dataAccess';
+
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
   try {
     const { serializedActivities } = yield select(selectOfflineActivity);
