@@ -53,12 +53,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return (await this.getRepository(repositoryId)).cachedIds ?? [];
   }
 
-  async saveActivity(id: string, data: unknown): Promise<void> {
+  async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-
-    await this.store.setItem(id, data);
+    await Promise.all(Object.keys(data).map((key) => this.store?.setItem(key, data[key])));
   }
 
   async setRepositoryStatus(cacheId: string, status: UserRecordCacheStatus) {
@@ -83,12 +82,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return CacheDownloadMode.DEFAULT;
   }
 
-  async saveIapp(id: string, iappRecord: IappRecord, iappTableRow: IappTableRow): Promise<void> {
+  async saveIapp(data: Record<PropertyKey, IappRecord | IappTableRow>): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    const data = { record: iappRecord, row: iappTableRow };
-    await this.store.setItem(id.toString(), data);
+    await Promise.all(Object.keys(data).map((id) => this.store?.setItem(id.toString(), data[id])));
   }
 
   async loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow> {
