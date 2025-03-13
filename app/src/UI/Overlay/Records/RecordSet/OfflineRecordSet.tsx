@@ -77,11 +77,18 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
         let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
 
         if (result[key].size > 0 && properties[propertyKey]?.options) {
-          let options = properties[propertyKey].options;
+          const optionsMap = new Map<string, string>(
+            properties[propertyKey].options.map((option: { value: string; label: string }) => [
+              option.value,
+              option.label
+            ])
+          );
+
           result[key].forEach((value) => {
-            // change this to Map for O(1)
-            let found = options.find((option: { value: string; label: string }) => option.value === value);
-            if (found) labels.push(found.label);
+            const label = optionsMap.get(value);
+            if (label) {
+              labels.push(label);
+            }
           });
         }
       }

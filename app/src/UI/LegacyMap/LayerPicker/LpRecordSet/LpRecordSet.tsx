@@ -12,7 +12,8 @@ type PropTypes = {
 };
 
 const LpRecordSet = ({ closePicker }: PropTypes) => {
-  const DEFAULT_RECORD_TYPES = ['1', '2', '3', '4']; // change this
+  const defaultRecordSetIds = Object.values(RecordSetId) as string[];
+
   const handleGoToRecords = () => {
     closePicker();
   };
@@ -38,7 +39,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
   const dispatch = useDispatch();
   const userIsMobileAndOffline = MOBILE && !connected;
   filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).forEach((recordSet) => {
-    if (DEFAULT_RECORD_TYPES.includes(recordSet)) {
+    if (defaultRecordSetIds.includes(recordSet)) {
       defaultRecordSets.push({ ...recordSets[recordSet], id: recordSet });
     } else {
       customRecordSets.push({ ...recordSets[recordSet], id: recordSet });

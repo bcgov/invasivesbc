@@ -1,4 +1,4 @@
-import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 
 /**
  * @desc Filter Recordset keys based on network status of user. Convert Obj keys to array.
@@ -11,7 +11,7 @@ const filterRecordsetsByNetworkState = (recordSets: Record<string, UserRecordSet
     return (
       !userOffline ||
       recordSets[set].cacheMetadataStatus === UserRecordCacheStatus.CACHED ||
-      recordSets[set].recordSetName === 'All Unsynced Offline Activities' // change this
+      set === RecordSetId.OfflineActivities
     );
   });
 

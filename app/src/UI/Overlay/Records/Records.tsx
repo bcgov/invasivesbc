@@ -11,14 +11,14 @@ import RecordSetControl from './RecordSetControl';
 import { MOBILE } from 'state/build-time-config';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import Activity from 'state/actions/activity/Activity';
+
 export const Records = () => {
-  const DEFAULT_RECORD_TYPES = [
-    'All InvasivesBC Activities',
-    'All IAPP Records',
-    'My Drafts',
-    'All Unsynced Offline Activities'
-  ];
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
+  const defaultRecordSetIds = Object.values(RecordSetId);
+  const defaultRecordSetTypes = defaultRecordSetIds
+    .map((key) => recordSets[parseInt(key)]?.recordSetName)
+    .filter((value) => value !== undefined);
+
   const connected = useSelector((state) => state.Network.connected);
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
 
@@ -98,14 +98,14 @@ export const Records = () => {
           >
             <RecordSetDetails
               name={recordSets[set]?.recordSetName}
-              isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+              isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
               handleNameChange={handleNameChange}
               recordSetType={recordSets[set].recordSetType}
               recordsetKey={set}
             ></RecordSetDetails>
 
             <RecordSetControl
-              isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+              isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
               recordset={recordSets[set]}
               recordsetKey={set}
               onClickToggleLabel={handleToggleLabel}
