@@ -4,7 +4,7 @@ import './Records.css';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
@@ -36,7 +36,7 @@ export const Records = () => {
   //Record set handlers:
   const handleToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    if (set === '4') {
+    if (set === RecordSetId.OfflineActivities) {
       dispatch(Activity.Offline.setLabelVisibility());
     }
     dispatch(UserSettings.RecordSet.toggleLabelVisibility(set));
@@ -45,7 +45,7 @@ export const Records = () => {
   const handleToggleLayer = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     // offline activities
-    if (set === '4') {
+    if (set === RecordSetId.OfflineActivities) {
       dispatch(Activity.Offline.setAllShapeVisibility());
     }
     dispatch(UserSettings.RecordSet.toggleVisibility(set));
