@@ -162,14 +162,7 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
     } else {
       // Get IDs from Offline Caches
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const overlappingRecords: string[] = [];
-      (yield service.getOverlappingRepositories(whatsHereFeature.payload)).flatMap((set) =>
-        set.cachedGeoJson.data.features.forEach((shape: Feature) => {
-          if (booleanIntersects(whatsHereFeature.payload, shape)) {
-            overlappingRecords.push(shape?.properties?.description);
-          }
-        })
-      );
+      const overlappingRecords: string[] = yield service.getRecordIdsOverlappingFeature(whatsHereFeature.payload);
       yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, [...overlappingRecords]));
     }
   } else {
