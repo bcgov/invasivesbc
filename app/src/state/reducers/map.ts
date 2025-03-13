@@ -709,7 +709,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
         }
 
-        if ('IDList' in draftState.layers[index]) {
+        if (draftState.layers[index] && 'IDList' in draftState.layers[index]) {
           draftState.layers[index].IDList = action.payload?.IDList ?? [];
           draftState.layers[index].loading = false;
         } else {

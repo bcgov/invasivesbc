@@ -194,3 +194,62 @@ export function populateJurisdictionArray(record) {
     jurisdiction: jurisdiction.sort() || []
   };
 }
+
+export function findSpeciesCodesAndConcatenateLabels(
+  obj: any,
+  targetKey: string,
+  properties: Record<string, any>,
+  specialCase: boolean
+): string {
+  const result: Record<string, Set<string>> = {
+    invasive_plant_code: new Set(),
+    invasive_plant_aquatic_code: new Set()
+  };
+
+  const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
+
+  function searchAndExtract(obj: any): void {
+    if (Array.isArray(obj)) {
+      obj.forEach(searchAndExtract);
+    } else if (obj !== null && typeof obj === 'object') {
+      Object.keys(obj).forEach((key) => {
+        if (key === targetKey) {
+          searchAndExtract(obj[key]); // continue searching in the targetKey's value
+        } else if (keysToFind.includes(key) && obj[key]) {
+          const values = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
+          values.forEach((value) => result[key].add(value));
+        } else {
+          searchAndExtract(obj[key]); // recurse into other nested objects
+        }
+      });
+    }
+  }
+
+  function getLabels(): string {
+    let labels: string[] = [];
+
+    for (const key of keysToFind) {
+      let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
+
+      if (result[key].size > 0 && properties[propertyKey]?.options) {
+        const optionsMap = new Map<string, string>(
+          properties[propertyKey].options.map((option: { value: string; label: string }) => [
+            option.value,
+            option.label
+          ])
+        );
+
+        result[key].forEach((value) => {
+          const label = optionsMap.get(value);
+          if (label) {
+            labels.push(label);
+          }
+        });
+      }
+    }
+    return labels.join(', ') || 'No labels found';
+  }
+
+  searchAndExtract(obj);
+  return getLabels();
+}
