@@ -36,8 +36,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   );
   const dataArray = Object.values(parsedObj).map((value) => value.data);
 
-  mapState = yield select((state) => state.Map);
-  tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
   if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
   }
