@@ -622,6 +622,7 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
     page: page,
     limit: limit
   };
+
   if (recordSetType === RecordSetType.Activity) {
     yield put(Activity.getRows(actionArg));
   } else if (recordSetType === RecordSetType.IAPP) {

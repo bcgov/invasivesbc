@@ -249,7 +249,7 @@ export function findSpeciesCodesAndConcatenateLabels(
         });
       }
     }
-    return labels.join(', ') || 'No labels found';
+    return labels.join(', ') || '';
   }
 
   searchAndExtract(obj);

@@ -248,8 +248,8 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
       return;
     }
 
-    // user online or offline activities fetched from persisted store
-    if (recordSetID === RecordSetId.OfflineActivities || !userMobileOffline) {
+    // user online: fetch from DB or (connectivity doesnt matter) offline recordset: activities fetched from persisted store
+    if (!userMobileOffline || recordSetID === RecordSetId.OfflineActivities) {
       yield put(
         Activity.getRowsRequest({
           filterObj: filterObject,

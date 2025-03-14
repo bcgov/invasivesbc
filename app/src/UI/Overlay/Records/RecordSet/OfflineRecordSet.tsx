@@ -39,8 +39,12 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   };
 
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
+  const recordTable = useSelector((state: any) => state.Map.recordTables?.[setID]);
   const { serializedActivities } = useSelector(selectOfflineActivity);
+
   const isTouch = detectTouchDevice();
+  const startIndex = recordTable?.page * recordTable?.limit;
+  const endIndex = startIndex + recordTable?.limit;
 
   let unsyncedOfflineActivities = Object.fromEntries(
     Object.entries(serializedActivities)
@@ -49,6 +53,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
         const typedValue = value as OfflineActivityRecord;
         return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
       })
+      .slice(startIndex, endIndex)
   );
 
   try {

@@ -28,13 +28,21 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   let mapState = yield select((state) => state.Map);
   let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 
-  const parsedObj = Object.fromEntries(
-    Object.entries(serializedActivities).map(([key, value]) => {
-      const typedValue = value as OfflineActivityRecord;
-      return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
-    })
+  let unsyncedOfflineActivities = Object.fromEntries(
+    Object.entries(serializedActivities)
+      .filter(([_, value]) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED)
+      .map(([key, value]) => {
+        const typedValue = value as OfflineActivityRecord;
+        return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
+      })
   );
-  const dataArray = Object.values(parsedObj).map((value) => value.data);
+  let dataArray = Object.values(unsyncedOfflineActivities)
+    .map((value) => value.data)
+    .flat();
+
+  const startIndex = action.payload.page * action.payload.limit;
+  const endIndex = startIndex + action.payload.limit;
+  dataArray = dataArray.slice(startIndex, endIndex);
 
   if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
@@ -45,6 +53,7 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
 
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
+
   try {
     yield put(
       Activity.Offline.getIdsForRecordset({
