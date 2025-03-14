@@ -74,7 +74,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
             call.reject("No refresh token available")
             return
         }
-
+        
         let revokeEndpoint = "\(SSO_BASE_URL)/protocol/openid-connect/revoke"
 
         let session = URLSession.shared
@@ -110,11 +110,10 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
     }
     
     @objc func performLogout(_ call: CAPPluginCall) {
-        guard let idTokenHint = call.getString("id_token_hint") else {
-            call.reject("id_token_hint parameter is missing.")
+        guard let idToken = authState?.lastTokenResponse?.idToken else {
+            call.reject("No refresh token available")
             return
         }
-
         guard let SSO_BASE_URL = Bundle.main.infoDictionary?["SSO_BASE_URL"] as? String else {
             call.reject("No SSO base URL configured")
             return
@@ -126,17 +125,6 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         }
 
         let endsessionEndpoint = "\(SSO_BASE_URL)/protocol/openid-connect/logout"
-        if let authState = authState {
-            self.authState = authState
-            if let idToken = authState.lastTokenResponse?.idToken {
-            if let authTime = self.extractAuthTime(from: idToken) {
-                print("auth_time: \(authTime)")
-                let currentTime = Int(Date().timeIntervalSince1970) 
-                let timeElapsed = currentTime - authTime
-                print("Time elapsed since last auth: \(timeElapsed) seconds")
-            }
-            }
-        }
         
         guard let postLogoutRedirectURL = URL(string: "invasivesbc://callback") else {
             call.reject("Invalid redirect URI")
@@ -150,12 +138,12 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         var request = URLRequest(url: URL(string: endsessionEndpoint)!)
         request.httpMethod = "POST"
         let bodyParams: [String: String] = [
-            "id_token_hint": idTokenHint,
+            "id_token_hint": idToken,
             "post_logout_redirect_uri": postLogoutRedirectURL.absoluteString,
             "client_id": SSO_CLIENT_ID,
             "refresh_token":refreshToken
         ]
-        print("-->", bodyParams)
+
         do {
             let bodyData = try JSONSerialization.data(withJSONObject: bodyParams, options: [])
             request.httpBody = bodyData
@@ -183,11 +171,14 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                         "idToken": nil
                     ])
                 } else {
-                    print("Logout failed with status code: \(httpResponse.statusCode)")
-                    if let data = data, let responseString = String(data: data, encoding: .utf8) {
-                        print("Response: \(responseString)")
-                    }
-                    call.reject("Logout failed with status code: \(httpResponse.statusCode)")
+                    print("Failed to logout")
+                    self.authState = nil
+                    call.resolve([
+                        "authorized": false,
+                        "accessToken": nil,
+                        "idToken": nil
+                     ])                    
+                    
                 }
             } else {
                 call.reject("No response received")
@@ -246,19 +237,14 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                                                     tokenEndpoint: tokenEndpoint)
         let redirectURI = URL(string:"invasivesbc://callback")!
         let clientID = "\(SSO_CLIENT_ID)"
-
-        let maxAge = 36
-        let additionalParameters: [String: String] = [
-            "max_age": "\(maxAge)"
-        ]
         
         let request = OIDAuthorizationRequest(configuration: configuration,
                                               clientId: clientID,
                                               scopes: [OIDScopeOpenID, OIDScopeProfile],
                                               redirectURL: redirectURI,
                                               responseType: OIDResponseTypeCode,
-                                              additionalParameters: additionalParameters)
-        print("-------\(request)")      
+                                              additionalParameters: ["prompt": "login"])
+
         DispatchQueue.main.sync {
             
             let appDelegate = UIApplication.shared.delegate as! AppDelegate

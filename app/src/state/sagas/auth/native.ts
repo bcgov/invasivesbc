@@ -29,13 +29,7 @@ function* handleSigninRequest() {
 }
 
 function* handleSignoutRequest() {
-  const config: AppConfig = yield select(selectConfiguration);
-  const { idToken } = yield AuthBridge.token({});
-
-  const authResult = yield AuthBridge.logout({
-    id_token_hint: idToken,
-    post_logout_redirect_uri: config.REDIRECT_URI
-  });
+  const authResult = yield AuthBridge.logout({});
 
   if (authResult?.error) {
     yield put(AuthActions.requestError());
