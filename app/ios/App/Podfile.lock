@@ -5,7 +5,7 @@ PODS:
   - AppAuth/Core (1.6.2)
   - AppAuth/ExternalUserAgent (1.6.2):
     - AppAuth/Core
-  - Capacitor (7.0.1):
+  - Capacitor (7.1.0):
     - CapacitorCordova
   - CapacitorApp (7.0.0):
     - Capacitor
@@ -17,8 +17,8 @@ PODS:
     - Capacitor
     - SQLCipher
     - ZIPFoundation
-  - CapacitorCordova (7.0.1)
-  - CapacitorGeolocation (7.1.0):
+  - CapacitorCordova (7.1.0)
+  - CapacitorGeolocation (7.1.1):
     - Capacitor
     - IONGeolocationLib (~> 1.0)
   - IONGeolocationLib (1.0.0)
