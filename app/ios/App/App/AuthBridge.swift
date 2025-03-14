@@ -139,7 +139,6 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         request.httpMethod = "POST"
         let bodyParams: [String: String] = [
             "id_token_hint": idToken,
-            "post_logout_redirect_uri": postLogoutRedirectURL.absoluteString,
             "client_id": SSO_CLIENT_ID,
             "refresh_token":refreshToken
         ]

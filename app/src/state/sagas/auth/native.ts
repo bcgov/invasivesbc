@@ -1,9 +1,7 @@
-import { put, takeLatest, select } from 'redux-saga/effects';
+import { put, takeLatest } from 'redux-saga/effects';
 import { USERINFO_CLEAR_REQUEST } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
 import { AuthActions } from 'state/actions/auth/Auth';
-import { AppConfig } from 'state/config';
-import { selectConfiguration } from 'state/reducers/configuration';
 
 function* handleSigninRequest() {
   const authResult = yield AuthBridge.authStart({});
@@ -30,7 +28,6 @@ function* handleSigninRequest() {
 
 function* handleSignoutRequest() {
   const authResult = yield AuthBridge.logout({});
-
   if (authResult?.error) {
     yield put(AuthActions.requestError());
     return;
