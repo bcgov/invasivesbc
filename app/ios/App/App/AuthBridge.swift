@@ -126,12 +126,18 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         }
 
         let endsessionEndpoint = "\(SSO_BASE_URL)/protocol/openid-connect/logout"
-
-        // guard let postLogoutRedirectUri = call.getString("post_logout_redirect_uri") else {
-        //     call.reject("post_logout_redirect_uri parameter is missing.")
-        //     return
-        // }
-
+        if let authState = authState {
+            self.authState = authState
+            if let idToken = authState.lastTokenResponse?.idToken {
+            if let authTime = self.extractAuthTime(from: idToken) {
+                print("auth_time: \(authTime)")
+                let currentTime = Int(Date().timeIntervalSince1970) 
+                let timeElapsed = currentTime - authTime
+                print("Time elapsed since last auth: \(timeElapsed) seconds")
+            }
+            }
+        }
+        
         guard let postLogoutRedirectURL = URL(string: "invasivesbc://callback") else {
             call.reject("Invalid redirect URI")
             return
@@ -192,6 +198,35 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         
     }
 
+    func decodeJWT(token: String) -> [String: Any]? {
+        let segments = token.split(separator: ".")
+        guard segments.count == 3 else { return nil }
+
+        let base64Payload = String(segments[1])
+        let paddedBase64Payload = base64Payload + String(repeating: "=", count: (4 - base64Payload.count % 4) % 4)
+        
+        guard let data = Data(base64Encoded: paddedBase64Payload, options: .ignoreUnknownCharacters) else {
+            return nil
+        }
+        
+        do {
+            if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                return jsonObject
+            }
+        } catch {
+            print("Error decoding JWT payload: \(error)")
+        }
+        
+        return nil
+    }
+
+    func extractAuthTime(from idToken: String) -> Int? {
+        if let payload = self.decodeJWT(token: idToken),
+        let authTime = payload["auth_time"] as? Int {
+            return authTime
+        }
+        return nil
+    }
 
     
     @objc func authStart(_ call: CAPPluginCall) {
@@ -211,14 +246,19 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                                                     tokenEndpoint: tokenEndpoint)
         let redirectURI = URL(string:"invasivesbc://callback")!
         let clientID = "\(SSO_CLIENT_ID)"
+
+        let maxAge = 36
+        let additionalParameters: [String: String] = [
+            "max_age": "\(maxAge)"
+        ]
         
         let request = OIDAuthorizationRequest(configuration: configuration,
                                               clientId: clientID,
                                               scopes: [OIDScopeOpenID, OIDScopeProfile],
                                               redirectURL: redirectURI,
                                               responseType: OIDResponseTypeCode,
-                                              additionalParameters: nil)
-                
+                                              additionalParameters: additionalParameters)
+        print("-------\(request)")      
         DispatchQueue.main.sync {
             
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
@@ -246,6 +286,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                      ])
                     print("Got authorization tokens. Access token: " +
                           "\(authState.lastTokenResponse?.accessToken ?? "nil")")
+                        
                 } else {
                     print("Authorization error: \(error?.localizedDescription ?? "Unknown error")")
                     self.authState = nil
