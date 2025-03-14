@@ -30,7 +30,7 @@ PODS:
   - ZIPFoundation (0.9.13)
 
 DEPENDENCIES:
-  - AppAuth
+  - AppAuth (~> 1.6.0)
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorApp (from `../../node_modules/@capacitor/app`)"
   - "CapacitorCamera (from `../../node_modules/@capacitor/camera`)"
@@ -75,6 +75,6 @@ SPEC CHECKSUMS:
   SQLCipher: 712e8416685e8e575b9b0706ffee71678b2fdcf8
   ZIPFoundation: ae5b4b813d216d3bf0a148773267fff14bd51d37
 
-PODFILE CHECKSUM: 899d946ea950952226830e245cf9a3a25a4bb857
+PODFILE CHECKSUM: 30daf2c4438fb7b865ac09e124f84b4d7702c3e7
 
 COCOAPODS: 1.16.2

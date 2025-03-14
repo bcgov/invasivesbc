@@ -21,7 +21,7 @@ end
 target 'App' do
   capacitor_pods
   # Add your Pods here
-  pod 'AppAuth'
+  pod 'AppAuth', '~> 1.6.0'
 end
 
 post_install do |installer|
