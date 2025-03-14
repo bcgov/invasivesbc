@@ -112,7 +112,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
           tableFiltersHash: action.payload.tableFiltersHash
         })
       );
-      return; // early return
+      return;
     }
 
     // if mobile or web
@@ -248,7 +248,7 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
       return;
     }
 
-    // user online: fetch from DB or (connectivity doesnt matter) offline recordset: activities fetched from persisted store
+    // user online: fetch from DB or offline recordset: activities fetched from persisted store
     if (!userMobileOffline || recordSetID === RecordSetId.OfflineActivities) {
       yield put(
         Activity.getRowsRequest({

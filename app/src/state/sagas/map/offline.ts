@@ -26,7 +26,17 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   const { serializedActivities } = yield select(selectOfflineActivity);
   let mapState = yield select((state) => state.Map);
+  const currentState = yield select((state) => state.UserSettings);
+  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
+  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
+
   let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
+  if (tableFiltersHash !== action.payload.tableFiltersHash) {
+    return;
+  }
+
+  filterObject.limit = 200000;
+  filterObject.selectColumns = ['activity_id'];
 
   let unsyncedOfflineActivities = Object.fromEntries(
     Object.entries(serializedActivities)
@@ -43,16 +53,6 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   const startIndex = action.payload.page * action.payload.limit;
   const endIndex = startIndex + action.payload.limit;
   dataArray = dataArray.slice(startIndex, endIndex);
-
-  if (tableFiltersHash !== action.payload.tableFiltersHash) {
-    return;
-  }
-  const currentState = yield select((state) => state.UserSettings);
-  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
-  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
-
-  filterObject.limit = 200000;
-  filterObject.selectColumns = ['activity_id'];
 
   try {
     yield put(
