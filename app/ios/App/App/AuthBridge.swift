@@ -138,12 +138,16 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
             "refresh_token":refreshToken
         ]
 
-        let bodyData = try JSONSerialization.data(withJSONObject: bodyParams, options: [])
-        request.httpBody = bodyData
+        do {
+            let bodyData = try JSONSerialization.data(withJSONObject: bodyParams, options: [])
+            request.httpBody = bodyData
+        } catch {
+            print("Failed to serialize bodyParams: \(error.localizedDescription)")
+        }
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("Authorization error: \(error?.localizedDescription ?? "Unknown error")")
+                print("Authorization error: \(error.localizedDescription)")
                     self.authState = nil
                     call.resolve([
                         "authorized": false,
