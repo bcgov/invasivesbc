@@ -126,11 +126,6 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
 
         let endsessionEndpoint = "\(SSO_BASE_URL)/protocol/openid-connect/logout"
         
-        guard let postLogoutRedirectURL = URL(string: "invasivesbc://callback") else {
-            call.reject("Invalid redirect URI")
-            return
-        }
-
         guard let refreshToken = authState?.lastTokenResponse?.refreshToken else {
             call.reject("No refresh token available")
             return
@@ -143,19 +138,18 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
             "refresh_token":refreshToken
         ]
 
-        do {
-            let bodyData = try JSONSerialization.data(withJSONObject: bodyParams, options: [])
-            request.httpBody = bodyData
-        } catch {
-            print("Error serializing JSON body: \(error.localizedDescription)")
-            call.reject("Failed to serialize JSON body")
-            return
-        }
+        let bodyData = try JSONSerialization.data(withJSONObject: bodyParams, options: [])
+        request.httpBody = bodyData
 
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
-                print("Error logging out: \(error.localizedDescription)")
-                call.reject("Logout failed: \(error.localizedDescription)")
+                print("Authorization error: \(error?.localizedDescription ?? "Unknown error")")
+                    self.authState = nil
+                    call.resolve([
+                        "authorized": false,
+                        "accessToken": nil,
+                        "idToken": nil
+                     ])   
                 return
             }
 
@@ -187,37 +181,6 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         task.resume()
         
     }
-
-    func decodeJWT(token: String) -> [String: Any]? {
-        let segments = token.split(separator: ".")
-        guard segments.count == 3 else { return nil }
-
-        let base64Payload = String(segments[1])
-        let paddedBase64Payload = base64Payload + String(repeating: "=", count: (4 - base64Payload.count % 4) % 4)
-        
-        guard let data = Data(base64Encoded: paddedBase64Payload, options: .ignoreUnknownCharacters) else {
-            return nil
-        }
-        
-        do {
-            if let jsonObject = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                return jsonObject
-            }
-        } catch {
-            print("Error decoding JWT payload: \(error)")
-        }
-        
-        return nil
-    }
-
-    func extractAuthTime(from idToken: String) -> Int? {
-        if let payload = self.decodeJWT(token: idToken),
-        let authTime = payload["auth_time"] as? Int {
-            return authTime
-        }
-        return nil
-    }
-
     
     @objc func authStart(_ call: CAPPluginCall) {
         guard let SSO_BASE_URL = Bundle.main.infoDictionary?["SSO_BASE_URL"] as? String else {
