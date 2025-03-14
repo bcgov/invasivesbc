@@ -46,12 +46,11 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const startIndex = recordTable?.page * recordTable?.limit;
   const endIndex = startIndex + recordTable?.limit;
 
-  let unsyncedOfflineActivities = Object.fromEntries(
-    Object.entries(serializedActivities)
-      .filter(([_, value]) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED)
+  let unsyncedOfflineActivities: Record<string, any> = Object.fromEntries(
+    Object.entries(serializedActivities as Record<string, OfflineActivityRecord>)
+      .filter(([_, value]) => value.sync_state !== OfflineActivitySyncState.SYNCHRONIZED)
       .map(([key, value]) => {
-        const typedValue = value as OfflineActivityRecord;
-        return [key, { ...typedValue, data: JSON.parse(typedValue.data) }];
+        return [key, { ...value, data: JSON.parse(value.data) }];
       })
       .slice(startIndex, endIndex)
   );
