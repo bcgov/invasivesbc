@@ -8,11 +8,13 @@ import { OverlayMenu } from 'UI/Overlay/OverlayMenu';
 import { FormMenuButtons } from 'UI/Overlay/FormMenuButtons';
 import { IAPPRecord } from 'UI/Overlay/IAPP/IAPPRecord';
 import { RecordSet } from 'UI/Overlay/Records/RecordSet/RecordSet';
+import { RecordSetId } from 'interfaces/UserRecordSet';
 import { Button } from '@mui/material';
 import Spinner from 'UI/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Overlay/WhatsHere/WhatsHereTable';
 import { RENDER_DEBUG } from 'UI/App';
 import { OverlayHeader } from 'UI/Overlay/OverlayHeader';
+import { OfflineRecordSet } from 'UI/Overlay/Records/RecordSet/OfflineRecordSet';
 
 const UserAccessPage = React.lazy(() => import('UI/Overlay/Admin/userAccess/UserAccessPage'));
 const EmbeddedReportsPage = React.lazy(() => import('UI/Overlay/Reports/EmbeddedReportsPage'));
@@ -115,7 +117,11 @@ const OverlayContent = () => {
           render={(props) => (
             <>
               {!userRecordOnClickMenuOpen ? (
-                <RecordSet setID={props.match.params.id.split(':')[1]} />
+                props.match.params.id.split(':')[1] === RecordSetId.OfflineActivities ? (
+                  <OfflineRecordSet setID={props.match.params.id.split(':')[1]} />
+                ) : (
+                  <RecordSet setID={props.match.params.id.split(':')[1]} />
+                )
               ) : (
                 <OverlayMenu>
                   <Button

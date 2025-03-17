@@ -139,6 +139,13 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       color: '#21f34f',
       drawOrder: 3,
       cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE
+    },
+    '4': {
+      recordSetType: RecordSetType.Activity,
+      recordSetName: 'All Unsynced Offline Activities',
+      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
+      drawOrder: 4,
+      mapToggle: true // by default
     }
   };
 

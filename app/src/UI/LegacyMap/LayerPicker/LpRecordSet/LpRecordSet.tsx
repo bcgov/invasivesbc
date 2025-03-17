@@ -3,23 +3,34 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import './LpRecordSet.css';
 import LpRecordSetOption from './LpRecordSetOption';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, UserRecordSet } from 'interfaces/UserRecordSet';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import { MOBILE } from 'state/build-time-config';
-import { LpOfflineActivitiesLayer } from './LpOfflineActivitiesLayer';
-
+import Activity from 'state/actions/activity/Activity';
 type PropTypes = {
   closePicker: () => void;
 };
 
 const LpRecordSet = ({ closePicker }: PropTypes) => {
-  const DEFAULT_RECORD_TYPES = ['1', '2', '3'];
+  const defaultRecordSetIds = Object.values(RecordSetId) as string[];
+
   const handleGoToRecords = () => {
     closePicker();
   };
-  const handleToggleVisibility = (id: string) => dispatch(UserSettings.RecordSet.toggleVisibility(id));
+  const handleToggleVisibility = (id: string) => {
+    if (id === RecordSetId.OfflineActivities) {
+      dispatch(Activity.Offline.setAllShapeVisibility());
+    }
+
+    dispatch(UserSettings.RecordSet.toggleVisibility(id));
+  };
   const handleCycleColour = (id: string) => dispatch(UserSettings.RecordSet.cycleColourById(id));
-  const handleToggleLabels = (id: string) => dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
+  const handleToggleLabels = (id: string) => {
+    if (id === RecordSetId.OfflineActivities) {
+      dispatch(Activity.Offline.setLabelVisibility());
+    }
+    dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
+  };
   const connected = useSelector((state) => state.Network.connected);
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
   const defaultRecordSets: UserRecordSet[] = [];
@@ -28,7 +39,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
   const dispatch = useDispatch();
   const userIsMobileAndOffline = MOBILE && !connected;
   filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).forEach((recordSet) => {
-    if (DEFAULT_RECORD_TYPES.includes(recordSet)) {
+    if (defaultRecordSetIds.includes(recordSet)) {
       defaultRecordSets.push({ ...recordSets[recordSet], id: recordSet });
     } else {
       customRecordSets.push({ ...recordSets[recordSet], id: recordSet });
@@ -65,14 +76,6 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
           />
         ))}
       </ul>
-      {MOBILE && (
-        <>
-          <h3>Unsynced Recordsets</h3>
-          <ul>
-            <LpOfflineActivitiesLayer />
-          </ul>
-        </>
-      )}
 
       <div className="guide">
         <p>You can modify or create new Recordsets from the Records page. </p>

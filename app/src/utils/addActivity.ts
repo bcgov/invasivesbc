@@ -7,7 +7,9 @@ import {
   ActivitySyncStatus,
   ActivityType,
   getShortActivityID,
-  ReviewStatus
+  ReviewStatus,
+  ActivitySubtypeShortLabels,
+  ActivitySubtypeTargetKey
 } from 'sharedAPI';
 import { getFieldsToCopy } from '../rjsf/business-rules/formDataCopyFields';
 import { IActivity } from '../interfaces/activity-interfaces';
@@ -193,4 +195,119 @@ export function populateJurisdictionArray(record) {
     ...record,
     jurisdiction: jurisdiction.sort() || []
   };
+}
+
+export function findSpeciesCodesAndConcatenateLabels(
+  obj: any,
+  targetKey: string,
+  properties: Record<string, any>,
+  specialCase: boolean
+): string {
+  const result: Record<string, Set<string>> = {
+    invasive_plant_code: new Set(),
+    invasive_plant_aquatic_code: new Set()
+  };
+
+  const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
+
+  function searchAndExtract(obj: any): void {
+    if (Array.isArray(obj)) {
+      obj.forEach(searchAndExtract);
+    } else if (obj !== null && typeof obj === 'object') {
+      Object.keys(obj).forEach((key) => {
+        if (key === targetKey) {
+          searchAndExtract(obj[key]); // continue searching in the targetKey's value
+        } else if (keysToFind.includes(key) && obj[key]) {
+          const values = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
+          values.forEach((value) => result[key].add(value));
+        } else {
+          searchAndExtract(obj[key]); // recurse into other nested objects
+        }
+      });
+    }
+  }
+
+  function getLabels(): string {
+    let labels: string[] = [];
+
+    for (const key of keysToFind) {
+      let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
+
+      if (result[key].size > 0 && properties[propertyKey]?.options) {
+        const optionsMap = new Map<string, string>(
+          properties[propertyKey].options.map((option: { value: string; label: string }) => [
+            option.value,
+            option.label
+          ])
+        );
+
+        result[key].forEach((value) => {
+          const label = optionsMap.get(value);
+          if (label) {
+            labels.push(label);
+          }
+        });
+      }
+    }
+    return labels.join(', ') || '';
+  }
+
+  searchAndExtract(obj);
+  return getLabels();
+}
+
+export function transformOfflineActivitiesForRecordTable(
+  offlineActivities: Record<string, any>,
+  listOptions: any
+): Record<string, any> {
+  try {
+    Object.entries(offlineActivities).forEach(([key, value]) => {
+      offlineActivities[key].data.activity_date = new Date(
+        value.data?.form_data?.activity_data?.activity_date_time ??
+          value.data?.form_data?.activity_data?.activity_date_time ??
+          null
+      )
+        .toISOString()
+        .substring(0, 10);
+
+      offlineActivities[key].data.activity_subtype = ActivitySubtypeShortLabels[value.record_type] || 'Unknown';
+
+      offlineActivities[key].data.invasive_plant = findSpeciesCodesAndConcatenateLabels(
+        offlineActivities[key].data.form_data.activity_subtype_data,
+        ActivitySubtypeTargetKey[offlineActivities[key].record_type],
+        listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties,
+        [
+          // Special case: if activity_subtype is in this list, switch between invasive_plant_code and invasive_plant_aquatic_code when searching api docs
+          ActivitySubtype.Treatment_MechanicalPlantAquatic,
+          ActivitySubtype.Treatment_ChemicalPlantAquatic,
+          ActivitySubtype.Observation_PlantAquatic
+        ].includes(offlineActivities[key].record_type as ActivitySubtype)
+      );
+
+      offlineActivities[key].data.jurisdiction_display = (offlineActivities[key].data?.jurisdiction || [])
+        .map(
+          (val) =>
+            listOptions?.components?.schemas[
+              value.record_type
+            ].properties.activity_data.properties.jurisdictions.items.properties.jurisdiction_code.options.find(
+              (item) => item.value === val
+            )?.label
+        )
+        .filter((label) => label)
+        .join(', ');
+
+      offlineActivities[key].data.agency =
+        listOptions?.components?.schemas[
+          value.record_type
+        ].properties.activity_data.properties.invasive_species_agency_code.options.find(
+          (item) => item.value === offlineActivities[key].data.form_data.activity_data.invasive_species_agency_code
+        )?.label || '';
+
+      offlineActivities[key].data.reported_area = offlineActivities[key].data.form_data.activity_data.reported_area;
+    });
+    return offlineActivities;
+  } catch (error) {
+    console.log(error);
+    return {};
+  }
 }

@@ -61,6 +61,23 @@ export enum ActivitySubtype {
   Activity_FREP_FormC = 'Activity_FREP_FormC'
 }
 
+export const ActivitySubtypeTargetKey = {
+  [ActivitySubtype.Observation_PlantTerrestrial]: 'TerrestrialPlants',
+  [ActivitySubtype.Observation_PlantAquatic]: 'AquaticPlants',
+  [ActivitySubtype.Treatment_ChemicalPlantAquatic]: 'chemical_treatment_details',
+  [ActivitySubtype.Treatment_ChemicalPlant]: 'chemical_treatment_details',
+  [ActivitySubtype.Treatment_MechanicalPlantAquatic]: 'Treatment_MechanicalPlant_Information',
+  [ActivitySubtype.Treatment_MechanicalPlant]: 'Treatment_MechanicalPlant_Information',
+  [ActivitySubtype.Treatment_BiologicalPlant]: 'Biocontrol_Release_Information',
+  [ActivitySubtype.Collection_Biocontrol]: 'Biocontrol_Collection_Information',
+  [ActivitySubtype.Monitoring_BiologicalDispersal]: 'Monitoring_BiocontrolDispersal_Information',
+  [ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant]:
+    'Monitoring_ChemicalTerrestrialAquaticPlant_Information',
+  [ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant]:
+    'Monitoring_MechanicalTerrestrialAquaticPlant_Information',
+  [ActivitySubtype.Monitoring_BiologicalTerrestrialPlant]: 'Monitoring_BiocontrolRelease_TerrestrialPlant_Information'
+};
+
 export const ActivitySubtypeRelations = {
   [ActivityCategory.Plant]: {
     [ActivityType.Observation]: [

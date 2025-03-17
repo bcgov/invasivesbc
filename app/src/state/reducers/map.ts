@@ -52,7 +52,7 @@ import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
@@ -428,6 +428,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
           }
         });
+
         if (draftState.layers[layerIndex].layerState.mapToggle === false) {
           draftState.layers[layerIndex].layerState.labelToggle = false;
         }
@@ -474,13 +475,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         Object.keys(action.payload.recordSets).forEach((setID) => {
-          let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-          if (!draftState.layers[layerIndex]) {
-            draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
-            layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+          if (setID !== RecordSetId.OfflineActivities) {
+            let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+            if (!draftState.layers[layerIndex]) {
+              draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
+              layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
+            }
+            draftState.layers[layerIndex].layerState = {};
+            Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
           }
-          draftState.layers[layerIndex].layerState = {};
-          Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
         });
       } else if (WhatsHere.map_init_get_poi_ids_fetched.match(action)) {
         Object.assign(draftState.whatsHere, {
@@ -693,6 +696,23 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.recordTables[recordSetID] = { rows };
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
+      } else if (Activity.Offline.getIdsForRecordsetSuccess.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+
+        if (!draftState.layers[index]) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+        }
+
+        if (draftState.layers[index] && 'IDList' in draftState.layers[index]) {
+          draftState.layers[index].IDList = action.payload?.IDList ?? [];
+          draftState.layers[index].loading = false;
+        } else {
+          draftState.layers[index] = {
+            ...draftState.layers[index],
+            IDList: action.payload?.IDList ?? [],
+            loading: false
+          };
+        }
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
       } else {
@@ -771,14 +791,16 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           }
           case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            if (!draftState.layers[index])
+            if (!draftState.layers[index]) {
               draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+            }
+
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
             if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
               break;
             }
-            draftState.layers[index].IDList = action.payload.IDList;
+            draftState.layers[index].IDList = action.payload?.IDList ?? [];
             if (draftState.MapMode === 'VECTOR_ENDPOINT') {
               draftState.layers[index].loading = false;
             }

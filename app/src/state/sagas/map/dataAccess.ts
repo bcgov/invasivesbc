@@ -16,7 +16,7 @@ import {
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { RecordSetType, UserRecordSet, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet, UserRecordCacheStatus, RecordSetId } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
@@ -103,6 +103,18 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   filterObject.selectColumns = ['activity_id'];
 
   try {
+    // offline activities
+    if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+      yield put(
+        Activity.Offline.getIdsForRecordset({
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID,
+          tableFiltersHash: action.payload.tableFiltersHash
+        })
+      );
+      return;
+    }
+
     // if mobile or web
     if (connected && !workingOffline) {
       yield put({
@@ -212,7 +224,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
   } as any;
 };
 
-export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
+export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
   try {
     const currentState = yield select(selectUserSettings);
     const connected = yield select(selectNetworkConnected);
@@ -236,24 +248,27 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST(action) {
       return;
     }
 
-    if (userMobileOffline) {
-      const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const recordSetIdList = yield service.getIdList(recordSetID);
-      const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
+    // user online: fetch from DB or offline recordset: activities fetched from persisted store
+    if (!userMobileOffline || recordSetID === RecordSetId.OfflineActivities) {
       yield put(
-        Activity.getRowsSuccess({
+        Activity.getRowsRequest({
+          filterObj: filterObject,
           recordSetID: recordSetID,
-          rows: records,
           tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit
         })
       );
     } else {
+      // user offline: fetch from cache
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const recordSetIdList = yield service.getIdList(recordSetID);
+      const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
+
       yield put(
-        Activity.getRowsRequest({
-          filterObj: filterObject,
+        Activity.getRowsSuccess({
           recordSetID: recordSetID,
+          rows: records,
           tableFiltersHash: tableFiltersHash,
           page: page,
           limit: limit

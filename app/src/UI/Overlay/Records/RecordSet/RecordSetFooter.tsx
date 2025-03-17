@@ -15,6 +15,7 @@ const RecordSetFooter = (props) => {
   const lastRowIndex =
     totalRecords < firstRowIndex + recordTable?.limit ? totalRecords : firstRowIndex + recordTable?.limit;
   let recordDisplayString = 'Loading...';
+
   if (loaded) {
     if (totalRecords !== undefined && totalRecords > 0 && !isNaN(firstRowIndex) && !isNaN(lastRowIndex)) {
       recordDisplayString = `${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords} records`;

@@ -99,7 +99,6 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
 
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
-  const layers = yield select((state) => state.Map.layers);
 
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) =>

@@ -15,7 +15,6 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { FeatureCollection } from 'geojson';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
-
 const LAYER_ID_PREFIX = 'recordset-layer-';
 const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
 /** DRY Handler for formatting LayerIDs */
@@ -291,12 +290,23 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode,
 
 const createOfflineActivitiesLayer = async (
   map: maplibregl.Map,
-  locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
+  locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>,
+  labelVisibility: boolean
 ) => {
   const geometryList = Object.values(locallyStoredActivities)
     .map((item) => {
       const parsedData = JSON.parse((item as OfflineActivityRecord).data);
-      return parsedData.geometry ? parsedData.geometry[0] : null;
+
+      if (parsedData.geometry && parsedData.geometry[0]) {
+        return {
+          ...parsedData.geometry[0],
+          properties: {
+            short_id: parsedData.short_id
+          }
+        };
+      }
+
+      return null;
     })
     .filter((geometry) => geometry !== null);
 
@@ -310,7 +320,18 @@ const createOfflineActivitiesLayer = async (
       .addSource(OFFLINE_ACTIVITIES_LAYER_ID, { type: 'geojson', data: geoJsonData })
       .addLayer(getFillLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
       .addLayer(getBorderLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
-      .addLayer(getCircleMarkerZoomedOutLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND);
+      .addLayer(getCircleMarkerZoomedOutLayer(OFFLINE_ACTIVITIES_LAYER_ID, { color: 'blue' }), LAYER_Z_FOREGROUND)
+      .addLayer(
+        getLabelLayer(OFFLINE_ACTIVITIES_LAYER_ID, {
+          color: 'black',
+          get_tag: 'short_id',
+          minzoom: 4
+        }),
+        LAYER_Z_FOREGROUND
+      );
+    if (!labelVisibility) {
+      map.setLayoutProperty('label-' + OFFLINE_ACTIVITIES_LAYER_ID, 'visibility', 'none');
+    }
   }
 };
 export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
@@ -332,11 +353,32 @@ export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
 export const refreshOfflineActivitiesLayer = async (
   map: maplibregl.Map,
   visibility: boolean,
+  labelVisibility: boolean,
   locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
 ) => {
   if (!map || !visibility) return;
   await removeOfflineActivitiesLayer(map);
-  await createOfflineActivitiesLayer(map, locallyStoredActivities);
+
+  if (Object.keys(locallyStoredActivities).length === 0) return;
+
+  await createOfflineActivitiesLayer(map, locallyStoredActivities, labelVisibility);
+};
+
+export const toggleOfflineActivityLabels = async (map: maplibregl.Map, labelVisibility: boolean) => {
+  const allLayersOnMap = map.getLayersOrder();
+  const recordSetOfflineLabelLayer = allLayersOnMap.filter((layer) =>
+    layer.includes('label-' + OFFLINE_ACTIVITIES_LAYER_ID)
+  );
+
+  recordSetOfflineLabelLayer.map((layer) => {
+    const visibility = map.getLayoutProperty(layer, 'visibility');
+    if (visibility !== 'none' && !labelVisibility) {
+      map.setLayoutProperty(layer, 'visibility', 'none');
+    }
+    if (visibility !== 'visible' && labelVisibility) {
+      map.setLayoutProperty(layer, 'visibility', 'visible');
+    }
+  });
 };
 
 export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {

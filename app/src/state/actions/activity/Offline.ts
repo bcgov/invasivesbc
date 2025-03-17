@@ -19,5 +19,11 @@ class Offline {
   static readonly delete = createAction(ACTIVITY_OFFLINE_DELETE_ITEM);
 
   static readonly setAllShapeVisibility = createAction(`${this.PREFIX}/setAllShapeVisibility`);
+  static readonly setLabelVisibility = createAction(`${this.PREFIX}/setLabelVisibility`);
+
+  static readonly getIdsForRecordset = createAction<Record<PropertyKey, any>>(`${this.PREFIX}/getIdsForRecordset`);
+  static readonly getIdsForRecordsetSuccess = createAction<Record<PropertyKey, any>>(
+    `${this.PREFIX}/getIdsForRecordsetSuccess`
+  );
 }
 export default Offline;

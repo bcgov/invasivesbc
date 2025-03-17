@@ -82,6 +82,8 @@ class Activity {
 
   static readonly getRows = createAction<ActivityTableRowRequest>(`${this.PREFIX}/getRows`);
   static readonly getRowsRequest = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
+  static readonly getRowsOnline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOnline`);
+  static readonly getRowsOffline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOffline`);
   static readonly getRowsSuccess = createAction<ActivityTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
 
   static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);

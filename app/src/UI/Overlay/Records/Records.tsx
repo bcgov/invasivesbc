@@ -4,16 +4,21 @@ import './Records.css';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
 import { MOBILE } from 'state/build-time-config';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
+import Activity from 'state/actions/activity/Activity';
 
 export const Records = () => {
-  const DEFAULT_RECORD_TYPES = ['All InvasivesBC Activities', 'All IAPP Records', 'My Drafts'];
   const recordSets = useSelector((state) => state.UserSettings?.recordSets);
+  const defaultRecordSetIds = Object.values(RecordSetId);
+  const defaultRecordSetTypes = defaultRecordSetIds
+    .map((key) => recordSets[parseInt(key)]?.recordSetName)
+    .filter((value) => value !== undefined);
+
   const connected = useSelector((state) => state.Network.connected);
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
 
@@ -31,11 +36,18 @@ export const Records = () => {
   //Record set handlers:
   const handleToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    if (set === RecordSetId.OfflineActivities) {
+      dispatch(Activity.Offline.setLabelVisibility());
+    }
     dispatch(UserSettings.RecordSet.toggleLabelVisibility(set));
   };
 
   const handleToggleLayer = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
+    // offline activities
+    if (set === RecordSetId.OfflineActivities) {
+      dispatch(Activity.Offline.setAllShapeVisibility());
+    }
     dispatch(UserSettings.RecordSet.toggleVisibility(set));
   };
 
@@ -66,6 +78,7 @@ export const Records = () => {
   const highlightSet = (set: string) => setHighlightedSet(set);
   const unHighlightSet = () => setHighlightedSet(null);
   const userIsMobileAndOffline = MOBILE && !connected;
+
   if (!recordSets) {
     return;
   }
@@ -85,14 +98,14 @@ export const Records = () => {
           >
             <RecordSetDetails
               name={recordSets[set]?.recordSetName}
-              isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+              isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
               handleNameChange={handleNameChange}
               recordSetType={recordSets[set].recordSetType}
               recordsetKey={set}
             ></RecordSetDetails>
 
             <RecordSetControl
-              isDefaultRecordset={DEFAULT_RECORD_TYPES.includes(recordSets[set]?.recordSetName)}
+              isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
               recordset={recordSets[set]}
               recordsetKey={set}
               onClickToggleLabel={handleToggleLabel}

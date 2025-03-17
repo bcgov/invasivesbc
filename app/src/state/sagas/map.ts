@@ -44,7 +44,7 @@ import {
   getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_GEOJSON_GET_REQUEST,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST,
+  handle_ACTIVITIES_TABLE_GET_ROWS,
   handle_IAPP_GEOJSON_GET_REQUEST,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
@@ -67,7 +67,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -83,6 +83,10 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
 import NetworkActions from 'state/actions/network/NetworkActions';
+import {
+  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+  handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
+} from './map/offline';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put({ type: MAP_INIT_REQUEST, payload: {} });
@@ -618,6 +622,7 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
     page: page,
     limit: limit
   };
+
   if (recordSetType === RecordSetType.Activity) {
     yield put(Activity.getRows(actionArg));
   } else if (recordSetType === RecordSetType.IAPP) {
@@ -656,7 +661,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
 
   const actionsToPut: ActionType[] = [];
   allUninitializedLayers.forEach((layer) => {
-    if (mapMode === 'VECTOR_ENDPOINT') {
+    if (mapMode === 'VECTOR_ENDPOINT' && layer.recordSetID !== RecordSetId.OfflineActivities) {
       actionsToPut.push({
         type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
@@ -807,6 +812,11 @@ function* handle_RECORDSET_SET_SORT(action) {
   }
 }
 
+export function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
+  if (action.payload.recordSetID === RecordSetId.OfflineActivities) yield put(Activity.getRowsOffline(action.payload));
+  else yield put(Activity.getRowsOnline(action.payload));
+}
+
 function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
@@ -845,8 +855,13 @@ function* activitiesPageSaga() {
     takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_ROWS_GET_REQUEST),
-    takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
+
+    takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_GET_ROWS),
+    takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST),
+    takeEvery(Activity.getRowsOnline, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
+    takeEvery(Activity.getRowsOffline, handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE),
+    takeEvery(Activity.Offline.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE),
+
     takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IappActions.getRowsRequest, handle_IAPP_TABLE_ROWS_GET_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),

@@ -136,3 +136,15 @@ export const iappColumnsToDisplay = [
   { key: 'regional_invasive_species_organization', name: 'Regional Invasive Species Organization', hide: false },
   { key: 'invasive_plant_management_area', name: 'Invasive Plant Management Area', hide: false }
 ];
+
+export const offlineActivityColumnsToDisplay = [
+  { key: 'short_id', name: 'Activity ID', displayWidget: 'div', hide: false },
+  { key: 'activity_type', name: 'Activity Type', hide: false },
+  { key: 'activity_subtype', name: 'Activity Sub Type', hide: false },
+  { key: 'activity_date', name: 'Activity Date', hide: false },
+  { key: 'reported_area', name: 'Area (m²)', hide: false },
+  { key: 'jurisdiction_display', name: 'Jurisdiction', hide: false },
+  { key: 'invasive_plant', name: 'Invasive Plant', hide: false },
+  { key: 'created_by', name: 'Created By', hide: false },
+  { key: 'agency', name: 'Agency', hide: false }
+];

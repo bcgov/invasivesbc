@@ -1,4 +1,4 @@
-import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 
 /**
  * @desc Filter Recordset keys based on network status of user. Convert Obj keys to array.
@@ -8,7 +8,11 @@ import { UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
  */
 const filterRecordsetsByNetworkState = (recordSets: Record<string, UserRecordSet>, userOffline: boolean): string[] =>
   Object.keys(recordSets).filter((set) => {
-    return !userOffline || recordSets[set].cacheMetadataStatus === UserRecordCacheStatus.CACHED;
+    return (
+      !userOffline ||
+      recordSets[set].cacheMetadataStatus === UserRecordCacheStatus.CACHED ||
+      set === RecordSetId.OfflineActivities
+    );
   });
 
 export default filterRecordsetsByNetworkState;
