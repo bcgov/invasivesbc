@@ -1,4 +1,8 @@
 #offline-data-sync-dialog {
+  .dialog-content {
+    padding: 1rem 10pt;
+  }
+
   .dialog-header {
     align-items: center;
     background-color: var(--bc-blue);
@@ -12,6 +16,7 @@
       color: white;
     }
   }
+
   .dialog-table {
     display: flex;
     height: auto;
@@ -19,10 +24,12 @@
     max-height: 375pt;
     overflow-x: scroll;
   }
+
   h2 {
     color: white;
     padding: 0;
   }
+
   .control {
     box-sizing: border-box;
     display: flex;
@@ -45,18 +52,22 @@
     top: 0;
     z-index: 2;
   }
+
   tbody > tr:hover {
     background-color: #c9f2ef95;
   }
+
   td {
     width: auto;
     min-width: 2em;
   }
+
   tbody > tr > td:last-child {
     text-align: right;
   }
+
   tbody > tr:nth-child(odd):not(:hover) {
-    background-color: #eeeeee;
+    background-color: #eee;
   }
 }
 
