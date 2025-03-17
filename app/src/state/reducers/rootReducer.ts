@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import localForage from 'localforage';
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
-import { persistReducer, createTransform } from 'redux-persist';
+import { createTransform, persistReducer } from 'redux-persist';
 import appMode from './appMode';
 import { ActivityState, createActivityReducer } from './activity';
 import { AuthState, createAuthReducer } from './auth';
@@ -23,20 +23,21 @@ import { createDownloadStateReducer } from './downloads';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { createTileCacheReducer } from 'state/reducers/tile_cache';
-import { MOBILE } from 'state/build-time-config';
+import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { CacheDownloadMode } from 'utils/record-cache';
+import { SQLiteStorage } from 'utils/redux-persist-sqlite';
 
-// it will try indexdb first, then fall back to localstorage if not available.
+// intended to be more durable than localStorage, and not purged when the application is reset
+const durableStorage = (() => {
+  if (PLATFORM == Platform.IOS) {
+    return new SQLiteStorage();
+  } else {
+    return localForage;
+  }
+})();
 
 const platformStorage = localForage;
-
-/* this should be replaced with an sqlite driver on mobile builds
- eg
- if (import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true') {
-   platformStorage = someSQLiteDriver
- }
-*/
 
 const purgeOldStateOnVersionUpgrade = async (state: any) => {
   // finer-grained or per-reducer controls are possible -- this is a big hammer to reset saved state when this version changes
@@ -50,6 +51,10 @@ const purgeOldStateOnVersionUpgrade = async (state: any) => {
     // pass-through unmodified
     return state;
   }
+};
+
+const preserveStateOnVersionUpgrade = async (state: any) => {
+  return state;
 };
 
 // executes during app restart or when the page reloads
@@ -162,8 +167,8 @@ function createRootReducer(config: AppConfig) {
     OfflineActivity: persistReducer<OfflineActivityState>(
       {
         key: 'offline-activity',
-        storage: platformStorage,
-        migrate: purgeOldStateOnVersionUpgrade,
+        storage: durableStorage,
+        migrate: preserveStateOnVersionUpgrade,
         stateReconciler: autoMergeLevel1
       },
       createOfflineActivityReducer(config)
