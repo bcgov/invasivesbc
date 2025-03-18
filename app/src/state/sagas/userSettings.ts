@@ -1,4 +1,4 @@
-import { all, put, select, take, takeEvery } from 'redux-saga/effects';
+import { all, put, select, takeEvery } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -8,7 +8,6 @@ import Activity from 'state/actions/activity/Activity';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { selectAuth } from 'state/reducers/auth';
-import { selectNetworkConnected } from 'state/reducers/network';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
