@@ -21,7 +21,6 @@ export const OfflineDataSyncTable = () => {
   const { authenticated, workingOffline } = useSelector((state) => state.Auth);
   const connected = useSelector((state) => state.Network.connected);
   const [syncDisabled, setSyncDisabled] = useState(false);
-  // const [tableData, setTableData] = useState(serializedActivities);
 
   const history = useHistory();
 
@@ -38,21 +37,10 @@ export const OfflineDataSyncTable = () => {
       setSyncDisabled(false);
     }
   }, [working, workingOffline, authenticated, connected]);
-  console.log('2--->', serializedActivities);
 
   if (Object.values(serializedActivities).length === 0) {
     return <p>There are no locally-stored activities to synchronize.</p>;
   }
-
-  // useEffect(() => {
-  //   setTableData(Object.entries(serializedActivities));
-  //   console.log('---> Table data', tableData);
-  // }, [serializedActivities]);
-
-  // const handleDelete = (key) => {
-  //   // setTableData((prevData) => prevData.filter(([k]) => k !== key));
-  //   dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: key } });
-  // };
 
   return (
     <>
@@ -70,11 +58,9 @@ export const OfflineDataSyncTable = () => {
           </thead>
           <tbody>
             {Object.entries(serializedActivities).map(([key, value]) => {
-              console.log('1---->', key, value);
-
               return (
                 <React.Fragment key={key}>
-                  <tr key={`row-${key}`}>
+                  <tr>
                     <td>
                       <IconButton
                         disabled={!(workingOffline || authenticated)}
@@ -103,7 +89,7 @@ export const OfflineDataSyncTable = () => {
                     </td>
                   </tr>
                   {(value as OfflineActivityRecord).sync_state == 'Error' ? (
-                    <tr key={`error-${key}`}>
+                    <tr>
                       <td></td>
                       <td>
                         {(value as OfflineActivityRecord).error_detail
@@ -117,9 +103,6 @@ export const OfflineDataSyncTable = () => {
                             : JSON.stringify((value as OfflineActivityRecord).error_object)}
                         </pre>
                       </td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
                     </tr>
                   ) : (
                     <tr key={`placeholder-${key}`} style={{ visibility: 'hidden', height: '1px' }}>
