@@ -21,8 +21,7 @@
     height: auto;
     margin: 10pt;
     max-height: 375pt;
-    overflow-x: auto;
-    overflow-y: auto;
+    overflow: auto;
   }
 
   h2 {

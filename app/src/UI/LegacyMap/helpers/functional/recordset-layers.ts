@@ -305,11 +305,10 @@ const createOfflineActivitiesLayer = async (
             }
           };
         }
-
-        return null;
       } catch (error) {
-        return null;
+        console.error(error);
       }
+      return null;
     })
     .filter(Boolean);
 
