@@ -51,19 +51,16 @@
     z-index: 2;
   }
 
-  td,
-  th {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  tbody > tr:nth-child(odd):not(:hover) {
+    background-color: #eee;
+  }
+
+  tbody > tr > td:last-child {
+    text-align: right;
   }
 
   tbody > tr:hover {
     background-color: #c9f2ef95;
-  }
-
-  tbody > tr:nth-child(odd):not(:hover) {
-    background-color: #eee;
   }
 }
 
