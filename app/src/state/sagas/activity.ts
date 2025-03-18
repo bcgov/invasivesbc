@@ -9,7 +9,6 @@ import {
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_INIT_REQUEST,
   MAP_SET_COORDS,
   PAN_AND_ZOOM_TO_ACTIVITY,
   URL_CHANGE
@@ -67,6 +66,7 @@ import { selectMap } from 'state/reducers/map';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
+import MapActions from 'state/actions/map';
 
 function* handle_ACTIVITY_DELETE_SUCCESS(action) {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -77,7 +77,7 @@ function* handle_ACTIVITY_DELETE_SUCCESS(action) {
       subject: AlertSubjects.Form
     })
   );
-  yield put({ type: MAP_INIT_REQUEST });
+  yield put(MapActions.initRequest());
 }
 
 function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {

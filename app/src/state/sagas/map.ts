@@ -20,7 +20,6 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
-  MAP_INIT_REQUEST,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
@@ -88,7 +87,7 @@ import {
 import MapActions from 'state/actions/map';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
-  yield put({ type: MAP_INIT_REQUEST, payload: {} });
+  yield put(MapActions.initRequest());
 }
 
 function* handle_MAP_INIT_REQUEST() {
@@ -839,7 +838,7 @@ function* activitiesPageSaga() {
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
-    takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
+    takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
     takeEvery(Activity.GeoJson.get, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
