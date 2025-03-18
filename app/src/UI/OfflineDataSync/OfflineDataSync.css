@@ -18,11 +18,13 @@
   }
 
   .dialog-table {
-    display: flex;
+    /* display: flex; */
+    width: 100%;
     height: auto;
     margin: 10pt;
     max-height: 375pt;
-    overflow-x: scroll;
+    overflow-x: auto;
+    overflow-y: auto;
   }
 
   h2 {
@@ -42,8 +44,8 @@
 
 .offlineDataSyncTable {
   border-collapse: collapse;
-  overflow-y: auto;
-  position: relative;
+  /* table-layout: fixed; */
+  width: 100%;
 
   th {
     background-color: white;
@@ -53,17 +55,16 @@
     z-index: 2;
   }
 
+  td,
+  th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* min-width: 100px; */
+  }
+
   tbody > tr:hover {
     background-color: #c9f2ef95;
-  }
-
-  td {
-    width: auto;
-    min-width: 2em;
-  }
-
-  tbody > tr > td:last-child {
-    text-align: right;
   }
 
   tbody > tr:nth-child(odd):not(:hover) {
