@@ -4,6 +4,7 @@ import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import networkAlertMessages from 'constants/alerts/networkAlerts';
 import Alerts from 'state/actions/alerts/Alerts';
+import { selectAuth } from 'state/reducers/auth';
 
 export const useInvasivesApi = () => {
   const { API_BASE } = useSelector(selectConfiguration);
@@ -292,7 +293,11 @@ export function* InvasivesAPI_Call(method, endpoint, payloadData?, additionalHea
     const data = yield response_data(res);
     return { data, status: res.status, url, ok: res.ok };
   } catch (ex) {
-    yield put(Alerts.create(networkAlertMessages.fetchFailed));
+    const { authenticated } = yield select(selectAuth);
+    if (authenticated) {
+      yield put(Alerts.create(networkAlertMessages.fetchFailed));
+    }
+    console.error(ex);
   }
 }
 

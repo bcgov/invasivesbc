@@ -36,7 +36,6 @@ import { RENDER_DEBUG } from 'UI/App';
 import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
-import RefreshButton from './RefreshButton';
 import { MOBILE } from 'state/build-time-config';
 import NetworkActions from 'state/actions/network/NetworkActions';
 import MapActions from 'state/actions/map';
@@ -373,7 +372,6 @@ const LoginOrOutMemo = React.memo(() => {
         )}
         {!authenticated && !workingOffline && <LoginButton />}
         {workingOffline && <LoginButton labelText={'Go Online'} />}
-        {MOBILE && <RefreshButton />}
         {(authenticated || workingOffline) && <LogoutButton />}
       </Menu>
     </div>
