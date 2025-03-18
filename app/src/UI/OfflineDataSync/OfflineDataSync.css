@@ -18,7 +18,6 @@
   }
 
   .dialog-table {
-    width: 100%;
     height: auto;
     margin: 10pt;
     max-height: 375pt;
@@ -43,7 +42,6 @@
 
 .offlineDataSyncTable {
   border-collapse: collapse;
-  width: 100%;
 
   th {
     background-color: white;

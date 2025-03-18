@@ -88,7 +88,7 @@ export const OfflineDataSyncTable = () => {
                       </IconButton>
                     </td>
                   </tr>
-                  {(value as OfflineActivityRecord).sync_state == 'Error' ? (
+                  {(value as OfflineActivityRecord).sync_state == 'Error' && (
                     <tr>
                       <td></td>
                       <td>
@@ -103,10 +103,6 @@ export const OfflineDataSyncTable = () => {
                             : JSON.stringify((value as OfflineActivityRecord).error_object)}
                         </pre>
                       </td>
-                    </tr>
-                  ) : (
-                    <tr key={`placeholder-${key}`} style={{ visibility: 'hidden', height: '1px' }}>
-                      <td colSpan={3}></td>
                     </tr>
                   )}
                 </React.Fragment>
