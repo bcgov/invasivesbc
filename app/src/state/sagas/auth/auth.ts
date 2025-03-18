@@ -90,7 +90,6 @@ function* handle_AUTH_MAKE_OFFLINE_USER_CURRENT(action) {
     yield all([
       put(NetworkActions.setAdministrativeStatus(false)),
       put(UserSettings.InitState.get({ offlineAPIDocsDisplayName: action.payload.displayName }))
-      // put(APIDocs.load({ displayName: action.payload.displayName })) // load previously-persisted api-docs
     ]);
   }
 }
