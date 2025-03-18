@@ -373,6 +373,31 @@ abstract class RecordCacheService extends BaseCacheService<
   }
 
   /**
+   * @desc Returns list of IDs that overlap with a GeoJSON Object
+   * @param {Feature} geom GeoJSON Object to find overlaps
+   * @returns { string[] } Overlapping record Ids
+   */
+  public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
+    const repos = await this.getOverlappingRepositories(geom);
+    const featureMap: Record<PropertyKey, Feature> = {};
+    const overlappingRecords: string[] = [];
+
+    // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
+    repos.forEach((repo) => {
+      (repo.cachedGeoJson?.data as any).features.forEach(
+        (feature: Feature, i: number) => (featureMap[feature?.properties?.name + i] ??= feature)
+      );
+    });
+
+    Object.values(featureMap).forEach((feature) => {
+      if (booleanIntersects(geom, feature)) {
+        overlappingRecords.push(feature?.properties?.description);
+      }
+    });
+
+    return overlappingRecords;
+  }
+  /**
    * @desc Get list of IDs that have had updates or been created since last update.
    * @param filterObjects Filters used at time of Cache
    * @param cacheTime Time of last Cache
