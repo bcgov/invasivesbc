@@ -167,7 +167,9 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
 
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
-      if (hasSelfIntersections) {
+      const hasHoles = sanitizedGeo.geometry.coordinates.length > 1; // check for intersections after LineStrings are converted to Polygons
+
+      if (hasSelfIntersections || hasHoles) {
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
         return;
       }
