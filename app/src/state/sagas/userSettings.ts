@@ -8,6 +8,7 @@ import Activity from 'state/actions/activity/Activity';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { selectAuth } from 'state/reducers/auth';
+import { MOBILE } from 'state/build-time-config';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -138,15 +139,19 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       color: '#21f34f',
       drawOrder: 3,
       cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE
-    },
-    '4': {
+    }
+  };
+
+  // add offline activities for mobile
+  if (MOBILE) {
+    defaultRecordSet['4'] = {
       recordSetType: RecordSetType.Activity,
       recordSetName: 'All Unsynced Offline Activities',
       cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
       drawOrder: 4,
       mapToggle: true // by default
-    }
-  };
+    };
+  }
 
   if (action.payload && action.payload.offlineAPIDocsDisplayName) {
     yield put(APIDocs.load({ displayName: action.payload.offlineAPIDocsDisplayName }));
