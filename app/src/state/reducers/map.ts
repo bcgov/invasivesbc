@@ -512,6 +512,26 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           limit: 5,
           page: 0
         });
+      } else if (WhatsHere.clear_whats_here.match(action)) {
+        Object.assign(draftState.whatsHere, {
+          clickedActivity: null,
+          clickedActivityDescription: null,
+          clickedIAPP: null,
+          clickedIAPPDescription: null,
+          loadingActivities: false,
+          loadingIAPP: false,
+          feature: null,
+          limit: 5,
+          page: 0,
+          ActivityIDs: [],
+          activityRows: [],
+          ActivityPage: 0,
+          ActivityLimit: 15,
+          IAPPIDs: [],
+          iappRows: [],
+          IAPPPage: 0,
+          IAPPLimit: 15
+        });
       } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
         const { iapp, activities } = action.payload;
         draftState.whatsHere.serverActivityIDs = activities;

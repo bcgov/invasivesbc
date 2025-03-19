@@ -9,25 +9,25 @@ class TileCache {
   static readonly PREFIX = 'TileCache';
 
   // used to tell the map we are on a page where we might want to draw a rectangle
-  static readonly setMapTileCacheMode = createAction<boolean>(`${this.PREFIX}/setDrawMode`);
+  static readonly setMapTileCacheMode = createAction<boolean>(`${this.PREFIX}/setMapTileCacheMode`);
 
-  static readonly setTileCacheShape = createAction<{ geometry: GeoJSON }>(`${this.PREFIX}/setShape`);
-  static readonly clearTileCacheShape = createAction(`${this.PREFIX}/clearShape`);
+  static readonly setTileCacheShape = createAction<{ geometry: GeoJSON }>(`${this.PREFIX}/setTileCacheShape`);
+  static readonly clearTileCacheShape = createAction(`${this.PREFIX}/clearTileCacheShape`);
 
   static readonly downloadProgressEvent = createAction<TileCacheProgressCallbackParameters>(
     `${this.PREFIX}/downloadProgressEvent`
   );
 
-  static readonly repositoryList = createAsyncThunk(`${this.PREFIX}/repoList`, async () => {
+  static readonly repositoryList = createAsyncThunk(`${this.PREFIX}/repositoryList`, async () => {
     return await (await TileCacheServiceFactory.getPlatformInstance()).listRepositories();
   });
-  static readonly deleteRepository = createAsyncThunk(`${this.PREFIX}/repoDelete`, async (repository: string) => {
+  static readonly deleteRepository = createAsyncThunk(`${this.PREFIX}/deleteRepository`, async (repository: string) => {
     const service = await TileCacheServiceFactory.getPlatformInstance();
     await service.deleteRepository(repository);
     return await service.listRepositories();
   });
   static readonly updateDescription = createAsyncThunk(
-    `${this.PREFIX}/repoUpdateDescription`,
+    `${this.PREFIX}/updateDescription`,
     async (spec: { repository: string; newDescription: string }) => {
       const service = await TileCacheServiceFactory.getPlatformInstance();
       await service.updateDescription(spec.repository, spec.newDescription);
