@@ -31,10 +31,9 @@ const canConnectToNetwork = async (url: string): Promise<boolean> => {
 const getTimeBetweenTicks = (heartbeatFailures: number): number => {
   const BASE_SECONDS_BETWEEN_FAILURE = 20;
   const BASE_SECONDS_BETWEEN_SUCCESS = 60;
-  return Math.max(
-    BASE_SECONDS_BETWEEN_FAILURE * 1000 * Math.pow(1.1, heartbeatFailures),
-    BASE_SECONDS_BETWEEN_SUCCESS * 1000
-  );
+  return heartbeatFailures === 0
+    ? BASE_SECONDS_BETWEEN_SUCCESS * 1000
+    : BASE_SECONDS_BETWEEN_FAILURE * 1000 * Math.floor(Math.pow(1.1, heartbeatFailures));
 };
 
 /* Sagas */
