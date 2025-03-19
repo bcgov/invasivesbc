@@ -59,7 +59,7 @@ export const OfflineDataSyncTable = () => {
           <tbody>
             {Object.entries(serializedActivities).map(([key, value]) => {
               return (
-                <React.Fragment key={`${key}`}>
+                <React.Fragment key={key}>
                   <tr>
                     <td>
                       <IconButton
@@ -99,7 +99,7 @@ export const OfflineDataSyncTable = () => {
                       <td colSpan={3}>
                         <pre>
                           {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
-                            ? JSON.stringify((value as OfflineActivityRecord).error_object.message)
+                            ? JSON.stringify((value as OfflineActivityRecord).error_object?.message)
                             : JSON.stringify((value as OfflineActivityRecord).error_object)}
                         </pre>
                       </td>
