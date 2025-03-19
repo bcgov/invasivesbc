@@ -139,19 +139,18 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       color: '#21f34f',
       drawOrder: 3,
       cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE
-    },
-    '4': {
+    }
+  };
+
+  // add offline activities for mobile
+  if (MOBILE) {
+    defaultRecordSet['4'] = {
       recordSetType: RecordSetType.Activity,
       recordSetName: 'All Unsynced Offline Activities',
       cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
       drawOrder: 4,
       mapToggle: true // by default
-    }
-  };
-
-  // remove offline activities for web
-  if (!MOBILE) {
-    delete (defaultRecordSet as any)['4'];
+    };
   }
 
   if (action.payload && action.payload.offlineAPIDocsDisplayName) {
