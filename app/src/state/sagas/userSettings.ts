@@ -8,6 +8,7 @@ import Activity from 'state/actions/activity/Activity';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { selectAuth } from 'state/reducers/auth';
+import { MOBILE } from 'state/build-time-config';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -147,6 +148,11 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       mapToggle: true // by default
     }
   };
+
+  // remove offline activities for web
+  if (!MOBILE) {
+    delete (defaultRecordSet as any)['4'];
+  }
 
   if (action.payload && action.payload.offlineAPIDocsDisplayName) {
     yield put(APIDocs.load({ displayName: action.payload.offlineAPIDocsDisplayName }));
