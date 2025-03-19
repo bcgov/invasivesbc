@@ -228,11 +228,11 @@ abstract class RecordCacheService extends BaseCacheService<
       // trigger a callback on the first run, on the last run, every 3%
       if (
         lastProgressCallback == null ||
-        currentProgress - lastProgressCallback > 0.003 ||
+        processedCaches - lastProgressCallback > 400 ||
         processedCaches == totalRecordsToCache
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
-        lastProgressCallback = currentProgress;
+        lastProgressCallback = processedCaches;
         if (progressCallback) {
           progressCallback({
             setId: spec.setId,
@@ -290,11 +290,11 @@ abstract class RecordCacheService extends BaseCacheService<
       // trigger a callback on the first run, on the last run, every 3%
       if (
         lastProgressCallback == null ||
-        currentProgress - lastProgressCallback > 0.005 ||
+        processedCaches - lastProgressCallback > 450 ||
         processedCaches === totalRecordsToCache
       ) {
         pauseOrAbort = await this.checkPauseOrAbort(spec.setId);
-        lastProgressCallback = currentProgress;
+        lastProgressCallback = processedCaches;
         const normalizedProgress = currentProgress;
         const progressLabel = `${processedCaches.toLocaleString()}/${totalRecordsToCache.toLocaleString()} Records`;
 
