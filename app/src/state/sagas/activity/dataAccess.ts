@@ -28,8 +28,7 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   CLOSE_NEW_RECORD_MENU,
-  MAIN_MAP_MOVE,
-  MAP_INIT_REQUEST
+  MAIN_MAP_MOVE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -52,6 +51,7 @@ import Activity, { INewActivity } from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import UserRecord from 'interfaces/UserRecord';
+import MapActions from 'state/actions/map';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -249,7 +249,7 @@ export function* handle_ACTIVITY_SAVE_SUCCESS() {
       })
     );
 
-    yield put({ type: MAP_INIT_REQUEST });
+    yield put(MapActions.initRequest());
   } catch (e) {
     console.error(e);
   }

@@ -1,5 +1,4 @@
 import { bboxPolygon, buffer, Feature } from '@turf/turf';
-import booleanIntersects from '@turf/boolean-intersects';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
@@ -21,8 +20,6 @@ import {
   IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
-  MAP_INIT_FOR_RECORDSET,
-  MAP_INIT_REQUEST,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
@@ -87,9 +84,10 @@ import {
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
 } from './map/offline';
+import MapActions from 'state/actions/map';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
-  yield put({ type: MAP_INIT_REQUEST, payload: {} });
+  yield put(MapActions.initRequest());
 }
 
 function* handle_MAP_INIT_REQUEST() {
@@ -106,15 +104,16 @@ function* handle_MAP_INIT_REQUEST() {
       }
     });
   }
-
+  yield put(MapActions.initForRecordset());
   yield call(refetchServerBoundaries);
-  yield put({ type: MAP_INIT_FOR_RECORDSET });
 }
 
 function* refetchServerBoundaries() {
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
-  const shapes = serverShapesServerResponse.data.result;
-  yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
+  if (serverShapesServerResponse?.ok) {
+    const shapes = serverShapesServerResponse.data.result;
+    yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
+  }
 }
 
 function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
@@ -828,7 +827,7 @@ function* activitiesPageSaga() {
     //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
     takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
-    takeEvery(MAP_INIT_FOR_RECORDSET, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(MapActions.initForRecordset, handle_MAP_INIT_FOR_RECORDSETS),
 
     takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
     takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
@@ -839,7 +838,7 @@ function* activitiesPageSaga() {
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
-    takeEvery(MAP_INIT_REQUEST, handle_MAP_INIT_REQUEST),
+    takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
     takeEvery(Activity.GeoJson.get, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
     takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),

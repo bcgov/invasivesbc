@@ -464,8 +464,8 @@ export const rebuildLayersOnTableHashUpdate = (
   const storeLayersIds = storeLayers.map((layer) => LAYER_ID_PREFIX + layer.recordSetID + '-');
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
-  const allThatAreRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID_PREFIX));
-  const allThatAreRecordSetSources = allSourcesOnMap.filter((source) => source.includes(LAYER_ID_PREFIX));
+  const allThatAreRecordSetLayers = allLayersOnMap.filter((layer) => layer.startsWith(LAYER_ID_PREFIX));
+  const allThatAreRecordSetSources = allSourcesOnMap.filter((source) => source.startsWith(LAYER_ID_PREFIX));
 
   const recordSetLayersThatAreNotInStore = allThatAreRecordSetLayers.filter(
     (layer) => storeLayersIds.filter((storeLayerId) => layer.includes(storeLayerId)).length === 0

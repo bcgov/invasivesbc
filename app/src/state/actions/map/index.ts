@@ -3,10 +3,12 @@ import { createAction } from '@reduxjs/toolkit';
 class MapActions {
   private static readonly PREFIX = `MapActions`;
 
-  static readonly toggleOverlay = createAction<string>(`${MapActions.PREFIX}/toggleOverlay`);
-  static readonly chooseBaseMap = createAction<string>(`${MapActions.PREFIX}/chooseBaseMap`);
-  static readonly updateAvailableBaseMaps = createAction<string[]>(`${MapActions.PREFIX}/updateAvailableBaseMaps`);
-  static readonly updateAvailableOverlays = createAction<string[]>(`${MapActions.PREFIX}/updateAvailableOverlays`);
+  static readonly chooseBaseMap = createAction<string>(`${this.PREFIX}/chooseBaseMap`);
+  static readonly initForRecordset = createAction(`${this.PREFIX}/initForRecordset`);
+  static readonly initRequest = createAction(`${this.PREFIX}/initRequest`);
+  static readonly toggleOverlay = createAction<string>(`${this.PREFIX}/toggleOverlay`);
+  static readonly updateAvailableBaseMaps = createAction<string[]>(`${this.PREFIX}/updateAvailableBaseMaps`);
+  static readonly updateAvailableOverlays = createAction<string[]>(`${this.PREFIX}/updateAvailableOverlays`);
 }
 
 export default MapActions;

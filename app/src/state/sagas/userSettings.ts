@@ -1,4 +1,4 @@
-import { all, put, select, take, takeEvery } from 'redux-saga/effects';
+import { all, put, select, takeEvery } from 'redux-saga/effects';
 import { ActivityStatus } from 'sharedAPI';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -153,7 +153,6 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   } else {
     yield put(APIDocs.getRequest());
   }
-  yield take(APIDocs.set.type);
   yield put(Activity.Suggestions.biocontrolOnline());
   yield put(UserSettings.InitState.getSuccess({ ...defaultRecordSet, ...recordSets }));
 }
