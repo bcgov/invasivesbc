@@ -191,8 +191,6 @@ const DrawControls = () => {
           drawInstance.current.changeMode('whats_here_box_mode');
           break;
         case TargetMode.DISABLED:
-          drawInstance.current.changeMode('do_nothing');
-          break;
         case TargetMode.ACTIVITY:
           drawInstance.current.changeMode('do_nothing');
           break;
@@ -231,7 +229,7 @@ const DrawControls = () => {
           },
           filter: ['all', ['==', 'active', 'true']],
           paint: {
-            'line-color': '#D20C0C',
+            'line-color': '#FCBA19',
             'line-dasharray': [0.2, 2],
             'line-width': 3
           }
@@ -245,7 +243,7 @@ const DrawControls = () => {
           },
           filter: ['all', ['==', 'active', 'false']],
           paint: {
-            'line-color': '#D20C0C',
+            'line-color': '#FCBA19',
             'line-width': 3
           }
         },
@@ -254,7 +252,7 @@ const DrawControls = () => {
           type: 'circle',
           paint: {
             'circle-radius': 3,
-            'circle-color': '#f00',
+            'circle-color': '#FCBA19',
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
           }
