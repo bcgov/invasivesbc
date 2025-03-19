@@ -85,6 +85,9 @@ const DrawControls = () => {
         })
       );
     } else {
+      if (mode === TargetMode.TILE_CACHE) {
+        dispatch(TileCache.clearTileCacheShape());
+      }
       drawInstance.current.deleteAll();
     }
   };
