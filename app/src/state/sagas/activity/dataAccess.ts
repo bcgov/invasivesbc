@@ -169,6 +169,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       if (hasSelfIntersections) {
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
+        return;
       }
     }
 
