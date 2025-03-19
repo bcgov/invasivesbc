@@ -87,6 +87,8 @@ const DrawControls = () => {
     } else {
       if (mode === TargetMode.TILE_CACHE) {
         dispatch(TileCache.clearTileCacheShape());
+      } else if (mode === TargetMode.WHATS_HERE) {
+        dispatch(WhatsHere.clear_whats_here());
       }
       drawInstance.current.deleteAll();
     }
