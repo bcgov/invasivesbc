@@ -284,8 +284,8 @@ export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
         limit: limit
       })
     );
-  } catch {
-    // do nothing. An expected error here is 'repository n not found' if the recordset contains no cache.
+  } catch (ex) {
+    console.error(ex);
   }
 }
 
