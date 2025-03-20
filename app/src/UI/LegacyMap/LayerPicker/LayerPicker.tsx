@@ -23,7 +23,7 @@ export const LayerPicker = () => {
   const toggleLayerPickerAccordion = () => dispatch(UserSettings.toggleLayerPickerAccordion());
   const [pickerPath, setPickerPath] = useState<LpModules>(LpModules.Init);
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
-  const isAuth = useSelector((state) => state.Auth.authenticated);
+  const isAuth = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   const accordionMode = useSelector((state) => state.UserSettings.layerPickerIsAccordion);
   const dispatch = useDispatch();
 

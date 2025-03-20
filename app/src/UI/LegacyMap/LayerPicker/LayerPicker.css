@@ -17,6 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  color: black;
   svg {
     height: 20pt;
     width: 20pt;
@@ -54,6 +55,9 @@ li > hr {
   .lp-content {
     height: 100%;
     overflow-y: auto;
+  }
+  * > button {
+    color: black;
   }
 }
 
