@@ -25,15 +25,18 @@ const canConnectToNetwork = async (url: string): Promise<boolean> => {
 
 /**
  * @desc Get the time between ticks for polling the heartbeat
- * @param heartbeatFailures Current number of failed network attempts
- * @returns { number } Greater of two delay values
+ * @param heartbeatFailures Current number of sequential failed network attempts
+ * @returns { number } delay between heartbeat checks
  */
 const getTimeBetweenTicks = (heartbeatFailures: number): number => {
-  const BASE_SECONDS_BETWEEN_FAILURE = 20;
-  const BASE_SECONDS_BETWEEN_SUCCESS = 60;
-  return heartbeatFailures === 0
-    ? BASE_SECONDS_BETWEEN_SUCCESS * 1000
-    : BASE_SECONDS_BETWEEN_FAILURE * 1000 * Math.floor(Math.pow(1.1, heartbeatFailures));
+  const BASE_SECONDS_BETWEEN_FAILURE = 20 * 1000;
+  const BASE_SECONDS_BETWEEN_SUCCESS = 60 * 1000;
+  if (heartbeatFailures === 0) {
+    // We are online and working as intended
+    return BASE_SECONDS_BETWEEN_SUCCESS;
+  }
+  // Poll more frequently if there are failed heartbeats, gradually increasing the time between ticks.
+  return BASE_SECONDS_BETWEEN_FAILURE * Math.floor(Math.pow(1.1, heartbeatFailures));
 };
 
 /* Sagas */
