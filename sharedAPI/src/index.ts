@@ -286,13 +286,13 @@ export function populateSpeciesArrays(record) {
       species_treated = subtypeData?.Biocontrol_Release_Information?.map((plant) => plant.invasive_plant_code);
       break;
     case ActivitySubtype.Monitoring_ChemicalTerrestrialAquaticPlant:
-      species_treated = subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.flatMap((info) =>
-        [info?.invasive_plant_code, info?.invasive_plant_aquatic_code].filter(Boolean)
+      species_treated = subtypeData?.Monitoring_ChemicalTerrestrialAquaticPlant_Information?.flatMap((plantInfo) =>
+        [plantInfo?.invasive_plant_code, plantInfo?.invasive_plant_aquatic_code].filter(Boolean)
       );
       break;
     case ActivitySubtype.Monitoring_MechanicalTerrestrialAquaticPlant:
-      species_treated = subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information?.flatMap((info) =>
-        [info?.invasive_plant_code, info?.invasive_plant_aquatic_code].filter(Boolean)
+      species_treated = subtypeData?.Monitoring_MechanicalTerrestrialAquaticPlant_Information?.flatMap((plantInfo) =>
+        [plantInfo?.invasive_plant_code, plantInfo?.invasive_plant_aquatic_code].filter(Boolean)
       );
       break;
     case ActivitySubtype.Monitoring_BiologicalTerrestrialPlant:
