@@ -30,7 +30,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
 
   const recordSetType = useSelector((state) => state.UserSettings?.recordSets?.[setID].recordSetType);
 
-  // memoize the selector to return the same array reference unless its values change, preventing unnecessary re-renders
+  // memoize the selector to return the same array reference unless the input values change, preventing unnecessary re-renders
   const selectFilteredColumns = createSelector(
     [(state) => state.UserSettings?.tableColumns, (_, type) => type],
     (tableColumns, type) => tableColumns?.[type]?.filter((col) => !col.hide) || []
