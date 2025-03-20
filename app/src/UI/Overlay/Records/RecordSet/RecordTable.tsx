@@ -7,6 +7,7 @@ import { detectTouchDevice } from 'utils/detectTouch';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useSelector } from 'utils/use_selector';
+import { createSelector } from '@reduxjs/toolkit';
 import UserRecord from 'interfaces/UserRecord';
 import RecordTableColumnSelect from './RecordTableColumnSelect/RecordTableColumnSelect';
 
@@ -28,9 +29,14 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
   };
 
   const recordSetType = useSelector((state) => state.UserSettings?.recordSets?.[setID].recordSetType);
-  const tableColumns = useSelector((state) =>
-    state.UserSettings?.tableColumns[recordSetType].filter((col) => !col.hide)
+
+  // memoize the selector to return the same array reference unless the input values change, preventing unnecessary re-renders
+  const selectFilteredColumns = createSelector(
+    [(state) => state.UserSettings?.tableColumns, (_, type) => type],
+    (tableColumns, type) => tableColumns?.[type]?.filter((col) => !col.hide) || []
   );
+  const tableColumns = useSelector((state) => selectFilteredColumns(state, recordSetType));
+
   const unmappedRows = useSelector((state) => state.Map?.recordTables?.[setID]?.rows);
   const sortColumn = useSelector((state) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
   const sortOrder = useSelector((state) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
