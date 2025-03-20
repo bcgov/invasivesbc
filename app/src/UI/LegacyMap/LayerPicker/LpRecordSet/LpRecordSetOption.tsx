@@ -1,4 +1,4 @@
-import { Label, LabelOff, Palette, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Label, LabelOff, Layers, LayersClear, Palette } from '@mui/icons-material';
 import { Tooltip } from '@mui/material';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 
@@ -37,7 +37,7 @@ const LpRecordSetOption = ({
             title="Toggle viewing the layer on the map, and including these records in the Whats Here search results."
           >
             <button onClick={() => toggleVisibility(recordSet.id!)}>
-              {recordSet?.mapToggle ? <Visibility /> : <VisibilityOff />}
+              {recordSet?.mapToggle ? <Layers /> : <LayersClear />}
             </button>
           </Tooltip>
           {canColour && (
