@@ -15,8 +15,10 @@ import {
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
-import Activity from 'state/actions/activity/Activity';
+import Activity, { ActivityTableRowGetRequest } from 'state/actions/activity/Activity';
 import UserRecord from 'interfaces/UserRecord';
+import { getRowsFromCachedRecordset } from './dataAccess';
+import { MOBILE } from 'state/build-time-config';
 
 function* refreshExportConfigIfRequired(action?: AnyAction) {
   const config = yield select(selectRootConfiguration);
@@ -129,7 +131,7 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
   });
 }
 
-export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
+export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<ActivityTableRowGetRequest>) {
   let mapState = yield select((state) => state.Map);
   let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 
@@ -153,6 +155,9 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action) {
         limit: action.payload.limit
       })
     );
+  } else if (MOBILE) {
+    // API Request Failed, see if we can rows from a cache
+    yield getRowsFromCachedRecordset(action.payload);
   }
 }
 

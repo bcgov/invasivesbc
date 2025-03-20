@@ -25,7 +25,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
-import Activity from 'state/actions/activity/Activity';
+import Activity, { ActivityTableRowGetRequest } from 'state/actions/activity/Activity';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -224,7 +224,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
   } as any;
 };
 
-export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
+export function* handle_ACTIVITIES_TABLE_GET_ROWS(action: PayloadAction<ActivityTableRowGetRequest>) {
   try {
     const currentState = yield select(selectUserSettings);
     const connected = yield select(selectNetworkConnected);
@@ -261,22 +261,31 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action) {
       );
     } else {
       // user offline: fetch from cache
-      const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const recordSetIdList = yield service.getIdList(recordSetID);
-      const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
-
-      yield put(
-        Activity.getRowsSuccess({
-          recordSetID: recordSetID,
-          rows: records,
-          tableFiltersHash: tableFiltersHash,
-          page: page,
-          limit: limit
-        })
-      );
+      yield getRowsFromCachedRecordset(action.payload);
     }
   } catch (e) {
     console.error(e);
+  }
+}
+
+export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
+  try {
+    const { recordSetID, page, limit, tableFiltersHash } = req;
+    const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    const recordSetIdList = yield service.getIdList(recordSetID);
+    const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
+
+    yield put(
+      Activity.getRowsSuccess({
+        recordSetID: recordSetID,
+        rows: records,
+        tableFiltersHash: tableFiltersHash,
+        page: page,
+        limit: limit
+      })
+    );
+  } catch (ex) {
+    console.error(ex);
   }
 }
 
