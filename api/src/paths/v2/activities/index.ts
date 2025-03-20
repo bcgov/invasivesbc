@@ -85,7 +85,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
   const reqID = getuid();
   return async (req: InvasivesRequest, res) => {
     if (req.authContext.roles.length === 0) {
-      res.status(401).json({ message: 'No Role for user' });
+      return res.status(401).json({ message: 'No Role for user' });
     }
 
     const rawBodyCriteria = req.body['filterObjects'];
