@@ -3,7 +3,7 @@ import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
@@ -13,6 +13,7 @@ import { createRoot, Root } from 'react-dom/client';
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
+import Prompt from 'state/actions/prompts/Prompt';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -52,6 +53,46 @@ const DrawControls = () => {
   useEffect(() => {
     modeRef.current = mode;
   }, [mode]);
+
+  /**
+   * @desc Override the delete button to clear all shapes from drawn tools and to update the Form activity with null shape.
+   */
+  MapboxDraw.modes.simple_select.onTrash = () => {
+    const callback = (confirmation: boolean) => {
+      if (confirmation) {
+        drawInstance.current?.deleteAll();
+        dispatch({
+          type: ACTIVITY_UPDATE_GEO_SUCCESS,
+          payload: {
+            geometry: undefined,
+            utm: undefined,
+            lat: undefined,
+            long: undefined,
+            reported_area: undefined,
+            Well_Information: undefined
+          }
+        });
+      }
+    };
+    if (!drawInstance.current) return;
+    if (mode === TargetMode.ACTIVITY) {
+      dispatch(
+        Prompt.confirmation({
+          callback,
+          title: 'Delete Geometry',
+          prompt: 'Do you want to delete the geometry from the activity? This action cannot be undone.',
+          confirmText: 'Delete Geometry'
+        })
+      );
+    } else {
+      if (mode === TargetMode.TILE_CACHE) {
+        dispatch(TileCache.clearTileCacheShape());
+      } else if (mode === TargetMode.WHATS_HERE) {
+        dispatch(WhatsHere.clear_whats_here());
+      }
+      drawInstance.current.deleteAll();
+    }
+  };
 
   const drawCreate = useCallback((event) => {
     if (!drawInstance.current) return;
@@ -152,8 +193,6 @@ const DrawControls = () => {
           drawInstance.current.changeMode('whats_here_box_mode');
           break;
         case TargetMode.DISABLED:
-          drawInstance.current.changeMode('do_nothing');
-          break;
         case TargetMode.ACTIVITY:
           drawInstance.current.changeMode('do_nothing');
           break;
@@ -184,15 +223,29 @@ const DrawControls = () => {
       },
       styles: [
         {
-          id: 'gl-draw-line',
+          id: 'gl-edited-line',
           type: 'line',
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
           },
+          filter: ['all', ['==', 'active', 'true']],
           paint: {
-            'line-color': '#D20C0C',
+            'line-color': '#FCBA19',
             'line-dasharray': [0.2, 2],
+            'line-width': 3
+          }
+        },
+        {
+          id: 'gl-drawn-line',
+          type: 'line',
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          },
+          filter: ['all', ['==', 'active', 'false']],
+          paint: {
+            'line-color': '#FCBA19',
             'line-width': 3
           }
         },
@@ -201,14 +254,13 @@ const DrawControls = () => {
           type: 'circle',
           paint: {
             'circle-radius': 3,
-            'circle-color': '#f00',
+            'circle-color': '#FCBA19',
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
           }
         }
       ]
     });
-
     drawModeDisplay.current = new DrawModeDisplay(mode);
 
     map.on('draw.create', drawCreate);

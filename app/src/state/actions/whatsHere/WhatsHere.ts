@@ -33,6 +33,7 @@ class WhatsHere {
       payload: { activities, iapp }
     })
   );
+  static readonly clear_whats_here = createAction(`${this.PREFIX}/clear_whats_here`);
   static readonly set_highlighted_iapp = createAction<string>(`${this.PREFIX}/set_highlighted_iapp`);
   static readonly set_highlighted_activity = createAction(
     `${this.PREFIX}/set_highlighted_activity`,
