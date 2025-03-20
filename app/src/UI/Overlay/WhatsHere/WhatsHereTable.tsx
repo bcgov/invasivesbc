@@ -13,6 +13,7 @@ import { calc_utm } from 'utils/utm';
 import './WhatsHereTable.css';
 import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import Spinner from 'UI/Spinner/Spinner';
 
 export const createDataUTM = (name: string, value: any) => {
   return { name, value };
@@ -48,6 +49,8 @@ export const WhatsHereTable = () => {
   const getActivityDescriptionForOpenButton = () => `Open InvasivesBC record: ${whatsHere?.clickedActivityDescription}`;
   const getIAPPDescriptionForOpenButton = () => `Open IAPP record: ${whatsHere?.clickedIAPPDescription}`;
 
+  const loadingInProgress = whatsHere.loadingActivities || whatsHere.loadingIAPP;
+
   return (
     <div className="whatshere-container">
       {whatsHere?.section && (
@@ -82,7 +85,7 @@ export const WhatsHereTable = () => {
                 )}
               </Grid>
             </Grid>
-
+            {loadingInProgress && <Spinner />}
             <TableContainer className="whatshere-position">
               {whatsHere?.section === 'invasivesbc' && <RenderTableActivity />}
               {whatsHere?.section === 'iapp' && <RenderTablePOI />}
