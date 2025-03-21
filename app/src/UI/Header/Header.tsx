@@ -70,7 +70,7 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
 
   const dispatch = useDispatch();
   const authenticated = useSelector((state) => state.Auth.authenticated && state?.Auth.roles.length > 0);
-  const workingOffline = useSelector((state) => state.Auth.workingOffline);
+  const { workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
 
   const canDisplayCallBack = useCallback(() => {
     if (platform === 'mobile' && !MOBILE) {
@@ -86,13 +86,13 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
       case 'never':
         return false;
       case 'unauthenticated':
-        return !workingOffline && !authenticated;
+        return !loggedInOrWorkingOffline;
       case 'authenticated_online':
         return authenticated && !workingOffline;
       case 'working_offline':
         return workingOffline;
       case 'authenticated_any':
-        return authenticated || workingOffline;
+        return loggedInOrWorkingOffline;
     }
   }, [authenticated, workingOffline, predicate, platform, MOBILE, JSON.stringify(path)]);
 
@@ -222,7 +222,7 @@ const ActivityTabMemo = () => {
       key={'tab3'}
       path={'/Records/Activity:' + activeActivity + '/form'}
       label="Current Activity"
-      predicate={'authenticated_online'}
+      predicate={'authenticated_any'}
       platform={'both'}
       panelOpen={true}
       panelFullScreen={false}
@@ -239,7 +239,7 @@ const IAPPTabMemo = () => {
       key={'tab4'}
       path={'/Records/IAPP/' + activeIAPP + '/summary'}
       label="Current IAPP"
-      predicate={'authenticated_online'}
+      predicate={'authenticated_any'}
       platform={'both'}
       panelOpen={true}
       panelFullScreen={false}
@@ -275,7 +275,7 @@ const AdminPanelMemo = () => {
 const LoginOrOutMemo = React.memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { authenticated, offlineUsers, workingOffline } = useSelector(selectAuth);
+  const { authenticated, offlineUsers, workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
   const activated = useSelector((state) => state.UserInfo.activated);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
@@ -288,16 +288,12 @@ const LoginOrOutMemo = React.memo(() => {
   useEffect(() => {
     if (!MOBILE) {
       setOfflineUserSelectionAvailable(false);
-      return;
-    }
-    if (workingOffline) {
+    } else if (loggedInOrWorkingOffline) {
       setOfflineUserSelectionAvailable(false);
-      return;
-    }
-    if (offlineUsers.length > 0) {
+    } else if (offlineUsers.length > 0) {
       setOfflineUserSelectionAvailable(true);
     }
-  }, [offlineUsers, workingOffline]);
+  }, [offlineUsers, loggedInOrWorkingOffline]);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -370,9 +366,8 @@ const LoginOrOutMemo = React.memo(() => {
             Choose Offline User
           </MenuItem>
         )}
-        {!authenticated && !workingOffline && <LoginButton />}
         {workingOffline && <LoginButton labelText={'Go Online'} />}
-        {(authenticated || workingOffline) && <LogoutButton />}
+        {loggedInOrWorkingOffline ? <LogoutButton /> : <LoginButton />}
       </Menu>
     </div>
   );
@@ -423,6 +418,7 @@ const NetworkStateControl: React.FC = () => {
 };
 
 export const Header: React.FC = () => {
+  const { loggedInOrWorkingOffline } = useSelector(selectAuth);
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) {
@@ -536,7 +532,7 @@ export const Header: React.FC = () => {
           <Map />
         </Tab>
 
-        {MOBILE && <OfflineSyncHeaderButton />}
+        {MOBILE && loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
 
         {MOBILE && <NetworkStateControl />}
       </ButtonWrapper>
