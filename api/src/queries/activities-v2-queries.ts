@@ -1,5 +1,6 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
+import { escapeLiteral } from 'pg';
 import { getLogger } from 'utils/logger';
 import { escapeLiteralUnquoted } from 'utils/dbutils';
 
@@ -592,7 +593,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
 
   if (filterObject.preferredUsername && isDraftFilter) {
     where.append(
-      `and (${tableAlias}.created_by=${escapeLiteralUnquoted(
+      `and (${tableAlias}.created_by=${escapeLiteral(
         filterObject.preferredUsername
       )} and ${tableAlias}.form_status <> 'Submitted') `
     );
