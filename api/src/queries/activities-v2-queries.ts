@@ -604,9 +604,6 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
 
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
-      /*case 'form_status':
-        where.append(`AND LOWER(${tableAlias}.form_status) = LOWER('${escapeLiteralUnquoted(filter.filter)}') `);
-        break;*/
       case 'activity_id':
         where.append(
           `${filter.operator2} LOWER(${tableAlias}.activity_id) ${

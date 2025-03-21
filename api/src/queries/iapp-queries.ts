@@ -1,7 +1,8 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
+import { PoolClient } from 'pg';
 import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
 import { getLogger } from 'utils/logger';
-import { PoolClient } from 'pg';
+import { escapeLiteralUnquoted } from 'utils/dbutils';
 
 const defaultLog = getLogger('point-of-interest');
 /**
@@ -173,93 +174,80 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   // grid filtering
   if (searchCriteria.grid_filters) {
     const gridFilters = searchCriteria.grid_filters;
-    //TBD if there's a legit reason to need this, client just shouldn't send if api doesn't need??
-    //if (gridFilters.enabled) {
-    if (true) {
-      if (gridFilters.point_of_interest_id) {
-        sqlStatement.append(SQL` AND i.site_id::text LIKE '%'||`);
-        sqlStatement.append(SQL`${gridFilters.point_of_interest_id}`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.paper_file_id) {
-        sqlStatement.append(SQL` AND LOWER(i.site_paper_file_id::text) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.paper_file_id})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.jurisdictions) {
-        sqlStatement.append(SQL` AND LOWER(j.j_string) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.jurisdictions})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.date_created) {
-        sqlStatement.append(SQL` AND LOWER(i.min_survey::text) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.date_created})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.species_on_site) {
-        sqlStatement.append(SQL` AND LOWER(i.all_species_on_site) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.species_on_site})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.date_last_surveyed) {
-        sqlStatement.append(SQL` AND LOWER(i.max_survey::text) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.date_last_surveyed})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.agencies) {
-        sqlStatement.append(SQL` AND LOWER(i.agencies::text) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.agencies})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.regional_district) {
-        sqlStatement.append(SQL` AND LOWER(i.regional_district::text) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.regional_district})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.regional_invasive_species_organization) {
-        sqlStatement.append(SQL` AND LOWER(i.regional_invasive_species_organization::text) LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.regional_invasive_species_organization})`);
-        sqlStatement.append(SQL`||'%'`);
-      }
-      if (gridFilters.bio_release) {
-        sqlStatement.append(SQL` AND has_biological_treatments = CASE
-        WHEN LOWER('Yes') LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.bio_release})`);
-        sqlStatement.append(SQL`||'%'`);
-        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
-      }
-      if (gridFilters.chem_treatment) {
-        sqlStatement.append(SQL` AND has_chemical_treatments = CASE
-        WHEN LOWER('Yes') LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.chem_treatment})`);
-        sqlStatement.append(SQL`||'%'`);
-        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
-      }
-      if (gridFilters.mech_treatment) {
-        sqlStatement.append(SQL` AND has_mechanical_treatments = CASE
-        WHEN LOWER('Yes') LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.mech_treatment})`);
-        sqlStatement.append(SQL`||'%'`);
-        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
-      }
-      if (gridFilters.bio_dispersal) {
-        sqlStatement.append(SQL` AND has_biological_dispersals = CASE
-        WHEN LOWER('Yes') LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.bio_dispersal})`);
-        sqlStatement.append(SQL`||'%'`);
-        sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
-      }
-      if (gridFilters.monitored) {
-        sqlStatement.append(SQL` AND (
+
+    if (gridFilters.point_of_interest_id) {
+      sqlStatement.append(
+        SQL` AND i.site_id::text LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.point_of_interest_id)}%')`
+      );
+    }
+    if (gridFilters.paper_file_id) {
+      sqlStatement.append(
+        SQL` AND LOWER(i.site_paper_file_id::text) LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.paper_file_id)}%')`
+      );
+    }
+    if (gridFilters.jurisdictions) {
+      sqlStatement.append(
+        SQL` AND LOWER(j.j_string) LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.jurisdictions)}%')`
+      );
+    }
+    if (gridFilters.date_created) {
+      sqlStatement.append(
+        SQL` AND LOWER(i.min_survey::text) LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.date_created)}%')`
+      );
+    }
+    if (gridFilters.species_on_site) {
+      sqlStatement.append(
+        SQL` AND LOWER(i.all_species_on_site) LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.species_on_site)}%')`
+      );
+    }
+    if (gridFilters.date_last_surveyed) {
+      sqlStatement.append(
+        SQL` AND LOWER(i.max_survey::text) LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.date_last_surveyed)}%')`
+      );
+    }
+    if (gridFilters.agencies) {
+      sqlStatement.append(
+        SQL` AND LOWER(i.agencies::text) LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.agencies)}%')`
+      );
+    }
+    if (gridFilters.regional_district) {
+      sqlStatement.append(
+        SQL` AND LOWER(i.regional_district::text) LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.regional_district)}%')`
+      );
+    }
+    if (gridFilters.regional_invasive_species_organization) {
+      sqlStatement.append(
+        SQL` AND LOWER(i.regional_invasive_species_organization::text) LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.regional_invasive_species_organization)}%')`
+      );
+    }
+    if (gridFilters.bio_release) {
+      sqlStatement.append(SQL` AND has_biological_treatments = CASE
+        WHEN LOWER('Yes') LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.bio_release)}%')`);
+      sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+    }
+    if (gridFilters.chem_treatment) {
+      sqlStatement.append(SQL` AND has_chemical_treatments = CASE
+        WHEN LOWER('Yes') LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.chem_treatment)}%')`);
+      sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+    }
+    if (gridFilters.mech_treatment) {
+      sqlStatement.append(SQL` AND has_mechanical_treatments = CASE
+        WHEN LOWER('Yes') LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.mech_treatment)}%')`);
+      sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+    }
+    if (gridFilters.bio_dispersal) {
+      sqlStatement.append(SQL` AND has_biological_dispersals = CASE
+        WHEN LOWER('Yes') LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.bio_dispersal)}%')`);
+      sqlStatement.append(SQL`THEN TRUE ELSE FALSE END`);
+    }
+    if (gridFilters.monitored) {
+      sqlStatement.append(SQL` AND (
           (has_biological_treatment_monitorings = TRUE
           OR has_chemical_treatment_monitorings = TRUE
           OR has_mechanical_treatment_monitorings = TRUE
           )
-        AND LOWER('Yes') LIKE '%'||`);
-        sqlStatement.append(SQL`LOWER(${gridFilters.monitored})`);
-        sqlStatement.append(SQL`||'%'`);
-        sqlStatement.append(SQL`)`);
-      }
+        AND LOWER('Yes') LIKE LOWER('%${escapeLiteralUnquoted(gridFilters.monitored)}%')`);
+      sqlStatement.append(SQL`)`);
     }
   }
 
