@@ -32,7 +32,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const [recordLookupId, setRecordLookupId] = useState<string>('');
 
   const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord) => {
-    console.log(row);
     setRecordDisplayId(row.short_id ?? '');
     setRecordLookupId(row.activity_id ?? '');
     setAnchorEl(evt.currentTarget);
