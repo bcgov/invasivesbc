@@ -1,11 +1,13 @@
 import { Button, Popover } from '@mui/material';
-import { nanoid } from '@reduxjs/toolkit';
 import { MouseEvent, ReactNode, TouchEvent, useState } from 'react';
 
 /**
  * @property { boolean } closeAfterPress Popover should close after an internal click is registered
  * @property { string } buttonClasses classes to assign the button component for custom styling
  * @property { string } buttonText displayed text in the button component
+ * @property { Object } buttonOverrideOptions Disables the default button, takes props to set show/hide functionality
+ * @property { HTMLElement | null } buttonOverrideOptions.anchorEl HTML element triggering event, used to anchor the Popover in place
+ * @property { (anchorEl: HTMLElement | null) => void } buttonOverrideOptions.setAnchorEl setter for the Anchor Element, needed to clear the popover from the view
  * @property { ReactNode } children Rendered display inside of popover
  * @property { number | string } horizontal relative horizontal postion for popover to appear
  * @property { number | string } vertical relative vertical postion for popover to appear
@@ -13,6 +15,10 @@ import { MouseEvent, ReactNode, TouchEvent, useState } from 'react';
 type PropTypes = {
   closeAfterPress?: boolean;
   buttonClasses?: string;
+  buttonOverrideOptions?: {
+    anchorEl: HTMLElement | null;
+    setAnchorEl: (anchorEl: HTMLElement | null) => void;
+  };
   buttonText?: string;
   children: ReactNode;
   horizontal?: number | 'left' | 'center' | 'right';
@@ -25,31 +31,50 @@ type PropTypes = {
 const CustomPopover = ({
   buttonClasses = '',
   buttonText,
+  buttonOverrideOptions,
   children,
   closeAfterPress = false,
   horizontal = 'center',
   vertical = 'center'
 }: PropTypes) => {
-  const [id] = useState<string>(nanoid());
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
-  const handleClick = (event: MouseEvent<HTMLButtonElement> | TouchEvent<HTMLButtonElement>) =>
-    setAnchorEl(event.currentTarget);
-  const handleInnerClick = () => {
-    if (closeAfterPress) {
+  const handleClick = (event: MouseEvent<HTMLButtonElement> | TouchEvent<HTMLButtonElement>) => {
+    if (!buttonOverrideOptions) {
+      setAnchorEl(event.currentTarget);
+    }
+  };
+
+  const handleClose = () => {
+    if (buttonOverrideOptions) {
+      buttonOverrideOptions.setAnchorEl(null);
+    } else {
       setAnchorEl(null);
     }
   };
+
+  const handleInnerClick = () => {
+    if (closeAfterPress) {
+      if (buttonOverrideOptions) {
+        buttonOverrideOptions.setAnchorEl(null);
+      } else {
+        setAnchorEl(null);
+      }
+    }
+  };
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+
   return (
     <>
-      <Button aria-describedby={id} className={buttonClasses} variant={'contained'} onClick={handleClick}>
-        {buttonText}
-      </Button>
+      {!buttonOverrideOptions && (
+        <Button className={buttonClasses} variant={'contained'} onClick={handleClick}>
+          {buttonText}
+        </Button>
+      )}
       <Popover
-        open={!!anchorEl}
-        id={id}
-        anchorEl={anchorEl}
+        open={!!anchorEl || !!buttonOverrideOptions?.anchorEl}
+        anchorEl={anchorEl ?? buttonOverrideOptions?.anchorEl}
         anchorOrigin={{ vertical, horizontal }}
-        onClose={() => setAnchorEl(null)}
+        onClose={handleClose}
       >
         <div onClick={handleInnerClick}>{children}</div>
       </Popover>
