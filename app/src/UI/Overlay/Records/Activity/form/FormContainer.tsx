@@ -59,7 +59,7 @@ const FormContainer = () => {
   const reported_area = useSelector((state) => state.ActivityPage.activity.form_data.activity_data?.reported_area);
   const username = useSelector((state) => state.Auth.username);
 
-  const [isCreatedByUser, setIsCreatedBy] = useState<boolean>(username === created_by);
+  const [isCreatedByUser, setIsCreatedByUser] = useState<boolean>(username === created_by);
   const [isDisabled, setIsDisabled] = useState<boolean>(!isCreatedByUser);
   const [userIsAdmin] = useState<boolean>(accessRoles?.some((role) => role.role_id === 18));
 
@@ -85,7 +85,7 @@ const FormContainer = () => {
   }, [formDataState]);
 
   useEffect(() => {
-    setIsCreatedBy(username === created_by);
+    setIsCreatedByUser(username === created_by);
     setIsDisabled(!(username === created_by));
   }, [username, created_by]);
 
