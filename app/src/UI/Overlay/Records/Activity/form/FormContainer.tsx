@@ -59,8 +59,8 @@ const FormContainer = () => {
   const reported_area = useSelector((state) => state.ActivityPage.activity.form_data.activity_data?.reported_area);
   const username = useSelector((state) => state.Auth.username);
 
-  const [createdByUser] = useState<boolean>(username === created_by);
-  const [isDisabled, setIsDisabled] = useState<boolean>(!createdByUser);
+  const [isCreatedByUser, setIsCreatedByUser] = useState<boolean>(username === created_by);
+  const [isDisabled, setIsDisabled] = useState<boolean>(!isCreatedByUser);
   const [userIsAdmin] = useState<boolean>(accessRoles?.some((role) => role.role_id === 18));
 
   const debouncedFormChange = useCallback(
@@ -84,6 +84,11 @@ const FormContainer = () => {
     dispatch(Activity.setErrors(formRef.current?.state?.errors ?? []));
   }, [formDataState]);
 
+  useEffect(() => {
+    setIsCreatedByUser(username === created_by);
+    setIsDisabled(username !== created_by);
+  }, [username, created_by]);
+
   const isActivityChemTreatment = (): boolean =>
     activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
     activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic';
@@ -95,7 +100,7 @@ const FormContainer = () => {
     <Box sx={{ px: '15%' }}>
       <ThemeProvider theme={theme}>
         <SelectAutoCompleteContextProvider>
-          {!createdByUser && userIsAdmin && (
+          {!isCreatedByUser && userIsAdmin && (
             <div className="editFormButtonCont">
               <Button variant="contained" color="warning" onClick={() => setIsDisabled((prev) => !prev)}>
                 {isDisabled ? 'Enable Editing' : 'Disable Editing'}
