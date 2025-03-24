@@ -1,27 +1,41 @@
 import { Button } from '@mui/material';
 import { useHistory } from 'react-router';
-import { useSelector } from 'utils/use_selector';
 import './RecordTablePopoverContent.css';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
+/**
+ * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
+ * @property { string } recordLookupId Long ID for a Record, used to lookup the record data from API/Cache
+ * @property { RecordSetType } recordType Type of Record in context
+ */
 type PropTypes = {
-  id: string;
+  recordDisplayId: string;
+  recordLookupId: string;
+  recordType: RecordSetType;
 };
-const RecordTablePopoverContent = ({ id }: PropTypes) => {
+const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, recordType }: PropTypes) => {
   const history = useHistory();
-  const userRecordOnClickRecordType = useSelector((state) => state.Map.userRecordOnClickRecordType);
-  const userRecordOnClickRecordID = useSelector((state) => state.Map.userRecordOnClickRecordID);
+
+  const label = (() => {
+    switch (recordType) {
+      case RecordSetType.Activity:
+        return 'Record ID';
+      case RecordSetType.IAPP:
+        return 'IAPP Site ID';
+    }
+  })();
 
   return (
     <div id="record-table-popover-content">
       <p>
-        {userRecordOnClickRecordType}: {id}
+        {label}: {id}
       </p>
       <Button
         onClick={() => {
           const url =
-            userRecordOnClickRecordType === 'Activity'
-              ? '/Records/Activity:' + userRecordOnClickRecordID + '/form'
-              : '/Records/IAPP/' + userRecordOnClickRecordID + '/summary';
+            recordType === RecordSetType.Activity
+              ? '/Records/Activity:' + recordLookupId + '/form'
+              : '/Records/IAPP/' + recordLookupId + '/summary';
           history.push(url);
         }}
         variant="contained"
