@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useRef } from 'react';
 import './App.css';
 import { selectGlobalErrorState } from 'state/reducers/error_handler';
 import { ErrorHandler } from './ErrorHandler/ErrorHandler';

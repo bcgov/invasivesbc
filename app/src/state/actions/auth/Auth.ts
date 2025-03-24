@@ -10,11 +10,18 @@ class AuthActions {
     authenticated?: boolean;
     idToken: string | undefined;
   }>(`${this.PREFIX}/initializeComplete`);
-  static readonly reinit = createAction(`${this.PREFIX}/reinit`);
+
+  static Keycloak = class {
+    static readonly reinit = createAction(`${AuthActions.PREFIX}/reinit`);
+  };
+
+  static Native = class {};
+
+  static readonly tokenValidationRequest = createAction(`${this.PREFIX}/tokenValidationRequest`);
+
   static readonly signinRequest = createAction(`${this.PREFIX}/signinRequest`);
   static readonly signoutRequest = createAction(`${this.PREFIX}/signoutRequest`);
   static readonly signoutComplete = createAction(`${this.PREFIX}/signoutComplete`);
-  static readonly refreshToken = createAction(`${this.PREFIX}/refreshToken`);
   static readonly updateTokenState = createAction<{ idToken: string }>(`${this.PREFIX}/updateTokenState`);
   static readonly disrupted = createAction(`${this.PREFIX}/disrupted`);
   static readonly recovered = createAction(`${this.PREFIX}/recovered`);

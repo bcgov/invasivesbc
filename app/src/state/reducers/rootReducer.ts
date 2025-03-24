@@ -164,15 +164,26 @@ function createRootReducer(config: AppConfig) {
     EmailSettings: createEmailSettingsReducer(),
     EmailTemplates: createEmailTemplatesReducer(),
     ErrorHandler: errorHandlerReducer,
-    OfflineActivity: persistReducer<OfflineActivityState>(
-      {
-        key: 'offline-activity',
-        storage: durableStorage,
-        migrate: preserveStateOnVersionUpgrade,
-        stateReconciler: autoMergeLevel1
-      },
-      createOfflineActivityReducer(config)
-    ),
+    OfflineActivity: (() => {
+      const persistedReducer = persistReducer<OfflineActivityState>(
+        {
+          key: 'offline-activity',
+          storage: durableStorage,
+          migrate: preserveStateOnVersionUpgrade,
+          stateReconciler: autoMergeLevel1
+        },
+        createOfflineActivityReducer(config)
+      );
+
+      return (state, action) => {
+        if (action.type === 'persist/PURGE') {
+          // protect this reducer from the purge action
+          return state;
+        } else {
+          return persistedReducer(state, action);
+        }
+      };
+    })(),
     ...(() => {
       if (MOBILE) {
         return { TileCache: createTileCacheReducer() };

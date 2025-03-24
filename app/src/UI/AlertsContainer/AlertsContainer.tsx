@@ -3,7 +3,7 @@
  * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Alert-System }
  */
 import { Alert, AlertTitle, Button, Icon } from '@mui/material';
-import { MapOutlined, Assignment, InsertPhoto, Wifi, Save } from '@mui/icons-material';
+import { Assignment, InsertPhoto, Lock, MapOutlined, Save, Wifi } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import './AlertsContainer.css';
 import AlertMessage from 'interfaces/AlertMessage';
@@ -32,6 +32,8 @@ const AlertsContainer = () => {
         return <Wifi />;
       case AlertSubjects.Cache:
         return <Save />;
+      case AlertSubjects.Authentication:
+        return <Lock />;
       default:
         break;
     }

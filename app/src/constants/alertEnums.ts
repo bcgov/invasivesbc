@@ -3,6 +3,7 @@ export enum AlertSubjects {
   Form = 'form',
   Photo = 'photo',
   Network = 'network',
+  Authentication = 'authentication',
   Cache = 'cache'
 }
 

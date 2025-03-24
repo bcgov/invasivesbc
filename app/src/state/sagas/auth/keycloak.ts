@@ -163,7 +163,6 @@ function* reinitAuth() {
     // we are already logged in
     // schedule our refresh
     // note that this happens after the redirect too, so we only need it here (it does not need to be in the signin handler)
-    yield put(AuthActions.refreshToken());
     yield put(AuthActions.refreshRolesRequest());
     if (postAuthNavigate) {
       sessionStorage.removeItem('_invasivesbc_auth_target');
@@ -183,14 +182,14 @@ function* initializeAuthentication() {
     url: config.KEYCLOAK_URL
   });
 
-  yield put(AuthActions.reinit());
+  yield put(AuthActions.Keycloak.reinit());
 }
 
 const keycloakAuthEffects = [
   takeLatest(AuthActions.initializeRequest.type, initializeAuthentication),
   takeLatest(AuthActions.signinRequest.type, handleSigninRequest),
   takeLatest(AuthActions.signoutRequest.type, handleSignoutRequest),
-  takeLatest(AuthActions.reinit.type, reinitAuth),
+  takeLatest(AuthActions.Keycloak.reinit.type, reinitAuth),
   fork(keepTokenFresh)
 ];
 

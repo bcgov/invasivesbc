@@ -70,7 +70,7 @@ const initialState: ActivityState = {
   uiSchema: undefined
 };
 
-function createActivityReducer(): (ActivityState: ActivityState, AnyAction) => ActivityState {
+function createActivityReducer() {
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<ActivityState>) => {
       if (GeoTracking.start.match(action)) {

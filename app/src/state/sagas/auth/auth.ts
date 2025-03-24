@@ -16,7 +16,7 @@ type withCurrentJWTCallback = (header: string) => Promise<any>;
 async function withCurrentJWT(callback: withCurrentJWTCallback) {
   // make a build-time determination about which version of the function to use
   if (MOBILE && [Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
-    const { idToken } = await AuthBridge.token({});
+    const { idToken, error } = await AuthBridge.token({});
     const header = `Bearer ${idToken}`;
     return await callback(header);
   } else if (keycloakInstance !== null) {

@@ -6,11 +6,21 @@ import { ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE } from 'state/actions';
 import { OfflineDataSyncTable } from 'UI/OfflineDataSync/OfflineDataSyncTable';
 import { Close } from '@mui/icons-material';
 import './OfflineDataSync.css';
+import { useEffect } from 'react';
+import { AuthActions } from 'state/actions/auth/Auth';
 
 export const OfflineDataSyncDialog = () => {
   const { statusDialogOpen } = useSelector(selectOfflineActivity);
   const dispatch = useDispatch();
   const handleClose = () => dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: false } });
+
+  useEffect(() => {
+    if (statusDialogOpen) {
+      // a hint that we should make sure our tokens are valid
+      dispatch(AuthActions.tokenValidationRequest());
+    }
+  }, [statusDialogOpen]);
+
   return (
     <Dialog open={statusDialogOpen} id="offline-data-sync-dialog" maxWidth={'xl'} onClose={handleClose}>
       <div className="dialog-header">

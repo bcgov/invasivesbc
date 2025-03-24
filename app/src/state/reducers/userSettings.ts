@@ -76,9 +76,7 @@ const initialState: UserSettingsState = {
   offlineDocs: []
 };
 
-function createUserSettingsReducer(
-  _configuration: AppConfig
-): (state: UserSettingsState, action: Action) => UserSettingsState {
+function createUserSettingsReducer(_configuration: AppConfig) {
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<UserSettingsState>) => {
       if (UserSettings.toggleRecordExpandSuccess.match(action)) {
