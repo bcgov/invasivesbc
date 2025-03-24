@@ -86,7 +86,7 @@ const FormContainer = () => {
 
   useEffect(() => {
     setIsCreatedByUser(username === created_by);
-    setIsDisabled(!(username === created_by));
+    setIsDisabled(username !== created_by);
   }, [username, created_by]);
 
   const isActivityChemTreatment = (): boolean =>
