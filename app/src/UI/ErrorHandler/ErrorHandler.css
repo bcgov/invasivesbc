@@ -8,6 +8,7 @@ div.errorHandler {
   padding: 1.5rem;
   background-color: #fff;
   font-size: 14pt;
+
   span {
     color: var(--error-red);
   }
@@ -32,7 +33,7 @@ div.errorHandler .controls {
   justify-content: right;
 }
 
-@media screen and (min-width: 600px) {
+@media screen and (width >= 600px) {
   div.errorHandler {
     margin: 4rem 2em;
   }
