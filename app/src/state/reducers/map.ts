@@ -237,9 +237,6 @@ export interface MapState {
   simplePickerLayers: object;
   tooManyLabelsDialog: any;
   userCoords: any;
-  userRecordOnClickRecordID: string | null;
-  userRecordOnClickRecordRow: any;
-  userRecordOnClickRecordType: string | null;
   userRecordOnHoverRecordID: any;
   userRecordOnHoverRecordRow: any;
   userRecordOnHoverRecordType: any;
@@ -297,10 +294,6 @@ const initialState: MapState = {
 
   map_center: [55, -128],
   map_zoom: 5,
-
-  userRecordOnClickRecordID: null,
-  userRecordOnClickRecordRow: null,
-  userRecordOnClickRecordType: null,
 
   CanTriggerCSV: true,
 

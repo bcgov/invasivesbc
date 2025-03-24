@@ -51,7 +51,7 @@ const CustomPopover = ({
     }
   };
 
-  const handleInnerClick = () => {
+  const handleCloseAfterClick = () => {
     if (closeAfterPress) {
       if (buttonOverrideOptions) {
         buttonOverrideOptions.setAnchorEl(null);
@@ -74,9 +74,10 @@ const CustomPopover = ({
         open={!!anchorEl || !!buttonOverrideOptions?.anchorEl}
         anchorEl={anchorEl ?? buttonOverrideOptions?.anchorEl}
         anchorOrigin={{ vertical, horizontal }}
+        onClick={handleCloseAfterClick}
         onClose={handleClose}
       >
-        <div onClick={handleInnerClick}>{children}</div>
+        {children}
       </Popover>
     </>
   );

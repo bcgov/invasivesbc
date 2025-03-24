@@ -69,8 +69,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     console.log(error);
   }
 
-  const tableType = recordSet?.recordSetType;
-
   return (
     <>
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>

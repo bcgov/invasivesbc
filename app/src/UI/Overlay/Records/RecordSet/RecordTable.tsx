@@ -106,7 +106,9 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                   }}
                 >
                   {col.name}{' '}
-                  {sortColumn === col.key && sortColumns.includes(sortColumn!) && (sortOrder === 'ASC' ? '▲' : '▼')}
+                  {sortColumn === col.key &&
+                    sortColumns.includes(sortColumn ?? '') &&
+                    (sortOrder === 'ASC' ? '▲' : '▼')}
                 </th>
               ))}
             </tr>
