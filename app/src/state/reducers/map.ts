@@ -43,9 +43,7 @@ import {
   TOGGLE_QUICK_PAN_TO_RECORD,
   TOGGLE_WMS_LAYER,
   URL_CHANGE,
-  USER_CLICKED_RECORD,
-  USER_HOVERED_RECORD,
-  USER_TOUCHED_RECORD
+  USER_HOVERED_RECORD
 } from '../actions';
 import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -242,7 +240,6 @@ export interface MapState {
   userRecordOnClickRecordID: string | null;
   userRecordOnClickRecordRow: any;
   userRecordOnClickRecordType: string | null;
-  userRecordOnHoverMenuOpen: boolean;
   userRecordOnHoverRecordID: any;
   userRecordOnHoverRecordRow: any;
   userRecordOnHoverRecordType: any;
@@ -355,7 +352,6 @@ const initialState: MapState = {
   tileCacheMode: false,
 
   userCoords: null,
-  userRecordOnHoverMenuOpen: false,
   userRecordOnHoverRecordID: undefined,
   userRecordOnHoverRecordRow: undefined,
   userRecordOnHoverRecordType: undefined,
@@ -1094,25 +1090,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             break;
           }
-          case USER_CLICKED_RECORD: {
-            draftState.userRecordOnClickRecordType = action.payload.recordType;
-            draftState.userRecordOnClickRecordID = action.payload.id;
-            draftState.userRecordOnClickRecordRow = action.payload.row;
-            break;
-          }
           case USER_HOVERED_RECORD: {
-            draftState.userRecordOnHoverMenuOpen = true;
             draftState.userRecordOnHoverRecordType = action.payload.recordType;
             draftState.userRecordOnHoverRecordID = action.payload.id;
             draftState.userRecordOnHoverRecordRow = action.payload.row;
-            break;
-          }
-          case USER_TOUCHED_RECORD: {
-            draftState.userRecordOnHoverMenuOpen = true;
-            draftState.userRecordOnHoverRecordType = action.payload.recordType;
-            draftState.userRecordOnHoverRecordID = action.payload.id;
-            draftState.userRecordOnHoverRecordRow = action.payload.row;
-            // draftState.touchTime = Date.now();
             break;
           }
           default:
