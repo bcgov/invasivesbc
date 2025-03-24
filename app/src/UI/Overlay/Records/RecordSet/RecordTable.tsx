@@ -10,6 +10,10 @@ import { useSelector } from 'utils/use_selector';
 import { createSelector } from '@reduxjs/toolkit';
 import UserRecord from 'interfaces/UserRecord';
 import RecordTableColumnSelect from './RecordTableColumnSelect/RecordTableColumnSelect';
+import { MouseEvent, TouchEvent, useState } from 'react';
+import { Popover } from '@mui/material';
+import RecordTablePopoverContent from './RecordTablePopoverContent/RecordTablePopoverContent';
+import IappRecord from 'interfaces/IappRecord';
 
 type PropTypes = {
   setID: string;
@@ -28,6 +32,11 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
     });
   };
 
+  const [recordId, setRecordId] = useState<string>('');
+  const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord | IappRecord) => {
+    setRecordId(row.short_id ?? row.site_id ?? '');
+    setAnchorEl(evt.currentTarget);
+  };
   const recordSetType = useSelector((state) => state.UserSettings?.recordSets?.[setID].recordSetType);
 
   // memoize the selector to return the same array reference unless the input values change, preventing unnecessary re-renders
@@ -41,7 +50,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
   const sortColumn = useSelector((state) => state.UserSettings?.recordSets?.[setID]?.sortColumn);
   const sortOrder = useSelector((state) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
   const dispatch = useDispatch();
-
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const isTouch = detectTouchDevice();
   const mappedRows = unmappedRows?.map((row) => {
     const unnestedRow =
@@ -72,6 +81,14 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
   return (
     <div>
       <RecordTableColumnSelect recordSetType={recordSetType} />
+      <Popover
+        open={!!anchorEl}
+        anchorEl={anchorEl}
+        anchorOrigin={{ horizontal: 'center', vertical: 'center' }}
+        onClose={() => setAnchorEl(null)}
+      >
+        <RecordTablePopoverContent id={recordId} />
+      </Popover>
       <div className="record_table_container">
         <table className="record_table">
           <tbody>
@@ -92,7 +109,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                   }}
                 >
                   {col.name}{' '}
-                  {sortColumn === col.key && sortColumns.includes(sortColumn) && (sortOrder === 'ASC' ? '▲' : '▼')}
+                  {sortColumn === col.key && sortColumns.includes(sortColumn!) && (sortOrder === 'ASC' ? '▲' : '▼')}
                 </th>
               ))}
             </tr>
@@ -103,7 +120,7 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     event.preventDefault();
                     event.stopPropagation();
                   }}
-                  onClick={() => {
+                  onClick={(evt: MouseEvent<HTMLTableRowElement> | TouchEvent<HTMLTableRowElement>) => {
                     if (!isTouch) {
                       dispatch({
                         type: USER_CLICKED_RECORD,
@@ -149,7 +166,11 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     </td>
                   )}
                   {tableColumns.map((col) => (
-                    <td className="record_table_row_column" key={col.key + col.name}>
+                    <td
+                      className="record_table_row_column"
+                      key={col.key + col.name}
+                      onClick={(evt) => handlePopoverOpen(evt, row)}
+                    >
                       {row[col.key]}
                     </td>
                   ))}

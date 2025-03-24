@@ -1,6 +1,5 @@
 export const SET_APP_MODE = 'SET_APP_MODE';
 export const TOGGLE_PANEL = 'TOGGLE_PANEL';
-export const OVERLAY_MENU_TOGGLE = 'OVERLAY_MENU_TOGGLE';
 export const URL_CHANGE = 'URL_CHANGE';
 export const SET_CURRENT_OPEN_SET = 'SET_CURRENT_OPEN_SET';
 

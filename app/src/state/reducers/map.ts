@@ -27,7 +27,6 @@ import {
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACKING_ON,
-  OVERLAY_MENU_TOGGLE,
   PAGE_OR_LIMIT_UPDATE,
   PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
@@ -240,7 +239,6 @@ export interface MapState {
   simplePickerLayers: object;
   tooManyLabelsDialog: any;
   userCoords: any;
-  userRecordOnClickMenuOpen: boolean;
   userRecordOnClickRecordID: string | null;
   userRecordOnClickRecordRow: any;
   userRecordOnClickRecordType: string | null;
@@ -303,7 +301,6 @@ const initialState: MapState = {
   map_center: [55, -128],
   map_zoom: 5,
 
-  userRecordOnClickMenuOpen: false,
   userRecordOnClickRecordID: null,
   userRecordOnClickRecordRow: null,
   userRecordOnClickRecordType: null,
@@ -1035,10 +1032,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.positionTracking = false;
             break;
           }
-          case OVERLAY_MENU_TOGGLE: {
-            draftState.userRecordOnClickMenuOpen = false;
-            break;
-          }
           case PAGE_OR_LIMIT_UPDATE: {
             draftState.recordTables[action.payload.setID].page = action.payload.page;
             draftState.recordTables[action.payload.setID].limit = action.payload.limit;
@@ -1092,7 +1085,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           case URL_CHANGE: {
-            draftState.userRecordOnClickMenuOpen = false;
             if (action.payload?.pathname === '/') {
               // draftState.panelOpen = false;
             }
@@ -1103,7 +1095,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           case USER_CLICKED_RECORD: {
-            draftState.userRecordOnClickMenuOpen = true;
             draftState.userRecordOnClickRecordType = action.payload.recordType;
             draftState.userRecordOnClickRecordID = action.payload.id;
             draftState.userRecordOnClickRecordRow = action.payload.row;
