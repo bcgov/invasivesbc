@@ -29,7 +29,7 @@ export const activityDefaults = {
 };
 
 type OfflineDocsProperties = {
-  [key: string]: {
+  [key: PropertyKey]: {
     options?: { value: string; label: string }[];
   };
 };
@@ -222,22 +222,15 @@ export function getConcatenatedCodes(obj: Record<string, Set<string>>): string {
  *
  * @param {Record<string, Set<string>>} obj - The object that contains sets of species codes
  * @param {OfflineDocsProperties} properties - Properties to search from, to map codes to their corresponding labels
- * @param {boolean} specialCase - A flag for special cases where the code search needs to be altered based on the keys to find
  * @returns {string} A string representation of the concatenated labels, comma separated
  */
-export function getConcatenatedLabels(
-  obj: Record<string, Set<string>>,
-  properties: OfflineDocsProperties,
-  specialCase: boolean
-): string {
-  let labels: string[] = [];
-  const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
-  for (const key of keysToFind) {
-    let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
+export function getConcatenatedLabels(obj: Record<string, Set<string>>, properties: OfflineDocsProperties): string {
+  const labels: string[] = [];
 
-    if (obj[key].size > 0 && properties[propertyKey]?.options) {
+  for (const key in obj) {
+    if (obj[key].size > 0 && properties[key]?.options) {
       const optionsMap = new Map<string, string>(
-        properties[propertyKey].options.map((option: { value: string; label: string }) => [option.value, option.label])
+        properties[key].options.map((option: { value: string; label: string }) => [option.value, option.label])
       );
 
       obj[key].forEach((value) => {
@@ -248,16 +241,26 @@ export function getConcatenatedLabels(
       });
     }
   }
+
   return labels.join(', ') || '';
 }
 
-export function findSpeciesCodes(obj: Record<string, any>, targetKey: string): Record<string, Set<string>> {
-  const result: Record<string, Set<string>> = {
+/**
+ * Recursively searches through an object (or an array within the object) to find specific keys
+ * (`invasive_plant_code`, `invasive_plant_aquatic_code`) and collect associated values
+ * into a Set.
+ */
+export function findSpeciesCodes(
+  obj: Record<string, any>,
+  targetKey: string,
+  switchToAquaticCode: boolean = false
+): Record<string, Set<string>> {
+  const codeMaps: Record<string, Set<string>> = {
     invasive_plant_code: new Set(),
     invasive_plant_aquatic_code: new Set()
   };
 
-  const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
+  const keysToFind = Object.keys(codeMaps);
 
   function searchAndExtract(obj: any): void {
     if (Array.isArray(obj)) {
@@ -268,7 +271,11 @@ export function findSpeciesCodes(obj: Record<string, any>, targetKey: string): R
           searchAndExtract(obj[key]); // continue searching in the targetKey's value
         } else if (keysToFind.includes(key) && obj[key]) {
           const values = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
-          values.forEach((value) => result[key].add(value));
+          if (switchToAquaticCode) {
+            values.forEach((value) => codeMaps.invasive_plant_aquatic_code.add(value));
+          } else {
+            values.forEach((value) => codeMaps[key].add(value));
+          }
         } else {
           searchAndExtract(obj[key]); // recurse into other nested objects
         }
@@ -278,7 +285,7 @@ export function findSpeciesCodes(obj: Record<string, any>, targetKey: string): R
 
   searchAndExtract(obj);
 
-  return result;
+  return codeMaps;
 }
 
 export function transformOfflineActivitiesForRecordTable(
@@ -300,15 +307,15 @@ export function transformOfflineActivitiesForRecordTable(
       offlineActivities[key].data.invasive_plant = getConcatenatedLabels(
         findSpeciesCodes(
           offlineActivities[key].data.form_data.activity_subtype_data,
-          ActivitySubtypeTargetKey[offlineActivities[key].record_type]
+          ActivitySubtypeTargetKey[offlineActivities[key].record_type],
+          [
+            // Special case: if activity_subtype is in this list, switch between invasive_plant_code and invasive_plant_aquatic_code when searching api docs
+            ActivitySubtype.Treatment_MechanicalPlantAquatic,
+            ActivitySubtype.Treatment_ChemicalPlantAquatic,
+            ActivitySubtype.Observation_PlantAquatic
+          ].includes(offlineActivities[key].record_type as ActivitySubtype)
         ),
-        listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties,
-        [
-          // Special case: if activity_subtype is in this list, switch between invasive_plant_code and invasive_plant_aquatic_code when searching api docs
-          ActivitySubtype.Treatment_MechanicalPlantAquatic,
-          ActivitySubtype.Treatment_ChemicalPlantAquatic,
-          ActivitySubtype.Observation_PlantAquatic
-        ].includes(offlineActivities[key].record_type as ActivitySubtype)
+        listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties
       );
 
       offlineActivities[key].data.jurisdiction_display = (offlineActivities[key].data?.jurisdiction || [])
