@@ -140,7 +140,7 @@
     }
 
     .iapp-logo {
-      height: calc(var(--header-bar-height) / 2 - 10px);
+      height: calc(var(--header-bar-height) / 2 - 6px);
     }
   }
 
