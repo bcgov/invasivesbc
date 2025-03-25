@@ -10,10 +10,10 @@
 }
 
 .alertsContainerAlert {
-  width: 100%;
-  max-width: 375px;
+  width: calc(max(30vw, min(375px, 90vw)));
   box-sizing: border-box;
   text-align: left;
   align-items: center;
   margin: 2pt;
+  opacity: 0.8;
 }

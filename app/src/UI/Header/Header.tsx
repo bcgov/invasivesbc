@@ -40,6 +40,7 @@ import { MOBILE } from 'state/build-time-config';
 import NetworkActions from 'state/actions/network/NetworkActions';
 import MapActions from 'state/actions/map';
 import { AuthActions } from 'state/actions/auth/Auth';
+import Alerts from 'state/actions/alerts/Alerts';
 
 type TabPredicate =
   | 'authenticated_any'
@@ -244,7 +245,12 @@ const IAPPTabMemo = () => {
       panelOpen={true}
       panelFullScreen={false}
     >
-      <img alt="iapp logo" src={'/assets/iapp_logo.gif'} style={{ maxWidth: '1rem', marginBottom: '0px' }} />
+      <img
+        alt="iapp logo"
+        className="iapp-logo"
+        src={'/assets/iapp_logo.gif'}
+        style={{ maxWidth: '1rem', marginBottom: '0px' }}
+      />
     </Tab>
   );
 };
@@ -276,11 +282,13 @@ const LoginOrOutMemo = React.memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
   const { authenticated, offlineUsers, workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
+  const { alerts, prompts } = useSelector((state) => state.AlertsAndPrompts);
   const activated = useSelector((state) => state.UserInfo.activated);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const openMenu = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
+    dispatch(Alerts.deleteAll());
   };
 
   const [offlineUserSelectionAvailable, setOfflineUserSelectionAvailable] = useState(false);
@@ -318,6 +326,12 @@ const LoginOrOutMemo = React.memo(() => {
       });
     }
   };
+
+  useEffect(() => {
+    if (alerts.length > 0 || prompts.length > 0) {
+      handleClose();
+    }
+  }, [alerts, prompts]);
 
   return (
     <div className={'avatar-menu'}>
