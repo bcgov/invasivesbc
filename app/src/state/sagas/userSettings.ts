@@ -3,12 +3,14 @@ import { ActivityStatus } from 'sharedAPI';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { selectAuth } from 'state/reducers/auth';
 import { MOBILE } from 'state/build-time-config';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { RepositoryMetadata } from 'utils/record-cache';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -80,8 +82,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   if (!UserSettings.InitState.get.match(action)) {
     return;
   }
-
-  const defaultRecordSet = {
+  const defaultRecordSet: Record<PropertyKey, Partial<UserRecordSet>> = {
     '1': {
       recordSetType: RecordSetType.Activity,
       recordSetName: 'My Drafts',
@@ -151,6 +152,22 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       drawOrder: 4,
       mapToggle: true // by default
     };
+
+    if (!recordSets || Object.keys(recordSets).length === 0) {
+      // RecordSets are empty, try to recover whats in the local database
+      const service = yield RecordCacheServiceFactory.getPlatformInstance();
+      const repos = yield service.listRepositories();
+      repos.forEach((repo: RepositoryMetadata) => {
+        // recordSet is immutable, so append it to defaultRecordSet
+        if (!defaultRecordSet[repo.setId]) {
+          const backedUpRecordSet = UserSettings.RecordSet.createDefaultRecordset(repo.recordSetType);
+          backedUpRecordSet.tableFilters = repo.filterObjects.tableFilters;
+          backedUpRecordSet.cacheMetadataStatus = repo.status;
+          backedUpRecordSet.recordSetName = repo.setName ?? '';
+          defaultRecordSet[repo.setId] = backedUpRecordSet;
+        }
+      });
+    }
   }
 
   if (action.payload && action.payload.offlineAPIDocsDisplayName) {
