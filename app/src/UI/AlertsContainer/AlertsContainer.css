@@ -10,8 +10,7 @@
 }
 
 .alertsContainerAlert {
-  width: 100%;
-  max-width: 30vw;
+  width: calc(max(30vw, min(375px, 90vw)));
   box-sizing: border-box;
   text-align: left;
   align-items: center;

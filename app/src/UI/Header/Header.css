@@ -97,8 +97,13 @@
   }
 }
 
+.Tab:not(.Tab__Indicator) {
+  /* make space so layout doesn't shift */
+  border-bottom: 4px solid transparent;
+}
+
 .Tab__Indicator {
-  border-bottom: 3pt solid var(--bc-yellow);
+  border-bottom: 4px solid var(--bc-yellow);
 }
 
 .network-state-control {
@@ -126,40 +131,42 @@
   }
 
   .Tab__Label {
-    font-size: xx-small;
+    font-size: 12px;
   }
 
   .Tab__Content {
     .MuiSvgIcon-root {
-      font-size: x-small;
+      height: calc(var(--header-bar-height) / 2 - 6px);
     }
 
     .iapp-logo {
-      width: 12px;
+      height: calc(var(--header-bar-height) / 2 - 10px);
     }
   }
 
   .network-status-display {
-    font-size: xx-small;
-
     .MuiSvgIcon-root {
-      font-size: x-small;
+      height: calc(var(--header-bar-height) / 2 - 6px);
     }
 
     span {
-      font-size: xx-small;
+      font-size: 12px;
     }
   }
 
   .offlineSyncButton {
     .MuiSvgIcon-root {
-      font-size: x-small;
+      height: calc(var(--header-bar-height) / 2 - 4px);
+    }
+
+    .MuiBadge-badge {
+      font-size: 8px;
     }
   }
 
   #ButtonWrapper {
     & > *:not(:last-child) {
-      margin-right: 2pt;
+      margin-right: 2px;
       padding: 0;
     }
   }
@@ -177,40 +184,42 @@
   }
 
   .Tab__Label {
-    font-size: x-small;
+    font-size: 12px;
   }
 
   .Tab__Content {
     .MuiSvgIcon-root {
-      font-size: x-small;
+      height: calc(var(--header-bar-height) / 2 - 6px);
     }
 
     .iapp-logo {
-      width: 12px;
+      height: calc(var(--header-bar-height) / 2 - 10px);
     }
   }
 
   .network-status-display {
-    font-size: x-small;
-
     .MuiSvgIcon-root {
-      font-size: small;
+      height: calc(var(--header-bar-height) / 2 - 6px);
     }
 
     span {
-      font-size: x-small;
+      font-size: 12px;
     }
   }
 
   .offlineSyncButton {
     .MuiSvgIcon-root {
-      font-size: x-small;
+      height: calc(var(--header-bar-height) / 2 - 4px);
+    }
+
+    .MuiBadge-badge {
+      font-size: 8px;
     }
   }
 
   #ButtonWrapper {
     & > *:not(:last-child) {
-      margin-right: 2pt;
+      margin-right: 2px;
       padding: 0;
     }
   }
@@ -231,40 +240,42 @@
   }
 
   .Tab__Label {
-    font-size: small;
+    font-size: 16px;
   }
 
   .Tab__Content {
     .MuiSvgIcon-root {
-      font-size: medium;
+      font-size: 24px;
     }
 
     .iapp-logo {
-      width: 12px;
+      height: calc(var(--header-bar-height) / 2);
     }
   }
 
   .network-status-display {
-    font-size: small;
-
     .MuiSvgIcon-root {
-      font-size: medium;
+      height: calc(var(--header-bar-height) / 2);
     }
 
     span {
-      font-size: small;
+      font-size: 16px;
     }
   }
 
   .offlineSyncButton {
     .MuiSvgIcon-root {
-      font-size: medium;
+      height: calc(var(--header-bar-height) / 2);
+    }
+
+    .MuiBadge-badge {
+      font-size: 8px;
     }
   }
 
   #ButtonWrapper {
     & > *:not(:last-child) {
-      margin-right: 4pt;
+      margin-right: 4px;
       padding: 0;
     }
   }
