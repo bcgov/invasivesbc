@@ -39,6 +39,7 @@ export interface RecordCacheDownloadRequestSpec {
  */
 export interface RepositoryMetadata {
   setId: string;
+  setName?: string;
   cacheTime: Date;
   cachedIds: string[];
   recordSetType: RecordSetType;
@@ -68,6 +69,7 @@ export interface CacheDownloadSpec {
   bbox: RepositoryBoundingBoxSpec;
   idsToCache: string[];
   setId: string;
+  setName: string;
   API_BASE: string;
   recordSetType: RecordSetType;
   recordSetCacheStatus: UserRecordCacheStatus;
@@ -175,6 +177,7 @@ abstract class RecordCacheService extends BaseCacheService<
       await this.addOrUpdateRepository({
         setId: spec.setId,
         cacheTime: new Date(),
+        setName: spec.setName,
         cachedIds: spec.idsToCache,
         recordSetType: spec.recordSetType,
         status: UserRecordCacheStatus.CACHED,

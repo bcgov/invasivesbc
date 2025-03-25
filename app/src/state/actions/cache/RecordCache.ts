@@ -72,6 +72,7 @@ class RecordCache {
           API_BASE: state.Configuration.current.API_BASE,
           bbox,
           idsToCache,
+          setName: recordSet.recordSetName,
           recordSetType: recordSet.recordSetType,
           recordSetCacheStatus: recordSet.cacheMetadataStatus,
           setId: spec.setId,
