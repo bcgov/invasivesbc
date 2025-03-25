@@ -156,6 +156,18 @@ const getCircleMarkerZoomedOutLayer = (layerID: string, options: LayerOptions): 
   minzoom: options.minzoom ?? 0
 });
 
+const getClusterLayer = (layerID: string, color): CircleLayerSpecification => ({
+  id: 'cluster-circle-' + layerID,
+  type: 'circle',
+  source: layerID,
+  filter: ['has', 'point_count'],
+  paint: {
+    'circle-color': color,
+    // 10px < 15 point_count < 15px < 30 point_count < 25px
+    'circle-radius': ['step', ['get', 'point_count'], 10, 15, 15, 30, 25],
+    'circle-opacity': 0.7
+  }
+});
 const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpecification => ({
   id: 'label-' + layerID,
   source: layerID,
@@ -205,13 +217,6 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   const CENTROID_ID = `${GEOJSON_ID}-centroid`;
   const color = getPaintBySchemeOrColor(layer);
 
-  const geoJsonSourceObj: GeoJSONSourceSpecification = metadata.cachedGeoJson;
-  const centroidSourceObj: GeoJSONSourceSpecification = metadata.cachedCentroid;
-
-  const circleMarkerZoomedOutLayerCentroid: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(CENTROID_ID, {
-    color,
-    maxzoom: CENTROID_TO_GEOJSON_ZOOM
-  });
   const labelLayerCentroid: SymbolLayerSpecification = getLabelLayer(CENTROID_ID, {
     color,
     maxzoom: CENTROID_TO_GEOJSON_ZOOM,
@@ -230,17 +235,25 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
     get_tag: 'name'
   });
 
+  const clusterLayer = getClusterLayer(CENTROID_ID, color);
   const existingSource = map.getSource(GEOJSON_ID);
+
   if (existingSource) return; // Due to the async nature of the local DB Calls, check the layer wasn't created during a re-render
-  map.addSource(GEOJSON_ID, geoJsonSourceObj);
+  map.addSource(GEOJSON_ID, { type: 'geojson', data: metadata.cachedGeoJson.data });
+  map.addSource(CENTROID_ID, {
+    type: 'geojson',
+    data: metadata.cachedCentroid.data,
+    cluster: true,
+    clusterRadius: 50,
+    clusterMaxZoom: CENTROID_TO_GEOJSON_ZOOM - 1
+  });
+
   map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
   map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
   map.addLayer(circleMarkerZoomedOutLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
-
-  map.addSource(CENTROID_ID, centroidSourceObj);
+  map.addLayer(clusterLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayerCentroid, LAYER_Z_FOREGROUND);
-  map.addLayer(circleMarkerZoomedOutLayerCentroid, LAYER_Z_FOREGROUND);
 };
 
 export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode, API_BASE) => {
@@ -392,10 +405,11 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
   //get all layers for recordset
   const allLayersForRecordSet = map.getLayersOrder().filter((mapLayer) => {
     return (
-      mapLayer.includes(LAYER_ID_PREFIX + layer.recordSetID) ||
-      mapLayer.includes('label-' + layer.recordSetID) ||
-      mapLayer.includes('polygon-border-' + layer.recordSetID) ||
-      mapLayer.includes('polygon-circle-' + layer.recordSetID)
+      mapLayer.startsWith(LAYER_ID_PREFIX + layer.recordSetID) ||
+      mapLayer.startsWith('label-' + layer.recordSetID) ||
+      mapLayer.startsWith('polygon-border-' + layer.recordSetID) ||
+      mapLayer.startsWith('polygon-circle-' + layer.recordSetID) ||
+      mapLayer.startsWith('cluster-circle-' + layer.recordSetID)
     );
   });
   const stale = allLayersForRecordSet.filter((mapLayer) => !mapLayer.includes(layer.tableFiltersHash));
@@ -550,6 +564,8 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
       } else if (mapLayer.startsWith('polygon-border-') && shouldUpdatePaint(layer, layerStyle, 'circle-color')) {
         safelySetPaintProperty(map, mapLayer, 'line-color', getPaintBySchemeOrColor(layer));
       } else if (mapLayer.startsWith('polygon-circle-') && shouldUpdatePaint(layer, layerStyle, 'fill-color')) {
+        safelySetPaintProperty(map, mapLayer, 'circle-color', getPaintBySchemeOrColor(layer));
+      } else if (mapLayer.startsWith('cluster-circle-')) {
         safelySetPaintProperty(map, mapLayer, 'circle-color', getPaintBySchemeOrColor(layer));
       }
     });
