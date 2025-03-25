@@ -1,6 +1,7 @@
 #appTitle {
   display: none;
 }
+
 .HeaderBar {
   overflow: hidden;
   height: var(--header-bar-height);
@@ -40,20 +41,23 @@
   height: 100%;
   margin-left: 1rem;
   box-sizing: border-box;
+
   button {
     padding: 0;
   }
 }
+
 /* Button Container */
 .ButtonWrapperContainer {
   height: 100%;
   width: 100%;
-  max-width: 700pt;
   display: flex;
   flex-direction: row;
   overflow-x: auto;
   margin-inline: auto;
+
   /* Button Section */
+
   #ButtonWrapper {
     height: 100%;
     width: 100%;
@@ -64,10 +68,6 @@
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     scrollbar-width: thin;
-    & > * {
-      margin-right: 5pt;
-      padding: 0;
-    }
   }
 
   #right-icon-container,
@@ -80,6 +80,7 @@
     align-items: center;
   }
 }
+
 .direction-icon {
   color: black;
 }
@@ -90,18 +91,21 @@
   background-color: transparent;
   border: none;
   color: white;
+
   &:hover {
     cursor: pointer;
   }
 }
 
-.Tab__Label {
-  font-size: small;
+.Tab:not(.Tab__Indicator) {
+  /* make space so layout doesn't shift */
+  border-bottom: 4px solid transparent;
 }
 
 .Tab__Indicator {
-  border-bottom: 3pt solid var(--bc-yellow);
+  border-bottom: 4px solid var(--bc-yellow);
 }
+
 .network-state-control {
   display: flex;
   flex-direction: row;
@@ -113,16 +117,166 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-size: small;
-  span {
-    font-size: small;
+}
+
+@media only screen and (width < 801px) {
+  .ButtonWrapperContainer {
+    max-width: 650px;
+  }
+
+  .Tab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .Tab__Label {
+    font-size: 12px;
+  }
+
+  .Tab__Content {
+    .MuiSvgIcon-root {
+      height: calc(var(--header-bar-height) / 2 - 6px);
+    }
+
+    .iapp-logo {
+      height: calc(var(--header-bar-height) / 2 - 6px);
+    }
+  }
+
+  .network-status-display {
+    .MuiSvgIcon-root {
+      height: calc(var(--header-bar-height) / 2 - 6px);
+    }
+
+    span {
+      font-size: 12px;
+    }
+  }
+
+  .offlineSyncButton {
+    .MuiSvgIcon-root {
+      height: calc(var(--header-bar-height) / 2 - 4px);
+    }
+
+    .MuiBadge-badge {
+      font-size: 8px;
+    }
+  }
+
+  #ButtonWrapper {
+    & > *:not(:last-child) {
+      margin-right: 2px;
+      padding: 0;
+    }
   }
 }
 
-@media only screen and (width >= 801px) {
+@media only screen and (width >= 801px) and (width <= 1280px) {
+  .ButtonWrapperContainer {
+    max-width: 750px;
+  }
+
+  .Tab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .Tab__Label {
+    font-size: 12px;
+  }
+
+  .Tab__Content {
+    .MuiSvgIcon-root {
+      height: calc(var(--header-bar-height) / 2 - 6px);
+    }
+
+    .iapp-logo {
+      height: calc(var(--header-bar-height) / 2 - 6px);
+    }
+  }
+
+  .network-status-display {
+    .MuiSvgIcon-root {
+      height: calc(var(--header-bar-height) / 2 - 6px);
+    }
+
+    span {
+      font-size: 12px;
+    }
+  }
+
+  .offlineSyncButton {
+    .MuiSvgIcon-root {
+      height: calc(var(--header-bar-height) / 2 - 4px);
+    }
+
+    .MuiBadge-badge {
+      font-size: 8px;
+    }
+  }
+
+  #ButtonWrapper {
+    & > *:not(:last-child) {
+      margin-right: 2px;
+      padding: 0;
+    }
+  }
+}
+
+@media only screen and (width >= 1281px) {
   #appTitle {
     display: block;
     font-weight: bold;
     padding-left: 5px;
+  }
+
+  .ButtonWrapperContainer {
+    max-width: 1000px;
+  }
+
+  .Tab {
+  }
+
+  .Tab__Label {
+    font-size: 16px;
+  }
+
+  .Tab__Content {
+    .MuiSvgIcon-root {
+      font-size: 24px;
+    }
+
+    .iapp-logo {
+      height: calc(var(--header-bar-height) / 2);
+    }
+  }
+
+  .network-status-display {
+    .MuiSvgIcon-root {
+      height: calc(var(--header-bar-height) / 2);
+    }
+
+    span {
+      font-size: 16px;
+    }
+  }
+
+  .offlineSyncButton {
+    .MuiSvgIcon-root {
+      height: calc(var(--header-bar-height) / 2);
+    }
+
+    .MuiBadge-badge {
+      font-size: 8px;
+    }
+  }
+
+  #ButtonWrapper {
+    & > *:not(:last-child) {
+      margin-right: 4px;
+      padding: 0;
+    }
   }
 }
