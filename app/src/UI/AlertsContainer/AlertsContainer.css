@@ -11,9 +11,10 @@
 
 .alertsContainerAlert {
   width: 100%;
-  max-width: 375px;
+  max-width: 30vw;
   box-sizing: border-box;
   text-align: left;
   align-items: center;
   margin: 2pt;
+  opacity: 0.8;
 }

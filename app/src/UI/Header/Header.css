@@ -1,6 +1,7 @@
 #appTitle {
   display: none;
 }
+
 .HeaderBar {
   overflow: hidden;
   height: var(--header-bar-height);
@@ -40,20 +41,23 @@
   height: 100%;
   margin-left: 1rem;
   box-sizing: border-box;
+
   button {
     padding: 0;
   }
 }
+
 /* Button Container */
 .ButtonWrapperContainer {
   height: 100%;
   width: 100%;
-  max-width: 700pt;
   display: flex;
   flex-direction: row;
   overflow-x: auto;
   margin-inline: auto;
+
   /* Button Section */
+
   #ButtonWrapper {
     height: 100%;
     width: 100%;
@@ -64,10 +68,6 @@
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     scrollbar-width: thin;
-    & > * {
-      margin-right: 5pt;
-      padding: 0;
-    }
   }
 
   #right-icon-container,
@@ -80,6 +80,7 @@
     align-items: center;
   }
 }
+
 .direction-icon {
   color: black;
 }
@@ -90,18 +91,16 @@
   background-color: transparent;
   border: none;
   color: white;
+
   &:hover {
     cursor: pointer;
   }
 }
 
-.Tab__Label {
-  font-size: small;
-}
-
 .Tab__Indicator {
   border-bottom: 3pt solid var(--bc-yellow);
 }
+
 .network-state-control {
   display: flex;
   flex-direction: row;
@@ -113,16 +112,160 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  font-size: small;
-  span {
-    font-size: small;
+}
+
+@media only screen and (width < 801px) {
+  .ButtonWrapperContainer {
+    max-width: 650px;
+  }
+
+  .Tab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .Tab__Label {
+    font-size: xx-small;
+  }
+
+  .Tab__Content {
+    .MuiSvgIcon-root {
+      font-size: x-small;
+    }
+
+    .iapp-logo {
+      width: 12px;
+    }
+  }
+
+  .network-status-display {
+    font-size: xx-small;
+
+    .MuiSvgIcon-root {
+      font-size: x-small;
+    }
+
+    span {
+      font-size: xx-small;
+    }
+  }
+
+  .offlineSyncButton {
+    .MuiSvgIcon-root {
+      font-size: x-small;
+    }
+  }
+
+  #ButtonWrapper {
+    & > *:not(:last-child) {
+      margin-right: 2pt;
+      padding: 0;
+    }
   }
 }
 
-@media only screen and (width >= 801px) {
+@media only screen and (width >= 801px) and (width <= 1280px) {
+  .ButtonWrapperContainer {
+    max-width: 750px;
+  }
+
+  .Tab {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .Tab__Label {
+    font-size: x-small;
+  }
+
+  .Tab__Content {
+    .MuiSvgIcon-root {
+      font-size: x-small;
+    }
+
+    .iapp-logo {
+      width: 12px;
+    }
+  }
+
+  .network-status-display {
+    font-size: x-small;
+
+    .MuiSvgIcon-root {
+      font-size: small;
+    }
+
+    span {
+      font-size: x-small;
+    }
+  }
+
+  .offlineSyncButton {
+    .MuiSvgIcon-root {
+      font-size: x-small;
+    }
+  }
+
+  #ButtonWrapper {
+    & > *:not(:last-child) {
+      margin-right: 2pt;
+      padding: 0;
+    }
+  }
+}
+
+@media only screen and (width >= 1281px) {
   #appTitle {
     display: block;
     font-weight: bold;
     padding-left: 5px;
+  }
+
+  .ButtonWrapperContainer {
+    max-width: 1000px;
+  }
+
+  .Tab {
+  }
+
+  .Tab__Label {
+    font-size: small;
+  }
+
+  .Tab__Content {
+    .MuiSvgIcon-root {
+      font-size: medium;
+    }
+
+    .iapp-logo {
+      width: 12px;
+    }
+  }
+
+  .network-status-display {
+    font-size: small;
+
+    .MuiSvgIcon-root {
+      font-size: medium;
+    }
+
+    span {
+      font-size: small;
+    }
+  }
+
+  .offlineSyncButton {
+    .MuiSvgIcon-root {
+      font-size: medium;
+    }
+  }
+
+  #ButtonWrapper {
+    & > *:not(:last-child) {
+      margin-right: 4pt;
+      padding: 0;
+    }
   }
 }
