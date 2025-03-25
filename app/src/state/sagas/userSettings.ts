@@ -159,7 +159,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       const repos = yield service.listRepositories();
       repos.forEach((repo: RepositoryMetadata) => {
         // recordSet is immutable, so append it to defaultRecordSet
-        if (!defaultRecordSet[repo.setId]) {
+        if (repo.status === UserRecordCacheStatus.CACHED && !defaultRecordSet[repo.setId]) {
           const backedUpRecordSet = UserSettings.RecordSet.createDefaultRecordset(repo.recordSetType);
           backedUpRecordSet.tableFilters = repo.filterObjects.tableFilters;
           backedUpRecordSet.cacheMetadataStatus = repo.status;
