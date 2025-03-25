@@ -28,6 +28,12 @@ export const activityDefaults = {
   reviewed_at: undefined
 };
 
+type OfflineDocsProperties = {
+  [key: string]: {
+    options?: { value: string; label: string }[];
+  };
+};
+
 /*
   Function to generate activity payload for a new activity (in old pouchDB doc format)
 */
@@ -197,12 +203,55 @@ export function populateJurisdictionArray(record) {
   };
 }
 
-export function findSpeciesCodesAndConcatenateLabels(
-  obj: any,
-  targetKey: string,
-  properties: Record<string, any>,
+/**
+ * Works with `findSpeciesCodes()` to get the 'obj' input and processes it to concatenate codes
+ *
+ * @param {Record<string, Set<string>>} obj - The object that contains sets of species codes
+ * @returns {string} A string representation of the concatentaed codes, comma separated
+ */
+export function getConcatenatedCodes(obj: Record<string, Set<string>>): string {
+  return (
+    Object.values(obj)
+      .flatMap((set) => Array.from(set))
+      .join(', ') || ''
+  );
+}
+
+/**
+ * Works with `findSpeciesCodes()` to get the 'obj' input and processes it to extract species' labels
+ *
+ * @param {Record<string, Set<string>>} obj - The object that contains sets of species codes
+ * @param {OfflineDocsProperties} properties - Properties to search from, to map codes to their corresponding labels
+ * @param {boolean} specialCase - A flag for special cases where the code search needs to be altered based on the keys to find
+ * @returns {string} A string representation of the concatenated labels, comma separated
+ */
+export function getConcatenatedLabels(
+  obj: Record<string, Set<string>>,
+  properties: OfflineDocsProperties,
   specialCase: boolean
 ): string {
+  let labels: string[] = [];
+  const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
+  for (const key of keysToFind) {
+    let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
+
+    if (obj[key].size > 0 && properties[propertyKey]?.options) {
+      const optionsMap = new Map<string, string>(
+        properties[propertyKey].options.map((option: { value: string; label: string }) => [option.value, option.label])
+      );
+
+      obj[key].forEach((value) => {
+        const label = optionsMap.get(value);
+        if (label) {
+          labels.push(label);
+        }
+      });
+    }
+  }
+  return labels.join(', ') || '';
+}
+
+export function findSpeciesCodes(obj: Record<string, any>, targetKey: string): Record<string, Set<string>> {
   const result: Record<string, Set<string>> = {
     invasive_plant_code: new Set(),
     invasive_plant_aquatic_code: new Set()
@@ -227,33 +276,9 @@ export function findSpeciesCodesAndConcatenateLabels(
     }
   }
 
-  function getLabels(): string {
-    let labels: string[] = [];
-
-    for (const key of keysToFind) {
-      let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
-
-      if (result[key].size > 0 && properties[propertyKey]?.options) {
-        const optionsMap = new Map<string, string>(
-          properties[propertyKey].options.map((option: { value: string; label: string }) => [
-            option.value,
-            option.label
-          ])
-        );
-
-        result[key].forEach((value) => {
-          const label = optionsMap.get(value);
-          if (label) {
-            labels.push(label);
-          }
-        });
-      }
-    }
-    return labels.join(', ') || '';
-  }
-
   searchAndExtract(obj);
-  return getLabels();
+
+  return result;
 }
 
 export function transformOfflineActivitiesForRecordTable(
@@ -272,9 +297,11 @@ export function transformOfflineActivitiesForRecordTable(
 
       offlineActivities[key].data.activity_subtype = ActivitySubtypeShortLabels[value.record_type] || 'Unknown';
 
-      offlineActivities[key].data.invasive_plant = findSpeciesCodesAndConcatenateLabels(
-        offlineActivities[key].data.form_data.activity_subtype_data,
-        ActivitySubtypeTargetKey[offlineActivities[key].record_type],
+      offlineActivities[key].data.invasive_plant = getConcatenatedLabels(
+        findSpeciesCodes(
+          offlineActivities[key].data.form_data.activity_subtype_data,
+          ActivitySubtypeTargetKey[offlineActivities[key].record_type]
+        ),
         listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties,
         [
           // Special case: if activity_subtype is in this list, switch between invasive_plant_code and invasive_plant_aquatic_code when searching api docs

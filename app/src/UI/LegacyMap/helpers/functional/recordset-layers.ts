@@ -15,6 +15,8 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { FeatureCollection } from 'geojson';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
+import { getConcatenatedCodes, findSpeciesCodes } from 'utils/addActivity';
+
 const LAYER_ID_PREFIX = 'recordset-layer-';
 const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
 /** DRY Handler for formatting LayerIDs */
@@ -297,11 +299,16 @@ const createOfflineActivitiesLayer = async (
     .map((item) => {
       try {
         const parsedData = JSON.parse((item as OfflineActivityRecord)?.data);
+        const plantCodes = getConcatenatedCodes(
+          findSpeciesCodes(parsedData.form_data.activity_subtype_data, item.record_type)
+        );
+
         if (parsedData && parsedData.geometry && parsedData.geometry[0]) {
           return {
             ...parsedData.geometry[0],
             properties: {
-              short_id: parsedData.short_id
+              short_id: parsedData.short_id,
+              map_symbol: plantCodes
             }
           };
         }
