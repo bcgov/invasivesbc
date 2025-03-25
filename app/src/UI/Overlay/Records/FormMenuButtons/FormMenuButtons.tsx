@@ -2,10 +2,10 @@ import { Button } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
-import { OVERLAY_MENU_TOGGLE } from 'state/actions';
 import Activity from 'state/actions/activity/Activity';
+import './FormMenuButtons.css';
 
-export const FormMenuButtons = (props) => {
+const FormMenuButtons = () => {
   const dispatch = useDispatch();
 
   const [saveDisabled, setSaveDisabled] = useState(false);
@@ -34,28 +34,23 @@ export const FormMenuButtons = (props) => {
 
   const handleSaveDraft = () => {
     dispatch(Activity.save());
-    dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handlePublish = () => {
     dispatch(Activity.submit());
-    dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handleCopy = () => {
     dispatch(Activity.copy());
-    dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handlePaste = () => {
     dispatch(Activity.paste());
-    dispatch({ type: OVERLAY_MENU_TOGGLE });
   };
   const handleDelete = () => {
     dispatch(Activity.deleteReq());
-    dispatch({ type: OVERLAY_MENU_TOGGLE });
     setTimeout(() => history.back(), 5000);
   };
 
   return (
-    <>
+    <div id="form-menu-buttons">
       <Button onClick={handleSaveDraft} disabled={saveDisabled || draftDisabled} variant="contained">
         SAVE TO DRAFT {connected || '(LOCAL OFFLINE)'}
       </Button>
@@ -71,6 +66,8 @@ export const FormMenuButtons = (props) => {
       <Button disabled={saveDisabled || !connected} onClick={handleDelete} variant="contained">
         DELETE
       </Button>
-    </>
+    </div>
   );
 };
+
+export default FormMenuButtons;

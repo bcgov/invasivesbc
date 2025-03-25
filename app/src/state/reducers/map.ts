@@ -27,7 +27,6 @@ import {
   MAP_TOGGLE_TRACKING,
   MAP_TOGGLE_TRACKING_OFF,
   MAP_TOGGLE_TRACKING_ON,
-  OVERLAY_MENU_TOGGLE,
   PAGE_OR_LIMIT_UPDATE,
   PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
@@ -44,9 +43,7 @@ import {
   TOGGLE_QUICK_PAN_TO_RECORD,
   TOGGLE_WMS_LAYER,
   URL_CHANGE,
-  USER_CLICKED_RECORD,
-  USER_HOVERED_RECORD,
-  USER_TOUCHED_RECORD
+  USER_HOVERED_RECORD
 } from '../actions';
 import { AppConfig } from '../config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -240,11 +237,6 @@ export interface MapState {
   simplePickerLayers: object;
   tooManyLabelsDialog: any;
   userCoords: any;
-  userRecordOnClickMenuOpen: boolean;
-  userRecordOnClickRecordID: string | null;
-  userRecordOnClickRecordRow: any;
-  userRecordOnClickRecordType: string | null;
-  userRecordOnHoverMenuOpen: boolean;
   userRecordOnHoverRecordID: any;
   userRecordOnHoverRecordRow: any;
   userRecordOnHoverRecordType: any;
@@ -303,11 +295,6 @@ const initialState: MapState = {
   map_center: [55, -128],
   map_zoom: 5,
 
-  userRecordOnClickMenuOpen: false,
-  userRecordOnClickRecordID: null,
-  userRecordOnClickRecordRow: null,
-  userRecordOnClickRecordType: null,
-
   CanTriggerCSV: true,
 
   accuracyToggle: false,
@@ -358,7 +345,6 @@ const initialState: MapState = {
   tileCacheMode: false,
 
   userCoords: null,
-  userRecordOnHoverMenuOpen: false,
   userRecordOnHoverRecordID: undefined,
   userRecordOnHoverRecordRow: undefined,
   userRecordOnHoverRecordType: undefined,
@@ -1035,10 +1021,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.positionTracking = false;
             break;
           }
-          case OVERLAY_MENU_TOGGLE: {
-            draftState.userRecordOnClickMenuOpen = false;
-            break;
-          }
           case PAGE_OR_LIMIT_UPDATE: {
             draftState.recordTables[action.payload.setID].page = action.payload.page;
             draftState.recordTables[action.payload.setID].limit = action.payload.limit;
@@ -1092,7 +1074,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           case URL_CHANGE: {
-            draftState.userRecordOnClickMenuOpen = false;
             if (action.payload?.pathname === '/') {
               // draftState.panelOpen = false;
             }
@@ -1102,26 +1083,10 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             break;
           }
-          case USER_CLICKED_RECORD: {
-            draftState.userRecordOnClickMenuOpen = true;
-            draftState.userRecordOnClickRecordType = action.payload.recordType;
-            draftState.userRecordOnClickRecordID = action.payload.id;
-            draftState.userRecordOnClickRecordRow = action.payload.row;
-            break;
-          }
           case USER_HOVERED_RECORD: {
-            draftState.userRecordOnHoverMenuOpen = true;
             draftState.userRecordOnHoverRecordType = action.payload.recordType;
             draftState.userRecordOnHoverRecordID = action.payload.id;
             draftState.userRecordOnHoverRecordRow = action.payload.row;
-            break;
-          }
-          case USER_TOUCHED_RECORD: {
-            draftState.userRecordOnHoverMenuOpen = true;
-            draftState.userRecordOnHoverRecordType = action.payload.recordType;
-            draftState.userRecordOnHoverRecordID = action.payload.id;
-            draftState.userRecordOnHoverRecordRow = action.payload.row;
-            // draftState.touchTime = Date.now();
             break;
           }
           default:

@@ -1,16 +1,12 @@
-import { Button, IconButton } from '@mui/material';
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import { IconButton } from '@mui/material';
 import { Route } from 'react-router';
-
 import debounce from 'lodash.debounce';
-
-import { OVERLAY_MENU_TOGGLE } from 'state/actions';
 import './OverlayHeader.css';
-import SaveAsIcon from '@mui/icons-material/SaveAs';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import CustomPopover from 'UI/CustomPopover/CustomPopover';
+import FormMenuButtons from './Records/FormMenuButtons/FormMenuButtons';
 
 const maximize = () => {
   setOverlayHeight('90%');
@@ -89,45 +85,32 @@ const onClickDragButton = (e) => {
   }
 };
 
-export const OverlayHeader = () => {
-  const dispatch = useDispatch();
-
-  return (
-    <div className="overlay-header">
-      <div className={'left'}></div>
-      <div className={'center'}>
-        <IconButton className="overlay-control" onClick={maximize}>
-          <ArrowDropUpIcon />
-        </IconButton>
-        <div onMouseDown={onClickDragButton} onTouchStart={onClickDragButton} className="dragMeToResize">
-          <IconButton className="overlay-control">
-            <DragHandleIcon />
-          </IconButton>
-        </div>
-        <IconButton className="overlay-control" onClick={minimize}>
-          <ArrowDropDownIcon />
+export const OverlayHeader = () => (
+  <div className="overlay-header">
+    <div className={'left'}></div>
+    <div className={'center'}>
+      <IconButton className="overlay-control" onClick={maximize}>
+        <ArrowDropUpIcon />
+      </IconButton>
+      <div onMouseDown={onClickDragButton} onTouchStart={onClickDragButton} className="dragMeToResize">
+        <IconButton className="overlay-control">
+          <DragHandleIcon />
         </IconButton>
       </div>
-      <div className={'right'}>
-        <Route
-          path="/Records/Activity:*"
-          exact={false}
-          render={() => {
-            return (
-              <Button
-                variant="contained"
-                className={'overlay-menu'}
-                onClick={() => {
-                  dispatch({ type: OVERLAY_MENU_TOGGLE });
-                }}
-              >
-                Save Menu
-                <SaveAsIcon />
-              </Button>
-            );
-          }}
-        />
-      </div>
+      <IconButton className="overlay-control" onClick={minimize}>
+        <ArrowDropDownIcon />
+      </IconButton>
     </div>
-  );
-};
+    <div className={'right'}>
+      <Route
+        path="/Records/Activity:*"
+        exact={false}
+        render={() => (
+          <CustomPopover buttonClasses={'overlay-menu'} buttonText={'Save Menu'} closeAfterPress={true}>
+            <FormMenuButtons />
+          </CustomPopover>
+        )}
+      />
+    </div>
+  </div>
+);

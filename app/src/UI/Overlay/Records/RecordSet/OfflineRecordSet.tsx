@@ -1,19 +1,19 @@
-import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import './RecordSet.css';
 import { useHistory } from 'react-router';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { Button } from '@mui/material';
 
 import RecordSetFooter from './RecordSetFooter';
 import { useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
-import { detectTouchDevice } from 'utils/detectTouch';
 import { offlineActivityColumnsToDisplay } from './RecordTableHelpers';
-import { USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
+import { USER_HOVERED_RECORD } from 'state/actions';
 import UserRecord from 'interfaces/UserRecord';
 import { transformOfflineActivitiesForRecordTable } from 'utils/addActivity';
+import CustomPopover from 'UI/CustomPopover/CustomPopover';
+import RecordTablePopoverContent from './RecordTablePopoverContent/RecordTablePopoverContent';
+import { MouseEvent, TouchEvent, useState } from 'react';
 type PropTypes = { setID: string };
 
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
@@ -26,6 +26,15 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
         row: row
       }
     });
+  };
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [recordDisplayId, setRecordDisplayId] = useState<string>('');
+  const [recordLookupId, setRecordLookupId] = useState<string>('');
+
+  const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord) => {
+    setRecordDisplayId(row.short_id ?? '');
+    setRecordLookupId(row.activity_id ?? '');
+    setAnchorEl(evt.currentTarget);
   };
 
   const offlineDocs = useSelector((state) => state.UserSettings.offlineDocs);
@@ -42,7 +51,6 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const recordTable = useSelector((state: any) => state.Map.recordTables?.[setID]);
   const { serializedActivities } = useSelector(selectOfflineActivity);
 
-  const isTouch = detectTouchDevice();
   const startIndex = recordTable?.page * recordTable?.limit;
   const endIndex = startIndex + recordTable?.limit;
 
@@ -61,10 +69,15 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
     console.log(error);
   }
 
-  const tableType = recordSet?.recordSetType;
-
   return (
     <>
+      <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
+        <RecordTablePopoverContent
+          recordDisplayId={recordDisplayId}
+          recordLookupId={recordLookupId}
+          recordType={RecordSetType.Activity}
+        />
+      </CustomPopover>
       <div className="stickyHeader">
         <div className="recordSet_header" style={{ backgroundColor: recordSet?.color + `50` }}>
           <div className="recordSet_back_button">
@@ -87,79 +100,34 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
               <table className="record_table">
                 <tbody>
                   <tr className="record_table_header">
-                    {isTouch && (
-                      <th className="record_table_header_column" style={{ width: '50px' }}>
-                        View/Edit
-                      </th>
-                    )}
                     {offlineActivityColumnsToDisplay.map((col: any) => (
                       <th className={'record_table_header_column'} key={col.key}>
-                        {col.name}{' '}
+                        {col.name}
                       </th>
                     ))}
                   </tr>
-                  {Object.entries(unsyncedOfflineActivities).map(([key, value]) => {
-                    return (
-                      <tr
-                        onContextMenu={(event) => {
-                          event.preventDefault();
-                          event.stopPropagation();
-                        }}
-                        onClick={() => {
-                          if (!isTouch) {
-                            dispatch({
-                              type: USER_CLICKED_RECORD,
-                              payload: {
-                                recordType: tableType,
-                                id: key,
-                                row: value.data
-                              }
-                            });
-                          }
-                        }}
-                        onMouseOver={() => onUserHoveredRecord(value.data)}
-                        onFocus={() => onUserHoveredRecord(value.data)}
-                        onTouchStart={() => {
-                          dispatch({
-                            type: USER_TOUCHED_RECORD,
-                            payload: {
-                              recordType: tableType,
-                              id: key,
-                              row: value.data
-                            }
-                          });
-                        }}
-                        className="record_table_row"
-                        key={value?.data?.activity_id}
-                      >
-                        {isTouch && (
-                          <td
-                            onTouchStart={() => {
-                              dispatch({
-                                type: USER_CLICKED_RECORD,
-                                payload: {
-                                  recordType: tableType,
-                                  id: key,
-                                  row: value.data
-                                }
-                              });
-                            }}
-                            className="record_table_row_column"
-                            style={{ width: '50px' }}
-                          >
-                            <VisibilityIcon />
-                          </td>
-                        )}
-                        {offlineActivityColumnsToDisplay.map((col) => {
-                          return (
-                            <td className="record_table_row_column" key={col.key + col.name}>
-                              {value.data[col.key]}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
+                  {Object.values(unsyncedOfflineActivities).map(({ data }) => (
+                    <tr
+                      onContextMenu={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                      }}
+                      onMouseOver={() => onUserHoveredRecord(data)}
+                      onFocus={() => onUserHoveredRecord(data)}
+                      className="record_table_row"
+                      key={data?.activity_id}
+                    >
+                      {offlineActivityColumnsToDisplay.map((col) => (
+                        <td
+                          className="record_table_row_column"
+                          key={col.key + col.name}
+                          onClick={(evt) => handlePopoverOpen(evt, data)}
+                        >
+                          {data[col.key]}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

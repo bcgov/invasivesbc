@@ -1,0 +1,13 @@
+#form-menu-buttons {
+  display: flex;
+  border: 1pt solid black;
+  box-sizing: border-box;
+  max-width: 100%;
+  overflow: hidden;
+  flex-direction: column;
+  width: 300pt;
+  button {
+    min-height: 50pt;
+    border-radius: 0;
+  }
+}

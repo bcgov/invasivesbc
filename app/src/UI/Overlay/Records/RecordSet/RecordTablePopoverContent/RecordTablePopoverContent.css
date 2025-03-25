@@ -1,0 +1,9 @@
+#record-table-popover-content {
+  display: flex;
+  flex-direction: column;
+  width: 250pt;
+  max-width: 100%;
+  background-color: var(--bc-blue);
+  color: white;
+  text-align: center;
+}

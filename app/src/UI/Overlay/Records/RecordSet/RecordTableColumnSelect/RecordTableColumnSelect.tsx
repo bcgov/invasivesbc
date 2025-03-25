@@ -1,43 +1,32 @@
-import { Button, Popover, Switch } from '@mui/material';
+import { Button, Switch } from '@mui/material';
 import { MouseEvent, TouchEvent, useState } from 'react';
 import { ViewColumn } from '@mui/icons-material';
 import './RecordTableColumnSelect.css';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import CustomPopover from 'UI/CustomPopover/CustomPopover';
 
 type PropTypes = {
   recordSetType: RecordSetType;
 };
 const RecordTableColumnSelect = ({ recordSetType }: PropTypes) => {
-  const handleClick = (event: MouseEvent<HTMLButtonElement> | TouchEvent<HTMLButtonElement>) =>
-    setAnchorEl(event.currentTarget);
+  const handleClick = (event: MouseEvent<any> | TouchEvent<any>) => setAnchorEl(event.currentTarget);
 
   const dispatch = useDispatch();
   const columns = useSelector((state) => state.UserSettings.tableColumns[recordSetType]);
 
   const [filter, setFilter] = useState<string>('');
-  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const shownColumns = !filter ? columns : columns.filter((col) => new RegExp(filter, 'i').test(col.name));
 
-  const id = 'table-column-select';
   return (
     <div className="custom-popover">
-      <Button aria-describedby={id} size={'small'} onClick={handleClick}>
+      <Button size={'small'} onClick={handleClick}>
         <ViewColumn /> Columns
       </Button>
-
-      <Popover
-        open={!!anchorEl}
-        id={id}
-        anchorEl={anchorEl}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'left'
-        }}
-        onClose={() => setAnchorEl(null)}
-      >
+      <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
         <div className="popover-content">
           <div className="popover-search">
             <input
@@ -69,7 +58,7 @@ const RecordTableColumnSelect = ({ recordSetType }: PropTypes) => {
             </Button>
           </div>
         </div>
-      </Popover>
+      </CustomPopover>
     </div>
   );
 };

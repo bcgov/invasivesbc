@@ -1,15 +1,17 @@
 import { useDispatch } from 'react-redux';
 import './RecordTable.css';
 import { getUnnestedFieldsForActivity, getUnnestedFieldsForIAPP } from './RecordTableHelpers';
-import { RECORDSET_SET_SORT, USER_CLICKED_RECORD, USER_HOVERED_RECORD, USER_TOUCHED_RECORD } from 'state/actions';
+import { RECORDSET_SET_SORT, USER_HOVERED_RECORD } from 'state/actions';
 import { validActivitySortColumns, validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
-import { detectTouchDevice } from 'utils/detectTouch';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useSelector } from 'utils/use_selector';
 import { createSelector } from '@reduxjs/toolkit';
 import UserRecord from 'interfaces/UserRecord';
 import RecordTableColumnSelect from './RecordTableColumnSelect/RecordTableColumnSelect';
+import { MouseEvent, TouchEvent, useState } from 'react';
+import RecordTablePopoverContent from './RecordTablePopoverContent/RecordTablePopoverContent';
+import IappRecord from 'interfaces/IappRecord';
+import CustomPopover from 'UI/CustomPopover/CustomPopover';
 
 type PropTypes = {
   setID: string;
@@ -27,9 +29,16 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
       }
     });
   };
+  /**
+   * @desc Set anchor point and display information for opening the Popover
+   */
+  const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord | IappRecord) => {
+    setRecordDisplayId(row.short_id ?? row.site_id ?? '');
+    setRecordLookupId(row.activity_id ?? row.site_id ?? '');
+    setAnchorEl(evt.currentTarget);
+  };
 
   const recordSetType = useSelector((state) => state.UserSettings?.recordSets?.[setID].recordSetType);
-
   // memoize the selector to return the same array reference unless the input values change, preventing unnecessary re-renders
   const selectFilteredColumns = createSelector(
     [(state) => state.UserSettings?.tableColumns, (_, type) => type],
@@ -42,7 +51,10 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
   const sortOrder = useSelector((state) => state.UserSettings?.recordSets?.[setID]?.sortOrder);
   const dispatch = useDispatch();
 
-  const isTouch = detectTouchDevice();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [recordDisplayId, setRecordDisplayId] = useState<string>('');
+  const [recordLookupId, setRecordLookupId] = useState<string>('');
+
   const mappedRows = unmappedRows?.map((row) => {
     const unnestedRow =
       recordSetType === RecordSetType.Activity ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row);
@@ -71,16 +83,18 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
   }
   return (
     <div>
+      <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
+        <RecordTablePopoverContent
+          recordDisplayId={recordDisplayId}
+          recordLookupId={recordLookupId}
+          recordType={recordSetType}
+        />
+      </CustomPopover>
       <RecordTableColumnSelect recordSetType={recordSetType} />
       <div className="record_table_container">
         <table className="record_table">
           <tbody>
             <tr className="record_table_header">
-              {isTouch && (
-                <th className="record_table_header_column" style={{ width: '50px' }}>
-                  View/Edit
-                </th>
-              )}
               {tableColumns.map((col) => (
                 <th
                   className="record_table_header_column"
@@ -92,7 +106,9 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                   }}
                 >
                   {col.name}{' '}
-                  {sortColumn === col.key && sortColumns.includes(sortColumn) && (sortOrder === 'ASC' ? '▲' : '▼')}
+                  {sortColumn === col.key &&
+                    sortColumns.includes(sortColumn ?? '') &&
+                    (sortOrder === 'ASC' ? '▲' : '▼')}
                 </th>
               ))}
             </tr>
@@ -103,53 +119,17 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
                     event.preventDefault();
                     event.stopPropagation();
                   }}
-                  onClick={() => {
-                    if (!isTouch) {
-                      dispatch({
-                        type: USER_CLICKED_RECORD,
-                        payload: {
-                          recordType: recordSetType,
-                          id: recordSetType === RecordSetType.Activity ? row.activity_id : row.site_id,
-                          row: row
-                        }
-                      });
-                    }
-                  }}
                   onMouseOver={() => onUserHoveredRecord(row)}
                   onFocus={() => onUserHoveredRecord(row)}
-                  onTouchStart={() => {
-                    dispatch({
-                      type: USER_TOUCHED_RECORD,
-                      payload: {
-                        recordType: recordSetType,
-                        id: recordSetType === RecordSetType.Activity ? row.activity_id : row.site_id,
-                        row: row
-                      }
-                    });
-                  }}
                   className="record_table_row"
                   key={row?.activity_id ?? row?.site_id}
                 >
-                  {isTouch && (
-                    <td
-                      onTouchStart={() => {
-                        dispatch({
-                          type: USER_CLICKED_RECORD,
-                          payload: {
-                            recordType: recordSetType,
-                            id: recordSetType === RecordSetType.Activity ? row.activity_id : row.site_id,
-                            row: row
-                          }
-                        });
-                      }}
-                      className="record_table_row_column"
-                      style={{ width: '50px' }}
-                    >
-                      <VisibilityIcon />
-                    </td>
-                  )}
                   {tableColumns.map((col) => (
-                    <td className="record_table_row_column" key={col.key + col.name}>
+                    <td
+                      className="record_table_row_column"
+                      key={col.key + col.name}
+                      onClick={(evt) => handlePopoverOpen(evt, row)}
+                    >
                       {row[col.key]}
                     </td>
                   ))}
