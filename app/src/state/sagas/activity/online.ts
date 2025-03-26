@@ -1,5 +1,5 @@
 import { put, select, take } from 'redux-saga/effects';
-import { ActivityStatus } from 'sharedAPI';
+import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
@@ -72,7 +72,11 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
       action.payload.form_status
     )
       ? action.payload.form_status
-      : ActivityStatus.DRAFT
+      : ActivityStatus.DRAFT,
+    sync_status:
+      action.payload.form_status === ActivityStatus.SUBMITTED
+        ? ActivitySyncStatus.SAVE_SUCCESSFUL
+        : ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE
   };
 
   // handle delete photos if needed
