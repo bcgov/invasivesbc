@@ -110,29 +110,41 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
 
   for (const activity of toSync) {
     const hydrated = JSON.parse(activity.data);
+    const sync_status =
+      hydrated.form_status === ActivityStatus.SUBMITTED
+        ? ActivitySyncStatus.SAVE_SUCCESSFUL
+        : ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE; // saved to db but only visible to user in drafts
 
     try {
       const networkReturn =
-        hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE
+        hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE ||
+        hydrated.sync_status === ActivitySyncStatus.SAVE_SUCCESSFUL
           ? yield InvasivesAPI_Call('PUT', `/api/activity/`, {
               ...hydrated,
-              form_status: ActivityStatus.DRAFT
+              sync_status: sync_status
             })
           : yield InvasivesAPI_Call('POST', `/api/activity/`, {
               ...hydrated,
-              form_status: ActivityStatus.DRAFT,
-              sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE // saved to db but only visible to user
+              sync_status: sync_status
             });
       if (networkReturn.status >= 200 && networkReturn.status < 300) {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE,
           payload: {
             id: hydrated.activity_id,
-            data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE },
+            data: {
+              ...hydrated,
+              sync_status: sync_status
+            },
             sync_state: OfflineActivitySyncState.SYNCHRONIZED
           }
         });
-        yield put(Activity.getSuccess({ ...hydrated, sync_status: ActivitySyncStatus.SAVE_SUCCESSFUL_PRIVATE }));
+        yield put(
+          Activity.getSuccess({
+            ...hydrated,
+            sync_status: sync_status
+          })
+        );
         yield put({
           type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
           payload: { recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }

@@ -9,10 +9,9 @@ import {
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
-import { Feature, FeatureCollection, kinks } from '@turf/turf';
+import { FeatureCollection, kinks } from '@turf/turf';
 
 import { PayloadAction } from '@reduxjs/toolkit';
-import booleanIntersects from '@turf/boolean-intersects';
 import {
   autoFillNameByPAC,
   autoFillSlopeAspect,
