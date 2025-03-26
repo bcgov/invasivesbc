@@ -299,7 +299,7 @@ export const validate_herbicide_fields = (
   }
 
   if (areaLargerThanTreatmentArea) {
-    newErrors.push('Ar least 1 of your herbicides area treated is larger than the area of entire treatment');
+    newErrors.push('At least 1 of your herbicides area treated is larger than the area of entire treatment');
   }
   if (noHerbCode) {
     newErrors.push("At least 1 of your herbicides doesn't have a herbicide name");
