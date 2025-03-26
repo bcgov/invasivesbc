@@ -4,19 +4,29 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
 import './FormMenuButtons.css';
+import { selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { ACTIVITY_OFFLINE_DELETE_ITEM } from 'state/actions';
+import { useHistory } from 'react-router';
 
 const FormMenuButtons = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const [saveDisabled, setSaveDisabled] = useState(false);
   const [draftDisabled, setDraftDisabled] = useState(false);
 
-  const { connected } = useSelector((state) => state.Network);
+  const accessRoles = useSelector((state) => state.Auth?.accessRoles);
   const activityCreatedBy = useSelector((state) => state.ActivityPage?.activity?.created_by);
   const activityErrors = useSelector((state) => state.ActivityPage?.activityErrors);
+  const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
+  const { connected } = useSelector((state) => state.Network);
   const status = useSelector((state) => state.ActivityPage?.activity?.form_status);
+  const { serializedActivities } = useSelector(selectOfflineActivity);
   const username = useSelector((state) => state.Auth?.username);
-  const accessRoles = useSelector((state) => state.Auth?.accessRoles);
+
+  const recordIsSerializedActivity = !!serializedActivities[activity_id];
+  // Users must have write permission and be online to delete, or record is users offline record
+  const blockUserFromDeletingRecord = (saveDisabled || !connected) && !recordIsSerializedActivity;
 
   useEffect(() => {
     if (!activityCreatedBy || !username || !accessRoles) return;
@@ -44,9 +54,14 @@ const FormMenuButtons = () => {
   const handlePaste = () => {
     dispatch(Activity.paste());
   };
+
   const handleDelete = () => {
-    dispatch(Activity.deleteReq());
-    setTimeout(() => history.back(), 5000);
+    if (recordIsSerializedActivity) {
+      dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: activity_id } });
+    } else {
+      dispatch(Activity.deleteReq());
+    }
+    setTimeout(() => history.push('/Records'), 500);
   };
 
   return (
@@ -63,8 +78,8 @@ const FormMenuButtons = () => {
       <Button disabled={saveDisabled} onClick={handlePaste} variant="contained">
         PASTE FORM
       </Button>
-      <Button disabled={saveDisabled || !connected} onClick={handleDelete} variant="contained">
-        DELETE
+      <Button disabled={blockUserFromDeletingRecord} onClick={handleDelete} variant="contained">
+        DELETE {recordIsSerializedActivity && 'FROM LOCAL DEVICE'}
       </Button>
     </div>
   );

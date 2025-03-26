@@ -3,6 +3,7 @@ import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
   ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  ACTIVITY_OFFLINE_DELETE_ITEM,
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
@@ -181,9 +182,33 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE });
 }
 
+function* handle_ACTIVITY_OFFLINE_DELETE_ITEM(action: PayloadAction<{ id: string }>) {
+  const { serializedActivities } = yield select(selectOfflineActivity);
+  if (!serializedActivities[action.payload.id]) {
+    yield put(
+      Alerts.create({
+        content: 'Offline activity deleted from device',
+        subject: AlertSubjects.Form,
+        severity: AlertSeverity.Success,
+        autoClose: 4
+      })
+    );
+  } else {
+    yield put(
+      Alerts.create({
+        content: 'Failed to delete offline activity',
+        subject: AlertSubjects.Form,
+        severity: AlertSeverity.Error,
+        autoClose: 4
+      })
+    );
+  }
+}
+
 export function* handle_ACTIVITY_RESTORE_OFFLINE() {}
 
 export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
+  takeEvery(ACTIVITY_OFFLINE_DELETE_ITEM, handle_ACTIVITY_OFFLINE_DELETE_ITEM),
   takeEvery(Activity.getLocal, handle_ACTIVITY_GET_LOCAL_REQUEST),
   takeEvery(ACTIVITY_SAVE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE),
   takeEvery(Activity.createLocal, handle_ACTIVITY_CREATE_LOCAL),
