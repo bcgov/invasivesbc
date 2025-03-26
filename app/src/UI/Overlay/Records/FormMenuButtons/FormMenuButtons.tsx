@@ -6,9 +6,11 @@ import Activity from 'state/actions/activity/Activity';
 import './FormMenuButtons.css';
 import { selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { ACTIVITY_OFFLINE_DELETE_ITEM } from 'state/actions';
+import { useHistory } from 'react-router';
 
 const FormMenuButtons = () => {
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const [saveDisabled, setSaveDisabled] = useState(false);
   const [draftDisabled, setDraftDisabled] = useState(false);
@@ -54,12 +56,12 @@ const FormMenuButtons = () => {
   };
 
   const handleDelete = () => {
-    if (!connected && recordIsSerializedActivity) {
+    if (recordIsSerializedActivity) {
       dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: activity_id } });
     } else {
       dispatch(Activity.deleteReq());
     }
-    setTimeout(() => history.back(), 3000);
+    setTimeout(() => history.push('/Records'), 500);
   };
 
   return (
