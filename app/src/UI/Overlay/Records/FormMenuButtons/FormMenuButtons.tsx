@@ -18,7 +18,7 @@ const FormMenuButtons = () => {
   const accessRoles = useSelector((state) => state.Auth?.accessRoles);
   const activityCreatedBy = useSelector((state) => state.ActivityPage?.activity?.created_by);
   const activityErrors = useSelector((state) => state.ActivityPage?.activityErrors);
-  const activity_id = useSelector((state) => state.ActivityPage.activity.activity_id);
+  const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
   const { connected } = useSelector((state) => state.Network);
   const status = useSelector((state) => state.ActivityPage?.activity?.form_status);
   const { serializedActivities } = useSelector(selectOfflineActivity);
