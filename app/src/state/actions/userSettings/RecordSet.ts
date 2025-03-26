@@ -100,7 +100,7 @@ class RecordSet {
   static readonly removeFilter = createAction<IRemoveFilter>(`${this.PREFIX}/removeFilter`);
   static readonly hideFilters = createAction(`${this.PREFIX}/hideFilters`);
 
-  private static readonly createDefaultRecordset = (type: RecordSetType): UserRecordSet => ({
+  public static readonly createDefaultRecordset = (type: RecordSetType): UserRecordSet => ({
     tableFilters: [],
     id: nanoid(),
     color: RECORD_COLOURS[0],

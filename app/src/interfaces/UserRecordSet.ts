@@ -27,7 +27,21 @@ export enum UserRecordCacheStatus {
 export interface UserRecordSet {
   tableFilters: IFilter[];
   id?: string;
-  color: string;
+  colorScheme?: {
+    Activity_Biocontrol_Collection: string;
+    Activity_Biocontrol_Release: string;
+    Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant: string;
+    Activity_Monitoring_BiocontrolRelease_TerrestrialPlant: string;
+    Activity_Monitoring_ChemicalTerrestrialAquaticPlant: string;
+    Activity_Monitoring_MechanicalTerrestrialAquaticPlant: string;
+    Activity_Observation_PlantAquatic: string;
+    Activity_Observation_PlantTerrestrial: string;
+    Activity_Treatment_ChemicalPlantAquatic: string;
+    Activity_Treatment_ChemicalPlantTerrestrial: string;
+    Activity_Treatment_MechanicalPlantAquatic: string;
+    Activity_Treatment_MechanicalPlantTerrestrial: string;
+  };
+  color?: string;
   drawOrder: number;
   expanded: boolean;
   isSelected: boolean;
