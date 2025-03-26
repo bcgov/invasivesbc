@@ -79,7 +79,7 @@ const FormMenuButtons = () => {
         PASTE FORM
       </Button>
       <Button disabled={blockUserFromDeletingRecord} onClick={handleDelete} variant="contained">
-        DELETE
+        DELETE {recordIsSerializedActivity && 'FROM LOCAL DEVICE'}
       </Button>
     </div>
   );
