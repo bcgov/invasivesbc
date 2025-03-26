@@ -51,6 +51,7 @@ import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import UserRecord from 'interfaces/UserRecord';
 import MapActions from 'state/actions/map';
+import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -496,38 +497,40 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
       : false;
 
     if (linkedActivitySubtypes.length > 0 && search_feature) {
+      const payload = {
+        activity_subtype: linkedActivitySubtypes,
+        user_roles: AuthState.accessRoles,
+        search_feature: search_feature
+      };
       if (networkState.connected) {
-        yield put(
-          Activity.Suggestions.treatmentIdsRequestOnline({
-            activity_subtype: linkedActivitySubtypes,
-            user_roles: AuthState.accessRoles,
-            search_feature
-          })
-        );
+        yield put(Activity.Suggestions.treatmentIdsRequestOnline(payload));
       } else {
-        const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        const overlappingRecords = yield service.getRecordIdsOverlappingFeature(search_feature);
-
-        const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(
-          overlappingRecords
-        )).filter((record: UserRecord) => linkedActivitySubtypes.includes(record.activity_subtype));
-
-        yield put(
-          Activity.Suggestions.treatmentIdsSuccess(
-            treatmentRecords.map((record, i) => ({
-              label: record.short_id,
-              title: record.short_id,
-              value: record.activity_id,
-              'x-code_sort_order': i + 1
-            }))
-          )
-        );
+        yield getLinkedTreatmentsFromCachedRecords(payload);
       }
     }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
+}
+
+export function* getLinkedTreatmentsFromCachedRecords(req: TreatmentIdsRequestOnline) {
+  const service = yield RecordCacheServiceFactory.getPlatformInstance();
+  const overlappingRecords = yield service.getRecordIdsOverlappingFeature(req.search_feature);
+  const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(overlappingRecords)).filter(
+    (record: UserRecord) => req.activity_subtype.includes(record.activity_subtype)
+  );
+
+  yield put(
+    Activity.Suggestions.treatmentIdsSuccess(
+      treatmentRecords.map((record, i) => ({
+        label: record.short_id,
+        title: record.short_id,
+        value: record.activity_id,
+        'x-code_sort_order': i + 1
+      }))
+    )
+  );
 }
 
 export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {

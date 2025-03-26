@@ -3,7 +3,7 @@ import { FeatureCollection, Geometry } from '@turf/helpers';
 import { ActivitySubtype } from 'sharedAPI';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 
-interface TreatmentIdsRequestOnline {
+export interface TreatmentIdsRequestOnline {
   activity_subtype: ActivitySubtype[];
   user_roles: Record<string, any>[];
   search_feature: FeatureCollection | boolean;
@@ -29,7 +29,7 @@ class Suggestions {
   static readonly personsSuccess = createAction<Record<string, any>[]>(`${this.PREFIX}/personsSuccess`);
 
   // Treatment ID Suggestions
-  static readonly treatmentIdsRequest = createAction<Record<string, any>>(`${this.PREFIX}/treatmentIdsRequest`);
+  static readonly treatmentIdsRequest = createAction<Record<PropertyKey, any>>(`${this.PREFIX}/treatmentIdsRequest`);
   static readonly treatmentIdsRequestOnline = createAction<TreatmentIdsRequestOnline>(
     `${this.PREFIX}/treatmentIdsRequestOnline`
   );
