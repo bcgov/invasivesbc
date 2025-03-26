@@ -28,6 +28,12 @@ export const activityDefaults = {
   reviewed_at: undefined
 };
 
+type OfflineDocsProperties = {
+  [key: PropertyKey]: {
+    options?: { value: string; label: string }[];
+  };
+};
+
 /*
   Function to generate activity payload for a new activity (in old pouchDB doc format)
 */
@@ -197,18 +203,64 @@ export function populateJurisdictionArray(record) {
   };
 }
 
-export function findSpeciesCodesAndConcatenateLabels(
-  obj: any,
+/**
+ * Works with `findSpeciesCodes()` to get the 'obj' input and processes it to concatenate codes
+ *
+ * @param {Record<string, Set<string>>} obj - The object that contains sets of species codes
+ * @returns {string} A string representation of the concatentaed codes, comma separated
+ */
+export function getConcatenatedCodes(obj: Record<string, Set<string>>): string {
+  return (
+    Object.values(obj)
+      .flatMap((set) => Array.from(set))
+      .join(', ') || ''
+  );
+}
+
+/**
+ * Works with `findSpeciesCodes()` to get the 'obj' input and processes it to extract species' labels
+ *
+ * @param {Record<string, Set<string>>} obj - The object that contains sets of species codes
+ * @param {OfflineDocsProperties} properties - Properties to search from, to map codes to their corresponding labels
+ * @returns {string} A string representation of the concatenated labels, comma separated
+ */
+export function getConcatenatedLabels(obj: Record<string, Set<string>>, properties: OfflineDocsProperties): string {
+  const labels: string[] = [];
+
+  for (const key in obj) {
+    if (obj[key].size > 0 && properties[key]?.options) {
+      const optionsMap = new Map<string, string>(
+        properties[key].options.map((option: { value: string; label: string }) => [option.value, option.label])
+      );
+
+      obj[key].forEach((value) => {
+        const label = optionsMap.get(value);
+        if (label) {
+          labels.push(label);
+        }
+      });
+    }
+  }
+
+  return labels.join(', ') || '';
+}
+
+/**
+ * Recursively searches through an object (or an array within the object) to find specific keys
+ * (`invasive_plant_code`, `invasive_plant_aquatic_code`) and collect associated values
+ * into a Set.
+ */
+export function findSpeciesCodes(
+  obj: Record<string, any>,
   targetKey: string,
-  properties: Record<string, any>,
-  specialCase: boolean
-): string {
-  const result: Record<string, Set<string>> = {
+  switchToAquaticCode: boolean = false
+): Record<string, Set<string>> {
+  const codeMaps: Record<string, Set<string>> = {
     invasive_plant_code: new Set(),
     invasive_plant_aquatic_code: new Set()
   };
 
-  const keysToFind = ['invasive_plant_code', 'invasive_plant_aquatic_code'];
+  const keysToFind = Object.keys(codeMaps);
 
   function searchAndExtract(obj: any): void {
     if (Array.isArray(obj)) {
@@ -219,7 +271,11 @@ export function findSpeciesCodesAndConcatenateLabels(
           searchAndExtract(obj[key]); // continue searching in the targetKey's value
         } else if (keysToFind.includes(key) && obj[key]) {
           const values = Array.isArray(obj[key]) ? obj[key] : [obj[key]];
-          values.forEach((value) => result[key].add(value));
+          if (switchToAquaticCode) {
+            values.forEach((value) => codeMaps.invasive_plant_aquatic_code.add(value));
+          } else {
+            values.forEach((value) => codeMaps[key].add(value));
+          }
         } else {
           searchAndExtract(obj[key]); // recurse into other nested objects
         }
@@ -227,33 +283,9 @@ export function findSpeciesCodesAndConcatenateLabels(
     }
   }
 
-  function getLabels(): string {
-    let labels: string[] = [];
-
-    for (const key of keysToFind) {
-      let propertyKey = specialCase ? 'invasive_plant_aquatic_code' : key;
-
-      if (result[key].size > 0 && properties[propertyKey]?.options) {
-        const optionsMap = new Map<string, string>(
-          properties[propertyKey].options.map((option: { value: string; label: string }) => [
-            option.value,
-            option.label
-          ])
-        );
-
-        result[key].forEach((value) => {
-          const label = optionsMap.get(value);
-          if (label) {
-            labels.push(label);
-          }
-        });
-      }
-    }
-    return labels.join(', ') || '';
-  }
-
   searchAndExtract(obj);
-  return getLabels();
+
+  return codeMaps;
 }
 
 export function transformOfflineActivitiesForRecordTable(
@@ -272,16 +304,18 @@ export function transformOfflineActivitiesForRecordTable(
 
       offlineActivities[key].data.activity_subtype = ActivitySubtypeShortLabels[value.record_type] || 'Unknown';
 
-      offlineActivities[key].data.invasive_plant = findSpeciesCodesAndConcatenateLabels(
-        offlineActivities[key].data.form_data.activity_subtype_data,
-        ActivitySubtypeTargetKey[offlineActivities[key].record_type],
-        listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties,
-        [
-          // Special case: if activity_subtype is in this list, switch between invasive_plant_code and invasive_plant_aquatic_code when searching api docs
-          ActivitySubtype.Treatment_MechanicalPlantAquatic,
-          ActivitySubtype.Treatment_ChemicalPlantAquatic,
-          ActivitySubtype.Observation_PlantAquatic
-        ].includes(offlineActivities[key].record_type as ActivitySubtype)
+      offlineActivities[key].data.invasive_plant = getConcatenatedLabels(
+        findSpeciesCodes(
+          offlineActivities[key].data.form_data.activity_subtype_data,
+          ActivitySubtypeTargetKey[offlineActivities[key].record_type],
+          [
+            // Special case: if activity_subtype is in this list, switch between invasive_plant_code and invasive_plant_aquatic_code when searching api docs
+            ActivitySubtype.Treatment_MechanicalPlantAquatic,
+            ActivitySubtype.Treatment_ChemicalPlantAquatic,
+            ActivitySubtype.Observation_PlantAquatic
+          ].includes(offlineActivities[key].record_type as ActivitySubtype)
+        ),
+        listOptions?.components?.schemas.ChemicalTreatment_Species_Codes.properties
       );
 
       offlineActivities[key].data.jurisdiction_display = (offlineActivities[key].data?.jurisdiction || [])
