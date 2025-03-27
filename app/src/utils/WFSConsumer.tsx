@@ -123,7 +123,7 @@ export function* getDataFromDataBCv2(
   let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
 
   let resp = yield getSimplifiedGeoJSON(encode(URL), '0.02');
-
+  if (!resp) return;
   const returnVal = resp;
   if (!pageSize && !startIndex) {
     return returnVal;
