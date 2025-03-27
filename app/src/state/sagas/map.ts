@@ -6,8 +6,6 @@ import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
@@ -152,19 +150,21 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
           filterObjects: [iappfilterObj]
         })
       ]);
+      if (activitiesNetworkReturn?.ok && iappNetworkReturn?.ok) {
+        const activityReturn =
+          activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
+        const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
 
-      const activityReturn = activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
-      const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
-
-      const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
-      const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
-      yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
-    } else {
-      // Get IDs from Offline Caches
-      const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const overlappingRecords: string[] = yield service.getRecordIdsOverlappingFeature(whatsHereFeature.payload);
-      yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, [...overlappingRecords]));
+        const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
+        const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
+        yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
+        return;
+      }
     }
+    // Get IDs from Offline Caches
+    const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    const overlappingRecords: string[] = yield service.getRecordIdsOverlappingFeature(whatsHereFeature.payload);
+    yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, [...overlappingRecords]));
   } else {
     if (!activitiesGeoJSONDict) {
       yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
@@ -215,7 +215,16 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
       const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
         filterObjects: [filterObject]
       });
-      records = networkReturn.data.result;
+      if (networkReturn?.ok) {
+        records = networkReturn.data.result;
+      } else {
+        const service = yield RecordCacheServiceFactory.getPlatformInstance();
+        records = yield service.getPaginatedCachedIappRecords(
+          whatsHere.IAPPIDs.map((id) => id.toString()),
+          whatsHere.IAPPPage,
+          whatsHere.IAPPLimit
+        );
+      }
     }
     const mappedToWhatsHereColumns = records.map((iappRecord) => ({
       id: iappRecord.site_id,
@@ -305,7 +314,16 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
       const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
         filterObjects: [filterObject]
       });
-      records = networkReturn.data.result;
+      if (networkReturn?.ok) {
+        records = networkReturn.data.result;
+      } else {
+        const service = yield RecordCacheServiceFactory.getPlatformInstance();
+        records = yield service.getPaginatedCachedActivityRecords(
+          whatsHere.ActivityIDs,
+          whatsHere.ActivityPage,
+          whatsHere.ActivityLimit
+        );
+      }
     }
     const mappedToWhatsHereColumns = records.map((activityRecord) => {
       // Differenciate the Cached records from the API called ones
@@ -578,13 +596,12 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
   };
   if (recordSetType === RecordSetType.Activity) {
     if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
-    yield put({
-      type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-      payload: {
+    yield put(
+      Activity.getIdsForRecordset({
         recordSetID: action.payload.setID,
         tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-      }
-    });
+      })
+    );
   } else {
     if (currentSet === action.payload.setID) yield put(IappActions.getRows(actionArg));
     yield put({
@@ -661,10 +678,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
       });
     }
     if (layer.recordSetType === RecordSetType.Activity) {
-      actionsToPut.push({
-        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-        payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
-      });
+      actionsToPut.push(Activity.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
     } else if (layer.recordSetType === RecordSetType.IAPP) {
       actionsToPut.push({
         type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -845,8 +859,8 @@ function* activitiesPageSaga() {
     takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
     takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
     takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
-    takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
-    takeEvery(ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
+    takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
+    takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
 

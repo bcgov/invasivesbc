@@ -2,7 +2,6 @@ import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
 import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   ACTIVITY_OFFLINE_DELETE_ITEM,
   ACTIVITY_RUN_OFFLINE_SYNC,
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
@@ -146,10 +145,7 @@ export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
             sync_status: sync_status
           })
         );
-        yield put({
-          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-          payload: { recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }
-        });
+        yield put(Activity.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
       } else {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE,

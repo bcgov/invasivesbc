@@ -2,8 +2,6 @@ import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
@@ -721,6 +719,43 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         }
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
+      } else if (Activity.getIdsForRecordset.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        }
+        draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
+        draftState.layers[index].loading = true;
+        if (!draftState.layers[index].layerState) {
+          draftState.layers[index].layerState = {
+            color: RECORD_COLOURS[0],
+            drawOrder: 0,
+            mapToggle: false
+          };
+        }
+      } else if (Activity.getIdsForRecordsetSuccess.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+        }
+        index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+
+        if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
+
+        draftState.layers[index].IDList = action.payload?.IDList ?? [];
+        if (draftState.MapMode === 'VECTOR_ENDPOINT') {
+          draftState.layers[index].loading = false;
+        }
+        if (draftState.MapMode !== 'VECTOR_ENDPOINT' && draftState.activitiesGeoJSONDict !== undefined) {
+          GeoJSONFilterSetForLayer(
+            draftState,
+            state,
+            RecordSetType.Activity,
+            action.payload.recordSetID,
+            action.payload.IDList
+          );
+        }
       } else {
         switch (action.type) {
           case TOGGLE_LAYER_PICKER_OPEN:
@@ -761,23 +796,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             break;
           }
-          case ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST: {
-            let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            if (!draftState.layers[index]) {
-              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
-              index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            }
-            draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-            draftState.layers[index].loading = true;
-            if (!draftState.layers[index].layerState) {
-              draftState.layers[index].layerState = {
-                color: RECORD_COLOURS[0],
-                drawOrder: 0,
-                mapToggle: false
-              };
-            }
-            break;
-          }
+
           case IAPP_GET_IDS_FOR_RECORDSET_REQUEST: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             if (!draftState.layers[index]) {
@@ -795,32 +814,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             }
             break;
           }
-          case ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS: {
-            let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            if (!draftState.layers[index]) {
-              draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
-            }
 
-            index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-
-            if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) {
-              break;
-            }
-            draftState.layers[index].IDList = action.payload?.IDList ?? [];
-            if (draftState.MapMode === 'VECTOR_ENDPOINT') {
-              draftState.layers[index].loading = false;
-            }
-            if (draftState.MapMode !== 'VECTOR_ENDPOINT' && draftState.activitiesGeoJSONDict !== undefined) {
-              GeoJSONFilterSetForLayer(
-                draftState,
-                state,
-                RecordSetType.Activity,
-                action.payload.recordSetID,
-                action.payload.IDList
-              );
-            }
-            break;
-          }
           case MAP_MODE_SET:
             draftState.MapMode = action.payload;
             switch (action.payload) {

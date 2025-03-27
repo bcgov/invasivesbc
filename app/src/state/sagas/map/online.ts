@@ -5,7 +5,6 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   EXPORT_CONFIG_LOAD_ERROR,
   EXPORT_CONFIG_LOAD_REQUEST,
   EXPORT_CONFIG_LOAD_SUCCESS,
@@ -15,9 +14,9 @@ import {
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
-import Activity, { ActivityTableRowGetRequest } from 'state/actions/activity/Activity';
+import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordsetOnline } from 'state/actions/activity/Activity';
 import UserRecord from 'interfaces/UserRecord';
-import { getRowsFromCachedRecordset } from './dataAccess';
+import { getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
 import { MOBILE } from 'state/build-time-config';
 
 function* refreshExportConfigIfRequired(action?: AnyAction) {
@@ -196,7 +195,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
   }
 }
 
-export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
+export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action: PayloadAction<IGetIdsForRecordsetOnline>) {
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
     filterObjects: [action.payload.filterObj]
   });
@@ -205,9 +204,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     return layer?.recordSetID === action.payload.recordSetID;
   })?.[0]?.tableFiltersHash;
 
-  if (!tableFiltersHash === action.payload.tableFiltersHash) {
-    return;
-  }
+  if (tableFiltersHash !== action.payload.tableFiltersHash) return;
 
   if (networkReturn?.ok && (networkReturn?.data?.result || networkReturn.data?.data?.result)) {
     const list = networkReturn.data?.data?.result ?? networkReturn.data?.result;
@@ -220,14 +217,15 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action) {
 
     if (tableFiltersHash !== action.payload.tableFiltersHash) return;
 
-    yield put({
-      type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-      payload: {
+    yield put(
+      Activity.getIdsForRecordsetSuccess({
         recordSetID: action.payload.recordSetID,
         IDList: IDList,
         tableFiltersHash: action.payload.tableFiltersHash
-      }
-    });
+      })
+    );
+  } else if (MOBILE) {
+    getIdsForRecordsetFromCache(action.payload);
   }
 }
 

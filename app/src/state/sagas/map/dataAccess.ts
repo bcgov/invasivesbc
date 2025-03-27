@@ -5,8 +5,6 @@ import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf'
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-  ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
@@ -16,7 +14,7 @@ import {
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { RecordSetType, UserRecordSet, UserRecordCacheStatus, RecordSetId } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet, RecordSetId } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
@@ -25,7 +23,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
-import Activity, { ActivityTableRowGetRequest } from 'state/actions/activity/Activity';
+import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordset } from 'state/actions/activity/Activity';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -93,7 +91,7 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
   }
 }
 
-export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
+export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: PayloadAction<IGetIdsForRecordset>) {
   const currentState = yield select((state) => state.UserSettings);
   const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
   const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
@@ -117,29 +115,15 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
 
     // if mobile or web
     if (connected && !workingOffline) {
-      yield put({
-        type: ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-        payload: {
+      yield put(
+        Activity.getIdsForRecordsetOnline({
           filterObj: filterObject,
           recordSetID: action.payload.recordSetID,
           tableFiltersHash: action.payload.tableFiltersHash
-        }
-      });
+        })
+      );
     } else {
-      const recordSet = currentState.recordSets[action.payload.recordSetID] ?? null;
-      if (recordSet.cacheMetadataStatus === UserRecordCacheStatus.CACHED) {
-        const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        const ids = yield service.getIdList(action.payload.recordSetID);
-
-        yield put({
-          type: ACTIVITIES_GET_IDS_FOR_RECORDSET_SUCCESS,
-          payload: {
-            recordSetID: action.payload.recordSetID,
-            IDList: ids ?? [],
-            tableFiltersHash: action.payload.tableFiltersHash
-          }
-        });
-      }
+      yield getIdsForRecordsetFromCache(action.payload);
     }
   } catch (e) {
     console.error(e);
@@ -147,6 +131,19 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   }
 }
 
+export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
+  const service = yield RecordCacheServiceFactory.getPlatformInstance();
+  if (service.isCached(action.recordSetID)) {
+    const ids = yield service.getIdList(action.recordSetID);
+    yield put(
+      Activity.getIdsForRecordsetSuccess({
+        recordSetID: action.recordSetID,
+        IDList: ids ?? [],
+        tableFiltersHash: action.tableFiltersHash
+      })
+    );
+  }
+}
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
     const currentState = yield select((state) => state.UserSettings);
