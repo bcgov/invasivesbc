@@ -365,8 +365,11 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       let linked_geo;
       if (connected) {
         const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
-        linked_geo = networkReturn.data.geometry;
-      } else {
+        if (networkReturn?.ok) {
+          linked_geo = networkReturn.data.geometry;
+        }
+      }
+      if (!linked_geo && MOBILE) {
         const service = yield RecordCacheServiceFactory.getPlatformInstance();
         const record = yield service.loadActivity(linked_id);
         linked_geo = record.geometry;
@@ -386,7 +389,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     console.error(e);
   }
 }
-
+const copyGeometryFromCache = async (id: string) => {};
 export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
 
