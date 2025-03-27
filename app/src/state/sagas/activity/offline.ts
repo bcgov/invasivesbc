@@ -52,14 +52,8 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
     yield put(Activity.getSuccess(JSON.parse(found.data)));
   } else if (connected) {
     // not locally, maybe we can get it from the server if we're online
-    try {
-      const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
-
-      if (networkReturn.status !== 200) {
-        yield put(Activity.getFailure(networkReturn));
-        return;
-      }
-
+    const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
+    if (networkReturn?.ok) {
       const datav2 = {
         ...networkReturn.data,
         species_positive: networkReturn.data.species_positive || [],
@@ -70,15 +64,12 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
       };
       yield put(Activity.getSuccess(datav2));
       return;
-    } catch (e) {
-      yield put(Activity.getFailure());
-      return;
     }
-  } else {
-    try {
-      const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const result = yield service.loadActivity(activityID);
-
+  }
+  try {
+    const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    const result = yield service.loadActivity(activityID);
+    if (result) {
       const datav2 = {
         ...result,
         species_positive: result.species_positive || [],
@@ -87,14 +78,13 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
         media: result.media || [],
         media_delete_keys: result.media_delete_keys || []
       };
-
       yield put(Activity.getSuccess(datav2));
-    } catch (e) {
-      console.error(e);
-      yield put(Activity.getFailure());
+      return;
     }
-    return;
+  } catch (e) {
+    console.error(e);
   }
+  yield put(Activity.getFailure());
 }
 
 export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {

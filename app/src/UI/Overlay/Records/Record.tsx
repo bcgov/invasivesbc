@@ -7,6 +7,7 @@ import { ActivityForm } from './Activity/Form';
 import { ActivityPhotos } from './Activity/Photos';
 import { Button } from '@mui/material';
 import { RENDER_DEBUG } from 'UI/App';
+import Spinner from 'UI/Spinner/Spinner';
 
 export const Activity = (props) => {
   const ref = useRef(0);
@@ -58,9 +59,11 @@ export const Activity = (props) => {
             }, 3000);
             return <div>Activity does not exists, redirecting...</div>;
           }
-          if (activity_ID && apiDocsWithSelectOptions && apiDocsWithViewOptions && loading === false)
+          if (activity_ID && apiDocsWithSelectOptions && apiDocsWithViewOptions && loading === false) {
             return <ActivityForm />;
-          else return <div>loading</div>;
+          } else {
+            return <Spinner />;
+          }
         }}
       />
       <Route
@@ -69,7 +72,7 @@ export const Activity = (props) => {
           if (activity_ID) {
             return <ActivityPhotos />;
           } else {
-            return <div>loading</div>;
+            return <Spinner />;
           }
         }}
       />
