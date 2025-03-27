@@ -226,7 +226,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action: PayloadA
       })
     );
   } else if (MOBILE) {
-    getIdsForRecordsetFromCache(action.payload);
+    yield getIdsForRecordsetFromCache(action.payload);
   }
 }
 

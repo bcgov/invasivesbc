@@ -131,16 +131,20 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: Payload
 }
 
 export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
-  const service = yield RecordCacheServiceFactory.getPlatformInstance();
-  if (service.isCached(action.recordSetID)) {
-    const ids = yield service.getIdList(action.recordSetID);
-    yield put(
-      Activity.getIdsForRecordsetSuccess({
-        recordSetID: action.recordSetID,
-        IDList: ids ?? [],
-        tableFiltersHash: action.tableFiltersHash
-      })
-    );
+  try {
+    const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    if (service.isCached(action.recordSetID)) {
+      const ids = yield service.getIdList(action.recordSetID);
+      yield put(
+        Activity.getIdsForRecordsetSuccess({
+          recordSetID: action.recordSetID,
+          IDList: ids ?? [],
+          tableFiltersHash: action.tableFiltersHash
+        })
+      );
+    }
+  } catch (ex) {
+    console.error(ex);
   }
 }
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
