@@ -561,9 +561,6 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     const activityState = yield select(selectActivity);
     const type = activityState?.activity?.activity_subtype;
 
-    yield put(Activity.Suggestions.persons());
-    yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
-
     // needs to be latlng expression
     const isGeo = !!action.payload?.geometry?.[0]?.geometry?.coordinates;
 
@@ -574,15 +571,22 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     if (centerPoint && isGeo) {
       yield put(UserSettings.Map.setCenter(centerPoint.geometry.coordinates));
     }
-    if (isLinkedTreatmentSubtype(type)) {
-      yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));
-    }
+
     const authState = yield select(selectAuth);
     const userName = authState.username;
     const created_by = action.payload.created_by;
     const createdByUser = userName === created_by;
 
     const isViewing = !createdByUser;
+
+    // Don't fetch suggestions if the record doesn't belong to the user
+    if (createdByUser) {
+      yield put(Activity.Suggestions.persons());
+      yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
+      if (isLinkedTreatmentSubtype(type)) {
+        yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));
+      }
+    }
 
     yield put({
       type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
