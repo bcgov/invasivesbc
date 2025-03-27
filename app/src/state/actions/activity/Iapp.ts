@@ -4,7 +4,7 @@ import { IGetIdsForRecordset, IGetIdsForRecordsetOnline, IGetIdsForRecordsetSucc
 
 export interface IappTableRowRequest {
   recordSetID: string | number;
-  tableFiltersHash: Record<PropertyKey, any>;
+  tableFiltersHash: string;
   page: number;
   limit: number;
 }

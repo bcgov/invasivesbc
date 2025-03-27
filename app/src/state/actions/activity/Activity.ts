@@ -24,7 +24,7 @@ export interface ICreateLocal {
 }
 export interface ActivityTableRowRequest {
   recordSetID: string | number;
-  tableFiltersHash: Record<PropertyKey, any>;
+  tableFiltersHash: string;
   page: number;
   limit: number;
 }
