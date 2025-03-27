@@ -141,7 +141,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
       const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
         search_feature: { ...searchFeature, properties: {} }
       });
-      yield put(Activity.Suggestions.jurisdictionsSuccess(networkReturn.data.result ?? []));
+      if (networkReturn?.ok) {
+        yield put(Activity.Suggestions.jurisdictionsSuccess(networkReturn.data.result ?? []));
+      }
     }
   } catch (err) {
     console.error(err);
