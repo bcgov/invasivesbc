@@ -306,18 +306,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
       return;
     }
     if (userMobileOffline) {
-      const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const recordSetIdList = yield service.getIdList(recordSetID.toString()) ?? [];
-      const records = yield service.getPaginatedCachedIappRecords(recordSetIdList, page, limit);
-      yield put(
-        IappActions.getRowsSuccess({
-          recordSetID: recordSetID,
-          rows: records,
-          tableFiltersHash: tableFiltersHash,
-          page: page,
-          limit: limit
-        })
-      );
+      yield getIappRowsFromCache(action.payload);
     } else {
       yield put(
         IappActions.getRowsRequest({
@@ -333,6 +322,21 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
+}
+export function* getIappRowsFromCache(payload: IappTableRowRequest) {
+  const { recordSetID, page, limit, tableFiltersHash } = payload;
+  const service = yield RecordCacheServiceFactory.getPlatformInstance();
+  const recordSetIdList = yield service.getIdList(recordSetID.toString()) ?? [];
+  const records = yield service.getPaginatedCachedIappRecords(recordSetIdList, page, limit);
+  yield put(
+    IappActions.getRowsSuccess({
+      recordSetID: recordSetID,
+      rows: records,
+      tableFiltersHash: tableFiltersHash,
+      page: page,
+      limit: limit
+    })
+  );
 }
 
 function largePush(src, dest) {

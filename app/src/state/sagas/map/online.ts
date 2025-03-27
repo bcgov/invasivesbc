@@ -15,7 +15,7 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordsetOnline } from 'state/actions/activity/Activity';
 import UserRecord from 'interfaces/UserRecord';
-import { getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
+import { getIappRowsFromCache, getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
 import { MOBILE } from 'state/build-time-config';
 
 function* refreshExportConfigIfRequired(action?: AnyAction) {
@@ -167,9 +167,8 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
   mapState = yield select((state) => state.Map);
 
   tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
-  if (tableFiltersHash !== action.payload.tableFiltersHash) {
-    return;
-  }
+
+  if (tableFiltersHash !== action.payload.tableFiltersHash) return;
 
   if (networkReturn?.ok && networkReturn?.data?.result) {
     yield put(
@@ -181,8 +180,10 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
         limit: action.payload.limit
       })
     );
+  } else if (MOBILE) {
+    yield getIappRowsFromCache(action.payload);
   } else {
-    put(
+    yield put(
       IappActions.getRowsFailure({
         recordSetID: action.payload.recordSetID,
         error: networkReturn?.data,
