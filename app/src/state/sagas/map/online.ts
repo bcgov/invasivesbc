@@ -8,8 +8,7 @@ import {
   EXPORT_CONFIG_LOAD_ERROR,
   EXPORT_CONFIG_LOAD_REQUEST,
   EXPORT_CONFIG_LOAD_SUCCESS,
-  IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS
+  IAPP_GEOJSON_GET_SUCCESS
 } from 'state/actions';
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -255,13 +254,12 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
       return;
     }
 
-    yield put({
-      type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
-      payload: {
+    yield put(
+      IappActions.getIdsForRecordsetSuccess({
         recordSetID: action.payload.recordSetID,
         IDList: IDList,
         tableFiltersHash: action.payload.tableFiltersHash
-      }
-    });
+      })
+    );
   }
 }

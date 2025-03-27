@@ -46,6 +46,9 @@ export interface IGetIdsForRecordset {
 export interface IGetIdsForRecordsetOnline extends IGetIdsForRecordset {
   filterObj: FilterObjects;
 }
+export interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
+  IDList: Array<string | number>;
+}
 
 class Activity {
   private static readonly PREFIX = 'Activity';
@@ -96,8 +99,12 @@ class Activity {
   static readonly getRowsSuccess = createAction<ActivityTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
 
   static readonly getIdsForRecordset = createAction<IGetIdsForRecordset>(`${this.PREFIX}/getIdsForRecordset`);
-  static readonly getIdsForRecordsetOnline = createAction<any>(`${this.PREFIX}/getIdsForRecordsetOnline`);
-  static readonly getIdsForRecordsetSuccess = createAction<any>(`${this.PREFIX}/getIdsForRecordsetSuccess`);
+  static readonly getIdsForRecordsetOnline = createAction<IGetIdsForRecordsetOnline>(
+    `${this.PREFIX}/getIdsForRecordsetOnline`
+  );
+  static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
+    `${this.PREFIX}/getIdsForRecordsetSuccess`
+  );
   static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);
 }
 export default Activity;

@@ -15,8 +15,6 @@ import {
   IAPP_GEOJSON_GET_ONLINE,
   IAPP_GEOJSON_GET_REQUEST,
   IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   INIT_SERVER_BOUNDARIES_GET,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
@@ -604,13 +602,12 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
     );
   } else {
     if (currentSet === action.payload.setID) yield put(IappActions.getRows(actionArg));
-    yield put({
-      type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-      payload: {
+    yield put(
+      IappActions.getIdsForRecordset({
         recordSetID: action.payload.setID,
         tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-      }
-    });
+      })
+    );
   }
 }
 
@@ -680,10 +677,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
     if (layer.recordSetType === RecordSetType.Activity) {
       actionsToPut.push(Activity.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
     } else if (layer.recordSetType === RecordSetType.IAPP) {
-      actionsToPut.push({
-        type: IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-        payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
-      });
+      actionsToPut.push(IappActions.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
     }
   });
   yield all(actionsToPut.map((action) => put(action)));
@@ -861,8 +855,8 @@ function* activitiesPageSaga() {
     takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
     takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeEvery(IAPP_GET_IDS_FOR_RECORDSET_REQUEST, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
-    takeEvery(IAPP_GET_IDS_FOR_RECORDSET_ONLINE, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
+    takeEvery(IappActions.getIdsForRecordset, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
+    takeEvery(IappActions.getIdsForRecordsetOnline, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
 
     takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_GET_ROWS),
     takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST),

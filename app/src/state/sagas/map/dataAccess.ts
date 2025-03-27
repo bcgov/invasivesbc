@@ -8,9 +8,7 @@ import {
   ACTIVITY_GET_INITIAL_STATE_FAILURE,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_GEOJSON_GET_ONLINE,
-  IAPP_GEOJSON_GET_SUCCESS,
-  IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  IAPP_GET_IDS_FOR_RECORDSET_SUCCESS
+  IAPP_GEOJSON_GET_SUCCESS
 } from 'state/actions';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -159,26 +157,24 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     filterObject.selectColumns = ['site_id'];
     if (connected && !workingOffline) {
       // if mobile or web
-      yield put({
-        type: IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-        payload: {
+      yield put(
+        IappActions.getIdsForRecordsetOnline({
           filterObj: filterObject,
           recordSetID: action.payload.recordSetID,
           tableFiltersHash: action.payload.tableFiltersHash
-        }
-      });
+        })
+      );
     } else {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       if (yield service.isCached(action.payload.recordSetID)) {
         const ids = yield service.getIdList(action.payload.recordSetID);
-        yield put({
-          type: IAPP_GET_IDS_FOR_RECORDSET_SUCCESS,
-          payload: {
+        yield put(
+          IappActions.getIdsForRecordsetSuccess({
             recordSetID: action.payload.recordSetID,
             IDList: ids,
             tableFiltersHash: action.payload.tableFiltersHash
-          }
-        });
+          })
+        );
       }
     }
   } catch (e) {
