@@ -22,6 +22,7 @@ import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRec
 import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordset } from 'state/actions/activity/Activity';
+import { getIappIdsForRecordsetFromCache } from './online';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -165,17 +166,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
         })
       );
     } else {
-      const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      if (yield service.isCached(action.payload.recordSetID)) {
-        const ids = yield service.getIdList(action.payload.recordSetID);
-        yield put(
-          IappActions.getIdsForRecordsetSuccess({
-            recordSetID: action.payload.recordSetID,
-            IDList: ids,
-            tableFiltersHash: action.payload.tableFiltersHash
-          })
-        );
-      }
+      yield getIappIdsForRecordsetFromCache(action.payload);
     }
   } catch (e) {
     console.error(e);
@@ -324,19 +315,24 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
   }
 }
 export function* getIappRowsFromCache(payload: IappTableRowRequest) {
-  const { recordSetID, page, limit, tableFiltersHash } = payload;
-  const service = yield RecordCacheServiceFactory.getPlatformInstance();
-  const recordSetIdList = yield service.getIdList(recordSetID.toString()) ?? [];
-  const records = yield service.getPaginatedCachedIappRecords(recordSetIdList, page, limit);
-  yield put(
-    IappActions.getRowsSuccess({
-      recordSetID: recordSetID,
-      rows: records,
-      tableFiltersHash: tableFiltersHash,
-      page: page,
-      limit: limit
-    })
-  );
+  try {
+    const { recordSetID, page, limit, tableFiltersHash } = payload;
+    const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    const recordSetIdList = yield service.getIdList(recordSetID.toString()) ?? [];
+    const records = yield service.getPaginatedCachedIappRecords(recordSetIdList, page, limit);
+
+    yield put(
+      IappActions.getRowsSuccess({
+        recordSetID: recordSetID,
+        rows: records,
+        tableFiltersHash: tableFiltersHash,
+        page: page,
+        limit: limit
+      })
+    );
+  } catch (ex) {
+    console.error(ex);
+  }
 }
 
 function largePush(src, dest) {

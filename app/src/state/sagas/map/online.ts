@@ -12,11 +12,12 @@ import {
 } from 'state/actions';
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
 import { PayloadAction } from '@reduxjs/toolkit';
-import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
+import IappActions, { IappTableRowGetRequest, IappTableRowRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordsetOnline } from 'state/actions/activity/Activity';
 import UserRecord from 'interfaces/UserRecord';
 import { getIappRowsFromCache, getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
 import { MOBILE } from 'state/build-time-config';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 function* refreshExportConfigIfRequired(action?: AnyAction) {
   const config = yield select(selectRootConfiguration);
@@ -260,6 +261,22 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
         recordSetID: action.payload.recordSetID,
         IDList: IDList,
         tableFiltersHash: action.payload.tableFiltersHash
+      })
+    );
+  } else if (MOBILE) {
+    yield getIappIdsForRecordsetFromCache(action.payload);
+  }
+}
+
+export function* getIappIdsForRecordsetFromCache(action: IappTableRowRequest) {
+  const service = yield RecordCacheServiceFactory.getPlatformInstance();
+  if (yield service.isCached(action.recordSetID)) {
+    const ids = yield service.getIdList(action.recordSetID);
+    yield put(
+      IappActions.getIdsForRecordsetSuccess({
+        recordSetID: action.recordSetID,
+        IDList: ids,
+        tableFiltersHash: action.tableFiltersHash
       })
     );
   }
