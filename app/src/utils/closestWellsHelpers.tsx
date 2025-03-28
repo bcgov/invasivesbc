@@ -1,4 +1,4 @@
-import { Feature, polygon } from '@turf/helpers';
+import { Feature, Point, Polygon, polygon } from '@turf/helpers';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import inside from '@turf/inside';
@@ -10,36 +10,38 @@ import { WellCacheServiceFactory } from './well-cache/context';
 import GeoShapes from 'constants/geoShapes';
 import WellData from 'interfaces/WellData';
 import { LineString } from 'geojson';
+import { MOBILE } from 'state/build-time-config';
 
 //gets layer data based on the layer name
-export function* getClosestWells(inputGeometry) {
+export function* getClosestWells(inputGeometry: Point | Polygon | LineString) {
   const firstFeature = inputGeometry;
   const networkState = yield select(selectNetworkState);
   //get the map extent as geoJson polygon feature
   const bufferedGeo = buffer(firstFeature, 1, { units: 'kilometers' });
-  //if well layer is selected
-  //if online, just get data from WFSonline consumer
-  if (networkState.connected) {
-    const returnVal = yield getDataFromDataBCv2('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo, true);
 
-    if (!returnVal?.features) {
-      return { well_objects: [], areWellsInside: undefined };
-    } else {
-      return getWellsArray(returnVal.features, firstFeature);
+  if (networkState.connected) {
+    // if online, just get data from WFSonline consumer
+    try {
+      const returnVal = yield getDataFromDataBCv2('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo, true);
+      if (returnVal?.features) {
+        return getWellsArray(returnVal.features, firstFeature);
+      }
+    } catch (ex) {
+      console.error('[getClosestWells]:', ex);
     }
-  } else {
+  }
+  if (MOBILE) {
     const service = yield WellCacheServiceFactory.getPlatformInstance();
     const wellsInArea = yield service.getNearbyWells(bufferedGeo) ?? [];
     if (wellsInArea.length > 0) {
       return getWellsArray(wellsInArea, firstFeature);
-    } else {
-      return { well_objects: [], areWellsInside: undefined };
     }
   }
+  return { well_objects: [], areWellsInside: undefined };
 
   //if there is a geometry drawn, get closest wells and wells inside and label them
-  // return getWellsArray(allFeatures, firstFeature);
 }
+
 // Function for going through array of wells and labeling 1 closest well and wells inside the polygon
 export const getWellsArray = (arrayOfWells, inputGeometry) => {
   let geoJSONFeature = inputGeometry;
@@ -73,9 +75,7 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
   });
 
   //sort by proximity ASC
-  outputWells.sort((wellA, wellB) => {
-    return wellA.proximity - wellB.proximity;
-  });
+  outputWells.sort((wellA, wellB) => wellA.proximity - wellB.proximity);
 
   outputWells[0] = { ...outputWells[0], closest: true };
 

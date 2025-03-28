@@ -7,6 +7,7 @@ import GeoJson from './GeoJson';
 import { ActivityStatus } from 'sharedAPI';
 import ChemicalTreatments from './ChemicalTreatments';
 import { FieldError } from '@rjsf/utils';
+import FilterObjects from 'interfaces/FilterObjects';
 
 export interface INewActivity {
   type: string;
@@ -23,7 +24,7 @@ export interface ICreateLocal {
 }
 export interface ActivityTableRowRequest {
   recordSetID: string | number;
-  tableFiltersHash: Record<PropertyKey, any>;
+  tableFiltersHash: string;
   page: number;
   limit: number;
 }
@@ -36,6 +37,17 @@ export interface ActivityTableRowGetRequest extends ActivityTableRowRequest {
 }
 export interface ActivityTableRowsGetSuccess extends ActivityTableRowRequest {
   rows: Record<PropertyKey, any>[];
+}
+
+export interface IGetIdsForRecordset {
+  recordSetID: PropertyKey;
+  tableFiltersHash: string;
+}
+export interface IGetIdsForRecordsetOnline extends IGetIdsForRecordset {
+  filterObj: FilterObjects;
+}
+export interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
+  IDList: Array<string | number>;
 }
 
 class Activity {
@@ -86,6 +98,13 @@ class Activity {
   static readonly getRowsOffline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOffline`);
   static readonly getRowsSuccess = createAction<ActivityTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
 
+  static readonly getIdsForRecordset = createAction<IGetIdsForRecordset>(`${this.PREFIX}/getIdsForRecordset`);
+  static readonly getIdsForRecordsetOnline = createAction<IGetIdsForRecordsetOnline>(
+    `${this.PREFIX}/getIdsForRecordsetOnline`
+  );
+  static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
+    `${this.PREFIX}/getIdsForRecordsetSuccess`
+  );
   static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);
 }
 export default Activity;
