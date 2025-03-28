@@ -52,6 +52,7 @@ import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import UserRecord from 'interfaces/UserRecord';
 import MapActions from 'state/actions/map';
+import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -367,8 +368,11 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       let linked_geo;
       if (connected) {
         const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
-        linked_geo = networkReturn.data.geometry;
-      } else {
+        if (networkReturn?.ok) {
+          linked_geo = networkReturn.data.geometry;
+        }
+      }
+      if (!linked_geo && MOBILE) {
         const service = yield RecordCacheServiceFactory.getPlatformInstance();
         const record = yield service.loadActivity(linked_id);
         linked_geo = record.geometry;
@@ -388,7 +392,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     console.error(e);
   }
 }
-
+const copyGeometryFromCache = async (id: string) => {};
 export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
 
@@ -499,38 +503,40 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
       : false;
 
     if (linkedActivitySubtypes.length > 0 && search_feature) {
+      const payload = {
+        activity_subtype: linkedActivitySubtypes,
+        user_roles: AuthState.accessRoles,
+        search_feature: search_feature
+      };
       if (networkState.connected) {
-        yield put(
-          Activity.Suggestions.treatmentIdsRequestOnline({
-            activity_subtype: linkedActivitySubtypes,
-            user_roles: AuthState.accessRoles,
-            search_feature
-          })
-        );
+        yield put(Activity.Suggestions.treatmentIdsRequestOnline(payload));
       } else {
-        const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        const overlappingRecords = yield service.getRecordIdsOverlappingFeature(search_feature);
-
-        const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(
-          overlappingRecords
-        )).filter((record: UserRecord) => linkedActivitySubtypes.includes(record.activity_subtype));
-
-        yield put(
-          Activity.Suggestions.treatmentIdsSuccess(
-            treatmentRecords.map((record, i) => ({
-              label: record.short_id,
-              title: record.short_id,
-              value: record.activity_id,
-              'x-code_sort_order': i + 1
-            }))
-          )
-        );
+        yield getLinkedTreatmentsFromCachedRecords(payload);
       }
     }
   } catch (e) {
     console.error(e);
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
+}
+
+export function* getLinkedTreatmentsFromCachedRecords(req: TreatmentIdsRequestOnline) {
+  const service = yield RecordCacheServiceFactory.getPlatformInstance();
+  const overlappingRecords = yield service.getRecordIdsOverlappingFeature(req.search_feature);
+  const treatmentRecords: UserRecord[] = (yield service.getPaginatedCachedActivityRecords(overlappingRecords)).filter(
+    (record: UserRecord) => req.activity_subtype.includes(record.activity_subtype)
+  );
+
+  yield put(
+    Activity.Suggestions.treatmentIdsSuccess(
+      treatmentRecords.map((record, i) => ({
+        label: record.short_id,
+        title: record.short_id,
+        value: record.activity_id,
+        'x-code_sort_order': i + 1
+      }))
+    )
+  );
 }
 
 export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
@@ -561,9 +567,6 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     const activityState = yield select(selectActivity);
     const type = activityState?.activity?.activity_subtype;
 
-    yield put(Activity.Suggestions.persons());
-    yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
-
     // needs to be latlng expression
     const isGeo = !!action.payload?.geometry?.[0]?.geometry?.coordinates;
 
@@ -574,15 +577,22 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     if (centerPoint && isGeo) {
       yield put(UserSettings.Map.setCenter(centerPoint.geometry.coordinates));
     }
-    if (isLinkedTreatmentSubtype(type)) {
-      yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));
-    }
+
     const authState = yield select(selectAuth);
     const userName = authState.username;
     const created_by = action.payload.created_by;
     const createdByUser = userName === created_by;
 
     const isViewing = !createdByUser;
+
+    // Don't fetch suggestions if the record doesn't belong to the user
+    if (createdByUser) {
+      yield put(Activity.Suggestions.persons());
+      yield put(Activity.Suggestions.jurisdictions(activityState.activity.geometry));
+      if (isLinkedTreatmentSubtype(type)) {
+        yield put(Activity.Suggestions.treatmentIdsRequest(action.payload));
+      }
+    }
 
     yield put({
       type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,

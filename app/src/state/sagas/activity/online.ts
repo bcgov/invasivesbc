@@ -11,6 +11,8 @@ import Alerts from 'state/actions/alerts/Alerts';
 import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { AuthActions } from 'state/actions/auth/Auth';
+import { MOBILE } from 'state/build-time-config';
+import { getLinkedTreatmentsFromCachedRecords } from './dataAccess';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
@@ -139,7 +141,9 @@ export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(acti
       const networkReturn = yield InvasivesAPI_Call('POST', `/api/jurisdictions/`, {
         search_feature: { ...searchFeature, properties: {} }
       });
-      yield put(Activity.Suggestions.jurisdictionsSuccess(networkReturn.data.result ?? []));
+      if (networkReturn?.ok) {
+        yield put(Activity.Suggestions.jurisdictionsSuccess(networkReturn.data.result ?? []));
+      }
     }
   } catch (err) {
     console.error(err);
@@ -214,19 +218,21 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
     const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
       filterObjects: [filterObject]
     });
-    let treatments: SuggestedTreatmentId[] = [];
-    const result = networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result;
-    if (result && result.length > 0) {
-      treatments = result.map((treatment, i) => {
-        return {
+    if (networkReturn?.ok) {
+      let treatments: SuggestedTreatmentId[] = [];
+      const result = networkReturn?.data?.data?.result ? networkReturn?.data?.data?.result : networkReturn.data.result;
+      if (result && result.length > 0) {
+        treatments = result.map((treatment, i) => ({
           label: treatment.short_id, //shortActID,
           title: treatment.short_id, //shortActID,
           value: treatment.activity_id,
           'x-code_sort_order': i + 1
-        };
-      });
+        }));
+      }
+      yield put(Activity.Suggestions.treatmentIdsSuccess(treatments));
+    } else if (MOBILE) {
+      yield getLinkedTreatmentsFromCachedRecords(action.payload);
     }
-    yield put(Activity.Suggestions.treatmentIdsSuccess(treatments));
   } catch (e) {
     console.error(e);
     yield put(
