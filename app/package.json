@@ -56,7 +56,6 @@
     "localforage": "^1.10.0",
     "lodash.debounce": "^4.0.8",
     "lodash.throttle": "^4.1.1",
-    "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "maplibre-gl": "^5.1.0",
     "moment": "^2.30.1",
     "mui-file-dropzone": "^4.0.2",
