@@ -101,14 +101,14 @@ const DrawControls = () => {
 
     //enforce one at a time everywhere
     const feature = event.features[0];
-
+    feature.properties.check = 'no_error';
     try {
       drawInstance.current.deleteAll();
       drawInstance.current.add(feature);
     } catch (e) {
       console.error(e);
     }
-
+    console.log('Draw create', drawInstance.current.getAll());
     switch (currentMode) {
       case TargetMode.WHATS_HERE: {
         dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
@@ -191,22 +191,31 @@ const DrawControls = () => {
     //   }
     // }
 
-    // if (editedGeo?.id !== event?.features?.[0]?.id) {
-    //   console.log('Called--->>', drawInstance.current.get(editedGeo.id as string));
-    //   // map.setFeatureState({ source: 'mapbox-gl-draw', id: editedGeo.id }, { error: 'true' });
-    //   const feature = drawInstance.current.get(editedGeo.id as string);
-    //   if (feature) {
-    //     // Force redraw
-    //     drawInstance.current.delete(editedGeo.id as string);
+    if (editedGeo?.id !== event?.features?.[0]?.id) {
+      // console.log('Called--->>', drawInstance.current.get(editedGeo.id as string));
+      // // map.setFeatureState({ source: 'mapbox-gl-draw', id: editedGeo.id }, { error: 'true' });
+      // const feature = drawInstance.current.get(editedGeo.id as string);
+      // if (feature) {
+      //   // Force redraw
+      //   drawInstance.current.delete(editedGeo.id as string);
 
-    //     drawInstance.current.add(feature);
-    //     drawInstance.current.setFeatureProperty(editedGeo.id as string, 'error', true);
-    //     console.log('Called--->>2', drawInstance.current.get(editedGeo.id as string));
-    //   }
-    //   editedGeo.properties = { error: true };
-    //   console.log('Called--->>3', editedGeo);
-    //   dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
-    // }
+      //   drawInstance.current.add(feature);
+      //   drawInstance.current.setFeatureProperty(editedGeo.id as string, 'error', true);
+      //   console.log('Called--->>2', drawInstance.current.get(editedGeo.id as string));
+      // }
+      // editedGeo.properties = { error: true };
+      console.log('Called--->>3', editedGeo);
+      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
+    }
+    const feature = event.features[0];
+    console.log('In the end--->', feature);
+
+    try {
+      drawInstance.current.deleteAll();
+      drawInstance.current.add(feature);
+    } catch (e) {
+      console.error(e);
+    }
   }, []);
 
   useEffect(() => {
@@ -235,7 +244,6 @@ const DrawControls = () => {
   }, [mode]);
 
   useEffect(() => {
-    console.log('What is called 2?', map);
     if (!map) {
       return;
     }
@@ -247,6 +255,7 @@ const DrawControls = () => {
         combine_features: false,
         uncombine_features: false
       },
+      userProperties: true,
       modes: {
         ...MapboxDraw.modes,
         do_nothing: DoNothing,
@@ -275,24 +284,26 @@ const DrawControls = () => {
             'line-cap': 'round',
             'line-join': 'round'
           },
-          filter: ['all', ['==', 'active', 'false'], ['!=', 'error', true]],
+          filter: ['all', ['==', 'active', 'false']],
           paint: {
             'line-color': '#FCBA19',
             'line-width': 3
           }
         },
         {
+          //https://docs.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
+          //https://github.com/mapbox/mapbox-gl-draw/issues/497
           id: 'gl-error-line',
           type: 'line',
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
           },
-          filter: ['all', ['==', 'active', 'false'], ['==', 'error', true]],
+          filter: ['all', ['==', 'active', 'false']],
           paint: {
-            'line-color': '#FCBA19',
+            'line-color': ['match', ['get', 'check'], 'error', 'red', 'no_error', 'white', 'blue'],
             'line-dasharray': [4, 4],
-            'line-width': 3
+            'line-width': 8
           }
         },
         {
@@ -300,7 +311,7 @@ const DrawControls = () => {
           type: 'circle',
           paint: {
             'circle-radius': 3,
-            'circle-color': '#FCBA19',
+            'circle-color': ['match', ['get', 'check'], 'error', 'red', 'no_error', 'white', 'blue'],
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
           }
@@ -320,13 +331,22 @@ const DrawControls = () => {
     });
     drawModeDisplay.current = new DrawModeDisplay(mode);
 
-    map.on('draw.create', drawCreate);
+    map.on('draw.create', (evt) => {
+      console.log('Inside create', evt, drawInstance.current);
+      // const selectedFeature = evt.features[0];
+      // drawInstance.current?.setFeatureProperty(selectedFeature.id as string, 'check', 'error');
+      drawCreate(evt);
+    });
     map.on('draw.selectionchange', (evt) => {
-      drawShapeUpdate(evt, map);
       const selectedFeature = evt.features[0];
       if (selectedFeature) {
         handleDrawingError(selectedFeature);
       }
+
+      setTimeout(() => {
+        console.log('===>> Draw Shape Update Called', drawInstance?.current?.getAll());
+        drawShapeUpdate(evt, map);
+      }, 5000);
     });
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
@@ -356,8 +376,21 @@ const DrawControls = () => {
   const handleDrawingError = (feature) => {
     if (feature && drawInstance.current) {
       console.log('Called--->> before', drawInstance.current.get(feature.id as string));
-      feature.properties.error = true;
-      drawInstance.current.add(feature);
+
+      // drawInstance.current.deleteAll();
+      // feature.properties.error = true;
+      drawInstance.current.setFeatureProperty(feature.id as string, 'check', 'error');
+      drawInstance?.current?.changeMode('simple_select');
+      // drawInstance?.current?.changeMode('draw_line_string', {
+      //   featureId: feature.id,
+      //   from: feature.geometry.coordinates[-1]
+      // });
+      // drawInstance.current.setFeatureProperty(feature.id as string, 'error', true);
+
+      console.log(
+        'Called--->> after',
+        map?.getStyle().layers.map((layer) => layer.id)
+      );
       console.log('Called--->> after', drawInstance.current.get(feature.id as string));
     }
   };
