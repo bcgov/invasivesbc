@@ -5,7 +5,8 @@ import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_UPDATE_GEO_SUCCESS
+  ACTIVITY_UPDATE_GEO_SUCCESS,
+  ACTIVITY_UPDATE_GEO_FAILURE
 } from '../actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';

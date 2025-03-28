@@ -26,6 +26,7 @@ import {
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
+  ACTIVITY_UPDATE_GEO_FAILURE,
   CLOSE_NEW_RECORD_MENU,
   MAIN_MAP_MOVE
 } from 'state/actions';
@@ -167,6 +168,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       const hasHoles = sanitizedGeo.geometry.coordinates.length > 1; // check for intersections after LineStrings are converted to Polygons
+      console.log('HAS HOLEs', hasSelfIntersections, hasHoles);
 
       if (hasSelfIntersections || hasHoles) {
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
@@ -228,6 +230,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       reported_area,
       Well_Information: wellInformationArr
     };
+    console.log('---->', isWIPLinestring, payload);
     yield put({
       type: ACTIVITY_UPDATE_GEO_SUCCESS,
       payload

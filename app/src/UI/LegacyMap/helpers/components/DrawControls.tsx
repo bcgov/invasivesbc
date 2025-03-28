@@ -14,6 +14,7 @@ import { createRoot, Root } from 'react-dom/client';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
+import { current } from 'immer';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -101,6 +102,7 @@ const DrawControls = () => {
 
     //enforce one at a time everywhere
     const feature = event.features[0];
+
     try {
       drawInstance.current.deleteAll();
       drawInstance.current.add(feature);
@@ -173,13 +175,44 @@ const DrawControls = () => {
     }
 
     const editedGeo = drawInstance.current.getAll().features[0];
+    // drawInstance.current.setFeatureProperty(editedGeo?.id as string, 'error', true);
 
-    if (editedGeo?.id !== event?.features?.[0]?.id) {
-      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
-    }
+    // if (editedGeo.id) {
+    //   const feature = drawInstance.current.get(editedGeo.id as string);
+    //   if (feature) {
+    //     console.log('Edited Geo', editedGeo.id, event?.features?.[0]?.id);
+
+    //     // Force redraw
+    //     drawInstance.current.delete(editedGeo.id as string);
+
+    //     console.log('Called--->>', drawInstance.current.get(editedGeo.id as string), feature);
+
+    //     drawInstance.current.add(feature);
+    //     drawInstance.current.setFeatureProperty(editedGeo.id as string, 'error', true);
+    //   }
+    // }
+
+    // if (editedGeo?.id !== event?.features?.[0]?.id) {
+    //   console.log('Called--->>', drawInstance.current.get(editedGeo.id as string));
+    //   // map.setFeatureState({ source: 'mapbox-gl-draw', id: editedGeo.id }, { error: 'true' });
+    //   const feature = drawInstance.current.get(editedGeo.id as string);
+    //   if (feature) {
+    //     // Force redraw
+    //     drawInstance.current.delete(editedGeo.id as string);
+
+    //     drawInstance.current.add(feature);
+    //     drawInstance.current.setFeatureProperty(editedGeo.id as string, 'error', true);
+    //     console.log('Called--->>2', drawInstance.current.get(editedGeo.id as string));
+    //   }
+    //   editedGeo.properties = { error: true };
+    //   console.log('Called--->>3', editedGeo);
+    //   dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
+    // }
   }, []);
 
   useEffect(() => {
+    console.log('What is called 1?', mode);
+
     if (drawModeDisplay.current) {
       drawModeDisplay.current.setMode(mode);
     }
@@ -203,6 +236,7 @@ const DrawControls = () => {
   }, [mode]);
 
   useEffect(() => {
+    console.log('What is called 2?', map);
     if (!map) {
       return;
     }
@@ -243,9 +277,23 @@ const DrawControls = () => {
             'line-cap': 'round',
             'line-join': 'round'
           },
-          filter: ['all', ['==', 'active', 'false']],
+          filter: ['all', ['==', 'active', 'false'], ['!=', 'error', true]],
           paint: {
             'line-color': '#FCBA19',
+            'line-width': 3
+          }
+        },
+        {
+          id: 'gl-error-line',
+          type: 'line',
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          },
+          filter: ['all', ['==', 'active', 'false'], ['==', 'error', true]],
+          paint: {
+            'line-color': '#FCBA19',
+            'line-dasharray': [4, 4],
             'line-width': 3
           }
         },
@@ -264,7 +312,13 @@ const DrawControls = () => {
     drawModeDisplay.current = new DrawModeDisplay(mode);
 
     map.on('draw.create', drawCreate);
-    map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
+    map.on('draw.selectionchange', (evt) => {
+      drawShapeUpdate(evt, map);
+      const selectedFeature = evt.features[0];
+      if (selectedFeature) {
+        handleDrawingError(selectedFeature);
+      }
+    });
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
@@ -290,6 +344,14 @@ const DrawControls = () => {
     };
   }, [map]);
 
+  const handleDrawingError = (feature) => {
+    if (feature && drawInstance.current) {
+      console.log('Called--->> before', drawInstance.current.get(feature.id as string));
+      feature.properties.error = true;
+      drawInstance.current.add(feature);
+      console.log('Called--->> after', drawInstance.current.get(feature.id as string));
+    }
+  };
   return null;
 };
 
