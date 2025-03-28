@@ -1,5 +1,4 @@
 import MapboxDraw, { DrawCustomMode } from '@mapbox/mapbox-gl-draw';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 
 const DoNothing: Partial<DrawCustomMode> = {};
 DoNothing.onSetup = function (opts) {
@@ -20,8 +19,6 @@ DoNothing.toDisplayFeatures = function (state, geojson, display) {
 
   display(geojson);
 };
-
-const WhatsHereBoxMode: Partial<DrawCustomMode> = { ...DrawRectangle };
 
 //Example from docs - keeping as template:
 const LotsOfPointsMode: Partial<DrawCustomMode> = {};
@@ -61,4 +58,4 @@ LotsOfPointsMode.toDisplayFeatures = function (state, geojson, display) {
   display(geojson);
 };
 
-export { LotsOfPointsMode, DoNothing, WhatsHereBoxMode };
+export { LotsOfPointsMode, DoNothing };

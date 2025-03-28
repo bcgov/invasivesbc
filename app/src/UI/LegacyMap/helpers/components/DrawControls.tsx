@@ -1,19 +1,19 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import DrawRectangle from 'mapbox-gl-draw-rectangle-mode';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
-import { DoNothing, LotsOfPointsMode, WhatsHereBoxMode } from 'UI/LegacyMap/helpers/functional/custom-drawing-modes';
+import { DoNothing, LotsOfPointsMode } from 'UI/LegacyMap/helpers/functional/custom-drawing-modes';
 import maplibregl, { IControl } from 'maplibre-gl';
 import { createRoot, Root } from 'react-dom/client';
 
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
+import { WhatsHereBoxMode } from 'UI/LegacyMap/helpers/functional/whats-here-box-mode';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -216,7 +216,6 @@ const DrawControls = () => {
       },
       modes: {
         ...MapboxDraw.modes,
-        draw_rectangle: DrawRectangle,
         do_nothing: DoNothing,
         lots_of_points: LotsOfPointsMode,
         whats_here_box_mode: WhatsHereBoxMode
@@ -254,6 +253,17 @@ const DrawControls = () => {
           type: 'circle',
           paint: {
             'circle-radius': 3,
+            'circle-color': '#FCBA19',
+            'circle-stroke-width': 1,
+            'circle-stroke-color': '#fff'
+          }
+        },
+        {
+          id: 'whats-here-box-start-point-marker',
+          filter: ['all', ['==', 'mode', 'whats_here_box_mode'], ['==', 'meta:type', 'Point']],
+          type: 'circle',
+          paint: {
+            'circle-radius': 4,
             'circle-color': '#FCBA19',
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
