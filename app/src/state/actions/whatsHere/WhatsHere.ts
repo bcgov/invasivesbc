@@ -49,7 +49,7 @@ class WhatsHere {
     })
   );
 
-  static readonly toggle = createAction<boolean>(`${this.PREFIX}/toggle`);
+  static readonly toggle = createAction(`${this.PREFIX}/toggle`);
 }
 
 export default WhatsHere;

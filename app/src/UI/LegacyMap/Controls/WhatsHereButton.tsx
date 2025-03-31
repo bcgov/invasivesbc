@@ -10,8 +10,7 @@ import { useState } from 'react';
 
 export const WhatsHereButton = () => {
   const handleWhatsHere = () => {
-    if (whatsHere.toggle == false) {
-      dispatch(WhatsHere.toggle(true));
+    if (!whatsHere.toggle) {
       dispatch(
         Alerts.create({
           content: 'Outline a region on the map to view records in the area.',
@@ -20,16 +19,16 @@ export const WhatsHereButton = () => {
           subject: AlertSubjects.Map
         })
       );
-    } else {
+    } else if (history.location.pathname === '/WhatsHere') {
       history.goBack();
     }
+    dispatch(WhatsHere.toggle());
   };
 
   const dispatch = useDispatch();
   const history = useHistory();
   const whatsHere = useSelector((state) => state.Map.whatsHere);
   const [show, setShow] = useState(false);
-
   return (
     <div className={whatsHere.toggle ? 'map-btn-selected' : 'map-btn'}>
       <Tooltip
