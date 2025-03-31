@@ -41,13 +41,12 @@ import maplibregl from 'maplibre-gl';
 import { MEMORY_CONSTRAINED_DEVICE, MOBILE } from 'state/build-time-config';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
-import { Coordinates } from 'UI/LegacyMap/helpers/components/Coordinates';
 import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
-import AccuracyDisplay from './helpers/components/AccuracyDisplay/AccuracyDisplay';
+import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -365,8 +364,7 @@ export const Map = ({ children }) => {
         </div>
 
         <MapContext.Provider value={map}>
-          <Coordinates />
-          <AccuracyDisplay />
+          <DisplayComposite />
           <DrawControls />
           <ReactiveLayers mapReady={mapReady} />
           <PositionMarkers mapReady={mapReady} />
