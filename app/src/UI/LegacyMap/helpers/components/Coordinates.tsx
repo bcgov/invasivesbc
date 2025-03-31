@@ -12,9 +12,11 @@ const Coordinates = () => {
     }
 
     coordinatesContainer.current = document.createElement('div');
+    coordinatesContainer.current.style.display = 'none';
     coordinatesContainer.current.style.position = 'absolute';
     coordinatesContainer.current.style.top = '10px';
-    coordinatesContainer.current.style.left = '90px';
+    coordinatesContainer.current.style.left = '60px';
+    coordinatesContainer.current.style.width = '184px';
     coordinatesContainer.current.style.background = 'rgba(255, 255, 255, 0.8)';
     coordinatesContainer.current.style.padding = '5px';
     coordinatesContainer.current.style.borderRadius = '5px';
@@ -40,6 +42,7 @@ const Coordinates = () => {
       const zdef = `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
       return zdef;
     };
+    coordinatesContainer.current.style.display = !x || !y ? 'none' : 'block';
     if (!map || !x || !y) {
       return;
     }
@@ -52,7 +55,6 @@ const Coordinates = () => {
     ]);
 
     const utm: [number, number] = proj4('EPSG:4326', 'EPSG:AUTO', [lng, lat]);
-
     coordinatesContainer.current.innerHTML = `
     <div>${lat.toFixed(6)}, ${lng.toFixed(6)}</div>
     <div>Zone ${utmZone}, E: ${utm[0].toFixed(0)}, N: ${utm[1].toFixed(0)}</div>
