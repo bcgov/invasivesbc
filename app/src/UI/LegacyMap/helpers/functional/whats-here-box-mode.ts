@@ -92,7 +92,7 @@ const WhatsHereBoxMode: DrawCustomMode<WhatsHereBoxState, WhatsHereBoxOptions> =
       updateRectangle(state);
     }
   },
-  onKeyUp: function (state: WhatsHereBoxState, e: KeyboardEvent) {
+  onKeyUp: function (_state: WhatsHereBoxState, e: KeyboardEvent) {
     if (e.keyCode === 27) {
       this.changeMode('simple_select');
     }

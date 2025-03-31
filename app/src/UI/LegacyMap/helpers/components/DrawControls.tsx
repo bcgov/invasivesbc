@@ -6,7 +6,7 @@ import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE }
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
-import { DoNothing, LotsOfPointsMode } from 'UI/LegacyMap/helpers/functional/custom-drawing-modes';
+import { DoNothing } from 'UI/LegacyMap/helpers/functional/do-nothing-mode';
 import maplibregl, { IControl } from 'maplibre-gl';
 import { createRoot, Root } from 'react-dom/client';
 
@@ -217,7 +217,6 @@ const DrawControls = () => {
       modes: {
         ...MapboxDraw.modes,
         do_nothing: DoNothing,
-        lots_of_points: LotsOfPointsMode,
         whats_here_box_mode: WhatsHereBoxMode
       },
       styles: [
@@ -341,7 +340,7 @@ class DrawModeDisplay implements IControl {
     return this._container;
   }
 
-  onRemove(_map: maplibregl.Map) {
+  onRemove() {
     if (this._root) {
       this._root.unmount();
       this._root = undefined;
