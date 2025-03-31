@@ -47,6 +47,7 @@ import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentAct
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
+import AccuracyDisplay from './helpers/components/AccuracyDisplay/AccuracyDisplay';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -365,6 +366,7 @@ export const Map = ({ children }) => {
 
         <MapContext.Provider value={map}>
           <Coordinates />
+          <AccuracyDisplay />
           <DrawControls />
           <ReactiveLayers mapReady={mapReady} />
           <PositionMarkers mapReady={mapReady} />

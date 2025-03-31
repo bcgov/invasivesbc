@@ -1,0 +1,17 @@
+#accuracy-display {
+  position: absolute;
+  top: calc(10px + 55px);
+  left: 60px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 5px;
+  font-size: 12px;
+  border-radius: 5px;
+  z-index: 109;
+}
+
+@media only screen and (width >= 400px) {
+  #accuracy-display {
+    top: 10px;
+    left: calc(184px + 60px + 20px); /* Coordinates Width + Accuracy Width + Space-between */
+  }
+}
