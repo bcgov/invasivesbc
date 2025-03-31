@@ -1,0 +1,13 @@
+#map-display-composite {
+  position: absolute;
+  top: 10px;
+  left: 60px;
+  display: flex;
+  flex-direction: column;
+  z-index: 99;
+  width: 184px;
+  box-sizing: border-box;
+  & > *:not(:last-child) {
+    margin-bottom: 5px;
+  }
+}
