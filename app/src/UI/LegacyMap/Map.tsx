@@ -277,10 +277,15 @@ export const Map = ({ children }) => {
     } else {
       const unsyncedOfflineActivities = Object.fromEntries(
         Object.entries(serializedActivities).filter(
-          ([_, value]) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED
+          ([, value]) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED
         )
       );
-      refreshOfflineActivitiesLayer(map, mapToggle, labelToggle, unsyncedOfflineActivities);
+      refreshOfflineActivitiesLayer(
+        map,
+        mapToggle,
+        labelToggle,
+        unsyncedOfflineActivities as Record<string, OfflineActivityRecord>
+      );
     }
   }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, mapToggle]);
 
