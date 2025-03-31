@@ -133,7 +133,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: Payload
 export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
   try {
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
-    if (service.isCached(action.recordSetID)) {
+    if (yield service.isCached(action.recordSetID)) {
       const ids = yield service.getIdList(action.recordSetID);
       yield put(
         Activity.getIdsForRecordsetSuccess({
