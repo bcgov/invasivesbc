@@ -11,7 +11,7 @@ const AccuracyDisplay = () => {
     setShowAccuracy(accuracyToggle && positionTracking);
   }, [accuracyToggle, positionTracking]);
 
-  if (!showAccuracy || !userCoords?.accuracy == undefined) {
+  if (!showAccuracy || !userCoords?.accuracy) {
     return;
   }
   return <div id="accuracy-display">GPS Accuracy: {Math.floor(userCoords?.accuracy)}m</div>;
