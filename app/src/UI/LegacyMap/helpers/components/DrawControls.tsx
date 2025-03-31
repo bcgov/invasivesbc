@@ -101,7 +101,7 @@ const DrawControls = () => {
 
     //enforce one at a time everywhere
     const feature = event.features[0];
-    feature.properties.check = 'no_error';
+    // feature.properties.check = 'no_error';
     try {
       drawInstance.current.deleteAll();
       drawInstance.current.add(feature);
@@ -174,48 +174,19 @@ const DrawControls = () => {
     }
 
     const editedGeo = drawInstance.current.getAll().features[0];
-    // drawInstance.current.setFeatureProperty(editedGeo?.id as string, 'error', true);
-
-    // if (editedGeo.id) {
-    //   const feature = drawInstance.current.get(editedGeo.id as string);
-    //   if (feature) {
-    //     console.log('Edited Geo', editedGeo.id, event?.features?.[0]?.id);
-
-    //     // Force redraw
-    //     drawInstance.current.delete(editedGeo.id as string);
-
-    //     console.log('Called--->>', drawInstance.current.get(editedGeo.id as string), feature);
-
-    //     drawInstance.current.add(feature);
-    //     drawInstance.current.setFeatureProperty(editedGeo.id as string, 'error', true);
-    //   }
-    // }
 
     if (editedGeo?.id !== event?.features?.[0]?.id) {
-      // console.log('Called--->>', drawInstance.current.get(editedGeo.id as string));
-      // // map.setFeatureState({ source: 'mapbox-gl-draw', id: editedGeo.id }, { error: 'true' });
-      // const feature = drawInstance.current.get(editedGeo.id as string);
-      // if (feature) {
-      //   // Force redraw
-      //   drawInstance.current.delete(editedGeo.id as string);
-
-      //   drawInstance.current.add(feature);
-      //   drawInstance.current.setFeatureProperty(editedGeo.id as string, 'error', true);
-      //   console.log('Called--->>2', drawInstance.current.get(editedGeo.id as string));
-      // }
-      // editedGeo.properties = { error: true };
-      console.log('Called--->>3', editedGeo);
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
-    const feature = event.features[0];
-    console.log('In the end--->', feature);
+    // const feature = event.features[0];
+    // console.log('In the end--->', feature);
 
-    try {
-      drawInstance.current.deleteAll();
-      drawInstance.current.add(feature);
-    } catch (e) {
-      console.error(e);
-    }
+    // try {
+    //   drawInstance.current.deleteAll();
+    //   drawInstance.current.add(feature);
+    // } catch (e) {
+    //   console.error(e);
+    // }
   }, []);
 
   useEffect(() => {
@@ -284,7 +255,7 @@ const DrawControls = () => {
             'line-cap': 'round',
             'line-join': 'round'
           },
-          filter: ['all', ['==', 'active', 'false']],
+          filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true']],
           paint: {
             'line-color': '#FCBA19',
             'line-width': 3
@@ -301,9 +272,9 @@ const DrawControls = () => {
           },
           filter: ['all', ['==', 'active', 'false']],
           paint: {
-            'line-color': ['match', ['get', 'check'], 'error', 'red', 'no_error', 'white', 'blue'],
-            'line-dasharray': [4, 4],
-            'line-width': 8
+            'line-color': ['match', ['get', 'user_error'], 'true', 'red', 'false', '#FCBA19', '#FCBA19'],
+            'line-dasharray': [1, 2],
+            'line-width': 3
           }
         },
         {
@@ -311,7 +282,7 @@ const DrawControls = () => {
           type: 'circle',
           paint: {
             'circle-radius': 3,
-            'circle-color': ['match', ['get', 'check'], 'error', 'red', 'no_error', 'white', 'blue'],
+            'circle-color': ['match', ['get', 'user_error'], 'true', 'red', 'false', '#FCBA19', '#FCBA19'],
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
           }
@@ -333,20 +304,18 @@ const DrawControls = () => {
 
     map.on('draw.create', (evt) => {
       console.log('Inside create', evt, drawInstance.current);
-      // const selectedFeature = evt.features[0];
-      // drawInstance.current?.setFeatureProperty(selectedFeature.id as string, 'check', 'error');
-      drawCreate(evt);
+      return drawCreate(evt);
     });
     map.on('draw.selectionchange', (evt) => {
       const selectedFeature = evt.features[0];
       if (selectedFeature) {
         handleDrawingError(selectedFeature);
       }
-
-      setTimeout(() => {
-        console.log('===>> Draw Shape Update Called', drawInstance?.current?.getAll());
-        drawShapeUpdate(evt, map);
-      }, 5000);
+      return drawShapeUpdate(evt, map);
+      // setTimeout(() => {
+      //   console.log('===>> Draw Shape Update Called', drawInstance?.current?.getAll());
+      //   drawShapeUpdate(evt, map);
+      // }, 2000);
     });
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
@@ -377,20 +346,8 @@ const DrawControls = () => {
     if (feature && drawInstance.current) {
       console.log('Called--->> before', drawInstance.current.get(feature.id as string));
 
-      // drawInstance.current.deleteAll();
-      // feature.properties.error = true;
-      drawInstance.current.setFeatureProperty(feature.id as string, 'check', 'error');
-      drawInstance?.current?.changeMode('simple_select');
-      // drawInstance?.current?.changeMode('draw_line_string', {
-      //   featureId: feature.id,
-      //   from: feature.geometry.coordinates[-1]
-      // });
-      // drawInstance.current.setFeatureProperty(feature.id as string, 'error', true);
+      drawInstance.current.setFeatureProperty('' + feature.id, 'error', 'true');
 
-      console.log(
-        'Called--->> after',
-        map?.getStyle().layers.map((layer) => layer.id)
-      );
       console.log('Called--->> after', drawInstance.current.get(feature.id as string));
     }
   };
