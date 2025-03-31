@@ -321,13 +321,15 @@ class DrawModeDisplay implements IControl {
 
   _rerender() {
     if (this._root) {
-      this._root.render(<>Current drawing mode: {this._text}</>);
+      this._root.render(<>Drawing mode: {this._text}</>);
     }
   }
 
   onAdd(map: maplibregl.Map): HTMLElement {
     this._map = map;
     const control = document.createElement('div');
+    control.style.background = 'rgba(255, 255, 255, 0.8)';
+    control.style.padding = '0 5px';
     control.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 
     this._root = createRoot(control);
