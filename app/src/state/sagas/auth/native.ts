@@ -31,10 +31,15 @@ function* handleSigninRequest() {
 }
 
 function* handleSignoutRequest() {
-  const authResult = yield AuthBridge.logout({});
-  if (authResult?.error) {
-    yield put(AuthActions.requestError());
-    return;
+  try {
+    const authResult = yield AuthBridge.logout({});
+    if (authResult?.error) {
+      yield put(AuthActions.requestError());
+      return;
+    }
+  } catch (error) {
+    // it's possible for this to fail in some cases, which may mean that tokens weren't revoked, but we should still be logged out
+    console.error(error);
   }
 
   yield put(AuthActions.signoutComplete());
