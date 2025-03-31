@@ -27,7 +27,8 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
   containsIntersections: {
     severity: AlertSeverity.Error,
     subject: AlertSubjects.Map,
-    content: 'Activity geometry intersects itself'
+    content: 'Activity geometry intersects itself',
+    autoClose: 5
   },
   cannotValidateRegion: {
     severity: AlertSeverity.Error,

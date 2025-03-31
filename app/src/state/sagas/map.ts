@@ -768,8 +768,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   if (drawingCustomLayer) {
     yield put({ type: CUSTOM_LAYER_DRAWN, payload: action.payload });
   } else if (url && /Activity/.test(url) && !whatsHere.toggle) {
-    // if (action.payload.geometry.type === GeoShapes.LineString) return; // prevent updating LineString on outside click
-    // console.log('Does it go here?', action.payload);
+    if (action.payload.geometry.type === GeoShapes.LineString) return; // prevent updating LineString on outside click
 
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload] } });
   } else if (tileCacheMode) {

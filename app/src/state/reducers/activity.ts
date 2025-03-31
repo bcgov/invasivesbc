@@ -192,6 +192,10 @@ function createActivityReducer() {
             draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
             break;
           }
+          case ACTIVITY_UPDATE_GEO_FAILURE: {
+            draftState.activity.geometry = action.payload.geometry;
+            break;
+          }
           case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {
             draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.activity.form_data));
             draftState.activity.species_positive = action.payload.activity.species_positive;

@@ -169,12 +169,16 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
       const hasHoles = sanitizedGeo.geometry.coordinates.length > 1; // check for intersections after LineStrings are converted to Polygons
-      console.log('HAS HOLEs', hasSelfIntersections, hasHoles);
 
       if (hasSelfIntersections || hasHoles) {
+        yield put({
+          type: ACTIVITY_UPDATE_GEO_FAILURE,
+          payload: { geometry: { ...sanitizedGeo, properties: { error: 'true' } } }
+        });
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
         return;
       }
+      sanitizedGeo.properties = { error: 'false' };
     }
 
     let wellInformationArr: Record<string, any>[] = [];

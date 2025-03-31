@@ -38,6 +38,8 @@ const DrawControls = () => {
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
   const appModeURL = useSelector((state) => state.AppMode.url);
+  const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry ?? {});
+  const prevGeoErrorRef = useRef(activityGeo?.properties?.error);
 
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
@@ -53,6 +55,20 @@ const DrawControls = () => {
   useEffect(() => {
     modeRef.current = mode;
   }, [mode]);
+
+  // update the drawn LineString or Polygon to a red dotted line if an error occurs
+  useEffect(() => {
+    const feature = drawInstance?.current?.getAll().features[0];
+    if (feature) {
+      feature.properties = { error: activityGeo?.properties?.error ?? 'false' };
+      try {
+        drawInstance?.current?.deleteAll();
+        drawInstance?.current?.add(feature);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [activityGeo?.properties?.error, activityGeo?.geometry]);
 
   /**
    * @desc Override the delete button to clear all shapes from drawn tools and to update the Form activity with null shape.
@@ -101,14 +117,13 @@ const DrawControls = () => {
 
     //enforce one at a time everywhere
     const feature = event.features[0];
-    // feature.properties.check = 'no_error';
     try {
       drawInstance.current.deleteAll();
       drawInstance.current.add(feature);
     } catch (e) {
       console.error(e);
     }
-    console.log('Draw create', drawInstance.current.getAll());
+
     switch (currentMode) {
       case TargetMode.WHATS_HERE: {
         dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
@@ -178,20 +193,9 @@ const DrawControls = () => {
     if (editedGeo?.id !== event?.features?.[0]?.id) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
-    // const feature = event.features[0];
-    // console.log('In the end--->', feature);
-
-    // try {
-    //   drawInstance.current.deleteAll();
-    //   drawInstance.current.add(feature);
-    // } catch (e) {
-    //   console.error(e);
-    // }
   }, []);
 
   useEffect(() => {
-    console.log('What is called 1?', mode);
-
     if (drawModeDisplay.current) {
       drawModeDisplay.current.setMode(mode);
     }
@@ -262,8 +266,6 @@ const DrawControls = () => {
           }
         },
         {
-          //https://docs.mapbox.com/mapbox-gl-js/example/data-driven-circle-colors/
-          //https://github.com/mapbox/mapbox-gl-draw/issues/497
           id: 'gl-error-line',
           type: 'line',
           layout: {
@@ -302,21 +304,8 @@ const DrawControls = () => {
     });
     drawModeDisplay.current = new DrawModeDisplay(mode);
 
-    map.on('draw.create', (evt) => {
-      console.log('Inside create', evt, drawInstance.current);
-      return drawCreate(evt);
-    });
-    map.on('draw.selectionchange', (evt) => {
-      const selectedFeature = evt.features[0];
-      if (selectedFeature) {
-        handleDrawingError(selectedFeature);
-      }
-      return drawShapeUpdate(evt, map);
-      // setTimeout(() => {
-      //   console.log('===>> Draw Shape Update Called', drawInstance?.current?.getAll());
-      //   drawShapeUpdate(evt, map);
-      // }, 2000);
-    });
+    map.on('draw.create', drawCreate);
+    map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
@@ -342,15 +331,6 @@ const DrawControls = () => {
     };
   }, [map]);
 
-  const handleDrawingError = (feature) => {
-    if (feature && drawInstance.current) {
-      console.log('Called--->> before', drawInstance.current.get(feature.id as string));
-
-      drawInstance.current.setFeatureProperty('' + feature.id, 'error', 'true');
-
-      console.log('Called--->> after', drawInstance.current.get(feature.id as string));
-    }
-  };
   return null;
 };
 
