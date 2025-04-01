@@ -330,7 +330,7 @@ export const Map = ({ children }) => {
 
     addClientBoundariesIfNotExists(clientBoundaries, map);
     refreshClientBoundariesOnToggle(clientBoundaries, map);
-  }, [clientBoundaries, map, mapReady]);
+  }, [clientBoundaries, map, mapReady, loggedInOrWorkingOffline]);
 
   // Jump Nav
   useEffect(() => {
