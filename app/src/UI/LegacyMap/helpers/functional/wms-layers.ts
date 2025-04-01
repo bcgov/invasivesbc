@@ -52,7 +52,7 @@ export const refreshWMSOnToggle = (simplePickerLayers2, map) => {
   });
 };
 
-export const hideWMSIfUnauthorized = (simplePickerLayers2, map) => {
+export const removeWMSLayers = (simplePickerLayers2, map) => {
   simplePickerLayers2.map((layer) => {
     if (map.getLayer(layer.url)) {
       map.removeLayer(layer.url);
