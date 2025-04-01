@@ -22,8 +22,8 @@ import {
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
 import {
   addWMSLayersIfNotExist,
-  hideWMSIfUnauthorized,
-  refreshWMSOnToggle
+  refreshWMSOnToggle,
+  removeWMSLayers
 } from 'UI/LegacyMap/helpers/functional/wms-layers';
 import {
   addServerBoundariesIfNotExists,
@@ -31,7 +31,8 @@ import {
 } from 'UI/LegacyMap/helpers/functional/server-boundaries';
 import {
   addClientBoundariesIfNotExists,
-  refreshClientBoundariesOnToggle
+  refreshClientBoundariesOnToggle,
+  removeClientBoundaries
 } from 'UI/LegacyMap/helpers/functional/client-boundaries';
 import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
@@ -272,7 +273,7 @@ export const Map = ({ children }) => {
   useEffect(() => {
     if (!map || !mapReady || !MOBILE) return;
 
-    if (!mapToggle) {
+    if (!mapToggle || !loggedInOrWorkingOffline) {
       removeOfflineActivitiesLayer(map);
     } else {
       const unsyncedOfflineActivities = Object.fromEntries(
@@ -301,8 +302,8 @@ export const Map = ({ children }) => {
     if (!mapReady) return;
     if (!map) return;
     const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
-    if (!authenticated || !rolesInitialized) {
-      hideWMSIfUnauthorized(layers, map);
+    if (!loggedInOrWorkingOffline) {
+      removeWMSLayers(layers, map);
       return;
     }
 
@@ -318,11 +319,18 @@ export const Map = ({ children }) => {
     }
   }, [serverBoundaries, authenticated, map, mapReady]);
 
+  // Custom Layers:
   useEffect(() => {
-    if (!mapReady) return;
+    if (!mapReady || !map) return;
+
+    if (!loggedInOrWorkingOffline) {
+      removeClientBoundaries(clientBoundaries, map);
+      return;
+    }
+
     addClientBoundariesIfNotExists(clientBoundaries, map);
     refreshClientBoundariesOnToggle(clientBoundaries, map);
-  }, [clientBoundaries, map, mapReady]);
+  }, [clientBoundaries, map, mapReady, loggedInOrWorkingOffline]);
 
   // Jump Nav
   useEffect(() => {

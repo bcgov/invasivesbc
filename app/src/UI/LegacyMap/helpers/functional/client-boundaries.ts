@@ -48,3 +48,13 @@ export const refreshClientBoundariesOnToggle = (clientBoundaries, map) => {
     });
   }
 };
+
+export const removeClientBoundaries = (clientBoundaries, map) => {
+  clientBoundaries.map((layer) => {
+    const layerID = 'clientBoundaries' + layer.id;
+    if (map.getSource(layerID) && map.getLayer(layerID)) {
+      map.removeLayer(layerID);
+      map.removeSource(layerID);
+    }
+  });
+};
