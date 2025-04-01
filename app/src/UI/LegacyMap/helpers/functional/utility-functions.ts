@@ -24,12 +24,3 @@ export function safelySetPaintProperty(map: maplibregl.Map, mapLayer: string, pr
     console.error(e);
   }
 }
-
-export const removeLayerIfUnauthorized = (curr_layer, map) => {
-  curr_layer.map((layer) => {
-    if (map.getLayer(layer.url)) {
-      map.removeLayer(layer.url);
-      map.removeSource(layer.url);
-    }
-  });
-};

@@ -20,14 +20,19 @@ import {
   removeOfflineActivitiesLayer,
   toggleOfflineActivityLabels
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
-import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/LegacyMap/helpers/functional/wms-layers';
+import {
+  addWMSLayersIfNotExist,
+  refreshWMSOnToggle,
+  removeWMSLayers
+} from 'UI/LegacyMap/helpers/functional/wms-layers';
 import {
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle
 } from 'UI/LegacyMap/helpers/functional/server-boundaries';
 import {
   addClientBoundariesIfNotExists,
-  refreshClientBoundariesOnToggle
+  refreshClientBoundariesOnToggle,
+  removeClientBoundaries
 } from 'UI/LegacyMap/helpers/functional/client-boundaries';
 import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
@@ -40,7 +45,7 @@ import { TileCacheService } from 'utils/tile-cache';
 import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
-import { toggleLayerOnBool, removeLayerIfUnauthorized } from 'UI/LegacyMap/helpers/functional/utility-functions';
+import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 /*
@@ -298,7 +303,7 @@ export const Map = ({ children }) => {
     if (!map) return;
     const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
     if (!loggedInOrWorkingOffline) {
-      removeLayerIfUnauthorized(layers, map);
+      removeWMSLayers(layers, map);
       return;
     }
 
@@ -316,10 +321,10 @@ export const Map = ({ children }) => {
 
   // Custom Layers:
   useEffect(() => {
-    if (!mapReady) return;
+    if (!mapReady || !map) return;
 
     if (!loggedInOrWorkingOffline) {
-      removeLayerIfUnauthorized(clientBoundaries, map);
+      removeClientBoundaries(clientBoundaries, map);
       return;
     }
 
