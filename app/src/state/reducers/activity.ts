@@ -151,11 +151,26 @@ function createActivityReducer() {
           suggestedTreatmentIDs: []
         });
       } else if (Activity.paste.match(action)) {
-        draftState.pasteCount = draftState.pasteCount + 1;
-        draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity_copy_buffer?.form_data));
+        const shallow = draftState?.activity_copy_buffer?.form_data;
+        if (!shallow) return;
+
+        // Copy keys 1 deep into the form_data object.
+        Object.keys(shallow).forEach((key) => {
+          if (typeof shallow[key] === 'object') {
+            Object.assign(draftState.activity.form_data[key], shallow[key]);
+          } else {
+            draftState.activity.form_data[key] = shallow[key];
+          }
+        });
+        draftState.activity.form_data = JSON.parse(JSON.stringify(draftState.activity.form_data)); // Sever memory reference
+        draftState.pasteCount++;
       } else if (Activity.copySuccess.match(action)) {
+        const copiedData = action.payload;
+        // Prevent Form status and Activity date from being copied over.
+        delete copiedData?.form_status;
+        delete copiedData?.activity_data?.activity_date_time;
         draftState.activity_copy_buffer = {
-          form_data: action.payload
+          form_data: copiedData
         };
       } else if (Activity.get.match(action)) {
         draftState.failCode = null;
