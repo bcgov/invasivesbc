@@ -80,6 +80,12 @@ const handleActiveDownloadsOnRehydration = createTransform(
   { whitelist: ['recordSets'] }
 );
 
+// Sets the working state to false on app reload
+const handleSyncTermination = createTransform(
+  (inboundState) => inboundState,
+  () => false,
+  { whitelist: ['working'] }
+);
 function createRootReducer(config: AppConfig) {
   return combineReducers({
     AppMode: appMode,
@@ -170,7 +176,8 @@ function createRootReducer(config: AppConfig) {
           key: 'offline-activity',
           storage: durableStorage,
           migrate: preserveStateOnVersionUpgrade,
-          stateReconciler: autoMergeLevel1
+          stateReconciler: autoMergeLevel1,
+          transforms: [handleSyncTermination]
         },
         createOfflineActivityReducer(config)
       );
