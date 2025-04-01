@@ -20,11 +20,7 @@ import {
   removeOfflineActivitiesLayer,
   toggleOfflineActivityLabels
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
-import {
-  addWMSLayersIfNotExist,
-  hideWMSIfUnauthorized,
-  refreshWMSOnToggle
-} from 'UI/LegacyMap/helpers/functional/wms-layers';
+import { addWMSLayersIfNotExist, refreshWMSOnToggle } from 'UI/LegacyMap/helpers/functional/wms-layers';
 import {
   addServerBoundariesIfNotExists,
   refreshServerBoundariesOnToggle
@@ -44,7 +40,7 @@ import { TileCacheService } from 'utils/tile-cache';
 import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
-import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
+import { toggleLayerOnBool, removeLayerIfUnauthorized } from 'UI/LegacyMap/helpers/functional/utility-functions';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 /*
@@ -272,7 +268,7 @@ export const Map = ({ children }) => {
   useEffect(() => {
     if (!map || !mapReady || !MOBILE) return;
 
-    if (!mapToggle) {
+    if (!mapToggle || !loggedInOrWorkingOffline) {
       removeOfflineActivitiesLayer(map);
     } else {
       const unsyncedOfflineActivities = Object.fromEntries(
@@ -301,8 +297,8 @@ export const Map = ({ children }) => {
     if (!mapReady) return;
     if (!map) return;
     const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
-    if (!authenticated || !rolesInitialized) {
-      hideWMSIfUnauthorized(layers, map);
+    if (!loggedInOrWorkingOffline) {
+      removeLayerIfUnauthorized(layers, map);
       return;
     }
 
@@ -318,8 +314,15 @@ export const Map = ({ children }) => {
     }
   }, [serverBoundaries, authenticated, map, mapReady]);
 
+  // Custom Layers:
   useEffect(() => {
     if (!mapReady) return;
+
+    if (!loggedInOrWorkingOffline) {
+      removeLayerIfUnauthorized(clientBoundaries, map);
+      return;
+    }
+
     addClientBoundariesIfNotExists(clientBoundaries, map);
     refreshClientBoundariesOnToggle(clientBoundaries, map);
   }, [clientBoundaries, map, mapReady]);
