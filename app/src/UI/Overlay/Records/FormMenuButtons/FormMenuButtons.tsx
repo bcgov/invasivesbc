@@ -15,7 +15,6 @@ const FormMenuButtons = () => {
   const accessRoles = useSelector((state) => state.Auth?.accessRoles);
   const activityCreatedBy = useSelector((state) => state.ActivityPage?.activity?.created_by);
   const activityErrors = useSelector((state) => state.ActivityPage?.activityErrors);
-  const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry ?? {});
   const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
 
   const { connected } = useSelector((state) => state.Network);
@@ -67,11 +66,7 @@ const FormMenuButtons = () => {
       <Button onClick={handleSaveDraft} disabled={saveDisabled || draftDisabled} variant="contained">
         SAVE TO DRAFT {connected || '(LOCAL OFFLINE)'}
       </Button>
-      <Button
-        onClick={handlePublish}
-        disabled={saveDisabled || activityErrors?.length > 0 || activityGeo?.properties?.error == 'true'}
-        variant="contained"
-      >
+      <Button onClick={handlePublish} disabled={saveDisabled || activityErrors?.length > 0} variant="contained">
         SAVE & PUBLISH TO SUBMITTED {connected || '(LOCAL OFFLINE)'}
       </Button>
       <Button onClick={handleCopy} variant="contained">

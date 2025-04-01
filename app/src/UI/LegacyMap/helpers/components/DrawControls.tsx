@@ -274,7 +274,7 @@ const DrawControls = () => {
           },
           filter: ['all', ['==', 'active', 'false']],
           paint: {
-            'line-color': ['match', ['get', 'user_error'], 'true', 'red', 'false', '#FCBA19', '#FCBA19'],
+            'line-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
             'line-dasharray': [1, 2],
             'line-width': 3
           }
@@ -284,7 +284,7 @@ const DrawControls = () => {
           type: 'circle',
           paint: {
             'circle-radius': 3,
-            'circle-color': ['match', ['get', 'user_error'], 'true', 'red', 'false', '#FCBA19', '#FCBA19'],
+            'circle-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
           }
