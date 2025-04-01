@@ -560,7 +560,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           });
         } else {
           Object.assign(draftState.whatsHere, {
-            toggle: !state.whatsHere.toggle,
             feature: null,
             iappRows: [],
             activityRows: [],
@@ -568,6 +567,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             page: 0
           });
         }
+        draftState.whatsHere.toggle = !draftState.whatsHere.toggle;
       } else if (WhatsHere.map_set_section.match(action)) {
         Object.assign(draftState.whatsHere, {
           section: action.payload,
