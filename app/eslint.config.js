@@ -27,6 +27,11 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
       {
         vars: 'all',
         args: 'after-used',
+        ignoreRestSiblings: true,
+        destructuredArrayIgnorePattern: '^_',
+        caughtErrors: 'all',
+        caughtErrorsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
         argsIgnorePattern: '^_' /* prefix a function argument with _ to indicate it is intentionally unused */
       }
     ],

@@ -62,16 +62,19 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
 
         guard let SSO_BASE_URL = Bundle.main.infoDictionary?["SSO_BASE_URL"] as? String else {
             call.reject("No SSO base URL configured")
+            self.authState = nil
             return
         }
 
         guard let SSO_CLIENT_ID = Bundle.main.infoDictionary?["SSO_CLIENT_ID"] as? String else {
             call.reject("No SSO client ID configured")
+            self.authState = nil
             return
         }
 
         guard let refreshToken = authState?.lastTokenResponse?.refreshToken else {
             call.reject("No refresh token available")
+            self.authState = nil
             return
         }
         
@@ -112,15 +115,18 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
     @objc func performLogout(_ call: CAPPluginCall) {
         guard let idToken = authState?.lastTokenResponse?.idToken else {
             call.reject("No refresh token available")
+            self.authState = nil
             return
         }
         guard let SSO_BASE_URL = Bundle.main.infoDictionary?["SSO_BASE_URL"] as? String else {
             call.reject("No SSO base URL configured")
+            self.authState = nil
             return
         }
 
         guard let SSO_CLIENT_ID = Bundle.main.infoDictionary?["SSO_CLIENT_ID"] as? String else {
             call.reject("No SSO client id configured")
+            self.authState = nil
             return
         }
 
@@ -128,6 +134,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         
         guard let refreshToken = authState?.lastTokenResponse?.refreshToken else {
             call.reject("No refresh token available")
+            self.authState = nil
             return
         }
         var request = URLRequest(url: URL(string: endsessionEndpoint)!)
@@ -148,12 +155,12 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("Authorization error: \(error.localizedDescription)")
-                    self.authState = nil
                     call.resolve([
                         "authorized": false,
                         "accessToken": nil,
                         "idToken": nil
-                     ])   
+                     ])
+                self.authState = nil
                 return
             }
 
@@ -167,6 +174,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                         "accessToken": nil,
                         "idToken": nil
                     ])
+                    self.authState = nil
                 } else {
                     print("Failed to logout")
                     self.authState = nil
@@ -179,6 +187,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                 }
             } else {
                 call.reject("No response received")
+                self.authState = nil
             }
         }
 

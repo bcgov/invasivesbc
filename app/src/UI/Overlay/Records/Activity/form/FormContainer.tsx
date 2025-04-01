@@ -23,6 +23,8 @@ import AgentSelectAutoComplete from 'rjsf/widgets/AgentSelectAutoComplete';
 import LinkedIdSelectAutoComplete from 'rjsf/widgets/LinkedIdSelectAutoComplete';
 import ErrorListTemplate from './ErrorListTemplate';
 import Activity from 'state/actions/activity/Activity';
+import { selectNetworkState } from 'state/reducers/network';
+import { selectOfflineActivity } from 'state/reducers/offlineActivity';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -54,13 +56,15 @@ const FormContainer = () => {
   const activitySchema = useSelector((state) => state.ActivityPage.schema);
   const activityUISchema = useSelector((state) => state.ActivityPage.uiSchema);
 
+  const { connected } = useSelector(selectNetworkState);
   const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
   const pasteCount = useSelector((state) => state.ActivityPage.pasteCount);
   const reported_area = useSelector((state) => state.ActivityPage.activity.form_data.activity_data?.reported_area);
+  const { serializedActivities } = useSelector(selectOfflineActivity);
   const username = useSelector((state) => state.Auth.username);
-
   const [isCreatedByUser, setIsCreatedByUser] = useState<boolean>(username === created_by);
-  const [isDisabled, setIsDisabled] = useState<boolean>(!isCreatedByUser);
+  const [isCachedRecord, setIsCachedRecord] = useState<boolean>(!serializedActivities?.[activity_ID] && !connected);
+  const [isDisabled, setIsDisabled] = useState<boolean>(!isCreatedByUser || isCachedRecord);
   const [userIsAdmin] = useState<boolean>(accessRoles?.some((role) => role.role_id === 18));
 
   const debouncedFormChange = useCallback(
@@ -85,9 +89,13 @@ const FormContainer = () => {
   }, [formDataState]);
 
   useEffect(() => {
+    setIsCachedRecord(!connected && !serializedActivities?.[activity_ID]);
+  }, [activity_ID, connected, serializedActivities]);
+
+  useEffect(() => {
     setIsCreatedByUser(username === created_by);
-    setIsDisabled(username !== created_by);
-  }, [username, created_by]);
+    setIsDisabled(username !== created_by || isCachedRecord);
+  }, [username, created_by, isCachedRecord]);
 
   const isActivityChemTreatment = (): boolean =>
     activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
@@ -100,7 +108,7 @@ const FormContainer = () => {
     <Box sx={{ px: '15%' }}>
       <ThemeProvider theme={theme}>
         <SelectAutoCompleteContextProvider>
-          {!isCreatedByUser && userIsAdmin && (
+          {userIsAdmin && !isCreatedByUser && !isCachedRecord && (
             <div className="editFormButtonCont">
               <Button variant="contained" color="warning" onClick={() => setIsDisabled((prev) => !prev)}>
                 {isDisabled ? 'Enable Editing' : 'Disable Editing'}

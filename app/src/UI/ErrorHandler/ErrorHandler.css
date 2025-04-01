@@ -1,6 +1,8 @@
-div.connectivityError {
-  font-size: 1.5rem;
-  margin: 4rem 2em;
+#connectivity-error-handler {
+  border-radius: 8pt;
+  margin: 3rem 2rem;
+  max-width: 900px;
+  box-sizing: border-box;
 }
 
 div.errorHandler {
