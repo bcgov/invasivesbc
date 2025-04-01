@@ -170,9 +170,11 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       const hasHoles = sanitizedGeo.geometry.coordinates.length > 1; // check for intersections after LineStrings are converted to Polygons
 
       if (hasSelfIntersections || hasHoles) {
+        yield put(Activity.updateGeoFailure({ geometry: { ...sanitizedGeo, properties: { error: 'true' } } }));
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
         return;
       }
+      sanitizedGeo.properties = { error: 'false' };
     }
 
     let wellInformationArr: Record<string, any>[] = [];
@@ -389,9 +391,10 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     console.error(e);
   }
 }
-const copyGeometryFromCache = async (id: string) => {};
+
 export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
+  if (activityState?.activity?.geometry?.properties?.error == 'true') return;
 
   if (MOBILE) {
     yield put({

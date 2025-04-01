@@ -62,6 +62,8 @@ class Activity {
   static readonly createReq = createAction<INewActivity>(`${this.PREFIX}/createReq`);
   static readonly createNetwork = createAction<Record<string, any>>(`${this.PREFIX}/createNetwork`);
 
+  static readonly updateGeoFailure = createAction<Record<string, any>>(`${this.PREFIX}/updateGeoFailure`);
+
   static readonly saveNetworkRequest = createAction<ISaveNetwork>(`${this.PREFIX}/saveNetworkRequest`);
   static readonly getNetworkRequest = createAction<string>(`${this.PREFIX}/getNetworkRequest`);
 
