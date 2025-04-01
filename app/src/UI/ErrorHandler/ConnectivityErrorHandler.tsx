@@ -1,15 +1,44 @@
-import React from 'react';
 import './ErrorHandler.css';
+import { useDispatch } from 'react-redux';
+import { AuthActions } from 'state/actions/auth/Auth';
+import { Button } from '@mui/material';
+import { useEffect, useState } from 'react';
 
 export const ConnectivityErrorHandler = () => {
+  const dispatch = useDispatch();
+  const handleRefresh = () => location.reload();
+  const handleOffline = () => {
+    dispatch(AuthActions.signoutRequest());
+  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeSinceCrash(Math.floor((new Date().getTime() - time.getTime()) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  });
+  const [time] = useState<Date>(new Date());
+  const [timeSinceCrash, setTimeSinceCrash] = useState<number>();
   return (
-    <div className={'connectivityError'}>
-      <h2>An temporary connectivity error has occurred</h2>
-
-      <p>
-        The application will attempt to recover. Please wait while connectivity is restored. If this message persists
-        for more than 1 minute, try refreshing your browser.
-      </p>
+    <div id="connectivity-error-handler" className="errorHandler">
+      <div>
+        <h1>Having Trouble Connecting?</h1>
+        <p>
+          It looks like there's an issue connecting to the authentication server. The app will try to fix it on its own.
+          Please be patient while it reconnects. If this message stays for more than a minute, try refreshing your
+          browser.
+        </p>
+        <p>
+          Elapsed time: <b>{timeSinceCrash?.toLocaleString()}</b> seconds
+        </p>
+        <div className="controls">
+          <Button variant="contained" color="primary" onClick={handleRefresh}>
+            Refresh
+          </Button>
+          <Button variant="contained" color="secondary" onClick={handleOffline} sx={{ margin: '0.5rem' }}>
+            Sign out
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
