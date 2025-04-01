@@ -39,6 +39,9 @@ const DrawControls = () => {
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
   const appModeURL = useSelector((state) => state.AppMode.url);
 
+  const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
+  const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry ?? EMPTY_OBJECT);
+
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
@@ -53,6 +56,20 @@ const DrawControls = () => {
   useEffect(() => {
     modeRef.current = mode;
   }, [mode]);
+
+  // update the drawn LineString or Polygon to a red dotted line if an error occurs
+  useEffect(() => {
+    const feature = drawInstance?.current?.getAll().features[0];
+    if (feature) {
+      feature.properties = { error: activityGeo?.properties?.error ?? 'false' };
+      try {
+        drawInstance?.current?.deleteAll();
+        drawInstance?.current?.add(feature);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }, [activityGeo?.properties?.error, activityGeo?.geometry]);
 
   /**
    * @desc Override the delete button to clear all shapes from drawn tools and to update the Form activity with null shape.
@@ -214,6 +231,7 @@ const DrawControls = () => {
         combine_features: false,
         uncombine_features: false
       },
+      userProperties: true,
       modes: {
         ...MapboxDraw.modes,
         do_nothing: DoNothing,
@@ -241,9 +259,23 @@ const DrawControls = () => {
             'line-cap': 'round',
             'line-join': 'round'
           },
-          filter: ['all', ['==', 'active', 'false']],
+          filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true']],
           paint: {
             'line-color': '#FCBA19',
+            'line-width': 3
+          }
+        },
+        {
+          id: 'gl-error-line',
+          type: 'line',
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          },
+          filter: ['all', ['==', 'active', 'false']],
+          paint: {
+            'line-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
+            'line-dasharray': [1, 2],
             'line-width': 3
           }
         },
@@ -252,7 +284,7 @@ const DrawControls = () => {
           type: 'circle',
           paint: {
             'circle-radius': 3,
-            'circle-color': '#FCBA19',
+            'circle-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
           }
