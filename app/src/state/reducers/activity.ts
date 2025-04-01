@@ -170,6 +170,14 @@ function createActivityReducer() {
         draftState.failCode = action.payload?.status ?? null;
       } else if (Activity.setErrors.match(action)) {
         draftState.activityErrors = getCustomErrorTransformer()(action.payload ?? []);
+      } else if (Activity.updateGeoFailure.match(action)) {
+        draftState.activity.geometry = action.payload.geometry;
+        draftState.activity.form_data.activity_data.latitude = null;
+        draftState.activity.form_data.activity_data.longitude = null;
+        draftState.activity.form_data.activity_data.utm_zone = null;
+        draftState.activity.form_data.activity_data.utm_easting = null;
+        draftState.activity.form_data.activity_data.utm_northing = null;
+        draftState.activity.form_data.activity_data.reported_area = null;
       } else {
         switch (action.type) {
           case ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS: {
@@ -190,10 +198,17 @@ function createActivityReducer() {
               ? action.payload.reported_area
               : null;
             draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
+
             break;
           }
           case ACTIVITY_UPDATE_GEO_FAILURE: {
             draftState.activity.geometry = action.payload.geometry;
+            draftState.activity.form_data.activity_data.latitude = null;
+            draftState.activity.form_data.activity_data.longitude = null;
+            draftState.activity.form_data.activity_data.utm_zone = null;
+            draftState.activity.form_data.activity_data.utm_easting = null;
+            draftState.activity.form_data.activity_data.utm_northing = null;
+            draftState.activity.form_data.activity_data.reported_area = null;
             break;
           }
           case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {

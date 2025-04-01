@@ -38,8 +38,9 @@ const DrawControls = () => {
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
   const appModeURL = useSelector((state) => state.AppMode.url);
-  const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry ?? {});
-  const prevGeoErrorRef = useRef(activityGeo?.properties?.error);
+
+  const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
+  const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry ?? EMPTY_OBJECT);
 
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();

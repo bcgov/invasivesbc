@@ -235,7 +235,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       reported_area,
       Well_Information: wellInformationArr
     };
-    console.log('---->', isWIPLinestring, payload);
     yield put({
       type: ACTIVITY_UPDATE_GEO_SUCCESS,
       payload
@@ -396,9 +395,10 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     console.error(e);
   }
 }
-const copyGeometryFromCache = async (id: string) => {};
+
 export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
+  if (activityState?.activity?.geometry?.properties?.error == 'true') return;
 
   if (MOBILE) {
     yield put({

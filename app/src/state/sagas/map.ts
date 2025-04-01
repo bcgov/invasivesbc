@@ -763,13 +763,11 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
 function* handle_MAP_ON_SHAPE_UPDATE(action) {
   const { url } = yield select((state) => state.AppMode);
   const { drawingCustomLayer, whatsHere, tileCacheMode } = yield select((state: RootState) => state.Map);
-  console.log('Custom layer draw?', drawingCustomLayer);
 
   if (drawingCustomLayer) {
     yield put({ type: CUSTOM_LAYER_DRAWN, payload: action.payload });
   } else if (url && /Activity/.test(url) && !whatsHere.toggle) {
     if (action.payload.geometry.type === GeoShapes.LineString) return; // prevent updating LineString on outside click
-
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload] } });
   } else if (tileCacheMode) {
     yield put(TileCache.setTileCacheShape({ geometry: action.payload.geometry }));
