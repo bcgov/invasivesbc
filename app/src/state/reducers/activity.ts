@@ -5,8 +5,7 @@ import {
   ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  ACTIVITY_UPDATE_GEO_FAILURE
+  ACTIVITY_UPDATE_GEO_SUCCESS
 } from '../actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
@@ -199,16 +198,6 @@ function createActivityReducer() {
               : null;
             draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
 
-            break;
-          }
-          case ACTIVITY_UPDATE_GEO_FAILURE: {
-            draftState.activity.geometry = action.payload.geometry;
-            draftState.activity.form_data.activity_data.latitude = null;
-            draftState.activity.form_data.activity_data.longitude = null;
-            draftState.activity.form_data.activity_data.utm_zone = null;
-            draftState.activity.form_data.activity_data.utm_easting = null;
-            draftState.activity.form_data.activity_data.utm_northing = null;
-            draftState.activity.form_data.activity_data.reported_area = null;
             break;
           }
           case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {

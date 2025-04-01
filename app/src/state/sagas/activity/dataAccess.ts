@@ -26,7 +26,6 @@ import {
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
-  ACTIVITY_UPDATE_GEO_FAILURE,
   CLOSE_NEW_RECORD_MENU,
   MAIN_MAP_MOVE
 } from 'state/actions';
@@ -171,10 +170,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       const hasHoles = sanitizedGeo.geometry.coordinates.length > 1; // check for intersections after LineStrings are converted to Polygons
 
       if (hasSelfIntersections || hasHoles) {
-        yield put({
-          type: ACTIVITY_UPDATE_GEO_FAILURE,
-          payload: { geometry: { ...sanitizedGeo, properties: { error: 'true' } } }
-        });
+        yield put(Activity.updateGeoFailure({ geometry: { ...sanitizedGeo, properties: { error: 'true' } } }));
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
         return;
       }
