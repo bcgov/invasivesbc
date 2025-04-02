@@ -85,10 +85,8 @@ const RECORD_CACHE_DB_MIGRATIONS_6 = [
     TABLE_DATA                             TEXT        NOT NULL,
     RECORD_DATA                            TEXT        NOT NULL,
     GEOJSON                                TEXT        NOT NULL,
-    CENTROID                               TEXT        NOT NULL,
     LATITUDE                               NUMBER      NOT NULL,
     LONGITUDE                              NUMBER      NOT NULL,
-
     SITE_ID                                TEXT,
     SITE_PAPER_FILE_ID                     TEXT,
     JURISDICTIONS_FLATTENED                TEXT,

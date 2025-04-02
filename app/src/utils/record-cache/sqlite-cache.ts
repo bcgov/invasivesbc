@@ -15,7 +15,10 @@ import {
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 import MIGRATIONS from './migrations';
-import { getUnnestedFieldsForActivity } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
+import {
+  getUnnestedFieldsForActivity,
+  getUnnestedFieldsForIAPP
+} from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -453,6 +456,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
   }
 
   private transformIapp(id: string, iappRecord: IappRecord, iappRow: IappTableRow): Array<any> {
+    const normalizedRows = getUnnestedFieldsForIAPP(iappRow);
     const geojson = iappRow.geojson;
     const map_symbol = geojson?.properties?.map_symbol;
     geojson.properties = {
@@ -462,17 +466,64 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const stringRecord = JSON.stringify(iappRecord);
     const stringRow = JSON.stringify(iappRow);
     const stringGeo = JSON.stringify(geojson);
-    return [id.toString(), stringRecord, stringRow, stringGeo];
+    return [
+      id.toString(), // ID
+      stringRow, // TABLE_DATA
+      stringRecord, // RECORD_DATA
+      stringGeo, // GEOJSON
+      geojson.geometry.coordinates[1], // LATITUDE
+      geojson.geometry.coordinates[0], // LONGITUDE
+      normalizedRows.site_id || null,
+      normalizedRows.site_paper_file_id || null,
+      normalizedRows.jurisdictions_flattened || null,
+      normalizedRows.min_survey || null,
+      normalizedRows.all_species_on_site || null,
+      normalizedRows.max_survey || null,
+      normalizedRows.agencies || null,
+      normalizedRows.biological_agent || null,
+      normalizedRows.has_biological_treatments || null,
+      normalizedRows.has_chemical_treatments || null,
+      normalizedRows.has_mechanical_treatments || null,
+      normalizedRows.has_biological_dispersals || null,
+      normalizedRows.monitored || null,
+      normalizedRows.regional_district || null,
+      normalizedRows.regional_invasive_species_organization || null,
+      normalizedRows.invasive_plant_management_area || null
+    ];
   }
 
   async saveIapp(data: Record<PropertyKey, { record: IappRecord; row: IappTableRow }>): Promise<void> {
+    const NUM_IAPP_COLUMNS = 22;
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const entry = ` ( ?, ?, ?, ? ) `;
+    const entry = ` ( ${Array(NUM_IAPP_COLUMNS).fill('?').join(',')} ) `;
     const values: Array<any> = [];
     Object.keys(data).forEach((id) => values.push(this.transformIapp(id, data[id].record, data[id].row)));
-    let query = 'INSERT INTO CACHED_IAPP_RECORDS(ID, RECORD_DATA, TABLE_DATA, GEOJSON) VALUES ';
+    let query = `INSERT INTO CACHED_IAPP_RECORDS(
+      ID,
+      TABLE_DATA,
+      RECORD_DATA,
+      GEOJSON,
+      LATITUDE,
+      LONGITUDE,
+      SITE_ID,
+      SITE_PAPER_FILE_ID,
+      JURISDICTIONS_FLATTENED,
+      MIN_SURVEY,
+      ALL_SPECIES_ON_SITE,
+      BIOLOGICAL_AGENT,
+      MAX_SURVEY,
+      AGENCIES,
+      HAS_BIOLOGICAL_TREATMENTS,
+      HAS_CHEMICAL_TREATMENTS,
+      HAS_MECHANICAL_TREATMENTS,
+      HAS_BIOLOGICAL_DISPERSALS,
+      MONITORED,
+      REGIONAL_DISTRICT,
+      REGIONAL_INVASIVE_SPECIES_ORGANIZATION,
+      INVASIVE_PLANT_MANAGEMENT_AREA
+    ) VALUES `;
     query += values.map(() => entry).join(', ');
     query += 'ON CONFLICT (ID) DO NOTHING';
     await this.cacheDB.run(query, values.flat(), false);
