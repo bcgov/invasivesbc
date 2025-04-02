@@ -47,19 +47,21 @@ const RECORD_CACHE_DB_MIGRATIONS_5 = [
     ADD COLUMN DATE_CREATED TEXT;`
 ];
 
+// Recreate Tables used by SQLite, Adding more normalization and enhancing the queries we can do on data
 const RECORD_CACHE_DB_MIGRATIONS_6 = [
   'DROP TABLE CACHED_RECORDS;',
   `CREATE TABLE CACHED_RECORDS(
-    LATITUDE                   NUMBER NOT NULL,
-    LONGITUDE                  NUMBER NOT NULL,
-    GEOJSON                    TEXT NOT NULL,
-    DATA                       TEXT NOT NULL,
-    DATE_CREATED               TEXT NOT NULL,
-
-    ACTIVITY_ID                VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
-    ACTIVITY_TYPE              TEXT NOT NULL,
-    SHORT_ID                   TEXT NOT NULL,
-    ACTIVITY_SUBTYPE           TEXT NOT NULL,
+    ID                         VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
+    LATITUDE                   NUMBER      NOT NULL,
+    LONGITUDE                  NUMBER      NOT NULL,
+    GEOJSON                    TEXT        NOT NULL,
+    CENTROID                   TEXT        NOT NULL,
+    DATA                       TEXT        NOT NULL,
+    DATE_CREATED               TEXT        NOT NULL,
+    ACTIVITY_ID                VARCHAR(64) NOT NULL,
+    ACTIVITY_TYPE              TEXT        NOT NULL,
+    SHORT_ID                   TEXT        NOT NULL,
+    ACTIVITY_SUBTYPE           TEXT        NOT NULL,
     ACTIVITY_DATE              TEXT,
     PROJECT_CODE               TEXT,
     JURISDICTION_DISPLAY       TEXT,
@@ -80,12 +82,14 @@ const RECORD_CACHE_DB_MIGRATIONS_6 = [
   `CREATE TABLE CACHED_IAPP_RECORDS
   (
     ID                                     VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
-    TABLE_DATA                             TEXT NOT NULL,
-    RECORD_DATA                            TEXT NOT NULL,
-    GEOJSON                                TEXT NOT NULL,
-    LATITUDE                               NUMBER NOT NULL,
-    LONGITUDE                              NUMBER NOT NULL,
+    TABLE_DATA                             TEXT        NOT NULL,
+    RECORD_DATA                            TEXT        NOT NULL,
+    GEOJSON                                TEXT        NOT NULL,
+    CENTROID                               TEXT        NOT NULL,
+    LATITUDE                               NUMBER      NOT NULL,
+    LONGITUDE                              NUMBER      NOT NULL,
 
+    SITE_ID                                TEXT,
     SITE_PAPER_FILE_ID                     TEXT,
     JURISDICTIONS_FLATTENED                TEXT,
     MIN_SURVEY                             TEXT,
@@ -101,7 +105,21 @@ const RECORD_CACHE_DB_MIGRATIONS_6 = [
     REGIONAL_DISTRICT                      TEXT,
     REGIONAL_INVASIVE_SPECIES_ORGANIZATION TEXT,
     INVASIVE_PLANT_MANAGEMENT_AREA         TEXT
-  );`
+  );`,
+  `DROP TABLE CACHE_METADATA;`,
+  `CREATE TABLE CACHE_METADATA
+   (
+     SET_ID          VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
+     CACHE_TIME      TEXT        NOT NULL,
+     STATUS          TEXT        NOT NULL,
+     SET_NAME        TEXT,
+     CACHED_IDS      TEXT,
+     RECORD_SET_TYPE TEXT,
+     CACHED_GEOJSON  TEXT,
+     CACHED_CENTROID TEXT,
+     BBOX            TEXT,
+     FILTER_OBJECTS  TEXT
+   );`
 ];
 
 // Hold Migrations as named variable so we can use length to update the Db version automagically
