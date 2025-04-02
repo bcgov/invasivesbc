@@ -38,16 +38,16 @@ export interface RecordCacheDownloadRequestSpec {
  * @property { UserRecordCacheStatus } status Cache Status.
  */
 export interface RepositoryMetadata {
-  setId: string;
-  setName?: string;
-  cacheTime: Date;
-  cachedIds: string[];
-  recordSetType: RecordSetType;
-  cachedGeoJson?: GeoJSONSourceSpecification;
-  cachedCentroid?: GeoJSONSourceSpecification;
+  set_id: string;
+  set_name?: string;
+  cache_time: Date;
+  cached_ids: string[];
+  record_set_type: RecordSetType;
+  cached_geojson?: GeoJSONSourceSpecification;
+  cached_centroid?: GeoJSONSourceSpecification;
   bbox?: RepositoryBoundingBoxSpec;
   status: UserRecordCacheStatus;
-  filterObjects: FilterObjects;
+  filter_objects: FilterObjects;
 }
 
 export interface RecordSetSourceMetadata {
@@ -151,13 +151,13 @@ abstract class RecordCacheService extends BaseCacheService<
     };
 
     await this.addOrUpdateRepository({
-      setId: spec.setId,
-      cacheTime: new Date(),
-      cachedIds: spec.idsToCache,
-      recordSetType: spec.recordSetType,
+      set_id: spec.setId,
+      cache_time: new Date(),
+      cached_ids: spec.idsToCache,
+      record_set_type: spec.recordSetType,
       status: UserRecordCacheStatus.DOWNLOADING,
       bbox: spec.bbox,
-      filterObjects: spec.filterObjects
+      filter_objects: spec.filterObjects
     });
 
     let downloadMode: CacheDownloadMode = CacheDownloadMode.DEFAULT;
@@ -175,16 +175,16 @@ abstract class RecordCacheService extends BaseCacheService<
 
     if (!downloadMode) {
       await this.addOrUpdateRepository({
-        setId: spec.setId,
-        cacheTime: new Date(),
-        setName: spec.setName,
-        cachedIds: spec.idsToCache,
-        recordSetType: spec.recordSetType,
+        set_id: spec.setId,
+        cache_time: new Date(),
+        set_name: spec.setName,
+        cached_ids: spec.idsToCache,
+        record_set_type: spec.recordSetType,
         status: UserRecordCacheStatus.CACHED,
-        cachedGeoJson: responseData.cachedGeoJson,
-        cachedCentroid: responseData.cachedCentroid,
+        cached_geojson: responseData.cachedGeoJson,
+        cached_centroid: responseData.cachedCentroid,
         bbox: spec.bbox,
-        filterObjects: spec.filterObjects
+        filter_objects: spec.filterObjects
       });
     } else if (downloadMode == CacheDownloadMode.ABORT) {
       this.deleteRepository(spec.setId);
@@ -426,11 +426,11 @@ abstract class RecordCacheService extends BaseCacheService<
     ]);
     const updatedRecords: string[] = []; // don't re-download records that crossover other recordsets
     for (const r of repositories) {
-      if (r.recordSetType === RecordSetType.Activity && r.status === UserRecordCacheStatus.CACHED) {
-        const idList = (await this.getListOfNewIds(r.filterObjects, newestRecordDate)).filter(
+      if (r.record_set_type === RecordSetType.Activity && r.status === UserRecordCacheStatus.CACHED) {
+        const idList = (await this.getListOfNewIds(r.filter_objects, newestRecordDate)).filter(
           (id) => !updatedRecords.includes(id)
         );
-        const newIds = idList.filter((id) => !r.cachedIds.includes(id)); // Filter out IDs not already in cache to add later
+        const newIds = idList.filter((id) => !r.cached_ids.includes(id)); // Filter out IDs not already in cache to add later
         for (let i = 0; i < idList.length; i += this.BATCH_AMOUNT) {
           const ids = idList.slice(i, i + this.BATCH_AMOUNT);
           const url = `${CONFIGURATION_API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
@@ -440,12 +440,12 @@ abstract class RecordCacheService extends BaseCacheService<
           const newRecords = (await rez.json()) ?? {};
           await this.saveActivity(newRecords);
         }
-        const updatedShapes = await this.createActivityRecordsetSourceMetadata([...r.cachedIds, ...newIds]);
+        const updatedShapes = await this.createActivityRecordsetSourceMetadata([...r.cached_ids, ...newIds]);
         this.addOrUpdateRepository({
           ...r,
           ...updatedShapes,
-          cachedIds: [...r.cachedIds, ...newIds],
-          cacheTime: currentTime
+          cached_ids: [...r.cached_ids, ...newIds],
+          cache_time: currentTime
         });
         updatedRecords.push(...newIds);
       }
