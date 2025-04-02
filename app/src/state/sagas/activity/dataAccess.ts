@@ -167,7 +167,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
 
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
-      const hasHoles = sanitizedGeo.geometry.coordinates.length > 1; // check for intersections after LineStrings are converted to Polygons
+      const hasHoles = sanitizedGeo.geometry.coordinates.length > 1 && sanitizedGeo.geometry.type === 'Polygon'; // check for intersections after LineStrings are converted to Polygons
 
       if (hasSelfIntersections || hasHoles) {
         yield put(Activity.updateGeoFailure({ geometry: { ...sanitizedGeo, properties: { error: 'true' } } }));
