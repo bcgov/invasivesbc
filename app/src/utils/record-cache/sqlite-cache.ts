@@ -15,6 +15,7 @@ import {
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 import MIGRATIONS from './migrations';
+import { getUnnestedFieldsForActivity } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -45,18 +46,22 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-
+    const columns: Array<string> = [];
+    const values: Array<string | number> = [];
+    Object.keys(spec).forEach((key) => {
+      columns.push(key);
+      values.push(spec[key]);
+    });
     try {
       await this.cacheDB.query(
         //language=SQLite`
-        `INSERT INTO CACHE_METADATA(SET_ID, STATUS, CACHE_TIME, DATA)
-         VALUES(?, ?, ?, ?)
+        `INSERT INTO CACHE_METADATA(${columns.join(', ')})
+         VALUES(${columns.map(() => '?').join(', ')})
          ON CONFLICT(SET_ID)
          DO UPDATE SET
           STATUS = excluded.STATUS,
-          CACHE_TIME = excluded.CACHE_TIME,
-          DATA = excluded.DATA`,
-        [spec.setId, spec.status, spec.cacheTime.toString(), JSON.stringify(spec)]
+          CACHE_TIME = excluded.CACHE_TIME`,
+        [...values]
       );
     } catch (error) {
       console.error(error);
@@ -98,7 +103,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw Error(CACHE_UNAVAILABLE);
     }
-    return (await this.getRepository(repositoryId)).cachedIds ?? [];
+    return (await this.getRepository(repositoryId)).cached_ids ?? [];
   }
 
   async deleteRepository(repositoryId: string): Promise<void> {
@@ -142,11 +147,17 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
     const repositories = await this.cacheDB.query(
       //language=SQLite
-      `SELECT DATA
+      `SELECT *
        FROM CACHE_METADATA`
     );
-    const response = repositories?.values?.map((entry) => JSON.parse(entry['DATA']) as RepositoryMetadata) ?? [];
-    return response;
+    const response = repositories?.values?.map((repo) => {
+      const parsedRepo = {};
+      Object.keys(repo).forEach((key) => {
+        parsedRepo[key.toLowerCase()] = JSON.parse(repo[key]);
+      });
+      return parsedRepo as RepositoryMetadata;
+    });
+    return response ?? [];
   }
 
   async setRepositoryStatus(repositoryId: string, status: UserRecordCacheStatus): Promise<void> {
@@ -310,39 +321,119 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return JSON.parse(result.values[0]['DATA']);
   }
   private transformActivity(id: string, data: UserRecord): Array<any> {
-    const stringified = JSON.stringify(data);
-    const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
+    const normalizedRows = getUnnestedFieldsForActivity(data);
+    const stringifiedData = JSON.stringify(data);
     const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
-    const map_symbol = (data as Record<PropertyKey, Feature[]>)?.map_symbol;
     const activityDate = (data as Record<PropertyKey, any>)?.date_created;
     geometry.forEach((_, i) => {
       geometry[i].properties = {
-        name: short_id + `${map_symbol ? '\n' + map_symbol : ''}`,
+        name: normalizedRows.short_id + `${data?.map_symbol ? '\n' + data.map_symbol : ''}`,
         description: id
       };
     });
+    const centroidObj = centroid(geometry[0] as Feature);
+    centroidObj.properties = { ...geometry[0].properties };
     const geojson = JSON.stringify(geometry) ?? null;
-    return [id, stringified, geojson, short_id, activityDate];
+    return [
+      id, // ID
+      centroidObj.geometry.coordinates[1], // LATITUDE
+      centroidObj.geometry.coordinates[0], // LONGITUDE
+      geojson, // GEOJSON
+      JSON.stringify(centroidObj), // CENTROID
+      stringifiedData, // DATA
+      activityDate, // DATE_CREATED
+      id, // ACTIVITY_ID
+      normalizedRows.activity_type || null,
+      normalizedRows.short_id || null,
+      normalizedRows.activity_subtype || null,
+      normalizedRows.activity_date || null,
+      normalizedRows.project_code || null,
+      normalizedRows.jurisdiction_display || null,
+      normalizedRows.invasive_plant || null,
+      normalizedRows.species_positive_full || null,
+      normalizedRows.species_negative_full || null,
+      normalizedRows.has_current_positive || null,
+      normalizedRows.current_positive_species || null,
+      normalizedRows.has_current_negative || null,
+      normalizedRows.current_negative_species || null,
+      normalizedRows.species_treated_full || null,
+      normalizedRows.species_biocontrol_full || null,
+      normalizedRows.created_by || null,
+      normalizedRows.updated_by || null,
+      normalizedRows.agency || null
+    ];
   }
 
   async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
+    const NUM_ACTIVITY_COLUMNS = 26;
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const entry = `( ?, ?, ?, ?, ? )`;
+    const entry = `( ${Array(NUM_ACTIVITY_COLUMNS).fill('?').join(',')} )`;
     const values: Array<any> = [];
     Object.keys(data).forEach((key) => values.push(this.transformActivity(key, data[key])));
-    let query = 'INSERT INTO CACHED_RECORDS(ID, DATA, GEOJSON, SHORT_ID, DATE_CREATED) VALUES ';
+    let query = `INSERT INTO CACHED_RECORDS(
+      ID,
+      LATITUDE,
+      LONGITUDE,
+      GEOJSON,
+      CENTROID,
+      DATA,
+      DATE_CREATED,
+      ACTIVITY_ID,
+      ACTIVITY_TYPE,
+      SHORT_ID,
+      ACTIVITY_SUBTYPE,
+      ACTIVITY_DATE,
+      PROJECT_CODE,
+      JURISDICTION_DISPLAY,
+      INVASIVE_PLANT,
+      SPECIES_POSITIVE_FULL,
+      SPECIES_NEGATIVE_FULL,
+      HAS_CURRENT_POSITIVE,
+      CURRENT_POSITIVE_SPECIES,
+      HAS_CURRENT_NEGATIVE,
+      CURRENT_NEGATIVE_SPECIES,
+      SPECIES_TREATED_FULL,
+      SPECIES_BIOCONTROL_FULL,
+      CREATED_BY,
+      UPDATED_BY,
+      AGENCY
+    ) VALUES `;
+
     query += values.map(() => entry).join(', ');
     query += `
       ON CONFLICT (ID)
       DO UPDATE SET
+      GEOJSON = excluded.GEOJSON,
+      CENTROID = excluded.CENTROID,
+      LATITUDE = excluded.LATITUDE,
+      LONGITUDE =  excluded.LONGITUDE,
+      GEOJSON =  excluded.GEOJSON,
       DATA = excluded.DATA,
       DATE_CREATED = excluded.DATE_CREATED,
-      GEOJSON = excluded.GEOJSON`;
-
+      ACTIVITY_TYPE = excluded.ACTIVITY_TYPE,
+      SHORT_ID = excluded.SHORT_ID,
+      ACTIVITY_SUBTYPE = excluded.ACTIVITY_SUBTYPE,
+      ACTIVITY_DATE = excluded.ACTIVITY_DATE,
+      PROJECT_CODE = excluded.PROJECT_CODE,
+      JURISDICTION_DISPLAY = excluded.JURISDICTION_DISPLAY,
+      INVASIVE_PLANT = excluded.INVASIVE_PLANT,
+      SPECIES_POSITIVE_FULL = excluded.SPECIES_POSITIVE_FULL,
+      SPECIES_NEGATIVE_FULL = excluded.SPECIES_NEGATIVE_FULL,
+      HAS_CURRENT_POSITIVE = excluded.HAS_CURRENT_POSITIVE,
+      CURRENT_POSITIVE_SPECIES = excluded.CURRENT_POSITIVE_SPECIES,
+      HAS_CURRENT_NEGATIVE = excluded.HAS_CURRENT_NEGATIVE,
+      CURRENT_NEGATIVE_SPECIES = excluded.CURRENT_NEGATIVE_SPECIES,
+      SPECIES_TREATED_FULL = excluded.SPECIES_TREATED_FULL,
+      SPECIES_BIOCONTROL_FULL = excluded.SPECIES_BIOCONTROL_FULL,
+      CREATED_BY = excluded.CREATED_BY,
+      UPDATED_BY = excluded.UPDATED_BY,
+      AGENCY = excluded.AGENCY
+    `;
     await this.cacheDB.run(query, values.flat(), false);
   }
+
   protected async dateOfMostRecentRecord() {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
