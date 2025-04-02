@@ -77,13 +77,17 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
     const repoData = await this.cacheDB.query(
       //language=SQLite
-      `SELECT DATA
+      `SELECT *
        FROM CACHE_METADATA
        WHERE SET_ID = ?
        LIMIT 1`,
       [repositoryId]
     );
-    return JSON.parse(repoData?.values?.[0]['DATA']) ?? {};
+    const resp = {};
+    Object.entries(repoData.values?.[0] ?? {}).forEach(([key, value]) => {
+      resp[key.toLowerCase()] = value;
+    });
+    return resp as RepositoryMetadata;
   }
 
   async isCached(repositoryId: string): Promise<boolean> {
