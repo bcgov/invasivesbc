@@ -53,8 +53,18 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const values: Array<string | number> = [];
     Object.keys(spec).forEach((key) => {
       columns.push(key);
-      values.push(spec[key]);
+      if (typeof spec[key] === 'string' || !spec[key]) {
+        values.push(spec[key] ?? null);
+      } else {
+        values.push(JSON.stringify(spec[key]));
+      }
     });
+
+    const updates = columns
+      .filter((column) => !RegExp(/SET_ID/i).test(column))
+      .map((key) => `${key} = excluded.${key}`)
+      .join(', ');
+
     try {
       await this.cacheDB.query(
         //language=SQLite`
@@ -62,8 +72,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
          VALUES(${columns.map(() => '?').join(', ')})
          ON CONFLICT(SET_ID)
          DO UPDATE SET
-          STATUS = excluded.STATUS,
-          CACHE_TIME = excluded.CACHE_TIME`,
+        ${updates}`,
         [...values]
       );
     } catch (error) {
@@ -119,27 +128,33 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
     const rawRepositoryMetadata = await this.cacheDB.query(
       //language=SQLite
-      `SELECT DATA
-       FROM CACHE_METADATA`
+      `SELECT SET_ID, CACHED_IDS, RECORD_SET_TYPE
+       FROM CACHE_METADATA
+       WHERE CACHED_IDS NOT NULL`
     );
-    const repositoryMetadata: RepositoryMetadata[] =
-      rawRepositoryMetadata?.values?.map((set) => JSON.parse(set['DATA'])) ?? [];
-    const targetIndex = repositoryMetadata.findIndex((set) => set.setId === repositoryId);
+    const repositoryMetadata: Array<Partial<RepositoryMetadata>> = (rawRepositoryMetadata?.values ?? []).map(
+      (repo) => ({
+        set_id: repo['SET_ID'],
+        cached_ids: JSON.parse(repo['CACHED_IDS']),
+        record_set_type: repo['RECORD_SET_TYPE']
+      })
+    );
 
+    const targetIndex = repositoryMetadata.findIndex((set) => set.set_id == repositoryId);
     if (targetIndex === -1) return;
 
-    const { cachedIds, recordSetType } = repositoryMetadata[targetIndex];
+    const { cached_ids, record_set_type } = repositoryMetadata[targetIndex];
 
     const ids: Record<PropertyKey, number> = {};
     repositoryMetadata
-      .flatMap((set) => set.cachedIds)
+      .flatMap((set) => set.cached_ids!)
       .forEach((id) => {
         ids[id] ??= 0;
         ids[id]++;
       });
-    const recordsToErase = cachedIds.filter((id) => ids[id] <= 1);
+    const recordsToErase = cached_ids!.filter((id) => ids[id] <= 1);
 
-    await this.deleteCachedRecordsFromIds(recordsToErase, recordSetType);
+    await this.deleteCachedRecordsFromIds(recordsToErase, record_set_type!);
     await this.cacheDB.query(
       //language=SQLite
       `DELETE FROM CACHE_METADATA
@@ -177,7 +192,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
     this.addOrUpdateRepository({
       ...currData,
-      setId: repositoryId,
+      set_id: repositoryId,
       status: status
     });
   }
