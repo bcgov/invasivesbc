@@ -12,15 +12,20 @@ let keycloakInstance: Keycloak | null = null;
 const MIN_TOKEN_FRESHNESS = 20; //want our token to be good for at least this long at all times
 const TOKEN_REFRESH_INTERVAL = 5 * 1000;
 
-function* handleSigninRequest() {
+function* handleSigninRequest(action) {
   const config: AppConfig = yield select(selectConfiguration);
   if (!keycloakInstance) {
     return;
   }
 
+  if (!AuthActions.signinRequest.match(action)) {
+    return;
+  }
+
   try {
     yield call(keycloakInstance.login, {
-      redirectUri: config.REDIRECT_URI
+      redirectUri: config.REDIRECT_URI,
+      ...action.payload
     });
 
     yield put(AuthActions.requestComplete({ idToken: keycloakInstance.idToken }));

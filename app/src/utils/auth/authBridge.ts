@@ -1,13 +1,18 @@
 import { registerPlugin } from '@capacitor/core';
 
 interface AuthBridgePlugin {
-  authStart(options: {}): Promise<{ error?: string; idToken?: string; accessToken?: string; authorized?: boolean }>;
+  authStart(options: { idpHint?: string }): Promise<{
+    error?: string;
+    idToken?: string;
+    accessToken?: string;
+    authorized?: boolean;
+  }>;
 
-  logout(options: {}): Promise<{ error?: string }>;
+  logout(options: Record<string, never>): Promise<{ error?: string }>;
 
-  token(options: {}): Promise<{ error?: string; idToken?: string; accessToken?: string }>;
+  token(options: Record<string, never>): Promise<{ error?: string; idToken?: string; accessToken?: string }>;
 
-  authStatus(options: {}): Promise<{ error?: string; authorized?: boolean }>;
+  authStatus(options: Record<string, never>): Promise<{ error?: string; authorized?: boolean }>;
 }
 
 const AuthBridge = registerPlugin<AuthBridgePlugin>('AuthBridge');

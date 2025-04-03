@@ -21,6 +21,7 @@ import { AppConfig } from './config';
 import { DEBUG } from './build-time-config';
 import NetworkActions from './actions/network/NetworkActions';
 import { AuthActions } from 'state/actions/auth/Auth';
+import EventActions from 'state/actions/events/EventActions';
 
 const historySingleton = createBrowserHistory();
 
@@ -94,6 +95,14 @@ export function setupStore(configuration: AppConfig) {
   });
 
   storeRef.store = store;
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      store.dispatch(EventActions.wakeup());
+    }
+  });
+  document.addEventListener('focus', () => {
+    store.dispatch(EventActions.wakeup());
+  });
 
   return { store, persistor: persistStore(store) };
 }

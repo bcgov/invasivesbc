@@ -212,13 +212,19 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
                                                     tokenEndpoint: tokenEndpoint)
         let redirectURI = URL(string:"invasivesbc://callback")!
         let clientID = "\(SSO_CLIENT_ID)"
+                
+        
+        var authorizationParameters = ["prompt": "login"]
+        if let idpHint = call.options["idpHint"] {
+            authorizationParameters["kc_idp_hint"] = "\(idpHint)";
+        }
         
         let request = OIDAuthorizationRequest(configuration: configuration,
                                               clientId: clientID,
                                               scopes: [OIDScopeOpenID, OIDScopeProfile],
                                               redirectURL: redirectURI,
                                               responseType: OIDResponseTypeCode,
-                                              additionalParameters: ["prompt": "login"])
+                                              additionalParameters: authorizationParameters)
 
         DispatchQueue.main.sync {
             
