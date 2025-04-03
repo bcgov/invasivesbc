@@ -19,7 +19,7 @@ class AuthActions {
 
   static readonly tokenValidationRequest = createAction(`${this.PREFIX}/tokenValidationRequest`);
 
-  static readonly signinRequest = createAction(`${this.PREFIX}/signinRequest`);
+  static readonly signinRequest = createAction<{ idpHint?: string }>(`${this.PREFIX}/signinRequest`);
   static readonly signoutRequest = createAction(`${this.PREFIX}/signoutRequest`);
   static readonly signoutComplete = createAction(`${this.PREFIX}/signoutComplete`);
   static readonly updateTokenState = createAction<{ idToken: string }>(`${this.PREFIX}/updateTokenState`);

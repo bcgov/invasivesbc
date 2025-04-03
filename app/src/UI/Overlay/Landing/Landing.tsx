@@ -29,14 +29,14 @@ const InformationalLinkBox = () => {
   );
 };
 
-export const LandingComponent = (props) => {
+export const LandingComponent = () => {
   const connected = useSelector(selectNetworkConnected);
   const dispatch = useDispatch();
   const history = useHistory();
 
   const requestAccess = async () => {
     if (connected && !authenticated) {
-      dispatch(AuthActions.signinRequest());
+      dispatch(AuthActions.signinRequest({}));
     } else {
       history.push('/AccessRequest');
       dispatch({
@@ -106,8 +106,8 @@ export const LandingComponent = (props) => {
                       <p>
                         <strong>Roles:</strong>
                       </p>
-                      {roles.map((role: any) => {
-                        return <span key={role.role_id}>{role.role_description + '\n'}</span>;
+                      {roles.map((role) => {
+                        return <span key={role.role_id}>{role.role_name + '\n'}</span>;
                       })}
                     </Box>
                   </Grid>

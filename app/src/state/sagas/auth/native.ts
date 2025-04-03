@@ -1,4 +1,4 @@
-import { all, put, takeLatest } from 'redux-saga/effects';
+import { all, put, select, takeLatest } from 'redux-saga/effects';
 import { nanoid } from '@reduxjs/toolkit';
 import { USERINFO_CLEAR_REQUEST } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
@@ -6,9 +6,14 @@ import { AuthActions } from 'state/actions/auth/Auth';
 import NetworkActions from 'state/actions/network/NetworkActions';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
+import EventActions from 'state/actions/events/EventActions';
 
-function* handleSigninRequest() {
-  const authResult = yield AuthBridge.authStart({});
+function* handleSigninRequest(action) {
+  if (!AuthActions.signinRequest.match(action)) {
+    return;
+  }
+
+  const authResult = yield AuthBridge.authStart({ ...action.payload });
 
   if (authResult.error) {
     yield put(AuthActions.requestError());
@@ -55,6 +60,13 @@ function* initializeAuthentication() {
 }
 
 function* checkTokenValidity() {
+  const { authenticated } = yield select((state) => state.Auth);
+
+  if (!authenticated) {
+    // if we don't think we're logged in, we have no opinion here
+    return;
+  }
+
   // verify that we can recover our auth session, sign out if we can't.
   const { error } = yield AuthBridge.token({});
   if (error) {
@@ -79,7 +91,10 @@ const nativeAuthEffects = [
   takeLatest(AuthActions.signinRequest.type, handleSigninRequest),
   takeLatest(AuthActions.signoutRequest.type, handleSignoutRequest),
   takeLatest(AuthActions.initializeRequest.type, initializeAuthentication),
-  takeLatest([NetworkActions.online.type, AuthActions.tokenValidationRequest.type], checkTokenValidity)
+  takeLatest(
+    [NetworkActions.online.type, AuthActions.tokenValidationRequest.type, EventActions.wakeup.type],
+    checkTokenValidity
+  )
 ];
 
 export { nativeAuthEffects };

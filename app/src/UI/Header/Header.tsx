@@ -163,14 +163,14 @@ const ButtonWrapper = ({ children }) => {
   );
 };
 
-const LoginButton = ({ labelText = 'Login' }) => {
+const LoginButton = ({ labelText = 'Login', idpHint }) => {
   const dispatch = useDispatch();
   const loginInProgress = useSelector((state) => state.Auth.loginInProgress);
   return (
     <MenuItem
       disabled={loginInProgress}
       onClick={() => {
-        dispatch(AuthActions.signinRequest());
+        dispatch(AuthActions.signinRequest({ idpHint }));
       }}
     >
       <ListItemIcon>
@@ -317,7 +317,7 @@ const LoginOrOutMemo = React.memo(() => {
 
   const requestAccess = async () => {
     if (!authenticated) {
-      dispatch(AuthActions.signinRequest());
+      dispatch(AuthActions.signinRequest({}));
     } else {
       history.push('/AccessRequest');
       dispatch({
@@ -380,8 +380,18 @@ const LoginOrOutMemo = React.memo(() => {
             Choose Offline User
           </MenuItem>
         )}
-        {workingOffline && <LoginButton labelText={'Go Online'} />}
-        {loggedInOrWorkingOffline ? <LogoutButton /> : <LoginButton />}
+        {workingOffline && [
+          <LoginButton labelText={'Go Online (IDIR)'} idpHint={'idir'} key={'idir-go'} />,
+          <LoginButton labelText={'Login (BCEID Business)'} idpHint={'bceidbusiness'} key={'bceidbusiness-go'} />
+        ]}
+        {loggedInOrWorkingOffline ? (
+          <LogoutButton />
+        ) : (
+          [
+            <LoginButton labelText={'Login (IDIR)'} idpHint={'idir'} key={'idir'} />,
+            <LoginButton labelText={'Login (BCEID Business)'} idpHint={'bceidbusiness'} key={'bceidbusiness'} />
+          ]
+        )}
       </Menu>
     </div>
   );
