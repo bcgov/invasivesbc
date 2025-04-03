@@ -52,8 +52,12 @@ const RecordSetControl = ({
 
       <div>
         <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
-          <IconButton onClick={(e) => onClickToggleLabel(recordsetKey, e)} color="primary">
-            {recordset?.labelToggle ? <Label /> : <LabelOff />}
+          <IconButton
+            disabled={!recordset?.mapToggle}
+            onClick={(e) => onClickToggleLabel(recordsetKey, e)}
+            color="primary"
+          >
+            {recordset?.labelToggle && recordset?.mapToggle ? <Label /> : <LabelOff />}
           </IconButton>
         </Tooltip>
 
