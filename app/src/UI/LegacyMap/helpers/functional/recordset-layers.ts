@@ -583,11 +583,15 @@ export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map
     });
     matchingLabelLayers?.map((mapLayer) => {
       const visibility = map.getLayoutProperty(mapLayer, 'visibility');
-      if (visibility !== 'none' && !layer.layerState.labelToggle) {
-        map.setLayoutProperty(mapLayer, 'visibility', 'none');
-      }
-      if (visibility !== 'visible' && layer.layerState.labelToggle) {
+      const shouldHideLabelLayer =
+        (visibility !== 'none' && !layer.layerState.labelToggle) || !layer.layerState.mapToggle;
+      const shouldShowLabelLayer =
+        visibility !== 'visible' && layer.layerState.labelToggle && layer.layerState.mapToggle;
+
+      if (shouldShowLabelLayer) {
         map.setLayoutProperty(mapLayer, 'visibility', 'visible');
+      } else if (shouldHideLabelLayer) {
+        map.setLayoutProperty(mapLayer, 'visibility', 'none');
       }
     });
   });

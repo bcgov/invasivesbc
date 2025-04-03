@@ -410,10 +410,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
           }
         });
-
-        if (draftState.layers[layerIndex].layerState.mapToggle === false) {
-          draftState.layers[layerIndex].layerState.labelToggle = false;
-        }
       } else if (
         UserSettings.RecordSet.updateFilter.match(action) ||
         UserSettings.RecordSet.removeFilter.match(action)
