@@ -170,7 +170,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       const hasHoles = sanitizedGeo.geometry.coordinates.length > 1 && sanitizedGeo.geometry.type === 'Polygon'; // check for intersections after LineStrings are converted to Polygons
 
       if (hasSelfIntersections || hasHoles) {
-        yield put(Activity.updateGeoFailure({ geometry: { ...sanitizedGeo, properties: { error: 'true' } } }));
+        yield put(Activity.updateGeoFailure({ geometry: [{ ...sanitizedGeo, properties: { error: 'true' } }] }));
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
         return;
       }
