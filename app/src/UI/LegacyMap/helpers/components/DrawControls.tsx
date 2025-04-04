@@ -40,7 +40,7 @@ const DrawControls = () => {
   const appModeURL = useSelector((state) => state.AppMode.url);
 
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
-  const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry ?? EMPTY_OBJECT);
+  const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
 
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
