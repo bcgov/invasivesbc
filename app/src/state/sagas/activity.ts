@@ -260,7 +260,11 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     console.error(err);
   }
   if (geographyWillContainIntersections) {
-    validationErrors.push(mappingAlertMessages.willContainIntersections);
+    // validationErrors.push(mappingAlertMessages.willContainIntersections);
+    yield put(GeoTracking.earlyExit());
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+    yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
+    return;
   }
   if (!geometryHasPositiveArea) {
     validationErrors.push(mappingAlertMessages.noAreaCalculated);
@@ -297,7 +301,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     }
   } else {
     yield put(GeoTracking.pause());
-    yield put(Alerts.create(mappingAlertMessages.canEditInfo));
+    // yield put(Alerts.create(mappingAlertMessages.canEditInfo)); // WIP
     for (const error of validationErrors) {
       yield put(Alerts.create(error));
     }
