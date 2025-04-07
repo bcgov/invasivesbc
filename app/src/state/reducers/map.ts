@@ -488,7 +488,9 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           feature: action.payload,
           toggle: state.whatsHere.toggle,
           limit: 5,
-          page: 0
+          page: 0,
+          IAPPPage: 0,
+          ActivityPage: 0
         });
       } else if (WhatsHere.clear_whats_here.match(action)) {
         Object.assign(draftState.whatsHere, {
@@ -564,7 +566,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           });
         }
         draftState.whatsHere.toggle = !draftState.whatsHere.toggle;
-      } else if (WhatsHere.map_set_section.match(action)) {
+      } else if (WhatsHere.map_change_section.match(action)) {
         Object.assign(draftState.whatsHere, {
           section: action.payload,
           page: 0,
