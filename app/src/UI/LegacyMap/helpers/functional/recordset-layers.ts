@@ -6,6 +6,7 @@ import maplibregl, {
   SourceSpecification,
   SymbolLayerSpecification
 } from 'maplibre-gl';
+import { FeatureCollection } from 'geojson';
 import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { FALLBACK_COLOR } from 'UI/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/LegacyMap/helpers/functional/utility-functions';
@@ -13,7 +14,6 @@ import { MOBILE } from 'state/build-time-config';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import { FeatureCollection } from 'geojson';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
 import { getConcatenatedCodes, findSpeciesCodes } from 'utils/addActivity';
 
@@ -321,7 +321,7 @@ const createOfflineActivitiesLayer = async (
 
   if (!geometryList) return;
 
-  let geoJsonData: FeatureCollection = {
+  const geoJsonData: FeatureCollection = {
     type: 'FeatureCollection',
     features: geometryList || []
   };
@@ -410,7 +410,7 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
   stale.forEach((staleLayer) => {
     try {
       map.removeLayer(staleLayer);
-    } catch (e) {
+    } catch (_e) {
       console.error('error removing layer' + staleLayer);
     }
   });
@@ -431,18 +431,16 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
 };
 
 /**
- * @desc Delete all recordset layers on the map when network changes
- * @param map Current Mapre
+ * @desc Delete all recordset layers on the map in response to major app events (connectivity change, or cache update)
+ * @param map Current map
  */
-export const removeLayersOnNetworkConnectivityChange = (map: maplibregl.Map) => {
-  if (!MOBILE) {
-    return;
-  }
+export const removeRecordsetLayersOnForcedRedraw = (map: maplibregl.Map) => {
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
 
   const recordSetLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID_PREFIX));
   const recordSetSources = allSourcesOnMap.filter((source) => source.includes(LAYER_ID_PREFIX));
+
   recordSetLayers.forEach((layer) => {
     try {
       map.removeLayer(layer);

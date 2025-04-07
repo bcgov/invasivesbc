@@ -16,7 +16,7 @@ import {
   refreshColoursOnColourUpdate,
   refreshOfflineActivitiesLayer,
   refreshVisibilityOnToggleUpdate,
-  removeLayersOnNetworkConnectivityChange,
+  removeRecordsetLayersOnForcedRedraw,
   removeOfflineActivitiesLayer,
   toggleOfflineActivityLabels
 } from 'UI/LegacyMap/helpers/functional/recordset-layers';
@@ -48,6 +48,7 @@ import { DrawControls } from 'UI/LegacyMap/helpers/components/DrawControls';
 import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-functions';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
+import { sha1 } from 'utils/sha1';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -67,6 +68,8 @@ export const Map = ({ children }) => {
   // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
   const { authenticated, loggedInOrWorkingOffline, rolesInitialized } = useSelector((state) => state.Auth);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
+
+  const [cacheStatusHash, setCacheStatusHash] = useState('init');
 
   // RecordSet Layers
   const storeLayers = useSelector((state) => state.Map.layers);
@@ -255,10 +258,24 @@ export const Map = ({ children }) => {
   }, [authenticated]);
 
   useEffect(() => {
+    // update cacheStatusHash when any recordset is added/removed or has a cache status change. this will force a redraw.
+    if (!MOBILE) {
+      return;
+    }
+    let cacheStatusTuples = '';
+    for (const layer of storeLayers) {
+      cacheStatusTuples += `${layer.recordSetID}-${layer.layerState.cacheMetadataStatus}`;
+    }
+    sha1(cacheStatusTuples).then((hash) => {
+      setCacheStatusHash(hash);
+    });
+  }, [storeLayers]);
+
+  useEffect(() => {
     if (!mapReady) return;
     if (!map) return;
-    removeLayersOnNetworkConnectivityChange(map);
-  }, [connectedToNetwork]);
+    removeRecordsetLayersOnForcedRedraw(map);
+  }, [connectedToNetwork, cacheStatusHash]);
 
   // RecordSet Layers:
   useEffect(() => {
@@ -267,7 +284,7 @@ export const Map = ({ children }) => {
     rebuildLayersOnTableHashUpdate(storeLayers, map, MapMode, API_BASE, connectedToNetwork);
     refreshColoursOnColourUpdate(storeLayers, map);
     refreshVisibilityOnToggleUpdate(storeLayers, map);
-  }, [storeLayers, map, mapReady, connectedToNetwork, loggedInOrWorkingOffline]);
+  }, [storeLayers, map, mapReady, connectedToNetwork, loggedInOrWorkingOffline, cacheStatusHash]);
 
   // Offline Activities Layer:
   useEffect(() => {
