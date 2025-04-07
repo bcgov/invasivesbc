@@ -9,7 +9,7 @@ import {
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
-import { FeatureCollection, kinks } from '@turf/turf';
+import { Feature, FeatureCollection, kinks } from '@turf/turf';
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
@@ -369,12 +369,29 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
         const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
         if (networkReturn?.ok) {
           linked_geo = networkReturn.data.geometry;
+          linked_geo.forEach((geom: Feature, i: number) => {
+            if (
+              geom?.geometry?.type === GeoShapes.Point &&
+              networkReturn.data.form_data?.activity_data?.reported_area
+            ) {
+              // If Radius missing from Point geometry, populate using area of shape
+              linked_geo[i].properties.radius ??= Math.sqrt(
+                networkReturn.data.form_data.activity_data.reported_area / Math.PI
+              );
+            }
+          });
         }
       }
       if (!linked_geo && MOBILE) {
         const service = yield RecordCacheServiceFactory.getPlatformInstance();
         const record = yield service.loadActivity(linked_id);
         linked_geo = record.geometry;
+        linked_geo.forEach((geom: Feature, i: number) => {
+          if (geom?.geometry?.type === GeoShapes.Point && record.form_data?.activity_data?.reported_area) {
+            // If Radius missing from Point geometry, populate using area of shape
+            linked_geo[i].properties.radius ??= Math.sqrt(record.form_data.activity_data.reported_area / Math.PI);
+          }
+        });
       }
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: linked_geo } });
       yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
