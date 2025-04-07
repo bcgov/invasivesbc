@@ -538,7 +538,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           });
         }
         draftState.whatsHere.toggle = !draftState.whatsHere.toggle;
-      } else if (WhatsHere.map_change_section.match(action)) {
+      } else if (WhatsHere.map_change_tab.match(action)) {
         Object.assign(draftState.whatsHere, {
           page: 0,
           limit: 5
