@@ -207,7 +207,7 @@ export interface MapState {
   activity_center: [number, number];
   activity_zoom: number;
   clientBoundaries: any[];
-  currentOpenSet: string;
+  currentOpenSet: string | null;
   customizeLayersToggle: boolean;
   drawingCustomLayer: boolean;
   error: boolean;
@@ -215,7 +215,7 @@ export interface MapState {
   labelBoundsPolygon: any;
   layers: any[];
   legendsPopup: any;
-  linkToCSV: string;
+  linkToCSV: string | null;
   map_center: [number, number];
   map_zoom: number;
   panned: boolean;
@@ -226,7 +226,7 @@ export interface MapState {
     drawingShape: boolean;
   };
   quickPanToRecord: boolean;
-  recordSetForCSV: number;
+  recordSetForCSV: number | null;
   recordTables: object;
   serverBoundaries: any[];
   simplePickerLayers2: any[];
@@ -242,21 +242,13 @@ export interface MapState {
     feature: any | null;
     limit: number;
     page: number;
-    section: string;
 
     clickedActivity: any | null;
     clickedActivityDescription: string | null;
     clickedIAPP: any | null;
-    clickedIAPPDescription: string | null;
 
     loadingActivities: boolean;
     loadingIAPP: boolean;
-
-    highlightedType: 'IAPP' | 'Activity' | null;
-    highlightedURLID: string | null;
-    highlightedIAPP: string | null;
-    highlightedACTIVITY: any | null;
-    highlightedGeo: any | null;
 
     ActivityIDs: any[];
     activityRows: any[];
@@ -271,12 +263,8 @@ export interface MapState {
     IAPPLimit: number;
     IAPPSortField: string;
     IAPPSortDirection: string;
-
-    serverActivityIDs: any[];
-    serverIAPPIDs: any[];
   };
 
-  workingLayerName: string;
   layerPickerOpen: boolean;
 
   tileCacheMode: boolean;
@@ -350,18 +338,10 @@ const initialState: MapState = {
     limit: 5,
     page: 0,
     feature: null,
-    section: 'invasivesbc',
 
     clickedActivity: null,
     clickedActivityDescription: null,
     clickedIAPP: null,
-    clickedIAPPDescription: null,
-
-    highlightedType: null,
-    highlightedURLID: null,
-    highlightedIAPP: null,
-    highlightedACTIVITY: null,
-    highlightedGeo: null,
 
     loadingActivities: false,
     activityRows: [],
@@ -377,12 +357,8 @@ const initialState: MapState = {
     IAPPPage: 0,
     IAPPLimit: 5,
     IAPPSortField: 'earliest_survey',
-    IAPPSortDirection: SortFilter.Desc,
-
-    serverActivityIDs: [],
-    serverIAPPIDs: []
-  },
-  workingLayerName: ''
+    IAPPSortDirection: SortFilter.Desc
+  }
 };
 
 function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
@@ -482,7 +458,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           clickedActivity: null,
           clickedActivityDescription: null,
           clickedIAPP: null,
-          clickedIAPPDescription: null,
           loadingActivities: true,
           loadingIAPP: true,
           feature: action.payload,
@@ -497,7 +472,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           clickedActivity: null,
           clickedActivityDescription: null,
           clickedIAPP: null,
-          clickedIAPPDescription: null,
           loadingActivities: false,
           loadingIAPP: false,
           feature: null,
@@ -514,8 +488,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         });
       } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
         const { iapp, activities } = action.payload;
-        draftState.whatsHere.serverActivityIDs = activities;
-        draftState.whatsHere.serverIAPPIDs = iapp;
         const toggledOnActivityLayers = draftState.layers.filter(
           ({ type, layerState }) => type === RecordSetType.Activity && layerState.mapToggle
         );
@@ -568,7 +540,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         draftState.whatsHere.toggle = !draftState.whatsHere.toggle;
       } else if (WhatsHere.map_change_section.match(action)) {
         Object.assign(draftState.whatsHere, {
-          section: action.payload,
           page: 0,
           limit: 5
         });
@@ -577,13 +548,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           id: action.payload,
           geometry: state?.whatsHere?.iappRows.filter((row) => row.site_id === action.payload)[0].geometry
         };
-        Object.assign(draftState.whatsHere, {
-          highlightedType: RecordSetType.IAPP,
-          highlightedURLID: action.payload,
-          highlightedIAPP: action.payload,
-          highlightedACTIVITY: null,
-          highlightedGeo: state?.whatsHere?.iappRows.filter((row) => row.site_id === action.payload)[0]
-        });
       } else if (WhatsHere.set_highlighted_activity.match(action)) {
         draftState.userRecordOnHoverRecordRow = {
           id: action.payload.id,
@@ -595,13 +559,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           ]
         };
         draftState.userRecordOnHoverRecordType = RecordSetType.Activity;
-        Object.assign(draftState.whatsHere, {
-          highlightedType: RecordSetType.Activity,
-          highlightedURLID: action.payload.id,
-          highlightedIAPP: null,
-          highlightedACTIVITY: action.payload.short_id,
-          highlightedGeo: state?.whatsHere?.activityRows.filter((row) => row.short_id === action.payload.short_id)[0]
-        });
       } else if (WhatsHere.iapp_rows_success.match(action)) {
         draftState.whatsHere.loadingIAPP = false;
         draftState.whatsHere.iappRows = [...action.payload];
@@ -614,7 +571,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
           draftState.whatsHere.clickedActivityDescription = action.payload.description ?? null;
         } else if (action.payload.type === RecordSetType.IAPP) {
           draftState.whatsHere.clickedIAPP = action.payload.id;
-          draftState.whatsHere.clickedIAPPDescription = action.payload.description ?? null;
         }
       } else if (WhatsHere.map_page_limit.match(action)) {
         draftState.whatsHere.page = action.payload.page;
@@ -873,16 +829,13 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             draftState.drawingCustomLayer = false;
             draftState.clientBoundaries.push({
               id: nanoid(),
-              title: draftState?.workingLayerName,
               geojson: action.payload,
               toggle: true
             });
-            draftState.workingLayerName = null;
             break;
           }
           case DRAW_CUSTOM_LAYER: {
             draftState.drawingCustomLayer = true;
-            draftState.workingLayerName = action.payload.name;
             break;
           }
 
@@ -1116,7 +1069,7 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     };
     draftState.layers[index].loading = false;
   } else if (type === typeToFilter && type === RecordSetType.IAPP) {
-    const filtered = [];
+    const filtered: any[] = [];
     IDList.map((id) => {
       const f = draftState.IAPPGeoJSONDict[id];
       if (f !== undefined && f !== null && f.geometry !== null) {
