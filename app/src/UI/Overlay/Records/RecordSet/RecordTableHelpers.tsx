@@ -54,10 +54,6 @@ export const getUnnestedFieldsForActivity = (activity) => {
     elevation: activity?.elevation,
     batch_id: activity?.batch_id,
     geometry: root?.geometry
-    // date_modified: new Date(root?.created_timestamp).toString(),
-    // reported_area: root?.form_data?.activity_data?.reported_area,
-    // latitude: root?.form_data?.activity_data?.latitude,
-    // longitude: root?.form_data?.activity_data?.longitude,
   };
 
   return JSON.parse(JSON.stringify(columns));
