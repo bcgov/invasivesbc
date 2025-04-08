@@ -321,7 +321,6 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
   try {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
-    const lastField = action.payload.lastField;
 
     let updatedFormData = action.payload.eventFormData;
     if (
