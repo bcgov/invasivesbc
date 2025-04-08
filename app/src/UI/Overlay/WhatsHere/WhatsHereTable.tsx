@@ -1,11 +1,10 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import center from '@turf/center';
 import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
 import { useHistory } from 'react-router';
-
 import RenderTableActivity from './Subcomponents/RenderTableActivity';
 import RenderTablePOI from './Subcomponents/RenderTablePOI';
 import { useSelector } from 'utils/use_selector';
@@ -14,18 +13,35 @@ import './WhatsHereTable.css';
 import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Spinner from 'UI/Spinner/Spinner';
-
-export const createDataUTM = (name: string, value: any) => {
-  return { name, value };
-};
+import { RecordSetType } from 'interfaces/UserRecordSet';
+import CustomPopover from 'UI/CustomPopover/CustomPopover';
+import RecordTablePopoverContent from '../Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
 
 export const WhatsHereTable = () => {
-  const dispatch = useDispatch();
+  const createDataUTM = (name: string, value: any) => ({ name, value });
+  const handleChange = (_event: ChangeEvent<{}>, newSection: string) => {
+    setRecordTab(newSection as RecordSetType);
+    dispatch(WhatsHere.map_change_tab());
+  };
 
-  const whatsHere = useSelector((state) => state.Map?.whatsHere);
+  const dispatch = useDispatch();
   const history = useHistory();
+  const whatsHere = useSelector((state) => state.Map?.whatsHere);
+
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const [recordTab, setRecordTab] = useState<RecordSetType>(RecordSetType.Activity);
+  const loadingInProgress = whatsHere.loadingActivities || whatsHere.loadingIAPP;
 
   const position = whatsHere?.feature?.geometry ? center(whatsHere?.feature?.geometry)?.geometry.coordinates : [0, 0];
+  const recordDisplayId = {
+    [RecordSetType.Activity]: whatsHere?.clickedActivityDescription,
+    [RecordSetType.IAPP]: whatsHere?.clickedIAPP
+  };
+  const recordLookupId = {
+    [RecordSetType.Activity]: whatsHere?.clickedActivity,
+    [RecordSetType.IAPP]: whatsHere?.clickedIAPP
+  };
+
   const utmResult = calc_utm(position[0], position[1]);
   const utmRows = [
     createDataUTM('Zone', utmResult[0]),
@@ -33,66 +49,43 @@ export const WhatsHereTable = () => {
     createDataUTM('Northing', utmResult[2])
   ];
 
-  const handleChange = (_event: ChangeEvent<{}>, newSection: string) => {
-    dispatch(WhatsHere.map_set_section(newSection));
-  };
-
-  const goToRecord = () => {
-    const id = whatsHere.section === 'invasivesbc' ? whatsHere?.clickedActivity : whatsHere?.clickedIAPP;
-    if (whatsHere?.section === 'invasivesbc') {
-      history.push(`/Records/Activity:${id}/form`);
-    } else if (whatsHere?.highlightedType === 'IAPP') {
-      history.push(`/Records/IAPP/${id}/summary`);
-    }
-  };
-
-  const getActivityDescriptionForOpenButton = () => `Open InvasivesBC record: ${whatsHere?.clickedActivityDescription}`;
-  const getIAPPDescriptionForOpenButton = () => `Open IAPP record: ${whatsHere?.clickedIAPPDescription}`;
-
-  const loadingInProgress = whatsHere.loadingActivities || whatsHere.loadingIAPP;
-
   return (
     <div className="whatshere-container">
-      {whatsHere?.section && (
-        <div className="whatshere-table-container">
-          <div className="whatshere_back_button">
-            <Button onClick={history.goBack} color="info" variant="contained">
-              <ArrowLeftIcon />
-              Back
-            </Button>
-          </div>
-          <div id="whatsherepopup" className="whatshere-table">
-            <Grid className="whatshere-header" container justifyContent="center" sx={{ mb: 2 }}>
-              <div className="whatshere-title">
-                What's Here: <br /> {`UTM: Z-${utmRows[0]?.value} E-${utmRows[1]?.value} N-${utmRows[2]?.value}`}
-              </div>
-              <Tabs value={whatsHere?.section} onChange={handleChange} centered>
-                <Tab value="invasivesbc" label="InvasivesBC Records" icon={<FolderIcon />} />
-                <Tab value="iapp" label="IAPP Records" icon={<AdjustIcon />} />
-              </Tabs>
-            </Grid>
-            <Grid container spacing={2} justifyContent="center">
-              <Grid item sx={{ mb: 1 }}>
-                {whatsHere?.section === 'invasivesbc' && whatsHere?.clickedActivity && (
-                  <Button variant="contained" color="info" onClick={goToRecord}>
-                    {getActivityDescriptionForOpenButton()}
-                  </Button>
-                )}
-                {whatsHere?.section === 'iapp' && whatsHere?.clickedIAPP && (
-                  <Button variant="contained" color="info" onClick={goToRecord}>
-                    {getIAPPDescriptionForOpenButton()}
-                  </Button>
-                )}
-              </Grid>
-            </Grid>
-            {loadingInProgress && <Spinner />}
-            <TableContainer className="whatshere-position">
-              {whatsHere?.section === 'invasivesbc' && <RenderTableActivity />}
-              {whatsHere?.section === 'iapp' && <RenderTablePOI />}
-            </TableContainer>
-          </div>
+      <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
+        <RecordTablePopoverContent
+          recordDisplayId={recordDisplayId[recordTab]}
+          recordType={recordTab}
+          recordLookupId={recordLookupId[recordTab]}
+        />
+      </CustomPopover>
+      <div className="whatshere-table-container">
+        <div className="whatshere_back_button">
+          <Button onClick={history.goBack} color="info" variant="contained">
+            <ArrowLeftIcon />
+            Back
+          </Button>
         </div>
-      )}
+        <div id="whatsherepopup" className="whatshere-table">
+          <Grid className="whatshere-header" container justifyContent="center" sx={{ mb: 2 }}>
+            <div className="whatshere-title">
+              What's Here: <br /> {`UTM: Z-${utmRows[0]?.value} E-${utmRows[1]?.value} N-${utmRows[2]?.value}`}
+            </div>
+            <Tabs value={recordTab} onChange={handleChange} centered>
+              <Tab value={RecordSetType.Activity} label="InvasivesBC Records" icon={<FolderIcon />} />
+              <Tab value={RecordSetType.IAPP} label="IAPP Records" icon={<AdjustIcon />} />
+            </Tabs>
+          </Grid>
+          {loadingInProgress && <Spinner />}
+          <TableContainer className="whatshere-position">
+            {
+              {
+                [RecordSetType.Activity]: <RenderTableActivity setAnchorEl={setAnchorEl} />,
+                [RecordSetType.IAPP]: <RenderTablePOI setAnchorEl={setAnchorEl} />
+              }[recordTab]
+            }
+          </TableContainer>
+        </div>
+      </div>
     </div>
   );
 };

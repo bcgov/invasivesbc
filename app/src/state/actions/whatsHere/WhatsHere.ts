@@ -23,7 +23,7 @@ class WhatsHere {
   static readonly map_init_get_poi = createAction(`${this.PREFIX}/map_init_get_poi`);
   static readonly map_init_get_poi_ids_fetched = createAction<string[]>(`${this.PREFIX}/map_init_get_poi_ids_fetched`);
   static readonly map_page_limit = createAction<{ page: number; limit: number }>(`${this.PREFIX}/map_page_limit`);
-  static readonly map_set_section = createAction<string>(`${this.PREFIX}/map_set_section`);
+  static readonly map_change_tab = createAction(`${this.PREFIX}/map_change_section`);
   static readonly map_feature = createAction<Record<string, any>>(`${this.PREFIX}/map_feature`);
   static readonly page_poi = createAction<{ page: number; limit: number }>(`${this.PREFIX}/page_poi`);
   static readonly page_activity = createAction<{ page: number; limit: number }>(`${this.PREFIX}/page_activity`);
