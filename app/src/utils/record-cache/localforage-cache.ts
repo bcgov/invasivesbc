@@ -35,22 +35,34 @@ class LocalForageRecordCacheService extends RecordCacheService {
 
   async isCached(repositoryId: string): Promise<boolean> {
     try {
-      return (await this.getRepository(repositoryId)).status === UserRecordCacheStatus.CACHED;
+      return (await this.getRepository(repositoryId, ['status'])).status === UserRecordCacheStatus.CACHED;
     } catch (e) {
       return false;
     }
   }
-
-  async getRepository(repositoryId: string): Promise<RepositoryMetadata> {
+  getRepository(repositoryId: string, fields: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
+  getRepository(repositoryId: string): Promise<RepositoryMetadata>;
+  async getRepository(
+    repositoryId: string,
+    fields?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata | Partial<RepositoryMetadata>> {
     const repos = await this.listRepositories();
-    const foundIndex = repos.findIndex((p) => p.setId === repositoryId);
+    console.log('Repos Result', repos);
+    console.log(repositoryId);
+    const foundIndex = repos.findIndex((p) => p.set_id == repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} not found`);
-
+    if (fields) {
+      const res: Partial<Record<keyof RepositoryMetadata, any>> = {};
+      fields.map((field) => {
+        res[field] = repos[foundIndex]?.[field];
+      });
+      return res;
+    }
     return repos[foundIndex];
   }
 
   async getIdList(repositoryId: string): Promise<string[]> {
-    return (await this.getRepository(repositoryId)).cachedIds ?? [];
+    return (await this.getRepository(repositoryId, ['cached_ids'])).cached_ids ?? [];
   }
 
   async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
@@ -65,7 +77,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw Error('Cache not available');
     }
     const cachedSets = await this.listRepositories();
-    const foundIndex = cachedSets.findIndex((p) => p.setId === cacheId);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === cacheId);
     if (foundIndex !== -1) {
       Object.assign(cachedSets[foundIndex], { status });
       await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
@@ -74,7 +86,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
 
   async checkPauseOrAbort(id: string): Promise<CacheDownloadMode> {
     const sets = await this.listRepositories();
-    const index = sets.findIndex((p) => p.setId === id);
+    const index = sets.findIndex((p) => p.set_id === id);
     if (index !== -1) {
       if (sets[index].status === UserRecordCacheStatus.DELETING) return CacheDownloadMode.ABORT;
       else if (sets[index].status === UserRecordCacheStatus.PAUSED) return CacheDownloadMode.PAUSE;
@@ -237,17 +249,17 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    const cachedSets = await this.listRepositories();
-    const foundIndex = cachedSets.findIndex((p) => p.setId === repositoryId);
+    const cachedSets = await this.listRepositories(['cached_ids', 'set_id']);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === repositoryId);
 
     if (foundIndex === -1) return;
 
     await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
-    const deleteList = cachedSets[foundIndex].cachedIds;
+    const deleteList = cachedSets[foundIndex].cached_ids ?? [];
     const ids: Record<PropertyKey, number> = {};
 
     cachedSets
-      .flatMap((set) => set.cachedIds)
+      .flatMap((set) => set?.cached_ids ?? [])
       .forEach((id) => {
         ids[id] ??= 0;
         ids[id]++;
@@ -288,7 +300,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
 
     const cachedSets = (await this.listRepositories()) ?? [];
-    const foundIndex = cachedSets.findIndex((p) => p.setId === newSet.setId);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === newSet.set_id);
 
     if (foundIndex === -1) {
       cachedSets.push(newSet);
@@ -298,7 +310,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
-  async listRepositories(): Promise<RepositoryMetadata[]> {
+  listRepositories(fields: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
+  listRepositories(): Promise<RepositoryMetadata[]>;
+  async listRepositories(
+    fields?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata[] | Partial<RepositoryMetadata>[]> {
     if (this.store == null) {
       return [];
     }
@@ -308,6 +324,15 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (metadata == null) {
       console.error('expected key not found');
       return [];
+    }
+    if (fields) {
+      return metadata.map((repo) => {
+        const res: Partial<Record<keyof RepositoryMetadata, any>> = {};
+        fields.map((field) => {
+          res[field] = repo?.[field];
+        });
+        return res;
+      });
     }
     return metadata;
   }

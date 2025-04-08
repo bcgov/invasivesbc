@@ -156,12 +156,12 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     if (!recordSets || Object.keys(recordSets).length === 0) {
       // RecordSets are empty, try to recover whats in the local database
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const repos = yield service.listRepositories();
+      const repos = yield service.listRepositories(['filter_objects', 'status', 'record_set_type', 'set_id']);
       repos.forEach((repo: RepositoryMetadata) => {
         // recordSet is immutable, so append it to defaultRecordSet
         if (repo.status === UserRecordCacheStatus.CACHED && !defaultRecordSet[repo.set_id]) {
           const backedUpRecordSet = UserSettings.RecordSet.createDefaultRecordset(repo.record_set_type);
-          backedUpRecordSet.tableFilters = repo.filter_objects.tableFilters;
+          backedUpRecordSet.tableFilters = repo?.filter_objects?.tableFilters;
           backedUpRecordSet.cacheMetadataStatus = repo.status;
           backedUpRecordSet.recordSetName = repo.set_name ?? '';
           defaultRecordSet[repo.set_id] = backedUpRecordSet;
