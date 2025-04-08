@@ -1,5 +1,4 @@
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
-import booleanIntersects from '@turf/boolean-intersects';
 import { Feature } from '@turf/helpers';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
@@ -8,7 +7,6 @@ import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
-import bboxToPolygon from 'utils/bboxToPolygon';
 import FilterObjects from 'interfaces/FilterObjects';
 
 export enum IappRecordMode {
@@ -96,6 +94,8 @@ abstract class RecordCacheService extends BaseCacheService<
   protected abstract addOrUpdateRepository(spec: RepositoryMetadata): Promise<void>;
 
   protected abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
+
+  public abstract getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]>;
 
   public abstract loadActivity(id: string): Promise<unknown>;
 
@@ -363,33 +363,6 @@ abstract class RecordCacheService extends BaseCacheService<
     }
   }
 
-  /**
-   * @desc Returns list of IDs that overlap with a GeoJSON Object
-   * @param {Feature} geom GeoJSON Object to find overlaps
-   * @returns { string[] } Overlapping record Ids
-   */
-  public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
-    const reposInBoundingBox = ((await this.listRepositories(['set_id', 'status', 'bbox'])) ?? [])?.filter(
-      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxToPolygon(r.bbox!), geom)
-    );
-
-    const featureMap: Record<PropertyKey, Feature> = {};
-    const overlappingRecords: string[] = [];
-
-    // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
-    for (const r of reposInBoundingBox) {
-      const repo = await this.getRepository(r.set_id!, ['cached_geojson']);
-      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature, i: number) => {
-        featureMap[feature?.properties?.name + i] ??= feature;
-      });
-    }
-    Object.values(featureMap).forEach((feature) => {
-      if (booleanIntersects(geom, feature)) {
-        overlappingRecords.push(feature?.properties?.description);
-      }
-    });
-    return overlappingRecords;
-  }
   /**
    * @desc Get list of IDs that have had updates or been created since last update.
    * @param filterObjects Filters used at time of Cache

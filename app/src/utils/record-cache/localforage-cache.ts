@@ -13,6 +13,8 @@ import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import booleanIntersects from '@turf/boolean-intersects';
+import bboxToPolygon from 'utils/bboxToPolygon';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -70,6 +72,34 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error('cache not available');
     }
     await Promise.all(Object.keys(data).map((key) => this.store?.setItem(key, data[key])));
+  }
+
+  /**
+   * @desc Returns list of IDs that overlap with a GeoJSON Object
+   * @param {Feature} geom GeoJSON Object to find overlaps
+   * @returns { string[] } Overlapping record Ids
+   */
+  public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
+    const reposInBoundingBox = ((await this.listRepositories(['set_id', 'status', 'bbox'])) ?? [])?.filter(
+      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxToPolygon(r.bbox!), geom)
+    );
+
+    const featureMap: Record<PropertyKey, Feature> = {};
+    const overlappingRecords: string[] = [];
+
+    // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
+    for (const r of reposInBoundingBox) {
+      const repo = await this.getRepository(r.set_id!, ['cached_geojson']);
+      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature, i: number) => {
+        featureMap[feature?.properties?.name + i] ??= feature;
+      });
+    }
+    Object.values(featureMap).forEach((feature) => {
+      if (booleanIntersects(geom, feature)) {
+        overlappingRecords.push(feature?.properties?.description);
+      }
+    });
+    return overlappingRecords;
   }
 
   async setRepositoryStatus(cacheId: string, status: UserRecordCacheStatus) {
