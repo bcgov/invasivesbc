@@ -110,7 +110,6 @@ export function getSlopeAspectBothFlatValidator(): rjsfValidator {
       return errors;
     }
     const { slope_code, aspect_code } = formData.activity_subtype_data.Observation_PlantTerrestrial_Information;
-    console.log('In Validation', slope_code, aspect_code);
     const onlyOneOfSuppliedCodesAreFlat = [aspect_code, slope_code].filter((val) => val === 'FL').length === 1;
     if (onlyOneOfSuppliedCodesAreFlat) {
       const shortHand = errors.activity_subtype_data?.Observation_PlantTerrestrial_Information;
