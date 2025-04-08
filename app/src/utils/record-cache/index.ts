@@ -412,7 +412,7 @@ abstract class RecordCacheService extends BaseCacheService<
     const currentTime = new Date();
     const [newestRecordDate, repositories] = await Promise.all([
       this.dateOfMostRecentRecord(),
-      this.listRepositories(['record_set_type', 'status', 'filter_objects', 'cached_ids'])
+      this.listRepositories(['record_set_type', 'status', 'filter_objects', 'cached_ids', 'set_id'])
     ]);
     const updatedRecords: string[] = []; // don't re-download records that crossover other recordsets
     for (const r of repositories) {
