@@ -97,7 +97,6 @@ abstract class RecordCacheService extends BaseCacheService<
 
   protected abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
 
-  /** */
   public abstract loadActivity(id: string): Promise<unknown>;
 
   public abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
@@ -338,41 +337,30 @@ abstract class RecordCacheService extends BaseCacheService<
   }
 
   public async stopDownload(repositoryId: string): Promise<void> {
-    const repositories = await this.listRepositories();
-    const foundIndex = repositories.findIndex((repo) => repo.setId === repositoryId);
-    if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);
-
-    if (
-      [UserRecordCacheStatus.DOWNLOADING, UserRecordCacheStatus.PAUSED, UserRecordCacheStatus.QUEUED].includes(
-        repositories[foundIndex].status
-      )
-    ) {
-      await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
-    } else if (repositories[foundIndex].status === UserRecordCacheStatus.CACHED) {
-      await this.deleteRepository(repositoryId);
+    try {
+      const repo = await this.getRepository(repositoryId, ['status']);
+      if (
+        [UserRecordCacheStatus.DOWNLOADING, UserRecordCacheStatus.PAUSED, UserRecordCacheStatus.QUEUED].includes(
+          repo.status!
+        )
+      ) {
+        await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
+      } else if (repo.status === UserRecordCacheStatus.CACHED) {
+        await this.deleteRepository(repositoryId);
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 
   public async pauseDownload(repositoryId: string): Promise<void> {
-    const repositories = await this.listRepositories();
-    const foundIndex = repositories.findIndex((repo) => repo.setId === repositoryId);
+    const repositories = await this.listRepositories(['set_id', 'status']);
+    const foundIndex = repositories.findIndex((repo) => repo?.set_id === repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);
 
-    if (repositories[foundIndex].status === UserRecordCacheStatus.DOWNLOADING) {
+    if (repositories[foundIndex]?.status === UserRecordCacheStatus.DOWNLOADING) {
       await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.PAUSED);
     }
-  }
-
-  /**
-   * @desc Get repositories filtered to a geographic area
-   * @param geom Area of target
-   * @returns Repositories overlapping with target area
-   */
-  public async getOverlappingRepositories(geom: Feature): Promise<RepositoryMetadata[]> {
-    return (await this.listRepositories()).filter(
-      (r) =>
-        r.status === UserRecordCacheStatus.CACHED && r.cachedGeoJson && booleanIntersects(bboxToPolygon(r.bbox!), geom)
-    );
   }
 
   /**
@@ -381,23 +369,25 @@ abstract class RecordCacheService extends BaseCacheService<
    * @returns { string[] } Overlapping record Ids
    */
   public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
-    const repos = await this.getOverlappingRepositories(geom);
+    const reposInBoundingBox = ((await this.listRepositories(['set_id', 'status', 'bbox'])) ?? [])?.filter(
+      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxToPolygon(r.bbox!), geom)
+    );
+
     const featureMap: Record<PropertyKey, Feature> = {};
     const overlappingRecords: string[] = [];
 
     // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
-    repos.forEach((repo) => {
-      (repo.cachedGeoJson?.data as any).features.forEach(
-        (feature: Feature, i: number) => (featureMap[feature?.properties?.name + i] ??= feature)
-      );
-    });
-
+    for (const r of reposInBoundingBox) {
+      const repo = await this.getRepository(r.set_id!, ['cached_geojson']);
+      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature, i: number) => {
+        featureMap[feature?.properties?.name + i] ??= feature;
+      });
+    }
     Object.values(featureMap).forEach((feature) => {
       if (booleanIntersects(geom, feature)) {
         overlappingRecords.push(feature?.properties?.description);
       }
     });
-
     return overlappingRecords;
   }
   /**
@@ -422,15 +412,15 @@ abstract class RecordCacheService extends BaseCacheService<
     const currentTime = new Date();
     const [newestRecordDate, repositories] = await Promise.all([
       this.dateOfMostRecentRecord(),
-      this.listRepositories()
+      this.listRepositories(['record_set_type', 'status', 'filter_objects', 'cached_ids'])
     ]);
     const updatedRecords: string[] = []; // don't re-download records that crossover other recordsets
     for (const r of repositories) {
-      if (r.record_set_type === RecordSetType.Activity && r.status === UserRecordCacheStatus.CACHED) {
-        const idList = (await this.getListOfNewIds(r.filter_objects, newestRecordDate)).filter(
+      if (r?.record_set_type === RecordSetType.Activity && r.status === UserRecordCacheStatus.CACHED) {
+        const idList = (await this.getListOfNewIds(r.filter_objects!, newestRecordDate)).filter(
           (id) => !updatedRecords.includes(id)
         );
-        const newIds = idList.filter((id) => !r.cached_ids.includes(id)); // Filter out IDs not already in cache to add later
+        const newIds = idList.filter((id) => !r.cached_ids?.includes(id)); // Filter out IDs not already in cache to add later
         for (let i = 0; i < idList.length; i += this.BATCH_AMOUNT) {
           const ids = idList.slice(i, i + this.BATCH_AMOUNT);
           const url = `${CONFIGURATION_API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
@@ -440,13 +430,13 @@ abstract class RecordCacheService extends BaseCacheService<
           const newRecords = (await rez.json()) ?? {};
           await this.saveActivity(newRecords);
         }
-        const updatedShapes = await this.createActivityRecordsetSourceMetadata([...r.cached_ids, ...newIds]);
-        this.addOrUpdateRepository({
+        const updatedShapes = await this.createActivityRecordsetSourceMetadata([...r.cached_ids!, ...newIds]);
+        await this.addOrUpdateRepository({
           ...r,
           ...updatedShapes,
-          cached_ids: [...r.cached_ids, ...newIds],
+          cached_ids: [...r.cached_ids!, ...newIds],
           cache_time: currentTime
-        });
+        } as RepositoryMetadata);
         updatedRecords.push(...newIds);
       }
     }
