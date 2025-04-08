@@ -104,25 +104,18 @@ export function getPosAndNegObservationValidatorAquatic(): rjsfValidator {
 export function getSlopeAspectBothFlatValidator(): rjsfValidator {
   return (formData: any, errors: FormValidation): FormValidation => {
     if (
-      !formData ||
-      !formData.activity_subtype_data ||
-      !formData.activity_subtype_data.Observation_PlantTerrestrial_Information ||
-      !formData.activity_subtype_data.Observation_PlantTerrestrial_Information.slope_code ||
-      !formData.activity_subtype_data.Observation_PlantTerrestrial_Information.aspect_code
+      !formData?.activity_subtype_data?.Observation_PlantTerrestrial_Information?.slope_code ||
+      !formData?.activity_subtype_data?.Observation_PlantTerrestrial_Information?.aspect_code
     ) {
       return errors;
     }
     const { slope_code, aspect_code } = formData.activity_subtype_data.Observation_PlantTerrestrial_Information;
-    if (
-      (slope_code.includes('FL') && !aspect_code.includes('FL')) ||
-      (!slope_code.includes('FL') && aspect_code.includes('FL'))
-    ) {
-      errors.activity_subtype_data['Observation_PlantTerrestrial_Information']['aspect_code'].addError(
-        'If either Aspect or Slope is flat, both of them must be flat.'
-      );
-      errors.activity_subtype_data['Observation_PlantTerrestrial_Information']['slope_code'].addError(
-        'If either Aspect or Slope is flat, both of them must be flat.'
-      );
+    console.log('In Validation', slope_code, aspect_code);
+    const onlyOneOfSuppliedCodesAreFlat = [aspect_code, slope_code].filter((val) => val === 'FL').length === 1;
+    if (onlyOneOfSuppliedCodesAreFlat) {
+      const shortHand = errors.activity_subtype_data?.Observation_PlantTerrestrial_Information;
+      shortHand?.aspect_code?.addError('If either Aspect or Slope is flat, both of them must be flat.');
+      shortHand?.slope_code?.addError('If either Aspect or Slope is flat, both of them must be flat.');
     }
     return errors;
   };
