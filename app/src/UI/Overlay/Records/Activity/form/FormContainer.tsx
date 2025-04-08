@@ -1,4 +1,4 @@
-import { Box, Button, CircularProgress, createTheme, ThemeOptions, ThemeProvider } from '@mui/material';
+import { Box, Button, CircularProgress, createTheme, Theme, ThemeOptions, ThemeProvider } from '@mui/material';
 import { Form } from '@rjsf/mui';
 import CoreForm from '@rjsf/core';
 import { createRef, Fragment, RefObject, useCallback, useEffect, useRef, useState } from 'react';
@@ -51,7 +51,7 @@ const FormContainer = () => {
   );
 
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
-  const activity_ID = useSelector((state) => state.ActivityPage.activity.activity_id);
+  const activity_ID = useSelector((state) => state.ActivityPage.activity?.activity_id);
   const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
   const activitySchema = useSelector((state) => state.ActivityPage.schema);
   const activityUISchema = useSelector((state) => state.ActivityPage.uiSchema);
@@ -66,6 +66,7 @@ const FormContainer = () => {
   const [isCachedRecord, setIsCachedRecord] = useState<boolean>(!serializedActivities?.[activity_ID] && !connected);
   const [isDisabled, setIsDisabled] = useState<boolean>(!isCreatedByUser || isCachedRecord);
   const [userIsAdmin] = useState<boolean>(accessRoles?.some((role) => role.role_id === 18));
+  const theme = useRef<Theme>(createTheme(rjsfTheme as ThemeOptions));
 
   const debouncedFormChange = useCallback(
     debounce((event, _, lastField) => {
@@ -80,9 +81,8 @@ const FormContainer = () => {
   const customValidators = useCallback(() => {
     return validatorForActivity(activity_subtype, null);
   }, [JSON.stringify(activity_subtype)]);
-  const formRef: RefObject<CoreForm> = createRef();
 
-  const theme = createTheme(rjsfTheme as ThemeOptions);
+  const formRef: RefObject<CoreForm> = createRef();
 
   useEffect(() => {
     dispatch(Activity.setErrors(formRef.current?.state?.errors ?? []));
@@ -97,7 +97,7 @@ const FormContainer = () => {
     setIsDisabled(username !== created_by || isCachedRecord);
   }, [username, created_by, isCachedRecord]);
 
-  const isActivityChemTreatment = (): boolean =>
+  const isActivityChemTreatment =
     activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
     activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic';
 
@@ -106,7 +106,7 @@ const FormContainer = () => {
   }
   return (
     <Box sx={{ px: '15%' }}>
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme.current}>
         <SelectAutoCompleteContextProvider>
           {userIsAdmin && !isCreatedByUser && !isCachedRecord && (
             <div className="editFormButtonCont">
@@ -147,7 +147,7 @@ const FormContainer = () => {
             <Fragment />
           </Form>
 
-          {isActivityChemTreatment() && (
+          {isActivityChemTreatment && (
             <ChemicalTreatmentDetailsForm
               activitySubType={activity_subtype}
               disabled={isDisabled}
