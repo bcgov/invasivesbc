@@ -28,13 +28,13 @@ export const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => 
     return;
   }
   const service = await RecordCacheServiceFactory.getPlatformInstance();
-  const repo = await service.getRepository(layer.recordSetID);
+  const repo = await service.getRepository(layer.recordSetID, ['cached_geojson']);
 
-  if (!repo?.cachedGeoJson) {
+  if (!repo?.cached_geojson) {
     return;
   }
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
-  const source: GeoJSONSourceSpecification = repo.cachedGeoJson;
+  const source: GeoJSONSourceSpecification = repo.cached_geojson;
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
   const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'name' });
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
@@ -196,9 +196,9 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
     return;
   }
   const service = await RecordCacheServiceFactory.getPlatformInstance();
-  const metadata = await service.getRepository(layer.recordSetID);
+  const repo = await service.getRepository(layer.recordSetID, ['cached_geojson', 'cached_geojson']);
 
-  if (!metadata?.cachedCentroid || !metadata?.cachedGeoJson) {
+  if (!repo?.cached_centroid || !repo?.cached_geojson) {
     return;
   }
 
@@ -207,8 +207,8 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   const CENTROID_ID = `${GEOJSON_ID}-centroid`;
   const color = getPaintBySchemeOrColor(layer);
 
-  const geoJsonSourceObj: GeoJSONSourceSpecification = metadata.cachedGeoJson;
-  const centroidSourceObj: GeoJSONSourceSpecification = metadata.cachedCentroid;
+  const geoJsonSourceObj: GeoJSONSourceSpecification = repo.cached_geojson;
+  const centroidSourceObj: GeoJSONSourceSpecification = repo.cached_centroid;
 
   const circleMarkerZoomedOutLayerCentroid: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(CENTROID_ID, {
     color,
