@@ -77,22 +77,25 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
   const [renderKey, setRenderKey] = useState(props.id + nanoid());
 
   useEffect(() => {
+    const FLAT_CODE = 'FL';
     if (!lastFieldChanged?.id) {
       return;
     }
     if (
       lastFieldChanged?.id?.includes('slope_code') &&
-      lastFieldChanged?.option?.includes('FL') &&
+      lastFieldChanged?.option?.includes(FLAT_CODE) &&
       props.id.includes('aspect_code')
     ) {
-      setValue('FL');
+      setValue(FLAT_CODE);
+      props.onChange(FLAT_CODE);
     }
     if (
       lastFieldChanged?.id?.includes('aspect_code') &&
-      lastFieldChanged?.option?.includes('FL') &&
+      lastFieldChanged?.option?.includes(FLAT_CODE) &&
       props.id.includes('slope_code')
     ) {
-      setValue('FL');
+      setValue(FLAT_CODE);
+      props.onChange(FLAT_CODE);
     }
   }, [lastFieldChanged, props.id]);
 
@@ -127,7 +130,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
       inputValue={inputValue ?? ''}
       isOptionEqualToValue={(option) => !value || option.value === value || option.value === value.value}
       key={renderKey}
-      onChange={(event: any, option: AutoCompleteSelectOption, reason: string) => {
+      onChange={(_, option: AutoCompleteSelectOption, reason: string) => {
         if (reason === 'clear') {
           // NOTE: currently disabled.
           setValue(null);
@@ -138,7 +141,7 @@ const SingleSelectAutoComplete = (props: WidgetProps) => {
         }
       }}
       onFocus={(event) => props.onFocus(event.target.id, event.target.nodeValue)}
-      onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
+      onInputChange={(_, newInputValue) => setInputValue(newInputValue)}
       openOnFocus
       options={listOptions}
       renderInput={(params) => (

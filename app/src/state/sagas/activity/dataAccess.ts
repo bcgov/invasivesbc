@@ -14,7 +14,6 @@ import { FeatureCollection, kinks } from '@turf/turf';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
   autoFillNameByPAC,
-  autoFillSlopeAspect,
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
@@ -322,10 +321,8 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
   try {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
-    const lastField = action.payload.lastField;
 
     let updatedFormData = action.payload.eventFormData;
-    updatedFormData = autoFillSlopeAspect(updatedFormData, lastField);
     if (
       beforeActivity.activity_type === ActivityType.Biocontrol ||
       beforeActivity.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant ||

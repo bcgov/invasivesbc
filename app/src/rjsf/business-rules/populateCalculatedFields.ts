@@ -249,47 +249,6 @@ export const autoFillNameByPAC = (formData: any, appUsers: any) => {
   return newFormData;
 };
 
-export const autoFillSlopeAspect = (formData: any, lastField: string) => {
-  if (!lastField) {
-    return formData;
-  }
-  const fieldId = lastField[0];
-
-  let newFormData = formData;
-
-  if (
-    fieldId.includes('slope_code') &&
-    formData.activity_subtype_data.Observation_PlantTerrestrial_Information.slope_code === 'FL'
-  ) {
-    newFormData = {
-      ...formData,
-      activity_subtype_data: {
-        ...formData.activity_subtype_data,
-        Observation_PlantTerrestrial_Information: {
-          ...formData.activity_subtype_data.Observation_PlantTerrestrial_Information,
-          aspect_code: 'FL'
-        }
-      }
-    };
-  }
-  if (
-    fieldId.includes('aspect_code') &&
-    formData.activity_subtype_data.Observation_PlantTerrestrial_Information.aspect_code === 'FL'
-  ) {
-    newFormData = {
-      ...formData,
-      activity_subtype_data: {
-        ...formData.activity_subtype_data,
-        Observation_PlantTerrestrial_Information: {
-          ...formData.activity_subtype_data.Observation_PlantTerrestrial_Information,
-          slope_code: 'FL'
-        }
-      }
-    };
-  }
-  return newFormData;
-};
-
 //not sure about this one. should be working, don't know how to test
 export const autoFillTreeNumbers = (activitySubtypeData: any) => {
   if (activitySubtypeData.form_b) {
