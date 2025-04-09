@@ -1,5 +1,5 @@
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
-import React, { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
   Box,
@@ -24,70 +24,54 @@ import {
   Typography,
   Tooltip
 } from '@mui/material';
-//import { makeStyles } from '@mui/styles';
 import { SelectChangeEvent } from '@mui/material';
-import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
+import { useSelector } from 'utils/use_selector';
 
-/*const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    width: '320px'
-  }
-}));
-*/
+const AccessRequestPage = () => {
+  const ITEM_HEIGHT = 48;
+  const ITEM_PADDING_TOP = 8;
 
-interface IAccessRequestPage {
-  classes?: any;
-  location?: any;
-}
-
-const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   const history = useHistory();
   const api = useInvasivesApi();
-  // const classes = useStyles();
-  const [transferAccess] = useState('yes');
   const [accountType, setAccountType] = useState('');
 
   const authState = useSelector(selectAuth);
 
-  const [idir, setIdir] = useState(authState.username ? authState.username : '');
-  const [bceid, setBceid] = useState(authState.username ? authState.username : '');
-  const [firstName, setFirstName] = React.useState(
-    authState.displayName.split(' ')[1] ? authState.displayName.split(' ')[1] : ''
-  );
-  const [lastName, setLastName] = React.useState(
-    authState.displayName.split(' ')[0].replace(',', '') ? authState.displayName.split(',')[0].replace(',', '') : ''
-  );
-  const [email, setEmail] = React.useState(authState.email ? authState.email : '');
-  const idir_userid = authState?.idir_user_guid ? authState?.idir_user_guid : '';
-  const bceid_userid = authState?.bceid_user_guid ? authState?.bceid_user_guid : '';
-  const [phone, setPhone] = React.useState('');
-  const [pacNumber, setPacNumber] = React.useState<number>(null);
-  const [psn1, setPsn1] = React.useState('');
-  const [psn2, setPsn2] = React.useState('');
-  const [employer, setEmployer] = React.useState([]);
-  const [fundingAgencies, setFundingAgencies] = React.useState<string[]>([]);
-  const [requestedRoles, setRequestedRoles] = React.useState<string[]>([]);
-  const [fundingAgenciesList, setFundingAgenciesList] = React.useState<any[]>([]);
-  const [employersList, setEmployersList] = React.useState<any[]>([]);
-  const [submitted, setSubmitted] = React.useState(false);
-  const [comments, setComments] = React.useState('');
-  const [roles, setRoles] = React.useState<any[]>([]);
+  const [idir, setIdir] = useState<string>(authState?.username ?? '');
+  const [bceid, setBceid] = useState<string>(authState?.username ?? '');
+  const [firstName, setFirstName] = useState<string>(authState?.displayName?.split(' ')[1] ?? '');
+  const [lastName, setLastName] = useState(authState?.displayName?.split(' ')[0].replace(',', '') ?? '');
+  const [email, setEmail] = useState(authState.email ?? '');
+  const idir_userid = authState?.idir_user_guid ?? '';
+  const bceid_userid = authState?.bceid_user_guid ?? '';
+  const [phone, setPhone] = useState<string>();
+  const [pacNumber, setPacNumber] = useState<number>();
+  const [psn1, setPsn1] = useState<string>();
+  const [psn2, setPsn2] = useState<string>();
+  const [employer, setEmployer] = useState<string[]>([]);
+  const [fundingAgencies, setFundingAgencies] = useState<string[]>([]);
+  const [requestedRoles, setRequestedRoles] = useState<string[]>([]);
+  const [fundingAgenciesList, setFundingAgenciesList] = useState<any[]>([]);
+  const [employersList, setEmployersList] = useState<any[]>([]);
+  const [submitted, setSubmitted] = useState(false);
+  const [comments, setComments] = useState<string>();
+  const [roles, setRoles] = useState<any[]>([]);
 
   // Validation Error Messages
-  const [idirErrorText, setIdirErrorText] = React.useState('');
-  const [bceidErrorText, setBceidErrorText] = React.useState('');
-  const [firstNameErrorText, setFirstNameErrorText] = React.useState('');
-  const [lastNameErrorText, setLastNameErrorText] = React.useState('');
-  const [emailErrorText, setEmailErrorText] = React.useState('');
-  const [employerErrorText, setEmployerErrorText] = React.useState('');
-  const [fundingAgenciesErrorText, setFundingAgenciesErrorText] = React.useState('');
-  const [requestedRolesErrorText, setRequestedRolesErrorText] = React.useState('');
+  const [idirErrorText, setIdirErrorText] = useState<string>();
+  const [bceidErrorText, setBceidErrorText] = useState<string>();
+  const [firstNameErrorText, setFirstNameErrorText] = useState<string>();
+  const [lastNameErrorText, setLastNameErrorText] = useState<string>();
+  const [emailErrorText, setEmailErrorText] = useState<string>();
+  const [employerErrorText, setEmployerErrorText] = useState<string>();
+  const [fundingAgenciesErrorText, setFundingAgenciesErrorText] = useState<string>();
+  const [requestedRolesErrorText, setRequestedRolesErrorText] = useState<string>();
 
   let isUpdating = authState?.roles?.length > 0 && authState?.extendedInfo?.account_status === 1;
 
   const isValid = (decline: boolean = false, valid: boolean = true): boolean => {
-    const requiredFields = [
+    const requiredFields: Array<{ value: string | string[]; error: any; text: string }> = [
       { value: firstName, error: setFirstNameErrorText, text: 'Please enter First name ' },
       { value: lastName, error: setLastNameErrorText, text: 'Please enter Last name ' },
       { value: email, error: setEmailErrorText, text: 'Please enter primary Email ' }
@@ -176,31 +160,7 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     }
   };
 
-  const declineAccess = async () => {
-    if (isValid(true)) {
-      const accessRequest = {
-        idir: idir,
-        bceid: bceid,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phone: null,
-        pacNumber: null,
-        psn1: null,
-        psn2: null,
-        employer: '',
-        fundingAgencies: '',
-        requestedRoles: null,
-        comments: null,
-        status: 'REMOVED',
-        idir_userid: null,
-        bceid_userid: null
-      };
-      await api.submitAccessRequest(accessRequest);
-      setSubmitted(true);
-    }
-  };
-  const [userInfo, setUserInfo] = useState(undefined);
+  const [userInfo, setUserInfo] = useState<Record<PropertyKey, any>>();
 
   useEffect(() => {
     if (userInfo !== undefined) {
@@ -253,21 +213,19 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
     });
   }, []);
 
-  const handleAccountRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAccountRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
     setAccountType(event.target.value);
   };
 
-  const handleEmployerChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEmployer(event.target.value);
+  const handleEmployerChange = (event: SelectChangeEvent<string[]>) => {
+    setEmployer(event.target.value as string[]);
   };
 
-  const ITEM_HEIGHT = 48;
-  const ITEM_PADDING_TOP = 8;
   const MenuProps = {
     PaperProps: {
       style: {
         maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250
+        maxWidth: 250
       }
     }
   };
@@ -296,449 +254,411 @@ const AccessRequestPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   return (
-    <Container>
-      <Grid container spacing={1}>
-        <Grid item xs={12}>
-          <Box style={{ paddingTop: '30px', paddingBottom: '10px', display: 'flex', justifyContent: 'center' }}>
-            <Typography variant="h4" align="center">
-              InvasivesBC Access Request
-            </Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12} style={{ marginBottom: 50 }}>
-          <Card elevation={8}>
-            {!submitted && (
-              <CardContent>
-                {/* {!isUpdating && (
-                  <FormControl component="fieldset">
-                    <FormLabel component="legend">
-                      Do you wish to transfer your IAPP access to InvasivesBC when it replaces IAPP?
-                    </FormLabel>
-                    <RadioGroup
-                      row
-                      aria-label="transfer-access"
-                      name="row-radio-buttons-group"
-                      value={transferAccess}
-                      onChange={handleRadioChange}>
-                      <FormControlLabel value="yes" control={<Radio />} label="Yes" />
-                      <FormControlLabel value="no" control={<Radio />} label="No" />
-                    </RadioGroup>
-                  </FormControl>
-                )}
-                {transferAccess === 'no' && (
-                  <Typography variant="body1" align="center">
-                    You will be removed from the InvasivesBC lists moving forward. You may, of course, rejoin us at any
-                    time.
-                  </Typography>
-                )} */}
-                {(transferAccess === 'yes' || isUpdating) && (
-                  <Grid container direction="column" spacing={3}>
-                    {isUpdating ? (
-                      <Grid item>
-                        <p>
-                          Please update any necessary fields if they have changed since you submitted your access
-                          request. Your information will be updated upon review.
-                        </p>
-                      </Grid>
-                    ) : (
-                      <>
-                        <Grid item>
-                          <p>
-                            The following information is required to properly establish your access to the new
-                            InvasivesBC applications. This information will not be shared with any other organization
-                            within government or externally with other agencies.
-                          </p>
-                        </Grid>
-                        <Grid item>
-                          <p>
-                            If you have more than one IAPP user account (i.e. two or more BCeIDs), please provide a
-                            separate form for each account.
-                          </p>
-                        </Grid>
-                      </>
-                    )}
+    <Container sx={{ maxWidth: '100%', marginTop: '30px', marginBottom: '30px' }}>
+      <Grid item xs={12}>
+        <Box sx={{ paddingTop: '30px', paddingBottom: '10px', display: 'flex', justifyContent: 'center' }}>
+          <Typography variant="h4" align="center">
+            InvasivesBC Access Request
+          </Typography>
+        </Box>
+        <Card elevation={8}>
+          {!submitted && (
+            <CardContent sx={{ padding: '25px 25px' }}>
+              <Grid container direction="column" spacing={3} sx={{ maxWidth: '100%' }}>
+                {isUpdating ? (
+                  <p>
+                    Please update any necessary fields if they have changed since you submitted your access request.
+                    Your information will be updated upon review.
+                  </p>
+                ) : (
+                  <>
+                    <p>
+                      The following information is required to properly establish your access to the new InvasivesBC
+                      applications. This information will not be shared with any other organization within government or
+                      externally with other agencies.
+                    </p>
 
-                    {!isUpdating && (
-                      <Grid item>
-                        <Grid container direction="row" spacing={5}>
-                          <Grid item>
-                            <FormControl component="fieldset">
-                              <FormLabel component="legend">Account type</FormLabel>
-                              <RadioGroup
-                                row
-                                aria-label="account-type"
-                                name="row-radio-buttons-group"
-                                value={accountType}
-                                onChange={handleAccountRadioChange}
-                              >
-                                <FormControlLabel value="IDIR" control={<Radio />} label="IDIR" />
-                                <FormControlLabel value="BCeID" control={<Radio />} label="BCeID" />
-                              </RadioGroup>
-                            </FormControl>
-                          </Grid>
-                          {accountType === 'IDIR' && (
-                            <Grid item>
-                              {' '}
-                              <TextField
-                                value={idir}
-                                style={{ width: 320 }}
-                                onChange={(e) => setIdir(e.target.value)}
-                                required
-                                variant="outlined"
-                                error={!!idirErrorText}
-                                id="idir"
-                                label="IDIR Account Name"
-                              />
-                            </Grid>
-                          )}
-                          {accountType === 'BCeID' && (
-                            <Grid item>
-                              {' '}
-                              <TextField
-                                required
-                                value={bceid}
-                                onChange={(e) => setBceid(e.target.value)}
-                                style={{ width: 320 }}
-                                variant="outlined"
-                                error={!!bceidErrorText}
-                                id="bceid"
-                                label="BCeID Account Name"
-                              />
-                            </Grid>
-                          )}
-                        </Grid>
-                      </Grid>
-                    )}
-                    <Grid item>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item>
-                          <TextField
-                            required
-                            style={{ width: 320 }}
-                            value={firstName}
-                            onChange={(e) => setFirstName(e.target.value)}
-                            variant="outlined"
-                            error={!!firstNameErrorText}
-                            id="first-name"
-                            label="First Name"
-                          />
-                        </Grid>
-                        <Grid item>
-                          <TextField
-                            required
-                            style={{ width: 320 }}
-                            value={lastName}
-                            onChange={(e) => setLastName(e.target.value)}
-                            variant="outlined"
-                            error={!!lastNameErrorText}
-                            id="last-name"
-                            label="Last Name"
-                          />
-                        </Grid>
-                        <Grid item>
-                          <TextField
-                            required
-                            style={{ width: 320 }}
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            variant="outlined"
-                            error={!!emailErrorText}
-                            id="primary-email"
-                            label="Primary Email"
-                          />
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item>
-                          <TextField
-                            variant="outlined"
-                            style={{ width: 320 }}
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            id="work-phone"
-                            label="Work Phone (optional)"
-                          />
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item>
-                          <Tooltip classes={{ tooltip: 'toolTip' }} placement="left" title="Who do you work for?">
-                            <>
-                              <InputLabel htmlFor="employer">Employer</InputLabel>
-                              <Select
-                                label="Employer"
-                                id="employer"
-                                required
-                                // variant="outlined"
-                                style={{ width: 1000 }}
-                                multiple
-                                value={employer}
-                                error={!!employerErrorText}
-                                onChange={handleEmployerChange}
-                                input={<OutlinedInput label="Employer" />}
-                                renderValue={(selected) => (
-                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value) => (
-                                      <Chip key={value} label={getEmployerDescription(value)} />
-                                    ))}
-                                  </Box>
-                                )}
-                                MenuProps={MenuProps}
-                              >
-                                {employersList.map((employer) => (
-                                  <MenuItem key={employer.code_id} value={employer.code_name}>
-                                    {employer.code_description}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </>
-                          </Tooltip>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item>
-                          <Tooltip
-                            placement="left"
-                            classes={{ tooltip: 'toolTip' }}
-                            title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer."
-                          >
-                            <>
-                              <InputLabel htmlFor="funding-agency">Funding Agencies</InputLabel>
-                              <Select
-                                label="Funding Agencies"
-                                id="funding-agency"
-                                required
-                                // variant="outlined"
-                                style={{ width: 1000 }}
-                                multiple
-                                value={fundingAgencies}
-                                error={!!fundingAgenciesErrorText}
-                                onChange={handleFundingAgenciesChange}
-                                input={<OutlinedInput label="Funding" />}
-                                renderValue={(selected) => (
-                                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value) => (
-                                      <Chip key={value} label={getAgencyDescription(value)} />
-                                    ))}
-                                  </Box>
-                                )}
-                                MenuProps={MenuProps}
-                              >
-                                {fundingAgenciesList.map((fundingAgency) => (
-                                  <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
-                                    {fundingAgency.code_description}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </>
-                          </Tooltip>
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                    <Grid item>
-                      <Grid container direction="row" spacing={5} style={{ marginBottom: '10px' }}>
-                        <Grid item>
-                          <Tooltip
-                            classes={{ tooltip: 'toolTip' }}
-                            placement="left"
-                            title="Pesticide Applicator Certificate (PAC) Number"
-                          >
-                            <TextField
-                              value={pacNumber}
-                              type={'number'}
-                              onChange={(e) => {
-                                const inputnumber = Number.parseInt(e.target.value);
-                                if (inputnumber) {
-                                  setPacNumber(inputnumber);
-                                }
-                              }}
-                              style={{ width: 320 }}
-                              variant="outlined"
-                              id="pac-number"
-                              label="PAC Number"
-                            />
-                          </Tooltip>
-                        </Grid>
-                        <Grid item>
-                          <Tooltip
-                            placement="left"
-                            classes={{ tooltip: 'toolTip' }}
-                            title="Enter the Service licence Number and Company name separated by a dash and no spaces"
-                          >
-                            <TextField
-                              value={psn1}
-                              onChange={(e) => setPsn1(e.target.value)}
-                              style={{ width: 320 }}
-                              variant="outlined"
-                              id="psn1"
-                              label="Pesticide Service Number #1"
-                            />
-                          </Tooltip>
-                        </Grid>
-                        <Grid item>
-                          <Tooltip
-                            placement="left"
-                            classes={{ tooltip: 'toolTip' }}
-                            title="Enter the Service licence Number and Company name separated by a dash and no spaces"
-                          >
-                            <TextField
-                              value={psn2}
-                              onChange={(e) => setPsn2(e.target.value)}
-                              style={{ width: 320 }}
-                              variant="outlined"
-                              id="psn2"
-                              label="Pesticide Service Number #2"
-                            />
-                          </Tooltip>
-                        </Grid>
-                      </Grid>
-                      <Grid item>
-                        <Grid container direction="row" spacing={5}>
-                          <Grid item>
-                            <Tooltip
-                              placement="left"
-                              classes={{ tooltip: 'toolTip' }}
-                              title="Select one or more roles to request."
-                            >
-                              <>
-                                <InputLabel htmlFor="requested-roles">Requested roles</InputLabel>
-                                <Select
-                                  label="Requested roles"
-                                  id="requested-roles"
-                                  required
-                                  // variant="outlined"
-                                  style={{ width: 1000 }}
-                                  multiple
-                                  value={requestedRoles}
-                                  error={!!requestedRolesErrorText}
-                                  onChange={handleRequestedRoleChange}
-                                  input={<OutlinedInput label="Requested roles" />}
-                                  renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                      {selected.map((value) => (
-                                        <Chip key={value} label={getRoleDescription(value)} />
-                                      ))}
-                                    </Box>
-                                  )}
-                                  MenuProps={MenuProps}
-                                >
-                                  {roles.map((role) => (
-                                    <MenuItem key={role.role_id} value={role.role_name}>
-                                      {role.role_description}
-                                    </MenuItem>
-                                  ))}
-                                </Select>
-                              </>
-                            </Tooltip>
-                          </Grid>
-                        </Grid>
-                      </Grid>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item style={{ marginBottom: '10px', marginTop: '10px' }}>
-                          <Tooltip
-                            placement="left"
-                            classes={{ tooltip: 'toolTip' }}
-                            title="If your employer or agency were not on our lists, please enter it here."
-                          >
-                            <TextField
-                              style={{ width: 640 }}
-                              multiline
-                              rows={4}
-                              value={comments}
-                              onChange={(e) => setComments(e.target.value)}
-                              name="Comments"
-                              id="comments"
-                              variant="outlined"
-                              label="Comments"
-                            />
-                          </Tooltip>
-                        </Grid>
-                      </Grid>
-                      <Grid container direction="row" spacing={5}>
-                        <Grid item>
-                          {!isUpdating && (
-                            <Typography variant="body1" align="center">
-                              We will inform you when the training materials are ready and again when your access is
-                              approved
-                            </Typography>
-                          )}
-                          {isUpdating && (
-                            <Typography variant="body1" align="center">
-                              We will inform you when your information has been updated.
-                            </Typography>
-                          )}
-                        </Grid>
-                      </Grid>
-                    </Grid>
-                  </Grid>
+                    <p>
+                      If you have more than one IAPP user account (i.e. two or more BCeIDs), please provide a separate
+                      form for each account.
+                    </p>
+                  </>
                 )}
-              </CardContent>
-            )}
-            {submitted && (
-              <CardContent>
-                <Grid container direction="row" spacing={7}>
+
+                {!isUpdating && (
                   <Grid item>
-                    {!isUpdating && (
-                      <Typography variant="body1" align="center">
-                        Thank you for submitting your request.
-                      </Typography>
-                    )}
-                    {isUpdating && (
-                      <Typography variant="body1" align="center">
-                        Your request to update your information has been received. We will inform you when your
-                        information has been updated.
-                      </Typography>
-                    )}
+                    <Grid container direction="row" spacing={5}>
+                      <Grid item>
+                        <FormControl component="fieldset">
+                          <FormLabel component="legend">Account type</FormLabel>
+                          <RadioGroup
+                            row
+                            aria-label="account-type"
+                            name="row-radio-buttons-group"
+                            value={accountType}
+                            onChange={handleAccountRadioChange}
+                          >
+                            <FormControlLabel value="IDIR" control={<Radio />} label="IDIR" />
+                            <FormControlLabel value="BCeID" control={<Radio />} label="BCeID" />
+                          </RadioGroup>
+                        </FormControl>
+                      </Grid>
+                      {accountType === 'IDIR' && (
+                        <Grid item>
+                          {' '}
+                          <TextField
+                            value={idir}
+                            sx={{ width: 320 }}
+                            onChange={(e) => setIdir(e.target.value)}
+                            required
+                            variant="outlined"
+                            error={!!idirErrorText}
+                            id="idir"
+                            label="IDIR Account Name"
+                          />
+                        </Grid>
+                      )}
+                      {accountType === 'BCeID' && (
+                        <Grid item>
+                          {' '}
+                          <TextField
+                            required
+                            value={bceid}
+                            onChange={(e) => setBceid(e.target.value)}
+                            sx={{ width: 320 }}
+                            variant="outlined"
+                            error={!!bceidErrorText}
+                            id="bceid"
+                            label="BCeID Account Name"
+                          />
+                        </Grid>
+                      )}
+                    </Grid>
+                  </Grid>
+                )}
+                <Grid item>
+                  <Grid container direction="row" spacing={5}>
+                    <Grid item>
+                      <TextField
+                        required
+                        sx={{ width: 320 }}
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        variant="outlined"
+                        error={!!firstNameErrorText}
+                        id="first-name"
+                        label="First Name"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        required
+                        sx={{ width: 320 }}
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        variant="outlined"
+                        error={!!lastNameErrorText}
+                        id="last-name"
+                        label="Last Name"
+                      />
+                    </Grid>
+                    <Grid item>
+                      <TextField
+                        required
+                        sx={{ width: 320 }}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        variant="outlined"
+                        error={!!emailErrorText}
+                        id="primary-email"
+                        label="Primary Email"
+                      />
+                    </Grid>
                   </Grid>
                 </Grid>
-              </CardContent>
-            )}
-            <Divider />
-            <CardActions>
-              <Grid container direction="row" spacing={5} justifyContent="space-between">
                 <Grid item>
-                  <Button
-                    color="primary"
-                    variant="outlined"
-                    onClick={() => {
-                      history.push('/');
-                    }}
-                  >
-                    Back
-                  </Button>
+                  <Grid container direction="row" spacing={5}>
+                    <Grid item>
+                      <TextField
+                        variant="outlined"
+                        sx={{ width: 320 }}
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        id="work-phone"
+                        label="Work Phone (optional)"
+                      />
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item sx={{ width: '100%' }}>
+                  <Grid>
+                    <Tooltip classes={{ tooltip: 'toolTip' }} placement="left" title="Who do you work for?">
+                      <>
+                        <InputLabel htmlFor="employer">Employer</InputLabel>
+                        <Select
+                          label="Employer"
+                          id="employer"
+                          required
+                          sx={{ width: '100%' }}
+                          multiple
+                          value={employer}
+                          error={!!employerErrorText}
+                          onChange={handleEmployerChange}
+                          input={<OutlinedInput label="Employer" />}
+                          renderValue={(selected) => (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                              {selected.map((value) => (
+                                <Chip key={value} label={getEmployerDescription(value)} />
+                              ))}
+                            </Box>
+                          )}
+                          MenuProps={MenuProps}
+                        >
+                          {employersList.map((employer) => (
+                            <MenuItem key={employer.code_id} value={employer.code_name}>
+                              {employer.code_description}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </>
+                    </Tooltip>
+                  </Grid>
+                </Grid>
+                <Grid item sx={{ width: '100%' }}>
+                  <Grid container direction="row" spacing={5}>
+                    <Grid item sx={{ width: '100%' }}>
+                      <Tooltip
+                        placement="left"
+                        classes={{ tooltip: 'toolTip' }}
+                        title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer."
+                      >
+                        <>
+                          <InputLabel htmlFor="funding-agency">Funding Agencies</InputLabel>
+                          <Select
+                            label="Funding Agencies"
+                            id="funding-agency"
+                            required
+                            sx={{ width: '100%' }}
+                            multiple
+                            value={fundingAgencies}
+                            error={!!fundingAgenciesErrorText}
+                            onChange={handleFundingAgenciesChange}
+                            input={<OutlinedInput label="Funding" />}
+                            renderValue={(selected) => (
+                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                {selected.map((value) => (
+                                  <Chip key={value} label={getAgencyDescription(value)} />
+                                ))}
+                              </Box>
+                            )}
+                            MenuProps={MenuProps}
+                          >
+                            {fundingAgenciesList.map((fundingAgency) => (
+                              <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
+                                {fundingAgency.code_description}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </>
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                </Grid>
+                <Grid item>
+                  <Grid container direction="row" spacing={5} sx={{ marginBottom: '10px' }}>
+                    <Grid item>
+                      <Tooltip
+                        classes={{ tooltip: 'toolTip' }}
+                        placement="left"
+                        title="Pesticide Applicator Certificate (PAC) Number"
+                      >
+                        <TextField
+                          value={pacNumber}
+                          type={'number'}
+                          onChange={(e) => {
+                            const inputnumber = Number.parseInt(e.target.value);
+                            if (inputnumber) {
+                              setPacNumber(inputnumber);
+                            }
+                          }}
+                          sx={{ width: 320 }}
+                          variant="outlined"
+                          id="pac-number"
+                          label="PAC Number"
+                        />
+                      </Tooltip>
+                    </Grid>
+                    <Grid item>
+                      <Tooltip
+                        placement="left"
+                        classes={{ tooltip: 'toolTip' }}
+                        title="Enter the Service licence Number and Company name separated by a dash and no spaces"
+                      >
+                        <TextField
+                          value={psn1}
+                          onChange={(e) => setPsn1(e.target.value)}
+                          sx={{ width: 320 }}
+                          variant="outlined"
+                          id="psn1"
+                          label="Pesticide Service Number #1"
+                        />
+                      </Tooltip>
+                    </Grid>
+                    <Grid item>
+                      <Tooltip
+                        placement="left"
+                        classes={{ tooltip: 'toolTip' }}
+                        title="Enter the Service licence Number and Company name separated by a dash and no spaces"
+                      >
+                        <TextField
+                          value={psn2}
+                          onChange={(e) => setPsn2(e.target.value)}
+                          sx={{ width: 320 }}
+                          variant="outlined"
+                          id="psn2"
+                          label="Pesticide Service Number #2"
+                        />
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                  <Grid item>
+                    <Grid container direction="row">
+                      <Grid item>
+                        <Tooltip
+                          placement="left"
+                          classes={{ tooltip: 'toolTip' }}
+                          title="Select one or more roles to request."
+                        >
+                          <>
+                            <InputLabel htmlFor="requested-roles">Requested roles</InputLabel>
+                            <Select
+                              label="Requested roles"
+                              id="requested-roles"
+                              required
+                              sx={{ width: '100%' }}
+                              multiple
+                              value={requestedRoles}
+                              error={!!requestedRolesErrorText}
+                              onChange={handleRequestedRoleChange}
+                              input={<OutlinedInput label="Requested roles" />}
+                              renderValue={(selected) => (
+                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                                  {selected.map((value) => (
+                                    <Chip key={value} label={getRoleDescription(value)} />
+                                  ))}
+                                </Box>
+                              )}
+                              MenuProps={MenuProps}
+                            >
+                              {roles.map((role) => (
+                                <MenuItem key={role.role_id} value={role.role_name}>
+                                  {role.role_description}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </>
+                        </Tooltip>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid container direction="row" spacing={5}>
+                    <Grid item sx={{ marginBottom: '10px', marginTop: '10px' }}>
+                      <Tooltip
+                        placement="left"
+                        classes={{ tooltip: 'toolTip' }}
+                        title="If your employer or agency were not on our lists, please enter it here."
+                      >
+                        <TextField
+                          sx={{ width: 640, maxWidth: '100%' }}
+                          multiline
+                          rows={4}
+                          value={comments}
+                          onChange={(e) => setComments(e.target.value)}
+                          name="Comments"
+                          id="comments"
+                          variant="outlined"
+                          label="Comments"
+                        />
+                      </Tooltip>
+                    </Grid>
+                  </Grid>
+                  <Grid container direction="row" spacing={5}>
+                    <Grid item>
+                      {!isUpdating && (
+                        <Typography variant="body1" align="center">
+                          We will inform you when the training materials are ready and again when your access is
+                          approved
+                        </Typography>
+                      )}
+                      {isUpdating && (
+                        <Typography variant="body1" align="center">
+                          We will inform you when your information has been updated.
+                        </Typography>
+                      )}
+                    </Grid>
+                  </Grid>
                 </Grid>
               </Grid>
-              <Grid item>
-                {!submitted && !isUpdating && (
-                  <Button
-                    style={{ maxWidth: '300px', minWidth: '225px' }}
-                    variant="contained"
-                    color="primary"
-                    onClick={transferAccess === 'yes' ? submitAccessRequest : declineAccess}
-                  >
-                    {transferAccess === 'yes' ? 'Submit Access Request' : 'Remove me from the list'}
-                  </Button>
-                )}
-                {!submitted && isUpdating && (
-                  <Button
-                    style={{ maxWidth: '300px', minWidth: '225px' }}
-                    variant="contained"
-                    color="primary"
-                    onClick={submitUpdateRequest}
-                  >
-                    Submit Update Request
-                  </Button>
-                )}
+            </CardContent>
+          )}
+          {submitted && (
+            <CardContent>
+              <Grid container direction="row" spacing={7}>
+                <Grid item>
+                  {!isUpdating && (
+                    <Typography variant="body1" align="center">
+                      Thank you for submitting your request.
+                    </Typography>
+                  )}
+                  {isUpdating && (
+                    <Typography variant="body1" align="center">
+                      Your request to update your information has been received. We will inform you when your
+                      information has been updated.
+                    </Typography>
+                  )}
+                </Grid>
               </Grid>
-            </CardActions>
-          </Card>
-        </Grid>
+            </CardContent>
+          )}
+          <Divider />
+          <CardActions>
+            <Grid container direction="row" spacing={5} justifyContent="space-between">
+              <Grid item>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  onClick={() => {
+                    history.push('/');
+                  }}
+                >
+                  Back
+                </Button>
+              </Grid>
+            </Grid>
+            <Grid item>
+              {!submitted && !isUpdating && (
+                <Button
+                  sx={{ maxWidth: '300px', minWidth: '225px' }}
+                  variant="contained"
+                  color="primary"
+                  onClick={submitAccessRequest}
+                >
+                  Submit Access Request
+                </Button>
+              )}
+              {!submitted && isUpdating && (
+                <Button
+                  sx={{ maxWidth: '300px', minWidth: '225px' }}
+                  variant="contained"
+                  color="primary"
+                  onClick={submitUpdateRequest}
+                >
+                  Submit Update Request
+                </Button>
+              )}
+            </Grid>
+          </CardActions>
+        </Card>
       </Grid>
     </Container>
   );
