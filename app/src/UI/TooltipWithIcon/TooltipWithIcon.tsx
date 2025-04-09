@@ -1,10 +1,11 @@
 import { HelpOutline } from '@mui/icons-material';
-import { Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { useState } from 'react';
 
 type PropTypes = {
   tooltipText: string;
 };
+
 const TooltipWithIcon = ({ tooltipText }: PropTypes) => {
   const [showTooltip, setShowTooltip] = useState<boolean>(false);
   return (
@@ -17,7 +18,9 @@ const TooltipWithIcon = ({ tooltipText }: PropTypes) => {
       onBlur={setShowTooltip.bind(this, false)}
       title={tooltipText}
     >
-      <HelpOutline color="info" />
+      <IconButton sx={{ padding: 0, margin: 0, pointerEvents: 'auto' }}>
+        <HelpOutline color="info" />
+      </IconButton>
     </Tooltip>
   );
 };
