@@ -67,10 +67,10 @@ function* checkTokenValidity() {
     return;
   }
 
-  // verify that we can recover our auth session, sign out if we can't.
-  const { error } = yield AuthBridge.token({});
-  if (error) {
-    // token has become invalid. log us out and tell the user why
+  // check authStatus (getting a token won't work if we're offline, but we might still have a valid refresh token)
+  const { authorized } = yield AuthBridge.authStatus({});
+  if (!authorized) {
+    // authState is invalid. log us out and tell the user why
     yield all([
       put(AuthActions.signoutRequest()),
       put(
