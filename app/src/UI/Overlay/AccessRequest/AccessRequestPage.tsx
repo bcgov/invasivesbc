@@ -2,117 +2,106 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import {
-  Box,
   Button,
-  Card,
-  CardActions,
-  CardContent,
   Chip,
-  Container,
-  Divider,
   FormControlLabel,
-  FormLabel,
-  Grid,
-  InputLabel,
   Radio,
   RadioGroup,
   TextField,
   FormControl,
   MenuItem,
-  OutlinedInput,
   Select,
-  Typography,
-  Tooltip
+  FormLabel,
+  FormHelperText
 } from '@mui/material';
 import { SelectChangeEvent } from '@mui/material';
 import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
+import TooltipWithIcon from 'UI/TooltipWithIcon/TooltipWithIcon';
+import './AccessRequestPage.css';
 
 const AccessRequestPage = () => {
+  enum AuthOptions {
+    BCeID = 'BCeID',
+    IDIR = 'IDIR'
+  }
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
-
-  const history = useHistory();
-  const api = useInvasivesApi();
-  const [accountType, setAccountType] = useState('');
-
-  const authState = useSelector(selectAuth);
-
-  const [idir, setIdir] = useState<string>(authState?.username ?? '');
-  const [bceid, setBceid] = useState<string>(authState?.username ?? '');
-  const [firstName, setFirstName] = useState<string>(authState?.displayName?.split(' ')[1] ?? '');
-  const [lastName, setLastName] = useState(authState?.displayName?.split(' ')[0].replace(',', '') ?? '');
-  const [email, setEmail] = useState(authState.email ?? '');
-  const idir_userid = authState?.idir_user_guid ?? '';
-  const bceid_userid = authState?.bceid_user_guid ?? '';
-  const [phone, setPhone] = useState<string>();
-  const [pacNumber, setPacNumber] = useState<number>();
-  const [psn1, setPsn1] = useState<string>();
-  const [psn2, setPsn2] = useState<string>();
-  const [employer, setEmployer] = useState<string[]>([]);
-  const [fundingAgencies, setFundingAgencies] = useState<string[]>([]);
-  const [requestedRoles, setRequestedRoles] = useState<string[]>([]);
-  const [fundingAgenciesList, setFundingAgenciesList] = useState<any[]>([]);
-  const [employersList, setEmployersList] = useState<any[]>([]);
-  const [submitted, setSubmitted] = useState(false);
-  const [comments, setComments] = useState<string>();
-  const [roles, setRoles] = useState<any[]>([]);
-
-  // Validation Error Messages
-  const [idirErrorText, setIdirErrorText] = useState<string>();
-  const [bceidErrorText, setBceidErrorText] = useState<string>();
-  const [firstNameErrorText, setFirstNameErrorText] = useState<string>();
-  const [lastNameErrorText, setLastNameErrorText] = useState<string>();
-  const [emailErrorText, setEmailErrorText] = useState<string>();
-  const [employerErrorText, setEmployerErrorText] = useState<string>();
-  const [fundingAgenciesErrorText, setFundingAgenciesErrorText] = useState<string>();
-  const [requestedRolesErrorText, setRequestedRolesErrorText] = useState<string>();
-
-  let isUpdating = authState?.roles?.length > 0 && authState?.extendedInfo?.account_status === 1;
-
-  const isValid = (decline: boolean = false, valid: boolean = true): boolean => {
-    const requiredFields: Array<{ value: string | string[]; error: any; text: string }> = [
-      { value: firstName, error: setFirstNameErrorText, text: 'Please enter First name ' },
-      { value: lastName, error: setLastNameErrorText, text: 'Please enter Last name ' },
-      { value: email, error: setEmailErrorText, text: 'Please enter primary Email ' }
-    ];
-    // if not declining check more fields
-    if (!decline) {
-      requiredFields.push(
-        { value: employer, error: setEmployerErrorText, text: 'Please enter Employer ' },
-        {
-          value: fundingAgencies?.join(),
-          error: setFundingAgenciesErrorText,
-          text: 'Please enter 1 or more Funding Agencies '
-        },
-        {
-          value: requestedRoles?.join(),
-          error: setRequestedRolesErrorText,
-          text: 'Please enter 1 or more Requested Roles '
-        }
-      );
-    }
-
-    if (accountType === 'IDIR') {
-      requiredFields.push({ value: idir, error: setIdirErrorText, text: 'Please enter IDIR name ' });
-    } else {
-      requiredFields.push({ value: bceid, error: setBceidErrorText, text: 'Please enter BCeID ' });
-    }
-
-    requiredFields.map((field) => {
-      if (!field.value || field.value.length === 0) {
-        field.error(field.text);
-        valid = false;
-      } else {
-        field.error('');
+  const MenuProps = {
+    PaperProps: {
+      style: {
+        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+        maxWidth: 250
       }
-    });
+    }
+  };
+  const getAgencyDescription = (name: string): string =>
+    fundingAgenciesList.find(({ code_name }) => code_name === name)?.code_description;
 
-    return valid;
+  const getEmployerDescription = (name: string): string =>
+    employersList.find(({ code_name }) => code_name === name)?.code_description;
+
+  const getRoleDescription = (name: string): string =>
+    roles.find(({ role_name }) => role_name === name)?.role_description;
+
+  const handleRequestedRoleChange = (event: SelectChangeEvent<typeof requestedRoles>) => {
+    const {
+      target: { value }
+    } = event;
+    setRequestedRoles(typeof value === 'string' ? value.split(',') : value);
   };
 
+  const handleFundingAgenciesChange = (event: SelectChangeEvent<typeof fundingAgencies>) => {
+    const {
+      target: { value }
+    } = event;
+    if (!value || value?.length < 0) {
+      setFundingAgenciesErrorText('');
+    }
+    setFundingAgencies(typeof value === 'string' ? value.split(',') : value);
+  };
+
+  const api = useInvasivesApi();
+  const authState = useSelector(selectAuth);
+  const history = useHistory();
+
+  const [accountType, setAccountType] = useState<AuthOptions>(AuthOptions.IDIR);
+  const [bceid, setBceid] = useState<string>(authState?.username ?? '');
+  const [comments, setComments] = useState<string>();
+  const [email, setEmail] = useState(authState.email ?? '');
+  const [employer, setEmployer] = useState<string[]>([]);
+  const [employersList, setEmployersList] = useState<any[]>([]);
+  console.log(authState);
+  const [firstName, setFirstName] = useState<string>(authState?.displayName?.split(' ')[1] ?? '');
+  const [formValid, setFormValid] = useState<boolean>(false);
+  const [fundingAgencies, setFundingAgencies] = useState<string[]>([]);
+  const [fundingAgenciesList, setFundingAgenciesList] = useState<any[]>([]);
+  const [idir, setIdir] = useState<string>(authState?.username ?? '');
+  const [lastName, setLastName] = useState(authState?.displayName?.split(' ')[0].replace(',', '') ?? '');
+  const [pacNumber, setPacNumber] = useState<number>();
+  const [phone, setPhone] = useState<string>();
+  const [psn1, setPsn1] = useState<string>();
+  const [psn2, setPsn2] = useState<string>();
+  const [requestedRoles, setRequestedRoles] = useState<string[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
+  const [submitted, setSubmitted] = useState<boolean>(false);
+  const [userInfo, setUserInfo] = useState<Record<PropertyKey, any>>();
+
+  // Validation Error Messages
+  const [bceidErrorText, setBceidErrorText] = useState<string>();
+  const [emailErrorText, setEmailErrorText] = useState<string>();
+  const [employerErrorText, setEmployerErrorText] = useState<string>();
+  const [firstNameErrorText, setFirstNameErrorText] = useState<string>();
+  const [fundingAgenciesErrorText, setFundingAgenciesErrorText] = useState<string>();
+  const [idirErrorText, setIdirErrorText] = useState<string>();
+  const [lastNameErrorText, setLastNameErrorText] = useState<string>();
+  const [requestedRolesErrorText, setRequestedRolesErrorText] = useState<string>();
+  const isUpdating = authState?.roles?.length > 0 && authState?.extendedInfo?.account_status === 1;
+  const idir_userid = authState?.idir_user_guid ?? '';
+  const bceid_userid = authState?.bceid_user_guid ?? '';
+
   const submitAccessRequest = async () => {
-    if (isValid()) {
+    if (formValid) {
       const accessRequest = {
         idir: idir,
         bceid: bceid,
@@ -131,13 +120,70 @@ const AccessRequestPage = () => {
         idirUserId: idir_userid,
         bceidUserId: bceid_userid
       };
-      await api.submitAccessRequest(accessRequest);
-      setSubmitted(true);
+      await api.submitAccessRequest(accessRequest).then(() => {
+        setSubmitted(true);
+      });
     }
   };
+  useEffect(() => {
+    let isFormValid: boolean = true;
+    const requiredFields: Array<{ value: string | string[]; error: any; text: string }> = [
+      { value: firstName, error: setFirstNameErrorText, text: 'Please enter First name ' },
+      { value: lastName, error: setLastNameErrorText, text: 'Please enter Last name ' },
+      { value: email, error: setEmailErrorText, text: 'Please enter primary Email ' },
+      { value: employer, error: setEmployerErrorText, text: 'Please enter Employer ' },
+      {
+        value: fundingAgencies?.join(),
+        error: setFundingAgenciesErrorText,
+        text: 'Please enter 1 or more Funding Agencies'
+      },
+      {
+        value: requestedRoles?.join(),
+        error: setRequestedRolesErrorText,
+        text: 'Please enter 1 or more Requested Roles'
+      }
+    ];
+
+    if (accountType === AuthOptions.IDIR) {
+      requiredFields.push({ value: idir, error: setIdirErrorText, text: 'Please enter IDIR name ' });
+    } else if (accountType === AuthOptions.BCeID) {
+      requiredFields.push({ value: bceid, error: setBceidErrorText, text: 'Please enter BCeID ' });
+    }
+
+    requiredFields.forEach((field) => {
+      if (!field.value || field.value.length === 0) {
+        isFormValid = false;
+        field.error(field.text);
+      } else {
+        field.error('');
+      }
+    });
+    setFormValid(isFormValid);
+  }, [
+    accountType,
+    bceid,
+    comments,
+    email,
+    employer,
+    employersList,
+    firstName,
+    formValid,
+    fundingAgencies,
+    fundingAgenciesList,
+    idir,
+    lastName,
+    pacNumber,
+    phone,
+    psn1,
+    psn2,
+    requestedRoles,
+    roles,
+    submitted,
+    userInfo
+  ]);
 
   const submitUpdateRequest = async () => {
-    if (isValid()) {
+    if (formValid) {
       const updateRequest = {
         idir: idir,
         bceid: bceid,
@@ -160,22 +206,14 @@ const AccessRequestPage = () => {
     }
   };
 
-  const [userInfo, setUserInfo] = useState<Record<PropertyKey, any>>();
-
   useEffect(() => {
     if (userInfo !== undefined) {
       if (userInfo?.idir_account_name) {
-        setAccountType('IDIR');
+        setAccountType(AuthOptions.IDIR);
         setIdir(userInfo?.idir_account_name);
       } else if (userInfo?.bceid_business_name) {
-        setAccountType('BCeID');
+        setAccountType(AuthOptions.BCeID);
         setBceid(userInfo?.bceid_business_name);
-      }
-
-      if (userInfo?.bceid_business_name) {
-        setFirstName(userInfo?.bceid_business_name);
-      } else {
-        userInfo?.first_name && setFirstName(userInfo?.first_name);
       }
       userInfo?.last_name && setLastName(userInfo?.last_name);
       userInfo?.primary_email && setEmail(userInfo?.primary_email);
@@ -214,453 +252,314 @@ const AccessRequestPage = () => {
   }, []);
 
   const handleAccountRadioChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setAccountType(event.target.value);
+    setAccountType(event.target.value as AuthOptions);
   };
 
   const handleEmployerChange = (event: SelectChangeEvent<string[]>) => {
     setEmployer(event.target.value as string[]);
   };
 
-  const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        maxWidth: 250
-      }
-    }
-  };
-
-  const getAgencyDescription = (name: string): string =>
-    fundingAgenciesList.find(({ code_name }) => code_name === name)?.code_description;
-
-  const getEmployerDescription = (name: string): string =>
-    employersList.find(({ code_name }) => code_name === name)?.code_description;
-
-  const getRoleDescription = (name: string): string =>
-    roles.find(({ role_name }) => role_name === name)?.role_description;
-
-  const handleRequestedRoleChange = (event: SelectChangeEvent<typeof requestedRoles>) => {
-    const {
-      target: { value }
-    } = event;
-    setRequestedRoles(typeof value === 'string' ? value.split(',') : value);
-  };
-
-  const handleFundingAgenciesChange = (event: SelectChangeEvent<typeof fundingAgencies>) => {
-    const {
-      target: { value }
-    } = event;
-    setFundingAgencies(typeof value === 'string' ? value.split(',') : value);
-  };
-
+  if (submitted) {
+    return (
+      <div id="access-request-page">
+        <h1>InvasivesBC Access Request</h1>
+        <div className="content">
+          <p>
+            {isUpdating
+              ? 'Thank you for submitting your request'
+              : 'Your request to update your information has been received. We will inform you when your information has been updated.'}
+          </p>
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => {
+              history.push('/');
+            }}
+          >
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
   return (
-    <Container sx={{ maxWidth: '100%', marginTop: '30px', marginBottom: '30px' }}>
-      <Grid item xs={12}>
-        <Box sx={{ paddingTop: '30px', paddingBottom: '10px', display: 'flex', justifyContent: 'center' }}>
-          <Typography variant="h4" align="center">
-            InvasivesBC Access Request
-          </Typography>
-        </Box>
-        <Card elevation={8}>
-          {!submitted && (
-            <CardContent sx={{ padding: '25px 25px' }}>
-              <Grid container direction="column" spacing={3} sx={{ maxWidth: '100%' }}>
-                {isUpdating ? (
-                  <p>
-                    Please update any necessary fields if they have changed since you submitted your access request.
-                    Your information will be updated upon review.
-                  </p>
-                ) : (
-                  <>
-                    <p>
-                      The following information is required to properly establish your access to the new InvasivesBC
-                      applications. This information will not be shared with any other organization within government or
-                      externally with other agencies.
-                    </p>
+    <div id="access-request-page">
+      <h1>InvasivesBC Access Request</h1>
+      <form className="content">
+        {isUpdating ? (
+          <p>
+            Please update any necessary fields if they have changed since you submitted your access request. Your
+            information will be updated upon review.
+          </p>
+        ) : (
+          <>
+            <p>
+              The following information is required to properly establish your access to the new InvasivesBC
+              applications. This information will not be shared with any other organization within government or
+              externally with other agencies.
+            </p>
 
-                    <p>
-                      If you have more than one IAPP user account (i.e. two or more BCeIDs), please provide a separate
-                      form for each account.
-                    </p>
-                  </>
-                )}
-
-                {!isUpdating && (
-                  <Grid item>
-                    <Grid container direction="row" spacing={5}>
-                      <Grid item>
-                        <FormControl component="fieldset">
-                          <FormLabel component="legend">Account type</FormLabel>
-                          <RadioGroup
-                            row
-                            aria-label="account-type"
-                            name="row-radio-buttons-group"
-                            value={accountType}
-                            onChange={handleAccountRadioChange}
-                          >
-                            <FormControlLabel value="IDIR" control={<Radio />} label="IDIR" />
-                            <FormControlLabel value="BCeID" control={<Radio />} label="BCeID" />
-                          </RadioGroup>
-                        </FormControl>
-                      </Grid>
-                      {accountType === 'IDIR' && (
-                        <Grid item>
-                          {' '}
-                          <TextField
-                            value={idir}
-                            sx={{ width: 320 }}
-                            onChange={(e) => setIdir(e.target.value)}
-                            required
-                            variant="outlined"
-                            error={!!idirErrorText}
-                            id="idir"
-                            label="IDIR Account Name"
-                          />
-                        </Grid>
-                      )}
-                      {accountType === 'BCeID' && (
-                        <Grid item>
-                          {' '}
-                          <TextField
-                            required
-                            value={bceid}
-                            onChange={(e) => setBceid(e.target.value)}
-                            sx={{ width: 320 }}
-                            variant="outlined"
-                            error={!!bceidErrorText}
-                            id="bceid"
-                            label="BCeID Account Name"
-                          />
-                        </Grid>
-                      )}
-                    </Grid>
-                  </Grid>
-                )}
-                <Grid item>
-                  <Grid container direction="row" spacing={5}>
-                    <Grid item>
-                      <TextField
-                        required
-                        sx={{ width: 320 }}
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                        variant="outlined"
-                        error={!!firstNameErrorText}
-                        id="first-name"
-                        label="First Name"
-                      />
-                    </Grid>
-                    <Grid item>
-                      <TextField
-                        required
-                        sx={{ width: 320 }}
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                        variant="outlined"
-                        error={!!lastNameErrorText}
-                        id="last-name"
-                        label="Last Name"
-                      />
-                    </Grid>
-                    <Grid item>
-                      <TextField
-                        required
-                        sx={{ width: 320 }}
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        variant="outlined"
-                        error={!!emailErrorText}
-                        id="primary-email"
-                        label="Primary Email"
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item>
-                  <Grid container direction="row" spacing={5}>
-                    <Grid item>
-                      <TextField
-                        variant="outlined"
-                        sx={{ width: 320 }}
-                        value={phone}
-                        onChange={(e) => setPhone(e.target.value)}
-                        id="work-phone"
-                        label="Work Phone (optional)"
-                      />
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item sx={{ width: '100%' }}>
-                  <Grid>
-                    <Tooltip classes={{ tooltip: 'toolTip' }} placement="left" title="Who do you work for?">
-                      <>
-                        <InputLabel htmlFor="employer">Employer</InputLabel>
-                        <Select
-                          label="Employer"
-                          id="employer"
-                          required
-                          sx={{ width: '100%' }}
-                          multiple
-                          value={employer}
-                          error={!!employerErrorText}
-                          onChange={handleEmployerChange}
-                          input={<OutlinedInput label="Employer" />}
-                          renderValue={(selected) => (
-                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                              {selected.map((value) => (
-                                <Chip key={value} label={getEmployerDescription(value)} />
-                              ))}
-                            </Box>
-                          )}
-                          MenuProps={MenuProps}
-                        >
-                          {employersList.map((employer) => (
-                            <MenuItem key={employer.code_id} value={employer.code_name}>
-                              {employer.code_description}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </>
-                    </Tooltip>
-                  </Grid>
-                </Grid>
-                <Grid item sx={{ width: '100%' }}>
-                  <Grid container direction="row" spacing={5}>
-                    <Grid item sx={{ width: '100%' }}>
-                      <Tooltip
-                        placement="left"
-                        classes={{ tooltip: 'toolTip' }}
-                        title="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer."
-                      >
-                        <>
-                          <InputLabel htmlFor="funding-agency">Funding Agencies</InputLabel>
-                          <Select
-                            label="Funding Agencies"
-                            id="funding-agency"
-                            required
-                            sx={{ width: '100%' }}
-                            multiple
-                            value={fundingAgencies}
-                            error={!!fundingAgenciesErrorText}
-                            onChange={handleFundingAgenciesChange}
-                            input={<OutlinedInput label="Funding" />}
-                            renderValue={(selected) => (
-                              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                {selected.map((value) => (
-                                  <Chip key={value} label={getAgencyDescription(value)} />
-                                ))}
-                              </Box>
-                            )}
-                            MenuProps={MenuProps}
-                          >
-                            {fundingAgenciesList.map((fundingAgency) => (
-                              <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
-                                {fundingAgency.code_description}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </>
-                      </Tooltip>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item>
-                  <Grid container direction="row" spacing={5} sx={{ marginBottom: '10px' }}>
-                    <Grid item>
-                      <Tooltip
-                        classes={{ tooltip: 'toolTip' }}
-                        placement="left"
-                        title="Pesticide Applicator Certificate (PAC) Number"
-                      >
-                        <TextField
-                          value={pacNumber}
-                          type={'number'}
-                          onChange={(e) => {
-                            const inputnumber = Number.parseInt(e.target.value);
-                            if (inputnumber) {
-                              setPacNumber(inputnumber);
-                            }
-                          }}
-                          sx={{ width: 320 }}
-                          variant="outlined"
-                          id="pac-number"
-                          label="PAC Number"
-                        />
-                      </Tooltip>
-                    </Grid>
-                    <Grid item>
-                      <Tooltip
-                        placement="left"
-                        classes={{ tooltip: 'toolTip' }}
-                        title="Enter the Service licence Number and Company name separated by a dash and no spaces"
-                      >
-                        <TextField
-                          value={psn1}
-                          onChange={(e) => setPsn1(e.target.value)}
-                          sx={{ width: 320 }}
-                          variant="outlined"
-                          id="psn1"
-                          label="Pesticide Service Number #1"
-                        />
-                      </Tooltip>
-                    </Grid>
-                    <Grid item>
-                      <Tooltip
-                        placement="left"
-                        classes={{ tooltip: 'toolTip' }}
-                        title="Enter the Service licence Number and Company name separated by a dash and no spaces"
-                      >
-                        <TextField
-                          value={psn2}
-                          onChange={(e) => setPsn2(e.target.value)}
-                          sx={{ width: 320 }}
-                          variant="outlined"
-                          id="psn2"
-                          label="Pesticide Service Number #2"
-                        />
-                      </Tooltip>
-                    </Grid>
-                  </Grid>
-                  <Grid item>
-                    <Grid container direction="row">
-                      <Grid item>
-                        <Tooltip
-                          placement="left"
-                          classes={{ tooltip: 'toolTip' }}
-                          title="Select one or more roles to request."
-                        >
-                          <>
-                            <InputLabel htmlFor="requested-roles">Requested roles</InputLabel>
-                            <Select
-                              label="Requested roles"
-                              id="requested-roles"
-                              required
-                              sx={{ width: '100%' }}
-                              multiple
-                              value={requestedRoles}
-                              error={!!requestedRolesErrorText}
-                              onChange={handleRequestedRoleChange}
-                              input={<OutlinedInput label="Requested roles" />}
-                              renderValue={(selected) => (
-                                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                  {selected.map((value) => (
-                                    <Chip key={value} label={getRoleDescription(value)} />
-                                  ))}
-                                </Box>
-                              )}
-                              MenuProps={MenuProps}
-                            >
-                              {roles.map((role) => (
-                                <MenuItem key={role.role_id} value={role.role_name}>
-                                  {role.role_description}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </>
-                        </Tooltip>
-                      </Grid>
-                    </Grid>
-                  </Grid>
-                  <Grid container direction="row" spacing={5}>
-                    <Grid item sx={{ marginBottom: '10px', marginTop: '10px' }}>
-                      <Tooltip
-                        placement="left"
-                        classes={{ tooltip: 'toolTip' }}
-                        title="If your employer or agency were not on our lists, please enter it here."
-                      >
-                        <TextField
-                          sx={{ width: 640, maxWidth: '100%' }}
-                          multiline
-                          rows={4}
-                          value={comments}
-                          onChange={(e) => setComments(e.target.value)}
-                          name="Comments"
-                          id="comments"
-                          variant="outlined"
-                          label="Comments"
-                        />
-                      </Tooltip>
-                    </Grid>
-                  </Grid>
-                  <Grid container direction="row" spacing={5}>
-                    <Grid item>
-                      {!isUpdating && (
-                        <Typography variant="body1" align="center">
-                          We will inform you when the training materials are ready and again when your access is
-                          approved
-                        </Typography>
-                      )}
-                      {isUpdating && (
-                        <Typography variant="body1" align="center">
-                          We will inform you when your information has been updated.
-                        </Typography>
-                      )}
-                    </Grid>
-                  </Grid>
-                </Grid>
-              </Grid>
-            </CardContent>
-          )}
-          {submitted && (
-            <CardContent>
-              <Grid container direction="row" spacing={7}>
-                <Grid item>
-                  {!isUpdating && (
-                    <Typography variant="body1" align="center">
-                      Thank you for submitting your request.
-                    </Typography>
-                  )}
-                  {isUpdating && (
-                    <Typography variant="body1" align="center">
-                      Your request to update your information has been received. We will inform you when your
-                      information has been updated.
-                    </Typography>
-                  )}
-                </Grid>
-              </Grid>
-            </CardContent>
-          )}
-          <Divider />
-          <CardActions>
-            <Grid container direction="row" spacing={5} justifyContent="space-between">
-              <Grid item>
-                <Button
-                  color="primary"
-                  variant="outlined"
-                  onClick={() => {
-                    history.push('/');
-                  }}
-                >
-                  Back
-                </Button>
-              </Grid>
-            </Grid>
-            <Grid item>
-              {!submitted && !isUpdating && (
-                <Button
-                  sx={{ maxWidth: '300px', minWidth: '225px' }}
-                  variant="contained"
-                  color="primary"
-                  onClick={submitAccessRequest}
-                >
-                  Submit Access Request
-                </Button>
+            <p>
+              If you have more than one IAPP user account (i.e. two or more BCeIDs), please provide a separate form for
+              each account.
+            </p>
+          </>
+        )}
+        {isUpdating && (
+          <section className="new-user">
+            <fieldset className="account-type">
+              <legend>Account type</legend>
+              <RadioGroup
+                row
+                aria-label="account-type"
+                name="row-radio-buttons-group"
+                value={accountType}
+                onChange={handleAccountRadioChange}
+              >
+                <FormControlLabel control={<Radio />} label={AuthOptions.IDIR} value={AuthOptions.IDIR} />
+                <FormControlLabel control={<Radio />} label={AuthOptions.BCeID} value={AuthOptions.BCeID} />
+              </RadioGroup>
+            </fieldset>
+            {
+              {
+                [AuthOptions.IDIR]: (
+                  <TextField
+                    value={idir}
+                    onChange={(e) => setIdir(e.target.value)}
+                    required
+                    error={!!idirErrorText}
+                    helperText={idirErrorText}
+                    id="idir"
+                    label="IDIR Account Name"
+                  />
+                ),
+                [AuthOptions.BCeID]: (
+                  <TextField
+                    required
+                    value={bceid}
+                    onChange={(e) => setBceid(e.target.value)}
+                    error={!!bceidErrorText}
+                    helperText={bceidErrorText}
+                    id="bceid"
+                    label="BCeID Account Name"
+                  />
+                )
+              }[accountType]
+            }
+          </section>
+        )}
+        <section className="contact-information">
+          <TextField
+            required
+            value={firstName ?? ''}
+            onChange={(e) => setFirstName(e.target.value)}
+            error={!!firstNameErrorText}
+            helperText={firstNameErrorText}
+            id="first-name"
+            label="First Name"
+          />
+          <TextField
+            required
+            value={lastName ?? ''}
+            onChange={(e) => setLastName(e.target.value)}
+            error={!!lastNameErrorText}
+            helperText={lastNameErrorText}
+            id="last-name"
+            label="Last Name"
+          />
+          <TextField
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={!!emailErrorText}
+            helperText={emailErrorText}
+            id="primary-email"
+            label="Primary Email"
+          />
+          <TextField
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            id="work-phone"
+            label="Work Phone (optional)"
+          />
+        </section>
+        <section className="employer-details">
+          <FormControl>
+            <FormLabel>
+              Employer <TooltipWithIcon tooltipText="Who do you work for?" />
+            </FormLabel>
+            <Select
+              id="employer"
+              required
+              multiple
+              value={employer ?? []}
+              error={!!employerErrorText}
+              onChange={handleEmployerChange}
+              renderValue={(selected) => (
+                <div className="selected-menu-options">
+                  {selected.map((value) => (
+                    <Chip key={value} label={getEmployerDescription(value)} />
+                  ))}
+                </div>
               )}
-              {!submitted && isUpdating && (
-                <Button
-                  sx={{ maxWidth: '300px', minWidth: '225px' }}
-                  variant="contained"
-                  color="primary"
-                  onClick={submitUpdateRequest}
-                >
-                  Submit Update Request
-                </Button>
+              MenuProps={MenuProps}
+            >
+              {employersList.map((employer) => (
+                <MenuItem key={employer.code_id} value={employer.code_name}>
+                  {employer.code_description}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText error>{employerErrorText}</FormHelperText>
+          </FormControl>
+          <FormControl>
+            <FormLabel>
+              Funding Agencies&nbsp;
+              <TooltipWithIcon tooltipText="Select one or more funding agencies that you collect/provide Invasives content for. May or may not be the same as your employer." />
+            </FormLabel>
+            <Select
+              id="funding-agency"
+              required
+              multiple
+              value={fundingAgencies}
+              error={!!fundingAgenciesErrorText}
+              onChange={handleFundingAgenciesChange}
+              renderValue={(selected) => (
+                <div className="selected-menu-options">
+                  {selected.map((value) => (
+                    <Chip key={value} label={getAgencyDescription(value)} />
+                  ))}
+                </div>
               )}
-            </Grid>
-          </CardActions>
-        </Card>
-      </Grid>
-    </Container>
+              MenuProps={MenuProps}
+            >
+              {fundingAgenciesList.map((fundingAgency) => (
+                <MenuItem key={fundingAgency.code_id} value={fundingAgency.code_name}>
+                  {fundingAgency.code_description}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText error>{fundingAgenciesErrorText}</FormHelperText>
+          </FormControl>
+        </section>
+        <section className="licensing-details">
+          <TextField
+            value={pacNumber ?? ''}
+            onChange={(e) => {
+              const userInput = e.target.value;
+              if (RegExp(/^[0-9]+$/).test(e.target.value)) {
+                setPacNumber(Number.parseInt(e.target.value) ?? '');
+              } else if (userInput === '') {
+                setPacNumber(undefined);
+              }
+            }}
+            id="pac-number"
+            label={
+              <>
+                PAC Number <TooltipWithIcon tooltipText="Pesticide Applicator Certificate (PAC) Number" />
+              </>
+            }
+          />
+          <TextField
+            value={psn1}
+            onChange={(e) => setPsn1(e.target.value)}
+            id="psn1"
+            label={
+              <>
+                Pesticide Service Number #1&nbsp;
+                <TooltipWithIcon tooltipText="Enter the Service licence Number and Company name separated by a dash and no spaces" />
+              </>
+            }
+          />
+          <TextField
+            value={psn2}
+            onChange={(e) => setPsn2(e.target.value)}
+            id="psn2"
+            label={
+              <>
+                Pesticide Service Number #2&nbsp;
+                <TooltipWithIcon tooltipText="Enter the Service licence Number and Company name separated by a dash and no spaces" />
+              </>
+            }
+          />
+        </section>
+        <section className="requested-roles">
+          <FormControl>
+            <FormLabel>
+              Requested roles <TooltipWithIcon tooltipText="Select one or more roles to request." />
+            </FormLabel>
+            <Select
+              id="requested-roles"
+              required
+              multiple
+              value={requestedRoles}
+              error={!!requestedRolesErrorText}
+              onChange={handleRequestedRoleChange}
+              renderValue={(selected) => (
+                <div className="selected-menu-options">
+                  {selected.map((value) => (
+                    <Chip key={value} label={getRoleDescription(value)} />
+                  ))}
+                </div>
+              )}
+              MenuProps={MenuProps}
+            >
+              {roles.map((role) => (
+                <MenuItem key={role.role_id} value={role.role_name}>
+                  {role.role_description}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText error>{requestedRolesErrorText}</FormHelperText>
+          </FormControl>
+        </section>
+        <section className="additional-comments">
+          <TextField
+            multiline
+            rows={4}
+            value={comments}
+            onChange={(e) => setComments(e.target.value)}
+            name="Comments"
+            id="comments"
+            placeholder="If your employer or agency were not on our lists, please enter it here."
+            label={
+              <>
+                Additional Comments&nbsp;
+                <TooltipWithIcon tooltipText="If your employer or agency were not on our lists, please enter it here." />
+              </>
+            }
+          />
+        </section>
+        <section className="closing-remark">
+          <p>
+            {isUpdating
+              ? 'We will inform you when your information has been updated.'
+              : 'We will inform you when the training materials are ready and again when your access is approved'}
+          </p>
+        </section>
+        <div className="controls">
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => {
+              history.push('/');
+            }}
+          >
+            Go Back
+          </Button>
+          {!isUpdating && (
+            <Button variant="contained" color="primary" disabled={!formValid} onClick={submitAccessRequest}>
+              Submit Access Request
+            </Button>
+          )}
+          {isUpdating && (
+            <Button variant="contained" color="primary" disabled={!formValid} onClick={submitUpdateRequest}>
+              Submit Update Request
+            </Button>
+          )}
+        </div>
+      </form>
+    </div>
   );
 };
 
