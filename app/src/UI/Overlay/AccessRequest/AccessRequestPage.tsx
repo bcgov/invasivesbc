@@ -71,7 +71,6 @@ const AccessRequestPage = () => {
   const [email, setEmail] = useState(authState.email ?? '');
   const [employer, setEmployer] = useState<string[]>([]);
   const [employersList, setEmployersList] = useState<any[]>([]);
-  console.log(authState);
   const [firstName, setFirstName] = useState<string>(authState?.displayName?.split(' ')[1] ?? '');
   const [formValid, setFormValid] = useState<boolean>(false);
   const [fundingAgencies, setFundingAgencies] = useState<string[]>([]);
@@ -266,8 +265,8 @@ const AccessRequestPage = () => {
         <div className="content">
           <p>
             {isUpdating
-              ? 'Thank you for submitting your request'
-              : 'Your request to update your information has been received. We will inform you when your information has been updated.'}
+              ? 'Your request to update your information has been received. We will inform you when your information has been updated.'
+              : 'Thank you for submitting your request'}
           </p>
           <Button
             color="primary"
@@ -305,7 +304,7 @@ const AccessRequestPage = () => {
             </p>
           </>
         )}
-        {isUpdating && (
+        {!isUpdating && (
           <section className="new-user">
             <fieldset className="account-type">
               <legend>Account type</legend>
