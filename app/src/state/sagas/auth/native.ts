@@ -61,6 +61,7 @@ function* initializeAuthentication() {
 
 function* checkTokenValidity() {
   const { authenticated } = yield select((state) => state.Auth);
+  const { connected } = yield select((state) => state.Network);
 
   if (!authenticated) {
     // if we don't think we're logged in, we have no opinion here
@@ -84,6 +85,27 @@ function* checkTokenValidity() {
         })
       )
     ]);
+    return;
+  }
+  if (connected && authorized) {
+    // if we are connected to a network, additionally validate that we can get new tokens
+    // (confirm refresh token is still usable)
+    const { error } = yield AuthBridge.token({});
+    if (error) {
+      yield all([
+        put(AuthActions.signoutRequest()),
+        put(
+          Alerts.create({
+            severity: AlertSeverity.Warning,
+            subject: AlertSubjects.Network,
+            title: 'Session Expired',
+            id: nanoid(),
+            content:
+              'Your authentication session has expired. This can occur if you have been offline for an extended period and reconnected. You have been signed out.'
+          })
+        )
+      ]);
+    }
   }
 }
 
