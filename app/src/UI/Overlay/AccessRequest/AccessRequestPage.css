@@ -1,0 +1,92 @@
+:root {
+  --margin-between-access-items: 12pt;
+  --border-color-access-items: #ccc;
+}
+#access-request-page {
+  display: flex;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  min-height: 100%;
+
+  .content {
+    display: flex;
+    box-sizing: border-box;
+    border-radius: 4pt;
+    width: 100%;
+    max-width: 1000px;
+    padding: 10pt;
+    flex-direction: column;
+    border: 1pt solid var(--border-color-access-items);
+    .account-type {
+      box-sizing: border-box;
+      border-radius: 5px;
+      font-size: 12px;
+      border: 1pt solid var(--border-color-access-items);
+      legend {
+        color: rgba(0, 0, 0, 0.6);
+      }
+    }
+    section {
+      display: flex;
+      padding: 5pt;
+      box-sizing: border-box;
+      flex-direction: row;
+      flex-wrap: wrap;
+      width: 100%;
+      margin-bottom: 15pt;
+      p {
+        width: 100%;
+      }
+      & > * {
+        width: 300px;
+        margin-right: auto;
+        &:not(:last-child) {
+          margin-bottom: var(--margin-between-access-items);
+        }
+      }
+    }
+    .new-user {
+      align-items: center;
+    }
+    .licensing-details > * {
+      width: 300px;
+    }
+    .employer-details > *,
+    .requested-roles > * {
+      width: 100%;
+      &:not(:last-child) {
+        margin-bottom: var(--margin-between-access-items);
+      }
+    }
+
+    /* Give text box full width */
+    .additional-comments > :first-child {
+      width: 100%;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      padding: 10pt;
+      box-sizing: border-box;
+      width: 100%;
+      border-top: 1pt solid var(--border-color-access-items);
+      justify-content: space-between;
+      & > * {
+        margin-bottom: 5pt;
+      }
+    }
+    .selected-menu-options {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-start;
+      align-items: center;
+      & > * {
+        margin-top: 5pt;
+        margin-right: 5pt;
+      }
+    }
+  }
+}
