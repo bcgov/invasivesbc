@@ -20,8 +20,8 @@ const InformationalLinkBox = () => {
         <u>Informational Links</u>
         <ul>
           {INFORMATIONAL_LINKS.map((link) => (
-            <li>
-              <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer">
+            <li key={link.label}>
+              <a href={link.url} target="_blank" rel="noopener noreferrer">
                 {link.label}
               </a>
             </li>
