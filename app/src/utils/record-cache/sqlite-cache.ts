@@ -19,6 +19,8 @@ import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
 } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
+import booleanIntersects from '@turf/boolean-intersects';
+import bbox from '@turf/bbox';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -80,66 +82,119 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
   }
 
-  async getRepository(repositoryId: string): Promise<RepositoryMetadata> {
+  /**
+   * @desc Returns list of IDs that overlap with a GeoJSON Object
+   * @param {Feature} geom GeoJSON Object to find overlaps
+   * @returns { string[] } Overlapping record Ids
+   */
+  public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const BUFFER = 0.0045; // Roughly 0.5KM
+    const [minX, minY, maxX, maxY] = bbox(geom);
+    const shapesInBufferedArea = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT GEOJSON
+       FROM CACHED_RECORDS
+       WHERE LATITUDE BETWEEN ? AND ?
+       AND LONGITUDE BETWEEN ? AND ?
+       UNION ALL
+       SELECT GEOJSON
+       FROM CACHED_IAPP_RECORDS
+       WHERE LATITUDE BETWEEN ? AND ?
+       AND LONGITUDE BETWEEN ? AND ?
+      `,
+      [
+        minY - BUFFER,
+        maxY + BUFFER,
+        minX - BUFFER,
+        maxX + BUFFER,
+        minY - BUFFER,
+        maxY + BUFFER,
+        minX - BUFFER,
+        maxX + BUFFER
+      ]
+    );
+
+    const overlappingRecords: string[] = [];
+    (shapesInBufferedArea.values ?? []).forEach((entry) => {
+      entry = JSON.parse(entry['GEOJSON']);
+      if (Object.hasOwn(entry, 'length')) {
+        entry?.forEach((shape: Feature) => {
+          if (booleanIntersects(geom, shape)) {
+            overlappingRecords.push(shape?.properties?.description);
+          }
+        });
+      } else {
+        if (booleanIntersects(geom, entry)) {
+          overlappingRecords.push(entry?.properties?.description);
+        }
+      }
+    });
+    return overlappingRecords;
+  }
+
+  getRepository(repositoryId: string, fields: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
+  getRepository(repositoryId: string): Promise<RepositoryMetadata>;
+  async getRepository(
+    repositoryId: string,
+    fields?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata | Partial<RepositoryMetadata>> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
     const repoData = await this.cacheDB.query(
       //language=SQLite
-      `SELECT *
+      `SELECT ${fields?.join(', ') ?? '*'}
        FROM CACHE_METADATA
        WHERE SET_ID = ?
        LIMIT 1`,
       [repositoryId]
     );
-    const resp = {};
-    Object.entries(repoData.values?.[0] ?? {}).forEach(([key, value]) => {
+
+    return this.cacheMetadataTransformer(repoData.values?.[0] ?? {});
+  }
+
+  /**
+   * @desc Return handler, ensures keys are in lower snakecase
+   * @param {RepositoryMetadata | Partial<RepositoryMetadata> } record entry from Db
+   * @returns {RepositoryMetadata | Partial<RepositoryMetadata> } Parsed Entry.
+   */
+  private cacheMetadataTransformer(
+    record: Partial<RepositoryMetadata> | RepositoryMetadata
+  ): Partial<RepositoryMetadata> | RepositoryMetadata {
+    const primitiveKeys = ['SET_ID', 'SET_NAME', 'RECORD_SET_TYPE', 'STATUS'];
+    const resp: Partial<RepositoryMetadata> | RepositoryMetadata = {};
+    Object.entries(record).forEach(([key, value]) => {
+      if (!primitiveKeys.includes(key)) {
+        value = JSON.parse(value);
+      }
       resp[key.toLowerCase()] = value;
     });
-    return resp as RepositoryMetadata;
+    return resp;
   }
 
   async isCached(repositoryId: string): Promise<boolean> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const metadata = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT STATUS
-       FROM CACHE_METADATA
-       WHERE SET_ID = ?
-       LIMIT 1
-      `,
-      [repositoryId]
-    );
-    return metadata?.values?.[0]?.['STATUS'] === UserRecordCacheStatus.CACHED;
+    const { status } = await this.getRepository(repositoryId, ['status']);
+    return status === UserRecordCacheStatus.CACHED;
   }
 
   async getIdList(repositoryId: string): Promise<string[]> {
     if (this.cacheDB == null) {
       throw Error(CACHE_UNAVAILABLE);
     }
-    return (await this.getRepository(repositoryId)).cached_ids ?? [];
+    return (await this.getRepository(repositoryId, ['cached_ids'])).cached_ids ?? [];
   }
 
   async deleteRepository(repositoryId: string): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const rawRepositoryMetadata = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT SET_ID, CACHED_IDS, RECORD_SET_TYPE
-       FROM CACHE_METADATA
-       WHERE CACHED_IDS NOT NULL`
-    );
-    const repositoryMetadata: Array<Partial<RepositoryMetadata>> = (rawRepositoryMetadata?.values ?? []).map(
-      (repo) => ({
-        set_id: repo['SET_ID'],
-        cached_ids: JSON.parse(repo['CACHED_IDS']),
-        record_set_type: repo['RECORD_SET_TYPE']
-      })
-    );
-
+    const repositoryMetadata = await this.listRepositories(['set_id', 'cached_ids', 'record_set_type']);
     const targetIndex = repositoryMetadata.findIndex((set) => set.set_id == repositoryId);
     if (targetIndex === -1) return;
 
@@ -163,23 +218,20 @@ class SQLiteRecordCacheService extends RecordCacheService {
     );
   }
 
-  async listRepositories(): Promise<RepositoryMetadata[]> {
+  listRepositories(fields: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
+  listRepositories(): Promise<RepositoryMetadata[]>;
+  async listRepositories(
+    fields?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata[] | Partial<RepositoryMetadata>[]> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
     const repositories = await this.cacheDB.query(
       //language=SQLite
-      `SELECT *
+      `SELECT ${fields?.join(',') ?? '*'}
        FROM CACHE_METADATA`
     );
-    const response = repositories?.values?.map((repo) => {
-      const parsedRepo = {};
-      Object.keys(repo).forEach((key) => {
-        parsedRepo[key.toLowerCase()] = JSON.parse(repo[key]);
-      });
-      return parsedRepo as RepositoryMetadata;
-    });
-    return response ?? [];
+    return repositories?.values?.map((repo) => this.cacheMetadataTransformer(repo)) ?? [];
   }
 
   async setRepositoryStatus(repositoryId: string, status: UserRecordCacheStatus): Promise<void> {
@@ -190,7 +242,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (Object.keys(currData).length === 0) return; // Repo doesn't exist.
     currData.status = status;
 
-    this.addOrUpdateRepository({
+    await this.addOrUpdateRepository({
       ...currData,
       set_id: repositoryId,
       status: status
@@ -201,40 +253,16 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const metadata = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT STATUS
-       FROM CACHE_METADATA
-       WHERE SET_ID = ?
-       LIMIT 1
-      `,
-      [repositoryId]
-    );
-
-    const cacheStatus = metadata?.values?.[0]['STATUS'];
-    if (cacheStatus) {
-      return cacheStatus === UserRecordCacheStatus.DELETING;
-    }
-    return true;
+    const { status } = await this.getRepository(repositoryId, ['status']);
+    return status ? status === UserRecordCacheStatus.DELETING : true;
   }
 
   async checkPauseOrAbort(repositoryId: string): Promise<CacheDownloadMode> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const metadata = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT STATUS
-       FROM CACHE_METADATA
-       WHERE SET_ID = ?
-       LIMIT 1
-      `,
-      [repositoryId]
-    );
-
-    const cacheStatus = metadata?.values?.[0]['STATUS'];
-
-    switch (cacheStatus) {
+    const { status } = await this.getRepository(repositoryId, ['status']);
+    switch (status) {
       case UserRecordCacheStatus.PAUSED:
         return CacheDownloadMode.PAUSE;
       case UserRecordCacheStatus.DELETING:
@@ -687,10 +715,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
           await this.cacheDB.query(
             //language=SQLite
             `SELECT ID
-           FROM CACHED_RECORDS
-           ORDER BY ID ASC
-           LIMIT ?
-           OFFSET ?`,
+             FROM CACHED_RECORDS
+             ORDER BY ID ASC
+             LIMIT ?
+             OFFSET ?`,
             [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
           )
         )?.values ?? [];
@@ -699,10 +727,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
           await this.cacheDB.query(
             //language=SQLite
             `SELECT ID
-           FROM CACHED_IAPP_RECORDS
-           ORDER BY ID ASC
-           LIMIT ?
-           OFFSET ?`,
+             FROM CACHED_IAPP_RECORDS
+             ORDER BY ID ASC
+             LIMIT ?
+             OFFSET ?`,
             [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
           )
         )?.values ?? [];

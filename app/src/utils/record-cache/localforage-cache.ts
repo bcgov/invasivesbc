@@ -42,21 +42,19 @@ class LocalForageRecordCacheService extends RecordCacheService {
       return false;
     }
   }
-  getRepository(repositoryId: string, fields: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
+  getRepository(repositoryId: string, columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
   getRepository(repositoryId: string): Promise<RepositoryMetadata>;
   async getRepository(
     repositoryId: string,
-    fields?: Array<keyof RepositoryMetadata>
+    columns?: Array<keyof RepositoryMetadata>
   ): Promise<RepositoryMetadata | Partial<RepositoryMetadata>> {
     const repos = await this.listRepositories();
-    console.log('Repos Result', repos);
-    console.log(repositoryId);
     const foundIndex = repos.findIndex((p) => p.set_id == repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} not found`);
-    if (fields) {
+    if (columns) {
       const res: Partial<Record<keyof RepositoryMetadata, any>> = {};
-      fields.map((field) => {
-        res[field] = repos[foundIndex]?.[field];
+      columns.forEach((column) => {
+        res[column] = repos[foundIndex]?.[column];
       });
       return res;
     }
@@ -340,10 +338,10 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
-  listRepositories(fields: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
+  listRepositories(columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
   listRepositories(): Promise<RepositoryMetadata[]>;
   async listRepositories(
-    fields?: Array<keyof RepositoryMetadata>
+    columns?: Array<keyof RepositoryMetadata>
   ): Promise<RepositoryMetadata[] | Partial<RepositoryMetadata>[]> {
     if (this.store == null) {
       return [];
@@ -355,10 +353,10 @@ class LocalForageRecordCacheService extends RecordCacheService {
       console.error('expected key not found');
       return [];
     }
-    if (fields) {
+    if (columns) {
       return metadata.map((repo) => {
         const res: Partial<Record<keyof RepositoryMetadata, any>> = {};
-        fields.map((field) => {
+        columns.forEach((field) => {
           res[field] = repo?.[field];
         });
         return res;
