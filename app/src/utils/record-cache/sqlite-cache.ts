@@ -689,15 +689,13 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const currData = await this.getRepository(repositoryId);
-    if (Object.keys(currData).length === 0) return; // Repo doesn't exist.
-    currData.status = status;
-
-    await this.addOrUpdateRepository({
-      ...currData,
-      set_id: repositoryId,
-      status: status
-    });
+    await this.cacheDB.query(
+      // language=SQLite
+      `UPDATE CACHE_METADATA
+       SET STATUS = ?
+       WHERE ID = ?`,
+      [status, repositoryId]
+    );
   }
 
   /**
