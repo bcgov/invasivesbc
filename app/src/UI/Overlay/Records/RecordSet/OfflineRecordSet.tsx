@@ -66,7 +66,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   try {
     unsyncedOfflineActivities = transformOfflineActivitiesForRecordTable(unsyncedOfflineActivities, listOptions);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   return (
