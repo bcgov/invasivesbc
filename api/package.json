@@ -14,6 +14,7 @@
     "start": "tsx src/server",
     "export-map": "tsx src/map-exporter",
     "export-geojson": "tsx src/geojson-exporter",
+    "export-observation-data": "tsx src/observation-data-exporter.ts",
     "test": "NODE_OPTIONS='--import tsx' mocha \"./src/tests/**/*.test.ts\" --timeout 10000",
     "lint": "eslint",
     "lint-fix": "eslint --fix"
