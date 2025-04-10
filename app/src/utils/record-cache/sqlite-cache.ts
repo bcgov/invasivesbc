@@ -135,18 +135,18 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return overlappingRecords;
   }
 
-  getRepository(repositoryId: string, fields: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
+  getRepository(repositoryId: string, columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
   getRepository(repositoryId: string): Promise<RepositoryMetadata>;
   async getRepository(
     repositoryId: string,
-    fields?: Array<keyof RepositoryMetadata>
+    columns?: Array<keyof RepositoryMetadata>
   ): Promise<RepositoryMetadata | Partial<RepositoryMetadata>> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
     const repoData = await this.cacheDB.query(
       //language=SQLite
-      `SELECT ${fields?.join(', ') ?? '*'}
+      `SELECT ${columns?.join(', ') ?? '*'}
        FROM CACHE_METADATA
        WHERE SET_ID = ?
        LIMIT 1`,
@@ -218,17 +218,17 @@ class SQLiteRecordCacheService extends RecordCacheService {
     );
   }
 
-  listRepositories(fields: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
+  listRepositories(columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
   listRepositories(): Promise<RepositoryMetadata[]>;
   async listRepositories(
-    fields?: Array<keyof RepositoryMetadata>
+    columns?: Array<keyof RepositoryMetadata>
   ): Promise<RepositoryMetadata[] | Partial<RepositoryMetadata>[]> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
     const repositories = await this.cacheDB.query(
       //language=SQLite
-      `SELECT ${fields?.join(',') ?? '*'}
+      `SELECT ${columns?.join(',') ?? '*'}
        FROM CACHE_METADATA`
     );
     return repositories?.values?.map((repo) => this.cacheMetadataTransformer(repo)) ?? [];
