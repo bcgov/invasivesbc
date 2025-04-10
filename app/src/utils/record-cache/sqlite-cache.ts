@@ -727,24 +727,24 @@ class SQLiteRecordCacheService extends RecordCacheService {
       stringifiedData, // DATA
       activityDate, // DATE_CREATED
       id, // ACTIVITY_ID
-      normalizedRows.activity_type || null,
-      normalizedRows.short_id || null,
-      normalizedRows.activity_subtype || null,
-      normalizedRows.activity_date || null,
-      normalizedRows.project_code || null,
-      normalizedRows.jurisdiction_display || null,
-      normalizedRows.invasive_plant || null,
-      normalizedRows.species_positive_full || null,
-      normalizedRows.species_negative_full || null,
-      normalizedRows.has_current_positive || null,
-      normalizedRows.current_positive_species || null,
-      normalizedRows.has_current_negative || null,
-      normalizedRows.current_negative_species || null,
-      normalizedRows.species_treated_full || null,
-      normalizedRows.species_biocontrol_full || null,
-      normalizedRows.created_by || null,
-      normalizedRows.updated_by || null,
-      normalizedRows.agency || null
+      normalizedRows.activity_type ?? null,
+      normalizedRows.short_id ?? null,
+      normalizedRows.activity_subtype ?? null,
+      normalizedRows.activity_date ?? null,
+      normalizedRows.project_code ?? null,
+      normalizedRows.jurisdiction_display ?? null,
+      normalizedRows.invasive_plant ?? null,
+      normalizedRows.species_positive_full ?? null,
+      normalizedRows.species_negative_full ?? null,
+      normalizedRows.has_current_positive ?? null,
+      normalizedRows.current_positive_species ?? null,
+      normalizedRows.has_current_negative ?? null,
+      normalizedRows.current_negative_species ?? null,
+      normalizedRows.species_treated_full ?? null,
+      normalizedRows.species_biocontrol_full ?? null,
+      normalizedRows.created_by ?? null,
+      normalizedRows.updated_by ?? null,
+      normalizedRows.agency ?? null
     ];
   }
 
@@ -772,22 +772,22 @@ class SQLiteRecordCacheService extends RecordCacheService {
       stringGeo, // GEOJSON
       geojson.geometry.coordinates[1], // LATITUDE
       geojson.geometry.coordinates[0], // LONGITUDE
-      normalizedRows.site_id || null,
-      normalizedRows.site_paper_file_id || null,
-      normalizedRows.jurisdictions_flattened || null,
-      normalizedRows.min_survey || null,
-      normalizedRows.all_species_on_site || null,
-      normalizedRows.max_survey || null,
-      normalizedRows.agencies || null,
-      normalizedRows.biological_agent || null,
-      normalizedRows.has_biological_treatments || null,
-      normalizedRows.has_chemical_treatments || null,
-      normalizedRows.has_mechanical_treatments || null,
-      normalizedRows.has_biological_dispersals || null,
-      normalizedRows.monitored || null,
-      normalizedRows.regional_district || null,
-      normalizedRows.regional_invasive_species_organization || null,
-      normalizedRows.invasive_plant_management_area || null
+      normalizedRows.site_id ?? null,
+      normalizedRows.site_paper_file_id ?? null,
+      normalizedRows.jurisdictions_flattened ?? null,
+      normalizedRows.min_survey ?? null,
+      normalizedRows.all_species_on_site ?? null,
+      normalizedRows.max_survey ?? null,
+      normalizedRows.agencies ?? null,
+      normalizedRows.biological_agent ?? null,
+      normalizedRows.has_biological_treatments ?? null,
+      normalizedRows.has_chemical_treatments ?? null,
+      normalizedRows.has_mechanical_treatments ?? null,
+      normalizedRows.has_biological_dispersals ?? null,
+      normalizedRows.monitored ?? null,
+      normalizedRows.regional_district ?? null,
+      normalizedRows.regional_invasive_species_organization ?? null,
+      normalizedRows.invasive_plant_management_area ?? null
     ];
   }
 }
