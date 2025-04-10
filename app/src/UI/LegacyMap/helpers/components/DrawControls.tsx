@@ -128,7 +128,9 @@ const DrawControls = () => {
     switch (currentMode) {
       case TargetMode.WHATS_HERE: {
         dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
-        uHistory.push('/WhatsHere');
+        if (uHistory.location.pathname !== '/WhatsHere') {
+          uHistory.push('/WhatsHere');
+        }
         break;
       }
       case TargetMode.ACTIVITY: {

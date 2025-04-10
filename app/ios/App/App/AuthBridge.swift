@@ -52,6 +52,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
     @objc func authStatus(_ call: CAPPluginCall) {
         guard let authState = authState else { call.resolve(["error": "no authstate"]); return; }
 
+        
         call.resolve([
             "authorized": authState.isAuthorized
         ])
@@ -221,7 +222,7 @@ public class AuthBridge: CAPPlugin, CAPBridgedPlugin {
         
         let request = OIDAuthorizationRequest(configuration: configuration,
                                               clientId: clientID,
-                                              scopes: [OIDScopeOpenID, OIDScopeProfile],
+                                              scopes: [OIDScopeOpenID, OIDScopeProfile, "offline_access"],
                                               redirectURL: redirectURI,
                                               responseType: OIDResponseTypeCode,
                                               additionalParameters: authorizationParameters)

@@ -1,12 +1,17 @@
-import { DataGrid, GridRowParams, MuiEvent } from '@mui/x-data-grid';
+import { DataGrid, MuiEvent } from '@mui/x-data-grid';
 import WhatsHerePagination from './WhatsHerePagination';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import NoRowsInSearch from './NoRowsInSearch';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import { MouseEvent } from 'react';
 
-const RenderTableActivity = () => {
+type PropTypes = {
+  setAnchorEl: (anchorEl: HTMLElement | null) => void;
+};
+
+const RenderTableActivity = ({ setAnchorEl }: PropTypes) => {
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector((state) => state.Auth);
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
@@ -36,14 +41,12 @@ const RenderTableActivity = () => {
       headerName: 'Reported Area',
       flex: 0.2,
       sortable: false,
-      renderCell: (params) => {
-        return (
-          <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>
-            {params.value}
-            {'m\u00B2'}
-          </div>
-        );
-      }
+      renderCell: (params) => (
+        <div onMouseEnter={dispatchUpdatedID.bind(this, params)}>
+          {params.value}
+          {'m\u00B2'}
+        </div>
+      )
     },
     {
       field: 'created',
@@ -70,7 +73,7 @@ const RenderTableActivity = () => {
 
   const highlightActivity = async (params) => {
     const { id, short_id } = params.row;
-    dispatch(WhatsHere.id_clicked({ type: RecordSetType.Activity, description: 'Activity-' + short_id, id }));
+    dispatch(WhatsHere.id_clicked({ type: RecordSetType.Activity, description: short_id, id }));
     dispatch(WhatsHere.set_highlighted_activity(id, short_id));
   };
 
@@ -89,8 +92,9 @@ const RenderTableActivity = () => {
             onColumnHeaderClick={(c) => {
               dispatch(WhatsHere.sort_filter_update(RecordSetType.Activity, c.field));
             }}
-            onRowClick={(params: GridRowParams, _event: MuiEvent<React.MouseEvent>) => {
+            onCellClick={(params, evt: MuiEvent<MouseEvent>) => {
               if (authenticated && roles.length > 0) {
+                setAnchorEl(evt.currentTarget as HTMLElement);
                 highlightActivity(params);
               }
             }}

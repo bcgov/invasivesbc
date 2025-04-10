@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import FormContainer from './form/FormContainer';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './Form.css';
 
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
@@ -12,8 +12,9 @@ import { UtmInputObj } from 'interfaces/prompt-interfaces';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordHistory from '../RecordHistory/RecordHistory';
+import { useSelector } from 'utils/use_selector';
 
-export const ActivityForm = (props) => {
+export const ActivityForm = () => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) {
@@ -36,10 +37,10 @@ export const ActivityForm = (props) => {
     received_timestamp,
     batch_id,
     activity_history
-  } = useSelector((state: any) => state.ActivityPage?.activity);
+  } = useSelector((state) => state.ActivityPage?.activity);
 
-  const invasive_plant = useSelector((state: any) => state.ActivityPage?.activity?.invasive_plant);
-  const drawGeometryTracking = useSelector((state: any) => state.Map?.track_me_draw_geo);
+  const invasive_plant = useSelector((state) => state.ActivityPage?.activity?.invasive_plant);
+  const drawGeometryTracking = useSelector((state) => state.Map?.track_me_draw_geo);
 
   /**
    * @desc Handler for creating a manual UTM Entry initiated by user

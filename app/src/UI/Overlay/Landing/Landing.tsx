@@ -10,6 +10,7 @@ import { useHistory } from 'react-router';
 import { INFORMATIONAL_LINKS } from 'constants/links';
 import { MobileOnly } from 'UI/Predicates/MobileOnly';
 import { AuthActions } from 'state/actions/auth/Auth';
+import DataSharingAgreement from './DataSharingAgreement/DataSharingAgreement';
 
 const InformationalLinkBox = () => {
   return (
@@ -17,13 +18,15 @@ const InformationalLinkBox = () => {
       {/*web receives this in the footer, but the footer is hidden on mobile*/}
       <Box mt={4} className={'links-box'}>
         <u>Informational Links</u>
-        {INFORMATIONAL_LINKS.map((link) => {
-          return (
-            <a key={link.label} href={link.url} target="_blank" rel="noopener noreferrer">
-              {link.label}
-            </a>
-          );
-        })}
+        <ul>
+          {INFORMATIONAL_LINKS.map((link) => (
+            <li key={link.label}>
+              <a href={link.url} target="_blank" rel="noopener noreferrer">
+                {link.label}
+              </a>
+            </li>
+          ))}
+        </ul>
       </Box>
     </MobileOnly>
   );
@@ -46,13 +49,14 @@ export const LandingComponent = () => {
     }
   };
 
-  const { authenticated, workingOffline, username, displayName, email, roles } = useSelector(selectAuth);
+  const { authenticated, loggedInOrWorkingOffline, workingOffline, username, displayName, email, roles } =
+    useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
   return (
     <section id="landing">
       <div className="content">
         <h2>Welcome to the InvasivesBC Application!</h2>
-        {(userInfoLoaded || workingOffline) && (
+        {(userInfoLoaded || loggedInOrWorkingOffline) && (
           <>
             <Box mt={2}>
               <h3>User Information</h3>
@@ -139,14 +143,9 @@ export const LandingComponent = () => {
                 </li>
               </ul>
             </Box>
-            <Box mt={4}>
-              By using this application, you agree to&nbsp;
-              <a
-                href=""
-                // onClick={redirectToAgreement}
-              >
-                the Data Sharing Agreement
-              </a>
+            <Box mt={4}>By using this application, you agree to the Data Sharing Agreement</Box>
+            <Box mt={1}>
+              <DataSharingAgreement />
             </Box>
             <Box mt={8}>
               <u>
@@ -181,7 +180,7 @@ export const LandingComponent = () => {
             </Button>
           </Box>
         )}
-        {!authenticated && (
+        {!loggedInOrWorkingOffline && (
           <>
             <Box mt={8}>
               <Divider />
@@ -210,7 +209,7 @@ export const LandingComponent = () => {
               </u>
             </Box>
             <Box mt={4}>
-              <strong>To log in: </strong> click the person icon at the top right of the page and select "log in".
+              <strong>To log in: </strong> click the person icon at the top right of the page and select "Login".
             </Box>
             <Box mt={4}>
               <strong>To update or change your account details: </strong> log in and then choose "update my info" from

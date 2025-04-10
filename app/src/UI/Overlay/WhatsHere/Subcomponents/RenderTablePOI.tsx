@@ -6,7 +6,10 @@ import NoRowsInSearch from './NoRowsInSearch';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
-const RenderTablePOI = (props: any) => {
+type PropTypes = {
+  setAnchorEl: (anchorEl: HTMLElement | null) => void;
+};
+const RenderTablePOI = ({ setAnchorEl }: PropTypes) => {
   const dispatch = useDispatch();
   const { authenticated, roles } = useSelector((state: any) => state.Auth);
   const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
@@ -74,8 +77,9 @@ const RenderTablePOI = (props: any) => {
             onColumnHeaderClick={(c) => {
               dispatch(WhatsHere.sort_filter_update(RecordSetType.IAPP, c.field));
             }}
-            onCellClick={(params: GridCellParams, _event: MuiEvent<React.MouseEvent>) => {
+            onCellClick={(params: GridCellParams, event: MuiEvent<React.MouseEvent>) => {
               if (authenticated && roles.length > 0) {
+                setAnchorEl(event.currentTarget as HTMLElement);
                 highlightPOI(params);
               }
             }}
