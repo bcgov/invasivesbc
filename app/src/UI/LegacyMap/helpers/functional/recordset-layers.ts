@@ -28,13 +28,13 @@ export const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => 
     return;
   }
   const service = await RecordCacheServiceFactory.getPlatformInstance();
-  const repo = await service.getRepository(layer.recordSetID);
+  const repo = await service.getRepository(layer.recordSetID, ['cached_geojson']);
 
-  if (!repo?.cachedGeoJson) {
+  if (!repo?.cached_geojson) {
     return;
   }
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
-  const source: GeoJSONSourceSpecification = repo.cachedGeoJson;
+  const source: GeoJSONSourceSpecification = repo.cached_geojson;
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
   const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'name' });
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
@@ -196,9 +196,9 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
     return;
   }
   const service = await RecordCacheServiceFactory.getPlatformInstance();
-  const metadata = await service.getRepository(layer.recordSetID);
+  const repo = await service.getRepository(layer.recordSetID, ['cached_geojson', 'cached_centroid']);
 
-  if (!metadata?.cachedCentroid || !metadata?.cachedGeoJson) {
+  if (!repo?.cached_centroid || !repo?.cached_geojson) {
     return;
   }
 
@@ -206,9 +206,6 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   const GEOJSON_ID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   const CENTROID_ID = `${GEOJSON_ID}-centroid`;
   const color = getPaintBySchemeOrColor(layer);
-
-  const geoJsonSourceObj: GeoJSONSourceSpecification = metadata.cachedGeoJson;
-  const centroidSourceObj: GeoJSONSourceSpecification = metadata.cachedCentroid;
 
   const circleMarkerZoomedOutLayerCentroid: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(CENTROID_ID, {
     color,
@@ -234,13 +231,13 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
 
   const existingSource = map.getSource(GEOJSON_ID);
   if (existingSource) return; // Due to the async nature of the local DB Calls, check the layer wasn't created during a re-render
-  map.addSource(GEOJSON_ID, geoJsonSourceObj);
+  map.addSource(GEOJSON_ID, repo.cached_geojson);
   map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
   map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
   map.addLayer(circleMarkerZoomedOutLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 
-  map.addSource(CENTROID_ID, centroidSourceObj);
+  map.addSource(CENTROID_ID, repo.cached_centroid);
   map.addLayer(labelLayerCentroid, LAYER_Z_FOREGROUND);
   map.addLayer(circleMarkerZoomedOutLayerCentroid, LAYER_Z_FOREGROUND);
 };

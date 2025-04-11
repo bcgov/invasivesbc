@@ -15,6 +15,12 @@ import {
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 import MIGRATIONS from './migrations';
+import {
+  getUnnestedFieldsForActivity,
+  getUnnestedFieldsForIAPP
+} from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
+import booleanIntersects from '@turf/boolean-intersects';
+import bbox from '@turf/bbox';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -41,167 +47,94 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return SQLiteRecordCacheService._instance;
   }
 
+  private async initializeRecordCache(sqlite: SQLiteConnection) {
+    await sqlite.addUpgradeStatement(CACHE_DB_NAME, MIGRATIONS);
+
+    const ret = await sqlite.checkConnectionsConsistency();
+    const isConn = (await sqlite.isConnection(CACHE_DB_NAME, false)).result;
+
+    if (ret.result && isConn) {
+      this.cacheDB = await sqlite.retrieveConnection(CACHE_DB_NAME, false);
+    } else {
+      this.cacheDB = await sqlite.createConnection(CACHE_DB_NAME, false, 'no-encryption', MIGRATIONS.length, false);
+    }
+    try {
+      await this.cacheDB.open().catch((e) => {
+        console.error(e);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   async addOrUpdateRepository(spec: RepositoryMetadata): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
+    const columns: Array<string> = [];
+    const values: Array<string | number> = [];
+    Object.keys(spec).forEach((key) => {
+      columns.push(key);
+      if (typeof spec[key] === 'string' || !spec[key]) {
+        values.push(spec[key] ?? null);
+      } else {
+        values.push(JSON.stringify(spec[key]));
+      }
+    });
+
+    const updates = columns
+      .filter((column) => !RegExp(/SET_ID/i).test(column))
+      .map((key) => `${key} = excluded.${key}`)
+      .join(', ');
 
     try {
       await this.cacheDB.query(
         //language=SQLite`
-        `INSERT INTO CACHE_METADATA(SET_ID, STATUS, CACHE_TIME, DATA)
-         VALUES(?, ?, ?, ?)
+        `INSERT INTO CACHE_METADATA(${columns.join(', ')})
+         VALUES(${columns.map(() => '?').join(', ')})
          ON CONFLICT(SET_ID)
          DO UPDATE SET
-          STATUS = excluded.STATUS,
-          CACHE_TIME = excluded.CACHE_TIME,
-          DATA = excluded.DATA`,
-        [spec.setId, spec.status, spec.cacheTime.toString(), JSON.stringify(spec)]
+        ${updates}`,
+        [...values]
       );
     } catch (error) {
       console.error(error);
     }
   }
 
-  async getRepository(repositoryId: string): Promise<RepositoryMetadata> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const repoData = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT DATA
-       FROM CACHE_METADATA
-       WHERE SET_ID = ?
-       LIMIT 1`,
-      [repositoryId]
-    );
-    return JSON.parse(repoData?.values?.[0]['DATA']) ?? {};
-  }
-
-  async isCached(repositoryId: string): Promise<boolean> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const metadata = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT STATUS
-       FROM CACHE_METADATA
-       WHERE SET_ID = ?
-       LIMIT 1
-      `,
-      [repositoryId]
-    );
-    return metadata?.values?.[0]?.['STATUS'] === UserRecordCacheStatus.CACHED;
-  }
-
-  async getIdList(repositoryId: string): Promise<string[]> {
-    if (this.cacheDB == null) {
-      throw Error(CACHE_UNAVAILABLE);
-    }
-    return (await this.getRepository(repositoryId)).cachedIds ?? [];
-  }
-
-  async deleteRepository(repositoryId: string): Promise<void> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const rawRepositoryMetadata = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT DATA
-       FROM CACHE_METADATA`
-    );
-    const repositoryMetadata: RepositoryMetadata[] =
-      rawRepositoryMetadata?.values?.map((set) => JSON.parse(set['DATA'])) ?? [];
-    const targetIndex = repositoryMetadata.findIndex((set) => set.setId === repositoryId);
-
-    if (targetIndex === -1) return;
-
-    const { cachedIds, recordSetType } = repositoryMetadata[targetIndex];
-
-    const ids: Record<PropertyKey, number> = {};
-    repositoryMetadata
-      .flatMap((set) => set.cachedIds)
-      .forEach((id) => {
-        ids[id] ??= 0;
-        ids[id]++;
-      });
-    const recordsToErase = cachedIds.filter((id) => ids[id] <= 1);
-
-    await this.deleteCachedRecordsFromIds(recordsToErase, recordSetType);
-    await this.cacheDB.query(
-      //language=SQLite
-      `DELETE FROM CACHE_METADATA
-       WHERE SET_ID = ?`,
-      [repositoryId]
-    );
-  }
-
-  async listRepositories(): Promise<RepositoryMetadata[]> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const repositories = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT DATA
-       FROM CACHE_METADATA`
-    );
-    const response = repositories?.values?.map((entry) => JSON.parse(entry['DATA']) as RepositoryMetadata) ?? [];
-    return response;
-  }
-
-  async setRepositoryStatus(repositoryId: string, status: UserRecordCacheStatus): Promise<void> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const currData = await this.getRepository(repositoryId);
-    if (Object.keys(currData).length === 0) return; // Repo doesn't exist.
-    currData.status = status;
-
-    this.addOrUpdateRepository({
-      ...currData,
-      setId: repositoryId,
-      status: status
+  /**
+   * @desc Return handler, ensures keys are in lower snakecase
+   * @param {RepositoryMetadata | Partial<RepositoryMetadata> } record entry from Db
+   * @returns {RepositoryMetadata | Partial<RepositoryMetadata> } Parsed Entry.
+   */
+  private cacheMetadataTransformer(
+    record: Partial<RepositoryMetadata> | RepositoryMetadata
+  ): Partial<RepositoryMetadata> | RepositoryMetadata {
+    const primitiveKeys = ['SET_ID', 'SET_NAME', 'RECORD_SET_TYPE', 'STATUS'];
+    const resp: Partial<RepositoryMetadata> | RepositoryMetadata = {};
+    Object.entries(record).forEach(([key, value]) => {
+      if (!primitiveKeys.includes(key)) {
+        value = JSON.parse(value);
+      }
+      resp[key.toLowerCase()] = value;
     });
+    return resp;
   }
 
   async checkForAbort(repositoryId: string): Promise<boolean> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const metadata = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT STATUS
-       FROM CACHE_METADATA
-       WHERE SET_ID = ?
-       LIMIT 1
-      `,
-      [repositoryId]
-    );
-
-    const cacheStatus = metadata?.values?.[0]['STATUS'];
-    if (cacheStatus) {
-      return cacheStatus === UserRecordCacheStatus.DELETING;
-    }
-    return true;
+    const { status } = await this.getRepository(repositoryId, ['status']);
+    return status ? status === UserRecordCacheStatus.DELETING : true;
   }
 
   async checkPauseOrAbort(repositoryId: string): Promise<CacheDownloadMode> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const metadata = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT STATUS
-       FROM CACHE_METADATA
-       WHERE SET_ID = ?
-       LIMIT 1
-      `,
-      [repositoryId]
-    );
-
-    const cacheStatus = metadata?.values?.[0]['STATUS'];
-
-    switch (cacheStatus) {
+    const { status } = await this.getRepository(repositoryId, ['status']);
+    switch (status) {
       case UserRecordCacheStatus.PAUSED:
         return CacheDownloadMode.PAUSE;
       case UserRecordCacheStatus.DELETING:
@@ -209,201 +142,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
       default:
         return CacheDownloadMode.DEFAULT;
     }
-  }
-
-  /**
-   * @desc fetch `n` records for a given recordset, supporting pagination
-   * @param recordSetID Recordset to filter from
-   * @param page Page to start pagination on
-   * @param limit Maximum results per page
-   * @returns { UserRecord[] } Filter Objects
-   */
-  async getPaginatedCachedActivityRecords(
-    recordSetIdList: string[],
-    page: number = 0,
-    limit: number = recordSetIdList.length
-  ): Promise<UserRecord[]> {
-    if (!recordSetIdList || recordSetIdList.length === 0) {
-      return [];
-    }
-
-    const startPos = page * limit;
-    const subset = recordSetIdList.slice(startPos, startPos + limit);
-    const results = await this.cacheDB?.query(
-      // language=SQLite
-      `SELECT DATA
-       FROM CACHED_RECORDS
-       WHERE ID IN (${subset.map(() => '?').join(', ')})`,
-      [...subset]
-    );
-
-    if (!results?.values || results.values?.length === 0) {
-      return [];
-    }
-
-    const response = results.values
-      .map((item) => {
-        try {
-          return JSON.parse(item['DATA']) as UserRecord;
-        } catch (e) {
-          console.error('Error parsing record:', e);
-          return null;
-        }
-      })
-      .filter((record) => record !== null);
-
-    return response;
-  }
-
-  async getPaginatedCachedIappRecords(recordSetIdList: string[], page: number, limit: number): Promise<IappRecord[]> {
-    if (!recordSetIdList || recordSetIdList.length === 0) {
-      return [];
-    }
-
-    const startPos = page * limit;
-    const results = await this.cacheDB?.query(
-      // language=SQLite
-      `SELECT TABLE_DATA
-       FROM CACHED_IAPP_RECORDS
-       WHERE ID IN (${recordSetIdList.map(() => '?').join(', ')})
-       LIMIT ?, ?`,
-      [...recordSetIdList, startPos, limit]
-    );
-
-    if (!results?.values || results.values?.length === 0) {
-      return [];
-    }
-    const response = results.values
-      .map((item) => {
-        try {
-          return JSON.parse(item['TABLE_DATA']) as IappRecord;
-        } catch (e) {
-          console.error('Error parsing record:', e);
-          return null;
-        }
-      })
-      .filter((record) => record !== null);
-    return response;
-  }
-
-  async loadActivity(id: string): Promise<unknown> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const result = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT DATA
-       FROM CACHED_RECORDS
-       WHERE ID = ?`,
-      [id]
-    );
-
-    if (!result?.values) {
-      return null;
-    }
-
-    if (result.values.length !== 1) {
-      console.error(`Unexpected result set size ${result.values.length} when querying cached_records table`);
-      return null;
-    }
-
-    return JSON.parse(result.values[0]['DATA']);
-  }
-  private transformActivity(id: string, data: UserRecord): Array<any> {
-    const stringified = JSON.stringify(data);
-    const short_id = (data as Record<PropertyKey, Feature[]>)?.short_id;
-    const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
-    const map_symbol = (data as Record<PropertyKey, Feature[]>)?.map_symbol;
-    const activityDate = (data as Record<PropertyKey, any>)?.date_created;
-    geometry.forEach((_, i) => {
-      geometry[i].properties = {
-        name: short_id + `${map_symbol ? '\n' + map_symbol : ''}`,
-        description: id
-      };
-    });
-    const geojson = JSON.stringify(geometry) ?? null;
-    return [id, stringified, geojson, short_id, activityDate];
-  }
-
-  async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const entry = `( ?, ?, ?, ?, ? )`;
-    const values: Array<any> = [];
-    Object.keys(data).forEach((key) => values.push(this.transformActivity(key, data[key])));
-    let query = 'INSERT INTO CACHED_RECORDS(ID, DATA, GEOJSON, SHORT_ID, DATE_CREATED) VALUES ';
-    query += values.map(() => entry).join(', ');
-    query += `
-      ON CONFLICT (ID)
-      DO UPDATE SET
-      DATA = excluded.DATA,
-      DATE_CREATED = excluded.DATE_CREATED,
-      GEOJSON = excluded.GEOJSON`;
-
-    await this.cacheDB.run(query, values.flat(), false);
-  }
-  protected async dateOfMostRecentRecord() {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    try {
-      return (
-        await this.cacheDB.query(
-          //language=SQLite
-          `SELECT MAX(DATE(DATE_CREATED)) as MAX_DATE
-           FROM CACHED_RECORDS
-           WHERE DATE_CREATED NOT NULL`
-        )
-      )?.values?.[0]?.['MAX_DATE'];
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  private transformIapp(id: string, iappRecord: IappRecord, iappRow: IappTableRow): Array<any> {
-    const geojson = iappRow.geojson;
-    const map_symbol = geojson?.properties?.map_symbol;
-    geojson.properties = {
-      name: id + (map_symbol ? '\n' + map_symbol : ''),
-      description: id
-    };
-    const stringRecord = JSON.stringify(iappRecord);
-    const stringRow = JSON.stringify(iappRow);
-    const stringGeo = JSON.stringify(geojson);
-    return [id.toString(), stringRecord, stringRow, stringGeo];
-  }
-
-  async saveIapp(data: Record<PropertyKey, { record: IappRecord; row: IappTableRow }>): Promise<void> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const entry = ` ( ?, ?, ?, ? ) `;
-    const values: Array<any> = [];
-    Object.keys(data).forEach((id) => values.push(this.transformIapp(id, data[id].record, data[id].row)));
-    let query = 'INSERT INTO CACHED_IAPP_RECORDS(ID, RECORD_DATA, TABLE_DATA, GEOJSON) VALUES ';
-    query += values.map(() => entry).join(', ');
-    query += 'ON CONFLICT (ID) DO NOTHING';
-    await this.cacheDB.run(query, values.flat(), false);
-  }
-
-  async loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const dataType = type === IappRecordMode.Record ? 'RECORD_DATA' : 'TABLE_DATA';
-    const result = await this.cacheDB.query(
-      //language=SQLite
-      `SELECT ${dataType}
-         FROM CACHED_IAPP_RECORDS
-         WHERE ID = ?
-         LIMIT 1`,
-      [id.toString()]
-    );
-    if (!result?.values) {
-      throw Error('No results found');
-    }
-    return JSON.parse(result.values[0][dataType]);
   }
 
   async createIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata> {
@@ -482,6 +220,27 @@ class SQLiteRecordCacheService extends RecordCacheService {
     };
     return { cachedCentroid, cachedGeoJson };
   }
+  /**
+   * @desc Gets the date of the most recently updated Activity Record. Used for determining Cache updates.
+   * @returns Most Recent Record Date.
+   */
+  protected async dateOfMostRecentRecord() {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    try {
+      return (
+        await this.cacheDB.query(
+          //language=SQLite
+          `SELECT MAX(DATE(DATE_CREATED)) as MAX_DATE
+           FROM CACHED_RECORDS
+           WHERE DATE_CREATED NOT NULL`
+        )
+      )?.values?.[0]?.['MAX_DATE'];
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
     if (this.cacheDB == null) {
@@ -513,6 +272,34 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
   }
 
+  async deleteRepository(repositoryId: string): Promise<void> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const repositoryMetadata = await this.listRepositories(['set_id', 'cached_ids', 'record_set_type']);
+    const targetIndex = repositoryMetadata.findIndex((set) => set.set_id == repositoryId);
+    if (targetIndex === -1) return;
+
+    const { cached_ids, record_set_type } = repositoryMetadata[targetIndex];
+
+    const ids: Record<PropertyKey, number> = {};
+    repositoryMetadata
+      .flatMap((set) => set.cached_ids!)
+      .forEach((id) => {
+        ids[id] ??= 0;
+        ids[id]++;
+      });
+    const recordsToErase = cached_ids!.filter((id) => ids[id] <= 1);
+
+    await this.deleteCachedRecordsFromIds(recordsToErase, record_set_type!);
+    await this.cacheDB.query(
+      //language=SQLite
+      `DELETE FROM CACHE_METADATA
+       WHERE SET_ID = ?`,
+      [repositoryId]
+    );
+  }
+
   protected async getAllCachedIds(): Promise<string[]> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
@@ -526,10 +313,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
           await this.cacheDB.query(
             //language=SQLite
             `SELECT ID
-           FROM CACHED_RECORDS
-           ORDER BY ID ASC
-           LIMIT ?
-           OFFSET ?`,
+             FROM CACHED_RECORDS
+             ORDER BY ID ASC
+             LIMIT ?
+             OFFSET ?`,
             [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
           )
         )?.values ?? [];
@@ -538,10 +325,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
           await this.cacheDB.query(
             //language=SQLite
             `SELECT ID
-           FROM CACHED_IAPP_RECORDS
-           ORDER BY ID ASC
-           LIMIT ?
-           OFFSET ?`,
+             FROM CACHED_IAPP_RECORDS
+             ORDER BY ID ASC
+             LIMIT ?
+             OFFSET ?`,
             [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
           )
         )?.values ?? [];
@@ -555,24 +342,453 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return idList;
   }
 
-  private async initializeRecordCache(sqlite: SQLiteConnection) {
-    await sqlite.addUpgradeStatement(CACHE_DB_NAME, MIGRATIONS);
-
-    const ret = await sqlite.checkConnectionsConsistency();
-    const isConn = (await sqlite.isConnection(CACHE_DB_NAME, false)).result;
-
-    if (ret.result && isConn) {
-      this.cacheDB = await sqlite.retrieveConnection(CACHE_DB_NAME, false);
-    } else {
-      this.cacheDB = await sqlite.createConnection(CACHE_DB_NAME, false, 'no-encryption', MIGRATIONS.length, false);
+  async getIdList(repositoryId: string): Promise<string[]> {
+    if (this.cacheDB == null) {
+      throw Error(CACHE_UNAVAILABLE);
     }
-    try {
-      await this.cacheDB.open().catch((e) => {
-        console.error(e);
-      });
-    } catch (e) {
-      console.error(e);
+    return (await this.getRepository(repositoryId, ['cached_ids'])).cached_ids ?? [];
+  }
+
+  /**
+   * @desc fetch `n` records for a given recordset, supporting pagination
+   * @param recordSetID Recordset to filter from
+   * @param page Page to start pagination on
+   * @param limit Maximum results per page
+   * @returns { UserRecord[] } Filter Objects
+   */
+  async getPaginatedCachedActivityRecords(
+    recordSetIdList: string[],
+    page: number = 0,
+    limit: number = recordSetIdList.length
+  ): Promise<UserRecord[]> {
+    if (!recordSetIdList || recordSetIdList.length === 0) {
+      return [];
     }
+
+    const startPos = page * limit;
+    const subset = recordSetIdList.slice(startPos, startPos + limit);
+    const results = await this.cacheDB?.query(
+      // language=SQLite
+      `SELECT DATA
+       FROM CACHED_RECORDS
+       WHERE ID IN (${subset.map(() => '?').join(', ')})`,
+      [...subset]
+    );
+
+    if (!results?.values || results.values?.length === 0) {
+      return [];
+    }
+
+    const response = results.values
+      .map((item) => {
+        try {
+          return JSON.parse(item['DATA']) as UserRecord;
+        } catch (e) {
+          console.error('Error parsing record:', e);
+          return null;
+        }
+      })
+      .filter((record) => record !== null);
+
+    return response;
+  }
+
+  async getPaginatedCachedIappRecords(recordSetIdList: string[], page: number, limit: number): Promise<IappRecord[]> {
+    if (!recordSetIdList || recordSetIdList.length === 0) {
+      return [];
+    }
+
+    const startPos = page * limit;
+    const results = await this.cacheDB?.query(
+      // language=SQLite
+      `SELECT TABLE_DATA
+       FROM CACHED_IAPP_RECORDS
+       WHERE ID IN (${recordSetIdList.map(() => '?').join(', ')})
+       LIMIT ?, ?`,
+      [...recordSetIdList, startPos, limit]
+    );
+
+    if (!results?.values || results.values?.length === 0) {
+      return [];
+    }
+    const response = results.values
+      .map((item) => {
+        try {
+          return JSON.parse(item['TABLE_DATA']) as IappRecord;
+        } catch (e) {
+          console.error('Error parsing record:', e);
+          return null;
+        }
+      })
+      .filter((record) => record !== null);
+    return response;
+  }
+
+  /**
+   * @desc Returns list of IDs that overlap with a GeoJSON Object.
+   * @param {Feature} geom GeoJSON Object to find overlaps
+   * @returns { string[] } Overlapping record Ids
+   */
+  public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    // Because local shapes are compared against a centroids lat/long, buffer the area of effect to catch what centroids may have missed
+    const BUFFER = 0.0045; // Roughly 0.5KM
+    const [minX, minY, maxX, maxY] = bbox(geom);
+    const shapesInBufferedArea = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT GEOJSON
+       FROM CACHED_RECORDS
+       WHERE LATITUDE BETWEEN ? AND ?
+       AND LONGITUDE BETWEEN ? AND ?
+       UNION ALL
+       SELECT GEOJSON
+       FROM CACHED_IAPP_RECORDS
+       WHERE LATITUDE BETWEEN ? AND ?
+       AND LONGITUDE BETWEEN ? AND ?
+      `,
+      [
+        minY - BUFFER,
+        maxY + BUFFER,
+        minX - BUFFER,
+        maxX + BUFFER,
+        minY - BUFFER,
+        maxY + BUFFER,
+        minX - BUFFER,
+        maxX + BUFFER
+      ]
+    );
+    const overlappingRecords: string[] = [];
+    (shapesInBufferedArea.values ?? []).forEach((entry) => {
+      entry = JSON.parse(entry['GEOJSON']);
+      // IAPP is Shape, but InvBC records are Array<Shape>
+      const recordIsActivity = Object.hasOwn(entry, 'length');
+      if (recordIsActivity) {
+        entry?.forEach((shape: Feature) => {
+          if (booleanIntersects(geom, shape)) {
+            overlappingRecords.push(shape?.properties?.description);
+          }
+        });
+      } else if (booleanIntersects(geom, entry)) {
+        overlappingRecords.push(entry?.properties?.description);
+      }
+    });
+    return overlappingRecords;
+  }
+
+  getRepository(repositoryId: string, columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
+  getRepository(repositoryId: string): Promise<RepositoryMetadata>;
+  async getRepository(
+    repositoryId: string,
+    columns?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata | Partial<RepositoryMetadata>> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const repoData = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT ${columns?.join(', ') ?? '*'}
+       FROM CACHE_METADATA
+       WHERE SET_ID = ?
+       LIMIT 1`,
+      [repositoryId]
+    );
+
+    return this.cacheMetadataTransformer(repoData.values?.[0] ?? {});
+  }
+
+  async isCached(repositoryId: string): Promise<boolean> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const { status } = await this.getRepository(repositoryId, ['status']);
+    return status === UserRecordCacheStatus.CACHED;
+  }
+
+  listRepositories(columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
+  listRepositories(): Promise<RepositoryMetadata[]>;
+  async listRepositories(
+    columns?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata[] | Partial<RepositoryMetadata>[]> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const repositories = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT ${columns?.join(',') ?? '*'}
+       FROM CACHE_METADATA`
+    );
+    return repositories?.values?.map((repo) => this.cacheMetadataTransformer(repo)) ?? [];
+  }
+
+  async loadActivity(id: string): Promise<unknown> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const result = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT DATA
+       FROM CACHED_RECORDS
+       WHERE ID = ?`,
+      [id]
+    );
+
+    if (!result?.values) {
+      return null;
+    }
+
+    if (result.values.length !== 1) {
+      console.error(`Unexpected result set size ${result.values.length} when querying cached_records table`);
+      return null;
+    }
+
+    return JSON.parse(result.values[0]['DATA']);
+  }
+
+  /**
+   * @desc Fetches an IAPP Record from the local Database in requested format
+   * @param id Site ID of Record
+   * @param type Format Requested, e.g For Record Table, Full Record
+   * @returns Formatted IAPP Information
+   */
+  async loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const dataType = type === IappRecordMode.Record ? 'RECORD_DATA' : 'TABLE_DATA';
+    const result = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT ${dataType}
+         FROM CACHED_IAPP_RECORDS
+         WHERE ID = ?
+         LIMIT 1`,
+      [id.toString()]
+    );
+    if (!result?.values) {
+      throw Error('No results found');
+    }
+    return JSON.parse(result.values[0][dataType]);
+  }
+  /**
+   * @desc Upserts an Invasives Activity into the local Database.
+   * @param data Incoming Activity Data
+   */
+  async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
+    const NUM_ACTIVITY_COLUMNS = 26;
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const entry = `( ${Array(NUM_ACTIVITY_COLUMNS).fill('?').join(',')} )`;
+    const values: Array<any> = [];
+    Object.keys(data).forEach((key) => values.push(this.transformActivity(key, data[key])));
+    let query = `INSERT INTO CACHED_RECORDS(
+      ID,
+      LATITUDE,
+      LONGITUDE,
+      GEOJSON,
+      CENTROID,
+      DATA,
+      DATE_CREATED,
+      ACTIVITY_ID,
+      ACTIVITY_TYPE,
+      SHORT_ID,
+      ACTIVITY_SUBTYPE,
+      ACTIVITY_DATE,
+      PROJECT_CODE,
+      JURISDICTION_DISPLAY,
+      INVASIVE_PLANT,
+      SPECIES_POSITIVE_FULL,
+      SPECIES_NEGATIVE_FULL,
+      HAS_CURRENT_POSITIVE,
+      CURRENT_POSITIVE_SPECIES,
+      HAS_CURRENT_NEGATIVE,
+      CURRENT_NEGATIVE_SPECIES,
+      SPECIES_TREATED_FULL,
+      SPECIES_BIOCONTROL_FULL,
+      CREATED_BY,
+      UPDATED_BY,
+      AGENCY
+    ) VALUES `;
+
+    query += values.map(() => entry).join(', ');
+    query += `
+      ON CONFLICT (ID)
+      DO UPDATE SET
+      GEOJSON = excluded.GEOJSON,
+      CENTROID = excluded.CENTROID,
+      LATITUDE = excluded.LATITUDE,
+      LONGITUDE =  excluded.LONGITUDE,
+      GEOJSON =  excluded.GEOJSON,
+      DATA = excluded.DATA,
+      DATE_CREATED = excluded.DATE_CREATED,
+      ACTIVITY_TYPE = excluded.ACTIVITY_TYPE,
+      SHORT_ID = excluded.SHORT_ID,
+      ACTIVITY_SUBTYPE = excluded.ACTIVITY_SUBTYPE,
+      ACTIVITY_DATE = excluded.ACTIVITY_DATE,
+      PROJECT_CODE = excluded.PROJECT_CODE,
+      JURISDICTION_DISPLAY = excluded.JURISDICTION_DISPLAY,
+      INVASIVE_PLANT = excluded.INVASIVE_PLANT,
+      SPECIES_POSITIVE_FULL = excluded.SPECIES_POSITIVE_FULL,
+      SPECIES_NEGATIVE_FULL = excluded.SPECIES_NEGATIVE_FULL,
+      HAS_CURRENT_POSITIVE = excluded.HAS_CURRENT_POSITIVE,
+      CURRENT_POSITIVE_SPECIES = excluded.CURRENT_POSITIVE_SPECIES,
+      HAS_CURRENT_NEGATIVE = excluded.HAS_CURRENT_NEGATIVE,
+      CURRENT_NEGATIVE_SPECIES = excluded.CURRENT_NEGATIVE_SPECIES,
+      SPECIES_TREATED_FULL = excluded.SPECIES_TREATED_FULL,
+      SPECIES_BIOCONTROL_FULL = excluded.SPECIES_BIOCONTROL_FULL,
+      CREATED_BY = excluded.CREATED_BY,
+      UPDATED_BY = excluded.UPDATED_BY,
+      AGENCY = excluded.AGENCY
+    `;
+    await this.cacheDB.run(query, values.flat(), false);
+  }
+
+  /**
+   * @desc Upserts an Invasives Activity into the local Database.
+   * @param data Incoming Activity Data
+   */
+  async saveIapp(data: Record<PropertyKey, { record: IappRecord; row: IappTableRow }>): Promise<void> {
+    const NUM_IAPP_COLUMNS = 22;
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const entry = ` ( ${Array(NUM_IAPP_COLUMNS).fill('?').join(',')} ) `;
+    const values: Array<any> = [];
+    Object.keys(data).forEach((id) => values.push(this.transformIapp(id, data[id].record, data[id].row)));
+    let query = `INSERT INTO CACHED_IAPP_RECORDS(
+      ID,
+      TABLE_DATA,
+      RECORD_DATA,
+      GEOJSON,
+      LATITUDE,
+      LONGITUDE,
+      SITE_ID,
+      SITE_PAPER_FILE_ID,
+      JURISDICTIONS_FLATTENED,
+      MIN_SURVEY,
+      ALL_SPECIES_ON_SITE,
+      BIOLOGICAL_AGENT,
+      MAX_SURVEY,
+      AGENCIES,
+      HAS_BIOLOGICAL_TREATMENTS,
+      HAS_CHEMICAL_TREATMENTS,
+      HAS_MECHANICAL_TREATMENTS,
+      HAS_BIOLOGICAL_DISPERSALS,
+      MONITORED,
+      REGIONAL_DISTRICT,
+      REGIONAL_INVASIVE_SPECIES_ORGANIZATION,
+      INVASIVE_PLANT_MANAGEMENT_AREA
+    ) VALUES `;
+    query += values.map(() => entry).join(', ');
+    query += 'ON CONFLICT (ID) DO NOTHING';
+    await this.cacheDB.run(query, values.flat(), false);
+  }
+
+  async setRepositoryStatus(repositoryId: string, status: UserRecordCacheStatus): Promise<void> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    await this.cacheDB.query(
+      // language=SQLite
+      `UPDATE CACHE_METADATA
+       SET STATUS = ?
+       WHERE ID = ?`,
+      [status, repositoryId]
+    );
+  }
+
+  /**
+   * @desc Takes the incoming Activity payload, and maps the column information to the fields, preps any geometry to contain Activity IDs and information.
+   * @param id ID of New record
+   * @param data Incoming Activity data
+   * @returns Database entry for Activity
+   */
+  private transformActivity(id: string, data: UserRecord): Array<any> {
+    const normalizedRows = getUnnestedFieldsForActivity(data);
+    const stringifiedData = JSON.stringify(data);
+    const geometry = (data as Record<PropertyKey, Feature[]>)?.geometry;
+    const activityDate = (data as Record<PropertyKey, any>)?.date_created;
+    geometry.forEach((_, i) => {
+      geometry[i].properties = {
+        name: normalizedRows.short_id + `${data?.map_symbol ? '\n' + data.map_symbol : ''}`,
+        description: id
+      };
+    });
+    const centroidObj = centroid(geometry[0]);
+    centroidObj.properties = { ...geometry[0].properties };
+    const geojson = JSON.stringify(geometry) ?? null;
+    return [
+      id, // ID
+      centroidObj.geometry.coordinates[1], // LATITUDE
+      centroidObj.geometry.coordinates[0], // LONGITUDE
+      geojson, // GEOJSON
+      JSON.stringify(centroidObj), // CENTROID
+      stringifiedData, // DATA
+      activityDate, // DATE_CREATED
+      id, // ACTIVITY_ID
+      normalizedRows.activity_type ?? null,
+      normalizedRows.short_id ?? null,
+      normalizedRows.activity_subtype ?? null,
+      normalizedRows.activity_date ?? null,
+      normalizedRows.project_code ?? null,
+      normalizedRows.jurisdiction_display ?? null,
+      normalizedRows.invasive_plant ?? null,
+      normalizedRows.species_positive_full ?? null,
+      normalizedRows.species_negative_full ?? null,
+      normalizedRows.has_current_positive ?? null,
+      normalizedRows.current_positive_species ?? null,
+      normalizedRows.has_current_negative ?? null,
+      normalizedRows.current_negative_species ?? null,
+      normalizedRows.species_treated_full ?? null,
+      normalizedRows.species_biocontrol_full ?? null,
+      normalizedRows.created_by ?? null,
+      normalizedRows.updated_by ?? null,
+      normalizedRows.agency ?? null
+    ];
+  }
+
+  /**
+   * @desc Takes the incoming IAPP payload, and maps the column information to the fields, preps any geometry to contain IAPP IDs and information.
+   * @param id ID of New record
+   * @param data Incoming IAPP data
+   * @returns Database entry for IAPP
+   */
+  private transformIapp(id: string, iappRecord: IappRecord, iappRow: IappTableRow): Array<any> {
+    const normalizedRows = getUnnestedFieldsForIAPP(iappRow);
+    const geojson = iappRow.geojson;
+    const map_symbol = geojson?.properties?.map_symbol;
+    geojson.properties = {
+      name: id + (map_symbol ? '\n' + map_symbol : ''),
+      description: id
+    };
+    const stringRecord = JSON.stringify(iappRecord);
+    const stringRow = JSON.stringify(iappRow);
+    const stringGeo = JSON.stringify(geojson);
+    return [
+      id.toString(), // ID
+      stringRow, // TABLE_DATA
+      stringRecord, // RECORD_DATA
+      stringGeo, // GEOJSON
+      geojson.geometry.coordinates[1], // LATITUDE
+      geojson.geometry.coordinates[0], // LONGITUDE
+      normalizedRows.site_id ?? null,
+      normalizedRows.site_paper_file_id ?? null,
+      normalizedRows.jurisdictions_flattened ?? null,
+      normalizedRows.min_survey ?? null,
+      normalizedRows.all_species_on_site ?? null,
+      normalizedRows.max_survey ?? null,
+      normalizedRows.agencies ?? null,
+      normalizedRows.biological_agent ?? null,
+      normalizedRows.has_biological_treatments ?? null,
+      normalizedRows.has_chemical_treatments ?? null,
+      normalizedRows.has_mechanical_treatments ?? null,
+      normalizedRows.has_biological_dispersals ?? null,
+      normalizedRows.monitored ?? null,
+      normalizedRows.regional_district ?? null,
+      normalizedRows.regional_invasive_species_organization ?? null,
+      normalizedRows.invasive_plant_management_area ?? null
+    ];
   }
 }
 

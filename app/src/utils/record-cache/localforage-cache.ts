@@ -13,6 +13,8 @@ import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import booleanIntersects from '@turf/boolean-intersects';
+import bboxToPolygon from 'utils/bboxToPolygon';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -35,22 +37,32 @@ class LocalForageRecordCacheService extends RecordCacheService {
 
   async isCached(repositoryId: string): Promise<boolean> {
     try {
-      return (await this.getRepository(repositoryId)).status === UserRecordCacheStatus.CACHED;
+      return (await this.getRepository(repositoryId, ['status'])).status === UserRecordCacheStatus.CACHED;
     } catch (e) {
       return false;
     }
   }
-
-  async getRepository(repositoryId: string): Promise<RepositoryMetadata> {
+  getRepository(repositoryId: string, columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
+  getRepository(repositoryId: string): Promise<RepositoryMetadata>;
+  async getRepository(
+    repositoryId: string,
+    columns?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata | Partial<RepositoryMetadata>> {
     const repos = await this.listRepositories();
-    const foundIndex = repos.findIndex((p) => p.setId === repositoryId);
+    const foundIndex = repos.findIndex((p) => p.set_id == repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} not found`);
-
+    if (columns) {
+      const res: Partial<Record<keyof RepositoryMetadata, any>> = {};
+      columns.forEach((column) => {
+        res[column] = repos[foundIndex]?.[column];
+      });
+      return res;
+    }
     return repos[foundIndex];
   }
 
   async getIdList(repositoryId: string): Promise<string[]> {
-    return (await this.getRepository(repositoryId)).cachedIds ?? [];
+    return (await this.getRepository(repositoryId, ['cached_ids'])).cached_ids ?? [];
   }
 
   async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
@@ -60,12 +72,40 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await Promise.all(Object.keys(data).map((key) => this.store?.setItem(key, data[key])));
   }
 
+  /**
+   * @desc Returns list of IDs that overlap with a GeoJSON Object
+   * @param {Feature} geom GeoJSON Object to find overlaps
+   * @returns { string[] } Overlapping record Ids
+   */
+  public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
+    const reposInBoundingBox = ((await this.listRepositories(['set_id', 'status', 'bbox'])) ?? [])?.filter(
+      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxToPolygon(r.bbox!), geom)
+    );
+
+    const featureMap: Record<PropertyKey, Feature> = {};
+    const overlappingRecords: string[] = [];
+
+    // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
+    for (const r of reposInBoundingBox) {
+      const repo = await this.getRepository(r.set_id!, ['cached_geojson']);
+      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature, i: number) => {
+        featureMap[feature?.properties?.name + i] ??= feature;
+      });
+    }
+    Object.values(featureMap).forEach((feature) => {
+      if (booleanIntersects(geom, feature)) {
+        overlappingRecords.push(feature?.properties?.description);
+      }
+    });
+    return overlappingRecords;
+  }
+
   async setRepositoryStatus(cacheId: string, status: UserRecordCacheStatus) {
     if (this.store == null) {
       throw Error('Cache not available');
     }
     const cachedSets = await this.listRepositories();
-    const foundIndex = cachedSets.findIndex((p) => p.setId === cacheId);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === cacheId);
     if (foundIndex !== -1) {
       Object.assign(cachedSets[foundIndex], { status });
       await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
@@ -74,7 +114,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
 
   async checkPauseOrAbort(id: string): Promise<CacheDownloadMode> {
     const sets = await this.listRepositories();
-    const index = sets.findIndex((p) => p.setId === id);
+    const index = sets.findIndex((p) => p.set_id === id);
     if (index !== -1) {
       if (sets[index].status === UserRecordCacheStatus.DELETING) return CacheDownloadMode.ABORT;
       else if (sets[index].status === UserRecordCacheStatus.PAUSED) return CacheDownloadMode.PAUSE;
@@ -237,17 +277,17 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    const cachedSets = await this.listRepositories();
-    const foundIndex = cachedSets.findIndex((p) => p.setId === repositoryId);
+    const cachedSets = await this.listRepositories(['cached_ids', 'set_id']);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === repositoryId);
 
     if (foundIndex === -1) return;
 
     await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
-    const deleteList = cachedSets[foundIndex].cachedIds;
+    const deleteList = cachedSets[foundIndex].cached_ids ?? [];
     const ids: Record<PropertyKey, number> = {};
 
     cachedSets
-      .flatMap((set) => set.cachedIds)
+      .flatMap((set) => set?.cached_ids ?? [])
       .forEach((id) => {
         ids[id] ??= 0;
         ids[id]++;
@@ -288,7 +328,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
 
     const cachedSets = (await this.listRepositories()) ?? [];
-    const foundIndex = cachedSets.findIndex((p) => p.setId === newSet.setId);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === newSet.set_id);
 
     if (foundIndex === -1) {
       cachedSets.push(newSet);
@@ -298,7 +338,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
-  async listRepositories(): Promise<RepositoryMetadata[]> {
+  listRepositories(columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
+  listRepositories(): Promise<RepositoryMetadata[]>;
+  async listRepositories(
+    columns?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata[] | Partial<RepositoryMetadata>[]> {
     if (this.store == null) {
       return [];
     }
@@ -308,6 +352,15 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (metadata == null) {
       console.error('expected key not found');
       return [];
+    }
+    if (columns) {
+      return metadata.map((repo) => {
+        const res: Partial<Record<keyof RepositoryMetadata, any>> = {};
+        columns.forEach((field) => {
+          res[field] = repo?.[field];
+        });
+        return res;
+      });
     }
     return metadata;
   }
