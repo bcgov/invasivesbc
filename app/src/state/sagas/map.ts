@@ -1,7 +1,6 @@
 import { bboxPolygon, buffer, Feature } from '@turf/turf';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { getSearchCriteriaFromFilters } from '../../utils/miscYankedFromComponents';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
@@ -54,6 +53,11 @@ import {
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_IAPP_TABLE_ROWS_GET_ONLINE
 } from './map/online';
+import {
+  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+  handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
+} from './map/offline';
+import { getSearchCriteriaFromFilters } from 'utils/miscYankedFromComponents';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -76,10 +80,6 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
 import NetworkActions from 'state/actions/network/NetworkActions';
-import {
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
-  handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
-} from './map/offline';
 import MapActions from 'state/actions/map';
 import GeoShapes from 'constants/geoShapes';
 
@@ -702,12 +702,11 @@ function* handle_REMOVE_CLIENT_BOUNDARY(action) {
     const filter = filteredSet?.tableFilters.filter((filter) => {
       return filter.filter === action.payload.id;
     })?.[0];
-    const actionObject = UserSettings.RecordSet.removeFilter({
+    return UserSettings.RecordSet.removeFilter({
       filterID: filter?.id,
       filterType: 'tableFilter',
       setID: filteredSet.recordSetID
     });
-    return actionObject;
   });
 
   yield all(

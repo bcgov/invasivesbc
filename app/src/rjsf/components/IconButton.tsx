@@ -5,14 +5,14 @@ import Remove from '@mui/icons-material/Remove';
 import React from 'react';
 import { Button } from '@mui/material';
 
-const mappings: any = {
+const mappings = {
   remove: <Remove />,
   plus: <Add />,
   'arrow-up': <ArrowUpward />,
   'arrow-down': <ArrowDownward />
 };
 
-const IconButton = (props: any) => {
+const IconButton = (props) => {
   const { icon, className, ...otherProps } = props;
   return (
     <Button variant="outlined" {...otherProps} size="small">

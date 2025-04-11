@@ -86,6 +86,7 @@ const handleSyncTermination = createTransform(
   () => false,
   { whitelist: ['working'] }
 );
+
 function createRootReducer(config: AppConfig) {
   return combineReducers({
     AppMode: appMode,
@@ -163,7 +164,7 @@ function createRootReducer(config: AppConfig) {
           'serverBoundaries'
         ]
       },
-      createMapReducer(config)
+      createMapReducer()
     ),
     Batch: createBatchReducer(),
     TrainingVideos: createTrainingVideosReducer(),

@@ -46,7 +46,7 @@ const AgentSelectAutoComplete = (props: WidgetProps) => {
   const [renderKey] = useState(props.id + nanoid());
 
   /**
-   * @desc    Checks if the ID is the adjacent plant code to an agent field, then updates the dropdown filters if they match.
+   * @desc    Checks if the ID is the adjacent plant code to an agent field, then updates the dropdown filters if they match.
    * @example Codes that would identify a matching pair of values, linking the plant entry to the bio agent field
    *          the ID's denote the hierarchy, and the numbers in the Id denote the array position.
    *          root_activity_subtype_data_Biocontrol_Collection_Information_0_invasive_plant_code - PlantCode in index[0]

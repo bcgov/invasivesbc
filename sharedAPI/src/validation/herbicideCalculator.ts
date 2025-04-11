@@ -17,7 +17,7 @@
  */
 
 //chooses the scenario based on the values in the form
-export const performCalculation = (area: number, formData: IGeneralFields, businessCodes: any): IGeneralFields => {
+export const performCalculation = (area: number, formData: IGeneralFields): IGeneralFields => {
   const { tank_mix, herbicides, tank_mix_object, invasive_plants, chemical_application_method_type } = formData;
 
   let calculationResults = {};
@@ -618,6 +618,7 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
 export const parseToRightFormat = (value: number) => {
   return Number(value.toFixed(10));
 };
+
 export interface IGeneralFields {
   application_start_time?: Date;
   invasive_plants?: IInvasivePlant[];

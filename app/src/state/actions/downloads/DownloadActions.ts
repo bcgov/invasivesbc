@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import Alerts from '../alerts/Alerts';
+import Alerts from 'state/actions/alerts/Alerts';
 import { RootState } from 'state/reducers/rootReducer';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
 

@@ -2,6 +2,7 @@
  * @desc Helper functions for Prompt system, used to ensure prop correctness when creating a prompts
  * @external {@link https://github.com/bcgov/invasivesbc/wiki/User-Prompt-System }
  */
+import { createAction } from '@reduxjs/toolkit';
 import {
   ConfirmationModalInterface,
   DateModalInterface,
@@ -10,7 +11,6 @@ import {
   RadioModalInterface,
   TextModalInterface
 } from 'interfaces/prompt-interfaces';
-import { createAction } from '@reduxjs/toolkit';
 import { PromptTypes } from 'constants/promptEnums';
 
 class Prompt {

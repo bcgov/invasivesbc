@@ -48,8 +48,7 @@ const buildStylesURLForDataBC = (layerName: string) => {
 
 const albersToGeog = (featureCollection: Object[]) => {
   try {
-    const reprojected = reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
-    return reprojected;
+    return reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
   } catch (e) {
     console.error('error converting back to geog from albers:', e);
   }

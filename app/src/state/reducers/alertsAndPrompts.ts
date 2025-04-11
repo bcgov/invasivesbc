@@ -1,5 +1,4 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
-import { AppConfig } from '../config';
 import AlertMessage from 'interfaces/AlertMessage';
 import Alerts from 'state/actions/alerts/Alerts';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -27,9 +26,7 @@ const addPrompt = (state: PromptAction[], prompt: PromptAction): PromptAction[] 
   { ...prompt, id: nanoid() }
 ];
 
-export function createAlertsAndPromptsReducer(
-  configuration: AppConfig
-): (AlertsAndPromptsState, AnyAction) => AlertsAndPromptsState {
+export function createAlertsAndPromptsReducer(): (AlertsAndPromptsState, AnyAction) => AlertsAndPromptsState {
   return (state: AlertsAndPromptsState = initialState, action) => {
     return createNextState(state, (draftState) => {
       if (Alerts.create.match(action)) {

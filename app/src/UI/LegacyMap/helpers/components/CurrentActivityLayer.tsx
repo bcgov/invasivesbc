@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { useSelector } from 'utils/use_selector';
-import { MEMORY_CONSTRAINED_DEVICE } from 'state/build-time-config';
 
 const CurrentActivityLayer = ({ mapReady }) => {
   const map = useContext(MapContext);

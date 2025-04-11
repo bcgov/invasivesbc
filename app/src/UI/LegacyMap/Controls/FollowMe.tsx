@@ -9,7 +9,7 @@ import { useSelector } from 'utils/use_selector';
 const FollowMe = () => {
   const { panned } = useSelector((state) => state.Map);
   const [show, setShow] = useState(false);
-  const divRef = useRef();
+  const divRef = useRef<HTMLDivElement | null>(null);
   const dispatch = useDispatch();
 
   const handleClick = () => {

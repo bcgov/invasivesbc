@@ -4,16 +4,16 @@ import { v4 as uuidv4 } from 'uuid';
 import {
   ActivityStatus,
   ActivitySubtype,
+  ActivitySubtypeShortLabels,
+  ActivitySubtypeTargetKey,
   ActivitySyncStatus,
   ActivityType,
   getShortActivityID,
-  ReviewStatus,
-  ActivitySubtypeShortLabels,
-  ActivitySubtypeTargetKey
+  ReviewStatus
 } from 'sharedAPI';
-import { getFieldsToCopy } from '../rjsf/business-rules/formDataCopyFields';
-import { IActivity } from '../interfaces/activity-interfaces';
-import { DocType } from '../constants/database';
+import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
+import { IActivity } from 'interfaces/activity-interfaces';
+import { DocType } from 'constants/database';
 
 export const activityDefaults = {
   doc_type: DocType.ACTIVITY,
@@ -45,7 +45,7 @@ export function generateActivityPayload(
   docType?: DocType
 ): IActivity {
   const id = uuidv4();
-  const short_id: string = getShortActivityID({
+  const short_id: string | undefined = getShortActivityID({
     activity_subtype: activitySubtype,
     activity_id: id,
     date_created: new Date()
@@ -116,7 +116,7 @@ export async function cloneActivity(clonedRecord: any) {
   // Used to avoid pouch DB conflict
   delete clonedRecord._rev;
 
-  const doc: any = {
+  return {
     ...clonedRecord,
     _id: id,
     dateCreated: new Date(),
@@ -124,8 +124,6 @@ export async function cloneActivity(clonedRecord: any) {
     status: ActivityStatus.DRAFT,
     activityId: id
   };
-
-  return doc;
 }
 
 /*
@@ -168,9 +166,7 @@ export async function createLinkedActivity(
     formData.activity_type_data = { activity_id: linkedRecord._id };
   }
 
-  const doc: IActivity = generateActivityPayload(formData, geometry, activityType, activitySubtype);
-
-  return doc;
+  return generateActivityPayload(formData, geometry, activityType, activitySubtype);
 }
 
 /*
@@ -183,6 +179,7 @@ export function isLinkedTreatmentSubtype(subType: ActivitySubtype): boolean {
     ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
   ].includes(subType);
 }
+
 // extract and set the species codes (both positive and negative) of a given activity (or POI, once they're editable)
 
 export function populateJurisdictionArray(record) {

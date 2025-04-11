@@ -2,7 +2,7 @@ import React, { createContext, useReducer } from 'react';
 
 export const initialValues = {
   lastFieldChanged: {},
-  setLastFieldChanged: (data) => {}
+  setLastFieldChanged: () => {}
 };
 
 type ISelectAutoCompleteContext = {

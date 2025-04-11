@@ -1,7 +1,7 @@
 import { Source, Layer } from 'react-map-gl/maplibre';
 import { useSelector } from 'utils/use_selector';
 
-const getPaintBySchemeOrColor = (layer: any) => {
+const getPaintBySchemeOrColor = (layer) => {
   const FALLBACK_COLOR = 'orange';
   if (layer?.layerState?.colorScheme) {
     return [

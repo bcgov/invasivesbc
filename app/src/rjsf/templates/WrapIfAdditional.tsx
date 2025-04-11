@@ -1,5 +1,4 @@
 import { FormControl, Grid, Input, InputLabel } from '@mui/material';
-import { JSONSchema7 } from 'json-schema';
 import React from 'react';
 import IconButton from 'rjsf/components/IconButton';
 import { ADDITIONAL_PROPERTY_FLAG } from '@rjsf/utils';
@@ -10,16 +9,16 @@ type WrapIfAdditionalProps = {
   disabled: boolean;
   id: string;
   label: string;
-  onDropPropertyClick: (index: string) => (event?: any) => void;
-  onKeyChange: (index: string) => (event?: any) => void;
+  onDropPropertyClick: (index: string) => (event?) => void;
+  onKeyChange: (index: string) => (event?) => void;
   readonly: boolean;
   required: boolean;
-  schema: JSONSchema7;
+  schema;
 };
 
 const WrapIfAdditional = (props: WrapIfAdditionalProps) => {
   const keyLabel = `${props.label} Key`; // i18n ?
-  const additional = props.schema.hasOwnProperty(ADDITIONAL_PROPERTY_FLAG);
+  const additional = Object.prototype.hasOwnProperty.call(props.schema, ADDITIONAL_PROPERTY_FLAG);
   const btnStyle = {
     flex: 1,
     paddingLeft: 6,
@@ -54,7 +53,7 @@ const WrapIfAdditional = (props: WrapIfAdditionalProps) => {
         <IconButton
           icon="remove"
           tabIndex={-1}
-          style={btnStyle as any}
+          style={btnStyle}
           disabled={props.disabled || props.readonly}
           onClick={props.onDropPropertyClick(props.label)}
         />

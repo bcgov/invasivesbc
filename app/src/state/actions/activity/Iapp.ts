@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
-import IappRecord from 'interfaces/IappRecord';
 import { IGetIdsForRecordset, IGetIdsForRecordsetOnline, IGetIdsForRecordsetSuccess } from './Activity';
+import IappRecord from 'interfaces/IappRecord';
 
 export interface IappTableRowRequest {
   recordSetID: string | number;
@@ -12,9 +12,11 @@ export interface IappTableRowRequest {
 export interface IappTableRowGetRequest extends IappTableRowRequest {
   filterObj: Record<PropertyKey, any>;
 }
+
 export interface IappTableRowsGetSuccess extends IappTableRowRequest {
   rows: Record<PropertyKey, any>[];
 }
+
 export interface IappTableRowsGetFailure extends IappTableRowRequest {
   error: Record<PropertyKey, any>[];
 }

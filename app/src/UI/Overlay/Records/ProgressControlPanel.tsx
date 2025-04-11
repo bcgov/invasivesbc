@@ -2,6 +2,7 @@ import { Box, Grid, IconButton, LinearProgress, Typography } from '@mui/material
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 import CloseIcon from '@mui/icons-material/Close';
+import React from 'react';
 
 interface ProgressControlPanelProps {
   isPaused: boolean;

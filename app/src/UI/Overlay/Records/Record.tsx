@@ -9,7 +9,7 @@ import { Button } from '@mui/material';
 import { RENDER_DEBUG } from 'UI/App';
 import Spinner from 'UI/Spinner/Spinner';
 
-export const Activity = (props) => {
+export const Activity = () => {
   const ref = useRef(0);
   ref.current += 1;
   if (RENDER_DEBUG) {

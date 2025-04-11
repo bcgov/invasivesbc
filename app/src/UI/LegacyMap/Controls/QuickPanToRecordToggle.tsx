@@ -1,21 +1,21 @@
 import { IconButton, Tooltip } from '@mui/material';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import PlaylistPlayIcon from '@mui/icons-material/PlaylistPlay';
 import 'UI/Global.css';
 import { TOGGLE_QUICK_PAN_TO_RECORD } from 'state/actions';
 import { useSelector } from 'utils/use_selector';
 
-export const QuickPanToRecordToggle = (props) => {
+export const QuickPanToRecordToggle = () => {
   const dispatch = useDispatch();
   //  const toolClass = toolStyles();
-  const divRef = useRef();
-  const isAuth = useSelector((state: any) => state.Auth?.authenticated);
-  const quickPanToRecord = useSelector((state: any) => state.Map?.quickPanToRecord);
+  const divRef = useRef<HTMLDivElement | null>(null);
+  const isAuth = useSelector((state) => state.Auth.authenticated);
+  const quickPanToRecord = useSelector((state) => state.Map.quickPanToRecord);
 
   const [show, setShow] = React.useState(false);
 
-  if (true && isAuth) {
+  if (isAuth) {
     return (
       <div ref={divRef} className={quickPanToRecord ? 'map-btn-selected' : 'map-btn'}>
         <Tooltip

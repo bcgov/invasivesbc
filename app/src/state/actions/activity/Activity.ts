@@ -1,40 +1,46 @@
 import { createAction } from '@reduxjs/toolkit';
+import { ActivityStatus } from 'sharedAPI';
+import { FieldError } from '@rjsf/utils';
 import Offline from './Offline';
 import Photos from './Photos';
 import Suggestions from './Suggestions';
 import AutoFill from './AutoFill';
 import GeoJson from './GeoJson';
-import { ActivityStatus } from 'sharedAPI';
 import ChemicalTreatments from './ChemicalTreatments';
-import { FieldError } from '@rjsf/utils';
 import FilterObjects from 'interfaces/FilterObjects';
 
 export interface INewActivity {
   type: string;
   subType: string;
 }
+
 interface ISaveNetwork {
   activity_id: string;
   updatedFormData?: Record<string, any>;
   form_status?: ActivityStatus;
 }
+
 export interface ICreateLocal {
   id: string;
   data: Record<string, any>;
 }
+
 export interface ActivityTableRowRequest {
   recordSetID: string | number;
   tableFiltersHash: string;
   page: number;
   limit: number;
 }
+
 /** Errors used in RJSF Validation */
 export interface IActivityError {
   [key: PropertyKey]: FieldError;
 }
+
 export interface ActivityTableRowGetRequest extends ActivityTableRowRequest {
   filterObj: Record<PropertyKey, any>;
 }
+
 export interface ActivityTableRowsGetSuccess extends ActivityTableRowRequest {
   rows: Record<PropertyKey, any>[];
 }
@@ -43,9 +49,11 @@ export interface IGetIdsForRecordset {
   recordSetID: PropertyKey;
   tableFiltersHash: string;
 }
+
 export interface IGetIdsForRecordsetOnline extends IGetIdsForRecordset {
   filterObj: FilterObjects;
 }
+
 export interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
   IDList: Array<string | number>;
 }
@@ -109,4 +117,5 @@ class Activity {
   );
   static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);
 }
+
 export default Activity;

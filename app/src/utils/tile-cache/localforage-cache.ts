@@ -155,7 +155,7 @@ class LocalForageCacheService extends TileCacheService {
     let sizeInBytes = 0;
     let numberOfTiles = 0;
 
-    await this.store.iterate((value, key, i) => {
+    await this.store.iterate((value, key) => {
       if (key == LocalForageCacheService.REPOSITORY_METADATA_KEY) return;
       try {
         const tileMetadata = LocalForageCacheService.deserializeTileKey(key);
@@ -163,7 +163,7 @@ class LocalForageCacheService extends TileCacheService {
           numberOfTiles++;
           sizeInBytes += (value as SerializedTileData).data.length;
         }
-      } catch (e) {
+      } catch (_e) {
         // it might not be parseable if it's not a tile record
         return;
       }
@@ -207,7 +207,7 @@ class LocalForageCacheService extends TileCacheService {
       try {
         const tileMetadata = LocalForageCacheService.deserializeTileKey(k);
         return !validRepositories.includes(tileMetadata.repository);
-      } catch (e) {
+      } catch (_e) {
         // it might not be parseable if it's not a tile record
         return false;
       }

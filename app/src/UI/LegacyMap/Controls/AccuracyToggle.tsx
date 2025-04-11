@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
@@ -7,14 +7,14 @@ import 'UI/Global.css';
 
 import AttributionIcon from '@mui/icons-material/Attribution';
 
-export const AccuracyToggle = (props) => {
+export const AccuracyToggle = () => {
   const dispatch = useDispatch();
-  const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
-  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
+  const accuracyToggle = useSelector((state) => state.Map.accuracyToggle);
+  const positionTracking = useSelector((state) => state.Map.positionTracking);
 
   const [show, setShow] = React.useState(false);
 
-  const divRef = useRef();
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   if (!positionTracking) {
     return <></>;
@@ -45,24 +45,13 @@ export const AccuracyToggle = (props) => {
   }
 };
 
-export const AccuracyMarker = (props) => {
-  const accuracyToggle = useSelector((state: any) => state.Map?.accuracyToggle);
-  const positionTracking = useSelector((state: any) => state.Map?.positionTracking);
-  const userCoords = useSelector((state: any) => state.Map?.userCoords);
+export const AccuracyMarker = () => {
+  const accuracyToggle = useSelector((state) => state.Map.accuracyToggle);
+  const positionTracking = useSelector((state) => state.Map.positionTracking);
+  const userCoords = useSelector((state) => state.Map.userCoords);
 
   if (accuracyToggle && positionTracking && userCoords?.long) {
     return null;
-    // return (
-    //   <Circle
-    //     key={'circlekeyforaccuracymarker' + Math.random()}
-    //     opacity={0.2}
-    //     color={'#00FF00'}
-    //     fillColor={'#00FF00'}
-    //     fillOpacity={0.2}
-    //     center={[userCoords.lat, userCoords.long]}
-    //     radius={userCoords.accuracy}
-    //   />
-    // );
   } else {
     return <></>;
   }

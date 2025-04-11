@@ -72,8 +72,16 @@ function Row(props: { name: string; row: ReturnType<typeof createData> }) {
           </p>
         </TableCell>
         <TableCell>
-          <span style={{ color: name.toString().toLowerCase().includes('percent') && Number(row) > 100 && 'red' }}>
-            {Array.isArray(row) ? '' : name.toString().toLowerCase().includes('percent') ? row.toString() + '%' : row}
+          <span
+            style={{
+              color: (name.toString().toLowerCase().includes('percent') && Number(row) > 100 && 'red') || undefined
+            }}
+          >
+            {Array.isArray(row)
+              ? ''
+              : name.toString().toLowerCase().includes('percent')
+                ? row.toString() + '%'
+                : row.toString()}
           </span>
         </TableCell>
       </TableRow>
