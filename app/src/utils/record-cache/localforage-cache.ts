@@ -8,13 +8,15 @@ import {
   RepositoryMetadata,
   RecordCacheService,
   RecordSetSourceMetadata,
-  CacheDownloadMode
+  CacheDownloadMode,
+  IQueryParams
 } from 'utils/record-cache/index';
 import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import bboxToPolygon from 'utils/bboxToPolygon';
+import { getUnnestedFieldsForActivity } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -33,6 +35,42 @@ class LocalForageRecordCacheService extends RecordCacheService {
       await LocalForageRecordCacheService._instance.initializeCache();
     }
     return LocalForageRecordCacheService._instance;
+  }
+
+  async query(params: IQueryParams): Promise<UserRecord[] | IappRecord[]> {
+    if (this.store == null) {
+      throw new Error('Cache not available');
+    }
+    const records: Array<UserRecord | IappRecord> = [];
+    await this.store.iterate((value: Record<PropertyKey, any>) => {
+      if (params.tableFilters.every((filter) => new RegExp(filter.filter, 'i').test(value[filter.field]))) {
+        records.push(value);
+      }
+    });
+    if (params.sort) {
+      const { by, order } = params.sort;
+      records.sort((a, b) => {
+        if (!a[by] && !b[by]) {
+          return 0;
+        } else if (!a[by]) {
+          return 1;
+        } else if (!b[by]) {
+          return -1;
+        } else {
+          return a[by]?.localeCompare(b[by]);
+        }
+      });
+      if (order === 'DESC') {
+        records.reverse();
+      }
+    }
+
+    if (params?.page != undefined && params?.limit != undefined) {
+      const startPos = params.page * params.limit;
+      const endPos = Math.min((params.page + 1) * params.limit, records.length);
+      return records.slice(startPos, endPos).map((record) => record.data);
+    }
+    return records.map((record) => record.data);
   }
 
   async isCached(repositoryId: string): Promise<boolean> {
@@ -70,7 +108,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    await Promise.all(Object.keys(data).map((key) => this.store?.setItem(key, data[key])));
+    await Promise.all(
+      Object.keys(data).map((key) => {
+        const parsed = getUnnestedFieldsForActivity(data[key]);
+        parsed.data = data[key];
+        this.store?.setItem(key, parsed);
+      })
+    );
   }
 
   /**
@@ -165,13 +209,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error('cache not available');
     }
 
-    const data = await this.store.getItem(id);
+    const data = (await this.store.getItem(id)) as UserRecord;
 
     if (!data) {
       throw new Error(`activity ${id} not found in cache`);
     }
 
-    return data;
+    return data?.data;
   }
 
   /**
