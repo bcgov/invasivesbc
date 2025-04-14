@@ -23,6 +23,8 @@ import { selectNetworkConnected } from 'state/reducers/network';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordset } from 'state/actions/activity/Activity';
+import { getIappIdsForRecordsetFromCache } from './online';
+import { IQueryParams } from 'utils/record-cache';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -260,10 +262,20 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action: PayloadAction<Activity
 export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
   try {
     const { recordSetID, page, limit, tableFiltersHash } = req;
+    const recordset = (yield select(selectUserSettings))[recordSetID];
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
-    const recordSetIdList = yield service.getIdList(recordSetID);
-    const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
-
+    const queryObj: IQueryParams = {
+      limit: recordset.limit,
+      page: recordset.page,
+      tableFilters: recordset?.tableFilters,
+      recordSetType: recordset.recordSetType,
+      selectColumns: [],
+      sort: {
+        by: recordset.sortColumn,
+        order: recordset.sortOrder
+      }
+    };
+    const records = yield service.query(queryObj);
     yield put(
       Activity.getRowsSuccess({
         recordSetID: recordSetID,
