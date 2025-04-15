@@ -1,9 +1,9 @@
-import React, { PropsWithChildren, useEffect, useState } from 'react';
+import { PropsWithChildren, useEffect, useState } from 'react';
 import { useSelector } from 'utils/use_selector';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { MOBILE } from 'state/build-time-config';
 
-interface MobileOnlyProps extends PropsWithChildren<any> {
+interface MobileOnlyProps extends PropsWithChildren {
   networkRequirement?: 'connected' | 'disconnected' | 'either';
 }
 

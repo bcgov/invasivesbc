@@ -16,6 +16,7 @@ import {
 import React from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+
 interface MonitoringColumn {
   id:
     | 'monitoring_id'
@@ -190,7 +191,6 @@ interface BioTreatmentColumn {
     | 'treatment_id'
     | 'species_common_name'
     | 'treatment_date'
-    | 'collection_date'
     | 'invasive_species_agency_code'
     | 'employer'
     | 'primary_applicator'
@@ -321,7 +321,7 @@ const bioTreatmentColumns: readonly BioTreatmentColumn[] = [
   { id: 'date_updated', label: 'Date Updated', minWidth: 150 }
 ];
 
-const Row = (props: any) => {
+const Row = (props) => {
   const { row, type } = props;
   const [monitoringRows, setMonitoringRows] = React.useState([]);
   const [open, setOpen] = React.useState(false);
@@ -347,7 +347,7 @@ const Row = (props: any) => {
     else return value.substring(0, 35) + '...';
   };
 
-  const convertData = (item: any) => {
+  const convertData = (item) => {
     return {
       monitoring_id: item.monitoring_id,
       monitoring_date: new Date(item.monitoring_date).toISOString().substring(0, 10),
@@ -499,7 +499,7 @@ export const TreatmentsTable = (props) => {
     setPage(0);
   };
 
-  const createData = (treatment: any) => {
+  const createData = (treatment) => {
     let method_code;
     let returnObj;
     switch (type) {

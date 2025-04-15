@@ -1,29 +1,29 @@
 import { FeatureCollection } from '@turf/helpers';
-import WellData from 'interfaces/WellData';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import {
   IWellCacheProgressCallbackParameters,
   IWellRepositoryMetadata,
   WellCacheService,
   WellRepositoryStatus
 } from '.';
-import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import WellData from 'interfaces/WellData';
+import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 
 const RECORD_CACHE_DB_MIGRATIONS_1 = [
   `CREATE TABLE CACHE_METADATA
-  (
-    ID           VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
-    BOUNDS           TEXT NOT NULL UNIQUE,
-    STATUS           TEXT NOT NULL,
-    WELL_TAG_NUMBERS TEXT NOT NULL,
-    GEOJSON          TEXT
-  );`,
+   (
+     ID               VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
+     BOUNDS           TEXT        NOT NULL UNIQUE,
+     STATUS           TEXT        NOT NULL,
+     WELL_TAG_NUMBERS TEXT        NOT NULL,
+     GEOJSON          TEXT
+   );`,
   `CREATE TABLE CACHED_WELLS
-  (
-    ID   INT UNIQUE PRIMARY KEY,
-    GEOM TEXT NOT NULL
-  );`
+   (
+     ID   INT UNIQUE PRIMARY KEY,
+     GEOM TEXT NOT NULL
+   );`
 ];
 
 class SQLiteWellCacheService extends WellCacheService {
@@ -61,23 +61,21 @@ class SQLiteWellCacheService extends WellCacheService {
       await this.cacheDB.query(
         //language=SQLite
         `INSERT INTO CACHE_METADATA(ID, BOUNDS, STATUS, WELL_TAG_NUMBERS, GEOJSON)
-           VALUES(?, ?, ?, ?, ?)
+         VALUES (?, ?, ?, ?, ?)
          ON CONFLICT(ID)
-         DO UPDATE SET
-           STATUS = excluded.STATUS,
-           WELL_TAG_NUMBERS = excluded.WELL_TAG_NUMBERS,
-           GEOJSON = excluded.GEOJSON`,
+           DO UPDATE SET STATUS           = excluded.STATUS,
+                         WELL_TAG_NUMBERS = excluded.WELL_TAG_NUMBERS,
+                         GEOJSON          = excluded.GEOJSON`,
         [id, bnds, status, wtns, geojsn]
       );
     } else {
       await this.cacheDB.query(
         //language=SQLite
         `INSERT INTO CACHE_METADATA(ID, BOUNDS, STATUS, WELL_TAG_NUMBERS)
-         VALUES(?, ?, ?, ?)
-           ON CONFLICT(ID)
-         DO UPDATE SET
-           STATUS = excluded.STATUS,
-           WELL_TAG_NUMBERS = excluded.WELL_TAG_NUMBERS`,
+         VALUES (?, ?, ?, ?)
+         ON CONFLICT(ID)
+           DO UPDATE SET STATUS           = excluded.STATUS,
+                         WELL_TAG_NUMBERS = excluded.WELL_TAG_NUMBERS`,
         [id, bnds, status, wtns]
       );
     }
@@ -106,11 +104,10 @@ class SQLiteWellCacheService extends WellCacheService {
 
       features.push(geometry);
     }
-    const featureCollection = {
+    return {
       type: 'FeatureCollection',
       features: features.flatMap((f) => f).map((f) => JSON.parse(f['GEOM']))
     } as FeatureCollection;
-    return featureCollection;
   }
 
   public async deleteRepository(identifier: string | RepositoryBoundingBoxSpec): Promise<void> {
@@ -140,8 +137,9 @@ class SQLiteWellCacheService extends WellCacheService {
     const wellsToDelete = deleteList.filter((id) => ids[id] <= 1);
     await this.deleteWellsFromIds(wellsToDelete);
     await this.cacheDB.query(
-      `DELETE FROM CACHE_METADATA
-      WHERE ID = ?`,
+      `DELETE
+       FROM CACHE_METADATA
+       WHERE ID = ?`,
       [repo.id]
     );
   }
@@ -156,7 +154,8 @@ class SQLiteWellCacheService extends WellCacheService {
         const sliced = wellTagNumbers.slice(i, Math.min(i + this.BATCH_AMOUNT, wellTagNumbers.length));
         await this.cacheDB.query(
           //language=SQLite
-          `DELETE FROM CACHED_WELLS
+          `DELETE
+           FROM CACHED_WELLS
            WHERE ID IN (${sliced.map(() => '?').join(', ')})`,
           [...sliced]
         );
@@ -181,7 +180,7 @@ class SQLiteWellCacheService extends WellCacheService {
           );
     const result = await this.cacheDB.query(
       //language=SQLite
-      `SELECT 
+      `SELECT
         ID AS id,
         STATUS as status,
         BOUNDS as bounds,
@@ -214,7 +213,7 @@ class SQLiteWellCacheService extends WellCacheService {
     }
     const repositories = await this.cacheDB.query(
       //language=SQLite
-      `SELECT 
+      `SELECT
         ID AS id,
         STATUS as status,
         BOUNDS as bounds,
@@ -222,8 +221,7 @@ class SQLiteWellCacheService extends WellCacheService {
         GEOJSON as cachedGeoJson
        FROM CACHE_METADATA`
     );
-    const response = repositories.values?.map((repo) => this.cleanRepository(repo)) ?? [];
-    return response;
+    return repositories.values?.map((repo) => this.cleanRepository(repo)) ?? [];
   }
 
   protected async saveWell(wellData: WellData): Promise<void> {
@@ -239,7 +237,7 @@ class SQLiteWellCacheService extends WellCacheService {
       `INSERT INTO CACHED_WELLS(ID, GEOM)
        VALUES (?, ?)
        ON CONFLICT(ID)
-       DO UPDATE SET GEOM = excluded.GEOM`,
+         DO UPDATE SET GEOM = excluded.GEOM`,
       [id, stringifiedGeo]
     );
   }

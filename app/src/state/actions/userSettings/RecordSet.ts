@@ -1,11 +1,11 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
-import RecordCache from '../cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { CacheDownloadMode } from 'utils/record-cache';
+import RecordCache from 'state/actions/cache/RecordCache';
 
 export interface IUpdateFilter extends Partial<IFilter> {
   setID: string | number;
@@ -17,6 +17,7 @@ export interface IRemoveFilter {
   setID: string | number;
   filterID: string | number;
 }
+
 export interface IFilter {
   id: string;
   field: string;
@@ -25,9 +26,11 @@ export interface IFilter {
   operator: string;
   operator2: string;
 }
+
 export interface IAddFilter extends Partial<IFilter> {
   setID: string | number;
 }
+
 class RecordSet {
   private static readonly PREFIX = `UserSettings/RecordSet`;
 

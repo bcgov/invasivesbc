@@ -1,6 +1,7 @@
 import { put, select, take } from 'redux-saga/effects';
 import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { getLinkedTreatmentsFromCachedRecords } from './dataAccess';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 
 import { ACTIVITIES_GEOJSON_REFETCH_ONLINE } from 'state/actions';
@@ -12,7 +13,6 @@ import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { MOBILE } from 'state/build-time-config';
-import { getLinkedTreatmentsFromCachedRecords } from './dataAccess';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
@@ -30,7 +30,7 @@ export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
     } else {
       yield put(Activity.deleteFailure());
     }
-  } catch (e) {
+  } catch (_e) {
     yield put(Activity.deleteFailure());
   }
 }

@@ -6,6 +6,7 @@ import maplibregl, {
   SourceSpecification,
   SymbolLayerSpecification
 } from 'maplibre-gl';
+import { FeatureCollection } from 'geojson';
 import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { FALLBACK_COLOR } from 'UI/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/LegacyMap/helpers/functional/utility-functions';
@@ -13,7 +14,6 @@ import { MOBILE } from 'state/build-time-config';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import { FeatureCollection } from 'geojson';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
 import { getConcatenatedCodes, findSpeciesCodes } from 'utils/addActivity';
 
@@ -318,7 +318,7 @@ const createOfflineActivitiesLayer = async (
 
   if (!geometryList) return;
 
-  let geoJsonData: FeatureCollection = {
+  const geoJsonData: FeatureCollection = {
     type: 'FeatureCollection',
     features: geometryList || []
   };
@@ -407,7 +407,7 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
   stale.forEach((staleLayer) => {
     try {
       map.removeLayer(staleLayer);
-    } catch (e) {
+    } catch (_e) {
       console.error('error removing layer' + staleLayer);
     }
   });

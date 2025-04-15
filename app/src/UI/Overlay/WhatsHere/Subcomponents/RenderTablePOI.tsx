@@ -5,14 +5,15 @@ import WhatsHerePagination from './WhatsHerePagination';
 import NoRowsInSearch from './NoRowsInSearch';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import React from 'react';
 
 type PropTypes = {
   setAnchorEl: (anchorEl: HTMLElement | null) => void;
 };
 const RenderTablePOI = ({ setAnchorEl }: PropTypes) => {
   const dispatch = useDispatch();
-  const { authenticated, roles } = useSelector((state: any) => state.Auth);
-  const whatsHere = useSelector((state: any) => state.Map?.whatsHere);
+  const { authenticated, roles } = useSelector((state) => state.Auth);
+  const whatsHere = useSelector((state) => state.Map?.whatsHere);
 
   const dispatchUpdatedID = (params) => {
     dispatch(WhatsHere.set_highlighted_iapp(params.row.site_id));

@@ -21,31 +21,29 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
 
-export interface INewRecordDialog {}
-
 export interface INewRecordDialogState {
   recordCategory: string;
   recordSubtype: string;
   recordType: string;
 }
 
-const NewRecordDialog = (props: INewRecordDialog) => {
+const NewRecordDialog = () => {
   const dispatch = useDispatch();
 
   const history = useHistory();
 
   const [activityCategorySelectOptions, setActivityCategorySelectOptions] = useState<string[]>([]);
-  const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState([]);
-  const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState([]);
+  const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState<string[]>([]);
+  const [activitySubTypeSelectOptions, setActivitySubTypeSelectOptions] = useState<string[]>([]);
 
-  const accessRoles = useSelector((state: any) => state.Auth.accessRoles);
-  const { newRecordDialogState } = useSelector((state: any) => state.UserSettings);
-  const dialogueOpen = useSelector((state: any) => state.UserSettings.newRecordDialogueOpen);
+  const accessRoles = useSelector((state) => state.Auth.accessRoles);
+  const { newRecordDialogState } = useSelector((state) => state.UserSettings);
+  const dialogueOpen = useSelector((state) => state.UserSettings.newRecordDialogueOpen);
   useSelector((state) => state.Configuration);
   useEffect(() => {
     const categories: string[] = [];
     categories.push('Plant');
-    if (accessRoles.some((role: Record<string, any>) => ['frep'].includes(role.role_name))) {
+    if (accessRoles.some((role) => ['frep'].includes(role.role_name))) {
       categories.push('FREP');
     }
     setActivityCategorySelectOptions(categories);
@@ -55,7 +53,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     if (!newRecordDialogState.recordCategory) {
       setActivityTypeSelectOptions([]);
     } else {
-      const types = [];
+      const types: string[] = [];
       Object.keys(ActivitySubtypeRelations[newRecordDialogState.recordCategory]).forEach((key) => {
         types.push(key);
       });
@@ -83,7 +81,7 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     dispatch(UserSettings.setNewRecordDialogueState(value));
   };
 
-  const handleRecordCategoryChange = (event: any) => {
+  const handleRecordCategoryChange = (event) => {
     setNewRecordDialogState({
       ...newRecordDialogState,
       recordCategory: event.target.value,
@@ -92,11 +90,11 @@ const NewRecordDialog = (props: INewRecordDialog) => {
     });
   };
 
-  const handleRecordTypeChange = (event: any) => {
+  const handleRecordTypeChange = (event) => {
     setNewRecordDialogState({ ...newRecordDialogState, recordType: event.target.value, recordSubtype: '' });
   };
 
-  const handleRecordSubtypeChange = (event: any) => {
+  const handleRecordSubtypeChange = (event) => {
     setNewRecordDialogState({ ...newRecordDialogState, recordSubtype: event.target.value });
   };
 

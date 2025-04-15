@@ -18,13 +18,11 @@ export interface ICustomAutoComplete {
 
 const CustomAutoComplete = ({
   // classes,
-  className,
   disabled,
   id,
   label,
   onChange,
   actualValue,
-  parentState,
   choices
 }) => {
   const optionValueLabels = {};

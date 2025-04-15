@@ -47,7 +47,7 @@ export const ActivityForm = () => {
    */
   const manualUTMEntry = () => {
     const utmCallback = (input: UtmInputObj) => {
-      const geo: any = {
+      const geo = {
         type: 'Feature',
         geometry: {
           type: GeoShapes.Point,

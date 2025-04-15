@@ -1,13 +1,10 @@
-import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import React from 'react';
-import { getJurisdictions } from '../../../utils/IAPPHelpers';
+import { getJurisdictions } from 'utils/IAPPHelpers';
 import { SurveysTable } from './SurveyTable';
 import { TreatmentsTable } from './TreatmentsTable';
 import './Summary.css';
-// import { TreatmentsTable } from './ExtractTables';
-// import { getJurisdictions } from './IAPP-Functions';
-// import { SurveysTable } from './SurveyTable';
 
 export interface IAPPSitePropType {
   record: any;

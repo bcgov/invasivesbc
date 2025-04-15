@@ -1,8 +1,8 @@
 import { createAsyncThunk, nanoid } from '@reduxjs/toolkit';
-import DownloadActions from '../downloads/DownloadActions';
 import { RootState } from 'state/reducers/rootReducer';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { WellCacheServiceFactory } from 'utils/well-cache/context';
+import DownloadActions from 'state/actions/downloads/DownloadActions';
 
 /**
  * @desc Action Members for WellCaching

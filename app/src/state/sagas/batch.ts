@@ -83,7 +83,7 @@ function* deleteBatch(action: PayloadAction<string>) {
   yield put(BatchActions.deleteSuccess());
 }
 
-function* listTemplates(action: PayloadAction) {
+function* listTemplates() {
   const configuration = yield select(selectConfiguration);
 
   const res = yield fetch(configuration.API_BASE + `/api/batch/templates`, {

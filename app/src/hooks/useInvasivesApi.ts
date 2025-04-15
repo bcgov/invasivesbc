@@ -48,9 +48,8 @@ export const useInvasivesApi = () => {
       headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
       body: JSON.stringify({ approvedAccessRequests: accessRequests })
     });
-    const data = await res.json();
     // not result here. this is different than all the others. intentional?
-    return data;
+    return await res.json();
   };
   const declineAccessRequest = async (accessRequest: any): Promise<any> => {
     const res = await fetch(API_BASE + `/api/access-request`, {
@@ -195,25 +194,19 @@ export const useInvasivesApi = () => {
       headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
       body: JSON.stringify(uploadRequest)
     });
-    const data = await res.json();
-
-    return data;
+    return await res.json();
   };
   const getEmbeddedMetabaseReport = async (reportId: string): Promise<any> => {
     const res = await fetch(`${API_BASE}/api/embedded-report/${reportId}`, {
       headers: { Authorization: await getCurrentJWT() }
     });
-    const data = await res.json();
-
-    return data;
+    return await res.json();
   };
   const listEmbeddedMetabaseReports = async (): Promise<any> => {
     const res = await fetch(`${API_BASE}/api/embedded-report`, {
       headers: { Authorization: await getCurrentJWT() }
     });
-    const data = await res.json();
-
-    return data;
+    return await res.json();
   };
   return {
     getMedia,

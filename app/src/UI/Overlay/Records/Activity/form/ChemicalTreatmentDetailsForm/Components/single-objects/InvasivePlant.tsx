@@ -36,7 +36,7 @@ const InvasivePlant: FC<IInvasivePlantComponent> = ({ index, species }) => {
 
   const handleRemoveInvasivePlant = () =>
     setFormDetails((prevDetails) => {
-      let newSpeciesArr = JSON.parse(JSON.stringify([...prevDetails.form_data.invasive_plants]));
+      const newSpeciesArr = JSON.parse(JSON.stringify([...prevDetails.form_data.invasive_plants]));
       newSpeciesArr.splice(index, 1);
       newSpeciesArr.forEach((item, i) => (item.index = i));
 

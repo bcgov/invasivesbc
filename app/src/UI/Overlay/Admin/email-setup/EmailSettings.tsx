@@ -53,7 +53,7 @@ const uiSchemaEmailSettings: UiSchema = {
   }
 };
 
-const EmailSettings = (props) => {
+const EmailSettings = () => {
   const emailSettingsState = useSelector(selectEmailSettings);
   const dispatch = useDispatch();
   useEffect(() => {

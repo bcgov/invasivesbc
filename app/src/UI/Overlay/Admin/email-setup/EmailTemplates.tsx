@@ -49,7 +49,7 @@ const uiSchemaEmailTemplates: UiSchema = {
   }
 };
 
-const EmailTemplates = (props) => {
+const EmailTemplates = () => {
   const emailTemplatesState = useSelector(selectEmailTemplates);
   const dispatch = useDispatch();
 

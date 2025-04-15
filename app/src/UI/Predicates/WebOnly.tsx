@@ -1,7 +1,7 @@
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { MOBILE } from 'state/build-time-config';
 
-const WebOnly = ({ children }: PropsWithChildren<any>) => {
+const WebOnly = ({ children }: PropsWithChildren) => {
   if (!MOBILE) {
     return children;
   }

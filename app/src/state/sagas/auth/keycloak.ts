@@ -1,5 +1,5 @@
 import { call, cancelled, delay, fork, put, select, takeLatest } from 'redux-saga/effects';
-import Keycloak from 'keycloak-js';
+import Keycloak, { KeycloakLogoutOptions } from 'keycloak-js';
 import { AppConfig } from 'state/config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { historySingleton } from 'state/store';
@@ -28,7 +28,12 @@ function* handleSigninRequest(action) {
       ...action.payload
     });
 
-    yield put(AuthActions.requestComplete({ idToken: keycloakInstance.idToken }));
+    if (keycloakInstance.idToken) {
+      yield put(AuthActions.requestComplete({ idToken: keycloakInstance.idToken }));
+    } else {
+      console.error(`missing idToken`);
+      yield put(AuthActions.requestError());
+    }
   } catch (e) {
     console.error(e);
     yield put(AuthActions.requestError());
@@ -42,10 +47,10 @@ function* handleSignoutRequest() {
   }
 
   try {
-    yield call(keycloakInstance.logout, {
-      id_token_hint: keycloakInstance.idToken,
-      post_logout_redirect_uri: config.REDIRECT_URI
-    });
+    const logoutOptions: KeycloakLogoutOptions = {
+      redirectUri: config.REDIRECT_URI
+    };
+    yield call(keycloakInstance.logout, logoutOptions);
     yield put(AuthActions.signoutComplete());
     yield put({ type: USERINFO_CLEAR_REQUEST });
   } catch (e) {
@@ -78,7 +83,11 @@ function* keepTokenFresh() {
         if (keycloakInstance.isTokenExpired(MIN_TOKEN_FRESHNESS)) {
           const refreshed = yield keycloakInstance.updateToken(MIN_TOKEN_FRESHNESS);
           if (refreshed) {
-            yield put(AuthActions.updateTokenState({ idToken: keycloakInstance.idToken }));
+            if (keycloakInstance.idToken) {
+              yield put(AuthActions.updateTokenState({ idToken: keycloakInstance.idToken }));
+            } else {
+              refreshRetryCount = 0;
+            }
           }
           if (disrupted) {
             yield put(AuthActions.recovered());

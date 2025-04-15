@@ -1,4 +1,3 @@
-import React from 'react';
 import BatchDetail from './batch-upload/BatchDetail';
 import BatchLayout from './BatchLayout';
 import { useParams } from 'react-router-dom';

@@ -1,5 +1,5 @@
+import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import AlertMessage from 'interfaces/AlertMessage';
-import { AlertSeverity, AlertSubjects } from '../alertEnums';
 
 const mappingAlertMessages: Record<string, AlertMessage> = {
   // Errors

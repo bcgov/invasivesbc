@@ -1,5 +1,5 @@
-import { IFilter } from 'state/actions/userSettings/RecordSet';
 import { RecordSetType } from './UserRecordSet';
+import { IFilter } from 'state/actions/userSettings/RecordSet';
 
 interface FilterObjects {
   limit?: number;

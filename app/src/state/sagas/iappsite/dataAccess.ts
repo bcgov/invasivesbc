@@ -1,6 +1,7 @@
 import { put, select } from 'redux-saga/effects';
 import centroid from '@turf/centroid';
-import { selectIAPPSite } from '../../reducers/iappsite';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { selectIAPPSite } from 'state/reducers/iappsite';
 import { MAIN_MAP_MOVE } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -8,7 +9,6 @@ import { selectNetworkConnected } from 'state/reducers/network';
 import { MOBILE } from 'state/build-time-config';
 import { IappRecordMode } from 'utils/record-cache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions from 'state/actions/activity/Iapp';
 
 export function* handle_IAPP_GET_REQUEST(iappId: PayloadAction<string>) {
@@ -41,7 +41,7 @@ export function* handle_IAPP_GET_SUCCESS(action) {
   }
 }
 
-export function* handle_IAPP_PAN_AND_ZOOM(action) {
+export function* handle_IAPP_PAN_AND_ZOOM() {
   const { site } = yield select(selectIAPPSite);
 
   const geometry = site?.geom || null;

@@ -1,6 +1,7 @@
 import { call, put, select } from 'redux-saga/effects';
 import moment from 'moment';
-import { AnyAction } from 'redux-saga';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { getIappRowsFromCache, getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import {
   ACTIVITIES_GEOJSON_GET_SUCCESS,
@@ -11,15 +12,13 @@ import {
   IAPP_GEOJSON_GET_SUCCESS
 } from 'state/actions';
 import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
-import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowGetRequest, IappTableRowRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordsetOnline } from 'state/actions/activity/Activity';
 import UserRecord from 'interfaces/UserRecord';
-import { getIappRowsFromCache, getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
-function* refreshExportConfigIfRequired(action?: AnyAction) {
+function* refreshExportConfigIfRequired() {
   const config = yield select(selectRootConfiguration);
 
   if (config.exportConfig && config.exportConfigFreshUntil && moment(config.exportConfigFreshUntil).isAfter()) {
@@ -107,7 +106,7 @@ export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
   yield put({ type: ACTIVITIES_GEOJSON_REFETCH_ONLINE, payload: action.payload });
 }
 
-export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
+export function* handle_IAPP_GEOJSON_GET_ONLINE() {
   const configuration = yield select(selectConfiguration);
   const networkReturn = yield fetch(configuration.IAPP_GEOJSON_URL);
   const data = yield networkReturn.json();
@@ -132,14 +131,13 @@ export function* handle_IAPP_GEOJSON_GET_ONLINE(action) {
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<ActivityTableRowGetRequest>) {
   let mapState = yield select((state) => state.Map);
-  let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
     filterObjects: [action.payload.filterObj]
   });
 
   mapState = yield select((state) => state.Map);
-  tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
+  const tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
   if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
   }
@@ -162,12 +160,11 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<A
 
 export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTableRowGetRequest>) {
   let mapState = yield select((state) => state.Map);
-  let tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 
   const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/IAPP/`, { filterObjects: [action.payload.filterObj] });
   mapState = yield select((state) => state.Map);
 
-  tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
+  const tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
 
   if (tableFiltersHash !== action.payload.tableFiltersHash) return;
 
