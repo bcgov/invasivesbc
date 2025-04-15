@@ -37,13 +37,31 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return LocalForageRecordCacheService._instance;
   }
 
+  /**
+   * @desc Query cached recordsets for results, orderable, filterable, limitable
+   *       LocalForage has no querying capabilities, but this is only used for Development.
+   */
   async query(params: IQueryParams): Promise<UserRecord[] | IappRecord[]> {
     if (this.store == null) {
       throw new Error('Cache not available');
     }
-    const records: Array<UserRecord | IappRecord> = [];
+    let records: Array<UserRecord | IappRecord> = [];
     await this.store.iterate((value: Record<PropertyKey, any>) => {
-      if (params.tableFilters.every((filter) => new RegExp(filter.filter, 'i').test(value[filter.field]))) {
+      if (
+        params.tableFilters.every((filter) => {
+          const pattern = new RegExp(filter.filter, 'i');
+          const columnVal = (() => {
+            if (value?.[filter.field]) {
+              return value[filter.field];
+            } else if (value?.row?.[filter.field]) {
+              return value.row[filter.field];
+            } else {
+              return '';
+            }
+          })();
+          return pattern.test(columnVal);
+        })
+      ) {
         records.push(value);
       }
     });
@@ -64,19 +82,34 @@ class LocalForageRecordCacheService extends RecordCacheService {
         records.reverse();
       }
     }
-
     if (params?.page != undefined && params?.limit != undefined) {
       const startPos = params.page * params.limit;
       const endPos = Math.min((params.page + 1) * params.limit, records.length);
-      return records.slice(startPos, endPos).map((record) => record.data);
+      records = records.slice(startPos, endPos);
     }
-    return records.map((record) => record.data);
+    if (params.selectColumns) {
+      return records.map((record) => {
+        const resObj: Record<PropertyKey, any> = {};
+        params.selectColumns.forEach((column) => {
+          if (column.toLowerCase() === 'table_row') {
+            resObj.table_row = record['row'];
+          } else if (column.toLowerCase() === 'table_data') {
+            resObj.table_data = record['record'];
+          } else {
+            resObj[column] = record[column];
+          }
+        });
+        return resObj;
+      });
+    }
+    return records;
   }
 
   async isCached(repositoryId: string): Promise<boolean> {
     try {
       return (await this.getRepository(repositoryId, ['status'])).status === UserRecordCacheStatus.CACHED;
     } catch (e) {
+      console.error(e);
       return false;
     }
   }
