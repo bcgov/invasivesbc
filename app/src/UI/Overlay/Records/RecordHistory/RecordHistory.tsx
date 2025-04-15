@@ -1,4 +1,6 @@
+import { IconButton } from '@mui/material';
 import './RecordHistory.css';
+import { Close } from '@mui/icons-material';
 
 type PropTypes = {
   show: boolean;
@@ -19,6 +21,9 @@ const RecordHistory = ({ activityHistory, show, handleClick }: PropTypes) => {
     <div id="record-history">
       <div className="history-header">
         <h2>Record History</h2>
+        <IconButton onClick={handleClick}>
+          <Close htmlColor="#FFF" />
+        </IconButton>
       </div>
       <div className="history-content">
         <ul className="outer-record-history">

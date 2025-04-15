@@ -1,11 +1,11 @@
 #record-history {
-  position: fixed;
+  position: absolute;
   background-color: white;
   left: 50%;
-  top: 50%;
+  top: 4rem;
   height: 350pt;
-  transform: translate(-50%, -50%);
-  z-index: 100000;
+  transform: translateX(-50%);
+  z-index: 2;
   width: 100%;
   max-width: 450pt;
   flex-direction: column;
@@ -23,7 +23,7 @@
     box-sizing: border-box;
     align-items: center;
     background-color: var(--bc-blue);
-    justify-content: flex-start;
+    justify-content: space-between;
     border-bottom: 2pt solid var(--bc-yellow);
     h2 {
       color: white;
@@ -95,7 +95,7 @@
       background-color: transparent;
       height: 30pt;
       width: 60pt;
-      border-radius: 12pt;
+      border-radius: 4pt;
       transition: 0.5s color;
     }
     button:hover {
@@ -106,6 +106,6 @@
 
 @media screen and (width > 450pt) {
   #record-history {
-    border-radius: 8pt;
+    border-radius: 4pt;
   }
 }
