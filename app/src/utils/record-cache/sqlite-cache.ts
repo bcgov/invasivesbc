@@ -88,11 +88,11 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return (
       results?.values?.map((record) => {
         const parsedRecord: Record<PropertyKey, UserRecord | IappRecord> = {};
-        Object.keys(record).forEach((rec) => {
-          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'RECORD_DATA', 'GEOJSON', 'CENTROID'].includes(rec)) {
-            parsedRecord[rec.toLowerCase()] = JSON.parse(record[rec]);
+        Object.keys(record).forEach((key) => {
+          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'RECORD_DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
+            parsedRecord[key.toLowerCase()] = JSON.parse(record[key]);
           } else {
-            parsedRecord[rec.toLowerCase()] = record[rec];
+            parsedRecord[key.toLowerCase()] = record[key];
           }
         });
         return parsedRecord;
