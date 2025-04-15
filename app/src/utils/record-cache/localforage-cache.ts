@@ -2,6 +2,7 @@ import localForage from 'localforage';
 import centroid from '@turf/centroid';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import booleanIntersects from '@turf/boolean-intersects';
 import {
   IappRecordMode,
   RepositoryMetadata,
@@ -13,7 +14,6 @@ import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
-import booleanIntersects from '@turf/boolean-intersects';
 import bboxToPolygon from 'utils/bboxToPolygon';
 
 class LocalForageRecordCacheService extends RecordCacheService {
@@ -42,6 +42,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
       return false;
     }
   }
+
   getRepository(repositoryId: string, columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
   getRepository(repositoryId: string): Promise<RepositoryMetadata>;
   async getRepository(
@@ -222,6 +223,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     };
     return { cachedGeoJson };
   }
+
   /**
    * @desc Iterate ids to produce list of values to populate in the map.
    *       The values only change with the recordsets, so we create the list at cache-ception to avoid querying
@@ -311,6 +313,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     });
     return maxDate;
   }
+
   protected async getAllCachedIds(): Promise<string[]> {
     if (this.store == null) {
       throw new Error('cache not available');
@@ -318,6 +321,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const keys = (await this.store.keys()) ?? [];
     return keys.filter((key) => key !== LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY);
   }
+
   /**
    * @desc Create or Update an entry in the cachedSet Repository
    * @param newSet Data to update

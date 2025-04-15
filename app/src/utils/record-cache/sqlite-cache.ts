@@ -2,6 +2,9 @@ import { DBSQLiteValues, SQLiteConnection, SQLiteDBConnection } from '@capacitor
 import centroid from '@turf/centroid';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import booleanIntersects from '@turf/boolean-intersects';
+import bbox from '@turf/bbox';
+import MIGRATIONS from './migrations';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
@@ -14,13 +17,10 @@ import {
   CacheDownloadMode
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
-import MIGRATIONS from './migrations';
 import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
 } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
-import booleanIntersects from '@turf/boolean-intersects';
-import bbox from '@turf/bbox';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -35,6 +35,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
   private static _instance: SQLiteRecordCacheService;
   private readonly QUERY_LIMIT: number = 50000;
   private cacheDB: SQLiteDBConnection | null = null;
+
   protected constructor() {
     super();
   }
@@ -91,10 +92,9 @@ class SQLiteRecordCacheService extends RecordCacheService {
       await this.cacheDB.query(
         //language=SQLite`
         `INSERT INTO CACHE_METADATA(${columns.join(', ')})
-         VALUES(${columns.map(() => '?').join(', ')})
+         VALUES (${columns.map(() => '?').join(', ')})
          ON CONFLICT(SET_ID)
-         DO UPDATE SET
-        ${updates}`,
+           DO UPDATE SET ${updates}`,
         [...values]
       );
     } catch (error) {
@@ -156,7 +156,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
         `SELECT GEOJSON
          FROM CACHED_IAPP_RECORDS
          WHERE ID IN (${slice.map(() => '?').join(', ')})
-         AND GEOJSON NOT NULL`,
+           AND GEOJSON NOT NULL`,
         [...slice]
       );
       results?.values?.forEach((item) => geojson.push(JSON.parse(item['GEOJSON'])));
@@ -186,9 +186,9 @@ class SQLiteRecordCacheService extends RecordCacheService {
       results = await this.cacheDB?.query(
         // language=SQLite
         `SELECT GEOJSON, SHORT_ID
-       FROM CACHED_RECORDS
-       WHERE ID IN (${slice.map(() => '?').join(', ')})
-       AND GEOJSON NOT NULL`,
+         FROM CACHED_RECORDS
+         WHERE ID IN (${slice.map(() => '?').join(', ')})
+           AND GEOJSON NOT NULL`,
         [...slice]
       );
 
@@ -220,6 +220,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     };
     return { cachedCentroid, cachedGeoJson };
   }
+
   /**
    * @desc Gets the date of the most recently updated Activity Record. Used for determining Cache updates.
    * @returns Most Recent Record Date.
@@ -260,7 +261,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
         const sliced = idsToDelete.slice(i, Math.min(i + BATCH_AMOUNT, idsToDelete.length));
         await this.cacheDB.query(
           // language=SQLite
-          `DELETE FROM ${RECORD_TABLE}
+          `DELETE
+           FROM ${RECORD_TABLE}
            WHERE ID IN (${sliced.map(() => '?').join(', ')})`,
           [...sliced]
         );
@@ -294,7 +296,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
     await this.deleteCachedRecordsFromIds(recordsToErase, record_set_type!);
     await this.cacheDB.query(
       //language=SQLite
-      `DELETE FROM CACHE_METADATA
+      `DELETE
+       FROM CACHE_METADATA
        WHERE SET_ID = ?`,
       [repositoryId]
     );
@@ -315,8 +318,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
             `SELECT ID
              FROM CACHED_RECORDS
              ORDER BY ID ASC
-             LIMIT ?
-             OFFSET ?`,
+             LIMIT ? OFFSET ?`,
             [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
           )
         )?.values ?? [];
@@ -327,8 +329,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
             `SELECT ID
              FROM CACHED_IAPP_RECORDS
              ORDER BY ID ASC
-             LIMIT ?
-             OFFSET ?`,
+             LIMIT ? OFFSET ?`,
             [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
           )
         )?.values ?? [];
@@ -441,12 +442,12 @@ class SQLiteRecordCacheService extends RecordCacheService {
       `SELECT GEOJSON
        FROM CACHED_RECORDS
        WHERE LATITUDE BETWEEN ? AND ?
-       AND LONGITUDE BETWEEN ? AND ?
+         AND LONGITUDE BETWEEN ? AND ?
        UNION ALL
        SELECT GEOJSON
        FROM CACHED_IAPP_RECORDS
        WHERE LATITUDE BETWEEN ? AND ?
-       AND LONGITUDE BETWEEN ? AND ?
+         AND LONGITUDE BETWEEN ? AND ?
       `,
       [
         minY - BUFFER,
@@ -560,9 +561,9 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const result = await this.cacheDB.query(
       //language=SQLite
       `SELECT ${dataType}
-         FROM CACHED_IAPP_RECORDS
-         WHERE ID = ?
-         LIMIT 1`,
+       FROM CACHED_IAPP_RECORDS
+       WHERE ID = ?
+       LIMIT 1`,
       [id.toString()]
     );
     if (!result?.values) {
@@ -570,6 +571,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     }
     return JSON.parse(result.values[0][dataType]);
   }
+
   /**
    * @desc Upserts an Invasives Activity into the local Database.
    * @param data Incoming Activity Data
@@ -582,34 +584,33 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const entry = `( ${Array(NUM_ACTIVITY_COLUMNS).fill('?').join(',')} )`;
     const values: Array<any> = [];
     Object.keys(data).forEach((key) => values.push(this.transformActivity(key, data[key])));
-    let query = `INSERT INTO CACHED_RECORDS(
-      ID,
-      LATITUDE,
-      LONGITUDE,
-      GEOJSON,
-      CENTROID,
-      DATA,
-      DATE_CREATED,
-      ACTIVITY_ID,
-      ACTIVITY_TYPE,
-      SHORT_ID,
-      ACTIVITY_SUBTYPE,
-      ACTIVITY_DATE,
-      PROJECT_CODE,
-      JURISDICTION_DISPLAY,
-      INVASIVE_PLANT,
-      SPECIES_POSITIVE_FULL,
-      SPECIES_NEGATIVE_FULL,
-      HAS_CURRENT_POSITIVE,
-      CURRENT_POSITIVE_SPECIES,
-      HAS_CURRENT_NEGATIVE,
-      CURRENT_NEGATIVE_SPECIES,
-      SPECIES_TREATED_FULL,
-      SPECIES_BIOCONTROL_FULL,
-      CREATED_BY,
-      UPDATED_BY,
-      AGENCY
-    ) VALUES `;
+    let query = `INSERT INTO CACHED_RECORDS(ID,
+                                            LATITUDE,
+                                            LONGITUDE,
+                                            GEOJSON,
+                                            CENTROID,
+                                            DATA,
+                                            DATE_CREATED,
+                                            ACTIVITY_ID,
+                                            ACTIVITY_TYPE,
+                                            SHORT_ID,
+                                            ACTIVITY_SUBTYPE,
+                                            ACTIVITY_DATE,
+                                            PROJECT_CODE,
+                                            JURISDICTION_DISPLAY,
+                                            INVASIVE_PLANT,
+                                            SPECIES_POSITIVE_FULL,
+                                            SPECIES_NEGATIVE_FULL,
+                                            HAS_CURRENT_POSITIVE,
+                                            CURRENT_POSITIVE_SPECIES,
+                                            HAS_CURRENT_NEGATIVE,
+                                            CURRENT_NEGATIVE_SPECIES,
+                                            SPECIES_TREATED_FULL,
+                                            SPECIES_BIOCONTROL_FULL,
+                                            CREATED_BY,
+                                            UPDATED_BY,
+                                            AGENCY)
+                 VALUES `;
 
     query += values.map(() => entry).join(', ');
     query += `
@@ -656,30 +657,29 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const entry = ` ( ${Array(NUM_IAPP_COLUMNS).fill('?').join(',')} ) `;
     const values: Array<any> = [];
     Object.keys(data).forEach((id) => values.push(this.transformIapp(id, data[id].record, data[id].row)));
-    let query = `INSERT INTO CACHED_IAPP_RECORDS(
-      ID,
-      TABLE_DATA,
-      RECORD_DATA,
-      GEOJSON,
-      LATITUDE,
-      LONGITUDE,
-      SITE_ID,
-      SITE_PAPER_FILE_ID,
-      JURISDICTIONS_FLATTENED,
-      MIN_SURVEY,
-      ALL_SPECIES_ON_SITE,
-      BIOLOGICAL_AGENT,
-      MAX_SURVEY,
-      AGENCIES,
-      HAS_BIOLOGICAL_TREATMENTS,
-      HAS_CHEMICAL_TREATMENTS,
-      HAS_MECHANICAL_TREATMENTS,
-      HAS_BIOLOGICAL_DISPERSALS,
-      MONITORED,
-      REGIONAL_DISTRICT,
-      REGIONAL_INVASIVE_SPECIES_ORGANIZATION,
-      INVASIVE_PLANT_MANAGEMENT_AREA
-    ) VALUES `;
+    let query = `INSERT INTO CACHED_IAPP_RECORDS(ID,
+                                                 TABLE_DATA,
+                                                 RECORD_DATA,
+                                                 GEOJSON,
+                                                 LATITUDE,
+                                                 LONGITUDE,
+                                                 SITE_ID,
+                                                 SITE_PAPER_FILE_ID,
+                                                 JURISDICTIONS_FLATTENED,
+                                                 MIN_SURVEY,
+                                                 ALL_SPECIES_ON_SITE,
+                                                 BIOLOGICAL_AGENT,
+                                                 MAX_SURVEY,
+                                                 AGENCIES,
+                                                 HAS_BIOLOGICAL_TREATMENTS,
+                                                 HAS_CHEMICAL_TREATMENTS,
+                                                 HAS_MECHANICAL_TREATMENTS,
+                                                 HAS_BIOLOGICAL_DISPERSALS,
+                                                 MONITORED,
+                                                 REGIONAL_DISTRICT,
+                                                 REGIONAL_INVASIVE_SPECIES_ORGANIZATION,
+                                                 INVASIVE_PLANT_MANAGEMENT_AREA)
+                 VALUES `;
     query += values.map(() => entry).join(', ');
     query += 'ON CONFLICT (ID) DO NOTHING';
     await this.cacheDB.run(query, values.flat(), false);
