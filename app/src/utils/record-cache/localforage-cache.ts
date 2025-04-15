@@ -91,10 +91,10 @@ class LocalForageRecordCacheService extends RecordCacheService {
       return records.map((record) => {
         const resObj: Record<PropertyKey, any> = {};
         params.selectColumns.forEach((column) => {
-          if (column.toLowerCase() === 'table_row') {
-            resObj.table_row = record['row'];
-          } else if (column.toLowerCase() === 'table_data') {
-            resObj.table_data = record['record'];
+          if (column.toLowerCase() === 'table_data') {
+            resObj.table_data = record['row'];
+          } else if (column.toLowerCase() === 'record_data') {
+            resObj.record_data = record['record'];
           } else {
             resObj[column] = record[column];
           }

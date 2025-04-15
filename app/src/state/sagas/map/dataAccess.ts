@@ -338,7 +338,7 @@ export function* getIappRowsFromCache(payload: IappTableRowRequest) {
       page: page,
       tableFilters: recordset?.tableFilters,
       recordSetType: recordset.recordSetType,
-      selectColumns: ['table_row'],
+      selectColumns: ['table_data'],
       sort: {
         by: recordset.sortColumn,
         order: recordset.sortOrder
@@ -349,7 +349,7 @@ export function* getIappRowsFromCache(payload: IappTableRowRequest) {
     yield put(
       IappActions.getRowsSuccess({
         recordSetID: recordSetID,
-        rows: records.map((r) => r?.table_row),
+        rows: records.map((r) => r?.table_data),
         tableFiltersHash: tableFiltersHash,
         page: page,
         limit: limit
