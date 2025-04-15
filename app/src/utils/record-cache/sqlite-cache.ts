@@ -84,7 +84,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
     `;
 
     const results = await this.cacheDB.query(query, values);
-    console.log('Query Results', results, 'Query', query, 'Query values', values);
     return (
       results?.values?.map((record) => {
         const parsedRecord: Record<PropertyKey, UserRecord | IappRecord> = {};
