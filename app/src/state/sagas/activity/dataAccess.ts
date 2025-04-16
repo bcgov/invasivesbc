@@ -340,6 +340,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
     }
     let updatedActivity = populateSpeciesArrays({ ...beforeActivity, form_data: updatedFormData });
     updatedActivity = populateJurisdictionArray({ ...updatedActivity });
+    updatedActivity = { ...updatedActivity, map_symbol: updatedActivity.species_positive.join(', ') };
 
     yield put({
       type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
