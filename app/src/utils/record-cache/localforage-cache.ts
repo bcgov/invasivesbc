@@ -95,6 +95,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
             resObj.table_data = record['row'];
           } else if (column.toLowerCase() === 'record_data') {
             resObj.record_data = record['record'];
+          } else if (column.toLowerCase() === 'id') {
+            resObj.id = record.activity_id ?? record.site_id ?? '';
           } else {
             resObj[column] = record[column];
           }
