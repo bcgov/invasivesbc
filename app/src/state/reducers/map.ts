@@ -40,8 +40,7 @@ import {
   TOGGLE_WMS_LAYER,
   URL_CHANGE,
   USER_HOVERED_RECORD
-} from '../actions';
-import { AppConfig } from '../config';
+} from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -230,7 +229,7 @@ export interface MapState {
   recordTables: object;
   serverBoundaries: any[];
   simplePickerLayers2: any[];
-  simplePickerLayers: object;
+  simplePickerLayers: object | undefined;
   tooManyLabelsDialog: any;
   userCoords: any;
   userRecordOnHoverRecordID: any;
@@ -361,7 +360,7 @@ const initialState: MapState = {
   }
 };
 
-function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => MapState {
+function createMapReducer(): (MapState, AnyAction) => MapState {
   return (state = initialState, action) => {
     /* MW:
        Using immer produce() (exported as createNextState from redux-toolkit) so we can modify draftState directly and
@@ -653,7 +652,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
       } else if (Activity.Offline.getIdsForRecordsetSuccess.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
         if (!draftState.layers[index]) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
@@ -871,7 +870,7 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             break;
           }
           case INIT_SERVER_BOUNDARIES_GET: {
-            const withLocalToggles =
+            draftState.serverBoundaries =
               action.payload.data?.map((incomingItem) => {
                 const returnVal = { ...incomingItem };
                 const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
@@ -881,22 +880,11 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
                   existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
                 return returnVal;
               }) ?? [];
-            draftState.serverBoundaries = withLocalToggles;
-            const strippedOfShapes = draftState.serverBoundaries.map((item) => {
-              const returnVal = { ...item };
-              delete returnVal.geojson;
-              return returnVal;
-            });
             break;
           }
           case TOGGLE_KML_LAYER: {
             const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
             draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
-            const strippedOfShapes = draftState.serverBoundaries.map((item) => {
-              const returnVal = { ...item };
-              delete returnVal.geojson;
-              return returnVal;
-            });
             break;
           }
 
@@ -995,9 +983,15 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
             for (const layerNameProperty in action.payload) {
               //if exists, toggle
               if (state.simplePickerLayers[layerNameProperty]) {
+                if (draftState.simplePickerLayers == undefined) {
+                  draftState.simplePickerLayers = [];
+                }
                 draftState.simplePickerLayers[layerNameProperty] = !state.simplePickerLayers[layerNameProperty];
               } else {
                 // doesn't exist, getting turned on
+                if (draftState.simplePickerLayers == undefined) {
+                  draftState.simplePickerLayers = [];
+                }
                 draftState.simplePickerLayers[layerNameProperty] = true;
               }
             }
@@ -1037,8 +1031,6 @@ function createMapReducer(configuration: AppConfig): (MapState, AnyAction) => Ma
 
 const selectMap: (state) => MapState = (state) => state.Map;
 
-export { createMapReducer, selectMap };
-
 const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
   if (
     !draftState.layers?.length ||
@@ -1051,10 +1043,10 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
   const type = draftState.layers[index].type;
 
   if (index !== undefined && type === typeToFilter && type === RecordSetType.Activity) {
-    const filtered = [];
+    const filtered: object[] = [];
     IDList.map((id) => {
       for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
-        if (draftState.activitiesGeoJSONDict.hasOwnProperty(source)) {
+        if (Object.prototype.hasOwnProperty.call(draftState.activitiesGeoJSONDict, source)) {
           const f = draftState.activitiesGeoJSONDict[source][id];
           if (f !== undefined) {
             filtered.push(f);
@@ -1084,3 +1076,4 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
     draftState.layers[index].loading = false;
   }
 };
+export { createMapReducer, selectMap };

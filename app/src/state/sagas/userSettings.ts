@@ -35,8 +35,7 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
     const current = sets[action.payload.setName];
 
     const boundary = JSON.parse(action.payload?.searchedBoundary);
-    const patchedBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
-    current.searchBoundary = patchedBoundary;
+    current.searchBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
 
     yield put(UserSettings.Boundaries.addToSetSuccess(sets));
   } catch (e) {

@@ -53,7 +53,7 @@ const TextModal = ({
   };
   const validateUserInput = (): boolean => {
     let error = '';
-    let resLength = userResponse.length;
+    const resLength = userResponse.length;
     if (selectOptions?.length && !selectOptions.includes(userResponse)) {
       error = 'You need to select an option from the menu';
     } else if (regex && !regex.test(userResponse)) {

@@ -26,13 +26,14 @@ import { useSelector } from 'utils/use_selector';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 
-const CustomizeLayerMenu = (props) => {
+const CustomizeLayerMenu = () => {
   enum MenuState {
     Init,
     New,
     Remove,
     Upload
   }
+
   enum LayerOptions {
     Draw = 'Draw',
     UploadKml = 'Upload KML/KMZ',

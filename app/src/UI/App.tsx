@@ -13,7 +13,7 @@ const LegacyMapLayout = React.lazy(() => import('UI/AppLayout/LegacyMapLayout'))
 
 export const RENDER_DEBUG = false;
 
-const App: React.FC = () => {
+const App = () => {
   const authInitiated = useSelector((state) => state.Auth.initialized);
   const { COMPONENTIZED_MAP } = useSelector((state) => state.Configuration.current.FEATURE_GATE);
 

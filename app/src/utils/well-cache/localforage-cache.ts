@@ -1,4 +1,5 @@
 import localForage from 'localforage';
+import { Feature, FeatureCollection } from '@turf/helpers';
 import {
   IWellCacheProgressCallbackParameters,
   IWellRepositoryMetadata,
@@ -7,7 +8,6 @@ import {
 } from '.';
 import WellData from 'interfaces/WellData';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
-import { Feature, FeatureCollection } from '@turf/helpers';
 
 class LocalForageWellCacheService extends WellCacheService {
   private static _instance: LocalForageWellCacheService;
@@ -187,6 +187,7 @@ class LocalForageWellCacheService extends WellCacheService {
 
     await this.store.setItem(LocalForageWellCacheService.REPOSITORY_METADATA_KEY, repositories);
   }
+
   private async initializeCache() {
     this.store = localForage.createInstance({
       storeName: 'well-cache',

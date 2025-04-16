@@ -1,5 +1,5 @@
 import { Accordion, Button, MenuItem, Select, Tooltip } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { CSV_LINK_CLICKED, RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -10,10 +10,10 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 
 const ExcelExporter = (props) => {
   const dispatch = useDispatch();
-  const linkToCSV = useSelector((state: any) => state.Map.linkToCSV);
-  const recordSetForCSV = useSelector((state: any) => state.Map.recordSetForCSV);
-  const CanTriggerCSV = useSelector((state: any) => state.Map.CanTriggerCSV);
-  const setType = useSelector((state: any) => state.UserSettings.recordSets[props.setName]?.recordSetType);
+  const linkToCSV = useSelector((state) => state.Map.linkToCSV);
+  const recordSetForCSV = useSelector((state) => state.Map.recordSetForCSV);
+  const CanTriggerCSV = useSelector((state) => state.Map.CanTriggerCSV);
+  const setType = useSelector((state) => state.UserSettings.recordSets[props.setName]?.recordSetType);
   const [selection, setSelection] = useState(
     setType === 'IAPP' ? 'site_selection_extract' : 'terrestrial_plant_observation'
   );

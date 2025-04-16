@@ -1,6 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { AppConfig } from '../config';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
 
@@ -18,7 +17,7 @@ const initialState: IAPPSiteState = {
   site: null
 };
 
-function createIAPPSiteReducer(configuration: AppConfig) {
+function createIAPPSiteReducer() {
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<IAPPSiteState>) => {
       if (IappActions.get.match(action)) {

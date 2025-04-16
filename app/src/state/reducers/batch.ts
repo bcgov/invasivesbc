@@ -22,6 +22,7 @@ export interface ShallowTemplate {
 export interface DeepTemplate {
   name: string;
   key: string;
+  columns: { name: string; dataType: string; required: boolean }[];
 }
 
 interface Batch {

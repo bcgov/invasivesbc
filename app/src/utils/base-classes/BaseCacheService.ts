@@ -25,11 +25,11 @@ abstract class BaseCacheService<
   public abstract deleteRepository(repositoryId: string): Promise<void>;
 
   /** Pull metadata for one Repository in the Collection */
-  public abstract getRepository(repositoryId: string): Promise<RepoMetadata>;
+  public abstract getRepository(repositoryId: string): Promise<RepoMetadata | null>;
   public abstract getRepository(
     repositoryId: string,
     fields: Array<keyof RepoMetadata>
-  ): Promise<RepoMetadata | Partial<RepoMetadata>>;
+  ): Promise<RepoMetadata | Partial<RepoMetadata> | null>;
 
   /** List metadata for all Repositories */
   /**

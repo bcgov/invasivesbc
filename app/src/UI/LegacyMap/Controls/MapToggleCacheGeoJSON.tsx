@@ -1,16 +1,16 @@
 import { IconButton, Tooltip } from '@mui/material';
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { MAP_TOGGLE_GEOJSON_CACHE } from 'state/actions';
 import { useSelector } from 'utils/use_selector';
 import 'UI/Global.css';
 import SpeedIcon from '@mui/icons-material/Speed';
 
-export const MapModeToggle = (props) => {
-  const mapModeToggle = useSelector((state: any) => state.Map?.MapMode);
+export const MapModeToggle = () => {
+  const mapModeToggle = useSelector((state) => state.Map.MapMode);
   const dispatch = useDispatch();
   const [show, setShow] = React.useState(false);
-  const divRef = useRef();
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   return (
     <div ref={divRef} className={mapModeToggle !== 'VECTOR_ENDPOINT' ? 'map-btn-selected' : 'map-btn'}>

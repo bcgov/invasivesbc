@@ -6,7 +6,7 @@ import {
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS
-} from '../actions';
+} from 'state/actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';

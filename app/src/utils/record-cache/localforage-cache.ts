@@ -2,19 +2,21 @@ import localForage from 'localforage';
 import centroid from '@turf/centroid';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import booleanIntersects from '@turf/boolean-intersects';
 import {
   IappRecordMode,
   RepositoryMetadata,
   RecordCacheService,
   RecordSetSourceMetadata,
-  CacheDownloadMode
+  CacheDownloadMode,
+  IQueryParams
 } from 'utils/record-cache/index';
 import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
-import booleanIntersects from '@turf/boolean-intersects';
 import bboxToPolygon from 'utils/bboxToPolygon';
+import { getUnnestedFieldsForActivity } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -35,13 +37,83 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return LocalForageRecordCacheService._instance;
   }
 
+  /**
+   * @desc Query cached recordsets for results, orderable, filterable, limitable
+   *       LocalForage has no querying capabilities, but this is only used for Development.
+   */
+  async query(params: IQueryParams): Promise<UserRecord[] | IappRecord[]> {
+    if (this.store == null) {
+      throw new Error('Cache not available');
+    }
+    let records: Array<UserRecord | IappRecord> = [];
+    await this.store.iterate((value: Record<PropertyKey, any>) => {
+      if (
+        params.tableFilters.every((filter) => {
+          const pattern = new RegExp(filter.filter, 'i');
+          const columnVal = (() => {
+            if (value?.[filter.field]) {
+              return value[filter.field];
+            } else if (value?.row?.[filter.field]) {
+              return value.row[filter.field];
+            } else {
+              return '';
+            }
+          })();
+          return pattern.test(columnVal);
+        })
+      ) {
+        records.push(value);
+      }
+    });
+    if (params.sort) {
+      const { by, order } = params.sort;
+      records.sort((a, b) => {
+        if (!a[by] && !b[by]) {
+          return 0;
+        } else if (!a[by]) {
+          return 1;
+        } else if (!b[by]) {
+          return -1;
+        } else {
+          return a[by]?.localeCompare(b[by]);
+        }
+      });
+      if (order === 'DESC') {
+        records.reverse();
+      }
+    }
+    if (params?.page != undefined && params?.limit != undefined) {
+      const startPos = params.page * params.limit;
+      const endPos = Math.min((params.page + 1) * params.limit, records.length);
+      records = records.slice(startPos, endPos);
+    }
+    if (params.selectColumns) {
+      return records.map((record) => {
+        const resObj: Record<PropertyKey, any> = {};
+        params.selectColumns.forEach((column) => {
+          if (column.toLowerCase() === 'table_data') {
+            resObj.table_data = record['row'];
+          } else if (column.toLowerCase() === 'record_data') {
+            resObj.record_data = record['record'];
+          } else {
+            resObj[column] = record[column];
+          }
+        });
+        return resObj;
+      });
+    }
+    return records;
+  }
+
   async isCached(repositoryId: string): Promise<boolean> {
     try {
       return (await this.getRepository(repositoryId, ['status'])).status === UserRecordCacheStatus.CACHED;
     } catch (e) {
+      console.error(e);
       return false;
     }
   }
+
   getRepository(repositoryId: string, columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
   getRepository(repositoryId: string): Promise<RepositoryMetadata>;
   async getRepository(
@@ -69,7 +141,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    await Promise.all(Object.keys(data).map((key) => this.store?.setItem(key, data[key])));
+    await Promise.all(
+      Object.keys(data).map((key) => {
+        const parsed = getUnnestedFieldsForActivity(data[key]);
+        parsed.data = data[key];
+        this.store?.setItem(key, parsed);
+      })
+    );
   }
 
   /**
@@ -164,13 +242,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error('cache not available');
     }
 
-    const data = await this.store.getItem(id);
+    const data = (await this.store.getItem(id)) as UserRecord;
 
     if (!data) {
       throw new Error(`activity ${id} not found in cache`);
     }
 
-    return data;
+    return data?.data;
   }
 
   /**
@@ -222,6 +300,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     };
     return { cachedGeoJson };
   }
+
   /**
    * @desc Iterate ids to produce list of values to populate in the map.
    *       The values only change with the recordsets, so we create the list at cache-ception to avoid querying
@@ -311,6 +390,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     });
     return maxDate;
   }
+
   protected async getAllCachedIds(): Promise<string[]> {
     if (this.store == null) {
       throw new Error('cache not available');
@@ -318,6 +398,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const keys = (await this.store.keys()) ?? [];
     return keys.filter((key) => key !== LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY);
   }
+
   /**
    * @desc Create or Update an entry in the cachedSet Repository
    * @param newSet Data to update

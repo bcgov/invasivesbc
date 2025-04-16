@@ -1,7 +1,6 @@
-import React from 'react';
 import './Spinner.css';
 
-const Spinner: React.FC = () => {
+const Spinner = () => {
   return (
     <svg viewBox="0 0 50 50" className="spinner">
       <circle

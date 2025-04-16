@@ -36,10 +36,12 @@ export enum WellRepositoryStatus {
   ERROR,
   NOT_CACHED
 }
+
 export interface ICachedWellData {
   id: string;
   geometry: Feature;
 }
+
 abstract class WellCacheService extends BaseCacheService<
   IWellRepositoryMetadata,
   IWellRepositoryDownloadRequestSpec,
@@ -131,10 +133,9 @@ abstract class WellCacheService extends BaseCacheService<
    * @returns {Feature[]} Wells in area
    */
   public async getNearbyWells(geom: Feature): Promise<Feature[]> {
-    const containedShapes = (await this.getOverlappingRepositories(geom))
+    return (await this.getOverlappingRepositories(geom))
       .flatMap((cr) => cr.cachedGeoJson!.features)
       .filter((s) => booleanIntersects(geom, s));
-    return containedShapes;
   }
 
   /**

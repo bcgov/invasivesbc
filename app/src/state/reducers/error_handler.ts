@@ -1,6 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { CRASH_HANDLE_GLOBAL_ERROR } from '../actions';
+import { CRASH_HANDLE_GLOBAL_ERROR } from 'state/actions';
 
 interface ErrorHandlerState {
   detail: {

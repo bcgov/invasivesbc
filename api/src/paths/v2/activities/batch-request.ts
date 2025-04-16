@@ -83,7 +83,7 @@ function getActivity(): RequestHandler {
 
       const sqlStatement: SQLStatement = getActivitiesByIdsSQL(idList);
       (await connection.query(sqlStatement.text, sqlStatement.values)).rows.forEach(async (a) => {
-        resObj[a.activity_id] = { ...a, ...a.activity_payload };
+        resObj[a.activity_id] = { ...a.activity_payload, ...a };
         delete resObj[a.activity_id].activity_payload;
         if (a?.media_keys?.length > 0) {
           try {

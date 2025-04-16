@@ -65,12 +65,13 @@ export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
     return mappedRow;
   });
   const sortColumns = (() => {
-    if (userOfflineMobile) return [];
     switch (recordSetType) {
       case RecordSetType.IAPP:
         return validIAPPSortColumns;
       case RecordSetType.Activity:
         return validActivitySortColumns;
+      default:
+        return [];
     }
   })();
 

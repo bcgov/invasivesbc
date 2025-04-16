@@ -6,7 +6,7 @@ import {
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_RESTORE_OFFLINE,
   ACTIVITY_OFFLINE_DELETE_ITEM
-} from '../../actions';
+} from 'state/actions';
 
 class Offline {
   private static readonly PREFIX = 'Offline';
@@ -26,4 +26,5 @@ class Offline {
     `${this.PREFIX}/getIdsForRecordsetSuccess`
   );
 }
+
 export default Offline;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
@@ -7,11 +7,11 @@ import 'UI/Global.css';
 import InfoIcon from '@mui/icons-material/Info';
 import { useHistory } from 'react-router-dom';
 
-export const LegendsButton = (props) => {
-  const legendsPopup = useSelector((state: any) => state.Map?.legendsPopup);
+export const LegendsButton = () => {
+  const legendsPopup = useSelector((state) => state.Map.legendsPopup);
   const history = useHistory();
   const dispatch = useDispatch();
-  const divRef = useRef();
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   const [show, setShow] = React.useState(false);
 

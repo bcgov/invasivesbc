@@ -14,8 +14,7 @@ const Coordinates = () => {
   const updateCoordinates = (x: number, y: number) => {
     if (!map) return;
     const proj4_setdef = (utmZone: number): string => {
-      const zdef = `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
-      return zdef;
+      return `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
     };
     const { lng, lat } = map.unproject([x, y]);
     const utmZone = Math.floor((lng + 180) / 6) + 1;

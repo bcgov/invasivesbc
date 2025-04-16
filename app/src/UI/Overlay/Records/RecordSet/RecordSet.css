@@ -15,6 +15,7 @@
 }
 
 .recordSet_header {
+  padding-left: 5px;
   height: 5vh;
   width: 100%;
   top: 0;
@@ -112,8 +113,12 @@
   border: 1px solid black;
   color: black;
   border-radius: 5px;
+  &:disabled {
+    color: rgba(0, 0, 0, 0.26);
+    background-color: rgba(0, 0, 0, 0.12);
+    border-color: rgba(0, 0, 0, 0.12);
+  }
 }
-
 .recordSet_footer {
   flex-direction: row;
   justify-content: center;

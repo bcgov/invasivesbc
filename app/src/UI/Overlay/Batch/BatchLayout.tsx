@@ -1,4 +1,3 @@
-import React from 'react';
 import { Box, Container, Stack } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';

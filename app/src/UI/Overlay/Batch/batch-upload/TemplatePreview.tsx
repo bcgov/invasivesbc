@@ -7,7 +7,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Download } from '@mui/icons-material';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
-import { selectBatch } from 'state/reducers/batch';
+import { DeepTemplate, selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Spinner/Spinner';
 import BatchActions from 'state/actions/batch/BatchActions';
 
@@ -16,7 +16,7 @@ const TemplatePreview = ({ name, id }) => {
   const { templateDetail } = useSelector(selectBatch);
   const { darkTheme } = useSelector(selectUserSettings);
 
-  const [detail, setDetail] = useState(null);
+  const [detail, setDetail] = useState<DeepTemplate | null>(null);
   const [loading, setLoading] = useState(true);
 
   const [expanded, setExpanded] = useState(false);
@@ -38,7 +38,7 @@ const TemplatePreview = ({ name, id }) => {
   }, [templateDetail]);
 
   const downloadTemplate = (key: string) => {
-    new Promise((resolve, reject) => {
+    new Promise((resolve) => {
       dispatch(
         BatchActions.downloadTemplateCsv({
           key: id,
@@ -144,14 +144,15 @@ const TemplatePreview = ({ name, id }) => {
             </tr>
           </thead>
           <tbody>
-            {detail.columns.map((c) => (
-              <tr key={`template-${c.name}`}>
-                <td>{c.name}</td>
-                <td>{c.dataType}</td>
-                <td>{c.required ? 'Yes' : ''}</td>
-                <td>{renderAcceptableValues(c)}</td>
-              </tr>
-            ))}
+            {detail &&
+              detail.columns.map((c) => (
+                <tr key={`template-${c.name}`}>
+                  <td>{c.name}</td>
+                  <td>{c.dataType}</td>
+                  <td>{c.required ? 'Yes' : ''}</td>
+                  <td>{renderAcceptableValues(c)}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
