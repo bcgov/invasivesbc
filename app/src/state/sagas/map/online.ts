@@ -261,20 +261,6 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
       })
     );
   } else if (MOBILE) {
-    yield getIappIdsForRecordsetFromCache(action.payload);
-  }
-}
-
-export function* getIappIdsForRecordsetFromCache(action: IappTableRowRequest) {
-  const service = yield RecordCacheServiceFactory.getPlatformInstance();
-  if (yield service.isCached(action.recordSetID)) {
-    const ids = yield service.getIdList(action.recordSetID);
-    yield put(
-      IappActions.getIdsForRecordsetSuccess({
-        recordSetID: action.recordSetID,
-        IDList: ids,
-        tableFiltersHash: action.tableFiltersHash
-      })
-    );
+    yield getIdsForRecordsetFromCache(action.payload);
   }
 }
