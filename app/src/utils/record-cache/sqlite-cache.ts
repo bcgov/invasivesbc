@@ -14,13 +14,15 @@ import {
   RepositoryMetadata,
   RecordCacheService,
   RecordSetSourceMetadata,
-  CacheDownloadMode
+  CacheDownloadMode,
+  IQueryParams
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
 } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
+import { IFilter } from 'state/actions/userSettings/RecordSet';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -570,6 +572,59 @@ class SQLiteRecordCacheService extends RecordCacheService {
       throw Error('No results found');
     }
     return JSON.parse(result.values[0][dataType]);
+  }
+
+  /**
+   * @desc Query Database using Parameters allowing for ordering, column filtering on all cached records
+   * @param {IQueryParams} params Query Parameters for search
+   */
+  public async query(params: IQueryParams): Promise<UserRecord[] | IappRecord[]> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const values: Array<string | number> = [];
+    const table = {
+      [RecordSetType.Activity]: 'CACHED_RECORDS',
+      [RecordSetType.IAPP]: 'CACHED_IAPP_RECORDS'
+    }[params.recordSetType];
+    const columns = params.selectColumns.length > 0 ? params.selectColumns.join(', ') : '*';
+    let where = '';
+
+    params.tableFilters.forEach((filter: IFilter, i: number) => {
+      where += i === 0 ? '\n WHERE ' : '\n AND ';
+      where += `${filter.field} LIKE '%${filter.filter}%'`;
+    });
+    let order = '';
+    if (params?.sort?.by) {
+      order = `ORDER BY ${params.sort.by} ${params.sort.order ?? 'ASC'}
+               NULLS ${params.sort.order === 'DESC' ? 'FIRST' : 'LAST'}`;
+    }
+    const limit = params?.limit ?? 50000;
+    const offset = params?.page != undefined && params?.limit != undefined ? params.page * params.limit : 0;
+    const query =
+      //language=SQLite
+      `SELECT ${columns} 
+       FROM ${table} 
+       ${where}
+       ${order}
+       LIMIT ${limit}
+       OFFSET ${offset}
+    `;
+
+    const results = await this.cacheDB.query(query, values);
+    return (
+      results?.values?.map((record) => {
+        const parsedRecord: Record<PropertyKey, UserRecord | IappRecord> = {};
+        Object.keys(record).forEach((key) => {
+          if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'RECORD_DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
+            parsedRecord[key.toLowerCase()] = JSON.parse(record[key]);
+          } else {
+            parsedRecord[key.toLowerCase()] = record[key];
+          }
+        });
+        return parsedRecord;
+      }) ?? []
+    );
   }
 
   /**

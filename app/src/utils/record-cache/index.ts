@@ -76,6 +76,13 @@ export interface CacheDownloadSpec {
   filterObjects: FilterObjects;
 }
 
+export interface IQueryParams extends FilterObjects {
+  sort?: {
+    order?: 'ASC' | 'DESC';
+    by: string;
+  };
+}
+
 abstract class RecordCacheService extends BaseCacheService<
   RepositoryMetadata,
   CacheDownloadSpec,
@@ -91,6 +98,8 @@ abstract class RecordCacheService extends BaseCacheService<
   static async getInstance(): Promise<RecordCacheService> {
     throw new Error('unimplemented in abstract base class');
   }
+  public abstract query(params: IQueryParams): Promise<UserRecord[] | IappRecord[]>;
+
   protected abstract addOrUpdateRepository(spec: RepositoryMetadata): Promise<void>;
 
   protected abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
