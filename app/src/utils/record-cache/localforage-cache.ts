@@ -135,10 +135,6 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return repos[foundIndex];
   }
 
-  async getIdList(repositoryId: string): Promise<string[]> {
-    return (await this.getRepository(repositoryId, ['cached_ids'])).cached_ids ?? [];
-  }
-
   async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
