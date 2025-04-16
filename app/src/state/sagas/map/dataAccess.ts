@@ -4,7 +4,6 @@ import intersect from '@turf/intersect';
 import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { getIappIdsForRecordsetFromCache } from './online';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
@@ -135,11 +134,18 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
   try {
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     if (yield service.isCached(action.recordSetID)) {
-      const ids = yield service.getIdList(action.recordSetID);
+      const { recordSets } = yield select(selectUserSettings);
+      const recordSet = recordSets[action.recordSetID];
+      const queryObj: IQueryParams = {
+        tableFilters: recordSet.tableFilters,
+        recordSetType: recordSet.recordSetType,
+        selectColumns: ['id']
+      };
+      const ids = yield service.query(queryObj);
       yield put(
         Activity.getIdsForRecordsetSuccess({
           recordSetID: action.recordSetID,
-          IDList: ids ?? [],
+          IDList: ids.map((record) => record.id) ?? [],
           tableFiltersHash: action.tableFiltersHash
         })
       );
@@ -172,7 +178,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
         })
       );
     } else {
-      yield getIappIdsForRecordsetFromCache(action.payload);
+      yield getIdsForRecordsetFromCache(action.payload);
     }
   } catch (e) {
     console.error(e);
