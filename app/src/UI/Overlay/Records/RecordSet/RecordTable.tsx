@@ -15,10 +15,9 @@ import CustomPopover from 'UI/CustomPopover/CustomPopover';
 
 type PropTypes = {
   setID: string;
-  userOfflineMobile: boolean;
 };
 
-export const RecordTable = ({ setID, userOfflineMobile }: PropTypes) => {
+export const RecordTable = ({ setID }: PropTypes) => {
   const onUserHoveredRecord = (row: UserRecord) => {
     dispatch({
       type: USER_HOVERED_RECORD,

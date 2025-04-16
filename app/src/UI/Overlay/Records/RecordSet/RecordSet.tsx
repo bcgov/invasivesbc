@@ -146,7 +146,6 @@ export const RecordSet = ({ setID }: PropTypes) => {
               <span>
                 <Button
                   size={'small'}
-                  disabled={userOfflineMobile}
                   onClick={() =>
                     dispatch(
                       UserSettings.RecordSet.addFilter({
@@ -193,13 +192,20 @@ export const RecordSet = ({ setID }: PropTypes) => {
                       );
                     }
                   })}
+                  <tr>
+                    {MOBILE && cacheFilters.length > 0 && (
+                      <td colSpan={5}>
+                        <i>Filters applied after caching will not be reflected on the map.</i>
+                      </td>
+                    )}
+                  </tr>
                 </tbody>
               </table>
             )}
           </div>
           <ExcelExporter setName={setID} />
         </div>
-        <RecordTable setID={setID} userOfflineMobile={userOfflineMobile} />
+        <RecordTable setID={setID} />
       </div>
       <RecordSetFooter setID={setID} />
     </>
