@@ -14,7 +14,7 @@ import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 
-export interface ActivityState {
+interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
   activity: any;
   activeActivity: string | null;
@@ -240,3 +240,4 @@ function createActivityReducer() {
 const selectActivity: (state) => ActivityState = (state) => state.ActivityPage;
 
 export { createActivityReducer, selectActivity };
+export type { ActivityState };

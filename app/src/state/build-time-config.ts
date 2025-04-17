@@ -48,7 +48,7 @@ const usePlatformClasses = () => {
         break;
     }
     setAppclasses(newAppClasses.join(' '));
-  }, [PLATFORM]);
+  }, []);
 
   return appClasses;
 };

@@ -12,13 +12,14 @@ const MultiSelectAutoComplete = (props: WidgetProps) => {
     White = '#FFF',
     Yellow = '#FFF000'
   }
+
   /**
    * On a value selected or un-selected, call the parents onChange event to inform the form of the new value of the
    * widget.
    * @param {AutoCompleteMultiSelectOption[]} value
    */
-  const handleOnChange = (value: any[]): void => {
-    const newValue: any[] = [];
+  const handleOnChange = (value: unknown[]): void => {
+    const newValue: unknown[] = [];
     value.forEach((value) => {
       newValue.push(value);
     });

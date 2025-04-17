@@ -13,18 +13,18 @@ const DIAGONAL_STRIPE_FALLBACK_IMAGE =
 const TRANSPARENT_FALLBACK_IMAGE =
   'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAQAAAD2e2DtAAABu0lEQVR42u3SQREAAAzCsOHf9F6oIJXQS07TxQIABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAgAACwAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAAsAEAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAAgAASAABIAAEAACQAAIAAEgAASAABAAAkAACAABIAAEgAAQAAJAAKg9kK0BATSHu+YAAAAASUVORK5CYII=';
 
-export type TileData = {
+type TileData = {
   data: ArrayBufferLike;
 };
 
-export interface RepositoryBoundingBoxSpec {
+interface RepositoryBoundingBoxSpec {
   minLatitude: number;
   maxLatitude: number;
   minLongitude: number;
   maxLongitude: number;
 }
 
-export interface RepositoryDownloadRequestSpec {
+interface RepositoryDownloadRequestSpec {
   id: string;
   description: string;
   bounds: RepositoryBoundingBoxSpec;
@@ -32,7 +32,7 @@ export interface RepositoryDownloadRequestSpec {
   tileURL: (x: number, y: number, z: number) => string;
 }
 
-export interface RepositoryMetadata {
+interface RepositoryMetadata {
   id: string;
   description: string;
   maxZoom: number;
@@ -57,7 +57,7 @@ interface TilePromise {
   z: number;
 }
 
-export interface TileCacheProgressCallbackParameters {
+interface TileCacheProgressCallbackParameters {
   aborted: boolean;
   description?: string;
   message: string;
@@ -67,7 +67,7 @@ export interface TileCacheProgressCallbackParameters {
   totalTiles: number;
 }
 
-export interface RepositoryStatistics {
+interface RepositoryStatistics {
   sizeInBytes: number;
   tileCount: number;
 }
@@ -236,3 +236,11 @@ abstract class TileCacheService extends BaseCacheService<
 }
 
 export { TileCacheService, FALLBACK_IMAGE, RepositoryStatus };
+export type {
+  TileData,
+  RepositoryMetadata,
+  RepositoryDownloadRequestSpec,
+  RepositoryBoundingBoxSpec,
+  RepositoryStatistics,
+  TileCacheProgressCallbackParameters
+};

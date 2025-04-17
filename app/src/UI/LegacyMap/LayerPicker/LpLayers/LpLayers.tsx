@@ -18,10 +18,10 @@ const LpLayers = () => {
   const handleWmsClick = (layer) => {
     dispatch({ type: TOGGLE_WMS_LAYER, payload: { layer } });
   };
-  const handleKmlClick = (layer: Record<string, any>) => {
+  const handleKmlClick = (layer: Record<string, unknown>) => {
     dispatch({ type: TOGGLE_KML_LAYER, payload: { layer } });
   };
-  const handleCustomClick = (layer: Record<string, any>) => {
+  const handleCustomClick = (layer: Record<string, unknown>) => {
     dispatch({ type: TOGGLE_DRAWN_LAYER, payload: { layer } });
   };
   const handleCreateCustom = () => {

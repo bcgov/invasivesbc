@@ -1,7 +1,7 @@
 :root {
-  --bg: rgb(239, 238, 245);
+  --bg: rgb(239 238 245);
   --list-option: white;
-  --focus: rgb(188, 198, 205);
+  --focus: rgb(188 198 205);
 }
 
 #layer-picker-closed-icon {
@@ -18,10 +18,12 @@
   align-items: center;
   justify-content: center;
   color: black;
+
   svg {
     height: 20pt;
     width: 20pt;
   }
+
   &:hover {
     cursor: pointer;
   }
@@ -37,6 +39,7 @@ li > hr {
   height: 1px;
   border: none;
 }
+
 #layer-picker-container {
   position: absolute;
   display: flex;
@@ -52,10 +55,12 @@ li > hr {
   z-index: 400;
   box-sizing: border-box;
   border-left: 1pt solid var(--eigengrau);
+
   .lp-content {
     height: 100%;
     overflow-y: auto;
   }
+
   * > button {
     color: black;
   }
@@ -64,6 +69,7 @@ li > hr {
 #layer-picker-container .small {
   font-size: 12pt;
 }
+
 #layer-picker-container .path-ul {
   list-style-type: none;
   padding: 0;
@@ -78,6 +84,7 @@ li > hr {
   height: 48px;
   box-sizing: border-box;
   background-color: var(--list-option);
+
   button {
     align-items: center;
     background-color: transparent;
@@ -86,20 +93,24 @@ li > hr {
     display: flex;
     font-size: 16pt;
     height: 100%;
-    padding: 0 1rem 0 1rem;
+    padding: 0 1rem;
     justify-content: space-between;
     width: 100%;
+
     & > div {
       display: flex;
       align-items: center;
+
       & > svg {
         margin-right: 1rem;
       }
     }
+
     &:hover {
       cursor: pointer;
     }
   }
+
   &:active {
     background-color: var(--focus);
   }
@@ -115,6 +126,7 @@ li > hr {
   border-bottom: 1pt solid var(--bg);
   box-sizing: border-box;
   margin-bottom: 1rem;
+
   & > div:first-child {
     margin-right: auto;
     font-size: 20pt;
@@ -129,6 +141,6 @@ li > hr {
   padding: 0 5%;
   font-size: 12pt;
   justify-content: flex-start;
-  align-items: left;
+  align-items: flex-start;
   text-align: left;
 }

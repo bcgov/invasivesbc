@@ -4,37 +4,40 @@ import { DeepBatch, DeepTemplate, ShallowBatch } from 'state/reducers/batch';
 interface IBatchCreateWithCallback {
   csvData: Record<string, any> | null;
   template?: string;
-  resolve: Function;
-  reject: Function;
+  resolve: () => void;
+  reject: () => void;
 }
 
-export interface IBatchSuccess extends DeepBatch {
+interface IBatchSuccess extends DeepBatch {
   batchId: string;
 }
-export interface IBatchUpdate {
+
+interface IBatchUpdate {
   id: string;
   csvData: string;
 }
-export interface IBatchExecute {
+
+interface IBatchExecute {
   id: string;
   desiredActivityState: string;
   treatmentOfErrorRows: string;
 }
 
-export interface IBatchListTemplate {
+interface IBatchListTemplate {
   name: string;
   key: string;
 }
 
-export interface IBatchDownloadTemplate {
+interface IBatchDownloadTemplate {
   key: string;
   data: DeepTemplate;
 }
 
-export interface IBatchDownloadTemplateCsv {
+interface IBatchDownloadTemplateCsv {
   key: string;
   resolve: any;
 }
+
 class BatchActions {
   private static readonly PREFIX = 'Batch';
 
@@ -69,3 +72,12 @@ class BatchActions {
 }
 
 export default BatchActions;
+
+export type {
+  IBatchSuccess,
+  IBatchUpdate,
+  IBatchExecute,
+  IBatchListTemplate,
+  IBatchDownloadTemplate,
+  IBatchDownloadTemplateCsv
+};

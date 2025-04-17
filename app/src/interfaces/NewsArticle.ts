@@ -1,4 +1,4 @@
-export enum NewsSubject {
+enum NewsSubject {
   New,
   Update,
   BugFix
@@ -12,3 +12,4 @@ type NewsArticle = {
 };
 
 export default NewsArticle;
+export { NewsSubject };

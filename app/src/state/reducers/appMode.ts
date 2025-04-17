@@ -1,7 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit';
-import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
+import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from 'state/actions';
 
-export enum appModeEnum {
+enum appModeEnum {
   'Records',
   'Record',
   'Landing',
@@ -58,3 +58,5 @@ export default function appMode(state = initialState, action: any): AppModeState
       return state;
   }
 }
+
+export { appModeEnum };

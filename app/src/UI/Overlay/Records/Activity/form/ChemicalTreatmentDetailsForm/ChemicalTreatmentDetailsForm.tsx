@@ -60,7 +60,7 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
   const createCodes = (): Record<PropertyKey, any[]> => {
     const sharedcodes = apiDocsWithViewOptions;
     const newCodes: Record<PropertyKey, any> = {};
-    for (let key of Object.keys(sharedcodes)) {
+    for (const key of Object.keys(sharedcodes)) {
       newCodes[key] = sharedcodes[key].options.map(({ value, label }) => ({
         value,
         label

@@ -21,7 +21,7 @@ export const Summary: React.FC<IAPPSitePropType> = ({ record }) => {
   const coordinates = record.point_of_interest_payload?.geometry[0]?.geometry?.coordinates;
   const longitude = parseFloat(coordinates[0]).toFixed(6);
   const latitude = parseFloat(coordinates[1]).toFixed(6);
-  const jurisdictions: any = getJurisdictions(surveys);
+  const jurisdictions = getJurisdictions(surveys);
   const date_created = site.date_created.substring(0, site.date_created.indexOf('T'));
   const date_entered = site.date_entered.substring(0, site.date_entered.indexOf('T'));
   const date_updated = site.date_updated.substring(0, site.date_updated.indexOf('T'));

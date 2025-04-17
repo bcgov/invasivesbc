@@ -7,7 +7,7 @@ import MyLocationIcon from '@mui/icons-material/MyLocation';
 
 import { useSelector } from 'utils/use_selector';
 
-export const FindMeToggle = (props) => {
+export const FindMeToggle = () => {
   const positionTracking = useSelector((state) => state.Map?.positionTracking);
   const dispatch = useDispatch();
   /**
@@ -16,7 +16,7 @@ export const FindMeToggle = (props) => {
    * @returns {void}
    */
   const [show, setShow] = React.useState(false);
-  const divRef = useRef();
+  const divRef = useRef<HTMLDivElement | null>(null);
   // this is to stop user from clicking it again while things are happening
   return (
     <div ref={divRef} className={positionTracking ? 'map-btn-selected' : 'map-btn'}>

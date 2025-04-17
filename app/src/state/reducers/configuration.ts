@@ -1,7 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import moment from 'moment/moment';
-import { AppConfig } from '../config';
+import { AppConfig } from 'state/config';
 import { EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS } from 'state/actions';
 
 interface ConfigurationState {

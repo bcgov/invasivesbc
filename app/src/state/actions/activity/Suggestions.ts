@@ -3,7 +3,7 @@ import { FeatureCollection, Geometry } from '@turf/helpers';
 import { ActivitySubtype } from 'sharedAPI';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 
-export interface TreatmentIdsRequestOnline {
+interface TreatmentIdsRequestOnline {
   activity_subtype: ActivitySubtype[];
   user_roles: Record<string, any>[];
   search_feature: FeatureCollection | boolean;
@@ -35,4 +35,6 @@ class Suggestions {
   );
   static readonly treatmentIdsSuccess = createAction<SuggestedTreatmentId[]>(`${this.PREFIX}/treatmentIdsSuccess`);
 }
+
+export type { TreatmentIdsRequestOnline };
 export default Suggestions;

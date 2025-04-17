@@ -9,23 +9,25 @@ import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import FilterObjects from 'interfaces/FilterObjects';
 
-export enum IappRecordMode {
+enum IappRecordMode {
   Record = 'record',
   Row = 'row'
 }
 
-export enum CacheDownloadMode {
+enum CacheDownloadMode {
   DEFAULT = '',
   PAUSE = 'pause',
   ABORT = 'abort'
 }
-export interface RecordCacheDownloadRequestSpec {
+
+interface RecordCacheDownloadRequestSpec {
   setId: string;
   API_BASE: string;
   idsToCache: string[];
   pausedActivityIdx: number;
   processedActivities: number;
 }
+
 /**
  * @desc Cached Metadata for Recordsets
  * @property { string } setID Recordset ID
@@ -35,7 +37,7 @@ export interface RecordCacheDownloadRequestSpec {
  * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
  * @property { UserRecordCacheStatus } status Cache Status.
  */
-export interface RepositoryMetadata {
+interface RepositoryMetadata {
   set_id: string;
   set_name?: string;
   cache_time: Date;
@@ -48,12 +50,12 @@ export interface RepositoryMetadata {
   filter_objects: FilterObjects;
 }
 
-export interface RecordSetSourceMetadata {
+interface RecordSetSourceMetadata {
   cachedGeoJson: GeoJSONSourceSpecification;
   cachedCentroid?: GeoJSONSourceSpecification;
 }
 
-export interface RecordCacheProgressCallbackParameters {
+interface RecordCacheProgressCallbackParameters {
   setId: string;
   message: string;
   pausedActivityIdx: number;
@@ -63,7 +65,7 @@ export interface RecordCacheProgressCallbackParameters {
   processedActivities: number;
 }
 
-export interface CacheDownloadSpec {
+interface CacheDownloadSpec {
   bbox: RepositoryBoundingBoxSpec;
   idsToCache: string[];
   setId: string;
@@ -76,7 +78,7 @@ export interface CacheDownloadSpec {
   filterObjects: FilterObjects;
 }
 
-export interface IQueryParams extends FilterObjects {
+interface IQueryParams extends FilterObjects {
   sort?: {
     order?: 'ASC' | 'DESC';
     by: string;
@@ -91,6 +93,7 @@ abstract class RecordCacheService extends BaseCacheService<
 > {
   private readonly CONCURRENCY_LIMIT = 3;
   private readonly BATCH_AMOUNT = 20;
+
   protected constructor() {
     super();
   }
@@ -98,6 +101,7 @@ abstract class RecordCacheService extends BaseCacheService<
   static async getInstance(): Promise<RecordCacheService> {
     throw new Error('unimplemented in abstract base class');
   }
+
   public abstract query(params: IQueryParams): Promise<UserRecord[] | IappRecord[]>;
 
   protected abstract addOrUpdateRepository(spec: RepositoryMetadata): Promise<void>;
@@ -346,14 +350,16 @@ abstract class RecordCacheService extends BaseCacheService<
   public async stopDownload(repositoryId: string): Promise<void> {
     try {
       const repo = await this.getRepository(repositoryId, ['status']);
-      if (
-        [UserRecordCacheStatus.DOWNLOADING, UserRecordCacheStatus.PAUSED, UserRecordCacheStatus.QUEUED].includes(
-          repo.status!
-        )
-      ) {
-        await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
-      } else if (repo.status === UserRecordCacheStatus.CACHED) {
-        await this.deleteRepository(repositoryId);
+      if (repo !== null) {
+        if (
+          [UserRecordCacheStatus.DOWNLOADING, UserRecordCacheStatus.PAUSED, UserRecordCacheStatus.QUEUED].includes(
+            repo.status!
+          )
+        ) {
+          await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
+        } else if (repo.status === UserRecordCacheStatus.CACHED) {
+          await this.deleteRepository(repositoryId);
+        }
       }
     } catch (err) {
       console.error(err);
@@ -424,4 +430,11 @@ abstract class RecordCacheService extends BaseCacheService<
   }
 }
 
-export { RecordCacheService };
+export { RecordCacheService, CacheDownloadMode, IappRecordMode };
+export type {
+  RecordCacheDownloadRequestSpec,
+  IQueryParams,
+  CacheDownloadSpec,
+  RecordCacheProgressCallbackParameters,
+  RecordSetSourceMetadata
+};

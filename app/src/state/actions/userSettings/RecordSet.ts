@@ -7,18 +7,18 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { CacheDownloadMode } from 'utils/record-cache';
 import RecordCache from 'state/actions/cache/RecordCache';
 
-export interface IUpdateFilter extends Partial<IFilter> {
+interface IUpdateFilter extends Partial<IFilter> {
   setID: string | number;
   filterID: string | number;
 }
 
-export interface IRemoveFilter {
+interface IRemoveFilter {
   filterType: string;
   setID: string | number;
   filterID: string | number;
 }
 
-export interface IFilter {
+interface IFilter {
   id: string;
   field: string;
   filterType: string;
@@ -27,7 +27,7 @@ export interface IFilter {
   operator2: string;
 }
 
-export interface IAddFilter extends Partial<IFilter> {
+interface IAddFilter extends Partial<IFilter> {
   setID: string | number;
 }
 
@@ -134,3 +134,4 @@ class RecordSet {
 }
 
 export default RecordSet;
+export { IUpdateFilter, IRemoveFilter, IFilter, IAddFilter };

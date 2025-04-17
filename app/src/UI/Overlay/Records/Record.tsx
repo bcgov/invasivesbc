@@ -15,7 +15,7 @@ export const Activity = () => {
   if (RENDER_DEBUG) {
     console.log('%cActivity  content render:' + ref.current.toString(), 'color: yellow');
   }
-  const urlFromAppModeState = useSelector((state: any) => state.AppMode?.url);
+  const urlFromAppModeState = useSelector((state) => state.AppMode.url);
 
   const history = useHistory();
   const id = history.location.pathname.split(':')[1]?.split('/')[0];

@@ -2,24 +2,24 @@ import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import BatchActions from 'state/actions/batch/BatchActions';
 
-export interface DeepBatch {
+interface DeepBatch {
   created_at: string;
   id: string | number;
 }
 
-export interface ShallowBatch {
+interface ShallowBatch {
   created_at: string;
   template: string;
   status: string;
   id: string | number;
 }
 
-export interface ShallowTemplate {
+interface ShallowTemplate {
   name: string;
   key: string;
 }
 
-export interface DeepTemplate {
+interface DeepTemplate {
   name: string;
   key: string;
   columns: { name: string; dataType: string; required: boolean }[];
@@ -147,3 +147,4 @@ function createBatchReducer() {
 const selectBatch: (state) => Batch = (state) => state.Batch;
 
 export { selectBatch, createBatchReducer };
+export type { DeepBatch, ShallowBatch, ShallowTemplate, DeepTemplate };

@@ -1,5 +1,5 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
-import DownloadActions from '../downloads/DownloadActions';
+import DownloadActions from 'state/actions/downloads/DownloadActions';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import { getRecordFilterObjectFromStateForAPI } from 'state/sagas/map/dataAccess';

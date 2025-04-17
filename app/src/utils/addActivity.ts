@@ -15,7 +15,7 @@ import { getFieldsToCopy } from 'rjsf/business-rules/formDataCopyFields';
 import { IActivity } from 'interfaces/activity-interfaces';
 import { DocType } from 'constants/database';
 
-export const activityDefaults = {
+const activityDefaults = {
   doc_type: DocType.ACTIVITY,
   date_created: new Date(),
   media: undefined,
@@ -92,7 +92,7 @@ export function cloneDBRecord(dbRecord) {
 }
 
 /*
-  Function to create a brand new activity and save it to the DB
+  Function to create a brand-new activity and save it to the DB
 */
 export async function addNewActivityToDB(
   databaseContext: any,
@@ -342,3 +342,5 @@ export function transformOfflineActivitiesForRecordTable(
     return {};
   }
 }
+
+export { activityDefaults };

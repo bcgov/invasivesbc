@@ -90,7 +90,7 @@ class LocalForageWellCacheService extends WellCacheService {
 
   protected async saveWells(
     wellList: WellData[],
-    progressCallback?: ((currentProgress: IWellCacheProgressCallbackParameters) => void) | undefined
+    _progressCallback?: ((currentProgress: IWellCacheProgressCallbackParameters) => void) | undefined
   ): Promise<void> {
     if (this.store == null) {
       throw new Error(this.CACHE_UNAVAILABLE);

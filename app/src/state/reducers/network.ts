@@ -11,7 +11,7 @@ const HEARTBEATS_TO_FAILURE = 4;
  * @property { number }  consecutiveHeartbeatFailures current number of concurrent failed health checks
  * @property { boolean } operationalStatus status of connection to the API
  */
-export interface NetworkState {
+interface NetworkState {
   administrativeStatus: boolean;
   connected: boolean;
   consecutiveHeartbeatFailures: number;
@@ -50,3 +50,4 @@ function createNetworkReducer() {
 const selectNetworkConnected: (state) => boolean = (state) => state.Network.connected;
 const selectNetworkState: (state) => NetworkState = (state) => state.Network;
 export { createNetworkReducer, selectNetworkConnected, selectNetworkState };
+export type { NetworkState };

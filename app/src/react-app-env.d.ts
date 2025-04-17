@@ -1,10 +1,8 @@
-/// <reference types="react" />
-/// <reference types="react-dom" />
-
 declare namespace NodeJS {
   interface Process {
     env: ProcessEnv;
   }
+
   interface ProcessEnv {
     /**
      * By default, there are two modes in Vite:

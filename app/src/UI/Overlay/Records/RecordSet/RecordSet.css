@@ -113,12 +113,14 @@
   border: 1px solid black;
   color: black;
   border-radius: 5px;
+
   &:disabled {
-    color: rgba(0, 0, 0, 0.26);
-    background-color: rgba(0, 0, 0, 0.12);
-    border-color: rgba(0, 0, 0, 0.12);
+    color: rgb(0 0 0 / 26%);
+    background-color: rgb(0 0 0 / 12%);
+    border-color: rgb(0 0 0 / 12%);
   }
 }
+
 .recordSet_footer {
   flex-direction: row;
   justify-content: center;
@@ -127,7 +129,6 @@
   height: var(--record-table-footer-height);
   width: 100%;
   background-color: #036;
-  align-items: top;
   display: flex;
   position: fixed;
 

@@ -55,16 +55,16 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 
-export enum LeafletWhosEditingEnum {
+enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
   WHATSHERE = 'WHATSHERE',
   BOUNDARY = 'BOUNDARY',
   NONE = 'NONE'
 }
 
-export const ACTIVITY_GEOJSON_SOURCE_KEYS = ['s3', 'draft', 'supplemental'];
+const ACTIVITY_GEOJSON_SOURCE_KEYS = ['s3', 'draft', 'supplemental'];
 
-export const DEFAULT_LOCAL_LAYERS = [
+const DEFAULT_LOCAL_LAYERS = [
   {
     title: 'Regional Districts',
     type: 'wms',
@@ -188,7 +188,7 @@ export const DEFAULT_LOCAL_LAYERS = [
   }
 ].sort((a, b) => (a.title < b.title ? -1 : 1));
 
-export interface MapState {
+interface MapState {
   [MIGRATION_VERSION_KEY]: number;
   baseMapLayer: string | null;
   availableBaseMapLayers: string[];
@@ -1077,3 +1077,5 @@ const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, 
   }
 };
 export { createMapReducer, selectMap };
+export type { LeafletWhosEditingEnum, MapState };
+export { ACTIVITY_GEOJSON_SOURCE_KEYS, DEFAULT_LOCAL_LAYERS };
