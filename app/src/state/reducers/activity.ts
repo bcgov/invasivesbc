@@ -221,6 +221,7 @@ function createActivityReducer() {
             draftState.activity.species_positive = action.payload.activity.species_positive;
             draftState.activity.species_negative = action.payload.activity.species_negative;
             draftState.activity.species_treated = action.payload.activity.species_treated;
+            draftState.activity.map_symbol = action.payload.activity.map_symbol;
             draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
             break;
           }
