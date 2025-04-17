@@ -62,7 +62,7 @@ export const Photos: React.FC<{ media: MediaDescriptor[] }> = ({ media }) => {
 
       return (
         <div className={'iapp-photo'} key={m.media_key}>
-          <img src={m.encoded_file} />
+          <img alt="IAPP Photo" src={m.encoded_file} />
           <dl>
             <dt>Comments</dt>
             <dd>{mediaData.comments}</dd>

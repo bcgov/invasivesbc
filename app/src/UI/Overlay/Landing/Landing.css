@@ -3,8 +3,8 @@ body {
 }
 
 .userInfoItemGrid {
-  display: 'flex';
-  flex-direction: 'row';
+  display: flex;
+  flex-direction: row;
 }
 
 .h-divider {
@@ -23,15 +23,18 @@ body {
   p {
     margin: 0;
   }
+
   h2 {
     font-size: 24pt;
     font-weight: 100;
   }
+
   h3 {
     font-size: 18pt;
     font-weight: 100;
     margin-bottom: 0;
   }
+
   .content {
     width: 100%;
     max-width: 1000px;

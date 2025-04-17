@@ -2,6 +2,31 @@ import { bboxPolygon, buffer, Feature } from '@turf/turf';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
+  getRecordFilterObjectFromStateForAPI,
+  handle_ACTIVITIES_GEOJSON_GET_REQUEST,
+  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  handle_ACTIVITIES_TABLE_GET_ROWS,
+  handle_IAPP_GEOJSON_GET_REQUEST,
+  handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
+  handle_IAPP_TABLE_ROWS_GET_REQUEST,
+  handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
+  handle_MAP_WHATS_HERE_INIT_GET_POI,
+  handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT
+} from './map/dataAccess';
+import {
+  handle_ACTIVITIES_GEOJSON_GET_ONLINE,
+  handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE,
+  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
+  handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
+  handle_IAPP_GEOJSON_GET_ONLINE,
+  handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
+  handle_IAPP_TABLE_ROWS_GET_ONLINE
+} from './map/online';
+import {
+  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
+  handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
+} from './map/offline';
+import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE,
@@ -31,32 +56,7 @@ import {
   SET_CURRENT_OPEN_SET,
   TOGGLE_PANEL,
   URL_CHANGE
-} from '../actions';
-import {
-  getRecordFilterObjectFromStateForAPI,
-  handle_ACTIVITIES_GEOJSON_GET_REQUEST,
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
-  handle_ACTIVITIES_TABLE_GET_ROWS,
-  handle_IAPP_GEOJSON_GET_REQUEST,
-  handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
-  handle_IAPP_TABLE_ROWS_GET_REQUEST,
-  handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
-  handle_MAP_WHATS_HERE_INIT_GET_POI,
-  handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT
-} from './map/dataAccess';
-import {
-  handle_ACTIVITIES_GEOJSON_GET_ONLINE,
-  handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  handle_IAPP_GEOJSON_GET_ONLINE,
-  handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_IAPP_TABLE_ROWS_GET_ONLINE
-} from './map/online';
-import {
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
-  handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
-} from './map/offline';
+} from 'state/actions';
 import { getSearchCriteriaFromFilters } from 'utils/miscYankedFromComponents';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
@@ -813,7 +813,7 @@ function* handle_RECORDSET_SET_SORT(action) {
   }
 }
 
-export function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
+function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
   if (action.payload.recordSetID === RecordSetId.OfflineActivities) yield put(Activity.getRowsOffline(action.payload));
   else yield put(Activity.getRowsOnline(action.payload));
 }
@@ -884,3 +884,4 @@ function* activitiesPageSaga() {
 }
 
 export default activitiesPageSaga;
+export { handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST };

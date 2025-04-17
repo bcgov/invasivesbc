@@ -125,7 +125,7 @@ function createTileCacheReducer() {
       } else if (TileCache.repositoryList.fulfilled.match(action)) {
         draft.loading = false;
         draft.repositories = action.payload;
-        // @ts-ignore
+        // @ts-expect-error "ts cannot infer types correctly here"
         draft.mapSpecifications = action.payload
           .filter((m) => m.status == RepositoryStatus.READY)
           .flatMap((m) => {
@@ -141,7 +141,6 @@ function createTileCacheReducer() {
       } else if (TileCache.requestCaching.fulfilled.match(action)) {
         draft.loading = false;
         draft.repositories = action.payload;
-        // @ts-ignore
         draft.mapSpecifications = action.payload
           .filter((m) => m.status == RepositoryStatus.READY)
           .flatMap((m) => {
@@ -159,7 +158,6 @@ function createTileCacheReducer() {
       } else if (TileCache.deleteRepository.fulfilled.match(action)) {
         draft.loading = false;
         draft.repositories = action.payload;
-        // @ts-ignore
         draft.mapSpecifications = action.payload
           .filter((m) => m.status == RepositoryStatus.READY)
           .flatMap((m) => {
@@ -174,7 +172,6 @@ function createTileCacheReducer() {
       } else if (TileCache.updateDescription.fulfilled.match(action)) {
         draft.loading = false;
         draft.repositories = action.payload;
-        // @ts-ignore
         draft.mapSpecifications = action.payload
           .filter((m) => m.status == RepositoryStatus.READY)
           .flatMap((m) => {

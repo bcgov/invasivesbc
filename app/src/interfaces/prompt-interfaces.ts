@@ -4,10 +4,11 @@
  */
 import { PromptTypes } from 'constants/promptEnums';
 
-export interface ReduxPayload {
+interface ReduxPayload {
   type: string;
   payload?: Record<string, any>;
 }
+
 /**
  * @interface BasePromptInterface Confirmation Modal Prompts
  * @property {string} cancelText Text override for 'Cancel' button text
@@ -27,6 +28,7 @@ interface BasePromptInterface {
   title: string;
   type?: PromptTypes;
 }
+
 /**
  * @interface ConfirmationModalInterface
  * @extends BasePromptInterface
@@ -60,6 +62,7 @@ export interface UtmInputObj {
   easting: number;
   results: number[];
 }
+
 /**
  * @interface ManualUtmModalInterface
  * @extends BasePromptInterface
@@ -68,6 +71,7 @@ export interface UtmInputObj {
 export interface ManualUtmModalInterface extends BasePromptInterface {
   callback: (input: UtmInputObj) => void | ReduxPayload[];
 }
+
 /**
  * @interface NumberModalInterface
  * @extends BasePromptInterface
@@ -128,3 +132,4 @@ export type PromptAction =
   | NumberModalInterface
   | DateModalInterface
   | ManualUtmModalInterface;
+export type { ReduxPayload };

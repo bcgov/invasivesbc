@@ -17,7 +17,7 @@ import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RecordSetId } from 'interfaces/UserRecordSet';
 
-export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
+function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
     Alerts.create({
       content: 'Saved locally',
@@ -37,11 +37,11 @@ export function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   }
 }
 
-export function* handle_ACTIVITY_CREATE_LOCAL(action: PayloadAction<ICreateLocal>) {
+function* handle_ACTIVITY_CREATE_LOCAL(action: PayloadAction<ICreateLocal>) {
   yield put(Activity.createSuccess(action.payload.data.activity_id));
 }
 
-export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
+function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
   const connected = yield select(selectNetworkConnected);
   const { serializedActivities } = yield select(selectOfflineActivity);
   const activityID = action.payload;
@@ -88,7 +88,7 @@ export function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>
   yield put(Activity.getFailure());
 }
 
-export function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
+function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
 
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
@@ -192,7 +192,7 @@ function* handle_ACTIVITY_OFFLINE_DELETE_ITEM(action: PayloadAction<{ id: string
   }
 }
 
-export function* handle_ACTIVITY_RESTORE_OFFLINE() {}
+function* handle_ACTIVITY_RESTORE_OFFLINE() {}
 
 export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
   takeEvery(ACTIVITY_OFFLINE_DELETE_ITEM, handle_ACTIVITY_OFFLINE_DELETE_ITEM),
@@ -201,3 +201,11 @@ export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
   takeEvery(Activity.createLocal, handle_ACTIVITY_CREATE_LOCAL),
   takeLeading(ACTIVITY_RUN_OFFLINE_SYNC, handle_ACTIVITY_RUN_OFFLINE_SYNC)
 ];
+
+export {
+  handle_ACTIVITY_SAVE_OFFLINE,
+  handle_ACTIVITY_GET_LOCAL_REQUEST,
+  handle_ACTIVITY_RUN_OFFLINE_SYNC,
+  handle_ACTIVITY_RESTORE_OFFLINE,
+  handle_ACTIVITY_CREATE_LOCAL
+};

@@ -1,6 +1,6 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { GeoJSON } from 'geojson';
-import DownloadActions from '../downloads/DownloadActions';
+import DownloadActions from 'state/actions/downloads/DownloadActions';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { TileCacheProgressCallbackParameters, RepositoryBoundingBoxSpec, RepositoryStatus } from 'utils/tile-cache';
 import { RootState } from 'state/reducers/rootReducer';

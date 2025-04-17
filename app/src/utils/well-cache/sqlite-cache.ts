@@ -180,15 +180,14 @@ class SQLiteWellCacheService extends WellCacheService {
           );
     const result = await this.cacheDB.query(
       //language=SQLite
-      `SELECT
-        ID AS id,
-        STATUS as status,
-        BOUNDS as bounds,
-        WELL_TAG_NUMBERS as wellTagNumbers,
-        GEOJSON as cachedGeoJson
+      `SELECT ID               AS id,
+              STATUS           as status,
+              BOUNDS           as bounds,
+              WELL_TAG_NUMBERS as wellTagNumbers,
+              GEOJSON          as cachedGeoJson
        FROM CACHE_METADATA
        WHERE ID = ?
-       OR BOUNDS = ?
+          OR BOUNDS = ?
        LIMIT 1;`,
       [identifier, identifier]
     );
@@ -213,12 +212,11 @@ class SQLiteWellCacheService extends WellCacheService {
     }
     const repositories = await this.cacheDB.query(
       //language=SQLite
-      `SELECT
-        ID AS id,
-        STATUS as status,
-        BOUNDS as bounds,
-        WELL_TAG_NUMBERS as wellTagNumbers,
-        GEOJSON as cachedGeoJson
+      `SELECT ID               AS id,
+              STATUS           as status,
+              BOUNDS           as bounds,
+              WELL_TAG_NUMBERS as wellTagNumbers,
+              GEOJSON          as cachedGeoJson
        FROM CACHE_METADATA`
     );
     return repositories.values?.map((repo) => this.cleanRepository(repo)) ?? [];
@@ -244,7 +242,7 @@ class SQLiteWellCacheService extends WellCacheService {
 
   protected async saveWells(
     wellList: WellData[],
-    progressCallback?: ((currentProgress: IWellCacheProgressCallbackParameters) => void) | undefined
+    _progressCallback?: ((currentProgress: IWellCacheProgressCallbackParameters) => void) | undefined
   ): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(this.CACHE_UNAVAILABLE);

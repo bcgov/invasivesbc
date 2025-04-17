@@ -1,6 +1,7 @@
 .whatshere-container {
   width: 100%;
 }
+
 .whatshere-margin {
   margin: 5pt;
 }
@@ -13,9 +14,11 @@
 .whatshere-position {
   height: 450px;
 }
+
 .whatshere-margin {
-  width: 5pt 0;
+  width: 5pt;
 }
+
 .whatshere-table-container {
   margin: 0 1rem;
   padding-bottom: 3rem;
@@ -26,6 +29,7 @@
   z-index: 1;
   position: absolute;
 }
+
 .whatshere-header {
   display: flex;
   align-items: center;

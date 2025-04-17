@@ -16,7 +16,7 @@ import { CacheDownloadMode } from 'utils/record-cache';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
 
-export interface UserSettingsState {
+interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
 
   initialized: boolean;
@@ -321,3 +321,4 @@ function createUserSettingsReducer(_configuration: AppConfig) {
 const selectUserSettings: (state) => UserSettingsState = (state) => state.UserSettings;
 
 export { createUserSettingsReducer, selectUserSettings };
+export type { UserSettingsState };

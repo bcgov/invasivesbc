@@ -29,7 +29,7 @@
 
 #InvBcLogo {
   box-sizing: border-box;
-  object-fit: 'contain';
+  object-fit: contain;
   background-color: white;
   border-radius: 5px;
   height: 100%;

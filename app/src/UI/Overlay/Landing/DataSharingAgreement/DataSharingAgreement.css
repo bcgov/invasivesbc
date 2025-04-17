@@ -12,39 +12,48 @@
   max-width: 700pt;
   display: flex;
   flex-direction: column;
+
   & > * {
     box-sizing: border-box;
     display: flex;
     height: 100%;
     width: 100%;
   }
+
   .agreement-content {
     flex-direction: column;
     background-color: white;
     height: 100%;
     padding: 10pt;
     overflow-y: scroll;
+
     h2 {
       margin-bottom: 1rem;
     }
+
     sub {
       font-style: italic;
     }
+
     ol > li {
       margin-bottom: 4pt;
     }
+
     p {
-      margin-bottom: none;
+      margin-bottom: 0;
       font-weight: bold;
     }
   }
+
   .controls {
     background-color: var(--bc-blue);
     height: auto;
     justify-content: flex-end;
+
     & > * {
       margin-right: 5pt;
     }
+
     &:first-of-type {
       border-bottom: 2pt solid var(--bc-yellow);
     }

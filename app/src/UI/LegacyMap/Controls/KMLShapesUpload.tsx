@@ -67,8 +67,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
       let status: string;
       const defaultTitle = props.title.length > 0 ? props.title : file.name.split('.')[0];
 
-      let fileType: string;
-      fileType = file.name.split('.').pop();
+      const fileType: string = file.name.split('.').pop() || '';
 
       const reader = new FileReader();
 

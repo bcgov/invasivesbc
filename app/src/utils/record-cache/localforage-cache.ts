@@ -346,7 +346,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     for (const id of idsToDelete) {
       try {
         await this.store.removeItem(id.toString());
-      } catch (e) {
+      } catch (_e) {
         // Item may not exist if a cache was quit while in progress.
       }
     }
