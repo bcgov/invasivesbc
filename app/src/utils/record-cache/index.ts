@@ -132,8 +132,6 @@ abstract class RecordCacheService extends BaseCacheService<
 
   public abstract isCached(repositoryId: string): Promise<boolean>;
 
-  public abstract getIdList(repositoryId: string): Promise<string[]>;
-
   protected abstract createIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
   protected abstract createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;

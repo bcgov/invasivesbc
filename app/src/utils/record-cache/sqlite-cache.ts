@@ -345,13 +345,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return idList;
   }
 
-  async getIdList(repositoryId: string): Promise<string[]> {
-    if (this.cacheDB == null) {
-      throw Error(CACHE_UNAVAILABLE);
-    }
-    return (await this.getRepository(repositoryId, ['cached_ids'])).cached_ids ?? [];
-  }
-
   /**
    * @desc fetch `n` records for a given recordset, supporting pagination
    * @param recordSetID Recordset to filter from

@@ -95,6 +95,8 @@ class LocalForageRecordCacheService extends RecordCacheService {
             resObj.table_data = record['row'];
           } else if (column.toLowerCase() === 'record_data') {
             resObj.record_data = record['record'];
+          } else if (column.toLowerCase() === 'id') {
+            resObj.id = record.activity_id ?? record['row'].site_id ?? '';
           } else {
             resObj[column] = record[column];
           }
@@ -131,10 +133,6 @@ class LocalForageRecordCacheService extends RecordCacheService {
       return res;
     }
     return repos[foundIndex];
-  }
-
-  async getIdList(repositoryId: string): Promise<string[]> {
-    return (await this.getRepository(repositoryId, ['cached_ids'])).cached_ids ?? [];
   }
 
   async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {

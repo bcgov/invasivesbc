@@ -72,7 +72,7 @@ class RecordSet {
 
       // these will be passed to the reducer, which can then mark the record sets as cached
       return cachedSets.map((set) => {
-        return { setId: set.setId };
+        return { setId: set.set_id };
       });
     }
   );
