@@ -1,5 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
-import CoreForm from '@rjsf/core';
+import { useEffect, useRef } from 'react';
 import './Record.css';
 import { Route, useHistory } from 'react-router';
 import { useSelector } from 'utils/use_selector';
@@ -25,16 +24,16 @@ export const Activity = () => {
   const loading = useSelector((state) => state.ActivityPage?.loading);
   const apiDocsWithSelectOptions = useSelector((state) => state.UserSettings?.apiDocsWithSelectOptions);
   const apiDocsWithViewOptions = useSelector((state) => state.UserSettings?.apiDocsWithViewOptions);
-  const formRef = useRef<CoreForm>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (formRef.current) {
-      formRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (wrapperRef.current) {
+      wrapperRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [activity_id]);
 
   return (
-    <div ref={formRef}>
+    <div ref={wrapperRef}>
       <div className="records__activity">
         <div className="records__activity__header">
           <div className="records__activity_buttons">
