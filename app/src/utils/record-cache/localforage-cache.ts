@@ -68,7 +68,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
               return '';
             }
           })();
-          return pattern.test(columnVal);
+          return filter.operator === 'CONTAINS' ? pattern.test(columnVal) : !pattern.test(columnVal);
         })
       ) {
         records.push(value);
