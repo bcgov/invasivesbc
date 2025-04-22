@@ -1,5 +1,5 @@
-import { useRef } from 'react';
-
+import { useEffect, useState, useRef } from 'react';
+import CoreForm from '@rjsf/core';
 import './Record.css';
 import { Route, useHistory } from 'react-router';
 import { useSelector } from 'utils/use_selector';
@@ -20,62 +20,72 @@ export const Activity = () => {
   const history = useHistory();
   const id = history.location.pathname.split(':')[1]?.split('/')[0];
   const failCode = useSelector((state) => state.ActivityPage?.failCode);
-  const activity_ID = useSelector((state) => state.ActivityPage?.activity?.activity_id);
+  const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
 
   const loading = useSelector((state) => state.ActivityPage?.loading);
   const apiDocsWithSelectOptions = useSelector((state) => state.UserSettings?.apiDocsWithSelectOptions);
   const apiDocsWithViewOptions = useSelector((state) => state.UserSettings?.apiDocsWithViewOptions);
+  const formRef = useRef<CoreForm>(null);
+
+  useEffect(() => {
+    if (formRef.current) {
+      formRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [activity_id]);
 
   return (
-    <div className="records__activity">
-      <div className="records__activity__header">
-        <div className="records__activity_buttons">
-          <Button
-            variant="contained"
-            className={
-              'records__activity__photos_button ' + (urlFromAppModeState?.includes('photos') ? ' selectedFormTab' : '')
-            }
-            onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/photos')}
-          >
-            Photos
-          </Button>
-          <Button
-            variant="contained"
-            className={
-              'records__activity__form_button ' + (urlFromAppModeState?.includes('form') ? ' selectedFormTab' : '')
-            }
-            onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/form')}
-          >
-            Form
-          </Button>
+    <div ref={formRef}>
+      <div className="records__activity">
+        <div className="records__activity__header">
+          <div className="records__activity_buttons">
+            <Button
+              variant="contained"
+              className={
+                'records__activity__photos_button ' +
+                (urlFromAppModeState?.includes('photos') ? ' selectedFormTab' : '')
+              }
+              onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/photos')}
+            >
+              Photos
+            </Button>
+            <Button
+              variant="contained"
+              className={
+                'records__activity__form_button ' + (urlFromAppModeState?.includes('form') ? ' selectedFormTab' : '')
+              }
+              onClick={() => history.push(history.location.pathname.split(':')[0] + ':' + id + '/form')}
+            >
+              Form
+            </Button>
+          </div>
         </div>
+        <Route
+          path="/Records/Activity:id/form"
+          render={() => {
+            if (failCode === 404) {
+              setTimeout(() => {
+                history.push('/Records');
+              }, 3000);
+              return <div>Activity does not exists, redirecting...</div>;
+            }
+            if (activity_id && apiDocsWithSelectOptions && apiDocsWithViewOptions && loading === false) {
+              return <ActivityForm />;
+            } else {
+              return <Spinner />;
+            }
+          }}
+        />
+        <Route
+          path="/Records/Activity:id/photos"
+          render={() => {
+            if (activity_id) {
+              return <ActivityPhotos />;
+            } else {
+              return <Spinner />;
+            }
+          }}
+        />
       </div>
-      <Route
-        path="/Records/Activity:id/form"
-        render={() => {
-          if (failCode === 404) {
-            setTimeout(() => {
-              history.push('/Records');
-            }, 3000);
-            return <div>Activity does not exists, redirecting...</div>;
-          }
-          if (activity_ID && apiDocsWithSelectOptions && apiDocsWithViewOptions && loading === false) {
-            return <ActivityForm />;
-          } else {
-            return <Spinner />;
-          }
-        }}
-      />
-      <Route
-        path="/Records/Activity:id/photos"
-        render={() => {
-          if (activity_ID) {
-            return <ActivityPhotos />;
-          } else {
-            return <Spinner />;
-          }
-        }}
-      />
     </div>
   );
 };
