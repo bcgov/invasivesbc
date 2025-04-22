@@ -1,4 +1,4 @@
-import { shallowEqual, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
 import { useHistory } from 'react-router';
