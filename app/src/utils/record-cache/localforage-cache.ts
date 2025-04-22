@@ -46,9 +46,18 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error('Cache not available');
     }
     let records: Array<UserRecord | IappRecord> = [];
-    await this.store.iterate((value: Record<PropertyKey, any>) => {
+    await this.store.iterate((value: Record<PropertyKey, any>, key: PropertyKey) => {
+      if (key === LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY) return;
       if (
         params.tableFilters.every((filter) => {
+          if (filter.filterType === 'spatialFilterDrawn') {
+            const shape = value?.record?.geom?.geometry ?? value?.geometry ?? null;
+            if (Object.hasOwn(shape, 'length')) {
+              return shape.some((cachedFeature: Feature) => booleanIntersects(cachedFeature, filter.geojson));
+            } else if (shape) {
+              return booleanIntersects(shape, filter.geojson);
+            }
+          }
           const pattern = new RegExp(filter.filter, 'i');
           const columnVal = (() => {
             if (value?.[filter.field]) {
