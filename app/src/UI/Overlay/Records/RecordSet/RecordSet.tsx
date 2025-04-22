@@ -26,20 +26,15 @@ interface ExtendedFilter extends IFilter {
 }
 export const RecordSet = ({ setID }: PropTypes) => {
   const viewFilters = useSelector((state) => state.Map.viewFilters);
-  const connected = useSelector((state) => state.Network.connected);
   const history = useHistory();
   const dispatch = useDispatch();
 
   const onClickBackButton = () => {
     history.push('/Records');
   };
-  const [userOfflineMobile, setUserOfflineMobile] = useState<boolean>(!connected && MOBILE);
+
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
   const tableType = recordSet?.recordSetType;
-
-  useEffect(() => {
-    setUserOfflineMobile(MOBILE && !connected);
-  }, [connected]);
 
   const [cacheFilters, setCacheFilters] = useState<IFilter[]>([]);
   const [filters, setFilters] = useState<ExtendedFilter[]>([]);
@@ -67,7 +62,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
     if (!MOBILE) return;
     const disabledFilters: ExtendedFilter[] = (recordSet?.tableFilters ?? []).map((filter, i) => {
       let filterCopy = { ...filter }; // Decouple from immutable Selector
-      filterCopy['disabled'] = cacheFilters?.[i] && shallowEqual(cacheFilters?.[i], filter);
+      filterCopy['disabled'] = cacheFilters?.[i]?.id === filterCopy.id;
       return filterCopy as ExtendedFilter;
     });
     setFilters(disabledFilters);
