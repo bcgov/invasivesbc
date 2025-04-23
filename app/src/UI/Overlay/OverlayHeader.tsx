@@ -106,7 +106,7 @@ export const OverlayHeader = () => (
         path="/Records/Activity:*"
         exact={false}
         render={() => (
-          <CustomPopover buttonClasses={'overlay-menu'} buttonText={'Save Menu'} closeAfterPress={true}>
+          <CustomPopover buttonClasses={'overlay-menu'} buttonText={'Menu'} closeAfterPress={true}>
             <FormMenuButtons />
           </CustomPopover>
         )}
