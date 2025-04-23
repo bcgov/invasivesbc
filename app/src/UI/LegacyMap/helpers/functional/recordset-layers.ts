@@ -411,7 +411,6 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
       console.error('error removing layer' + staleLayer);
     }
   });
-
   const staleSources = Object.keys(map.style.sourceCaches).filter((source) => {
     return source.includes(LAYER_ID_PREFIX + layer.recordSetID) && !source.includes(layer.tableFiltersHash);
   });
@@ -479,25 +478,44 @@ export const rebuildLayersOnTableHashUpdate = (
   );
 
   recordSetLayersThatAreNotInStore.forEach((layer) => {
-    try {
-      map.removeLayer(layer);
-    } catch (e) {
-      console.error('error removing layer', e);
-    }
+    //get all layers for recordset
+    const allLayersForRecordSetNotInStore = map.getLayersOrder().filter((mapLayer) => {
+      return (
+        mapLayer.includes(layer) ||
+        mapLayer.includes('label-' + layer) ||
+        mapLayer.includes('polygon-border-' + layer) ||
+        mapLayer.includes('polygon-circle-' + layer)
+      );
+    });
+
+    allLayersForRecordSetNotInStore.forEach((staleLayer) => {
+      try {
+        map.removeLayer(staleLayer);
+      } catch (e) {
+        console.error('error removing layer' + staleLayer);
+      }
+    });
   });
+
   recordSetSourcesThatAreNotInStore.forEach((source) => {
-    try {
-      map.removeSource(source);
-    } catch (e) {
-      console.error('error removing source', e);
-    }
+    const allSourcesNotInStore = Object.keys(map.style.sourceCaches).filter((mapSource) => {
+      return mapSource.includes(source);
+    });
+
+    allSourcesNotInStore?.map((staleSource) => {
+      try {
+        map.removeSource(staleSource);
+      } catch (e) {
+        console.error('error removing source', e);
+      }
+    });
   });
 
   // now update the layers that are in the store
   storeLayers.forEach(async (layer: Record<PropertyKey, any>) => {
     if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
       const sourceId = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
-      deleteStaleRecordsetLayer(map, layer);
+      deleteStaleRecordsetLayer(map, layer); // works for cached layers
       const existingSource = map.getSource(sourceId);
       if (existingSource) return;
       await createMapLayer(map, layer, mode, API_BASE, MOBILE_OFFLINE);
