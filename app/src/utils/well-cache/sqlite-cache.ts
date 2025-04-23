@@ -9,22 +9,7 @@ import {
 import WellData from 'interfaces/WellData';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { sqlite } from 'utils/sharedSQLiteInstance';
-
-const RECORD_CACHE_DB_MIGRATIONS_1 = [
-  `CREATE TABLE CACHE_METADATA
-   (
-     ID               VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
-     BOUNDS           TEXT        NOT NULL UNIQUE,
-     STATUS           TEXT        NOT NULL,
-     WELL_TAG_NUMBERS TEXT        NOT NULL,
-     GEOJSON          TEXT
-   );`,
-  `CREATE TABLE CACHED_WELLS
-   (
-     ID   INT UNIQUE PRIMARY KEY,
-     GEOM TEXT NOT NULL
-   );`
-];
+import MIGRATIONS from './migrations';
 
 class SQLiteWellCacheService extends WellCacheService {
   private readonly CACHE_DB_NAME = 'well_cache.db';
@@ -269,12 +254,6 @@ class SQLiteWellCacheService extends WellCacheService {
   private async initializeRecordCache(sqlite: SQLiteConnection) {
     // Hold Migrations as named variable so we can use length to update the Db version automagically
     // Note: toVersion must be an integer.
-    const MIGRATIONS = [
-      {
-        toVersion: 1,
-        statements: RECORD_CACHE_DB_MIGRATIONS_1
-      }
-    ];
     await sqlite.addUpgradeStatement(this.CACHE_DB_NAME, MIGRATIONS);
 
     const ret = await sqlite.checkConnectionsConsistency();
