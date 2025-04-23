@@ -70,7 +70,8 @@
     -ms-overflow-style: -ms-autohiding-scrollbar;
     scrollbar-width: thin;
     & > *:not(:last-child) {
-      margin-right: 10pt;
+      margin-left: 5pt;
+      margin-right: 5pt;
     }
   }
 
