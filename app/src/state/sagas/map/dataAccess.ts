@@ -134,11 +134,13 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
   try {
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     if (yield service.isCached(action.recordSetID)) {
-      const { recordSets } = yield select(selectUserSettings);
-      const recordSet = recordSets[action.recordSetID];
+      const userSettingsState = yield select(selectUserSettings);
+      const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
+      const filters = getRecordFilterObjectFromStateForAPI(action.recordSetID, userSettingsState, clientBoundaries);
+
       const queryObj: IQueryParams = {
-        tableFilters: recordSet.tableFilters,
-        recordSetType: recordSet.recordSetType,
+        tableFilters: filters.tableFilters,
+        recordSetType: filters.recordSetType,
         selectColumns: ['id']
       };
       const ids = yield service.query(queryObj);
@@ -197,19 +199,12 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
   const sortColumn = recordSet?.sortColumn;
   const sortOrder = recordSet?.sortOrder;
   const tableFilters = recordSet?.tableFilters;
-  let modifiedTableFilters = tableFilters?.map((filter) => {
-    return filter.filterType !== 'spatialFilterDrawn'
-      ? filter
-      : { ...filter, geojson: getFilterWithDrawnShape(filter.filter) };
-  });
+  let modifiedTableFilters = tableFilters?.map((filter) =>
+    filter.filterType !== 'spatialFilterDrawn' ? filter : { ...filter, geojson: getFilterWithDrawnShape(filter.filter) }
+  );
 
-  if (!modifiedTableFilters) {
-    modifiedTableFilters = [];
-  }
-
-  const selectColumns = recordSet?.selectColumns
-    ? recordSet?.selectColumns
-    : getSelectColumnsByRecordSetType(recordSetType);
+  modifiedTableFilters ??= [];
+  const selectColumns = recordSet?.selectColumns ?? getSelectColumnsByRecordSetType(recordSetType);
 
   return {
     recordSetType: recordSetType,
@@ -267,15 +262,17 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action: PayloadAction<Activity
 export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
   try {
     const { recordSetID, page, limit, tableFiltersHash } = req;
-    const recordset = (yield select(selectUserSettings)).recordSets[recordSetID];
+    const userSettingsState = yield select(selectUserSettings);
+    const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
+    const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState, clientBoundaries);
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     const queryObj: IQueryParams = {
       limit: limit,
       page: page,
-      tableFilters: recordset?.tableFilters,
-      recordSetType: recordset.recordSetType,
+      tableFilters: filters.tableFilters,
+      recordSetType: filters.recordSetType,
       selectColumns: ['data'],
-      sort: { by: recordset.sortColumn, order: recordset.sortOrder }
+      sort: { by: filters.sortColumn, order: filters.sortOrder }
     };
     const records = yield service.query(queryObj);
     yield put(
@@ -337,17 +334,19 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
 export function* getIappRowsFromCache(payload: IappTableRowRequest) {
   try {
     const { recordSetID, page, limit, tableFiltersHash } = payload;
-    const recordset = (yield select(selectUserSettings)).recordSets[recordSetID];
+    const userSettingsState = yield select(selectUserSettings);
+    const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
+    const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState, clientBoundaries);
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     const queryObj: IQueryParams = {
       limit: limit,
       page: page,
-      tableFilters: recordset?.tableFilters,
-      recordSetType: recordset.recordSetType,
+      tableFilters: filters?.tableFilters,
+      recordSetType: filters.recordSetType,
       selectColumns: ['table_data'],
       sort: {
-        by: recordset.sortColumn,
-        order: recordset.sortOrder
+        by: filters.sortColumn,
+        order: filters.sortOrder
       }
     };
 
