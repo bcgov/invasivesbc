@@ -209,6 +209,7 @@ interface MapState {
   currentOpenSet: string | null;
   customizeLayersToggle: boolean;
   drawingCustomLayer: boolean;
+  drawingCustomLayerName: string;
   error: boolean;
   initialized: boolean;
   labelBoundsPolygon: any;
@@ -300,6 +301,7 @@ const initialState: MapState = {
   currentOpenSet: null,
   customizeLayersToggle: false,
   drawingCustomLayer: false,
+  drawingCustomLayerName: '',
   error: false,
   initialized: false,
   labelBoundsPolygon: undefined,
@@ -829,12 +831,15 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.clientBoundaries.push({
               id: nanoid(),
               geojson: action.payload,
-              toggle: true
+              toggle: true,
+              title: draftState.drawingCustomLayerName
             });
+            draftState.drawingCustomLayerName = '';
             break;
           }
           case DRAW_CUSTOM_LAYER: {
             draftState.drawingCustomLayer = true;
+            draftState.drawingCustomLayerName = action.payload.name;
             break;
           }
 
