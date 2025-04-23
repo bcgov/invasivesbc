@@ -213,7 +213,7 @@ function* handle_GET_API_DOC_REQUEST() {
     { filterForSelectable: 'true' }
   );
   const apiDocsWithViewOptionsResponse = yield InvasivesAPI_Call('GET', '/api/api-docs/');
-  if (apiDocsWithViewOptionsResponse?.ok) {
+  if (apiDocsWithViewOptionsResponse?.ok && apiDocsWithSelectOptionsResponse?.ok) {
     const apiDocsWithViewOptions = apiDocsWithViewOptionsResponse.data;
     const apiDocsWithSelectOptions = apiDocsWithSelectOptionsResponse.data;
 
