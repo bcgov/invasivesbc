@@ -2,6 +2,7 @@ import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
+import { Feature } from '@turf/helpers';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { CacheDownloadMode } from 'utils/record-cache';
@@ -25,6 +26,7 @@ interface IFilter {
   filter: string;
   operator: string;
   operator2: string;
+  geojson?: Feature;
 }
 
 interface IAddFilter extends Partial<IFilter> {
@@ -134,4 +136,4 @@ class RecordSet {
 }
 
 export default RecordSet;
-export { IUpdateFilter, IRemoveFilter, IFilter, IAddFilter };
+export type { IUpdateFilter, IRemoveFilter, IFilter, IAddFilter };

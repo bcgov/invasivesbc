@@ -575,17 +575,27 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
+    const spatialQueries = params.tableFilters.filter((filter) => filter.filterType === 'spatialFilterDrawn');
     const values: Array<string | number> = [];
     const table = {
       [RecordSetType.Activity]: 'CACHED_RECORDS',
       [RecordSetType.IAPP]: 'CACHED_IAPP_RECORDS'
     }[params.recordSetType];
+
+    if (spatialQueries.length > 0 && params.selectColumns.length > 0 && !params.selectColumns.includes('GEOJSON')) {
+      params.selectColumns.push('GEOJSON');
+    }
     const columns = params.selectColumns.length > 0 ? params.selectColumns.join(', ') : '*';
     let where = '';
 
     params.tableFilters.forEach((filter: IFilter, i: number) => {
       where += i === 0 ? '\n WHERE ' : '\n AND ';
-      where += `${filter.field} LIKE '%${filter.filter}%'`;
+      if (filter.filterType === 'spatialFilterDrawn') {
+        const [minX, minY, maxX, maxY] = bbox(filter.geojson);
+        where += `LATITUDE BETWEEN ${minY} AND ${maxY} AND LONGITUDE BETWEEN ${minX} AND ${maxX}`;
+      } else {
+        where += `${filter.field} ${filter.operator === 'CONTAINS' ? 'LIKE' : 'NOT LIKE'} '%${filter.filter}%'`;
+      }
     });
     let order = '';
     if (params?.sort?.by) {
@@ -604,9 +614,20 @@ class SQLiteRecordCacheService extends RecordCacheService {
        OFFSET ${offset}
     `;
 
-    const results = await this.cacheDB.query(query, values);
+    let results = (await this.cacheDB.query(query, values))?.values ?? [];
+    if (spatialQueries.length > 0) {
+      results = results.filter((result) => {
+        const geojson = JSON.parse(result['GEOJSON']);
+        if (Object.hasOwn(geojson, 'length')) {
+          return geojson.every((shape: Feature) =>
+            spatialQueries.every((query) => booleanIntersects(shape, query.geojson))
+          );
+        }
+        return spatialQueries.every((spatialFilter) => booleanIntersects(spatialFilter.geojson, geojson));
+      });
+    }
     return (
-      results?.values?.map((record) => {
+      results.map((record) => {
         const parsedRecord: Record<PropertyKey, UserRecord | IappRecord> = {};
         Object.keys(record).forEach((key) => {
           if (['TABLE_DATA', 'RECORD_DATA', 'DATA', 'RECORD_DATA', 'GEOJSON', 'CENTROID'].includes(key)) {
