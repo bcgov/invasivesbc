@@ -62,12 +62,16 @@
     height: 100%;
     width: 100%;
     display: flex;
+    box-sizing: border-box;
     justify-content: space-between;
     white-space: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     scrollbar-width: thin;
+    & > *:not(:last-child) {
+      margin-right: 10pt;
+    }
   }
 
   #right-icon-container,
