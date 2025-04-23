@@ -20,6 +20,14 @@ body {
   display: flex;
   justify-content: center;
 
+  .landing-header {
+    font-weight: bold;
+    text-transform: uppercase;
+    text-decoration: underline;
+    margin-bottom: 5pt;
+    font-size: 14pt;
+  }
+
   p {
     margin: 0;
   }
