@@ -23,7 +23,7 @@
   }
 
   .left {
-    width: 30%;
+    width: 33%;
   }
 
   .center {
@@ -48,7 +48,7 @@
   }
 
   .right {
-    width: 30%;
+    width: 33%;
     justify-content: right;
     display: flex;
     flex-direction: row;
