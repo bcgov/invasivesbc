@@ -30,6 +30,7 @@ function buildSpecificDefines() {
     defines['CONFIGURATION_PUBLIC_MAP_URL'] = JSON.stringify(process.env['PUBLIC_MAP_URL']);
     defines['CONFIGURATION_IAPP_GEOJSON_URL'] = JSON.stringify(process.env['IAPP_GEOJSON_URL']);
     defines['CONFIGURATION_SILENT_CHECK_URI'] = JSON.stringify(process.env['SILENT_CHECK_URI']);
+    defines['CONFIGURATION_IOS_APP_STORE_URL'] = JSON.stringify(process.env['IOS_APP_STORE_URL']);
 
     defines['CONFIGURATION_COMPONENTIZED_MAP'] = JSON.stringify(process.env['ENABLE_COMPONENTIZED_MAP']);
   } else if (process.env.CONFIGURATION_SOURCE === 'Caddy') {

@@ -11,6 +11,8 @@ import { INFORMATIONAL_LINKS } from 'constants/links';
 import { MobileOnly } from 'UI/Predicates/MobileOnly';
 import { AuthActions } from 'state/actions/auth/Auth';
 import DataSharingAgreement from './DataSharingAgreement/DataSharingAgreement';
+import { MOBILE } from 'state/build-time-config';
+import IosDownloadLink from '../../IosDownloadLink/IosDownloadLink';
 
 const InformationalLinkBox = () => {
   return (
@@ -147,6 +149,11 @@ export const LandingComponent = () => {
             <Box mt={1}>
               <DataSharingAgreement />
             </Box>
+            {!MOBILE && (
+              <Box mt={1}>
+                <IosDownloadLink />
+              </Box>
+            )}
             <Box mt={8}>
               <u>
                 <strong>FOR MORE INFORMATION: </strong>
