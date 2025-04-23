@@ -59,9 +59,8 @@ export const RecordSet = ({ setID }: PropTypes) => {
    * Enabling a user to filter into their cache, but not move out of it
    */
   useEffect(() => {
-    if (!MOBILE) return;
     const disabledFilters: ExtendedFilter[] = (recordSet?.tableFilters ?? []).map((filter, i) => {
-      let filterCopy = { ...filter }; // Decouple from immutable Selector
+      const filterCopy = { ...filter }; // Decouple from immutable Selector
       filterCopy['disabled'] = cacheFilters?.[i]?.id === filterCopy.id;
       return filterCopy as ExtendedFilter;
     });
