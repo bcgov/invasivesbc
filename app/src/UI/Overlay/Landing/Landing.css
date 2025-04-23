@@ -27,7 +27,32 @@ body {
     margin-bottom: 5pt;
     font-size: 14pt;
   }
+  .app-store-links {
+    p {
+      margin-bottom: 0.5rem;
+    }
 
+    /* Margin around icons must be >= 25% of badge icon height */
+    .download-links {
+      --icon-height: 55px;
+      display: flex;
+      flex-direction: row;
+      margin: 13px 0;
+
+      a {
+        display: flex;
+        flex-direction: column;
+        margin-top: calc(var(--icon-height) * 0.25);
+        img {
+          height: var(--icon-height);
+        }
+      }
+
+      a:not(:last-child) {
+        margin-right: calc(var(--icon-height) * 0.25);
+      }
+    }
+  }
   p {
     margin: 0;
   }
