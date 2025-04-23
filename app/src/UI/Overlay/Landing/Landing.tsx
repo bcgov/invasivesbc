@@ -124,9 +124,7 @@ export const LandingComponent = () => {
               <Divider />
             </Box>
             <Box mt={10}>
-              <u>
-                <strong>PRIVACY REQUIREMENTS AND LEGAL DISCLAIMER: </strong>
-              </u>
+              <h3 className="landing-header">PRIVACY REQUIREMENTS AND LEGAL DISCLAIMER:</h3>
             </Box>
             <Box mt={4}>
               <ul>
@@ -150,14 +148,16 @@ export const LandingComponent = () => {
               <DataSharingAgreement />
             </Box>
             {!MOBILE && (
-              <Box mt={1}>
-                <IosDownloadLink />
+              <Box mt={5} className="app-store-links">
+                <h3 className="landing-header">Download the Mobile app:</h3>
+                <p>InvasivesBC is currently available for download in the App Store. Coming soon to Google Play.</p>
+                <div className="download-links">
+                  <IosDownloadLink />
+                </div>
               </Box>
             )}
-            <Box mt={8}>
-              <u>
-                <strong>FOR MORE INFORMATION: </strong>
-              </u>
+            <Box mt={5}>
+              <h3 className="landing-header">FOR MORE INFORMATION:</h3>
             </Box>
             <Box mt={4}>
               For training materials and more info:{' '}
