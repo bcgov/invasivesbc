@@ -73,6 +73,7 @@ body {
     max-width: 1000px;
     padding: 1rem;
     box-sizing: border-box;
+    word-break: break-word;
   }
 }
 
