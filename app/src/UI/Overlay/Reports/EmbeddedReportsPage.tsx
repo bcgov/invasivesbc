@@ -37,16 +37,6 @@ const EmbeddedReportsPage: React.FC = () => {
 
     api.listEmbeddedMetabaseReports().then((data) => {
       setReports(data.result);
-      setCategories(
-        data.result
-          .map((report) => report.category)
-          .reduce((all_categories, category) => {
-            if (!all_categories.includes(category)) {
-              return all_categories.concat(category);
-            }
-            return all_categories;
-          }, [])
-      );
       setLoading(false);
     });
   }, [authState?.authenticated]);
