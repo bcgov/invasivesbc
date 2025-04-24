@@ -1,5 +1,7 @@
 #new_record_dialog .content {
-  min-width: 30svw;
+  box-sizing: border-box;
+  width: 450px;
+  max-width: 100%;
   padding: 1rem;
 }
 
