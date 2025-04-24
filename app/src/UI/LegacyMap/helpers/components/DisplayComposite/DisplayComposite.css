@@ -4,7 +4,6 @@
   left: 60px;
   display: flex;
   flex-direction: column;
-  z-index: 99;
   width: 184px;
   box-sizing: border-box;
   & > *:not(:last-child) {
