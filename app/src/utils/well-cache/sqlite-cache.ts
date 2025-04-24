@@ -214,14 +214,17 @@ class SQLiteWellCacheService extends WellCacheService {
     const id = wellData.properties.WELL_TAG_NUMBER;
     wellData.geometry.properties = { WELL_TAG_NUMBER: id };
     const stringifiedGeo = JSON.stringify(wellData.geometry);
-
+    const latLong = wellData.geometry.coordinates;
     await this.cacheDB.query(
       //language=SQLite
-      `INSERT INTO CACHED_WELLS(ID, GEOM)
-       VALUES (?, ?)
+      `INSERT INTO CACHED_WELLS(ID, GEOM, LATITUDE, LONGITUDE)
+       VALUES (?, ?, ?, ?)
        ON CONFLICT(ID)
-         DO UPDATE SET GEOM = excluded.GEOM`,
-      [id, stringifiedGeo]
+         DO UPDATE SET
+          GEOM = excluded.GEOM,
+          LATITUDE = excluded.LATITUDE,
+          LONGITUDE = excluded.LONGITUDE`,
+      [id, stringifiedGeo, latLong[1], latLong[0]]
     );
   }
 
