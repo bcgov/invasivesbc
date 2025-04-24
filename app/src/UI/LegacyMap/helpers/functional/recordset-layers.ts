@@ -390,6 +390,37 @@ export const toggleOfflineActivityLabels = async (map: maplibregl.Map, labelVisi
   });
 };
 
+const purgeRecordsetLayersNotInStore = (
+  map: maplibregl.Map,
+  storeLayerIds: string[],
+  recordsetLayers: string[],
+  recordsetSources: string[]
+) => {
+  const recordSetLayersNotInStore = recordsetLayers.filter(
+    (layer) => storeLayerIds.filter((storeLayerId) => layer.includes(storeLayerId)).length === 0
+  );
+
+  const recordSetSourcesNotInStore = recordsetSources.filter(
+    (source) => storeLayerIds.filter((storeLayerId) => source.includes(storeLayerId)).length === 0
+  );
+
+  recordSetLayersNotInStore.forEach((staleLayer) => {
+    try {
+      map.removeLayer(staleLayer);
+    } catch (e) {
+      console.error('error removing layer' + staleLayer);
+    }
+  });
+
+  recordSetSourcesNotInStore.forEach((staleSource) => {
+    try {
+      map.removeSource(staleSource);
+    } catch (e) {
+      console.error('error removing source', e);
+    }
+  });
+};
+
 export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
   if (!map) {
     return;
@@ -403,6 +434,7 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
       mapLayer.includes('polygon-circle-' + layer.recordSetID)
     );
   });
+
   const stale = allLayersForRecordSet.filter((mapLayer) => !mapLayer.includes(layer.tableFiltersHash));
 
   stale.forEach((staleLayer) => {
@@ -468,38 +500,16 @@ export const rebuildLayersOnTableHashUpdate = (
   const storeLayersIds = storeLayers.map((layer) => LAYER_ID_PREFIX + layer.recordSetID + '-');
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
-  const allThatAreRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID_PREFIX));
-  const allThatAreRecordSetSources = allSourcesOnMap.filter((source) => source.startsWith(LAYER_ID_PREFIX));
+  const allRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID_PREFIX));
+  const allRecordSetSources = allSourcesOnMap.filter((source) => source.startsWith(LAYER_ID_PREFIX));
 
-  const recordSetLayersThatAreNotInStore = allThatAreRecordSetLayers.filter(
-    (layer) => storeLayersIds.filter((storeLayerId) => layer.includes(storeLayerId)).length === 0
-  );
-
-  const recordSetSourcesThatAreNotInStore = allThatAreRecordSetSources.filter(
-    (source) => storeLayersIds.filter((storeLayerId) => source.includes(storeLayerId)).length === 0
-  );
-
-  recordSetLayersThatAreNotInStore.forEach((staleLayer) => {
-    try {
-      map.removeLayer(staleLayer);
-    } catch (e) {
-      console.error('error removing layer' + staleLayer);
-    }
-  });
-
-  recordSetSourcesThatAreNotInStore.forEach((staleSource) => {
-    try {
-      map.removeSource(staleSource);
-    } catch (e) {
-      console.error('error removing source', e);
-    }
-  });
+  purgeRecordsetLayersNotInStore(map, storeLayersIds, allRecordSetLayers, allRecordSetSources);
 
   // now update the layers that are in the store
   storeLayers.forEach(async (layer: Record<PropertyKey, any>) => {
     if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
       const sourceId = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
-      deleteStaleRecordsetLayer(map, layer); // cleans up cached layers
+      deleteStaleRecordsetLayer(map, layer); // cleans up recordset layers with filters
       const existingSource = map.getSource(sourceId);
       if (existingSource) return;
       await createMapLayer(map, layer, mode, API_BASE, MOBILE_OFFLINE);
