@@ -107,14 +107,14 @@ export const LandingComponent = () => {
                   </>
                 )}
                 {roles.length > 0 && (
-                  <Grid item md={3}>
+                  <Grid item md={8}>
                     <Box overflow="hidden" textOverflow="ellipsis">
                       <p>
                         <strong>Roles:</strong>
                       </p>
-                      {roles.map((role) => {
-                        return <span key={role.role_id}>{role.role_name + '\n'}</span>;
-                      })}
+                      {roles.map((role) => (
+                        <p key={role.role_id}>{role.role_name}</p>
+                      ))}
                     </Box>
                   </Grid>
                 )}
