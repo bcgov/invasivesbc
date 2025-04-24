@@ -12,7 +12,7 @@ import { MobileOnly } from 'UI/Predicates/MobileOnly';
 import { AuthActions } from 'state/actions/auth/Auth';
 import DataSharingAgreement from './DataSharingAgreement/DataSharingAgreement';
 import { MOBILE } from 'state/build-time-config';
-import IosDownloadLink from '../../IosDownloadLink/IosDownloadLink';
+import IosDownloadLink from 'UI/IosDownloadLink/IosDownloadLink';
 
 const InformationalLinkBox = () => {
   return (
