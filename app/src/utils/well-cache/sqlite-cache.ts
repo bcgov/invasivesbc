@@ -1,4 +1,5 @@
-import { FeatureCollection } from '@turf/helpers';
+import { Feature, FeatureCollection } from '@turf/helpers';
+import bbox from '@turf/bbox';
 import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import {
   IWellCacheProgressCallbackParameters,
@@ -28,6 +29,23 @@ class SQLiteWellCacheService extends WellCacheService {
       await SQLiteWellCacheService._instance.initializeRecordCache(sqlite);
     }
     return SQLiteWellCacheService._instance;
+  }
+
+  public async getNearbyWells(geom: Feature): Promise<Feature[]> {
+    if (this.cacheDB == null) {
+      throw new Error(this.CACHE_UNAVAILABLE);
+    }
+    const [minX, minY, maxX, maxY] = bbox(geom);
+    const wellsInArea = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT GEOM
+       FROM  CACHED_WELLS
+       WHERE LATITUDE BETWEEN ? AND ?
+         AND LONGITUDE BETWEEN ? AND ?;
+      `,
+      [minY, maxY, minX, maxX]
+    );
+    return wellsInArea.values?.map((well) => JSON.parse(well['GEOM'])) ?? [];
   }
 
   protected async addOrUpdateRepository(repository: IWellRepositoryMetadata): Promise<void> {
