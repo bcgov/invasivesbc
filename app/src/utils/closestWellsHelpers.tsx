@@ -37,7 +37,7 @@ export function* getClosestWells(inputGeometry: Point | Polygon | LineString) {
       return getWellsArray(wellsInArea, firstFeature);
     }
   }
-  return { well_objects: [], areWellsInside: undefined };
+  return { well_objects: [], areWellsInside: false };
 
   //if there is a geometry drawn, get closest wells and wells inside and label them
 }
@@ -50,10 +50,7 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
   }
 
   if (geoJSONFeature.geometry.type === GeoShapes.Point) {
-    let radius = 100;
-    if (geoJSONFeature.properties?.radius) {
-      radius = geoJSONFeature.properties.radius;
-    }
+    const radius = geoJSONFeature?.properties?.radius ?? 100;
     geoJSONFeature = buffer(geoJSONFeature, radius, { units: 'meters' });
   }
 
