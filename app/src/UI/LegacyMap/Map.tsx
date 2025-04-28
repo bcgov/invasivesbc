@@ -56,20 +56,18 @@ import { sha1 } from 'utils/sha1';
 
  */
 export const Map = ({ children }) => {
-  const { API_BASE, PUBLIC_MAP_URL } = useSelector((state) => state.Configuration.current);
   const tileCache = useContext(Context);
 
-  const [mapReady, setMapReady] = useState(false);
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
-  // const map: React.MutableRefObject<MapLibre | null> = useRef<MapLibre>(null);
 
   const MapMode = useSelector((state) => state.Map.MapMode);
 
-  // Avoid remounting map to avoid unnecesssary tile fetches or bad umounts:
-  const { authenticated, loggedInOrWorkingOffline, rolesInitialized } = useSelector((state) => state.Auth);
+  // Auth + Network
+  const authenticated = useSelector((state) => state.Auth.authenticated);
+  const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
+  const rolesInitialized = useSelector((state) => state.Auth.rolesInitialized);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
-
-  const [cacheStatusHash, setCacheStatusHash] = useState('init');
+  const { API_BASE, PUBLIC_MAP_URL } = useSelector((state) => state.Configuration.current);
 
   // RecordSet Layers
   const storeLayers = useSelector((state) => state.Map.layers);
@@ -82,16 +80,20 @@ export const Map = ({ children }) => {
 
   //KML
   const serverBoundaries = useSelector((state) => state.Map.serverBoundaries);
+
   //Drawn boundaries:
   const clientBoundaries = useSelector((state) => state.Map.clientBoundaries);
 
   // Map position jump
   const map_center = useSelector((state) => state.Map.map_center);
   const map_zoom = useSelector((state) => state.Map.map_zoom);
-
   const baseMapLayer = useSelector((state) => state.Map.baseMapLayer);
 
+  const [cacheStatusHash, setCacheStatusHash] = useState<string>('init');
+  const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
   const [map, setMap] = useState<InvasivesMap>();
+  const [mapLoaded, setMapLoaded] = useState<boolean>(false);
+  const [mapReady, setMapReady] = useState<boolean>(false);
 
   useEffect(() => {
     if (!mapContainer.current) {
@@ -118,7 +120,6 @@ export const Map = ({ children }) => {
 
     // this is so we share one instance across the JS code and the map renderer
     pmtilesProtocol.add(p);
-    // pmtilesProtocol.add(new PMTiles(new Fetc()));
 
     if (MOBILE) {
       if (!tileCache) {
@@ -136,11 +137,6 @@ export const Map = ({ children }) => {
       });
     }
 
-    /* map can have platform-specific options */
-    const platformOptions = (() => {
-      return {};
-    })();
-
     const tileCacheSettings = (() => {
       if (MEMORY_CONSTRAINED_DEVICE) {
         // disable maplibre's builtin tile cache
@@ -151,7 +147,6 @@ export const Map = ({ children }) => {
 
     setMap(
       new InvasivesMap({
-        ...platformOptions,
         container: mapContainer.current,
         maxZoom: 24,
         ...tileCacheSettings,
@@ -231,7 +226,6 @@ export const Map = ({ children }) => {
     }
   }, [map?.isStyleLoaded()]);
 
-  const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
   const authHeaderRef = useRef<string>();
   authHeaderRef.current = currentAuthHeader;
 
@@ -281,9 +275,11 @@ export const Map = ({ children }) => {
   useEffect(() => {
     if (!mapReady) return;
     if (!map) return;
-    rebuildLayersOnTableHashUpdate(storeLayers, map, MapMode, API_BASE, connectedToNetwork);
-    refreshColoursOnColourUpdate(storeLayers, map);
-    refreshVisibilityOnToggleUpdate(storeLayers, map);
+    (async () => {
+      await rebuildLayersOnTableHashUpdate(storeLayers, map, MapMode, API_BASE, connectedToNetwork);
+      refreshColoursOnColourUpdate(storeLayers, map);
+      refreshVisibilityOnToggleUpdate(storeLayers, map);
+    })();
   }, [storeLayers, map, mapReady, connectedToNetwork, loggedInOrWorkingOffline, cacheStatusHash]);
 
   // Offline Activities Layer:
@@ -310,8 +306,9 @@ export const Map = ({ children }) => {
   // Offline Activities Label:
   useEffect(() => {
     if (!map || !mapReady || !MOBILE) return;
-
-    toggleOfflineActivityLabels(map, labelToggle);
+    (async () => {
+      await toggleOfflineActivityLabels(map, labelToggle);
+    })();
   }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, labelToggle]);
 
   // Layer picker:
@@ -362,8 +359,6 @@ export const Map = ({ children }) => {
       console.error(e);
     }
   }, [map_center, map_zoom]);
-
-  const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
     setInterval(() => {
