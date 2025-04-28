@@ -23,39 +23,6 @@ export enum Role {
   MASTER_ADMINISTRATOR = 'master_administrator'
 }
 
-export enum User_Access {
-  PLANTS = 'plants',
-  ANIMALS = 'animals',
-  BOTH = 'both',
-  MUSSELS = 'mussels',
-  NONE = 'none'
-}
-
-export const UserRolesAccess = {
-  [Role.ADMIN]: User_Access.BOTH,
-  [Role.MANAGER]: User_Access.BOTH,
-  [Role.DATA_EDITOR]: User_Access.BOTH,
-  [Role.ADMIN_PLANTS]: User_Access.PLANTS,
-  [Role.ADMIN_ANIMALS]: User_Access.ANIMALS,
-  [Role.BCGOV_STAFF_ANIMALS]: User_Access.ANIMALS,
-  [Role.BCGOV_STAFF_PLANTS]: User_Access.PLANTS,
-  [Role.BCGOV_STAFF_BOTH]: User_Access.BOTH,
-  [Role.CONTRACTOR_MANAGER_ANIMALS]: User_Access.ANIMALS,
-  [Role.CONTRACTOR_MANAGER_PLANTS]: User_Access.PLANTS,
-  [Role.CONTRACTOR_MANAGER_BOTH]: User_Access.BOTH,
-  [Role.CONTRACTOR_STAFF_PLANTS]: User_Access.PLANTS,
-  [Role.CONTRACTOR_STAFF_ANIMALS]: User_Access.ANIMALS,
-  [Role.CONTRACTOR_STAFF_BOTH]: User_Access.BOTH,
-  [Role.INDIGENOUS_RISO_MANAGER_ANIMALS]: User_Access.ANIMALS,
-  [Role.INDIGENOUS_RISO_MANAGER_PLANTS]: User_Access.PLANTS,
-  [Role.INDIGENOUS_RISO_MANAGER_BOTH]: User_Access.BOTH,
-  [Role.INDIGENOUS_RISO_STAFF_ANIMALS]: User_Access.ANIMALS,
-  [Role.INDIGENOUS_RISO_STAFF_PLANTS]: User_Access.PLANTS,
-  [Role.INDIGENOUS_RISO_STAFF_BOTH]: User_Access.BOTH,
-  [Role.MUSSEL_INSPECTION_OFFICER]: User_Access.MUSSELS,
-  [Role.MASTER_ADMINISTRATOR]: User_Access.BOTH
-};
-
 export const ALL_ROLES = [
   Role.ADMIN,
   Role.MANAGER,
@@ -79,38 +46,4 @@ export const ALL_ROLES = [
   Role.INDIGENOUS_RISO_STAFF_BOTH,
   Role.MUSSEL_INSPECTION_OFFICER,
   Role.MASTER_ADMINISTRATOR
-];
-
-export const ANIMAL_ROLES = [
-  Role.MASTER_ADMINISTRATOR,
-  Role.ADMIN,
-  Role.DATA_EDITOR,
-  Role.ADMIN_ANIMALS,
-  Role.BCGOV_STAFF_ANIMALS,
-  Role.CONTRACTOR_MANAGER_ANIMALS,
-  Role.CONTRACTOR_STAFF_ANIMALS,
-  Role.INDIGENOUS_RISO_MANAGER_ANIMALS,
-  Role.INDIGENOUS_RISO_STAFF_ANIMALS
-];
-
-export const PLANT_ROLES = [
-  Role.MASTER_ADMINISTRATOR,
-  Role.ADMIN,
-  Role.DATA_EDITOR,
-  Role.ADMIN_PLANTS,
-  Role.BCGOV_STAFF_PLANTS,
-  Role.CONTRACTOR_MANAGER_PLANTS,
-  Role.CONTRACTOR_STAFF_PLANTS,
-  Role.INDIGENOUS_RISO_MANAGER_PLANTS,
-  Role.INDIGENOUS_RISO_STAFF_PLANTS
-];
-
-export const MUSSEL_ROLES = [Role.MASTER_ADMINISTRATOR, Role.ADMIN, Role.DATA_EDITOR, Role.MUSSEL_INSPECTION_OFFICER];
-
-export const USER_ACCESS = [
-  User_Access.PLANTS,
-  User_Access.ANIMALS,
-  User_Access.BOTH,
-  User_Access.MUSSELS,
-  User_Access.NONE
 ];

@@ -9,12 +9,12 @@ import { IFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 
 type PropTypes = {
   setID: string;
-  userOfflineMobile: boolean;
+  disabled: boolean;
   filterSet: IFilter;
   recordSetType: RecordSetType;
 };
 
-const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropTypes) => {
+const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
   const TIME_TO_AUTO_UPDATE_IN_SECONDS = 0.75;
 
   /**
@@ -73,7 +73,7 @@ const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropType
         return (
           <input
             className="filterSelect"
-            disabled={userOfflineMobile}
+            disabled={disabled}
             onChange={handleInputChange}
             type="text"
             value={inputValue}
@@ -83,7 +83,7 @@ const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropType
         return (
           <select
             className="filterSelect"
-            disabled={userOfflineMobile}
+            disabled={disabled}
             onChange={(e) => updateFilter({ filter: e.target.value })}
             value={filterSet.filter}
           >
@@ -98,7 +98,7 @@ const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropType
         return (
           <select
             className="filterSelect"
-            disabled={userOfflineMobile}
+            disabled={disabled}
             onChange={(e) => updateFilter({ filter: e.target.value })}
             value={filterSet.filter}
           >
@@ -134,7 +134,7 @@ const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropType
       <td>
         <select
           className="filterSelect"
-          disabled={userOfflineMobile}
+          disabled={disabled}
           onChange={(e) => updateFilter({ operator2: e.target.value })}
           value={filterSet.operator2}
         >
@@ -177,7 +177,7 @@ const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropType
       <td>
         <select
           className="filterSelect"
-          disabled={userOfflineMobile}
+          disabled={disabled}
           onChange={(e) => updateFilter({ operator: e.target.value })}
           value={filterSet.operator}
         >
@@ -220,7 +220,7 @@ const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropType
       <td>
         <select
           className="filterTypeSelect"
-          disabled={userOfflineMobile}
+          disabled={disabled}
           onChange={(e) => {
             const payload: Partial<IUpdateFilter> = {
               filterType: e.target.value,
@@ -259,7 +259,7 @@ const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropType
       <td>
         <select
           className="filterSelect"
-          disabled={userOfflineMobile}
+          disabled={disabled}
           value={filterSet.field}
           onChange={(e) => updateFilter({ filterID: filterSet.id, field: e.target.value, filterType: 'tableFilter' })}
         >
@@ -282,7 +282,7 @@ const Filter = ({ setID, userOfflineMobile, filterSet, recordSetType }: PropType
           <span>
             <Button
               className={'deleteButton'}
-              disabled={userOfflineMobile}
+              disabled={disabled}
               onClick={() => removeFilter('tableFilter')}
               variant="contained"
             >

@@ -35,8 +35,7 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
     const current = sets[action.payload.setName];
 
     const boundary = JSON.parse(action.payload?.searchedBoundary);
-    const patchedBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
-    current.searchBoundary = patchedBoundary;
+    current.searchBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
 
     yield put(UserSettings.Boundaries.addToSetSuccess(sets));
   } catch (e) {
@@ -156,15 +155,15 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     if (!recordSets || Object.keys(recordSets).length === 0) {
       // RecordSets are empty, try to recover whats in the local database
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const repos = yield service.listRepositories();
+      const repos = yield service.listRepositories(['filter_objects', 'status', 'record_set_type', 'set_id']);
       repos.forEach((repo: RepositoryMetadata) => {
         // recordSet is immutable, so append it to defaultRecordSet
-        if (repo.status === UserRecordCacheStatus.CACHED && !defaultRecordSet[repo.setId]) {
-          const backedUpRecordSet = UserSettings.RecordSet.createDefaultRecordset(repo.recordSetType);
-          backedUpRecordSet.tableFilters = repo.filterObjects.tableFilters;
+        if (repo.status === UserRecordCacheStatus.CACHED && !defaultRecordSet[repo.set_id]) {
+          const backedUpRecordSet = UserSettings.RecordSet.createDefaultRecordset(repo.record_set_type);
+          backedUpRecordSet.tableFilters = repo?.filter_objects?.tableFilters;
           backedUpRecordSet.cacheMetadataStatus = repo.status;
-          backedUpRecordSet.recordSetName = repo.setName ?? '';
-          defaultRecordSet[repo.setId] = backedUpRecordSet;
+          backedUpRecordSet.recordSetName = repo.set_name ?? '';
+          defaultRecordSet[repo.set_id] = backedUpRecordSet;
         }
       });
     }

@@ -6,7 +6,7 @@ import {
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS
-} from '../actions';
+} from 'state/actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -14,7 +14,7 @@ import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 
-export interface ActivityState {
+interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
   activity: any;
   activeActivity: string | null;
@@ -221,6 +221,7 @@ function createActivityReducer() {
             draftState.activity.species_positive = action.payload.activity.species_positive;
             draftState.activity.species_negative = action.payload.activity.species_negative;
             draftState.activity.species_treated = action.payload.activity.species_treated;
+            draftState.activity.map_symbol = action.payload.activity.map_symbol;
             draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
             break;
           }
@@ -239,3 +240,4 @@ function createActivityReducer() {
 const selectActivity: (state) => ActivityState = (state) => state.ActivityPage;
 
 export { createActivityReducer, selectActivity };
+export type { ActivityState };

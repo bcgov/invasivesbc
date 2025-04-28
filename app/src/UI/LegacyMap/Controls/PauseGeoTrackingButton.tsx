@@ -8,7 +8,7 @@ import { useSelector } from 'utils/use_selector';
 const PauseGeoTrackingButton = () => {
   const { drawingShape } = useSelector((state) => state.Map.track_me_draw_geo);
   const [show, setShow] = useState<boolean>(false);
-  const divRef = useRef();
+  const divRef = useRef<HTMLDivElement | null>(null);
   const dispatch = useDispatch();
 
   const handleClick = () => {

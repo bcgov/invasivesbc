@@ -32,8 +32,9 @@ interface IAccessRequestPage {
   classes?: any;
 }
 
-const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
+const UserAccessPage: React.FC<IAccessRequestPage> = () => {
   const nilRole = '';
+
   enum Mode {
     GRANT,
     REVOKE,
@@ -118,8 +119,8 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const renderStatus = (params: GridValueGetterParams) => {
-    let color = 'white';
-    let text = params.row.status;
+    const color = 'white';
+    const text = params.row.status;
     let bgcolor = 'white';
     if (params.row.status === 'APPROVED') {
       bgcolor = green[600];
@@ -498,7 +499,7 @@ const UserAccessPage: React.FC<IAccessRequestPage> = (props) => {
   };
 
   const revokeRole = () => {
-    api.revokeRoleFromUser(selectedUserIds[0], selectedRole).then((res) => {
+    api.revokeRoleFromUser(selectedUserIds[0], selectedRole).then(() => {
       setRoleDialogOpen(false);
       loadUsers();
       setSelectedRole(nilRole);

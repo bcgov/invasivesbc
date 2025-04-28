@@ -1,4 +1,3 @@
-import React from 'react';
 import Container from '@mui/material/Container';
 import BatchLayout from './BatchLayout';
 import BatchUploadList from './batch-upload/BatchUploadList';

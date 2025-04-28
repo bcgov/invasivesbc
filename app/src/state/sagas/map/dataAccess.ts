@@ -2,6 +2,8 @@ import { put, select, take } from 'redux-saga/effects';
 import intersect from '@turf/intersect';
 
 import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
+import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
+import { PayloadAction } from '@reduxjs/toolkit';
 import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
@@ -18,11 +20,9 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import GeoShapes from 'constants/geoShapes';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
-import { PayloadAction } from '@reduxjs/toolkit';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordset } from 'state/actions/activity/Activity';
-import { getIappIdsForRecordsetFromCache } from './online';
+import { IQueryParams } from 'utils/record-cache';
 
 export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
   try {
@@ -134,11 +134,20 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
   try {
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     if (yield service.isCached(action.recordSetID)) {
-      const ids = yield service.getIdList(action.recordSetID);
+      const userSettingsState = yield select(selectUserSettings);
+      const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
+      const filters = getRecordFilterObjectFromStateForAPI(action.recordSetID, userSettingsState, clientBoundaries);
+
+      const queryObj: IQueryParams = {
+        tableFilters: filters.tableFilters,
+        recordSetType: filters.recordSetType,
+        selectColumns: ['id']
+      };
+      const ids = yield service.query(queryObj);
       yield put(
         Activity.getIdsForRecordsetSuccess({
           recordSetID: action.recordSetID,
-          IDList: ids ?? [],
+          IDList: ids.map((record) => record.id) ?? [],
           tableFiltersHash: action.tableFiltersHash
         })
       );
@@ -147,6 +156,7 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
     console.error(ex);
   }
 }
+
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
     const currentState = yield select((state) => state.UserSettings);
@@ -170,7 +180,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
         })
       );
     } else {
-      yield getIappIdsForRecordsetFromCache(action.payload);
+      yield getIdsForRecordsetFromCache(action.payload);
     }
   } catch (e) {
     console.error(e);
@@ -189,19 +199,12 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
   const sortColumn = recordSet?.sortColumn;
   const sortOrder = recordSet?.sortOrder;
   const tableFilters = recordSet?.tableFilters;
-  let modifiedTableFilters = tableFilters?.map((filter) => {
-    return filter.filterType !== 'spatialFilterDrawn'
-      ? filter
-      : { ...filter, geojson: getFilterWithDrawnShape(filter.filter) };
-  });
+  let modifiedTableFilters = tableFilters?.map((filter) =>
+    filter.filterType !== 'spatialFilterDrawn' ? filter : { ...filter, geojson: getFilterWithDrawnShape(filter.filter) }
+  );
 
-  if (!modifiedTableFilters) {
-    modifiedTableFilters = [];
-  }
-
-  const selectColumns = recordSet?.selectColumns
-    ? recordSet?.selectColumns
-    : getSelectColumnsByRecordSetType(recordSetType);
+  modifiedTableFilters ??= [];
+  const selectColumns = recordSet?.selectColumns ?? getSelectColumnsByRecordSetType(recordSetType);
 
   return {
     recordSetType: recordSetType,
@@ -259,14 +262,23 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action: PayloadAction<Activity
 export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
   try {
     const { recordSetID, page, limit, tableFiltersHash } = req;
+    const userSettingsState = yield select(selectUserSettings);
+    const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
+    const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState, clientBoundaries);
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
-    const recordSetIdList = yield service.getIdList(recordSetID);
-    const records = yield service.getPaginatedCachedActivityRecords(recordSetIdList, page, limit);
-
+    const queryObj: IQueryParams = {
+      limit: limit,
+      page: page,
+      tableFilters: filters.tableFilters,
+      recordSetType: filters.recordSetType,
+      selectColumns: ['data'],
+      sort: { by: filters.sortColumn, order: filters.sortOrder }
+    };
+    const records = yield service.query(queryObj);
     yield put(
       Activity.getRowsSuccess({
         recordSetID: recordSetID,
-        rows: records,
+        rows: records.map((r) => r.data),
         tableFiltersHash: tableFiltersHash,
         page: page,
         limit: limit
@@ -318,17 +330,31 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
     yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
+
 export function* getIappRowsFromCache(payload: IappTableRowRequest) {
   try {
     const { recordSetID, page, limit, tableFiltersHash } = payload;
+    const userSettingsState = yield select(selectUserSettings);
+    const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
+    const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState, clientBoundaries);
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
-    const recordSetIdList = yield service.getIdList(recordSetID.toString()) ?? [];
-    const records = yield service.getPaginatedCachedIappRecords(recordSetIdList, page, limit);
+    const queryObj: IQueryParams = {
+      limit: limit,
+      page: page,
+      tableFilters: filters?.tableFilters,
+      recordSetType: filters.recordSetType,
+      selectColumns: ['table_data'],
+      sort: {
+        by: filters.sortColumn,
+        order: filters.sortOrder
+      }
+    };
 
+    const records = yield service.query(queryObj);
     yield put(
       IappActions.getRowsSuccess({
         recordSetID: recordSetID,
-        rows: records,
+        rows: records.map((r) => r?.table_data),
         tableFiltersHash: tableFiltersHash,
         page: page,
         limit: limit
@@ -379,7 +405,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI() {
   yield put(WhatsHere.iapp_rows_request());
 }
 
-export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
+export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY() {
   let currentMapState = yield select((state) => state.Map);
 
   if (!currentMapState?.activitiesGeoJSONDict || !currentMapState?.IAPPGeoJSONDict) {
@@ -400,15 +426,18 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY(action) {
       ...Object.values(current)?.filter((feature: any) => {
         const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
         switch (feature?.geometry?.type) {
-          case GeoShapes.Point:
+          case GeoShapes.Point: {
             const featurePoint = point(feature.geometry.coordinates);
             return booleanPointInPolygon(featurePoint, boundaryPolygon);
-          case GeoShapes.Polygon:
+          }
+          case GeoShapes.Polygon: {
             const featurePolygon = polygon(feature.geometry.coordinates);
             return intersect(featurePolygon, boundaryPolygon);
-          case GeoShapes.MultiPolygon:
+          }
+          case GeoShapes.MultiPolygon: {
             const amultiPolygon = multiPolygon(feature.geometry.coordinates);
             return intersect(amultiPolygon, boundaryPolygon);
+          }
           default:
             return false;
         }

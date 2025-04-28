@@ -13,7 +13,7 @@ import {
   Typography
 } from '@mui/material';
 import React from 'react';
-import { getReportedAreaOutput } from '../../../utils/IAPPHelpers';
+import { getReportedAreaOutput } from 'utils/IAPPHelpers';
 
 interface SurveyColumn {
   id:
@@ -62,7 +62,7 @@ const surveyColumns: readonly SurveyColumn[] = [
   { id: 'date_updated', label: 'Date Updated', minWidth: 150 }
 ];
 
-const sortArray = (inputArray: any[]) => {
+const sortArray = (inputArray) => {
   return [...inputArray].sort((a, b) => {
     if (a.survey_date.valueOf() > b.survey_date.valueOf()) {
       return 1;
@@ -74,7 +74,7 @@ const sortArray = (inputArray: any[]) => {
   });
 };
 
-const Row = (props: any) => {
+const Row = (props) => {
   const { row } = props;
   const [shortComment, setShortComment] = React.useState(true);
 
@@ -88,16 +88,17 @@ const Row = (props: any) => {
     else return value.substring(0, 35) + '...';
   };
 
-  const outputValue = (id: any, value: any) => {
+  const outputValue = (id, value) => {
     switch (id) {
       case 'general_comment':
         return shortValOutput(value as string);
-      case 'reported_area':
-        var returnVal;
+      case 'reported_area': {
+        let returnVal;
         if ((value as number) > 0) {
           returnVal = value;
         } else returnVal = 'NWF';
         return <Typography fontSize={'1rem'}>{returnVal}</Typography>;
+      }
       default:
         return <Typography fontSize={'1rem'}>{value}</Typography>;
     }
@@ -125,7 +126,7 @@ const Row = (props: any) => {
   );
 };
 
-export const SurveysTable = (props: any) => {
+export const SurveysTable = (props) => {
   const { surveys } = props;
   const [expanded, setExpanded] = React.useState(true);
   const [rows, setRows] = React.useState([]);
@@ -143,7 +144,7 @@ export const SurveysTable = (props: any) => {
   }, [surveys]);
 
   const SurveyTableHead = () => {
-    return (surveyColumns as any).map((column) => (
+    return surveyColumns.map((column) => (
       <TableCell align={column.align} style={{ minWidth: column.minWidth }} key={column.id}>
         <Typography fontSize={'1rem'}>{column.label}</Typography>
       </TableCell>
@@ -159,7 +160,7 @@ export const SurveysTable = (props: any) => {
     setPage(0);
   };
 
-  const createData = (survey: any) => {
+  const createData = (survey) => {
     return {
       survey_id: survey.survey_id,
       invasive_plant_code: survey.invasive_plant_code,

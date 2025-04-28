@@ -1,6 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { TRAINING_VIDEOS_LIST_REQUEST, TRAINING_VIDEOS_LIST_REQUEST_COMPLETE } from '../actions';
+import { TRAINING_VIDEOS_LIST_REQUEST, TRAINING_VIDEOS_LIST_REQUEST_COMPLETE } from 'state/actions';
 
 interface TrainingVideoMetadata {
   id: number;

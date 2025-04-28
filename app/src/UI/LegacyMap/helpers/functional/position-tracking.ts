@@ -10,7 +10,7 @@ export const handlePositionTracking = (
   positionTracking,
   panToUser: boolean
 ) => {
-  function animateMarker(timestamp) {
+  function animateMarker() {
     positionMarker.setLngLat([userCoords.long, userCoords.lat]);
     // Ensure it's added to the map. This is safe to call if it's already added.
     positionMarker.addTo(map);

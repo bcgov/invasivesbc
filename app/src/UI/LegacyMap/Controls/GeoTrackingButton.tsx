@@ -18,7 +18,7 @@ export const GeoTrackingButton = () => {
 
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
-  const divRef = useRef();
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? {};
 

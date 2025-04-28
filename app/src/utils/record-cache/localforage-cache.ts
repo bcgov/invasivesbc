@@ -2,17 +2,21 @@ import localForage from 'localforage';
 import centroid from '@turf/centroid';
 import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
+import booleanIntersects from '@turf/boolean-intersects';
 import {
   IappRecordMode,
   RepositoryMetadata,
   RecordCacheService,
   RecordSetSourceMetadata,
-  CacheDownloadMode
+  CacheDownloadMode,
+  IQueryParams
 } from 'utils/record-cache/index';
 import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import bboxToPolygon from 'utils/bboxToPolygon';
+import { getUnnestedFieldsForActivity } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -33,31 +37,152 @@ class LocalForageRecordCacheService extends RecordCacheService {
     return LocalForageRecordCacheService._instance;
   }
 
+  /**
+   * @desc Query cached recordsets for results, orderable, filterable, limitable
+   *       LocalForage has no querying capabilities, but this is only used for Development.
+   */
+  async query(params: IQueryParams): Promise<UserRecord[] | IappRecord[]> {
+    if (this.store == null) {
+      throw new Error('Cache not available');
+    }
+    let records: Array<UserRecord | IappRecord> = [];
+    await this.store.iterate((value: Record<PropertyKey, any>, key: PropertyKey) => {
+      if (key === LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY) return;
+      if (
+        params.tableFilters.every((filter) => {
+          if (filter.filterType === 'spatialFilterDrawn') {
+            const shape = value?.record?.geom?.geometry ?? value?.geometry ?? null;
+            if (Object.hasOwn(shape, 'length')) {
+              return shape.some((cachedFeature: Feature) => booleanIntersects(cachedFeature, filter.geojson));
+            } else if (shape) {
+              return booleanIntersects(shape, filter.geojson);
+            }
+          }
+          const pattern = new RegExp(filter.filter, 'i');
+          const columnVal = (() => {
+            if (value?.[filter.field]) {
+              return value[filter.field];
+            } else if (value?.row?.[filter.field]) {
+              return value.row[filter.field];
+            } else {
+              return '';
+            }
+          })();
+          return filter.operator === 'CONTAINS' ? pattern.test(columnVal) : !pattern.test(columnVal);
+        })
+      ) {
+        records.push(value);
+      }
+    });
+    if (params.sort) {
+      const { by, order } = params.sort;
+      records.sort((a, b) => {
+        if (!a[by] && !b[by]) {
+          return 0;
+        } else if (!a[by]) {
+          return 1;
+        } else if (!b[by]) {
+          return -1;
+        } else {
+          return a[by]?.localeCompare(b[by]);
+        }
+      });
+      if (order === 'DESC') {
+        records.reverse();
+      }
+    }
+    if (params?.page != undefined && params?.limit != undefined) {
+      const startPos = params.page * params.limit;
+      const endPos = Math.min((params.page + 1) * params.limit, records.length);
+      records = records.slice(startPos, endPos);
+    }
+    if (params.selectColumns) {
+      return records.map((record) => {
+        const resObj: Record<PropertyKey, any> = {};
+        params.selectColumns.forEach((column) => {
+          if (column.toLowerCase() === 'table_data') {
+            resObj.table_data = record['row'];
+          } else if (column.toLowerCase() === 'record_data') {
+            resObj.record_data = record['record'];
+          } else if (column.toLowerCase() === 'id') {
+            resObj.id = record.activity_id ?? record['row'].site_id ?? '';
+          } else {
+            resObj[column] = record[column];
+          }
+        });
+        return resObj;
+      });
+    }
+    return records;
+  }
+
   async isCached(repositoryId: string): Promise<boolean> {
     try {
-      return (await this.getRepository(repositoryId)).status === UserRecordCacheStatus.CACHED;
+      return (await this.getRepository(repositoryId, ['status'])).status === UserRecordCacheStatus.CACHED;
     } catch (e) {
+      console.error(e);
       return false;
     }
   }
 
-  async getRepository(repositoryId: string): Promise<RepositoryMetadata> {
+  getRepository(repositoryId: string, columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
+  getRepository(repositoryId: string): Promise<RepositoryMetadata>;
+  async getRepository(
+    repositoryId: string,
+    columns?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata | Partial<RepositoryMetadata>> {
     const repos = await this.listRepositories();
-    const foundIndex = repos.findIndex((p) => p.setId === repositoryId);
+    const foundIndex = repos.findIndex((p) => p.set_id == repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} not found`);
-
+    if (columns) {
+      const res: Partial<Record<keyof RepositoryMetadata, any>> = {};
+      columns.forEach((column) => {
+        res[column] = repos[foundIndex]?.[column];
+      });
+      return res;
+    }
     return repos[foundIndex];
-  }
-
-  async getIdList(repositoryId: string): Promise<string[]> {
-    return (await this.getRepository(repositoryId)).cachedIds ?? [];
   }
 
   async saveActivity(data: Record<PropertyKey, UserRecord>): Promise<void> {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    await Promise.all(Object.keys(data).map((key) => this.store?.setItem(key, data[key])));
+    await Promise.all(
+      Object.keys(data).map((key) => {
+        const parsed = getUnnestedFieldsForActivity(data[key]);
+        parsed.data = data[key];
+        this.store?.setItem(key, parsed);
+      })
+    );
+  }
+
+  /**
+   * @desc Returns list of IDs that overlap with a GeoJSON Object
+   * @param {Feature} geom GeoJSON Object to find overlaps
+   * @returns { string[] } Overlapping record Ids
+   */
+  public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
+    const reposInBoundingBox = ((await this.listRepositories(['set_id', 'status', 'bbox'])) ?? [])?.filter(
+      (r) => r?.status === UserRecordCacheStatus.CACHED && booleanIntersects(bboxToPolygon(r.bbox!), geom)
+    );
+
+    const featureMap: Record<PropertyKey, Feature> = {};
+    const overlappingRecords: string[] = [];
+
+    // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
+    for (const r of reposInBoundingBox) {
+      const repo = await this.getRepository(r.set_id!, ['cached_geojson']);
+      (repo?.cached_geojson?.data as any)?.features.forEach((feature: Feature, i: number) => {
+        featureMap[feature?.properties?.name + i] ??= feature;
+      });
+    }
+    Object.values(featureMap).forEach((feature) => {
+      if (booleanIntersects(geom, feature)) {
+        overlappingRecords.push(feature?.properties?.description);
+      }
+    });
+    return overlappingRecords;
   }
 
   async setRepositoryStatus(cacheId: string, status: UserRecordCacheStatus) {
@@ -65,7 +190,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw Error('Cache not available');
     }
     const cachedSets = await this.listRepositories();
-    const foundIndex = cachedSets.findIndex((p) => p.setId === cacheId);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === cacheId);
     if (foundIndex !== -1) {
       Object.assign(cachedSets[foundIndex], { status });
       await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
@@ -74,7 +199,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
 
   async checkPauseOrAbort(id: string): Promise<CacheDownloadMode> {
     const sets = await this.listRepositories();
-    const index = sets.findIndex((p) => p.setId === id);
+    const index = sets.findIndex((p) => p.set_id === id);
     if (index !== -1) {
       if (sets[index].status === UserRecordCacheStatus.DELETING) return CacheDownloadMode.ABORT;
       else if (sets[index].status === UserRecordCacheStatus.PAUSED) return CacheDownloadMode.PAUSE;
@@ -124,13 +249,13 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error('cache not available');
     }
 
-    const data = await this.store.getItem(id);
+    const data = (await this.store.getItem(id)) as UserRecord;
 
     if (!data) {
       throw new Error(`activity ${id} not found in cache`);
     }
 
-    return data;
+    return data?.data;
   }
 
   /**
@@ -182,6 +307,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     };
     return { cachedGeoJson };
   }
+
   /**
    * @desc Iterate ids to produce list of values to populate in the map.
    *       The values only change with the recordsets, so we create the list at cache-ception to avoid querying
@@ -227,7 +353,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     for (const id of idsToDelete) {
       try {
         await this.store.removeItem(id.toString());
-      } catch (e) {
+      } catch (_e) {
         // Item may not exist if a cache was quit while in progress.
       }
     }
@@ -237,17 +363,17 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (this.store == null) {
       throw new Error('cache not available');
     }
-    const cachedSets = await this.listRepositories();
-    const foundIndex = cachedSets.findIndex((p) => p.setId === repositoryId);
+    const cachedSets = await this.listRepositories(['cached_ids', 'set_id']);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === repositoryId);
 
     if (foundIndex === -1) return;
 
     await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
-    const deleteList = cachedSets[foundIndex].cachedIds;
+    const deleteList = cachedSets[foundIndex].cached_ids ?? [];
     const ids: Record<PropertyKey, number> = {};
 
     cachedSets
-      .flatMap((set) => set.cachedIds)
+      .flatMap((set) => set?.cached_ids ?? [])
       .forEach((id) => {
         ids[id] ??= 0;
         ids[id]++;
@@ -271,6 +397,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     });
     return maxDate;
   }
+
   protected async getAllCachedIds(): Promise<string[]> {
     if (this.store == null) {
       throw new Error('cache not available');
@@ -278,6 +405,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const keys = (await this.store.keys()) ?? [];
     return keys.filter((key) => key !== LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY);
   }
+
   /**
    * @desc Create or Update an entry in the cachedSet Repository
    * @param newSet Data to update
@@ -288,7 +416,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     }
 
     const cachedSets = (await this.listRepositories()) ?? [];
-    const foundIndex = cachedSets.findIndex((p) => p.setId === newSet.setId);
+    const foundIndex = cachedSets.findIndex((p) => p.set_id === newSet.set_id);
 
     if (foundIndex === -1) {
       cachedSets.push(newSet);
@@ -298,7 +426,11 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await this.store.setItem(LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY, cachedSets);
   }
 
-  async listRepositories(): Promise<RepositoryMetadata[]> {
+  listRepositories(columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
+  listRepositories(): Promise<RepositoryMetadata[]>;
+  async listRepositories(
+    columns?: Array<keyof RepositoryMetadata>
+  ): Promise<RepositoryMetadata[] | Partial<RepositoryMetadata>[]> {
     if (this.store == null) {
       return [];
     }
@@ -308,6 +440,15 @@ class LocalForageRecordCacheService extends RecordCacheService {
     if (metadata == null) {
       console.error('expected key not found');
       return [];
+    }
+    if (columns) {
+      return metadata.map((repo) => {
+        const res: Partial<Record<keyof RepositoryMetadata, any>> = {};
+        columns.forEach((field) => {
+          res[field] = repo?.[field];
+        });
+        return res;
+      });
     }
     return metadata;
   }

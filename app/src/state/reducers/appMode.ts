@@ -1,7 +1,7 @@
 import { createNextState } from '@reduxjs/toolkit';
-import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from '../actions';
+import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from 'state/actions';
 
-export enum appModeEnum {
+enum appModeEnum {
   'Records',
   'Record',
   'Landing',
@@ -40,7 +40,7 @@ export default function appMode(state = initialState, action: any): AppModeState
       };
     }
     case URL_CHANGE: {
-      const nextState = createNextState(state, (draftState: any) => {
+      return createNextState(state, (draftState: any) => {
         draftState.url = action?.payload?.url;
         if (['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News'].includes(action.payload.url.split('/')[1])) {
           draftState.panelFullScreen = true;
@@ -53,9 +53,10 @@ export default function appMode(state = initialState, action: any): AppModeState
           draftState.panelOpen = true;
         }
       });
-      return nextState;
     }
     default:
       return state;
   }
 }
+
+export { appModeEnum };

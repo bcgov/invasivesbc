@@ -295,7 +295,7 @@ export const autoFillTotalReleaseQuantity = (formData: any) => {
     }
   });
 
-  const newFormData = {
+  return {
     ...formData,
     activity_subtype_data: {
       ...formData.activity_subtype_data,
@@ -305,7 +305,6 @@ export const autoFillTotalReleaseQuantity = (formData: any) => {
       }
     }
   };
-  return newFormData;
 };
 
 //Monitoring Biocontrol Dispersal
@@ -416,14 +415,13 @@ export const autofillBiocontrolCollectionTotalQuantity = (formData: any) => {
           total_bio_agent_quantity_estimated: totalEstimated
         });
       });
-      const newFormData = {
+      return {
         ...formData,
         activity_subtype_data: {
           ...formData.activity_subtype_data,
           Biocontrol_Collection_Information: newArray
         }
       };
-      return newFormData;
     }
   }
 };
@@ -452,27 +450,25 @@ export const autoFillBiocontrolPresent = (formData: any) => {
     biocontrol_present = true;
   }
 
-  const newFormData =
-    releaseMonitoring === true
-      ? {
-          ...formData,
-          activity_subtype_data: {
-            ...formData.activity_subtype_data,
-            Monitoring_BiocontrolRelease_TerrestrialPlant_Information: {
-              ...formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
-              biocontrol_present: biocontrol_present
-            }
+  return releaseMonitoring === true
+    ? {
+        ...formData,
+        activity_subtype_data: {
+          ...formData.activity_subtype_data,
+          Monitoring_BiocontrolRelease_TerrestrialPlant_Information: {
+            ...formData.activity_subtype_data.Monitoring_BiocontrolRelease_TerrestrialPlant_Information,
+            biocontrol_present: biocontrol_present
           }
         }
-      : {
-          ...formData,
-          activity_subtype_data: {
-            ...formData.activity_subtype_data,
-            Monitoring_BiocontrolDispersal_Information: {
-              ...formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information,
-              biocontrol_present: biocontrol_present
-            }
+      }
+    : {
+        ...formData,
+        activity_subtype_data: {
+          ...formData.activity_subtype_data,
+          Monitoring_BiocontrolDispersal_Information: {
+            ...formData.activity_subtype_data.Monitoring_BiocontrolDispersal_Information,
+            biocontrol_present: biocontrol_present
           }
-        };
-  return newFormData;
+        }
+      };
 };

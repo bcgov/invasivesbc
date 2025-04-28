@@ -5,7 +5,7 @@ import { useDispatch } from 'react-redux';
 import NoRowsInSearch from './NoRowsInSearch';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { MouseEvent } from 'react';
+import { MouseEvent, TouchEvent } from 'react';
 
 type PropTypes = {
   setAnchorEl: (anchorEl: HTMLElement | null) => void;
@@ -13,7 +13,7 @@ type PropTypes = {
 
 const RenderTableActivity = ({ setAnchorEl }: PropTypes) => {
   const dispatch = useDispatch();
-  const { authenticated, roles } = useSelector((state) => state.Auth);
+  const { loggedInOrWorkingOffline, roles } = useSelector((state) => state.Auth);
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
 
   const dispatchUpdatedID = (params) => {
@@ -92,8 +92,8 @@ const RenderTableActivity = ({ setAnchorEl }: PropTypes) => {
             onColumnHeaderClick={(c) => {
               dispatch(WhatsHere.sort_filter_update(RecordSetType.Activity, c.field));
             }}
-            onCellClick={(params, evt: MuiEvent<MouseEvent>) => {
-              if (authenticated && roles.length > 0) {
+            onCellClick={(params, evt: MuiEvent<MouseEvent | TouchEvent>) => {
+              if (loggedInOrWorkingOffline && roles.length > 0) {
                 setAnchorEl(evt.currentTarget as HTMLElement);
                 highlightActivity(params);
               }

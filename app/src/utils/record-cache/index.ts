@@ -1,5 +1,4 @@
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
-import booleanIntersects from '@turf/boolean-intersects';
 import { Feature } from '@turf/helpers';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
@@ -8,26 +7,27 @@ import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
-import bboxToPolygon from 'utils/bboxToPolygon';
 import FilterObjects from 'interfaces/FilterObjects';
 
-export enum IappRecordMode {
+enum IappRecordMode {
   Record = 'record',
   Row = 'row'
 }
 
-export enum CacheDownloadMode {
+enum CacheDownloadMode {
   DEFAULT = '',
   PAUSE = 'pause',
   ABORT = 'abort'
 }
-export interface RecordCacheDownloadRequestSpec {
+
+interface RecordCacheDownloadRequestSpec {
   setId: string;
   API_BASE: string;
   idsToCache: string[];
   pausedActivityIdx: number;
   processedActivities: number;
 }
+
 /**
  * @desc Cached Metadata for Recordsets
  * @property { string } setID Recordset ID
@@ -37,25 +37,25 @@ export interface RecordCacheDownloadRequestSpec {
  * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
  * @property { UserRecordCacheStatus } status Cache Status.
  */
-export interface RepositoryMetadata {
-  setId: string;
-  setName?: string;
-  cacheTime: Date;
-  cachedIds: string[];
-  recordSetType: RecordSetType;
-  cachedGeoJson?: GeoJSONSourceSpecification;
-  cachedCentroid?: GeoJSONSourceSpecification;
+interface RepositoryMetadata {
+  set_id: string;
+  set_name?: string;
+  cache_time: Date;
+  cached_ids: string[];
+  record_set_type: RecordSetType;
+  cached_geojson?: GeoJSONSourceSpecification;
+  cached_centroid?: GeoJSONSourceSpecification;
   bbox?: RepositoryBoundingBoxSpec;
   status: UserRecordCacheStatus;
-  filterObjects: FilterObjects;
+  filter_objects: FilterObjects;
 }
 
-export interface RecordSetSourceMetadata {
+interface RecordSetSourceMetadata {
   cachedGeoJson: GeoJSONSourceSpecification;
   cachedCentroid?: GeoJSONSourceSpecification;
 }
 
-export interface RecordCacheProgressCallbackParameters {
+interface RecordCacheProgressCallbackParameters {
   setId: string;
   message: string;
   pausedActivityIdx: number;
@@ -65,7 +65,7 @@ export interface RecordCacheProgressCallbackParameters {
   processedActivities: number;
 }
 
-export interface CacheDownloadSpec {
+interface CacheDownloadSpec {
   bbox: RepositoryBoundingBoxSpec;
   idsToCache: string[];
   setId: string;
@@ -78,6 +78,13 @@ export interface CacheDownloadSpec {
   filterObjects: FilterObjects;
 }
 
+interface IQueryParams extends FilterObjects {
+  sort?: {
+    order?: 'ASC' | 'DESC';
+    by: string;
+  };
+}
+
 abstract class RecordCacheService extends BaseCacheService<
   RepositoryMetadata,
   CacheDownloadSpec,
@@ -86,6 +93,7 @@ abstract class RecordCacheService extends BaseCacheService<
 > {
   private readonly CONCURRENCY_LIMIT = 3;
   private readonly BATCH_AMOUNT = 20;
+
   protected constructor() {
     super();
   }
@@ -93,11 +101,15 @@ abstract class RecordCacheService extends BaseCacheService<
   static async getInstance(): Promise<RecordCacheService> {
     throw new Error('unimplemented in abstract base class');
   }
+
+  public abstract query(params: IQueryParams): Promise<UserRecord[] | IappRecord[]>;
+
   protected abstract addOrUpdateRepository(spec: RepositoryMetadata): Promise<void>;
 
   protected abstract deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void>;
 
-  /** */
+  public abstract getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]>;
+
   public abstract loadActivity(id: string): Promise<unknown>;
 
   public abstract loadIapp(id: string, type: IappRecordMode): Promise<IappRecord | IappTableRow>;
@@ -124,8 +136,6 @@ abstract class RecordCacheService extends BaseCacheService<
 
   public abstract isCached(repositoryId: string): Promise<boolean>;
 
-  public abstract getIdList(repositoryId: string): Promise<string[]>;
-
   protected abstract createIappRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
 
   protected abstract createActivityRecordsetSourceMetadata(ids: string[]): Promise<RecordSetSourceMetadata>;
@@ -151,13 +161,13 @@ abstract class RecordCacheService extends BaseCacheService<
     };
 
     await this.addOrUpdateRepository({
-      setId: spec.setId,
-      cacheTime: new Date(),
-      cachedIds: spec.idsToCache,
-      recordSetType: spec.recordSetType,
+      set_id: spec.setId,
+      cache_time: new Date(),
+      cached_ids: spec.idsToCache,
+      record_set_type: spec.recordSetType,
       status: UserRecordCacheStatus.DOWNLOADING,
       bbox: spec.bbox,
-      filterObjects: spec.filterObjects
+      filter_objects: spec.filterObjects
     });
 
     let downloadMode: CacheDownloadMode = CacheDownloadMode.DEFAULT;
@@ -175,16 +185,16 @@ abstract class RecordCacheService extends BaseCacheService<
 
     if (!downloadMode) {
       await this.addOrUpdateRepository({
-        setId: spec.setId,
-        cacheTime: new Date(),
-        setName: spec.setName,
-        cachedIds: spec.idsToCache,
-        recordSetType: spec.recordSetType,
+        set_id: spec.setId,
+        cache_time: new Date(),
+        set_name: spec.setName,
+        cached_ids: spec.idsToCache,
+        record_set_type: spec.recordSetType,
         status: UserRecordCacheStatus.CACHED,
-        cachedGeoJson: responseData.cachedGeoJson,
-        cachedCentroid: responseData.cachedCentroid,
+        cached_geojson: responseData.cachedGeoJson,
+        cached_centroid: responseData.cachedCentroid,
         bbox: spec.bbox,
-        filterObjects: spec.filterObjects
+        filter_objects: spec.filterObjects
       });
     } else if (downloadMode == CacheDownloadMode.ABORT) {
       this.deleteRepository(spec.setId);
@@ -338,68 +348,34 @@ abstract class RecordCacheService extends BaseCacheService<
   }
 
   public async stopDownload(repositoryId: string): Promise<void> {
-    const repositories = await this.listRepositories();
-    const foundIndex = repositories.findIndex((repo) => repo.setId === repositoryId);
-    if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);
-
-    if (
-      [UserRecordCacheStatus.DOWNLOADING, UserRecordCacheStatus.PAUSED, UserRecordCacheStatus.QUEUED].includes(
-        repositories[foundIndex].status
-      )
-    ) {
-      await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
-    } else if (repositories[foundIndex].status === UserRecordCacheStatus.CACHED) {
-      await this.deleteRepository(repositoryId);
+    try {
+      const repo = await this.getRepository(repositoryId, ['status']);
+      if (repo !== null) {
+        if (
+          [UserRecordCacheStatus.DOWNLOADING, UserRecordCacheStatus.PAUSED, UserRecordCacheStatus.QUEUED].includes(
+            repo.status!
+          )
+        ) {
+          await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.DELETING);
+        } else if (repo.status === UserRecordCacheStatus.CACHED) {
+          await this.deleteRepository(repositoryId);
+        }
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 
   public async pauseDownload(repositoryId: string): Promise<void> {
-    const repositories = await this.listRepositories();
-    const foundIndex = repositories.findIndex((repo) => repo.setId === repositoryId);
+    const repositories = await this.listRepositories(['set_id', 'status']);
+    const foundIndex = repositories.findIndex((repo) => repo?.set_id === repositoryId);
     if (foundIndex === -1) throw Error(`Repository ${repositoryId} wasn't found`);
 
-    if (repositories[foundIndex].status === UserRecordCacheStatus.DOWNLOADING) {
+    if (repositories[foundIndex]?.status === UserRecordCacheStatus.DOWNLOADING) {
       await this.setRepositoryStatus(repositoryId, UserRecordCacheStatus.PAUSED);
     }
   }
 
-  /**
-   * @desc Get repositories filtered to a geographic area
-   * @param geom Area of target
-   * @returns Repositories overlapping with target area
-   */
-  public async getOverlappingRepositories(geom: Feature): Promise<RepositoryMetadata[]> {
-    return (await this.listRepositories()).filter(
-      (r) =>
-        r.status === UserRecordCacheStatus.CACHED && r.cachedGeoJson && booleanIntersects(bboxToPolygon(r.bbox!), geom)
-    );
-  }
-
-  /**
-   * @desc Returns list of IDs that overlap with a GeoJSON Object
-   * @param {Feature} geom GeoJSON Object to find overlaps
-   * @returns { string[] } Overlapping record Ids
-   */
-  public async getRecordIdsOverlappingFeature(geom: Feature): Promise<string[]> {
-    const repos = await this.getOverlappingRepositories(geom);
-    const featureMap: Record<PropertyKey, Feature> = {};
-    const overlappingRecords: string[] = [];
-
-    // Multiple Repos could contain the same record, so iterate them into an object to filter the duplicates
-    repos.forEach((repo) => {
-      (repo.cachedGeoJson?.data as any).features.forEach(
-        (feature: Feature, i: number) => (featureMap[feature?.properties?.name + i] ??= feature)
-      );
-    });
-
-    Object.values(featureMap).forEach((feature) => {
-      if (booleanIntersects(geom, feature)) {
-        overlappingRecords.push(feature?.properties?.description);
-      }
-    });
-
-    return overlappingRecords;
-  }
   /**
    * @desc Get list of IDs that have had updates or been created since last update.
    * @param filterObjects Filters used at time of Cache
@@ -422,15 +398,15 @@ abstract class RecordCacheService extends BaseCacheService<
     const currentTime = new Date();
     const [newestRecordDate, repositories] = await Promise.all([
       this.dateOfMostRecentRecord(),
-      this.listRepositories()
+      this.listRepositories(['record_set_type', 'status', 'filter_objects', 'cached_ids', 'set_id'])
     ]);
     const updatedRecords: string[] = []; // don't re-download records that crossover other recordsets
     for (const r of repositories) {
-      if (r.recordSetType === RecordSetType.Activity && r.status === UserRecordCacheStatus.CACHED) {
-        const idList = (await this.getListOfNewIds(r.filterObjects, newestRecordDate)).filter(
+      if (r?.record_set_type === RecordSetType.Activity && r.status === UserRecordCacheStatus.CACHED) {
+        const idList = (await this.getListOfNewIds(r.filter_objects!, newestRecordDate)).filter(
           (id) => !updatedRecords.includes(id)
         );
-        const newIds = idList.filter((id) => !r.cachedIds.includes(id)); // Filter out IDs not already in cache to add later
+        const newIds = idList.filter((id) => !r.cached_ids?.includes(id)); // Filter out IDs not already in cache to add later
         for (let i = 0; i < idList.length; i += this.BATCH_AMOUNT) {
           const ids = idList.slice(i, i + this.BATCH_AMOUNT);
           const url = `${CONFIGURATION_API_BASE}/api/v2/activities/batch-request?idList=${JSON.stringify(ids)}`;
@@ -440,13 +416,13 @@ abstract class RecordCacheService extends BaseCacheService<
           const newRecords = (await rez.json()) ?? {};
           await this.saveActivity(newRecords);
         }
-        const updatedShapes = await this.createActivityRecordsetSourceMetadata([...r.cachedIds, ...newIds]);
-        this.addOrUpdateRepository({
+        const updatedShapes = await this.createActivityRecordsetSourceMetadata([...r.cached_ids!, ...newIds]);
+        await this.addOrUpdateRepository({
           ...r,
           ...updatedShapes,
-          cachedIds: [...r.cachedIds, ...newIds],
-          cacheTime: currentTime
-        });
+          cached_ids: [...r.cached_ids!, ...newIds],
+          cache_time: currentTime
+        } as RepositoryMetadata);
         updatedRecords.push(...newIds);
       }
     }
@@ -454,4 +430,11 @@ abstract class RecordCacheService extends BaseCacheService<
   }
 }
 
-export { RecordCacheService };
+export { RecordCacheService, CacheDownloadMode, IappRecordMode };
+export type {
+  RecordCacheDownloadRequestSpec,
+  IQueryParams,
+  CacheDownloadSpec,
+  RecordCacheProgressCallbackParameters,
+  RecordSetSourceMetadata
+};

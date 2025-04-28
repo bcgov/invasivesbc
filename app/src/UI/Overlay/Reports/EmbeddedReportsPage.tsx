@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { Autocomplete, Box, Container, TextField, Typography } from '@mui/material';
 import { Report } from './Report';
 import Spinner from 'UI/Spinner/Spinner';
@@ -18,7 +18,6 @@ const EmbeddedReportsPage: React.FC = () => {
   const api = useInvasivesApi();
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
   const [reports, setReports] = useState([]);
-  const [categories, setCategories] = useState([]);
   const [activeReport, setActiveReport] = useState<number>(null);
   const [loading, setLoading] = useState(true);
   const authState = useSelector(selectAuth);
@@ -38,16 +37,6 @@ const EmbeddedReportsPage: React.FC = () => {
 
     api.listEmbeddedMetabaseReports().then((data) => {
       setReports(data.result);
-      setCategories(
-        data.result
-          .map((report) => report.category)
-          .reduce((all_categories, category) => {
-            if (!all_categories.includes(category)) {
-              return all_categories.concat(category);
-            }
-            return all_categories;
-          }, [])
-      );
       setLoading(false);
     });
   }, [authState?.authenticated]);

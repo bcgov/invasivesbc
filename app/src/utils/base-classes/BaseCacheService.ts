@@ -26,9 +26,17 @@ abstract class BaseCacheService<
 
   /** Pull metadata for one Repository in the Collection */
   public abstract getRepository(repositoryId: string): Promise<RepoMetadata | null>;
+  public abstract getRepository(
+    repositoryId: string,
+    fields: Array<keyof RepoMetadata>
+  ): Promise<RepoMetadata | Partial<RepoMetadata> | null>;
 
   /** List metadata for all Repositories */
+  /**
+   * @param fields Specific keys to filter for, reducing payload size.
+   */
   public abstract listRepositories(): Promise<RepoMetadata[]>;
+  public abstract listRepositories(fields: Array<keyof RepoMetadata>): Promise<Partial<RepoMetadata>[]>;
 
   /** Change the status for a given Repository */
   public abstract setRepositoryStatus(repositoryId: string, status: RepositoryStatusSchema): Promise<void>;

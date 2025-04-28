@@ -1,13 +1,10 @@
-import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Theme, Typography } from '@mui/material';
+import { Accordion, AccordionDetails, AccordionSummary, Container, Grid, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import React from 'react';
-import { getJurisdictions } from '../../../utils/IAPPHelpers';
+import { getJurisdictions } from 'utils/IAPPHelpers';
 import { SurveysTable } from './SurveyTable';
 import { TreatmentsTable } from './TreatmentsTable';
 import './Summary.css';
-// import { TreatmentsTable } from './ExtractTables';
-// import { getJurisdictions } from './IAPP-Functions';
-// import { SurveysTable } from './SurveyTable';
 
 export interface IAPPSitePropType {
   record: any;
@@ -24,7 +21,7 @@ export const Summary: React.FC<IAPPSitePropType> = ({ record }) => {
   const coordinates = record.point_of_interest_payload?.geometry[0]?.geometry?.coordinates;
   const longitude = parseFloat(coordinates[0]).toFixed(6);
   const latitude = parseFloat(coordinates[1]).toFixed(6);
-  const jurisdictions: any = getJurisdictions(surveys);
+  const jurisdictions = getJurisdictions(surveys);
   const date_created = site.date_created.substring(0, site.date_created.indexOf('T'));
   const date_entered = site.date_entered.substring(0, site.date_entered.indexOf('T'));
   const date_updated = site.date_updated.substring(0, site.date_updated.indexOf('T'));

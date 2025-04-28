@@ -55,7 +55,7 @@
   align-items: center;
   position: absolute;
   font-size: 20px;
-  color: 'black';
+  color: black;
   top: 0;
   left: 50%;
   width: 100px;
@@ -80,7 +80,7 @@
 
 :root:has(#map-btn-container, #overlaydiv.map__overlay--show) {
   .maplibregl-ctrl-bottom-right {
-    bottom: calc(var(--overlay-height) + var(--overlay-grip-height));
+    bottom: calc(var(--overlay-height) - 7px);
     transition: bottom 0.1s ease 0.3s;
   }
 

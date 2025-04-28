@@ -1,18 +1,5 @@
 import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
-import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
-  ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_RESTORE_OFFLINE,
-  ACTIVITY_SET_CURRENT_HASH_FAILURE,
-  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_SET_COORDS,
-  PAN_AND_ZOOM_TO_ACTIVITY,
-  URL_CHANGE
-} from '../actions';
+import { buffer, distance, kinks, lineToPolygon } from '@turf/turf';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
   handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -44,12 +31,25 @@ import {
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
-import { selectActivity } from 'state/reducers/activity';
 import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
+import {
+  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
+  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
+  ACTIVITY_ON_FORM_CHANGE_REQUEST,
+  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
+  ACTIVITY_RESTORE_OFFLINE,
+  ACTIVITY_SET_CURRENT_HASH_FAILURE,
+  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
+  ACTIVITY_UPDATE_GEO_REQUEST,
+  ACTIVITY_UPDATE_GEO_SUCCESS,
+  MAP_SET_COORDS,
+  PAN_AND_ZOOM_TO_ACTIVITY,
+  URL_CHANGE
+} from 'state/actions';
+import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { buffer, distance, kinks, lineToPolygon } from '@turf/turf';
 import GeoShapes from 'constants/geoShapes';
 import { calculateGeometryArea } from 'utils/geometryHelpers';
 import geomWithinBC from 'utils/geomWithinBC';
@@ -67,8 +67,10 @@ import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
 import MapActions from 'state/actions/map';
+import { selectAuth } from 'state/reducers/auth';
+import { Role } from 'constants/roles';
 
-function* handle_ACTIVITY_DELETE_SUCCESS(action) {
+function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
   yield put(
     Alerts.create({
@@ -80,7 +82,7 @@ function* handle_ACTIVITY_DELETE_SUCCESS(action) {
   yield put(MapActions.initRequest());
 }
 
-function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST(action) {
+function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST() {
   try {
     const activityState = yield select(selectActivity);
     yield put(Activity.setSavedHashSuccess(activityState?.current_activity_hash));
@@ -144,14 +146,17 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   const activityState = yield select(selectActivity);
   const activity_subtype = activityState?.activity?.activity_subtype;
   const uiSchema = RootUISchemas[activity_subtype];
-
+  const isAdmin = ((yield select(selectAuth))?.accessRoles ?? []).some(
+    (role) => role.role_name === Role.MASTER_ADMINISTRATOR
+  );
   let apiSpec;
-  var userSettings = yield select(selectUserSettings);
+  let userSettings = yield select(selectUserSettings);
   if (!userSettings?.apiDocsWithViewOptions?.components) {
     yield take(UserSettings.InitState.getSuccess);
     userSettings = yield select(selectUserSettings);
   }
-  if (isViewing) {
+  if (isViewing || isAdmin) {
+    // Admins get all codes as they fill out data on behalf of other users
     apiSpec = userSettings.apiDocsWithViewOptions;
   } else {
     apiSpec = userSettings.apiDocsWithSelectOptions;
@@ -179,7 +184,6 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
         return mappingAlertMessages.trackingStarted;
     }
   })();
-
   const userHasTrackingEnabled = coords?.hasOwnProperty('long');
   if (userHasTrackingEnabled) {
     const initGeo = {
@@ -330,9 +334,11 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME() {
   yield put(Alerts.create(mappingAlertMessages.trackingResumed));
 }
+
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
   yield put(Alerts.create(mappingAlertMessages.trackingPaused));
 }
+
 /**
  * @desc Handles new coordinates coming in from the TRACK_ME_GEO featureset.
  *       Evaluates distance between new and previous points to eliminate micro adjustments from GPS sway.
@@ -382,6 +388,7 @@ function* handle_MAP_SET_COORDS(action) {
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
   }
 }
+
 function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
   const connected = yield select(selectNetworkConnected);
   try {
@@ -406,7 +413,7 @@ function* handle_UPDATE_CACHED_RECORDS() {
         yield Alerts.create(cacheAlertMessages.updateCachesSuccess);
       }
     }
-  } catch (ex) {
+  } catch (_e) {
     yield Alerts.create(cacheAlertMessages.updateCachesFailed);
   }
 }

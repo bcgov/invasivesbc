@@ -30,7 +30,7 @@ interface OfflineUserState {
   bceid_user_guid: string | null;
 }
 
-export interface AuthState {
+interface AuthState {
   [MIGRATION_VERSION_KEY]: number;
 
   initialized: boolean;
@@ -362,3 +362,4 @@ function createAuthReducer(_configuration: AppConfig) {
 const selectAuth: (state) => AuthState = (state) => state.Auth;
 
 export { createAuthReducer, selectAuth };
+export type { AuthState };

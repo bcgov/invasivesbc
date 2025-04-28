@@ -1,5 +1,5 @@
-import Filter from 'interfaces/Filter';
 import { ActivityStatus } from 'sharedAPI/src/constants';
+import Filter from 'interfaces/Filter';
 
 export const getSearchCriteriaFromFilters = (
   advancedFilterRows: any,

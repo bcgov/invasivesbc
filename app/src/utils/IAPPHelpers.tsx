@@ -1,5 +1,5 @@
-export const getJurisdictions = (surveys: any[]) => {
-  const tempArr = [];
+export const getJurisdictions = (surveys) => {
+  const tempArr: unknown[] = [];
 
   surveys?.forEach((survey) => {
     survey?.jurisdictions?.forEach((jurisdiction) => {

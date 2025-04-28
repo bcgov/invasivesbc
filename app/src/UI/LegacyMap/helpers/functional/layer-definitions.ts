@@ -7,7 +7,7 @@ const LAYER_Z_BACKGROUND = 'LAYER_Z_BACKGROUND';
 const LAYER_Z_MID = 'LAYER_Z_MID';
 const LAYER_Z_FOREGROUND = 'LAYER_Z_FOREGROUND';
 
-export type MapDefinitionEligibilityPredicates = {
+type MapDefinitionEligibilityPredicates = {
   // not directly selectable means there won't be a button for it (but it can still be enabled by another definition requiring it)
   directlySelectable: boolean;
   mobileOnly: boolean;
@@ -18,7 +18,7 @@ export type MapDefinitionEligibilityPredicates = {
 };
 
 // fluent convenience object builder
-export class MapDefinitionEligibilityPredicatesBuilder {
+class MapDefinitionEligibilityPredicatesBuilder {
   state: MapDefinitionEligibilityPredicates = {
     directlySelectable: true,
     mobileOnly: false,
@@ -88,12 +88,12 @@ export class MapDefinitionEligibilityPredicatesBuilder {
 }
 
 // determines layer stacking and whether the layer is individually toggle-able (eg only one basemap can be active at once)
-export enum MapSourceAndLayerDefinitionMode {
+enum MapSourceAndLayerDefinitionMode {
   BASEMAP = 'BASEMAP',
   OVERLAY = 'OVERLAY'
 }
 
-export type MapSourceAndLayerDefinition = {
+type MapSourceAndLayerDefinition = {
   name: string;
 
   displayName: string;
@@ -1998,6 +1998,7 @@ function allSourceIDsRequiredForDefinition(definitionList: MapSourceAndLayerDefi
 }
 
 export {
+  MapSourceAndLayerDefinitionMode,
   MAP_DEFINITIONS,
   allLayerIdsInDefinition,
   allBaseMapLayerIdsNotInDefinition,
@@ -2008,3 +2009,6 @@ export {
   LAYER_Z_MID,
   LAYER_Z_FOREGROUND
 };
+
+export type { MapDefinitionEligibilityPredicates, MapSourceAndLayerDefinition };
+export { MapDefinitionEligibilityPredicatesBuilder };

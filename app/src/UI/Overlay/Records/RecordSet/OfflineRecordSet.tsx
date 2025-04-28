@@ -14,6 +14,7 @@ import { transformOfflineActivitiesForRecordTable } from 'utils/addActivity';
 import CustomPopover from 'UI/CustomPopover/CustomPopover';
 import RecordTablePopoverContent from './RecordTablePopoverContent/RecordTablePopoverContent';
 import { MouseEvent, TouchEvent, useState } from 'react';
+
 type PropTypes = { setID: string };
 
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
@@ -38,7 +39,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   };
 
   const offlineDocs = useSelector((state) => state.UserSettings.offlineDocs);
-  const listOptions: any = offlineDocs[0]?.apiDocsWithViewOptions;
+  const listOptions = offlineDocs[0]?.apiDocsWithViewOptions;
 
   const history = useHistory();
   const dispatch = useDispatch();
@@ -48,7 +49,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   };
 
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
-  const recordTable = useSelector((state: any) => state.Map.recordTables?.[setID]);
+  const recordTable = useSelector((state) => state.Map.recordTables?.[setID]);
   const { serializedActivities } = useSelector(selectOfflineActivity);
 
   const startIndex = recordTable?.page * recordTable?.limit;
@@ -66,7 +67,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   try {
     unsyncedOfflineActivities = transformOfflineActivitiesForRecordTable(unsyncedOfflineActivities, listOptions);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   return (
@@ -100,7 +101,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
               <table className="record_table">
                 <tbody>
                   <tr className="record_table_header">
-                    {offlineActivityColumnsToDisplay.map((col: any) => (
+                    {offlineActivityColumnsToDisplay.map((col) => (
                       <th className={'record_table_header_column'} key={col.key}>
                         {col.name}
                       </th>

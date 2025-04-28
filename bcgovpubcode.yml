@@ -1,0 +1,42 @@
+---
+data_management_roles:
+  data_custodian: Crystal Chadburn
+  product_owner: Crystal Chadburn
+product_external_dependencies:
+  identity_authorization:
+    - Business-BceId
+    - IDIR
+  notification_standard:
+    - Common-Hosted-Email-Service
+product_information:
+  api_specifications: []
+  ministry:
+    - Water, Land and Resource Stewardship
+  product_acronym: InvBC
+  product_description: Invasive species tracking
+  product_name: InvasivesBC
+  product_status: maturing
+  product_urls:
+    - https://invasivesbc.gov.bc.ca/
+  program_area: Environmental Protection
+product_technology_information:
+  backend_frameworks: []
+  backend_languages_version:
+    - name: TypeScript
+      version: '5'
+  ci_cd_tools:
+    - GitHub-Actions
+    - Tekton
+  data_storage_platforms:
+    - Postgis
+  frontend_frameworks:
+    - name: React
+      version: '18'
+  frontend_languages:
+    - name: TypeScript
+      version: '5'
+  hosting_platforms:
+    - Private-Cloud-Openshift
+  spatial_mapping_technologies:
+    - MapLibre
+version: 1

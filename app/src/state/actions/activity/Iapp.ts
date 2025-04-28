@@ -1,21 +1,23 @@
 import { createAction } from '@reduxjs/toolkit';
-import IappRecord from 'interfaces/IappRecord';
 import { IGetIdsForRecordset, IGetIdsForRecordsetOnline, IGetIdsForRecordsetSuccess } from './Activity';
+import IappRecord from 'interfaces/IappRecord';
 
-export interface IappTableRowRequest {
+interface IappTableRowRequest {
   recordSetID: string | number;
   tableFiltersHash: string;
   page: number;
   limit: number;
 }
 
-export interface IappTableRowGetRequest extends IappTableRowRequest {
+interface IappTableRowGetRequest extends IappTableRowRequest {
   filterObj: Record<PropertyKey, any>;
 }
-export interface IappTableRowsGetSuccess extends IappTableRowRequest {
+
+interface IappTableRowsGetSuccess extends IappTableRowRequest {
   rows: Record<PropertyKey, any>[];
 }
-export interface IappTableRowsGetFailure extends IappTableRowRequest {
+
+interface IappTableRowsGetFailure extends IappTableRowRequest {
   error: Record<PropertyKey, any>[];
 }
 
@@ -42,3 +44,4 @@ class IappActions {
 }
 
 export default IappActions;
+export type { IappTableRowRequest, IappTableRowGetRequest, IappTableRowsGetSuccess, IappTableRowsGetFailure };

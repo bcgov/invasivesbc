@@ -86,10 +86,11 @@ const handleSyncTermination = createTransform(
   () => false,
   { whitelist: ['working'] }
 );
+
 function createRootReducer(config: AppConfig) {
   return combineReducers({
     AppMode: appMode,
-    AlertsAndPrompts: createAlertsAndPromptsReducer(config),
+    AlertsAndPrompts: createAlertsAndPromptsReducer(),
     Configuration: createConfigurationReducerWithDefaultState(config),
     DownloadState: createDownloadStateReducer,
     Auth: persistReducer<AuthState>(
@@ -122,7 +123,7 @@ function createRootReducer(config: AppConfig) {
       },
       createActivityReducer()
     ),
-    IAPPSitePage: createIAPPSiteReducer(config),
+    IAPPSitePage: createIAPPSiteReducer(),
     UserSettings: persistReducer<UserSettingsState>(
       {
         key: 'user-settings',
@@ -163,7 +164,7 @@ function createRootReducer(config: AppConfig) {
           'serverBoundaries'
         ]
       },
-      createMapReducer(config)
+      createMapReducer()
     ),
     Batch: createBatchReducer(),
     TrainingVideos: createTrainingVideosReducer(),

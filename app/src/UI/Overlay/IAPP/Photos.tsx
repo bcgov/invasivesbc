@@ -1,11 +1,21 @@
 import { Accordion, AccordionSummary, Paper } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { useInvasivesApi } from '../../../hooks/useInvasivesApi';
-import Spinner from '../../Spinner/Spinner';
+import { useInvasivesApi } from 'hooks/useInvasivesApi';
+import Spinner from 'UI/Spinner/Spinner';
 
-export const Photos = ({ media }) => {
+type MediaDescriptor = {
+  media_key: string;
+  encoded_file: string;
+  treatment_id: string | null;
+  comments: string;
+  image_date: string;
+  reference_no: string;
+  perspective_code?: string;
+};
+
+export const Photos: React.FC<{ media: MediaDescriptor[] }> = ({ media }) => {
   const [expanded, setExpanded] = React.useState(true);
-  const [mediaURLs, setMediaURLs] = useState([]);
+  const [mediaURLs, setMediaURLs] = useState<MediaDescriptor[]>([]);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const api = useInvasivesApi();
@@ -23,7 +33,7 @@ export const Photos = ({ media }) => {
           setMediaURLs(result);
           setLoading(false);
         })
-        .catch((e) => {
+        .catch(() => {
           setLoading(false);
           setError(true);
           setMediaURLs([]);
@@ -52,7 +62,7 @@ export const Photos = ({ media }) => {
 
       return (
         <div className={'iapp-photo'} key={m.media_key}>
-          <img src={m.encoded_file} />
+          <img alt="IAPP Photo" src={m.encoded_file} />
           <dl>
             <dt>Comments</dt>
             <dd>{mediaData.comments}</dd>

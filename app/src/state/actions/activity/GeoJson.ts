@@ -4,7 +4,7 @@ import {
   ACTIVITIES_GEOJSON_GET_ONLINE,
   ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITIES_GEOJSON_REFETCH_ONLINE
-} from '../../actions';
+} from 'state/actions';
 import Filter from 'interfaces/Filter';
 
 class GeoJson {
@@ -13,4 +13,5 @@ class GeoJson {
   static readonly getOnline = createAction(ACTIVITIES_GEOJSON_GET_ONLINE);
   static readonly refetchOnline = createAction(ACTIVITIES_GEOJSON_REFETCH_ONLINE);
 }
+
 export default GeoJson;

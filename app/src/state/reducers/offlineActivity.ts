@@ -1,6 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
 import moment from 'moment';
-import { AppConfig } from '../config';
 import {
   ACTIVITY_OFFLINE_DELETE_ITEM,
   ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
@@ -8,18 +7,19 @@ import {
   ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_SYNC_STATE
-} from '../actions';
+} from 'state/actions';
+import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import Activity from 'state/actions/activity/Activity';
 
-export enum OfflineActivitySyncState {
+enum OfflineActivitySyncState {
   LOCALLY_MODIFIED = 'Locally Modified',
   SYNCHRONIZED = 'Synchronized',
   ERROR = 'Error',
   OPTIMISTIC_LOCKING_FAILURE = 'Optimistic Locking Failure'
 }
 
-export interface OfflineActivityRecord {
+interface OfflineActivityRecord {
   data: string;
   saved_at: number;
   short_id: string;
@@ -29,7 +29,7 @@ export interface OfflineActivityRecord {
   error_object?: unknown;
 }
 
-export interface OfflineActivityState {
+interface OfflineActivityState {
   [MIGRATION_VERSION_KEY]: number;
   working: boolean;
   statusDialogOpen: boolean;
@@ -52,7 +52,7 @@ const initialState: OfflineActivityState = {
 };
 
 function createOfflineActivityReducer(
-  configuration: AppConfig
+  _configuration: AppConfig
 ): (OfflineActivityState, AnyAction) => OfflineActivityState {
   return (state: OfflineActivityState = initialState, action) => {
     return createNextState(state, (draftState) => {
@@ -135,3 +135,5 @@ function createOfflineActivityReducer(
 const selectOfflineActivity = (state) => state.OfflineActivity;
 
 export { createOfflineActivityReducer, selectOfflineActivity };
+export { OfflineActivitySyncState };
+export type { OfflineActivityRecord, OfflineActivityState };

@@ -9,7 +9,7 @@ const CodeTableReference = ({ column }) => {
   const [showButton, setShowButton] = useState(true);
 
   const [filterString, setFilterString] = useState('');
-  const [filteredCodes, setFilteredCodes] = useState([]);
+  const [filteredCodes, setFilteredCodes] = useState<{ code: string; description: string }[]>([]);
 
   useEffect(() => {
     setFilterString('');
@@ -47,7 +47,7 @@ const CodeTableReference = ({ column }) => {
           </tr>
         </thead>
         <tbody>
-          {filteredCodes.slice(0, shown).map((c, index) => (
+          {filteredCodes.slice(0, shown).map((c) => (
             <React.Fragment key={c.code}>
               <tr>
                 <td>{c.description}</td>

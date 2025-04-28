@@ -82,7 +82,7 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
   const fiveClosest: WellData[] = [];
   const insideGeoWells: WellData[] = [];
 
-  outputWells.forEach((well: any) => {
+  outputWells.forEach((well) => {
     if (well.inside) {
       insideGeoWells.push(well);
     }

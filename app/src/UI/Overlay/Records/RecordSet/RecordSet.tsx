@@ -17,27 +17,59 @@ import { MOBILE } from 'state/build-time-config';
 import { useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import { IFilter } from 'state/actions/userSettings/RecordSet';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 type PropTypes = { setID: string };
-
+interface ExtendedFilter extends IFilter {
+  disabled: boolean;
+}
 export const RecordSet = ({ setID }: PropTypes) => {
   const viewFilters = useSelector((state) => state.Map.viewFilters);
-  const connected = useSelector((state) => state.Network.connected);
   const history = useHistory();
   const dispatch = useDispatch();
 
   const onClickBackButton = () => {
     history.push('/Records');
   };
-  const [userOfflineMobile, setUserOfflineMobile] = useState<boolean>(!connected && MOBILE);
+
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
   const tableType = recordSet?.recordSetType;
 
+  const [cacheFilters, setCacheFilters] = useState<IFilter[]>([]);
+  const [filters, setFilters] = useState<ExtendedFilter[]>([]);
+
+  /**
+   * Get filters from recordset metadata that were applied at time of caching.
+   */
   useEffect(() => {
-    setUserOfflineMobile(MOBILE && !connected);
-  }, [connected]);
+    if (!MOBILE) return;
+    (async () => {
+      const service = await RecordCacheServiceFactory.getPlatformInstance();
+      if (await service.isCached(setID)) {
+        const filtersInCache =
+          (await service.getRepository(setID, ['filter_objects']))?.filter_objects?.tableFilters ?? [];
+        setCacheFilters(filtersInCache);
+      }
+    })();
+  }, []);
+
+  /**
+   * Disabled modification of filters that part of the Cache.
+   * Enabling a user to filter into their cache, but not move out of it
+   */
+  useEffect(() => {
+    const disabledFilters: ExtendedFilter[] = (recordSet?.tableFilters ?? []).map((filter, i) => {
+      const filterCopy = { ...filter }; // Decouple from immutable Selector
+      filterCopy['disabled'] = cacheFilters?.[i]?.id === filterCopy.id;
+      return filterCopy as ExtendedFilter;
+    });
+    setFilters(disabledFilters);
+  }, [cacheFilters, recordSet?.tableFilters]);
+
   const onlyFilterIsForDrafts =
     recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
+
   if (!recordSet) {
     return;
   }
@@ -62,7 +94,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
               <span>
                 <Button
                   size={'small'}
-                  disabled={userOfflineMobile}
+                  disabled={cacheFilters.length > 0}
                   onClick={() => dispatch(UserSettings.RecordSet.clearFilters({ setID }))}
                   variant="contained"
                 >
@@ -77,7 +109,6 @@ export const RecordSet = ({ setID }: PropTypes) => {
               <span>
                 <Button
                   size={'small'}
-                  disabled={userOfflineMobile}
                   onClick={() => dispatch(UserSettings.RecordSet.hideFilters())}
                   variant="contained"
                 >
@@ -109,7 +140,6 @@ export const RecordSet = ({ setID }: PropTypes) => {
               <span>
                 <Button
                   size={'small'}
-                  disabled={userOfflineMobile}
                   onClick={() =>
                     dispatch(
                       UserSettings.RecordSet.addFilter({
@@ -143,7 +173,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {recordSet.tableFilters.map((filter) => {
+                  {filters.map((filter) => {
                     if (filter.field !== 'form_status') {
                       return (
                         <Filter
@@ -151,18 +181,25 @@ export const RecordSet = ({ setID }: PropTypes) => {
                           recordSetType={recordSet.recordSetType}
                           setID={setID}
                           filterSet={filter}
-                          userOfflineMobile={userOfflineMobile}
+                          disabled={filter.disabled}
                         />
                       );
                     }
                   })}
+                  <tr>
+                    {MOBILE && cacheFilters.length > 0 && (
+                      <td colSpan={5}>
+                        <i>Filters applied after caching will not be reflected on the map.</i>
+                      </td>
+                    )}
+                  </tr>
                 </tbody>
               </table>
             )}
           </div>
           <ExcelExporter setName={setID} />
         </div>
-        <RecordTable setID={setID} userOfflineMobile={userOfflineMobile} />
+        <RecordTable setID={setID} />
       </div>
       <RecordSetFooter setID={setID} />
     </>

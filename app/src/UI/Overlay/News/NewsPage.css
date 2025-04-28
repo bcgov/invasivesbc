@@ -21,6 +21,7 @@
   flex-direction: column;
   align-items: center;
 }
+
 .newsPageSeeMore {
   width: 120pt;
   height: 40pt;
@@ -28,7 +29,7 @@
   color: white;
   border-radius: 4pt;
   font-size: 1.2rem;
-  border: 1pt solid var(--black);
+  border: 1pt solid black;
 }
 
 .newsPageSeeMore:hover {
@@ -74,6 +75,7 @@
     display: flex;
     width: 100%;
   }
+
   .newsListItem {
     border: 1px solid black;
   }

@@ -4,8 +4,8 @@ import { PAGE_OR_LIMIT_UPDATE } from 'state/actions';
 import { useSelector } from 'utils/use_selector';
 
 const RecordSetFooter = (props) => {
-  const layer = useSelector((state: any) => state.Map.layers?.filter((layer) => layer.recordSetID === props.setID)[0]);
-  const recordTable = useSelector((state: any) => state.Map.recordTables?.[props.setID]);
+  const layer = useSelector((state) => state.Map.layers?.filter((layer) => layer.recordSetID === props.setID)[0]);
+  const recordTable = useSelector((state) => state.Map.recordTables?.[props.setID]);
 
   const loading = layer?.loading || recordTable?.loading;
 

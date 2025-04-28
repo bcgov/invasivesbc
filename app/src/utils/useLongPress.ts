@@ -29,6 +29,7 @@ const useLongPress = (callback: Function, options?: Options) => {
     longpress,
     click
   }
+
   const [action, setAction] = useState<Actions>();
 
   const timerRef = useRef<ReturnType<typeof setInterval>>({} as ReturnType<typeof setInterval>);
@@ -42,7 +43,7 @@ const useLongPress = (callback: Function, options?: Options) => {
     }, 500);
   };
 
-  const handleOnClick = (e) => {
+  const handleOnClick = () => {
     if (isLongPress.current) {
       callback();
       return;

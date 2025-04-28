@@ -1,4 +1,3 @@
-import React from 'react';
 import BatchCreate from './batch-upload/BatchCreate';
 import BatchLayout from './BatchLayout';
 

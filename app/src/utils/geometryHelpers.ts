@@ -1,13 +1,13 @@
 import area from '@turf/area';
 import centroid from '@turf/centroid';
 import * as turf from '@turf/helpers';
-import GeoShapes from 'constants/geoShapes';
 import { Feature } from 'geojson';
+import GeoShapes from 'constants/geoShapes';
 
 /**
  * Calculate the net area for the total geometry
  *
- * @param {Feature[]} geoJSON The geometry in GeoJSON format
+ * @param {Feature[]} geometry The geometry in GeoJSON format
  */
 export function calculateGeometryArea(geometry: Feature[]) {
   //zero if linestring:
@@ -47,7 +47,7 @@ export function calculateGeometryArea(geometry: Feature[]) {
 /**
  * Calculate the anchor point lat/lng for the geometry
  *
- * @param {Feature[]} geoJSON The geometry in GeoJSON format
+ * @param {Feature[]} geom The geometry in GeoJSON format
  */
 export function calculateLatLng(geom: Feature[]) {
   if (!geom || !geom[geom.length - 1] || !geom[geom.length - 1].geometry) return;
@@ -55,8 +55,8 @@ export function calculateLatLng(geom: Feature[]) {
   const geo = geom[geom.length - 1].geometry;
   const firstCoord = geo['coordinates'][0];
 
-  let latitude = null;
-  let longitude = null;
+  let latitude: number | null = null;
+  let longitude: number | null = null;
 
   /*
     Calculations based on business rules as to how anchor points need to be calculated
@@ -80,10 +80,8 @@ export function calculateLatLng(geom: Feature[]) {
   if (!latitude || !longitude) {
     return null;
   }
-  const latlng = {
+  return {
     latitude: parseFloat(latitude.toFixed(6)),
     longitude: parseFloat(longitude.toFixed(6))
   };
-
-  return latlng;
 }

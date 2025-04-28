@@ -1,33 +1,38 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
-import RecordCache from '../cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
+import { Feature } from '@turf/helpers';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { CacheDownloadMode } from 'utils/record-cache';
+import RecordCache from 'state/actions/cache/RecordCache';
 
-export interface IUpdateFilter extends Partial<IFilter> {
+interface IUpdateFilter extends Partial<IFilter> {
   setID: string | number;
   filterID: string | number;
 }
 
-export interface IRemoveFilter {
+interface IRemoveFilter {
   filterType: string;
   setID: string | number;
   filterID: string | number;
 }
-export interface IFilter {
+
+interface IFilter {
   id: string;
   field: string;
   filterType: string;
   filter: string;
   operator: string;
   operator2: string;
+  geojson?: Feature;
 }
-export interface IAddFilter extends Partial<IFilter> {
+
+interface IAddFilter extends Partial<IFilter> {
   setID: string | number;
 }
+
 class RecordSet {
   private static readonly PREFIX = `UserSettings/RecordSet`;
 
@@ -69,7 +74,7 @@ class RecordSet {
 
       // these will be passed to the reducer, which can then mark the record sets as cached
       return cachedSets.map((set) => {
-        return { setId: set.setId };
+        return { setId: set.set_id };
       });
     }
   );
@@ -131,3 +136,4 @@ class RecordSet {
 }
 
 export default RecordSet;
+export type { IUpdateFilter, IRemoveFilter, IFilter, IAddFilter };

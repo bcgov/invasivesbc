@@ -1,10 +1,12 @@
 #records-container {
   height: 100%;
   width: 100%;
+
   ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
+
     li:hover {
       cursor: pointer;
     }
@@ -26,6 +28,7 @@
   border: none;
   background-color: white;
   border-bottom: 1pt solid black;
+
   p {
     margin: 0;
     padding: 0;
@@ -38,9 +41,10 @@
   display: flex;
   align-items: center;
 }
+
 .record-set-details {
-  flex-direction: flex-start;
   margin-bottom: 5pt;
+
   input {
     height: 30pt;
     border: 1pt solid lightgray;
@@ -49,6 +53,7 @@
     padding-left: 1rem;
   }
 }
+
 .record-set-control {
   justify-content: flex-start;
   flex-direction: row;
@@ -59,29 +64,34 @@
   flex-direction: column;
 }
 
-@media screen and (min-width: 500px) {
+@media screen and (width >= 500px) {
   .record-set-option {
     flex-direction: row;
   }
+
   .record-set-details,
   .record-set-control {
     flex-direction: row;
     width: 50%;
   }
+
   .record-set-details {
     margin-bottom: 0;
   }
 }
-@media screen and (min-width: 500px) and (max-width: 1000px) {
+
+@media screen and (width >= 500px) and (width <= 1000px) {
   .record-set-progressbar {
     flex-direction: column !important;
   }
+
   .record-set-control {
     justify-content: flex-end;
     align-items: flex-end;
   }
 }
-@media screen and (min-width: 1000px) {
+
+@media screen and (width >= 1000px) {
   .record-set-control {
     justify-content: flex-end;
     align-items: center;

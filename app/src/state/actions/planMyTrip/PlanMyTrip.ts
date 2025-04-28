@@ -1,8 +1,8 @@
 import { createAsyncThunk, nanoid } from '@reduxjs/toolkit';
-import TileCache from '../cache/TileCache';
 import { RootState } from 'state/reducers/rootReducer';
-import WellCache from '../cache/WellCache';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import TileCache from 'state/actions/cache/TileCache';
+import WellCache from 'state/actions/cache/WellCache';
 
 /**
  * @desc Parameters for a user planning their trip
@@ -67,4 +67,5 @@ class PlanMyTrip {
     dispatch(TileCache.deleteRepository(id));
   });
 }
+
 export default PlanMyTrip;
