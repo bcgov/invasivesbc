@@ -132,11 +132,7 @@ abstract class WellCacheService extends BaseCacheService<
    * @param geom Geometry to check for containing shapes
    * @returns {Feature[]} Wells in area
    */
-  public async getNearbyWells(geom: Feature): Promise<Feature[]> {
-    return (await this.getOverlappingRepositories(geom))
-      .flatMap((cr) => cr.cachedGeoJson!.features)
-      .filter((s) => booleanIntersects(geom, s));
-  }
+  public abstract getNearbyWells(geom: Feature): Promise<Feature[]>;
 
   /**
    * @desc Find all well Ids already cached and remove them from list

@@ -8,6 +8,7 @@ import {
 } from '.';
 import WellData from 'interfaces/WellData';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import booleanIntersects from '@turf/boolean-intersects';
 
 class LocalForageWellCacheService extends WellCacheService {
   private static _instance: LocalForageWellCacheService;
@@ -186,6 +187,12 @@ class LocalForageWellCacheService extends WellCacheService {
     }
 
     await this.store.setItem(LocalForageWellCacheService.REPOSITORY_METADATA_KEY, repositories);
+  }
+
+  public async getNearbyWells(geom: Feature): Promise<Feature[]> {
+    return (await this.getOverlappingRepositories(geom))
+      .flatMap((cr) => cr.cachedGeoJson!.features)
+      .filter((s) => booleanIntersects(geom, s));
   }
 
   private async initializeCache() {
