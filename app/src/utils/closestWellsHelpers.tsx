@@ -12,7 +12,11 @@ import WellData from 'interfaces/WellData';
 import { LineString } from 'geojson';
 import { MOBILE } from 'state/build-time-config';
 
-//gets layer data based on the layer name
+/**
+ * @desc Fetch list of Wells within a surrounding area
+ * @param inputGeometry Area of interest
+ * @returns {{wellsInArea: Record<PropertyKey, any>, areWellsInside: boolean}} Wells in surrounding area, and flag for if wells are contained WITHIN area.
+ */
 export function* getClosestWells(inputGeometry: Point | Polygon | LineString) {
   const firstFeature = inputGeometry;
   const networkState = yield select(selectNetworkState);
