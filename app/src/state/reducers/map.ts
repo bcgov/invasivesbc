@@ -1,23 +1,19 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import {
-  ACTIVITIES_GEOJSON_GET_SUCCESS,
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_SUCCESS,
-  IAPP_GEOJSON_GET_SUCCESS,
   IAPP_PAN_AND_ZOOM,
   INIT_SERVER_BOUNDARIES_GET,
   MAIN_MAP_MOVE,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
-  MAP_MODE_SET,
   MAP_SET_COORDS,
   MAP_TOGGLE_ACCURACY,
-  MAP_TOGGLE_GEOJSON_CACHE,
   MAP_TOGGLE_LEGENDS,
   MAP_TOGGLE_PANNED,
   MAP_TOGGLE_TRACKING,
@@ -35,7 +31,6 @@ import {
   TOGGLE_CUSTOMIZE_LAYERS,
   TOGGLE_DRAWN_LAYER,
   TOGGLE_KML_LAYER,
-  TOGGLE_LAYER_PICKER_OPEN,
   TOGGLE_QUICK_PAN_TO_RECORD,
   TOGGLE_WMS_LAYER,
   URL_CHANGE,
@@ -61,8 +56,6 @@ enum LeafletWhosEditingEnum {
   BOUNDARY = 'BOUNDARY',
   NONE = 'NONE'
 }
-
-const ACTIVITY_GEOJSON_SOURCE_KEYS = ['s3', 'draft', 'supplemental'];
 
 const DEFAULT_LOCAL_LAYERS = [
   {
@@ -194,7 +187,6 @@ interface MapState {
   availableBaseMapLayers: string[];
   availableOverlayLayers: string[];
   enabledOverlayLayers: string[];
-  MapMode: string;
   CanTriggerCSV: boolean;
   IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
@@ -305,7 +297,6 @@ const initialState: MapState = {
   layers: [],
   legendsPopup: undefined,
   linkToCSV: '',
-  MapMode: 'VECTOR_ENDPOINT',
   panned: false,
   positionTracking: false,
   track_me_draw_geo: {
@@ -692,18 +683,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
         draftState.layers[index].IDList = action.payload?.IDList ?? [];
-
-        if (draftState.MapMode === 'VECTOR_ENDPOINT') {
-          draftState.layers[index].loading = false;
-        } else if (draftState.activitiesGeoJSONDict !== undefined) {
-          GeoJSONFilterSetForLayer(
-            draftState,
-            state,
-            RecordSetType.Activity,
-            action.payload.recordSetID,
-            action.payload.IDList
-          );
-        }
+        draftState.layers[index].loading = false;
       } else if (IappActions.getIdsForRecordset.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         if (!draftState.layers[index]) {
@@ -727,23 +707,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
 
         draftState.layers[index].IDList = action.payload.IDList;
-        if (draftState.MapMode === 'VECTOR_ENDPOINT') {
-          draftState.layers[index].loading = false;
-        }
-
-        if (
-          draftState.MapMode != 'VECTOR_ENDPOINT' &&
-          draftState.IAPPGeoJSONDict !== undefined &&
-          Object.keys(draftState.IAPPGeoJSONDict).length > 0
-        ) {
-          GeoJSONFilterSetForLayer(
-            draftState,
-            state,
-            RecordSetType.IAPP,
-            action.payload.recordSetID,
-            action.payload.IDList
-          );
-        }
+        draftState.layers[index].loading = false;
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {
@@ -756,45 +720,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
             break;
           }
-          case MAP_TOGGLE_GEOJSON_CACHE: {
-            draftState.MapMode = draftState.MapMode === 'VECTOR_ENDPOINT' ? 'GEOJSON' : 'VECTOR_ENDPOINT';
-            break;
-          }
-          case ACTIVITIES_GEOJSON_GET_SUCCESS: {
-            // Everything should point to this now instead:
-            draftState.activitiesGeoJSONDict = {
-              ...draftState.activitiesGeoJSONDict,
-              ...action.payload.activitiesGeoJSONDict
-            };
-
-            if (
-              draftState.layers?.filter(
-                (layer) => layer.type === RecordSetType.Activity && layer.IDList?.length !== undefined
-              ).length > 0
-            ) {
-              const activityLayersToRegen = draftState.layers?.filter(
-                (layer) => layer.type === RecordSetType.Activity && layer.IDList?.length !== undefined
-              );
-              activityLayersToRegen.forEach((layer) => {
-                GeoJSONFilterSetForLayer(draftState, state, RecordSetType.Activity, layer.recordSetID, layer.IDList);
-              });
-            }
-            break;
-          }
-
-          case MAP_MODE_SET:
-            draftState.MapMode = action.payload;
-            switch (action.payload) {
-              case 'VECTOR_ENDPOINT':
-                draftState.activitiesGeoJSONDict = {};
-                draftState.IAPPGeoJSONDict = {};
-                draftState.layers = draftState.layers.map((layer) => {
-                  delete layer.geoJSON;
-                  return layer;
-                });
-                break;
-            }
-            break;
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             if (!draftState.layers[index]) {
@@ -837,33 +762,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
           case IAPP_EXTENT_FILTER_SUCCESS: {
             draftState.IAPPBoundsPolygon = action.payload.bounds;
-            break;
-          }
-          case IAPP_GEOJSON_GET_SUCCESS: {
-            //TODO:  Delete this when other refs to it are gone:
-            draftState.IAPPGeoJSON = { type: 'FeatureCollection', features: [] }; //action.payload.IAPPGeoJSON;
-
-            //Everything should point to this now instead:
-            draftState.IAPPGeoJSONDict = {};
-            action.payload.IAPPGeoJSON.features.map((feature) => {
-              if (!feature.properties.site_id) console.warn('no site_id', feature);
-              if (feature?.properties?.site_id) {
-                draftState.IAPPGeoJSONDict[feature.properties.site_id] = feature;
-              }
-            });
-
-            if (
-              draftState.layers?.filter(
-                (layer) => layer.type === RecordSetType.IAPP && layer.IDList?.length !== undefined
-              ).length > 0
-            ) {
-              const IAPPLayersToRegen = draftState.layers?.filter(
-                (layer) => layer.type === RecordSetType.IAPP && layer.IDList?.length !== undefined
-              );
-              IAPPLayersToRegen.forEach((layer) => {
-                GeoJSONFilterSetForLayer(draftState, state, RecordSetType.IAPP, layer.recordSetID, layer.IDList);
-              });
-            }
             break;
           }
           case INIT_SERVER_BOUNDARIES_GET: {
@@ -1027,52 +925,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 }
 
 const selectMap: (state) => MapState = (state) => state.Map;
-
-const GeoJSONFilterSetForLayer = (draftState, state, typeToFilter, recordSetID, IDList) => {
-  if (
-    !draftState.layers?.length ||
-    (Object.keys(draftState.activitiesGeoJSONDict).length !== ACTIVITY_GEOJSON_SOURCE_KEYS.length &&
-      typeToFilter === RecordSetType.Activity) ||
-    (!draftState.IAPPGeoJSONDict && typeToFilter === RecordSetType.Activity)
-  )
-    return;
-  const index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
-  const type = draftState.layers[index].type;
-
-  if (index !== undefined && type === typeToFilter && type === RecordSetType.Activity) {
-    const filtered: object[] = [];
-    IDList.map((id) => {
-      for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
-        if (Object.prototype.hasOwnProperty.call(draftState.activitiesGeoJSONDict, source)) {
-          const f = draftState.activitiesGeoJSONDict[source][id];
-          if (f !== undefined) {
-            filtered.push(f);
-          }
-        }
-      }
-    });
-
-    draftState.layers[index].geoJSON = {
-      type: 'FeatureCollection',
-      features: filtered
-    };
-    draftState.layers[index].loading = false;
-  } else if (type === typeToFilter && type === RecordSetType.IAPP) {
-    const filtered: any[] = [];
-    IDList.map((id) => {
-      const f = draftState.IAPPGeoJSONDict[id];
-      if (f !== undefined && f !== null && f.geometry !== null) {
-        filtered.push(f);
-      }
-    });
-
-    draftState.layers[index].geoJSON = {
-      type: 'FeatureCollection',
-      features: filtered
-    };
-    draftState.layers[index].loading = false;
-  }
-};
 export { createMapReducer, selectMap };
 export type { LeafletWhosEditingEnum, MapState };
-export { ACTIVITY_GEOJSON_SOURCE_KEYS, DEFAULT_LOCAL_LAYERS };
+export { DEFAULT_LOCAL_LAYERS };
