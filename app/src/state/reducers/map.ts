@@ -629,20 +629,16 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
       } else if (Activity.Offline.getIdsForRecordsetSuccess.match(action)) {
-        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
-        if (!draftState.layers[index]) {
+        if (index === -1) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         }
-
-        if (draftState.layers[index] && 'IDList' in draftState.layers[index]) {
-          draftState.layers[index].loading = false;
-        } else {
-          draftState.layers[index] = {
-            ...draftState.layers[index],
-            loading: false
-          };
-        }
+        draftState.layers[index] = {
+          ...draftState.layers[index]
+        };
+        draftState.layers[index].loading = false;
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
       } else if (Activity.getIdsForRecordset.match(action)) {
@@ -662,12 +658,12 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
       } else if (Activity.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) {
+        if (index === -1) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         }
-
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
+
         draftState.layers[index].loading = false;
       } else if (IappActions.getIdsForRecordset.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
@@ -686,8 +682,10 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
       } else if (IappActions.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
-        index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (index === -1) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        }
 
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
         draftState.layers[index].loading = false;

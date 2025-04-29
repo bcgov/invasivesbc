@@ -20,7 +20,6 @@ class WhatsHere {
   static readonly map_init_get_activity_ids_fetched = createAction<string[]>(
     `${this.PREFIX}/map_init_get_activity_ids_fetched`
   );
-  static readonly map_init_get_poi = createAction(`${this.PREFIX}/map_init_get_poi`);
   static readonly map_init_get_poi_ids_fetched = createAction<string[]>(`${this.PREFIX}/map_init_get_poi_ids_fetched`);
   static readonly map_page_limit = createAction<{ page: number; limit: number }>(`${this.PREFIX}/map_page_limit`);
   static readonly map_change_tab = createAction(`${this.PREFIX}/map_change_section`);

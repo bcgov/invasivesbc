@@ -8,7 +8,6 @@ import {
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
   handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
-  handle_MAP_WHATS_HERE_INIT_GET_POI,
   handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT
 } from './map/dataAccess';
 import {
@@ -173,7 +172,6 @@ function* parseRecordSetsForWhatsHere(activity, iapp) {
 
 function* whatsHereSaga() {
   yield all([
-    takeEvery(WhatsHere.map_init_get_poi, handle_MAP_WHATS_HERE_INIT_GET_POI),
     takeEvery(WhatsHere.init_get_activities, handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY),
     takeEvery(WhatsHere.map_feature, handle_WHATS_HERE_FEATURE)
   ]);

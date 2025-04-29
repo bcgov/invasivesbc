@@ -7,6 +7,7 @@ import {
   ACTIVITY_RESTORE_OFFLINE,
   ACTIVITY_OFFLINE_DELETE_ITEM
 } from 'state/actions';
+import { IGetIdsForRecordsetSuccess } from './Activity';
 
 class Offline {
   private static readonly PREFIX = 'Offline';
@@ -22,7 +23,7 @@ class Offline {
   static readonly setLabelVisibility = createAction(`${this.PREFIX}/setLabelVisibility`);
 
   static readonly getIdsForRecordset = createAction<Record<PropertyKey, any>>(`${this.PREFIX}/getIdsForRecordset`);
-  static readonly getIdsForRecordsetSuccess = createAction<Record<PropertyKey, any>>(
+  static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
     `${this.PREFIX}/getIdsForRecordsetSuccess`
   );
 }

@@ -215,8 +215,8 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         Activity.getIdsForRecordsetSuccess.match(action) ||
         IappActions.getIdsForRecordsetSuccess.match(action)
       ) {
-        const { recordSetID, IDList } = action.payload;
-        draftState.recordSets[recordSetID].idList = IDList;
+        const { recordSetID, idList } = action.payload;
+        draftState.recordSets[recordSetID].idList = idList;
       } else if (UserSettings.RecordSet.addFilter.match(action)) {
         const { filterType, setID, field, operator, operator2, filter } = action.payload;
         if (filterType === 'tableFilter') {
