@@ -160,9 +160,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
 
   if (networkReturn?.ok && (networkReturn.data.result || networkReturn.data?.data?.result)) {
     const list = networkReturn.data?.data?.result ? networkReturn.data?.data?.result : networkReturn.data?.result;
-    const IDList = list?.map((row) => {
-      return row.site_id;
-    });
+    const IDList = list?.map((row) => row.site_id);
     // check again after the network call
     const mapState = yield select((state) => state.Map);
     const tableFiltersHash = mapState?.layers?.filter((layer) => {
