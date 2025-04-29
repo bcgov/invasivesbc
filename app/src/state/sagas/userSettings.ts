@@ -83,6 +83,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   }
   const defaultRecordSet: Record<PropertyKey, Partial<UserRecordSet>> = {
     '1': {
+      id: '1',
+      idList: [],
       recordSetType: RecordSetType.Activity,
       recordSetName: 'My Drafts',
       // add draft key
@@ -114,6 +116,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       drawOrder: 1
     },
     '2': {
+      id: '2',
+      idList: [],
       recordSetType: RecordSetType.Activity,
       recordSetName: 'All InvasivesBC Activities',
       colorScheme: {
@@ -135,6 +139,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     },
     '3': {
       recordSetType: RecordSetType.IAPP,
+      id: '3',
+      idList: [],
       recordSetName: 'All IAPP Records',
       color: '#21f34f',
       drawOrder: 3,
@@ -146,6 +152,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   if (MOBILE) {
     defaultRecordSet['4'] = {
       recordSetType: RecordSetType.Activity,
+      id: '4',
+      idList: [],
       recordSetName: 'All Unsynced Offline Activities',
       cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
       drawOrder: 4,
@@ -161,6 +169,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         if (repo.status === UserRecordCacheStatus.CACHED && !defaultRecordSet[repo.set_id]) {
           const backedUpRecordSet = UserSettings.RecordSet.createDefaultRecordset(repo.record_set_type);
           backedUpRecordSet.tableFilters = repo?.filter_objects?.tableFilters;
+          backedUpRecordSet.id = repo?.set_id;
           backedUpRecordSet.cacheMetadataStatus = repo.status;
           backedUpRecordSet.recordSetName = repo.set_name ?? '';
           defaultRecordSet[repo.set_id] = backedUpRecordSet;

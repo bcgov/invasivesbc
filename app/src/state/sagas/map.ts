@@ -390,6 +390,7 @@ function* handle_URL_CHANGE(action) {
       page: page,
       limit: limit
     };
+
     if (recordSetType === RecordSetType.Activity) {
       yield put(Activity.getRows(actionArg));
     } else if (recordSetType === RecordSetType.IAPP) {
@@ -481,7 +482,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
 
   // current but unintialized:
   const currentUninitializedLayers = layers
-    .filter((layer) => !layer?.IDList)
+    .filter((layer) => !layer.loading)
     .map((layer) => {
       return { recordSetID: layer.recordSetID, recordSetType: layer.type };
     });
