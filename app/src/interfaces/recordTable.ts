@@ -7,7 +7,6 @@ interface IRecordTable {
   page: number;
   rows: Array<IappRecord | UserRecord>;
   tableFiltersHash: string | null;
-  idList: Array<string | number>;
 }
 
 export default IRecordTable;

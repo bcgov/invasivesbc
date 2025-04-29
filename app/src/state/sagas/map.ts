@@ -51,7 +51,7 @@ import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
-import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
@@ -125,14 +125,50 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
 
       const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
       const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
-      yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
+
+      const { activity, iapp } = yield parseRecordSetsForWhatsHere(activitiesServerIDList, iappServerIDList);
+
+      yield put(WhatsHere.server_filtered_ids_fetched(activity, iapp));
       return;
     }
   }
   // Get IDs from Offline Caches
   const service = yield RecordCacheServiceFactory.getPlatformInstance();
   const overlappingRecords: string[] = yield service.getRecordIdsOverlappingFeature(whatsHereFeature.payload);
-  yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, [...overlappingRecords]));
+  const { activity, iapp } = yield parseRecordSetsForWhatsHere(overlappingRecords, overlappingRecords);
+  yield put(WhatsHere.server_filtered_ids_fetched(activity, iapp));
+}
+
+/**
+ * @desc Compares list of IDs against Ids in a Recordset
+ * @param activity Activity Records to check
+ * @param iapp IAPP Records to check
+ * @returns {{activity: string[], iapp: string[]}} IDs That are contained in an active Recordset on the map
+ */
+function* parseRecordSetsForWhatsHere(activity, iapp) {
+  const recordSets = (yield select(selectUserSettings)).recordSets as Record<PropertyKey, UserRecordSet>;
+  const toggledActivityLayers: Array<Array<string | number>> = [];
+  const toggledIappLayers: Array<Array<string | number>> = [];
+
+  Object.values(recordSets).forEach((recordSet) => {
+    const { recordSetType, mapToggle } = recordSet;
+    if (recordSetType === RecordSetType.Activity && mapToggle) {
+      toggledActivityLayers.push(recordSet.idList);
+    } else if (recordSetType === RecordSetType.IAPP && mapToggle) {
+      toggledIappLayers.push(recordSet.idList);
+    }
+  });
+
+  const localActivityIDs = toggledActivityLayers.flatMap((idList) => idList);
+  const localIappIds = toggledIappLayers.flatMap((idList) => idList);
+
+  const iappIds = localIappIds.filter((l) => iapp.includes(l) || activity.includes(l.toString()));
+  const activityIds = localActivityIDs.filter((l) => activity.includes(l));
+
+  return {
+    activity: activityIds,
+    iapp: iappIds
+  };
 }
 
 function* whatsHereSaga() {
