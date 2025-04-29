@@ -54,7 +54,7 @@ interface IGetIdsForRecordsetOnline extends IGetIdsForRecordset {
 }
 
 interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
-  IDList: number;
+  IDList: Array<string | number>;
 }
 
 class Activity {
