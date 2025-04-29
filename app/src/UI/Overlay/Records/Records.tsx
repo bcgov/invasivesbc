@@ -13,7 +13,7 @@ import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState
 import Activity from 'state/actions/activity/Activity';
 
 export const Records = () => {
-  const recordSets = useSelector((state) => state.UserSettings?.recordSets);
+  const recordSets = useSelector((state) => state.UserSettings.recordSets);
   const defaultRecordSetIds = Object.values(RecordSetId);
   const defaultRecordSetTypes = defaultRecordSetIds
     .map((key) => recordSets[parseInt(key)]?.recordSetName)
@@ -77,11 +77,20 @@ export const Records = () => {
 
   const highlightSet = (set: string) => setHighlightedSet(set);
   const unHighlightSet = () => setHighlightedSet(null);
-  const userIsMobileAndOffline = MOBILE && !connected;
+  const [userIsMobileAndOffline, setUserIsMobileAndOffline] = useState(false);
+
+  useEffect(() => {
+    if (MOBILE && !connected) {
+      setUserIsMobileAndOffline(true);
+    } else {
+      setUserIsMobileAndOffline(false);
+    }
+  }, [connected]);
 
   if (!recordSets) {
     return;
   }
+
   return (
     <div id="records-container">
       <ul>

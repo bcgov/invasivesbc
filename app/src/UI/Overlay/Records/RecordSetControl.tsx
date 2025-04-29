@@ -4,6 +4,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { ColorLens, Delete, Label, LabelOff, Layers, LayersClear } from '@mui/icons-material';
 import { MouseEvent, useState } from 'react';
+
 type PropTypes = {
   isDefaultRecordset: boolean;
   recordset: UserRecordSet;

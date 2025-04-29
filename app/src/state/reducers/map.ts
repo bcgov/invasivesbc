@@ -264,9 +264,6 @@ interface MapState {
     IAPPSortField: string;
     IAPPSortDirection: string;
   };
-
-  layerPickerOpen: boolean;
-
   tileCacheMode: boolean;
 }
 
@@ -305,7 +302,6 @@ const initialState: MapState = {
   error: false,
   initialized: false,
   labelBoundsPolygon: undefined,
-  layerPickerOpen: false,
   layers: [],
   legendsPopup: undefined,
   linkToCSV: '',
@@ -691,16 +687,15 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         if (!draftState.layers[index]) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         }
-        index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
-
         draftState.layers[index].IDList = action.payload?.IDList ?? [];
+
         if (draftState.MapMode === 'VECTOR_ENDPOINT') {
           draftState.layers[index].loading = false;
-        }
-        if (draftState.MapMode !== 'VECTOR_ENDPOINT' && draftState.activitiesGeoJSONDict !== undefined) {
+        } else if (draftState.activitiesGeoJSONDict !== undefined) {
           GeoJSONFilterSetForLayer(
             draftState,
             state,
@@ -751,9 +746,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
       } else {
         switch (action.type) {
-          case TOGGLE_LAYER_PICKER_OPEN:
-            draftState.layerPickerOpen = !draftState.layerPickerOpen;
-            break;
           case TOGGLE_WMS_LAYER: {
             const index = draftState.simplePickerLayers2.findIndex((layer) => layer.url === action.payload.layer.url);
             draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle;
