@@ -19,6 +19,7 @@ body {
   padding: 30pt 0;
   display: flex;
   justify-content: center;
+  box-sizing: border-box;
 
   .landing-header {
     font-weight: bold;
@@ -69,9 +70,10 @@ body {
   }
 
   .content {
-    width: 100%;
     max-width: 1000px;
     padding: 1rem;
+    box-sizing: border-box;
+    word-break: break-word;
   }
 }
 

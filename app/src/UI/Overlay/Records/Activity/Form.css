@@ -83,7 +83,6 @@ td {
 }
 
 .herbicide_list_item {
-  width: 45%;
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -126,6 +125,9 @@ td {
 }
 
 @media screen and (width > 500px) {
+  .herbicide_list_item {
+    width: 45%;
+  }
   #record-header-info {
     .content {
       flex-direction: row;

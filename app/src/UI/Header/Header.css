@@ -7,6 +7,7 @@
   height: var(--header-bar-height);
   position: relative;
   top: 0;
+  z-index: 3;
   left: 0;
   width: 100%;
   background-color: var(--bc-blue);
@@ -62,12 +63,17 @@
     height: 100%;
     width: 100%;
     display: flex;
+    box-sizing: border-box;
     justify-content: space-between;
     white-space: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     -ms-overflow-style: -ms-autohiding-scrollbar;
     scrollbar-width: thin;
+    & > *:not(:last-child) {
+      margin-left: 5pt;
+      margin-right: 5pt;
+    }
   }
 
   #right-icon-container,

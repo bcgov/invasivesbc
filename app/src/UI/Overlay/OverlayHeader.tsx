@@ -9,7 +9,7 @@ import CustomPopover from 'UI/CustomPopover/CustomPopover';
 import FormMenuButtons from './Records/FormMenuButtons/FormMenuButtons';
 
 const maximize = () => {
-  setOverlayHeight('90%');
+  setOverlayHeight('100%');
 };
 
 const minimize = () => {
@@ -20,7 +20,7 @@ const setOverlayHeight = (height) => {
   const sel = document.querySelector(':root');
   if (sel instanceof HTMLElement) {
     const MIN = `var(--overlay-grip-height)`;
-    const MAX = `90%`;
+    const MAX = `100%`;
     sel.style.setProperty('--overlay-height', `clamp(${MIN}, ${height}, ${MAX})`);
   }
 };

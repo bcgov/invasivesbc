@@ -37,7 +37,8 @@ body {
   flex-flow: column wrap;
   position: relative;
   box-sizing: border-box;
-  padding: calc(var(--extra-top-padding) + env(safe-area-inset-top, 0)) env(safe-area-inset-right, 0);
+  padding: env(safe-area-inset-top, 0) env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0)
+    env(safe-area-inset-left, 0);
   overflow: hidden;
   height: 100svh;
 
@@ -54,15 +55,12 @@ body {
   }
 
   &.ios {
-    --extra-top-padding: 20px;
     --extra-bottom-padding: 20px;
     --record-table-footer-height: 2.5rem !important;
   }
 
   &.android {
     height: 100dvh;
-
-    --extra-top-padding: 8px;
     --extra-bottom-padding: 8px;
   }
 }
@@ -77,12 +75,8 @@ body {
 .MapWrapper {
   position: absolute;
   inset: 0;
-
-  /* height: calc( */
-
-  /*  100svh - (var(--header-bar-height) + var(--footer-bar-height)) */
-
-  /* ); !* calculate height of the screen minus the heading *! */
+  height: calc(100svh - (var(--header-bar-height) - var((--footer-bar-height))));
+  overflow: hidden;
 }
 
 .Map {
@@ -112,7 +106,7 @@ body {
   --map-button-bar-height: 45px;
   --overlay-height: 200px;
   --overlay-grip-height: 25px; /* grab handle */
-  --extra-top-padding: 0px;
+
   --extra-bottom-padding: 0px;
   --bc-blue: #036;
   --error-red: #f44336;
