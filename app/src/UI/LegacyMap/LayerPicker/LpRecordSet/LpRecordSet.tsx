@@ -7,6 +7,8 @@ import { RecordSetId, UserRecordSet } from 'interfaces/UserRecordSet';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import { MOBILE } from 'state/build-time-config';
 import Activity from 'state/actions/activity/Activity';
+import { useEffect, useState } from 'react';
+
 type PropTypes = {
   closePicker: () => void;
 };
@@ -32,19 +34,39 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
     dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
   };
   const connected = useSelector((state) => state.Network.connected);
-  const recordSets = useSelector((state) => state.UserSettings?.recordSets);
-  const defaultRecordSets: UserRecordSet[] = [];
-  const customRecordSets: UserRecordSet[] = [];
+  const recordSets = useSelector((state) => state.UserSettings.recordSets);
+
+  const [defaultRecordSets, setDefaultRecordSets] = useState<UserRecordSet[]>([]);
+  const [customRecordSets, setCustomRecordSets] = useState<UserRecordSet[]>([]);
 
   const dispatch = useDispatch();
-  const userIsMobileAndOffline = MOBILE && !connected;
-  filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).forEach((recordSet) => {
-    if (defaultRecordSetIds.includes(recordSet)) {
-      defaultRecordSets.push({ ...recordSets[recordSet], id: recordSet });
+  const [userIsMobileAndOffline, setUserIsMobileAndOffline] = useState(false);
+
+  useEffect(() => {
+    if (MOBILE && !connected) {
+      setUserIsMobileAndOffline(true);
     } else {
-      customRecordSets.push({ ...recordSets[recordSet], id: recordSet });
+      setUserIsMobileAndOffline(false);
     }
-  });
+  }, [connected]);
+
+  useEffect(() => {
+    const newDefaultRecordSets: UserRecordSet[] = [];
+    const newCustomRecordSets: UserRecordSet[] = [];
+
+    filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).forEach((recordSet) => {
+      console.dir(recordSet);
+
+      if (defaultRecordSetIds.includes(recordSet)) {
+        newDefaultRecordSets.push({ ...recordSets[recordSet], id: recordSet });
+      } else {
+        newCustomRecordSets.push({ ...recordSets[recordSet], id: recordSet });
+      }
+    });
+
+    setDefaultRecordSets(newDefaultRecordSets);
+    setCustomRecordSets(newCustomRecordSets);
+  }, [userIsMobileAndOffline, recordSets]);
 
   return (
     <div id="lp-record-set">

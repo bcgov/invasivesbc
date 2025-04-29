@@ -1,4 +1,5 @@
-import { FeatureCollection } from '@turf/helpers';
+import { Feature, FeatureCollection } from '@turf/helpers';
+import bbox from '@turf/bbox';
 import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import {
   IWellCacheProgressCallbackParameters,
@@ -9,22 +10,7 @@ import {
 import WellData from 'interfaces/WellData';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { sqlite } from 'utils/sharedSQLiteInstance';
-
-const RECORD_CACHE_DB_MIGRATIONS_1 = [
-  `CREATE TABLE CACHE_METADATA
-   (
-     ID               VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
-     BOUNDS           TEXT        NOT NULL UNIQUE,
-     STATUS           TEXT        NOT NULL,
-     WELL_TAG_NUMBERS TEXT        NOT NULL,
-     GEOJSON          TEXT
-   );`,
-  `CREATE TABLE CACHED_WELLS
-   (
-     ID   INT UNIQUE PRIMARY KEY,
-     GEOM TEXT NOT NULL
-   );`
-];
+import MIGRATIONS from './migrations';
 
 class SQLiteWellCacheService extends WellCacheService {
   private readonly CACHE_DB_NAME = 'well_cache.db';
@@ -43,6 +29,23 @@ class SQLiteWellCacheService extends WellCacheService {
       await SQLiteWellCacheService._instance.initializeRecordCache(sqlite);
     }
     return SQLiteWellCacheService._instance;
+  }
+
+  public async getNearbyWells(geom: Feature): Promise<Feature[]> {
+    if (this.cacheDB == null) {
+      throw new Error(this.CACHE_UNAVAILABLE);
+    }
+    const [minX, minY, maxX, maxY] = bbox(geom);
+    const wellsInArea = await this.cacheDB.query(
+      //language=SQLite
+      `SELECT GEOM
+       FROM  CACHED_WELLS
+       WHERE LATITUDE BETWEEN ? AND ?
+         AND LONGITUDE BETWEEN ? AND ?;
+      `,
+      [minY, maxY, minX, maxX]
+    );
+    return wellsInArea.values?.map((well) => JSON.parse(well['GEOM'])) ?? [];
   }
 
   protected async addOrUpdateRepository(repository: IWellRepositoryMetadata): Promise<void> {
@@ -229,14 +232,17 @@ class SQLiteWellCacheService extends WellCacheService {
     const id = wellData.properties.WELL_TAG_NUMBER;
     wellData.geometry.properties = { WELL_TAG_NUMBER: id };
     const stringifiedGeo = JSON.stringify(wellData.geometry);
-
+    const latLong = wellData.geometry.coordinates;
     await this.cacheDB.query(
       //language=SQLite
-      `INSERT INTO CACHED_WELLS(ID, GEOM)
-       VALUES (?, ?)
+      `INSERT INTO CACHED_WELLS(ID, GEOM, LATITUDE, LONGITUDE)
+       VALUES (?, ?, ?, ?)
        ON CONFLICT(ID)
-         DO UPDATE SET GEOM = excluded.GEOM`,
-      [id, stringifiedGeo]
+         DO UPDATE SET
+          GEOM = excluded.GEOM,
+          LATITUDE = excluded.LATITUDE,
+          LONGITUDE = excluded.LONGITUDE`,
+      [id, stringifiedGeo, latLong[1], latLong[0]]
     );
   }
 
@@ -269,12 +275,6 @@ class SQLiteWellCacheService extends WellCacheService {
   private async initializeRecordCache(sqlite: SQLiteConnection) {
     // Hold Migrations as named variable so we can use length to update the Db version automagically
     // Note: toVersion must be an integer.
-    const MIGRATIONS = [
-      {
-        toVersion: 1,
-        statements: RECORD_CACHE_DB_MIGRATIONS_1
-      }
-    ];
     await sqlite.addUpgradeStatement(this.CACHE_DB_NAME, MIGRATIONS);
 
     const ret = await sqlite.checkConnectionsConsistency();

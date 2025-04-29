@@ -67,6 +67,8 @@ import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
 import MapActions from 'state/actions/map';
+import { selectAuth } from 'state/reducers/auth';
+import { Role } from 'constants/roles';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -144,14 +146,17 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   const activityState = yield select(selectActivity);
   const activity_subtype = activityState?.activity?.activity_subtype;
   const uiSchema = RootUISchemas[activity_subtype];
-
+  const isAdmin = ((yield select(selectAuth))?.accessRoles ?? []).some(
+    (role) => role.role_name === Role.MASTER_ADMINISTRATOR
+  );
   let apiSpec;
   let userSettings = yield select(selectUserSettings);
   if (!userSettings?.apiDocsWithViewOptions?.components) {
     yield take(UserSettings.InitState.getSuccess);
     userSettings = yield select(selectUserSettings);
   }
-  if (isViewing) {
+  if (isViewing || isAdmin) {
+    // Admins get all codes as they fill out data on behalf of other users
     apiSpec = userSettings.apiDocsWithViewOptions;
   } else {
     apiSpec = userSettings.apiDocsWithSelectOptions;

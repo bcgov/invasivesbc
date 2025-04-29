@@ -176,23 +176,22 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       sanitizedGeo.properties = { error: 'false' };
     }
 
-    let wellInformationArr: Record<string, any>[] = [];
-    let nearestWells: Record<string, any> | null = null;
-    let areWellsInside = false;
+    const wellInformationArr: Record<PropertyKey, any>[] = [];
+
+    let wellsAreWithinRecordArea = false;
 
     if (reported_area < MAX_AREA && !isWIPLinestring && latitude && longitude) {
-      nearestWells = yield getClosestWells(sanitizedGeo);
+      const nearestWells = yield getClosestWells(sanitizedGeo);
+      wellsAreWithinRecordArea = nearestWells.areWellsInside;
       if (nearestWells?.well_objects.length === 0) {
-        wellInformationArr = [
+        wellInformationArr.push([
           {
             well_id: 'No wells found',
             well_proximity: 'No wells found'
           }
-        ];
+        ]);
       } else {
-        const { well_objects } = nearestWells as Record<string, any>;
-        areWellsInside = (nearestWells as Record<string, any>).areWellsInside;
-        well_objects.forEach((well) => {
+        nearestWells.well_objects.forEach((well) => {
           if (well.proximity || well.inside) {
             wellInformationArr.push({
               well_id: well.properties.WELL_TAG_NUMBER.toString(),
@@ -215,7 +214,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       }
     }
 
-    if (areWellsInside && activityState.activity.activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial') {
+    if (
+      wellsAreWithinRecordArea &&
+      activityState.activity.activity_subtype === ActivitySubtype.Treatment_ChemicalPlant
+    ) {
       yield put(Alerts.create(mappingAlertMessages.wellsInsideTreatmentArea));
     }
     if (!isWithinBC && !isWIPLinestring) {
