@@ -1,9 +1,9 @@
-import { getuid } from 'process';
 import { Operation } from 'express-openapi';
 import { RequestHandler } from 'express';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { PoolClient } from 'pg';
+import { nanoid } from 'nanoid';
 import { getLogger } from 'utils/logger';
 import { streamIAPPResult } from 'utils/iapp-json-utils';
 import { getDBConnection } from 'database/db';
@@ -261,7 +261,7 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
  * @return {RequestHandler}
  */
 function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
-  const reqID = getuid();
+  const reqID = nanoid();
   return async (req: InvasivesRequest, res) => {
     if (req.authContext.roles.length === 0) {
       res.status(401).json({ message: 'No Role for user' });
