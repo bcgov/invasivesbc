@@ -366,18 +366,16 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI() {
 }
 
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY() {
-  let currentMapState = yield select((state) => state.Map);
-
-  currentMapState = yield select(selectMap);
-  const featuresFilteredByShape: Record<string, any> = [];
+  const currentMapState = yield select(selectMap);
+  const featuresFilteredByShape: Record<PropertyKey, any> = [];
 
   const featureFilteredIDS = featuresFilteredByShape.map((feature: any) => {
     return feature.properties.id;
   });
 
   const unfilteredRecordSetIDs: string[] = [];
-  currentMapState?.layers?.map((layer) => {
-    if (layer?.type === 'Activity' && layer?.layerState.mapToggle) {
+  currentMapState?.layers?.forEach((layer) => {
+    if (layer?.type === RecordSetType.Activity && layer?.layerState.mapToggle) {
       unfilteredRecordSetIDs.push(...layer?.IDList);
     }
   });
