@@ -31,9 +31,7 @@ interface UserSettingsState {
   mapCenter: [number, number];
   newRecordDialogState: any;
   newRecordDialogueOpen: boolean;
-  recordSets: {
-    [key: PropertyKey]: UserRecordSet;
-  };
+  recordSets: Record<PropertyKey, UserRecordSet>;
   recordsExpanded: boolean;
 
   boundaries: Boundary[];
@@ -105,7 +103,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
       } else if (UserSettings.Map.setCenterSuccess.match(action)) {
         draftState.mapCenter = action.payload as [number, number];
       } else if (UserSettings.RecordSet.add.match(action)) {
-        draftState.recordSets[Date.now().toString()] ??= action.payload;
+        draftState.recordSets[action.payload.id] ??= action.payload;
       } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
         delete draftState.recordSets[action.payload];
       } else if (UserSettings.RecordSet.set.match(action)) {
@@ -212,6 +210,13 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.activeActivity = action.payload;
       } else if (IappActions.getSuccess.match(action)) {
         draftState.activeIAPP = action.payload.iapp?.site_id;
+      } else if (
+        Activity.Offline.getIdsForRecordsetSuccess.match(action) ||
+        Activity.getIdsForRecordsetSuccess.match(action) ||
+        IappActions.getIdsForRecordsetSuccess.match(action)
+      ) {
+        const { recordSetID, IDList } = action.payload;
+        draftState.recordSets[recordSetID].idList = IDList;
       } else if (UserSettings.RecordSet.addFilter.match(action)) {
         const { filterType, setID, field, operator, operator2, filter } = action.payload;
         if (filterType === 'tableFilter') {

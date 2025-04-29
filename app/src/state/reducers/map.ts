@@ -49,6 +49,7 @@ import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
+import IRecordTable from 'interfaces/recordTable';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -219,7 +220,7 @@ interface MapState {
   };
   quickPanToRecord: boolean;
   recordSetForCSV: number | null;
-  recordTables: object;
+  recordTables: Record<PropertyKey, IRecordTable>;
   serverBoundaries: any[];
   simplePickerLayers2: any[];
   simplePickerLayers: object | undefined;
