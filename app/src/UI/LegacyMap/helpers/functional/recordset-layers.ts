@@ -37,11 +37,16 @@ export const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => 
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   const source: GeoJSONSourceSpecification = repo.cached_geojson;
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
-  const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'name' });
+  const labelsShouldBeVisible = !!layer?.layerState?.labelToggle && !!layer?.layerState?.mapToggle;
+
+  const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, {
+    color,
+    minzoom: 10,
+    get_tag: 'name',
+    visibility: labelsShouldBeVisible
+  });
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
 
-  const existingSource = map.getSource(layerID);
-  if (existingSource) return; // Due to the async nature of the local DB Calls, check the layer wasn't created during a re-render
   map.addSource(layerID, source);
   map.addLayer(circleLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
@@ -63,9 +68,14 @@ export const createOnlineIappLayer = (map: any, layer: any, mode: string, API_BA
       data: layer.geoJSON
     };
   }
-
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
-  const labelLayer = getLabelLayer(layerID, { color, minzoom: 10, get_tag: 'site_id' });
+  const labelsShouldBeVisible = !!layer?.layerState?.labelToggle && !!layer?.layerState?.mapToggle;
+  const labelLayer = getLabelLayer(layerID, {
+    color,
+    minzoom: 10,
+    get_tag: 'site_id',
+    visibility: labelsShouldBeVisible
+  });
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
 
   if (mode === 'VECTOR_ENDPOINT') {
@@ -119,6 +129,7 @@ interface LayerOptions {
   minzoom?: number;
   maxzoom?: number;
   get_tag?: string;
+  visibility?: boolean;
 }
 
 const getFillLayer = (layerID: string, options: LayerOptions): FillLayerSpecification => ({
@@ -176,7 +187,8 @@ const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpeci
     // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
     'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
     'text-offset': [0, 0.6],
-    'text-anchor': 'top'
+    'text-anchor': 'top',
+    visibility: options?.visibility ? 'visible' : 'none'
   },
   paint: {
     'text-color': 'black',
@@ -207,6 +219,7 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   const GEOJSON_ID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   const CENTROID_ID = `${GEOJSON_ID}-centroid`;
   const color = getPaintBySchemeOrColor(layer);
+  const labelsShouldBeVisible = !!layer?.layerState?.labelToggle && !!layer?.layerState?.mapToggle;
 
   const circleMarkerZoomedOutLayerCentroid: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(CENTROID_ID, {
     color,
@@ -215,7 +228,8 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   const labelLayerCentroid: SymbolLayerSpecification = getLabelLayer(CENTROID_ID, {
     color,
     maxzoom: CENTROID_TO_GEOJSON_ZOOM,
-    get_tag: 'name'
+    get_tag: 'name',
+    visibility: labelsShouldBeVisible
   });
 
   const fillLayer: FillLayerSpecification = getFillLayer(GEOJSON_ID, { color, minzoom: CENTROID_TO_GEOJSON_ZOOM });
@@ -226,12 +240,10 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   });
   const labelLayer: SymbolLayerSpecification = getLabelLayer(GEOJSON_ID, {
     color,
-    minzoom: CENTROID_TO_GEOJSON_ZOOM,
-    get_tag: 'name'
+    get_tag: 'name',
+    visibility: labelsShouldBeVisible
   });
 
-  const existingSource = map.getSource(GEOJSON_ID);
-  if (existingSource) return; // Due to the async nature of the local DB Calls, check the layer wasn't created during a re-render
   map.addSource(GEOJSON_ID, repo.cached_geojson);
   map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
   map.addLayer(borderLayer, LAYER_Z_FOREGROUND);
@@ -269,10 +281,15 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode,
     };
   }
   const color = getPaintBySchemeOrColor(layer);
+  const labelsShouldBeVisible = !!layer?.layerState?.labelToggle && !!layer?.layerState?.mapToggle;
   const fillLayer: FillLayerSpecification = getFillLayer(layerID, { color });
   const borderLayer: LineLayerSpecification = getBorderLayer(layerID, { color });
   const circleMarkerZoomedOutLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
-  const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, { color, get_tag: 'short_id' });
+  const labelLayer: SymbolLayerSpecification = getLabelLayer(layerID, {
+    color,
+    get_tag: 'short_id',
+    visibility: labelsShouldBeVisible
+  });
 
   if (mode === 'VECTOR_ENDPOINT') {
     fillLayer['source-layer'] = 'data';
@@ -460,18 +477,16 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
 };
 
 /**
- * @desc Delete all recordset layers on the map when network changes
- * @param map Current Mapre
+ * @desc Delete all recordset layers on the map in response to major app events (connectivity change, or cache update)
+ * @param map Current map
  */
-export const removeLayersOnNetworkConnectivityChange = (map: maplibregl.Map) => {
-  if (!MOBILE) {
-    return;
-  }
+export const removeRecordsetLayersOnForcedRedraw = (map: maplibregl.Map) => {
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
 
   const recordSetLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID_PREFIX));
   const recordSetSources = allSourcesOnMap.filter((source) => source.includes(LAYER_ID_PREFIX));
+
   recordSetLayers.forEach((layer) => {
     try {
       map.removeLayer(layer);
@@ -488,7 +503,7 @@ export const removeLayersOnNetworkConnectivityChange = (map: maplibregl.Map) => 
   });
 };
 
-export const rebuildLayersOnTableHashUpdate = (
+export const rebuildLayersOnTableHashUpdate = async (
   storeLayers: Record<PropertyKey, any>,
   map: maplibregl.Map,
   mode: string,
@@ -497,7 +512,7 @@ export const rebuildLayersOnTableHashUpdate = (
 ) => {
   const MOBILE_OFFLINE = MOBILE && !connectedToNetwork;
   /* First need to delete the layers who's record set was deleted altogether: */
-  const storeLayersIds = storeLayers.map((layer) => LAYER_ID_PREFIX + layer.recordSetID + '-');
+  const storeLayersIds = storeLayers.map((layer) => formatLayerID(layer.recordSetID, layer.tableFiltersHash));
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
   const allRecordSetLayers = allLayersOnMap.filter((layer) => layer.includes(LAYER_ID_PREFIX));
@@ -506,8 +521,8 @@ export const rebuildLayersOnTableHashUpdate = (
   purgeRecordsetLayersNotInStore(map, storeLayersIds, allRecordSetLayers, allRecordSetSources);
 
   // now update the layers that are in the store
-  storeLayers.forEach(async (layer: Record<PropertyKey, any>) => {
-    if ((layer.geoJSON && layer.loading === false) || (mode === 'VECTOR_ENDPOINT' && layer.filterObject)) {
+  await storeLayers.forEach(async (layer: Record<PropertyKey, any>) => {
+    if ((mode === 'VECTOR_ENDPOINT' && layer.filterObject) || (layer.geoJSON && layer.loading === false)) {
       const sourceId = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
       deleteStaleRecordsetLayer(map, layer); // cleans up recordset layers with filters
       const existingSource = map.getSource(sourceId);
@@ -551,7 +566,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
     !currentColor(layerStyle, property) && !Object.hasOwn(layer.layerState, 'colorScheme');
 
   for (const layer of storeLayers) {
-    const layerSearchString = `${layer.recordSetID}-hash-${layer.tableFiltersHash}`;
+    const layerSearchString = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
     const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => mapLayer.includes(layerSearchString));
 
     matchingLayers.forEach((mapLayer) => {
@@ -574,13 +589,14 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
 
 export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map) => {
   storeLayers.map((layer) => {
-    const layerSearchString = layer.recordSetID + '-hash-' + layer.tableFiltersHash;
-    const matchingLayers = map.getLayersOrder().filter((mapLayer: any) => {
-      return mapLayer.includes(layerSearchString) && !mapLayer.includes('label');
-    });
-    const matchingLabelLayers = map.getLayersOrder().filter((mapLayer: any) => {
-      return mapLayer.includes(layerSearchString) && mapLayer.includes('label');
-    });
+    const layerSearchString = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
+    const mapLayers = map.getLayersOrder();
+    const matchingLayers = mapLayers.filter(
+      (mapLayer: any) => mapLayer.includes(layerSearchString) && !mapLayer.includes('label')
+    );
+    const matchingLabelLayers = mapLayers.filter(
+      (mapLayer: any) => mapLayer.includes(layerSearchString) && mapLayer.includes('label')
+    );
     matchingLayers?.map((mapLayer) => {
       const visibility = map.getLayoutProperty(mapLayer, 'visibility');
       if (visibility !== 'none' && !layer.layerState.mapToggle) {
@@ -596,7 +612,6 @@ export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map
         (visibility !== 'none' && !layer.layerState.labelToggle) || !layer.layerState.mapToggle;
       const shouldShowLabelLayer =
         visibility !== 'visible' && layer.layerState.labelToggle && layer.layerState.mapToggle;
-
       if (shouldShowLabelLayer) {
         map.setLayoutProperty(mapLayer, 'visibility', 'visible');
       } else if (shouldHideLabelLayer) {
