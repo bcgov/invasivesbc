@@ -1,0 +1,39 @@
+const WELL_CACHE_DB_MIGRATIONS_1 = [
+  `CREATE TABLE CACHE_METADATA
+   (
+     ID               VARCHAR(64) NOT NULL UNIQUE PRIMARY KEY,
+     BOUNDS           TEXT        NOT NULL UNIQUE,
+     STATUS           TEXT        NOT NULL,
+     WELL_TAG_NUMBERS TEXT        NOT NULL,
+     GEOJSON          TEXT
+   );`,
+  `CREATE TABLE CACHED_WELLS
+   (
+     ID   INT UNIQUE PRIMARY KEY,
+     GEOM TEXT NOT NULL
+   );`
+];
+
+const WELL_CACHE_DB_MIGRATIONS_2 = [
+  'DROP TABLE CACHED_WELLS;',
+  `CREATE TABLE CACHED_WELLS
+  (
+    ID   INT UNIQUE PRIMARY KEY,
+    GEOM TEXT NOT NULL,
+    LATITUDE NUMBER NOT NULL,
+    LONGITUDE NUMBER NOT NULL
+  );`
+];
+
+const MIGRATIONS = [
+  {
+    toVersion: 1,
+    statements: WELL_CACHE_DB_MIGRATIONS_1
+  },
+  {
+    toVersion: 2,
+    statements: WELL_CACHE_DB_MIGRATIONS_2
+  }
+];
+
+export default MIGRATIONS;

@@ -12,7 +12,11 @@ import WellData from 'interfaces/WellData';
 import { LineString } from 'geojson';
 import { MOBILE } from 'state/build-time-config';
 
-//gets layer data based on the layer name
+/**
+ * @desc Fetch list of Wells within a surrounding area
+ * @param inputGeometry Area of interest
+ * @returns {{wellsInArea: Record<PropertyKey, any>, areWellsInside: boolean}} Wells in surrounding area, and flag for if wells are contained WITHIN area.
+ */
 export function* getClosestWells(inputGeometry: Point | Polygon | LineString) {
   const firstFeature = inputGeometry;
   const networkState = yield select(selectNetworkState);
@@ -37,7 +41,7 @@ export function* getClosestWells(inputGeometry: Point | Polygon | LineString) {
       return getWellsArray(wellsInArea, firstFeature);
     }
   }
-  return { well_objects: [], areWellsInside: undefined };
+  return { well_objects: [], areWellsInside: false };
 
   //if there is a geometry drawn, get closest wells and wells inside and label them
 }
@@ -50,10 +54,7 @@ export const getWellsArray = (arrayOfWells, inputGeometry) => {
   }
 
   if (geoJSONFeature.geometry.type === GeoShapes.Point) {
-    let radius = 100;
-    if (geoJSONFeature.properties?.radius) {
-      radius = geoJSONFeature.properties.radius;
-    }
+    const radius = geoJSONFeature?.properties?.radius ?? 100;
     geoJSONFeature = buffer(geoJSONFeature, radius, { units: 'meters' });
   }
 
