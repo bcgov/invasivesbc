@@ -5,7 +5,7 @@ import { LocalForageRecordCacheService } from 'utils/record-cache/localforage-ca
 
 class RecordCacheServiceFactory {
   static async getPlatformInstance(): Promise<RecordCacheService> {
-    if (PLATFORM == Platform.IOS) {
+    if ([Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
       return SQLiteRecordCacheService.getInstance();
     }
     return LocalForageRecordCacheService.getInstance();
