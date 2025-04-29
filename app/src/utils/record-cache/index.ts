@@ -436,5 +436,6 @@ export type {
   IQueryParams,
   CacheDownloadSpec,
   RecordCacheProgressCallbackParameters,
-  RecordSetSourceMetadata
+  RecordSetSourceMetadata,
+  RepositoryMetadata
 };
