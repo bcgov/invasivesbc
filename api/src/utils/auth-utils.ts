@@ -74,12 +74,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
   const filterForSelectable = req.header('filterforselectable') === 'true';
   const authHeader = req.header('Authorization');
 
-  const isPublicURL = [
-    '/api/activities-lean/',
-    '/api/points-of-interest-lean/',
-    '/api/points-of-interest/',
-    '/api/activities/'
-  ].includes(req.originalUrl.split('?')?.[0]);
+  const isPublicURL = ['/api/points-of-interest/', '/api/activities/'].includes(req.originalUrl.split('?')?.[0]);
 
   MDC.additionalContext.isPublicURL = isPublicURL;
 
