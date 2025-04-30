@@ -50,7 +50,7 @@ const HerbicidesAccordion = ({ insideTankMix }: PropTypes) => {
             if (insideTankMix) {
               setFormDetails((prevDetails) => {
                 const newHerbicidesArr = [...prevDetails.form_data.tank_mix_object.herbicides];
-                newHerbicidesArr.push({ index: newHerbicidesArr.length });
+                newHerbicidesArr.push({ index: newHerbicidesArr.length, uuid: nanoid() });
                 return {
                   ...prevDetails,
                   form_data: {
@@ -66,7 +66,7 @@ const HerbicidesAccordion = ({ insideTankMix }: PropTypes) => {
             } else {
               setFormDetails((prevDetails) => {
                 const newHerbicidesArr = [...prevDetails.form_data.herbicides];
-                newHerbicidesArr.push({ index: newHerbicidesArr.length });
+                newHerbicidesArr.push({ index: newHerbicidesArr.length, uuid: nanoid() });
                 return {
                   ...prevDetails,
                   form_data: {
