@@ -13,6 +13,7 @@ import { AuthActions } from 'state/actions/auth/Auth';
 import DataSharingAgreement from './DataSharingAgreement/DataSharingAgreement';
 import { MOBILE } from 'state/build-time-config';
 import IosDownloadLink from 'UI/IosDownloadLink/IosDownloadLink';
+import AndroidDownloadLink from 'UI/AndroidDownloadLink/AndroidDownloadLink';
 
 const InformationalLinkBox = () => {
   return (
@@ -153,6 +154,7 @@ export const LandingComponent = () => {
                 <p>InvasivesBC is currently available for download in the App Store. Coming soon to Google Play.</p>
                 <div className="download-links">
                   <IosDownloadLink />
+                  <AndroidDownloadLink />
                 </div>
               </Box>
             )}

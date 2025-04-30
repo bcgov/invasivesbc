@@ -101,7 +101,8 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
       const queryObj: IQueryParams = {
         tableFilters: filters.tableFilters,
         recordSetType: filters.recordSetType,
-        selectColumns: ['id']
+        selectColumns: ['id'],
+        limit: 1000000 // Override 50k limit of query tool since known size is small.
       };
       const ids = yield service.query(queryObj);
       yield put(
