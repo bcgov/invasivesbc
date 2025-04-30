@@ -12,6 +12,8 @@ interface AppConfig {
 
   PUBLIC_MAP_URL: string;
   IOS_APP_STORE_URL: string;
+  ANDROID_APP_STORE_URL: string;
+
   // to easily disable features not ready for prod-use (or disable them on mobile/web)
   FEATURE_GATE: {
     PLAN_MY_TRIP: boolean;
@@ -31,6 +33,7 @@ declare global {
   const CONFIGURATION_REDIRECT_URI: string | null;
   const CONFIGURATION_SILENT_CHECK_URI: string | null;
   const CONFIGURATION_IOS_APP_STORE_URL: string | null;
+  const CONFIGURATION_ANDROID_APP_STORE_URL: string | null;
   const CONFIGURATION_PUBLIC_MAP_URL: string | null;
   const INJECTED_COMMIT_HASH: string | null;
   const CONFIGURATION_COMPONENTIZED_MAP: string | null;
@@ -50,6 +53,7 @@ switch (CONFIGURATION_SOURCE) {
       PUBLIC_MAP_URL: '{{env "PUBLIC_MAP_URL"}}',
       SILENT_CHECK_URI: '{{env "SILENT_CHECK_URI"}}',
       IOS_APP_STORE_URL: '{{env "IOS_APP_STORE_URL"}}',
+      ANDROID_APP_STORE_URL: '{{env "ANDROID_APP_STORE_URL"}}',
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
         EMBEDDED_REPORTS: true,
@@ -69,6 +73,7 @@ switch (CONFIGURATION_SOURCE) {
       PUBLIC_MAP_URL: CONFIGURATION_PUBLIC_MAP_URL || 'unset',
       SILENT_CHECK_URI: CONFIGURATION_SILENT_CHECK_URI || 'unset',
       IOS_APP_STORE_URL: CONFIGURATION_IOS_APP_STORE_URL || 'unset',
+      ANDROID_APP_STORE_URL: CONFIGURATION_ANDROID_APP_STORE_URL || 'unset',
       FEATURE_GATE: {
         PLAN_MY_TRIP: true,
         EMBEDDED_REPORTS: true,
