@@ -26,16 +26,16 @@ const HerbicidesAccordion = ({ insideTankMix }: PropTypes) => {
           ? formDetails.form_data?.tank_mix_object?.herbicides?.map((herbicide) => (
               <Herbicide
                 insideTankMix={insideTankMix}
-                key={herbicide.index}
-                index={herbicide?.uuid ?? herbicide.index}
+                key={herbicide?.uuid ?? herbicide.index}
+                index={herbicide.index}
                 herbicide={herbicide}
               />
             ))
           : formDetails?.form_data?.herbicides?.map((herbicide) => (
               <Herbicide
                 insideTankMix={insideTankMix}
-                key={herbicide.index}
-                index={herbicide?.uuid ?? herbicide.index}
+                key={herbicide?.uuid ?? herbicide.index}
+                index={herbicide.index}
                 herbicide={herbicide}
               />
             ))}
