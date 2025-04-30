@@ -23,11 +23,21 @@ const HerbicidesAccordion = ({ insideTankMix }: PropTypes) => {
       <Typography variant="h5">Herbicides</Typography>
       <div id="herbicides_list">
         {insideTankMix
-          ? formDetails.form_data?.tank_mix_object?.herbicides?.map((herbicide, index) => (
-              <Herbicide insideTankMix={insideTankMix} key={herbicide.index} index={index} herbicide={herbicide} />
+          ? formDetails.form_data?.tank_mix_object?.herbicides?.map((herbicide) => (
+              <Herbicide
+                insideTankMix={insideTankMix}
+                key={herbicide.index}
+                index={herbicide?.uuid ?? herbicide.index}
+                herbicide={herbicide}
+              />
             ))
-          : formDetails?.form_data?.herbicides?.map((herbicide, index) => (
-              <Herbicide insideTankMix={insideTankMix} key={herbicide.index} index={index} herbicide={herbicide} />
+          : formDetails?.form_data?.herbicides?.map((herbicide) => (
+              <Herbicide
+                insideTankMix={insideTankMix}
+                key={herbicide.index}
+                index={herbicide?.uuid ?? herbicide.index}
+                herbicide={herbicide}
+              />
             ))}
       </div>
       <Box component="div">
@@ -35,10 +45,12 @@ const HerbicidesAccordion = ({ insideTankMix }: PropTypes) => {
           disabled={formDetails.disabled}
           id="btn_add_herbicide"
           onClick={() => {
+            /* Due to a metabase Report, we want to keep the Herbicides Array index in the Object.
+               But to prevent unnecessary Rererendering, we add the uuid key */
             if (insideTankMix) {
               setFormDetails((prevDetails) => {
                 const newHerbicidesArr = [...prevDetails.form_data.tank_mix_object.herbicides];
-                newHerbicidesArr.push({ index: nanoid() });
+                newHerbicidesArr.push({ index: newHerbicidesArr.length });
                 return {
                   ...prevDetails,
                   form_data: {
@@ -54,7 +66,7 @@ const HerbicidesAccordion = ({ insideTankMix }: PropTypes) => {
             } else {
               setFormDetails((prevDetails) => {
                 const newHerbicidesArr = [...prevDetails.form_data.herbicides];
-                newHerbicidesArr.push({ index: nanoid() });
+                newHerbicidesArr.push({ index: newHerbicidesArr.length });
                 return {
                   ...prevDetails,
                   form_data: {
