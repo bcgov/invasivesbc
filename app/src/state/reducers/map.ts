@@ -49,6 +49,7 @@ import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
+import IRecordTable from 'interfaces/recordTable';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -219,7 +220,7 @@ interface MapState {
   };
   quickPanToRecord: boolean;
   recordSetForCSV: number | null;
-  recordTables: object;
+  recordTables: Record<PropertyKey, IRecordTable>;
   serverBoundaries: any[];
   simplePickerLayers2: any[];
   simplePickerLayers: object | undefined;
@@ -475,21 +476,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           IAPPLimit: 15
         });
       } else if (WhatsHere.server_filtered_ids_fetched.match(action)) {
-        const { iapp, activities } = action.payload;
-        const toggledOnActivityLayers = draftState.layers.filter(
-          ({ type, layerState }) => type === RecordSetType.Activity && layerState.mapToggle
-        );
-        const toggledOnIAPPLayers = draftState.layers.filter(
-          ({ type, layerState }) => type === RecordSetType.IAPP && layerState.mapToggle
-        );
-
-        const localActivityIDs = toggledOnActivityLayers.flatMap((layer) => layer.IDList ?? []);
-        const localIappIds = toggledOnIAPPLayers.flatMap((layer) => layer.IDList ?? []);
-
-        const iappIds = localIappIds.filter((l) => iapp.includes(l) || iapp.includes(l.toString()));
-        const activityIds = localActivityIDs.filter((l) => activities.includes(l));
-        draftState.whatsHere.ActivityIDs = Array.from(new Set(activityIds));
-        draftState.whatsHere.IAPPIDs = Array.from(new Set(iappIds));
+        draftState.whatsHere.ActivityIDs = Array.from(new Set(action.payload.activities));
+        draftState.whatsHere.IAPPIDs = Array.from(new Set(action.payload.iapp));
       } else if (RecordCache.requestCaching.fulfilled.match(action)) {
         const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.meta.arg.setId);
         if (index !== -1) {
@@ -615,7 +603,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         if (recordTable) {
           draftState.recordTables[recordSetID].rows = rows;
         } else {
-          draftState.recordTables[recordSetID] = { rows };
+          draftState.recordTables[recordSetID] = { loading: false, limit, page, rows, tableFiltersHash };
         } // set defaults
         draftState.recordTables[recordSetID].loading = false;
       } else if (Activity.getRowsSuccess.match(action)) {
@@ -637,26 +625,20 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         if (draftState.recordTables?.[recordSetID]) {
           draftState.recordTables[recordSetID].rows = rows;
         } else {
-          draftState.recordTables[recordSetID] = { rows };
+          draftState.recordTables[recordSetID] = { loading: false, limit, page, rows, tableFiltersHash };
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
       } else if (Activity.Offline.getIdsForRecordsetSuccess.match(action)) {
-        const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
 
-        if (!draftState.layers[index]) {
+        if (index === -1) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         }
-
-        if (draftState.layers[index] && 'IDList' in draftState.layers[index]) {
-          draftState.layers[index].IDList = action.payload?.IDList ?? [];
-          draftState.layers[index].loading = false;
-        } else {
-          draftState.layers[index] = {
-            ...draftState.layers[index],
-            IDList: action.payload?.IDList ?? [],
-            loading: false
-          };
-        }
+        draftState.layers[index] = {
+          ...draftState.layers[index]
+        };
+        draftState.layers[index].loading = false;
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
       } else if (Activity.getIdsForRecordset.match(action)) {
@@ -676,13 +658,12 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
       } else if (Activity.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) {
+        if (index === -1) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
           index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         }
-
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
-        draftState.layers[index].IDList = action.payload?.IDList ?? [];
+
         draftState.layers[index].loading = false;
       } else if (IappActions.getIdsForRecordset.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
@@ -701,12 +682,12 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
       } else if (IappActions.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) draftState.layers.push({ recordSetID: action.payload.recordSetID });
-        index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (index === -1) {
+          draftState.layers.push({ recordSetID: action.payload.recordSetID });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        }
 
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
-
-        draftState.layers[index].IDList = action.payload.IDList;
         draftState.layers[index].loading = false;
       } else {
         switch (action.type) {

@@ -108,7 +108,7 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
       yield put(
         Activity.getIdsForRecordsetSuccess({
           recordSetID: action.recordSetID,
-          IDList: ids.map((record) => record.id) ?? [],
+          idList: ids.map((record) => record.id) ?? [],
           tableFiltersHash: action.tableFiltersHash
         })
       );
@@ -326,59 +326,17 @@ export function* getIappRowsFromCache(payload: IappTableRowRequest) {
   }
 }
 
-function largePush(src, dest) {
-  const len = src.length;
-  for (let i = 0; i < len; i++) {
-    dest.push(src[i]);
-  }
-}
-
-export function* handle_MAP_WHATS_HERE_INIT_GET_POI() {
-  const currentMapState = yield select((state) => state.Map);
-
-  const featuresFilteredByUserShape = Object.values(currentMapState?.IAPPGeoJSONDict)?.filter((feature: any) => {
-    // IAPP will always be points
-    const pointToCheck = point(feature.geometry.coordinates);
-    const polygonToCheck = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
-    return booleanPointInPolygon(pointToCheck, polygonToCheck);
-  });
-
-  const featureFilteredIDS = featuresFilteredByUserShape.map((feature: any) => {
-    return feature.properties.site_id;
-  });
-
-  const unfilteredRecordSetIDs = [];
-
-  currentMapState?.layers.map((layer) => {
-    if (layer?.type === RecordSetType.IAPP && layer?.layerState.mapToggle) {
-      largePush(layer?.IDList, unfilteredRecordSetIDs);
-    }
-  });
-
-  const recordSetFilteredIDs = unfilteredRecordSetIDs.filter((id) => {
-    return featureFilteredIDS.includes(id);
-  });
-
-  // Filter duplicates
-  const recordSetUniqueFilteredIDs = Array.from(new Set(recordSetFilteredIDs));
-
-  yield put(WhatsHere.map_init_get_poi_ids_fetched(recordSetUniqueFilteredIDs));
-  yield put(WhatsHere.iapp_rows_request());
-}
-
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY() {
-  let currentMapState = yield select((state) => state.Map);
-
-  currentMapState = yield select(selectMap);
-  const featuresFilteredByShape: Record<string, any> = [];
+  const currentMapState = yield select(selectMap);
+  const featuresFilteredByShape: Record<PropertyKey, any> = [];
 
   const featureFilteredIDS = featuresFilteredByShape.map((feature: any) => {
     return feature.properties.id;
   });
 
   const unfilteredRecordSetIDs: string[] = [];
-  currentMapState?.layers?.map((layer) => {
-    if (layer?.type === 'Activity' && layer?.layerState.mapToggle) {
+  currentMapState?.layers?.forEach((layer) => {
+    if (layer?.type === RecordSetType.Activity && layer?.layerState.mapToggle) {
       unfilteredRecordSetIDs.push(...layer?.IDList);
     }
   });

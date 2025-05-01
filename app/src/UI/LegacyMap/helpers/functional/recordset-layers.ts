@@ -502,7 +502,7 @@ export const rebuildLayersOnTableHashUpdate = async (
 
   // now update the layers that are in the store
   await storeLayers.forEach(async (layer: Record<PropertyKey, any>) => {
-    if (layer.filterObject || (layer.geoJSON && layer.loading === false)) {
+    if (layer.filterObject) {
       const sourceId = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
       deleteStaleRecordsetLayer(map, layer); // cleans up recordset layers with filters
       const existingSource = map.getSource(sourceId);

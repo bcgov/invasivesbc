@@ -201,7 +201,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
         </div>
         <RecordTable setID={setID} />
       </div>
-      <RecordSetFooter setID={setID} />
+      <RecordSetFooter recordSet={recordSet} />
     </>
   );
 };

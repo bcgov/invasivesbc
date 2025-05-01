@@ -126,7 +126,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action: PayloadA
 
   if (networkReturn?.ok && (networkReturn?.data?.result || networkReturn.data?.data?.result)) {
     const list = networkReturn.data?.data?.result ?? networkReturn.data?.result;
-    const IDList = list.map((row: UserRecord) => row.activity_id);
+    const idList = list.map((row: UserRecord) => row.activity_id);
 
     // check again after the network call
     const mapState = yield select((state) => state.Map);
@@ -138,7 +138,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action: PayloadA
     yield put(
       Activity.getIdsForRecordsetSuccess({
         recordSetID: action.payload.recordSetID,
-        IDList: IDList,
+        idList: idList,
         tableFiltersHash: action.payload.tableFiltersHash
       })
     );
@@ -160,9 +160,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
 
   if (networkReturn?.ok && (networkReturn.data.result || networkReturn.data?.data?.result)) {
     const list = networkReturn.data?.data?.result ? networkReturn.data?.data?.result : networkReturn.data?.result;
-    const IDList = list?.map((row) => {
-      return row.site_id;
-    });
+    const idList = list?.map((row) => row.site_id);
     // check again after the network call
     const mapState = yield select((state) => state.Map);
     const tableFiltersHash = mapState?.layers?.filter((layer) => {
@@ -176,7 +174,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
     yield put(
       IappActions.getIdsForRecordsetSuccess({
         recordSetID: action.payload.recordSetID,
-        IDList: IDList,
+        idList: idList,
         tableFiltersHash: action.payload.tableFiltersHash
       })
     );

@@ -1,63 +1,54 @@
 import { ArrowLeftIcon, ArrowRightIcon } from '@mui/x-date-pickers/icons';
+import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'react-redux';
 import { PAGE_OR_LIMIT_UPDATE } from 'state/actions';
 import { useSelector } from 'utils/use_selector';
 
-const RecordSetFooter = (props) => {
-  const layer = useSelector((state) => state.Map.layers?.filter((layer) => layer.recordSetID === props.setID)[0]);
-  const recordTable = useSelector((state) => state.Map.recordTables?.[props.setID]);
+type PropTypes = {
+  recordSet: UserRecordSet;
+};
+const RecordSetFooter = ({ recordSet }: PropTypes) => {
+  const handleUpdatePage = (change: number) => {
+    dispatch({
+      type: PAGE_OR_LIMIT_UPDATE,
+      payload: {
+        setID: recordSet.id,
+        page: recordTable?.page + change,
+        limit: recordTable?.limit
+      }
+    });
+  };
 
-  const loading = layer?.loading || recordTable?.loading;
+  const dispatch = useDispatch();
+  const recordTable = useSelector((state) => state.Map.recordTables?.[recordSet.id]);
 
-  const totalRecords = layer?.IDList?.length;
-  const loaded = !loading;
+  const loading = recordTable?.loading;
+  const totalRecords = recordSet.idList.length;
   const firstRowIndex = recordTable?.page * recordTable?.limit;
   const lastRowIndex =
     totalRecords < firstRowIndex + recordTable?.limit ? totalRecords : firstRowIndex + recordTable?.limit;
-  let recordDisplayString = 'Loading...';
+  const shouldDisplayNext = totalRecords > lastRowIndex && !loading;
+  const shouldDisplayPrevious = firstRowIndex > 0 && !loading;
 
-  if (loaded) {
-    if (totalRecords !== undefined && totalRecords > 0 && !isNaN(firstRowIndex) && !isNaN(lastRowIndex)) {
-      recordDisplayString = `${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords} records`;
-    } else if (layer?.IDList && totalRecords < 1) {
-      recordDisplayString = 'No records found';
+  const recordDisplayString = (() => {
+    if (!loading) {
+      if (totalRecords && totalRecords > 0 && !isNaN(firstRowIndex) && !isNaN(lastRowIndex)) {
+        return `${firstRowIndex + 1} to ${lastRowIndex} of ${totalRecords} records`;
+      } else if (totalRecords === 0) {
+        return 'No records found';
+      }
     }
-  }
-
-  const shouldDisplayNextButton = totalRecords > lastRowIndex && !loading;
-  const shouldDisplayPreviousButton = firstRowIndex > 0 && !loading;
-
-  const dispatch = useDispatch();
-
-  const onClickPrevious = () => {
-    dispatch({
-      type: PAGE_OR_LIMIT_UPDATE,
-      payload: {
-        setID: props.setID,
-        page: recordTable?.page - 1,
-        limit: recordTable?.limit
-      }
-    });
-  };
-  const onClickNext = () => {
-    dispatch({
-      type: PAGE_OR_LIMIT_UPDATE,
-      payload: {
-        setID: props.setID,
-        page: recordTable?.page + 1,
-        limit: recordTable?.limit
-      }
-    });
-  };
+    return 'Loading...';
+  })();
 
   return (
     <div className="recordSet_footer">
       <div className="recordSet_pagePrevious">
-        {shouldDisplayPreviousButton ? <ArrowLeftIcon onClick={onClickPrevious} /> : <></>}
+        {shouldDisplayPrevious && <ArrowLeftIcon onClick={handleUpdatePage.bind(this, -1)} />}
       </div>
       <div className="recordSet_pageOfAndTotal">{recordDisplayString}</div>
       <div className="recordSet_pageNext">
-        {shouldDisplayNextButton ? <ArrowRightIcon onClick={onClickNext} /> : <></>}
+        {shouldDisplayNext && <ArrowRightIcon onClick={handleUpdatePage.bind(this, 1)} />}
       </div>
     </div>
   );

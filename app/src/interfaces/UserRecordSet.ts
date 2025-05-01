@@ -26,7 +26,8 @@ export enum UserRecordCacheStatus {
 
 export interface UserRecordSet {
   tableFilters: IFilter[];
-  id?: string;
+  id: string;
+  idList: Array<string | number>;
   colorScheme?: {
     Activity_Biocontrol_Collection: string;
     Activity_Biocontrol_Release: string;

@@ -7,14 +7,14 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
   try {
     const { serializedActivities } = yield select(selectOfflineActivity);
 
-    const IDList =
+    const idList =
       Object.values(serializedActivities).filter(
         (value) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED
       ) ?? [];
     yield put(
       Activity.Offline.getIdsForRecordsetSuccess({
         recordSetID: action.payload.recordSetID,
-        IDList: IDList,
+        idList: idList.map((id) => (id as any).short_id),
         tableFiltersHash: action.payload.tableFiltersHash
       })
     );
