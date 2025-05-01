@@ -6,6 +6,8 @@ import { ChemicalTreatmentDetailsContext } from '../../ChemicalTreatmentDetailsC
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import isNumber from 'is-number';
 import { IHerbicide } from 'sharedAPI';
+import { shallowEqual } from 'react-redux';
+import { nanoid } from '@reduxjs/toolkit';
 
 enum ApplicationMethod {
   Spray,
@@ -155,11 +157,7 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
 
   return (
     <div className={'herbicide_list_item'}>
-      <Typography variant="h5">
-        {optionValueLabels[herbicide.herbicide_code]
-          ? optionValueLabels[herbicide.herbicide_code]
-          : `Herbicide #${index + 1}`}
-      </Typography>
+      <Typography variant="h5">{optionValueLabels[herbicide.herbicide_code] ?? `Herbicide #${index + 1}`}</Typography>
       <div className="input-field">
         <Tooltip
           style={{ float: 'right', marginBottom: 5, color: 'rgb(170, 170, 170)' }}
@@ -178,10 +176,7 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
           label={'Herbicide Type'}
           parentState={{ herbicide, setCurrentHerbicide }}
           onChange={(_: ChangeEvent, value) => {
-            if (value === null) {
-              return;
-            }
-
+            if (value == null) return;
             setCurrentHerbicide((prevHerbicide) => ({ ...prevHerbicide, herbicide_type_code: value.value }));
           }}
         />
@@ -203,12 +198,8 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
           actualValue={herbicide.herbicide_code}
           parentState={{ herbicide, setCurrentHerbicide }}
           onChange={(_: ChangeEvent, value) => {
-            if (value === null) {
-              return;
-            }
-            setCurrentHerbicide((prevHerbicide) => {
-              return { ...prevHerbicide, herbicide_code: value.value };
-            });
+            if (value == null) return;
+            setCurrentHerbicide((prevHerbicide) => ({ ...prevHerbicide, herbicide_code: value.value }));
           }}
         />
       </div>
@@ -230,9 +221,7 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
             actualValue={herbicide.calculation_type}
             parentState={{ herbicide, setCurrentHerbicide }}
             onChange={(_: ChangeEvent, value) => {
-              if (value === null) {
-                return;
-              }
+              if (value == null) return;
               setCurrentHerbicide((prevHerbicide) => ({ ...prevHerbicide, calculation_type: value.value }));
             }}
           />
@@ -556,10 +545,20 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
         disabled={formDetails.disabled}
         onClick={() => {
           if (insideTankMix) {
+            /**
+             * UUIDs were appended to the Chemical Treatment Herbicides to ensure a proper render, and states updated correctly.
+             * Due to a Metabase report, its instrumental that the `index` key matches to what was in the array at the time.
+             * Keeping the key in line but pushing/popping causes awkward rerendering so UUIDs were introduced. To avoid plugging the DB, the UUIDs are removed before entering
+             */
             setFormDetails((prevDetails) => {
-              const newHerbicidesArr = [...prevDetails.form_data.tank_mix_object.herbicides];
-              const sliceIndex = newHerbicidesArr.findIndex((herb) => herb.index === herbicide.index);
-              newHerbicidesArr.splice(sliceIndex, 1);
+              const newHerbicidesArr = prevDetails.form_data.tank_mix_object.herbicides.map((h) => ({ ...h }));
+              const sliceIndex = newHerbicidesArr.findIndex((herb) => shallowEqual(herb, herbicide));
+              if (sliceIndex !== -1) {
+                newHerbicidesArr.splice(sliceIndex, 1);
+                newHerbicidesArr.forEach(
+                  (_, i) => (newHerbicidesArr[i] = { uuid: nanoid(), ...newHerbicidesArr[i], index: i })
+                );
+              }
               return {
                 ...prevDetails,
                 form_data: {
@@ -573,9 +572,14 @@ const Herbicide = ({ herbicide, index, insideTankMix }: PropTypes) => {
             });
           } else {
             setFormDetails((prevDetails) => {
-              const newHerbicidesArr = [...prevDetails.form_data.herbicides];
-              const sliceIndex = newHerbicidesArr.findIndex((herb) => herb.index === herbicide.index);
-              newHerbicidesArr.splice(sliceIndex, 1);
+              const newHerbicidesArr = prevDetails.form_data.herbicides.map((h) => ({ ...h }));
+              const sliceIndex = newHerbicidesArr.findIndex((herb) => shallowEqual(herb, herbicide));
+              if (sliceIndex !== -1) {
+                newHerbicidesArr.splice(sliceIndex, 1);
+                newHerbicidesArr.forEach(
+                  (_, i) => (newHerbicidesArr[i] = { uuid: nanoid(), ...newHerbicidesArr[i], index: i })
+                );
+              }
               return {
                 ...prevDetails,
                 form_data: { ...prevDetails.form_data, herbicides: newHerbicidesArr }

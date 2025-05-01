@@ -403,6 +403,26 @@ function updateActivity(): RequestHandler {
     try {
       connection = await getDBConnection();
 
+      const isChemicalTreatment =
+        sanitizedActivityData.activity_type === 'Treatment' &&
+        sanitizedActivityData.activity_subtype.includes('Chemical');
+      /**
+       * UUIDs were appended to the Chemical Treatment Herbicides to ensure a proper render, and states updated correctly.
+       * Due to a Metabase report, its instrumental that the `index` key matches to what was in the array at the time.
+       * Keeping the key in line but pushing/popping causes awkward rerendering so UUIDs were introduced. To avoid plugging the DB, the UUIDs are removed before entering
+       */
+      if (isChemicalTreatment) {
+        const chemicalDetails = (sanitizedActivityData.activity_subtype_data as Record<PropertyKey, any>)
+          ?.chemical_treatment_details;
+        const herbicides = chemicalDetails.tank_mix
+          ? chemicalDetails?.tank_mix_object?.herbicides ?? []
+          : chemicalDetails?.herbicides ?? [];
+        herbicides.forEach((_, i) => {
+          herbicides[i].index = i;
+          delete herbicides[i]?.uuid;
+        });
+      }
+
       const sanitizedSearchCriteria: string = data.activity_id;
       const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
 
@@ -462,22 +482,6 @@ function updateActivity(): RequestHandler {
           });
         }
       }
-      /*
-    if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
-          return res.status(400).json({
-            message: 'Invalid request, cannot convert back to draft from submitted',
-            request: req.body,
-            namespace: 'activity',
-            code: 401
-          });
-    }
-    */
-      /* disabled for now
-     if(response.rows[0].form_status === 'Submitted' && req?.body?.form_status === 'Draft') {
-       req.body.form_status = 'Submitted'
-       sanitizedActivityData.form_status = 'Submitted'
-     }
-     */
       const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);
 
       if (!sqlStatements || !sqlStatements.createSQL) {
