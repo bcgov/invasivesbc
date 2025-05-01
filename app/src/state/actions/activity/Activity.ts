@@ -5,7 +5,6 @@ import Offline from './Offline';
 import Photos from './Photos';
 import Suggestions from './Suggestions';
 import AutoFill from './AutoFill';
-import GeoJson from './GeoJson';
 import ChemicalTreatments from './ChemicalTreatments';
 import FilterObjects from 'interfaces/FilterObjects';
 
@@ -55,7 +54,7 @@ interface IGetIdsForRecordsetOnline extends IGetIdsForRecordset {
 }
 
 interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
-  IDList: Array<string | number>;
+  IDList: number;
 }
 
 class Activity {
@@ -64,7 +63,6 @@ class Activity {
   static readonly Photo = Photos;
   static readonly Suggestions = Suggestions;
   static readonly Autofill = AutoFill;
-  static readonly GeoJson = GeoJson;
   static readonly ChemicalTreatments = ChemicalTreatments;
   static readonly createReq = createAction<INewActivity>(`${this.PREFIX}/createReq`);
   static readonly createNetwork = createAction<Record<string, any>>(`${this.PREFIX}/createNetwork`);

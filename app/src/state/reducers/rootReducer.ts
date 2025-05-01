@@ -156,7 +156,6 @@ function createRootReducer(config: AppConfig) {
         migrate: purgeOldStateOnVersionUpgrade,
         whitelist: [
           MIGRATION_VERSION_KEY,
-          'MapMode',
           'HDToggle',
           'accuracyToggle',
           'simplePickerLayers2',

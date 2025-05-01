@@ -1,22 +1,14 @@
-import { call, put, select } from 'redux-saga/effects';
+import { put, select } from 'redux-saga/effects';
 import moment from 'moment';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { getIappRowsFromCache, getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import {
-  ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-  EXPORT_CONFIG_LOAD_ERROR,
-  EXPORT_CONFIG_LOAD_REQUEST,
-  EXPORT_CONFIG_LOAD_SUCCESS,
-  IAPP_GEOJSON_GET_SUCCESS
-} from 'state/actions';
-import { selectConfiguration, selectRootConfiguration } from 'state/reducers/configuration';
-import IappActions, { IappTableRowGetRequest, IappTableRowRequest } from 'state/actions/activity/Iapp';
+import { EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS } from 'state/actions';
+import { selectRootConfiguration } from 'state/reducers/configuration';
+import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordsetOnline } from 'state/actions/activity/Activity';
 import UserRecord from 'interfaces/UserRecord';
 import { MOBILE } from 'state/build-time-config';
-import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 function* refreshExportConfigIfRequired() {
   const config = yield select(selectRootConfiguration);
@@ -55,78 +47,6 @@ function* fetchS3GeoJSON() {
   });
 
   return yield networkReturnS3.json();
-}
-
-function* fetchSupplementalGeoJSON(activitiesFilterCriteria) {
-  const apiNetworkReturn = yield InvasivesAPI_Call('POST', `/api/activities-lean/`, {
-    ...activitiesFilterCriteria
-  });
-
-  //
-  const api_geojson = apiNetworkReturn.data.result.rows.map((row) => {
-    return row.geojson ? row.geojson : row;
-  });
-
-  return api_geojson.reduce((a, v) => ({ ...a, [v.properties.id]: v }), {});
-}
-
-//
-export function* handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE(action) {
-  const supplemental = yield call(fetchSupplementalGeoJSON, action.payload.activitiesFilterCriteria);
-  const draft = yield call(fetchSupplementalGeoJSON, { form_status: ['Draft'], page: 0, limit: 100000 });
-
-  yield put({
-    type: ACTIVITIES_GEOJSON_GET_SUCCESS,
-    payload: {
-      recordSetID: action.payload.recordSetID,
-      activitiesGeoJSONDict: {
-        supplemental,
-        draft
-      },
-      layerState: action.payload.layerState
-    }
-  });
-}
-
-//
-export function* handle_ACTIVITIES_GEOJSON_GET_ONLINE(action) {
-  const s3 = yield call(fetchS3GeoJSON);
-
-  yield put({
-    type: ACTIVITIES_GEOJSON_GET_SUCCESS,
-    payload: {
-      recordSetID: action.payload.recordSetID,
-      activitiesGeoJSONDict: {
-        s3
-      },
-      layerState: action.payload.layerState
-    }
-  });
-
-  yield put({ type: ACTIVITIES_GEOJSON_REFETCH_ONLINE, payload: action.payload });
-}
-
-export function* handle_IAPP_GEOJSON_GET_ONLINE() {
-  const configuration = yield select(selectConfiguration);
-  const networkReturn = yield fetch(configuration.IAPP_GEOJSON_URL);
-  const data = yield networkReturn.json();
-
-  const rows = data?.result || [];
-  const featureCollection = {
-    type: 'FeatureCollection',
-    features: rows?.filter((row) => {
-      if (row !== undefined && row?.geometry?.coordinates) {
-        return row;
-      }
-    })
-  };
-
-  yield put({
-    type: IAPP_GEOJSON_GET_SUCCESS,
-    payload: {
-      IAPPGeoJSON: featureCollection
-    }
-  });
 }
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<ActivityTableRowGetRequest>) {

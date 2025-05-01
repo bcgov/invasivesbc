@@ -3,10 +3,8 @@ import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } f
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
   getRecordFilterObjectFromStateForAPI,
-  handle_ACTIVITIES_GEOJSON_GET_REQUEST,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_ACTIVITIES_TABLE_GET_ROWS,
-  handle_IAPP_GEOJSON_GET_REQUEST,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
   handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
@@ -14,11 +12,8 @@ import {
   handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT
 } from './map/dataAccess';
 import {
-  handle_ACTIVITIES_GEOJSON_GET_ONLINE,
-  handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  handle_IAPP_GEOJSON_GET_ONLINE,
   handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
   handle_IAPP_TABLE_ROWS_GET_ONLINE
 } from './map/online';
@@ -27,24 +22,17 @@ import {
   handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
 } from './map/offline';
 import {
-  ACTIVITIES_GEOJSON_GET_ONLINE,
-  ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITIES_GEOJSON_REFETCH_ONLINE,
   ACTIVITY_UPDATE_GEO_REQUEST,
   CUSTOM_LAYER_DRAWN,
   DRAW_CUSTOM_LAYER,
   FILTER_PREP_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
-  IAPP_GEOJSON_GET_ONLINE,
-  IAPP_GEOJSON_GET_REQUEST,
-  IAPP_GEOJSON_GET_SUCCESS,
   INIT_SERVER_BOUNDARIES_GET,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
-  MAP_TOGGLE_GEOJSON_CACHE,
   PAGE_OR_LIMIT_UPDATE,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
@@ -57,9 +45,8 @@ import {
   TOGGLE_PANEL,
   URL_CHANGE
 } from 'state/actions';
-import { getSearchCriteriaFromFilters } from 'utils/miscYankedFromComponents';
 import { selectUserSettings } from 'state/reducers/userSettings';
-import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
+import { selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -88,19 +75,6 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
 }
 
 function* handle_MAP_INIT_REQUEST() {
-  const mapState = yield select(selectMap);
-  const sets = {};
-  const filterCriteria = yield getSearchCriteriaFromFilters([], sets, '2', false, [], 0, 100000);
-  const IAPP_filter = yield getSearchCriteriaFromFilters([], sets, '3', true, [], 0, 100);
-  if (mapState.MapMode !== 'VECTOR_ENDPOINT') {
-    yield put(Activity.GeoJson.get(filterCriteria));
-    yield put({
-      type: IAPP_GEOJSON_GET_REQUEST,
-      payload: {
-        IAPPFilterCriteria: { ...IAPP_filter, limit: 200000 }
-      }
-    });
-  }
   yield put(MapActions.initForRecordset());
   yield call(refetchServerBoundaries);
 }
@@ -114,64 +88,51 @@ function* refetchServerBoundaries() {
 }
 
 function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
-  const { MapMode, activitiesGeoJSONDict, IAPPGeoJSONDict } = yield select(selectMap);
   const { connected } = yield select(selectNetworkState);
-
-  if (MapMode === 'VECTOR_ENDPOINT') {
-    if (connected) {
-      // get all the toggled on recordsets
-      const tableFilters = [
-        {
-          id: '0.81778552637744651712083357942',
-          filterType: 'spatialFilterDrawn',
-          operator: 'CONTAINED IN',
-          filter: '0.652479498272151712093656568',
-          geojson: whatsHereFeature.payload
-        }
-      ];
-
-      const activitiesfilterObj = {
-        selectColumns: ['activity_id'],
-        tableFilters,
-        limit: 200000
-      };
-      const iappfilterObj = {
-        selectColumns: ['site_id'],
-        tableFilters,
-        limit: 200000
-      };
-      const [activitiesNetworkReturn, iappNetworkReturn] = yield all([
-        call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
-          filterObjects: [activitiesfilterObj]
-        }),
-        call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
-          filterObjects: [iappfilterObj]
-        })
-      ]);
-      if (activitiesNetworkReturn?.ok && iappNetworkReturn?.ok) {
-        const activityReturn =
-          activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
-        const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
-
-        const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
-        const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
-        yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
-        return;
+  if (connected) {
+    // get all the toggled on recordsets
+    const tableFilters = [
+      {
+        id: '0.81778552637744651712083357942',
+        filterType: 'spatialFilterDrawn',
+        operator: 'CONTAINED IN',
+        filter: '0.652479498272151712093656568',
+        geojson: whatsHereFeature.payload
       }
+    ];
+
+    const activitiesfilterObj = {
+      selectColumns: ['activity_id'],
+      tableFilters,
+      limit: 200000
+    };
+    const iappfilterObj = {
+      selectColumns: ['site_id'],
+      tableFilters,
+      limit: 200000
+    };
+    const [activitiesNetworkReturn, iappNetworkReturn] = yield all([
+      call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
+        filterObjects: [activitiesfilterObj]
+      }),
+      call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
+        filterObjects: [iappfilterObj]
+      })
+    ]);
+    if (activitiesNetworkReturn?.ok && iappNetworkReturn?.ok) {
+      const activityReturn = activitiesNetworkReturn?.data?.data?.result ?? activitiesNetworkReturn?.data?.result ?? [];
+      const activitiesServerIDList: string[] = activityReturn.map((row: UserRecord) => row.activity_id);
+
+      const iappReturn = iappNetworkReturn?.data?.data?.result ?? iappNetworkReturn?.data?.result ?? [];
+      const iappServerIDList: string[] = iappReturn.map((row: Record<PropertyKey, any>) => row.site_id);
+      yield put(WhatsHere.server_filtered_ids_fetched(activitiesServerIDList, iappServerIDList));
+      return;
     }
-    // Get IDs from Offline Caches
-    const service = yield RecordCacheServiceFactory.getPlatformInstance();
-    const overlappingRecords: string[] = yield service.getRecordIdsOverlappingFeature(whatsHereFeature.payload);
-    yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, [...overlappingRecords]));
-  } else {
-    if (!activitiesGeoJSONDict) {
-      yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
-    }
-    if (!IAPPGeoJSONDict) {
-      yield take(IAPP_GEOJSON_GET_SUCCESS);
-    }
-    yield all([put(WhatsHere.map_init_get_activity()), put(WhatsHere.map_init_get_poi())]);
   }
+  // Get IDs from Offline Caches
+  const service = yield RecordCacheServiceFactory.getPlatformInstance();
+  const overlappingRecords: string[] = yield service.getRecordIdsOverlappingFeature(whatsHereFeature.payload);
+  yield put(WhatsHere.server_filtered_ids_fetched(overlappingRecords, [...overlappingRecords]));
 }
 
 function* whatsHereSaga() {
@@ -185,89 +146,53 @@ function* whatsHereSaga() {
 function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
   const mapState = yield select(selectMap);
   const connected = yield select(selectNetworkConnected);
-  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
-    const { whatsHere } = mapState;
-    const startRecord = whatsHere.IAPPLimit * (whatsHere.IAPPPage + 1) - whatsHere.IAPPLimit;
-    const endRecord = whatsHere.IAPPLimit * (whatsHere.IAPPPage + 1);
-    const slicedIDs = whatsHere.IAPPIDs.slice(startRecord, endRecord);
+  const { whatsHere } = mapState;
+  const startRecord = whatsHere.IAPPLimit * (whatsHere.IAPPPage + 1) - whatsHere.IAPPLimit;
+  const endRecord = whatsHere.IAPPLimit * (whatsHere.IAPPPage + 1);
+  const slicedIDs = whatsHere.IAPPIDs.slice(startRecord, endRecord);
 
-    const filterObject = {
-      selectColumns: ['site_id', 'jurisdictions_flattened', 'map_symbol', 'min_survey', 'reported_area', 'geojson'],
-      limit: 200000,
-      ids_to_filter: slicedIDs
-    };
+  const filterObject = {
+    selectColumns: ['site_id', 'jurisdictions_flattened', 'map_symbol', 'min_survey', 'reported_area', 'geojson'],
+    limit: 200000,
+    ids_to_filter: slicedIDs
+  };
 
-    if (slicedIDs.length === 0) {
-      yield put(WhatsHere.iapp_rows_success([]));
-      return;
-    }
-    let records: IappRecord[];
-    if (MOBILE && !connected) {
+  if (slicedIDs.length === 0) {
+    yield put(WhatsHere.iapp_rows_success([]));
+    return;
+  }
+  let records: IappRecord[];
+  if (MOBILE && !connected) {
+    const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    records = yield service.getPaginatedCachedIappRecords(
+      whatsHere.IAPPIDs.map((id) => id.toString()),
+      whatsHere.IAPPPage,
+      whatsHere.IAPPLimit
+    );
+  } else {
+    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
+      filterObjects: [filterObject]
+    });
+    if (networkReturn?.ok) {
+      records = networkReturn.data.result;
+    } else {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       records = yield service.getPaginatedCachedIappRecords(
         whatsHere.IAPPIDs.map((id) => id.toString()),
         whatsHere.IAPPPage,
         whatsHere.IAPPLimit
       );
-    } else {
-      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/iapp/`, {
-        filterObjects: [filterObject]
-      });
-      if (networkReturn?.ok) {
-        records = networkReturn.data.result;
-      } else {
-        const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        records = yield service.getPaginatedCachedIappRecords(
-          whatsHere.IAPPIDs.map((id) => id.toString()),
-          whatsHere.IAPPPage,
-          whatsHere.IAPPLimit
-        );
-      }
-    }
-    const mappedToWhatsHereColumns = records.map((iappRecord) => ({
-      id: iappRecord.site_id,
-      site_id: iappRecord.site_id,
-      jurisdiction_code: iappRecord.jurisdictions_flattened,
-      species_code: iappRecord.map_symbol,
-      earliest_survey: new Date(iappRecord.min_survey).toDateString(),
-      geometry: iappRecord.geojson
-    }));
-    yield put(WhatsHere.iapp_rows_success(mappedToWhatsHereColumns));
-  } else {
-    try {
-      const startRecord =
-        mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1) - mapState?.whatsHere?.IAPPLimit;
-      const endRecord = mapState?.whatsHere?.IAPPLimit * (mapState?.whatsHere?.IAPPPage + 1);
-      const sorted = mapState?.whatsHere?.IAPPIDs.map((site_id) => mapState?.IAPPGeoJSONDict[site_id]).sort((a, b) => {
-        if (mapState?.whatsHere?.IAPPSortDirection === SortFilter.Desc) {
-          return a?.properties[mapState?.whatsHere?.IAPPSortField] > b?.properties[mapState?.whatsHere?.IAPPSortField]
-            ? 1
-            : -1;
-        } else {
-          return a?.properties[mapState?.whatsHere?.IAPPSortField] < b?.properties[mapState?.whatsHere?.IAPPSortField]
-            ? 1
-            : -1;
-        }
-      });
-      const sliceWithData = sorted.slice(startRecord, endRecord);
-
-      const mappedToWhatsHereColumns = sliceWithData.map((iappRecord) => {
-        return {
-          id: iappRecord?.properties.site_id,
-          site_id: iappRecord?.properties.site_id,
-          jurisdiction_code: iappRecord?.properties.jurisdictions,
-          species_code: iappRecord?.properties.species_on_site,
-          earliest_survey: iappRecord?.properties.earliest_survey,
-          geometry: iappRecord?.geometry,
-          reported_area: iappRecord?.properties.reported_area
-        };
-      });
-
-      yield put(WhatsHere.iapp_rows_success(mappedToWhatsHereColumns));
-    } catch (e) {
-      console.error(e);
     }
   }
+  const mappedToWhatsHereColumns = records.map((iappRecord) => ({
+    id: iappRecord.site_id,
+    site_id: iappRecord.site_id,
+    jurisdiction_code: iappRecord.jurisdictions_flattened,
+    species_code: iappRecord.map_symbol,
+    earliest_survey: new Date(iappRecord.min_survey).toDateString(),
+    geometry: iappRecord.geojson
+  }));
+  yield put(WhatsHere.iapp_rows_success(mappedToWhatsHereColumns));
 }
 
 function* handle_WHATS_HERE_PAGE_POI() {
@@ -278,159 +203,65 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
   const mapState = yield select(selectMap);
   const connected = yield select(selectNetworkConnected);
 
-  if (mapState.MapMode === 'VECTOR_ENDPOINT') {
-    const { whatsHere } = mapState;
-    const startRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1) - whatsHere.ActivityLimit;
-    const endRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1);
-    const slicedIDs = whatsHere.ActivityIDs.slice(startRecord, endRecord);
-    const filterObject = {
-      selectColumns: [
-        'activity_id',
-        'short_id',
-        'activity_payload',
-        'activity_type',
-        'jurisdiction_display',
-        'map_symbol'
-      ],
-      limit: 200000,
-      ids_to_filter: slicedIDs
-    };
-    if (slicedIDs.length === 0) {
-      yield put(WhatsHere.activity_rows_success([]));
-      return;
-    }
+  const { whatsHere } = mapState;
+  const startRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1) - whatsHere.ActivityLimit;
+  const endRecord = whatsHere.ActivityLimit * (whatsHere.ActivityPage + 1);
+  const slicedIDs = whatsHere.ActivityIDs.slice(startRecord, endRecord);
+  const filterObject = {
+    selectColumns: [
+      'activity_id',
+      'short_id',
+      'activity_payload',
+      'activity_type',
+      'jurisdiction_display',
+      'map_symbol'
+    ],
+    limit: 200000,
+    ids_to_filter: slicedIDs
+  };
+  if (slicedIDs.length === 0) {
+    yield put(WhatsHere.activity_rows_success([]));
+    return;
+  }
 
-    let records: UserRecord[];
-    if (MOBILE && !connected) {
+  let records: UserRecord[];
+  if (MOBILE && !connected) {
+    const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    records = yield service.getPaginatedCachedActivityRecords(
+      whatsHere.ActivityIDs,
+      whatsHere.ActivityPage,
+      whatsHere.ActivityLimit
+    );
+  } else {
+    const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
+      filterObjects: [filterObject]
+    });
+    if (networkReturn?.ok) {
+      records = networkReturn.data.result;
+    } else {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       records = yield service.getPaginatedCachedActivityRecords(
         whatsHere.ActivityIDs,
         whatsHere.ActivityPage,
         whatsHere.ActivityLimit
       );
-    } else {
-      const networkReturn = yield InvasivesAPI_Call('POST', `/api/v2/activities/`, {
-        filterObjects: [filterObject]
-      });
-      if (networkReturn?.ok) {
-        records = networkReturn.data.result;
-      } else {
-        const service = yield RecordCacheServiceFactory.getPlatformInstance();
-        records = yield service.getPaginatedCachedActivityRecords(
-          whatsHere.ActivityIDs,
-          whatsHere.ActivityPage,
-          whatsHere.ActivityLimit
-        );
-      }
-    }
-    const mappedToWhatsHereColumns = records.map((activityRecord) => {
-      // Differenciate the Cached records from the API called ones
-      const shortHand = activityRecord.activity_payload ? activityRecord.activity_payload : activityRecord;
-      return {
-        id: activityRecord.activity_id,
-        short_id: activityRecord.short_id,
-        activity_type: activityRecord.activity_type,
-        jurisdiction_code: activityRecord.jurisdiction_display,
-        species_code: activityRecord.map_symbol,
-        reported_area: shortHand.form_data.activity_data.reported_area,
-        geometry: shortHand.geometry?.[0],
-        created: new Date(shortHand.form_data.activity_data.activity_date_time).toDateString()
-      };
-    });
-    yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
-  } else {
-    try {
-      const startRecord =
-        mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1) -
-        mapState?.whatsHere?.ActivityLimit;
-      const endRecord = mapState?.whatsHere?.ActivityLimit * (mapState?.whatsHere?.ActivityPage + 1);
-
-      const sorted = mapState?.whatsHere?.ActivityIDs.map((id) => {
-        for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
-          if (mapState.activitiesGeoJSONDict[source] !== undefined) {
-            if (mapState.activitiesGeoJSONDict[source][id]) {
-              return mapState.activitiesGeoJSONDict[source][id];
-            }
-          }
-        }
-        return null;
-      }).sort((a, b) => {
-        if (mapState?.whatsHere?.ActivitySortDirection === SortFilter.Desc) {
-          return a?.properties[mapState?.whatsHere?.ActivitySortField] >
-            b?.properties[mapState?.whatsHere?.ActivitySortField]
-            ? 1
-            : -1;
-        } else {
-          return a?.properties[mapState?.whatsHere?.ActivitySortField] <
-            b?.properties[mapState?.whatsHere?.ActivitySortField]
-            ? 1
-            : -1;
-        }
-      });
-      const sliceWithData = sorted.slice(startRecord, endRecord);
-      const mappedToWhatsHereColumns = sliceWithData.map((activityRecord) => {
-        const jurisdiction_code: any[] = [];
-        activityRecord?.properties?.jurisdiction?.forEach((item) => {
-          jurisdiction_code.push(item.jurisdiction_code + ' (' + item.percent_covered + '%)');
-        });
-
-        const species_code: any[] = [];
-        switch (activityRecord?.properties?.type) {
-          case 'Observation':
-            activityRecord?.properties?.species_positive?.forEach((s) => {
-              if (s !== null) species_code.push(s);
-            });
-            activityRecord?.properties?.species_negative?.forEach((s) => {
-              if (s !== null) species_code.push(s);
-            });
-            break;
-          case 'Biocontrol':
-          case 'Treatment':
-            if (
-              activityRecord?.properties.species_treated &&
-              activityRecord?.properties.species_treated.length > 0 &&
-              activityRecord?.properties.species_treated[0] !== null
-            ) {
-              const treatmentTemp = activityRecord?.properties.species_treated;
-              if (treatmentTemp) {
-                treatmentTemp.forEach((s) => {
-                  species_code.push(s);
-                });
-              }
-            }
-            break;
-          case 'Monitoring':
-            if (
-              activityRecord?.properties.species_treated &&
-              activityRecord?.properties.species_treated.length > 0 &&
-              activityRecord?.properties.species_treated[0] !== null
-            ) {
-              const monitoringTemp = activityRecord?.properties.species_treated;
-              if (monitoringTemp) {
-                monitoringTemp.forEach((s) => {
-                  species_code.push(s);
-                });
-              }
-            }
-            break;
-        }
-
-        return {
-          id: activityRecord?.properties?.id,
-          short_id: activityRecord?.properties?.short_id,
-          activity_type: activityRecord?.properties?.type,
-          reported_area: activityRecord?.properties?.reported_area ? activityRecord?.properties?.reported_area : 0,
-          created: activityRecord?.properties?.created,
-          jurisdiction_code: jurisdiction_code,
-          species_code: species_code,
-          geometry: activityRecord?.geometry
-        };
-      });
-      yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
-    } catch (e) {
-      console.error(e);
     }
   }
+  const mappedToWhatsHereColumns = records.map((activityRecord) => {
+    // Differenciate the Cached records from the API called ones
+    const shortHand = activityRecord.activity_payload ? activityRecord.activity_payload : activityRecord;
+    return {
+      id: activityRecord.activity_id,
+      short_id: activityRecord.short_id,
+      activity_type: activityRecord.activity_type,
+      jurisdiction_code: activityRecord.jurisdiction_display,
+      species_code: activityRecord.map_symbol,
+      reported_area: shortHand.form_data.activity_data.reported_area,
+      geometry: shortHand.geometry?.[0],
+      created: new Date(shortHand.form_data.activity_data.activity_date_time).toDateString()
+    };
+  });
+  yield put(WhatsHere.activity_rows_success(mappedToWhatsHereColumns));
 }
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY() {
@@ -577,15 +408,13 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
     recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !==
     recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash
   )
-    if (map.MapMode === 'VECTOR_ENDPOINT') {
-      yield put({
-        type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
-        payload: {
-          recordSetID: action.payload.setID,
-          tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-        }
-      });
-    }
+    yield put({
+      type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
+      payload: {
+        recordSetID: action.payload.setID,
+        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+      }
+    });
   const actionArg = {
     recordSetID: action.payload.setID,
     tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
@@ -645,7 +474,6 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
 
   const userSettingsState = yield select(selectUserSettings);
   const recordSets = Object.keys(userSettingsState.recordSets);
-  const mapMode = yield select((state) => state.Map.MapMode);
 
   // current layers
   const layers = yield select((state) => state.Map.layers);
@@ -668,7 +496,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
 
   const actionsToPut: ActionType[] = [];
   allUninitializedLayers.forEach((layer) => {
-    if (mapMode === 'VECTOR_ENDPOINT' && layer.recordSetID !== RecordSetId.OfflineActivities) {
+    if (layer.recordSetID !== RecordSetId.OfflineActivities) {
       actionsToPut.push({
         type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
         payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
@@ -773,10 +601,6 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   }
 }
 
-function handle_MAP_TOGGLE_GEOJSON_CACHE() {
-  location.reload();
-}
-
 function* handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED() {
   yield all([put(WhatsHere.iapp_rows_request()), put(WhatsHere.activity_rows_request())]);
 }
@@ -845,12 +669,8 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
-    takeEvery(MAP_TOGGLE_GEOJSON_CACHE, handle_MAP_TOGGLE_GEOJSON_CACHE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
-    takeEvery(Activity.GeoJson.get, handle_ACTIVITIES_GEOJSON_GET_REQUEST),
-    takeEvery(ACTIVITIES_GEOJSON_REFETCH_ONLINE, handle_ACTIVITIES_GEOJSON_REFETCH_ONLINE),
-    takeEvery(IAPP_GEOJSON_GET_REQUEST, handle_IAPP_GEOJSON_GET_REQUEST),
     takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
     takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
@@ -865,8 +685,6 @@ function* activitiesPageSaga() {
 
     takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IappActions.getRowsRequest, handle_IAPP_TABLE_ROWS_GET_ONLINE),
-    takeEvery(IAPP_GEOJSON_GET_ONLINE, handle_IAPP_GEOJSON_GET_ONLINE),
-    takeEvery(ACTIVITIES_GEOJSON_GET_ONLINE, handle_ACTIVITIES_GEOJSON_GET_ONLINE),
     takeEvery(WhatsHere.iapp_rows_request, handle_WHATS_HERE_IAPP_ROWS_REQUEST),
     takeEvery(WhatsHere.page_poi, handle_WHATS_HERE_PAGE_POI),
     takeEvery(WhatsHere.sort_filter_update, handle_WHATS_HERE_SORT_FILTER_UPDATE),

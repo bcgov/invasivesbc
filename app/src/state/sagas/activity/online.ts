@@ -3,8 +3,6 @@ import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { getLinkedTreatmentsFromCachedRecords } from './dataAccess';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-
-import { ACTIVITIES_GEOJSON_REFETCH_ONLINE } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
@@ -124,13 +122,6 @@ export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
       })
     );
   }
-  yield put({
-    type: ACTIVITIES_GEOJSON_REFETCH_ONLINE,
-    payload: {
-      page: 0,
-      limit: 100000
-    }
-  });
 }
 
 export function* handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE(action) {

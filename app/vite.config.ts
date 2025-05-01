@@ -18,17 +18,12 @@ function buildSpecificDefines() {
 
     defines['INJECTED_COMMIT_HASH'] = JSON.stringify(commitHash);
 
-    if (process.env['IAPP_GEOJSON_URL'] === undefined) {
-      throw new Error('Heads up -- at least one required env var is not defined. Did you setup your environment?');
-    }
-
     defines['CONFIGURATION_API_BASE'] = JSON.stringify(process.env['REACT_APP_API_HOST']);
     defines['CONFIGURATION_KEYCLOAK_CLIENT_ID'] = JSON.stringify(process.env['SSO_CLIENT_ID']);
     defines['CONFIGURATION_KEYCLOAK_REALM'] = JSON.stringify(process.env['SSO_REALM']);
     defines['CONFIGURATION_KEYCLOAK_URL'] = JSON.stringify(process.env['SSO_URL']);
     defines['CONFIGURATION_REDIRECT_URI'] = JSON.stringify(process.env['REDIRECT_URI']);
     defines['CONFIGURATION_PUBLIC_MAP_URL'] = JSON.stringify(process.env['PUBLIC_MAP_URL']);
-    defines['CONFIGURATION_IAPP_GEOJSON_URL'] = JSON.stringify(process.env['IAPP_GEOJSON_URL']);
     defines['CONFIGURATION_SILENT_CHECK_URI'] = JSON.stringify(process.env['SILENT_CHECK_URI']);
     defines['CONFIGURATION_IOS_APP_STORE_URL'] = JSON.stringify(process.env['IOS_APP_STORE_URL']);
     defines['CONFIGURATION_ANDROID_APP_STORE_URL'] = JSON.stringify(process.env['ANDROID_APP_STORE_URL']);

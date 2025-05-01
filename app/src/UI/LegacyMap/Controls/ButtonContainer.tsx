@@ -7,7 +7,6 @@ import { LegendsButton } from './LegendsButton';
 import { NewRecord } from './NewRecord';
 import { QuickPanToRecordToggle } from './QuickPanToRecordToggle';
 import { WhatsHereButton } from './WhatsHereButton';
-import { MapModeToggle } from './MapToggleCacheGeoJSON';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import TrackingButtonsContainer from './TrackingButtonsContainer';
 import { PrimaryLayerSelect } from 'UI/LegacyMap/Controls/PrimaryLayerSelect';
@@ -38,7 +37,6 @@ export const ButtonContainer = () => {
         {authenticated && <CenterCurrentRecord type={RecordSetType.Activity} />}
         {authenticated && <CenterCurrentRecord type={RecordSetType.IAPP} />}
         <QuickPanToRecordToggle />
-        {authenticated && <MapModeToggle />}
       </WebOnly>
     </div>
   );

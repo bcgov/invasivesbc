@@ -60,8 +60,6 @@ export const Map = ({ children }) => {
 
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
 
-  const MapMode = useSelector((state) => state.Map.MapMode);
-
   // Auth + Network
   const authenticated = useSelector((state) => state.Auth.authenticated);
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
@@ -276,7 +274,7 @@ export const Map = ({ children }) => {
     if (!mapReady) return;
     if (!map) return;
     (async () => {
-      await rebuildLayersOnTableHashUpdate(storeLayers, map, MapMode, API_BASE, connectedToNetwork);
+      await rebuildLayersOnTableHashUpdate(storeLayers, map, API_BASE, connectedToNetwork);
       refreshColoursOnColourUpdate(storeLayers, map);
       refreshVisibilityOnToggleUpdate(storeLayers, map);
     })();

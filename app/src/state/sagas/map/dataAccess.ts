@@ -1,59 +1,19 @@
-import { put, select, take } from 'redux-saga/effects';
-import intersect from '@turf/intersect';
+import { put, select } from 'redux-saga/effects';
 
-import { booleanPointInPolygon, multiPolygon, point, polygon } from '@turf/turf';
+import { booleanPointInPolygon, point, polygon } from '@turf/turf';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { PayloadAction } from '@reduxjs/toolkit';
-import {
-  ACTIVITIES_GEOJSON_GET_ONLINE,
-  ACTIVITIES_GEOJSON_GET_SUCCESS,
-  ACTIVITY_GET_INITIAL_STATE_FAILURE,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  IAPP_GEOJSON_GET_ONLINE,
-  IAPP_GEOJSON_GET_SUCCESS
-} from 'state/actions';
-import { ACTIVITY_GEOJSON_SOURCE_KEYS, selectMap } from 'state/reducers/map';
+import { ACTIVITY_GET_INITIAL_STATE_FAILURE, FILTERS_PREPPED_FOR_VECTOR_ENDPOINT } from 'state/actions';
+import { selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType, UserRecordSet, RecordSetId } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
-import GeoShapes from 'constants/geoShapes';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordset } from 'state/actions/activity/Activity';
 import { IQueryParams } from 'utils/record-cache';
-
-export function* handle_ACTIVITIES_GEOJSON_GET_REQUEST(action) {
-  try {
-    // if mobile or web
-    yield put({
-      type: ACTIVITIES_GEOJSON_GET_ONLINE,
-      payload: {
-        recordSetID: action.payload.recordSetID,
-        activitiesFilterCriteria: action.payload.activitiesFilterCriteria
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
-  }
-}
-
-export function* handle_IAPP_GEOJSON_GET_REQUEST(action) {
-  try {
-    // if mobile or web
-    yield put({
-      type: IAPP_GEOJSON_GET_ONLINE,
-      payload: {
-        ...action.payload
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
-  }
-}
 
 export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
   try {
@@ -409,42 +369,8 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_POI() {
 export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY() {
   let currentMapState = yield select((state) => state.Map);
 
-  if (!currentMapState?.activitiesGeoJSONDict || !currentMapState?.IAPPGeoJSONDict) {
-    yield take(ACTIVITIES_GEOJSON_GET_SUCCESS);
-    yield take(IAPP_GEOJSON_GET_SUCCESS);
-  }
-
   currentMapState = yield select(selectMap);
   const featuresFilteredByShape: Record<string, any> = [];
-
-  for (const source of ACTIVITY_GEOJSON_SOURCE_KEYS) {
-    if (!currentMapState?.activitiesGeoJSONDict?.hasOwnProperty(source)) continue;
-
-    const current = currentMapState?.activitiesGeoJSONDict[source];
-    if (current == undefined) continue;
-
-    featuresFilteredByShape.push(
-      ...Object.values(current)?.filter((feature: any) => {
-        const boundaryPolygon = polygon(currentMapState?.whatsHere?.feature?.geometry.coordinates);
-        switch (feature?.geometry?.type) {
-          case GeoShapes.Point: {
-            const featurePoint = point(feature.geometry.coordinates);
-            return booleanPointInPolygon(featurePoint, boundaryPolygon);
-          }
-          case GeoShapes.Polygon: {
-            const featurePolygon = polygon(feature.geometry.coordinates);
-            return intersect(featurePolygon, boundaryPolygon);
-          }
-          case GeoShapes.MultiPolygon: {
-            const amultiPolygon = multiPolygon(feature.geometry.coordinates);
-            return intersect(amultiPolygon, boundaryPolygon);
-          }
-          default:
-            return false;
-        }
-      })
-    );
-  }
 
   const featureFilteredIDS = featuresFilteredByShape.map((feature: any) => {
     return feature.properties.id;

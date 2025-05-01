@@ -52,22 +52,15 @@ export const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => 
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 };
 
-export const createOnlineIappLayer = (map: any, layer: any, mode: string, API_BASE: string) => {
+export const createOnlineIappLayer = (map: any, layer: any, API_BASE: string) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   let source: SourceSpecification;
-  if (mode === 'VECTOR_ENDPOINT') {
-    source = {
-      type: 'vector',
-      tiles: [`${API_BASE}/api/vectors/iapp/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
-      minzoom: 0,
-      maxzoom: 24
-    };
-  } else {
-    source = {
-      type: 'geojson',
-      data: layer.geoJSON
-    };
-  }
+  source = {
+    type: 'vector',
+    tiles: [`${API_BASE}/api/vectors/iapp/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
+    minzoom: 0,
+    maxzoom: 24
+  };
   const color: string = layer.layerState.color ?? FALLBACK_COLOR;
   const labelsShouldBeVisible = !!layer?.layerState?.labelToggle && !!layer?.layerState?.mapToggle;
   const labelLayer = getLabelLayer(layerID, {
@@ -77,11 +70,8 @@ export const createOnlineIappLayer = (map: any, layer: any, mode: string, API_BA
     visibility: labelsShouldBeVisible
   });
   const circleLayer: CircleLayerSpecification = getCircleMarkerZoomedOutLayer(layerID, { color });
-
-  if (mode === 'VECTOR_ENDPOINT') {
-    circleLayer['source-layer'] = 'data';
-    labelLayer['source-layer'] = 'data';
-  }
+  circleLayer['source-layer'] = 'data';
+  labelLayer['source-layer'] = 'data';
 
   map.addSource(layerID, source);
   map.addLayer(circleLayer, LAYER_Z_MID);
@@ -94,33 +84,33 @@ const getPaintBySchemeOrColor = (layer: any) => {
       'match',
       ['get', 'activity_subtype'],
       'Activity_Biocontrol_Collection',
-      layer.layerState.colorScheme['Activity_Biocontrol_Collection'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Biocontrol_Collection'] ?? FALLBACK_COLOR,
       'Activity_Biocontrol_Release',
-      layer.layerState.colorScheme['Activity_Biocontrol_Release'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Biocontrol_Release'] ?? FALLBACK_COLOR,
       'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
-      layer.layerState.colorScheme['Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant'] ?? FALLBACK_COLOR,
       'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
-      layer.layerState.colorScheme['Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'] ?? FALLBACK_COLOR,
       'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
-      layer.layerState.colorScheme['Activity_Monitoring_ChemicalTerrestrialAquaticPlant'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Monitoring_ChemicalTerrestrialAquaticPlant'] ?? FALLBACK_COLOR,
       'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-      layer.layerState.colorScheme['Activity_Monitoring_MechanicalTerrestrialAquaticPlant'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Monitoring_MechanicalTerrestrialAquaticPlant'] ?? FALLBACK_COLOR,
       'Activity_Observation_PlantAquatic',
-      layer.layerState.colorScheme['Activity_Observation_PlantAquatic'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Observation_PlantAquatic'] ?? FALLBACK_COLOR,
       'Activity_Observation_PlantTerrestrial',
-      layer.layerState.colorScheme['Activity_Observation_PlantTerrestrial'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Observation_PlantTerrestrial'] ?? FALLBACK_COLOR,
       'Activity_Treatment_ChemicalPlantAquatic',
-      layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantAquatic'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantAquatic'] ?? FALLBACK_COLOR,
       'Activity_Treatment_ChemicalPlantTerrestrial',
-      layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantTerrestrial'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantTerrestrial'] ?? FALLBACK_COLOR,
       'Activity_Treatment_MechanicalPlantAquatic',
-      layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantAquatic'] || FALLBACK_COLOR,
+      layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantAquatic'] ?? FALLBACK_COLOR,
       'Activity_Treatment_MechanicalPlantTerrestrial',
-      layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantTerrestrial'] || FALLBACK_COLOR,
-      layer.layerState.color || FALLBACK_COLOR
+      layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantTerrestrial'] ?? FALLBACK_COLOR,
+      layer.layerState.color ?? FALLBACK_COLOR
     ];
   } else {
-    return layer?.layerState?.color || FALLBACK_COLOR;
+    return layer?.layerState?.color ?? FALLBACK_COLOR;
   }
 };
 
@@ -255,7 +245,7 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   map.addLayer(circleMarkerZoomedOutLayerCentroid, LAYER_Z_FOREGROUND);
 };
 
-export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode, API_BASE) => {
+export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, API_BASE) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
 
   if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
@@ -264,22 +254,15 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode,
 
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
   let source: SourceSpecification;
-  if (mode === 'VECTOR_ENDPOINT') {
-    source = {
-      type: 'vector',
-      tiles: [
-        `${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`
-      ],
-      minzoom: 0,
-      maxzoom: 24
-    };
-  } else {
-    source = {
-      type: 'geojson',
-      data: layer.geoJSON
-      //tolerance: 0 defaults to 0.375, 0 is a hog but 0.375 is too much at low zooms
-    };
-  }
+
+  source = {
+    type: 'vector',
+    tiles: [
+      `${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`
+    ],
+    minzoom: 0,
+    maxzoom: 24
+  };
   const color = getPaintBySchemeOrColor(layer);
   const labelsShouldBeVisible = !!layer?.layerState?.labelToggle && !!layer?.layerState?.mapToggle;
   const fillLayer: FillLayerSpecification = getFillLayer(layerID, { color });
@@ -291,12 +274,10 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, mode,
     visibility: labelsShouldBeVisible
   });
 
-  if (mode === 'VECTOR_ENDPOINT') {
-    fillLayer['source-layer'] = 'data';
-    borderLayer['source-layer'] = 'data';
-    circleMarkerZoomedOutLayer['source-layer'] = 'data';
-    labelLayer['source-layer'] = 'data';
-  }
+  fillLayer['source-layer'] = 'data';
+  borderLayer['source-layer'] = 'data';
+  circleMarkerZoomedOutLayer['source-layer'] = 'data';
+  labelLayer['source-layer'] = 'data';
 
   map.addSource(layerID, source);
   map.addLayer(fillLayer, LAYER_Z_FOREGROUND);
@@ -506,7 +487,6 @@ export const removeRecordsetLayersOnForcedRedraw = (map: maplibregl.Map) => {
 export const rebuildLayersOnTableHashUpdate = async (
   storeLayers: Record<PropertyKey, any>,
   map: maplibregl.Map,
-  mode: string,
   API_BASE: string,
   connectedToNetwork: boolean
 ) => {
@@ -522,12 +502,12 @@ export const rebuildLayersOnTableHashUpdate = async (
 
   // now update the layers that are in the store
   await storeLayers.forEach(async (layer: Record<PropertyKey, any>) => {
-    if ((mode === 'VECTOR_ENDPOINT' && layer.filterObject) || (layer.geoJSON && layer.loading === false)) {
+    if (layer.filterObject || (layer.geoJSON && layer.loading === false)) {
       const sourceId = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
       deleteStaleRecordsetLayer(map, layer); // cleans up recordset layers with filters
       const existingSource = map.getSource(sourceId);
       if (existingSource) return;
-      await createMapLayer(map, layer, mode, API_BASE, MOBILE_OFFLINE);
+      await createMapLayer(map, layer, API_BASE, MOBILE_OFFLINE);
     }
   });
 };
@@ -538,7 +518,6 @@ export const rebuildLayersOnTableHashUpdate = async (
 const createMapLayer = async (
   map: maplibregl.Map,
   layer: Record<PropertyKey, any>,
-  mapMode: string,
   apiBase: string,
   isOfflineLayer: boolean
 ): Promise<void> => {
@@ -546,13 +525,13 @@ const createMapLayer = async (
     if (isOfflineLayer) {
       await createCachedActivityLayer(map, layer);
     } else {
-      createOnlineActivityLayer(map, layer, mapMode, apiBase);
+      createOnlineActivityLayer(map, layer, apiBase);
     }
   } else if (layer.type === RecordSetType.IAPP) {
     if (isOfflineLayer) {
       await createCachedIappLayer(map, layer);
     } else {
-      createOnlineIappLayer(map, layer, mapMode, apiBase);
+      createOnlineIappLayer(map, layer, apiBase);
     }
   }
 };
