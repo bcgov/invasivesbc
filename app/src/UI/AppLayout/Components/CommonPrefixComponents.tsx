@@ -1,7 +1,8 @@
 import AlertsContainer from 'UI/AlertsContainer/AlertsContainer';
 import UserInputModalController from 'UI/UserInputModals/UserInputModalController';
 import { Header } from 'UI/Header/Header';
-import React from 'react';
+import { MOBILE } from 'state/build-time-config';
+import MobileHeader from 'UI/MobileHeader/MobileHeader';
 
 /* Components that occur after the map in the layout dom, in both layouts */
 
@@ -10,7 +11,7 @@ const CommonPrefixComponents = () => {
     <>
       <AlertsContainer />
       <UserInputModalController />
-      <Header />
+      {MOBILE ? <MobileHeader /> : <Header />}
     </>
   );
 };
