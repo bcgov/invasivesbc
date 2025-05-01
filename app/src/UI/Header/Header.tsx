@@ -41,113 +41,7 @@ import NetworkActions from 'state/actions/network/NetworkActions';
 import MapActions from 'state/actions/map';
 import { AuthActions } from 'state/actions/auth/Auth';
 import Alerts from 'state/actions/alerts/Alerts';
-
-type TabPredicate =
-  | 'authenticated_any'
-  | 'authenticated_online'
-  | 'working_offline'
-  | 'unauthenticated'
-  | 'always'
-  | 'never';
-
-type TabPlatformPredicate = 'web' | 'mobile' | 'both';
-
-interface TabProps extends PropsWithChildren {
-  predicate: TabPredicate;
-  platform: TabPlatformPredicate;
-  path: string;
-  label: string;
-  panelOpen: boolean;
-  panelFullScreen: boolean;
-}
-
-const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, panelOpen, panelFullScreen }) => {
-  const ref = useRef(0);
-  ref.current += 1;
-
-  const urlFromAppModeState = useSelector((state) => state.AppMode.url);
-
-  const history = useHistory();
-
-  const dispatch = useDispatch();
-  const authenticated = useSelector((state) => state.Auth.authenticated && state?.Auth.roles.length > 0);
-  const { workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
-
-  const canDisplayCallBack = useCallback(() => {
-    if (platform === 'mobile' && !MOBILE) {
-      return false;
-    }
-    if (platform === 'web' && MOBILE) {
-      return false;
-    }
-
-    switch (predicate) {
-      case 'always':
-        return true;
-      case 'never':
-        return false;
-      case 'unauthenticated':
-        return !loggedInOrWorkingOffline;
-      case 'authenticated_online':
-        return authenticated && !workingOffline;
-      case 'working_offline':
-        return workingOffline;
-      case 'authenticated_any':
-        return loggedInOrWorkingOffline;
-    }
-  }, [authenticated, workingOffline, predicate, platform, MOBILE, JSON.stringify(path)]);
-
-  useEffect(() => {
-    const scrollContainer = document.getElementById('ButtonWrapper');
-    const rightIconContainer = document.getElementById('right-icon-container');
-    const leftIconContainer = document.getElementById('left-icon-container');
-
-    if (scrollContainer !== null && rightIconContainer !== null && leftIconContainer !== null) {
-      // workaround for scroll = client on load race
-      setTimeout(() => {
-        if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
-          rightIconContainer.style.visibility = 'visible';
-        }
-      }, 100);
-
-      scrollContainer.addEventListener('scroll', () => {
-        const enableVisibleLeft = scrollContainer.scrollLeft <= 5;
-        const enableVisibleRight =
-          scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5;
-        if (enableVisibleRight) {
-          rightIconContainer.style.visibility = 'visible';
-          leftIconContainer.style.visibility = 'hidden';
-        } else if (enableVisibleLeft) {
-          rightIconContainer.style.visibility = 'hidden';
-          leftIconContainer.style.visibility = 'visible';
-        } else {
-          rightIconContainer.style.visibility = 'visible';
-          leftIconContainer.style.visibility = 'visible';
-        }
-      });
-    }
-  }, []);
-
-  return (
-    <>
-      {canDisplayCallBack() && (
-        <button
-          className={'Tab' + (urlFromAppModeState === path ? ' Tab__Indicator' : '')}
-          onClick={() => {
-            history.push(path);
-            dispatch({
-              type: TOGGLE_PANEL,
-              payload: { panelOpen: panelOpen, fullScreen: panelFullScreen }
-            });
-          }}
-        >
-          <div className="Tab__Content">{children}</div>
-          <div className="Tab__Label">{label}</div>
-        </button>
-      )}
-    </>
-  );
-};
+import NavTab from './NavTab';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -219,7 +113,7 @@ const InvIcon = () => {
 const ActivityTabMemo = () => {
   const activeActivity = useSelector((state) => state.UserSettings.activeActivity) || undefined;
   return (
-    <Tab
+    <NavTab
       key={'tab3'}
       path={'/Records/Activity:' + activeActivity + '/form'}
       label="Current Activity"
@@ -229,14 +123,14 @@ const ActivityTabMemo = () => {
       panelFullScreen={false}
     >
       <AssignmentIcon />
-    </Tab>
+    </NavTab>
   );
 };
 
 const IAPPTabMemo = () => {
   const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
   return (
-    <Tab
+    <NavTab
       key={'tab4'}
       path={'/Records/IAPP/' + activeIAPP + '/summary'}
       label="Current IAPP"
@@ -251,7 +145,7 @@ const IAPPTabMemo = () => {
         src={'/assets/iapp_logo.gif'}
         style={{ maxWidth: '1rem', marginBottom: '0px' }}
       />
-    </Tab>
+    </NavTab>
   );
 };
 
@@ -260,7 +154,7 @@ const AdminPanelMemo = () => {
   return (
     <>
       {roles.find((role) => role.role_id === 18) ? (
-        <Tab
+        <NavTab
           key={'tab9'}
           path={'/Admin'}
           label="Admin"
@@ -270,7 +164,7 @@ const AdminPanelMemo = () => {
           panelFullScreen={true}
         >
           <AdminPanelSettings />
-        </Tab>
+        </NavTab>
       ) : (
         <></>
       )}
@@ -397,7 +291,7 @@ const LoginOrOutMemo = React.memo(() => {
   );
 });
 
-const NetworkStateControl: React.FC = () => {
+export const NetworkStateControl: React.FC = () => {
   const handleNetworkStateChange = () => {
     dispatch(connected ? NetworkActions.setAdministrativeStatus(false) : NetworkActions.manualReconnect());
   };
@@ -454,7 +348,7 @@ export const Header: React.FC = () => {
       <InvIcon />
 
       <ButtonWrapper>
-        <Tab
+        <NavTab
           key={'tab1'}
           path={'/Landing'}
           predicate={'always'}
@@ -464,9 +358,9 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <Home />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key={'tab2'}
           path="/Records"
           label="Records"
@@ -476,13 +370,13 @@ export const Header: React.FC = () => {
           panelFullScreen={false}
         >
           <ManageSearchIcon />
-        </Tab>
+        </NavTab>
 
         <ActivityTabMemo />
 
         <IAPPTabMemo />
 
-        <Tab
+        <NavTab
           key={'tileCache'}
           path="/OfflineTiles"
           label={'Tile Cache Status'}
@@ -492,9 +386,9 @@ export const Header: React.FC = () => {
           panelFullScreen={false}
         >
           <OfflineBolt />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key={'tab5'}
           path={'/Batch/list'}
           label="Batch"
@@ -504,9 +398,9 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <FileUpload />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key={'tab6'}
           path={'/Reports'}
           label="Reports"
@@ -516,9 +410,9 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <Assessment />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key="tab7-1/2"
           path="/News"
           label="News"
@@ -528,9 +422,9 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <Newspaper />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key={'tab7'}
           path={'/Training'}
           label="Training"
@@ -540,11 +434,11 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <School />
-        </Tab>
+        </NavTab>
 
         <AdminPanelMemo />
 
-        <Tab
+        <NavTab
           key={'tab8'}
           path={'/Map'}
           label="Map"
@@ -554,7 +448,7 @@ export const Header: React.FC = () => {
           panelOpen={false}
         >
           <Map />
-        </Tab>
+        </NavTab>
 
         {MOBILE && loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
 
