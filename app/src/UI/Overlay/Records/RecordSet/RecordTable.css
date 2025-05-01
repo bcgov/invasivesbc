@@ -4,7 +4,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   p {
     width: 100%;
     max-width: 375pt;
@@ -16,15 +15,16 @@
 }
 
 .record_table_container {
+  box-sizing: border-box;
+  border: 1pt solid black;
   display: flex;
   flex-direction: column;
-  width: 100%;
+  font-size: 1rem;
+  margin-bottom: var(--record-table-footer-height);
   max-height: 300pt;
   overflow-x: scroll;
-  margin-bottom: var(--record-table-footer-height);
-  border: 1pt solid black;
-  box-sizing: border-box;
-
+  width: 100%;
+  -webkit-text-size-adjust: 100%; /* Disables iOS Autoscaling text size */
   .record_table {
     white-space: nowrap;
     border-collapse: separate;
