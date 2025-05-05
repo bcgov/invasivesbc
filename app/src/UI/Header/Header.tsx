@@ -93,7 +93,7 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
       case 'working_offline':
         return workingOffline;
       case 'authenticated_any':
-        return loggedInOrWorkingOffline && roles.length > 0;
+        return loggedInOrWorkingOffline;
     }
   }, [authenticated, workingOffline, predicate, platform, MOBILE, JSON.stringify(path)]);
 
