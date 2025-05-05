@@ -1,0 +1,83 @@
+#nav-header {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  height: var(--header-bar-height);
+  justify-content: space-between;
+  padding: 5pt;
+  margin-top: env(safe-area-inset-top, 0);
+  width: 100%;
+  .nav-icon,
+  img {
+    height: calc(var(--header-bar-height) - 10pt) !important;
+    aspect-ratio: 1 / 1;
+  }
+}
+
+#nav-header nav {
+  display: flex;
+  flex-direction: row;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Styling for Navigation Tabs */
+#nav-header nav {
+  & > * {
+    display: flex;
+    flex-direction: row;
+  }
+}
+
+.hamburger-nav {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  .network-section {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    /* https://www2.gov.bc.ca/gov/content/digital/design-system/foundations/colour#palettes */
+    background-color: #1e5189;
+    border-bottom: 2pt solid var(--bc-yellow);
+    color: white;
+    box-sizing: border-box;
+    padding: 0 10pt;
+  }
+  ul {
+    padding: 0;
+    margin: 0;
+    li:nth-child(even) {
+      background-color: #eceae8;
+    }
+    li:nth-child(odd) {
+      background-color: #fff;
+    }
+    li > button {
+      background-color: transparent;
+      padding: 5pt;
+      display: flex;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: flex-start;
+      border: none;
+      border-radius: 0;
+      height: 30pt;
+      width: 100%;
+      img:first-child,
+      svg:first-child {
+        margin-right: 10px;
+        color: #053662;
+      }
+      &:hover {
+        cursor: pointer;
+        background-color: #d1cfcd;
+      }
+    }
+    li > a > svg,
+    li > a > img {
+      margin-right: 10pt;
+    }
+  }
+}
