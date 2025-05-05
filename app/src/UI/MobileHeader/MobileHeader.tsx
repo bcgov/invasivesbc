@@ -7,6 +7,7 @@ import { useSelector } from 'utils/use_selector';
 import { Home, Map } from '@mui/icons-material';
 import HeaderPopover from './HeaderPopover';
 import { useState } from 'react';
+import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 
 const MobileHeader = () => {
   const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
@@ -68,12 +69,13 @@ const MobileHeader = () => {
           panelFullScreen={false}
         >
           <img
-            alt="iapp logo"
+            alt="IAPP logo"
             className="nav-icon iapp-logo"
-            src={'/assets/IAPP.png'}
-            style={{ marginBottom: '0px' }}
+            src={'/assets/iapp_logo.gif'}
+            style={{ marginBottom: '0px', maxWidth: '20px', objectFit: 'contain' }}
           />
         </NavTab>
+        <OfflineSyncHeaderButton />
       </nav>
       <HeaderPopover />
     </header>
