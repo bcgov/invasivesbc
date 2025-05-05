@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.util.Log;
 
 import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Nullable;
 
 import com.getcapacitor.JSObject;
@@ -26,9 +25,20 @@ import net.openid.appauth.ResponseTypeValues;
 
 import org.json.JSONException;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @CapacitorPlugin(name = "AuthBridge")
 
 public class AuthBridge extends Plugin {
+
+  private static String CLIENT_ID = "invasives-bc-4565";
 
   private AuthorizationService authService = null;
   private AuthState authState = null;
@@ -77,8 +87,49 @@ public class AuthBridge extends Plugin {
 
   @PluginMethod()
   public void logout(PluginCall call) {
-    this.authState = null;
-    call.resolve();
+    final JSObject resolution = new JSObject();
+    resolution.put("accessToken", null);
+    resolution.put("idToken", null);
+
+    this.authState.performActionWithFreshTokens(authService, new AuthState.AuthStateAction() {
+        @Override
+        public void execute(@Nullable String accessToken, @Nullable String idToken, @Nullable AuthorizationException ex) {
+
+          try {
+            final URL logoutURL = new URL("https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/logout");
+            HttpURLConnection conn = (HttpURLConnection) logoutURL.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+            conn.setDoOutput(true);
+            conn.setDoInput(true);
+
+            try (BufferedOutputStream out = new BufferedOutputStream(conn.getOutputStream())) {
+              final String encodedClientID = URLEncoder.encode(CLIENT_ID, StandardCharsets.UTF_8);
+              final String encodedRefreshToken = URLEncoder.encode(authState.getRefreshToken(), StandardCharsets.UTF_8);
+              final String logoutRequestBody = "client_id=" + encodedClientID + "&refresh_token=" + encodedRefreshToken;
+
+              out.write(logoutRequestBody.getBytes(StandardCharsets.UTF_8));
+            }
+
+            try (BufferedInputStream in = new BufferedInputStream(conn.getInputStream())) {
+              final byte[] response = in.readAllBytes();
+              Log.d("auth", "response: " + new String(response));
+            }
+
+          } catch (IOException e) {
+            Log.e("auth", "Caught exception processing logout\n" + e.toString());
+            call.resolve(resolution);
+          } finally {
+            authState = null;
+          }
+
+          call.resolve(resolution);
+
+        }
+      }
+
+    );
   }
 
   @PluginMethod()
@@ -124,10 +175,10 @@ public class AuthBridge extends Plugin {
     AuthorizationRequest req =
       new AuthorizationRequest.Builder(
         serviceConfig,
-        "invasives-bc-4565",
+        CLIENT_ID,
         ResponseTypeValues.CODE,
         Uri.parse("invasivesbc://callback")
-      ).setScopes("openid")
+      ).setScopes("openid", "offline_access")
         .build();
 
 
