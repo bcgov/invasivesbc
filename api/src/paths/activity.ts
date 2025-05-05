@@ -271,10 +271,16 @@ function createActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
+    if (!req.authContext.roles || req.authContext.roles.length === 0) {
+      return res.status(401).json({
+        message: 'Unauthorized, user lacks sufficient roles',
+        namespace: 'activity',
+        code: 401
+      });
+    }
     const data = { ...req.body, media_keys: req['media_keys'], user_role: req.authContext?.roles[0] };
 
     const sanitizedActivityData = new ActivityPostRequestBody(data);
-
     if (!(req.authContext && req.authContext.preferredUsername && req.authContext.friendlyUsername)) {
       return res.status(401).json({
         message: 'Invalid request, authContext provides insufficient data to complete record metadata',
