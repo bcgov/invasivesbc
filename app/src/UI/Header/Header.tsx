@@ -71,7 +71,7 @@ const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, p
 
   const dispatch = useDispatch();
   const authenticated = useSelector((state) => state.Auth.authenticated && state?.Auth.roles.length > 0);
-  const { workingOffline, loggedInOrWorkingOffline, roles } = useSelector(selectAuth);
+  const { workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
 
   const canDisplayCallBack = useCallback(() => {
     if (platform === 'mobile' && !MOBILE) {
