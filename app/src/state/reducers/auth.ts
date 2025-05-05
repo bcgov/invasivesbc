@@ -151,7 +151,6 @@ function loadCurrentStateFromIdToken(idToken: string): object {
   const authenticated = !!idToken;
 
   if (authenticated) {
-    loggedInOrWorkingOffline = true;
     try {
       const parsedToken = JSON.parse(
         decodeURIComponent(
@@ -270,7 +269,7 @@ function createAuthReducer(_configuration: AppConfig) {
           draftState.username = found.username;
           draftState.displayName = found.displayName;
           draftState.workingOffline = true;
-          draftState.loggedInOrWorkingOffline = true;
+          draftState.loggedInOrWorkingOffline = found.roles.length > 0;
         }
       } else if (AuthActions.initializeComplete.match(action)) {
         draftState.initialized = true;
@@ -335,6 +334,7 @@ function createAuthReducer(_configuration: AppConfig) {
       } else if (AuthActions.refreshRolesComplete.match(action)) {
         const { all_roles, roles, extendedInfo, v2BetaAccess } = action.payload;
         draftState.roles = roles;
+        draftState.loggedInOrWorkingOffline = roles.length > 0;
         draftState.accessRoles = computeAccessRoles(all_roles, roles);
         draftState.extendedInfo = extendedInfo;
         draftState.rolesInitialized = true;
