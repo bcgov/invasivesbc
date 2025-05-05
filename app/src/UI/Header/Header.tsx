@@ -296,7 +296,7 @@ const LoginOrOutMemo = React.memo(() => {
   useEffect(() => {
     if (!MOBILE) {
       setOfflineUserSelectionAvailable(false);
-    } else if (loggedInOrWorkingOffline) {
+    } else if (authenticated || workingOffline) {
       setOfflineUserSelectionAvailable(false);
     } else if (offlineUsers.length > 0) {
       setOfflineUserSelectionAvailable(true);
@@ -384,7 +384,7 @@ const LoginOrOutMemo = React.memo(() => {
           <LoginButton labelText={'Go Online (IDIR)'} idpHint={'idir'} key={'idir-go'} />,
           <LoginButton labelText={'Login (BCEID Business)'} idpHint={'bceidbusiness'} key={'bceidbusiness-go'} />
         ]}
-        {loggedInOrWorkingOffline ? (
+        {authenticated || workingOffline ? (
           <LogoutButton />
         ) : (
           [
