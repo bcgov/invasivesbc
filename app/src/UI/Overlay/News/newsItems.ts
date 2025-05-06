@@ -11,8 +11,17 @@ const newsItems: NewsArticle[] = [
     date: new Date(),
     content: [],
     subject: NewsSubject.
-  }
+  },
   */
+  {
+    title: 'InvasivesBC is in the BCGW',
+    date: new Date('May 6, 2025'),
+    content: [
+      'We are excited to announce that the InvasivesBC observations data layer is now available in the BC Geographic Warehouse. This new layer includes data on observations for invasive plants in BC.',
+      'More information on the layer can be found here: https://catalogue.data.gov.bc.ca/dataset/invasive-species-observations'
+    ],
+    subject: NewsSubject.New
+  },
   {
     title: 'Updated Ministry names',
     date: new Date('December 13, 2024'),
