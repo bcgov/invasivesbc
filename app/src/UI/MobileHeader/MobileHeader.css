@@ -15,14 +15,14 @@
 /* Styling for Navigation Tabs */
 #nav-header nav {
   align-items: flex-end;
-  height: 100%;
   box-sizing: border-box;
   display: flex;
   flex-direction: row;
+  height: 100%;
   justify-content: space-evenly;
+  max-width: 500px;
   padding: 0;
   width: 100%;
-  max-width: 500px;
   .offlineSyncButton svg {
     display: flex;
     height: 100%;
@@ -34,11 +34,11 @@
 }
 
 #nav-header .Tab {
-  display: flex;
-  margin-top: 2pt;
   box-sizing: border-box;
+  display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  margin-top: 2pt;
   max-height: var(--header-bar-height);
   .Tab__Content svg,
   .Tab__Content img {
@@ -60,18 +60,18 @@
 .hamburger-nav {
   display: flex;
   flex-direction: column;
-
   width: 100%;
+
   .network-section {
-    display: flex;
-    width: 100%;
-    justify-content: center;
-    /* https://www2.gov.bc.ca/gov/content/digital/design-system/foundations/colour#palettes */
     background-color: #1e5189;
+    box-sizing: border-box;
     border-bottom: 2pt solid var(--bc-yellow);
     color: white;
-    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    /* https://www2.gov.bc.ca/gov/content/digital/design-system/foundations/colour#palettes */
     padding: 0 10pt;
+    width: 100%;
   }
   ul {
     padding: 0;
@@ -87,17 +87,17 @@
       background-color: #fff;
     }
     li > button {
-      background-color: transparent;
-      padding: 5pt;
-      display: flex;
-      height: 100%;
-      color: black;
-      box-sizing: border-box;
       align-items: center;
-      justify-content: flex-start;
+      background-color: transparent;
       border: none;
+      box-sizing: border-box;
       border-radius: 0;
-      height: 30pt;
+      color: black;
+      display: flex;
+      height: 35pt;
+      font-size: 14px;
+      justify-content: flex-start;
+      padding: 5pt;
       width: 100%;
 
       img:first-child,
