@@ -14,6 +14,8 @@ export const IAPPRecord = () => {
   const history = useHistory();
   const dispatch = useDispatch();
 
+  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
+
   const { id } = useParams<{ id: string }>();
 
   const IAPPState = useSelector((state) => state.IAPPSitePage);
@@ -50,7 +52,7 @@ export const IAPPRecord = () => {
               history.push(`/Records/IAPP/${id}/summary`);
             }}
           >
-            Re-center Map
+            {isCellPhoneWidth ? 'Center' : `Re-center Map`}
           </Button>
         </div>
       </div>

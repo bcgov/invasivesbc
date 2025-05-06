@@ -1,12 +1,10 @@
 import { put, select } from 'redux-saga/effects';
-
-import { booleanPointInPolygon, point, polygon } from '@turf/turf';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { ACTIVITY_GET_INITIAL_STATE_FAILURE, FILTERS_PREPPED_FOR_VECTOR_ENDPOINT } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { RecordSetType, UserRecordSet, RecordSetId } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { selectNetworkConnected } from 'state/reducers/network';
@@ -25,6 +23,9 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
       currentState,
       clientBoundaries
     );
+    if (filterObject == null) {
+      console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
+    }
 
     // abort if already a stale hash
     const mapState = yield select((state) => state.Map);
@@ -56,6 +57,10 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: Payload
   const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
   const workingOffline = yield select((state) => state.Auth.workingOffline);
   const connected = yield select((state) => state.Network.connected);
+  if (filterObject == null) {
+    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+    return;
+  }
   filterObject.limit = 200000;
   filterObject.selectColumns = ['activity_id'];
 
@@ -98,6 +103,10 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
       const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
       const filters = getRecordFilterObjectFromStateForAPI(action.recordSetID, userSettingsState, clientBoundaries);
 
+      if (filters == null) {
+        console.warn('null filterObject returned by getRecordFilterObjectFromStateForAPI, probable data error');
+      }
+
       const queryObj: IQueryParams = {
         tableFilters: filters.tableFilters,
         recordSetType: filters.recordSetType,
@@ -129,6 +138,10 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
       currentState,
       clientBoundaries
     );
+    if (filterObject == null) {
+      yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
+      return;
+    }
     filterObject.limit = 200000;
     filterObject.selectColumns = ['site_id'];
     if (connected && !workingOffline) {
@@ -155,25 +168,34 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
       return filter.id === filterID;
     })?.[0]?.geojson;
   };
-  const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
-  const recordSetType = JSON.parse(JSON.stringify(recordSetsState?.recordSets?.[recordSetID]?.recordSetType));
-  const sortColumn = recordSet?.sortColumn;
-  const sortOrder = recordSet?.sortOrder;
-  const tableFilters = recordSet?.tableFilters;
-  let modifiedTableFilters = tableFilters?.map((filter) =>
-    filter.filterType !== 'spatialFilterDrawn' ? filter : { ...filter, geojson: getFilterWithDrawnShape(filter.filter) }
-  );
+  try {
+    const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
+    const recordSetType = JSON.parse(JSON.stringify(recordSetsState?.recordSets?.[recordSetID]?.recordSetType));
+    const sortColumn = recordSet?.sortColumn;
+    const sortOrder = recordSet?.sortOrder;
+    const tableFilters = recordSet?.tableFilters;
+    let modifiedTableFilters = tableFilters?.map((filter) =>
+      filter.filterType !== 'spatialFilterDrawn'
+        ? filter
+        : {
+            ...filter,
+            geojson: getFilterWithDrawnShape(filter.filter)
+          }
+    );
 
-  modifiedTableFilters ??= [];
-  const selectColumns = recordSet?.selectColumns ?? getSelectColumnsByRecordSetType(recordSetType);
+    modifiedTableFilters ??= [];
+    const selectColumns = recordSet?.selectColumns ?? getSelectColumnsByRecordSetType(recordSetType);
 
-  return {
-    recordSetType: recordSetType,
-    sortColumn: sortColumn,
-    sortOrder: sortOrder,
-    tableFilters: modifiedTableFilters,
-    selectColumns: selectColumns
-  } as any;
+    return {
+      recordSetType: recordSetType,
+      sortColumn: sortColumn,
+      sortOrder: sortOrder,
+      tableFilters: modifiedTableFilters,
+      selectColumns: selectColumns
+    } as any;
+  } catch (_e) {
+    return null;
+  }
 };
 
 export function* handle_ACTIVITIES_TABLE_GET_ROWS(action: PayloadAction<ActivityTableRowGetRequest>) {
@@ -185,9 +207,12 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action: PayloadAction<Activity
     const userMobileOffline = MOBILE && !connected;
 
     const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState, mapState?.clientBoundaries);
-    filterObject.page = page;
-    filterObject.limit = limit;
-
+    if (filterObject == null) {
+      console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
+    } else {
+      filterObject.page = page;
+      filterObject.limit = limit;
+    }
     if (mapState?.recordTables?.[recordSetID]?.tableFiltersHash !== tableFiltersHash) {
       console.warn('Stale tableRow request (tableFiltersHash mismatch), aborting');
       return;
@@ -227,11 +252,16 @@ export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
     const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
     const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState, clientBoundaries);
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
+
+    if (filters == null) {
+      console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
+    }
+
     const queryObj: IQueryParams = {
       limit: limit,
       page: page,
-      tableFilters: filters.tableFilters,
-      recordSetType: filters.recordSetType,
+      tableFilters: filters?.tableFilters,
+      recordSetType: filters?.recordSetType,
       selectColumns: ['data'],
       sort: { by: filters.sortColumn, order: filters.sortOrder }
     };
@@ -259,8 +289,12 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
     const userMobileOffline = MOBILE && !connected;
 
     const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState, mapState?.clientBoundaries);
-    filterObject.page = page;
-    filterObject.limit = limit;
+    if (filterObject == null) {
+      console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
+    } else {
+      filterObject.page = page;
+      filterObject.limit = limit;
+    }
 
     if (mapState?.recordTables?.[recordSetID]?.tableFiltersHash !== tableFiltersHash) {
       console.warn('Stale tableRow request (tableFiltersHash mismatch), aborting');
@@ -298,16 +332,19 @@ export function* getIappRowsFromCache(payload: IappTableRowRequest) {
     const userSettingsState = yield select(selectUserSettings);
     const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
     const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState, clientBoundaries);
+    if (filters == null) {
+      console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
+    }
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     const queryObj: IQueryParams = {
       limit: limit,
       page: page,
       tableFilters: filters?.tableFilters,
-      recordSetType: filters.recordSetType,
+      recordSetType: filters?.recordSetType,
       selectColumns: ['table_data'],
       sort: {
-        by: filters.sortColumn,
-        order: filters.sortOrder
+        by: filters?.sortColumn,
+        order: filters?.sortOrder
       }
     };
 

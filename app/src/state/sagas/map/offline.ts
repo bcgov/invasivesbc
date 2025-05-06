@@ -29,14 +29,17 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE(action) {
   const currentState = yield select((state) => state.UserSettings);
   const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
   const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
+  if (filterObject == null) {
+    console.warn('null filterObject returned by getRecordFilterObjectFromStateForAPI, probable data issue');
+  } else {
+    filterObject.limit = 200000;
+    filterObject.selectColumns = ['activity_id'];
+  }
 
   const tableFiltersHash = mapState?.recordTables[action.payload.recordSetID]?.tableFiltersHash;
   if (tableFiltersHash !== action.payload.tableFiltersHash) {
     return;
   }
-
-  filterObject.limit = 200000;
-  filterObject.selectColumns = ['activity_id'];
 
   const unsyncedOfflineActivities = Object.fromEntries(
     Object.entries(serializedActivities)

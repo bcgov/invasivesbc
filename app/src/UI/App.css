@@ -61,6 +61,7 @@ body {
 
   &.android {
     height: 100dvh;
+
     --extra-bottom-padding: 8px;
   }
 }
@@ -106,7 +107,6 @@ body {
   --map-button-bar-height: 45px;
   --overlay-height: 200px;
   --overlay-grip-height: 25px; /* grab handle */
-
   --extra-bottom-padding: 0px;
   --bc-blue: #036;
   --error-red: #f44336;
@@ -138,8 +138,10 @@ body {
 @media only screen and (width <= 800px) {
   :root {
     .App {
-      &.web {
-        --header-bar-height: 40px;
+      &.web,
+      &.ios,
+      &.android {
+        --header-bar-height: 60px;
       }
     }
   }
