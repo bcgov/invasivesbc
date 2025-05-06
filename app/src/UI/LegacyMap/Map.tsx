@@ -325,7 +325,7 @@ export const Map = ({ children }) => {
 
   useEffect(() => {
     if (!mapReady) return;
-    if (authenticated) {
+    if (authenticated && loggedInOrWorkingOffline) {
       addServerBoundariesIfNotExists(serverBoundaries, map);
       refreshServerBoundariesOnToggle(serverBoundaries, map);
     }
