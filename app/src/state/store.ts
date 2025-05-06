@@ -104,7 +104,7 @@ export function setupStore(configuration: AppConfig) {
   document.addEventListener('focus', () => {
     store.dispatch(EventActions.wakeup());
   });
-  
+
   // throttled updates. used to control some layouts (eg alternative button text on very tiny screens)
   const debouncedResize = debounce(() => {
     store.dispatch(EventActions.viewportResize({ width: window.innerWidth, height: window.innerHeight }));

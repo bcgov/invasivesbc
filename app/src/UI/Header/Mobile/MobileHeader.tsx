@@ -7,6 +7,8 @@ import { useSelector } from 'utils/use_selector';
 import { Home, Map } from '@mui/icons-material';
 import HeaderPopover from 'UI/Header/Mobile/HeaderPopover';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
+import { AndroidMemoryReport } from 'UI/Header/Mobile/AndroidMemoryReport';
+import { Platform, PLATFORM } from 'state/build-time-config';
 
 const MobileHeader = () => {
   const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
@@ -77,6 +79,7 @@ const MobileHeader = () => {
         </NavTab>
         <OfflineSyncHeaderButton />
       </nav>
+      {PLATFORM == Platform.ANDROID && <AndroidMemoryReport />}
       <HeaderPopover />
     </header>
   );
