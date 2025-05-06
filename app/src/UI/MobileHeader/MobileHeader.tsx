@@ -8,11 +8,13 @@ import { Home, Map } from '@mui/icons-material';
 import HeaderPopover from './HeaderPopover';
 import { useState } from 'react';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
+import { MOBILE } from 'state/build-time-config';
 
 const MobileHeader = () => {
   const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
   const activeActivity = useSelector((state) => state.UserSettings.activeActivity) || undefined;
-  const [isCellPhoneWidth] = useState<boolean>(window.innerWidth <= 400);
+  // Set value once at load. Views don't change on physical devices, shortens text for phone deployments.
+  const [isCellPhoneWidth] = useState<boolean>(MOBILE && window.innerWidth <= 500);
 
   return (
     <header id="nav-header">
