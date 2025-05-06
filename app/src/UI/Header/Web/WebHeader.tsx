@@ -1,47 +1,22 @@
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
-import React, { useEffect, useRef, useState } from 'react';
-import './Header.css';
-import {
-  Avatar,
-  FormControl,
-  FormControlLabel,
-  Grow,
-  IconButton,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Switch
-} from '@mui/material';
+import React, { useEffect } from 'react';
+import 'UI/Header/Web/WebHeader.css';
+import { Avatar, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import {
-  AdminPanelSettings,
-  Assessment,
-  FileUpload,
-  Home,
-  Map,
-  Newspaper,
-  OfflineBolt,
-  School,
-  SignalWifi4Bar,
-  SignalWifiOff
-} from '@mui/icons-material';
+import { AdminPanelSettings, Assessment, FileUpload, Home, Map, Newspaper, School } from '@mui/icons-material';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
-import { RENDER_DEBUG } from 'UI/App';
 import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
-import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
-import { MOBILE } from 'state/build-time-config';
-import NetworkActions from 'state/actions/network/NetworkActions';
 import MapActions from 'state/actions/map';
 import { AuthActions } from 'state/actions/auth/Auth';
 import Alerts from 'state/actions/alerts/Alerts';
-import NavTab from './NavTab';
+import NavTab from 'UI/Header/NavTab';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -175,7 +150,7 @@ const AdminPanelMemo = () => {
 const LoginOrOutMemo = React.memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { authenticated, offlineUsers, workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
+  const { authenticated } = useSelector(selectAuth);
   const { alerts, prompts } = useSelector((state) => state.AlertsAndPrompts);
   const activated = useSelector((state) => state.UserInfo.activated);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -184,18 +159,6 @@ const LoginOrOutMemo = React.memo(() => {
     setAnchorEl(event.currentTarget);
     dispatch(Alerts.deleteAll());
   };
-
-  const [offlineUserSelectionAvailable, setOfflineUserSelectionAvailable] = useState(false);
-
-  useEffect(() => {
-    if (!MOBILE) {
-      setOfflineUserSelectionAvailable(false);
-    } else if (loggedInOrWorkingOffline) {
-      setOfflineUserSelectionAvailable(false);
-    } else if (offlineUsers.length > 0) {
-      setOfflineUserSelectionAvailable(true);
-    }
-  }, [offlineUsers, loggedInOrWorkingOffline]);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -260,25 +223,8 @@ const LoginOrOutMemo = React.memo(() => {
             Request Access
           </MenuItem>
         )}
-        {offlineUserSelectionAvailable && (
-          <MenuItem
-            onClick={() => {
-              setAnchorEl(null);
 
-              dispatch(AuthActions.openOfflineUserSelectionDialog(true));
-            }}
-          >
-            <ListItemIcon>
-              <AssignmentIcon />
-            </ListItemIcon>
-            Choose Offline User
-          </MenuItem>
-        )}
-        {workingOffline && [
-          <LoginButton labelText={'Go Online (IDIR)'} idpHint={'idir'} key={'idir-go'} />,
-          <LoginButton labelText={'Login (BCEID Business)'} idpHint={'bceidbusiness'} key={'bceidbusiness-go'} />
-        ]}
-        {loggedInOrWorkingOffline ? (
+        {authenticated ? (
           <LogoutButton />
         ) : (
           [
@@ -291,58 +237,7 @@ const LoginOrOutMemo = React.memo(() => {
   );
 });
 
-export const NetworkStateControl: React.FC = () => {
-  const handleNetworkStateChange = () => {
-    dispatch(connected ? NetworkActions.setAdministrativeStatus(false) : NetworkActions.manualReconnect());
-  };
-  const connected = useSelector((state) => state.Network.connected);
-  const dispatch = useDispatch();
-  return (
-    <div className={'network-state-control'}>
-      <FormControl className="network-status-display">
-        <FormControlLabel
-          control={
-            <Switch
-              checked={connected}
-              color={'primary'}
-              size={'medium'}
-              onChange={handleNetworkStateChange}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
-          }
-          label={'Network'}
-          labelPlacement="end"
-        />
-      </FormControl>
-      <div className="network-status-display"></div>
-      {connected && (
-        <div className={'network-status-display'}>
-          <Grow in={true} appear={true}>
-            <SignalWifi4Bar fontSize={'medium'} aria-label={'Online'} />
-          </Grow>
-          <span className={'network-status-label'}>&nbsp;Online</span>
-        </div>
-      )}
-      {connected || (
-        <div className={'network-status-display'}>
-          <Grow in={true} appear={true}>
-            <SignalWifiOff fontSize={'medium'} aria-label={'Offline'} />
-          </Grow>
-          <span className={'network-status-label'}>Offline</span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export const Header: React.FC = () => {
-  const { loggedInOrWorkingOffline } = useSelector(selectAuth);
-  const ref = useRef(0);
-  ref.current += 1;
-  if (RENDER_DEBUG) {
-    console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
-  }
-
+export const WebHeader: React.FC = () => {
   return (
     <header className="HeaderBar">
       <InvIcon />
@@ -375,18 +270,6 @@ export const Header: React.FC = () => {
         <ActivityTabMemo />
 
         <IAPPTabMemo />
-
-        <NavTab
-          key={'tileCache'}
-          path="/OfflineTiles"
-          label={'Tile Cache Status'}
-          predicate={'authenticated_any'}
-          platform={'mobile'}
-          panelOpen={true}
-          panelFullScreen={false}
-        >
-          <OfflineBolt />
-        </NavTab>
 
         <NavTab
           key={'tab5'}
@@ -449,10 +332,6 @@ export const Header: React.FC = () => {
         >
           <Map />
         </NavTab>
-
-        {MOBILE && loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
-
-        {MOBILE && <NetworkStateControl />}
       </ButtonWrapper>
       <LoginOrOutMemo />
     </header>

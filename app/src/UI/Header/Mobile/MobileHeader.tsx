@@ -1,20 +1,18 @@
 import InvBcLogo from 'UI/InvBcLogo/InvBcLogo';
-import './MobileHeader.css';
+import 'UI/Header/Mobile/MobileHeader.css';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import NavTab from '../Header/NavTab';
+import NavTab from 'UI/Header/NavTab';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import { useSelector } from 'utils/use_selector';
 import { Home, Map } from '@mui/icons-material';
-import HeaderPopover from './HeaderPopover';
-import { useState } from 'react';
+import HeaderPopover from 'UI/Header/Mobile/HeaderPopover';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
-import { MOBILE } from 'state/build-time-config';
 
 const MobileHeader = () => {
   const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
   const activeActivity = useSelector((state) => state.UserSettings.activeActivity) || undefined;
-  // Set value once at load. Views don't change on physical devices, shortens text for phone deployments.
-  const [isCellPhoneWidth] = useState<boolean>(MOBILE && window.innerWidth <= 500);
+
+  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
 
   return (
     <header id="nav-header">

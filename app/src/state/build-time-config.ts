@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 
-const MOBILE = import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true';
+const MOBILE: boolean = import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true';
 
-const DEBUG = import.meta.env.VITE_DEBUG && import.meta.env.VITE_DEBUG.toLowerCase() === 'true';
+const DEBUG: boolean = import.meta.env.VITE_DEBUG && import.meta.env.VITE_DEBUG.toLowerCase() === 'true';
 
 enum Platform {
   IOS = 'ios',

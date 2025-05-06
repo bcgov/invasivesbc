@@ -7,6 +7,7 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CustomPopover from 'UI/CustomPopover/CustomPopover';
 import FormMenuButtons from './Records/FormMenuButtons/FormMenuButtons';
+import { useSelector } from 'utils/use_selector';
 
 const maximize = () => {
   setOverlayHeight('100%');
@@ -85,32 +86,40 @@ const onClickDragButton = (e) => {
   }
 };
 
-export const OverlayHeader = () => (
-  <div className="overlay-header">
-    <div className={'left'}></div>
-    <div className={'center'}>
-      <IconButton className="overlay-control" onClick={maximize}>
-        <ArrowDropUpIcon />
-      </IconButton>
-      <div onMouseDown={onClickDragButton} onTouchStart={onClickDragButton} className="dragMeToResize">
-        <IconButton className="overlay-control">
-          <DragHandleIcon />
+export const OverlayHeader = () => {
+  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
+
+  return (
+    <div className="overlay-header">
+      <div className={'left'}></div>
+      <div className={'center'}>
+        <IconButton className="overlay-control" onClick={maximize}>
+          <ArrowDropUpIcon />
+        </IconButton>
+        <div onMouseDown={onClickDragButton} onTouchStart={onClickDragButton} className="dragMeToResize">
+          <IconButton className="overlay-control">
+            <DragHandleIcon />
+          </IconButton>
+        </div>
+        <IconButton className="overlay-control" onClick={minimize}>
+          <ArrowDropDownIcon />
         </IconButton>
       </div>
-      <IconButton className="overlay-control" onClick={minimize}>
-        <ArrowDropDownIcon />
-      </IconButton>
+      <div className={'right'}>
+        <Route
+          path="/Records/Activity:*"
+          exact={false}
+          render={() => (
+            <CustomPopover
+              buttonClasses={'overlay-menu'}
+              buttonText={isCellPhoneWidth ? 'Save' : 'Save Menu'}
+              closeAfterPress={true}
+            >
+              <FormMenuButtons />
+            </CustomPopover>
+          )}
+        />
+      </div>
     </div>
-    <div className={'right'}>
-      <Route
-        path="/Records/Activity:*"
-        exact={false}
-        render={() => (
-          <CustomPopover buttonClasses={'overlay-menu'} buttonText={'Save Menu'} closeAfterPress={true}>
-            <FormMenuButtons />
-          </CustomPopover>
-        )}
-      />
-    </div>
-  </div>
-);
+  );
+};

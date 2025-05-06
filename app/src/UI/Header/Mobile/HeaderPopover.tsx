@@ -1,8 +1,7 @@
 import { Menu, OfflineBolt } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import CustomPopover from 'UI/CustomPopover/CustomPopover';
-import { NetworkStateControl } from 'UI/Header/Header';
-import './MobileHeader.css';
+import { NetworkStateControl } from 'UI/Header/NetworkStateControl';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
@@ -14,7 +13,7 @@ import { AuthActions } from 'state/actions/auth/Auth';
 import MapActions from 'state/actions/map';
 import { TOGGLE_PANEL } from 'state/actions';
 import { selectAuth } from 'state/reducers/auth';
-import { MOBILE } from 'state/build-time-config';
+import 'UI/Header/Mobile/MobileHeader.css';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
@@ -87,9 +86,7 @@ const HeaderPopover = () => {
   const [offlineUserSelectionAvailable, setOfflineUserSelectionAvailable] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   useEffect(() => {
-    if (!MOBILE) {
-      setOfflineUserSelectionAvailable(false);
-    } else if (loggedInOrWorkingOffline) {
+    if (loggedInOrWorkingOffline) {
       setOfflineUserSelectionAvailable(false);
     } else if (offlineUsers.length > 0) {
       setOfflineUserSelectionAvailable(true);

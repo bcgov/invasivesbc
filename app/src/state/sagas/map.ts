@@ -282,7 +282,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
     }
   }
   const mappedToWhatsHereColumns = records.map((activityRecord) => {
-    // Differenciate the Cached records from the API called ones
+    // Differentiate the Cached records from the API called ones
     const shortHand = activityRecord.activity_payload ? activityRecord.activity_payload : activityRecord;
     return {
       id: activityRecord.activity_id,
@@ -312,6 +312,12 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       const currentState = yield select((state) => state.UserSettings);
 
       const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
+      if (filterObject == null) {
+        yield put({
+          type: RECORD_SET_TO_EXCEL_FAILURE
+        });
+        return;
+      }
       filterObject.limit = 200000;
       filterObject.isCSV = true;
       filterObject.CSVType = action.payload.CSVType;
@@ -331,6 +337,12 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
       const currentState = yield select((state) => state.UserSettings);
 
       const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
+      if (filterObject == null) {
+        yield put({
+          type: RECORD_SET_TO_EXCEL_FAILURE
+        });
+        return;
+      }
       filterObject.limit = 200000;
       filterObject.isCSV = true;
       filterObject.CSVType = action.payload.CSVType;
