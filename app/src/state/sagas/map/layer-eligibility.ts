@@ -15,20 +15,17 @@ function* recomputeEligibleMapLayers(action) {
     return;
   }
 
-  const WORKING_OFFLINE = yield select((state) => (state as RootState).Auth.workingOffline);
-  const ONLINE_AUTHENTICATED = yield select((state) => (state as RootState).Auth.authenticated);
+  const AUTHENTICATED = yield select((state) => state.Auth.loggedInOrWorkingOffline);
 
-  const AUTHENTICATED = WORKING_OFFLINE || ONLINE_AUTHENTICATED;
+  const CONNECTED = yield select((state) => state.Network.connected);
 
-  const CONNECTED = yield select((state) => (state as RootState).Network.connected);
-
-  const CURRENT_ELIGIBLE_BASEMAP_LIST = yield select((state) => (state as RootState).Map.availableBaseMapLayers);
-  const CURRENT_ELIGIBLE_OVERLAY_LIST = yield select((state) => (state as RootState).Map.availableOverlayLayers);
+  const CURRENT_ELIGIBLE_BASEMAP_LIST = yield select((state) => state.Map.availableBaseMapLayers);
+  const CURRENT_ELIGIBLE_OVERLAY_LIST = yield select((state) => state.Map.availableOverlayLayers);
 
   const UPDATED_BASEMAP_LIST: string[] = [];
   const UPDATED_OVERLAY_LIST: string[] = [];
 
-  const offlineDefinitions = (yield select((state) => (state as RootState).TileCache?.mapSpecifications)) || [];
+  const offlineDefinitions = (yield select((state) => state.TileCache?.mapSpecifications)) ?? [];
 
   // evaluate each potential map definition and remove those not eligible at this moment
   for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions] as MapSourceAndLayerDefinition[]) {
