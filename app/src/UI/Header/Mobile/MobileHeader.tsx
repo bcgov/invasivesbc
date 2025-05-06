@@ -11,7 +11,7 @@ import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 const MobileHeader = () => {
   const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
   const activeActivity = useSelector((state) => state.UserSettings.activeActivity) || undefined;
-
+  const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
 
   return (
@@ -75,7 +75,7 @@ const MobileHeader = () => {
             style={{ marginBottom: '0px', maxWidth: '20px', objectFit: 'contain' }}
           />
         </NavTab>
-        <OfflineSyncHeaderButton />
+        {loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
       </nav>
       <HeaderPopover />
     </header>
