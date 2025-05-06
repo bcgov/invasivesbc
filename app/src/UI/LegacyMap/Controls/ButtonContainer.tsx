@@ -13,31 +13,32 @@ import { PrimaryLayerSelect } from 'UI/LegacyMap/Controls/PrimaryLayerSelect';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export const ButtonContainer = () => {
-  const { authenticated, workingOffline } = useSelector((state) => state.Auth);
+  const { loggedInOrWorkingOffline } = useSelector((state) => state.Auth);
   const { positionTracking } = useSelector((state) => state.Map);
 
   return (
     <div id="map-btn-container">
       <PrimaryLayerSelect />
+      {loggedInOrWorkingOffline && (
+        <>
+          <FindMeToggle />
+          {positionTracking && <TrackingButtonsContainer />}
 
-      {(authenticated || workingOffline) && <FindMeToggle />}
-      {positionTracking && <TrackingButtonsContainer />}
+          <WebOnly>
+            <LegendsButton />
+          </WebOnly>
 
-      <WebOnly>
-        <LegendsButton />
-      </WebOnly>
+          <AccuracyToggle />
+          <WhatsHereButton />
+          <NewRecord />
 
-      <AccuracyToggle />
-
-      {(authenticated || workingOffline) && <WhatsHereButton />}
-
-      {(authenticated || workingOffline) && <NewRecord />}
-
-      <WebOnly>
-        {authenticated && <CenterCurrentRecord type={RecordSetType.Activity} />}
-        {authenticated && <CenterCurrentRecord type={RecordSetType.IAPP} />}
-        <QuickPanToRecordToggle />
-      </WebOnly>
+          <WebOnly>
+            <CenterCurrentRecord type={RecordSetType.Activity} />
+            <CenterCurrentRecord type={RecordSetType.IAPP} />
+            <QuickPanToRecordToggle />
+          </WebOnly>
+        </>
+      )}
     </div>
   );
 };
