@@ -26,12 +26,13 @@ const AndroidMemoryReport = () => {
   return (
     <div className={'memory-report'}>
       <dl>
-        <dt>total mem MiB</dt>
-        <dd>{`${Math.floor(memoryInformation.totalBytes / (1024 * 1024))}`}</dd>
-        <dt>available mem MiB</dt>
-        <dd>{`${Math.floor(memoryInformation.availableBytes / (1024 * 1024))}`}</dd>
-        <dt>low memory condition</dt>
-        <dd>{memoryInformation.lowMemoryCondition ? 'YES' : 'NO'}</dd>
+        <dt className={`${memoryInformation.lowMemoryCondition ? 'red' : 'green'}`}>Device Mem MiB</dt>
+        <dd>{`${Math.floor((memoryInformation.totalBytes - memoryInformation.availableBytes) / (1024 * 1024))} / ${Math.floor(memoryInformation.totalBytes / (1024 * 1024))}`}</dd>
+        <dt>VM Mem MiB</dt>
+        <dd
+          className={`${memoryInformation.VMFree < (10 * 1024 * 1024)} ? 'red':'green'`}>{`${Math.floor((memoryInformation.VMMax - memoryInformation.VMFree) / (1024 * 1024))} / ${Math.floor(memoryInformation.VMMax / (1024 * 1024))}`}</dd>
+        <dt>memory class MiB</dt>
+        <dd>{`${Math.floor(memoryInformation.largeMemoryClass)}`}</dd>
       </dl>
     </div>
   );

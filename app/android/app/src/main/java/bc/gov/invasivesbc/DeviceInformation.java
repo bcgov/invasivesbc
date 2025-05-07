@@ -28,6 +28,9 @@ public class DeviceInformation extends Plugin {
     ret.put("totalBytes", memoryInfo.totalMem);
     ret.put("availableBytes", memoryInfo.availMem);
     ret.put("lowMemoryCondition", memoryInfo.lowMemory);
+    ret.put("largeMemoryClass", activityManager.getLargeMemoryClass());
+    ret.put("VMFree", runtime.freeMemory());
+    ret.put("VMMax", runtime.maxMemory());
 
     call.resolve(ret);
   }

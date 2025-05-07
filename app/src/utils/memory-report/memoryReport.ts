@@ -4,6 +4,9 @@ interface DeviceMemoryInformation {
   availableBytes: number;
   totalBytes: number;
   lowMemoryCondition: boolean;
+  largeMemoryClass: number;
+  VMFree: number;
+  VMMax: number;
 }
 
 interface DeviceInformationPlugin {
