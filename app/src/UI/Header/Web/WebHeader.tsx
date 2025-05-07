@@ -1,153 +1,22 @@
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
-import React, { PropsWithChildren, useCallback, useEffect, useRef, useState } from 'react';
-import './Header.css';
-import {
-  Avatar,
-  FormControl,
-  FormControlLabel,
-  Grow,
-  IconButton,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Switch
-} from '@mui/material';
+import React, { useEffect } from 'react';
+import 'UI/Header/Web/WebHeader.css';
+import { Avatar, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
 import { TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router-dom';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import {
-  AdminPanelSettings,
-  Assessment,
-  FileUpload,
-  Home,
-  Map,
-  Newspaper,
-  OfflineBolt,
-  School,
-  SignalWifi4Bar,
-  SignalWifiOff
-} from '@mui/icons-material';
+import { AdminPanelSettings, Assessment, FileUpload, Home, Map, Newspaper, School } from '@mui/icons-material';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
-import { RENDER_DEBUG } from 'UI/App';
 import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
 import { selectAuth } from 'state/reducers/auth';
-import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
-import { MOBILE } from 'state/build-time-config';
-import NetworkActions from 'state/actions/network/NetworkActions';
 import MapActions from 'state/actions/map';
 import { AuthActions } from 'state/actions/auth/Auth';
 import Alerts from 'state/actions/alerts/Alerts';
-
-type TabPredicate =
-  | 'authenticated_any'
-  | 'authenticated_online'
-  | 'working_offline'
-  | 'unauthenticated'
-  | 'always'
-  | 'never';
-
-type TabPlatformPredicate = 'web' | 'mobile' | 'both';
-
-interface TabProps extends PropsWithChildren {
-  predicate: TabPredicate;
-  platform: TabPlatformPredicate;
-  path: string;
-  label: string;
-  panelOpen: boolean;
-  panelFullScreen: boolean;
-}
-
-const Tab: React.FC<TabProps> = ({ predicate, platform, children, path, label, panelOpen, panelFullScreen }) => {
-  const ref = useRef(0);
-  ref.current += 1;
-
-  const urlFromAppModeState = useSelector((state) => state.AppMode.url);
-
-  const history = useHistory();
-
-  const dispatch = useDispatch();
-  const authenticated = useSelector((state) => state.Auth.authenticated && state?.Auth.roles.length > 0);
-  const { workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
-
-  const canDisplayCallBack = useCallback(() => {
-    if (platform === 'mobile' && !MOBILE) {
-      return false;
-    }
-    if (platform === 'web' && MOBILE) {
-      return false;
-    }
-
-    switch (predicate) {
-      case 'always':
-        return true;
-      case 'never':
-        return false;
-      case 'unauthenticated':
-        return !loggedInOrWorkingOffline;
-      case 'authenticated_online':
-        return authenticated && !workingOffline;
-      case 'working_offline':
-        return workingOffline;
-      case 'authenticated_any':
-        return loggedInOrWorkingOffline;
-    }
-  }, [authenticated, workingOffline, predicate, platform, MOBILE, JSON.stringify(path)]);
-
-  useEffect(() => {
-    const scrollContainer = document.getElementById('ButtonWrapper');
-    const rightIconContainer = document.getElementById('right-icon-container');
-    const leftIconContainer = document.getElementById('left-icon-container');
-
-    if (scrollContainer !== null && rightIconContainer !== null && leftIconContainer !== null) {
-      // workaround for scroll = client on load race
-      setTimeout(() => {
-        if (scrollContainer.scrollWidth > scrollContainer.clientWidth) {
-          rightIconContainer.style.visibility = 'visible';
-        }
-      }, 100);
-
-      scrollContainer.addEventListener('scroll', () => {
-        const enableVisibleLeft = scrollContainer.scrollLeft <= 5;
-        const enableVisibleRight =
-          scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 5;
-        if (enableVisibleRight) {
-          rightIconContainer.style.visibility = 'visible';
-          leftIconContainer.style.visibility = 'hidden';
-        } else if (enableVisibleLeft) {
-          rightIconContainer.style.visibility = 'hidden';
-          leftIconContainer.style.visibility = 'visible';
-        } else {
-          rightIconContainer.style.visibility = 'visible';
-          leftIconContainer.style.visibility = 'visible';
-        }
-      });
-    }
-  }, []);
-
-  return (
-    <>
-      {canDisplayCallBack() && (
-        <button
-          className={'Tab' + (urlFromAppModeState === path ? ' Tab__Indicator' : '')}
-          onClick={() => {
-            history.push(path);
-            dispatch({
-              type: TOGGLE_PANEL,
-              payload: { panelOpen: panelOpen, fullScreen: panelFullScreen }
-            });
-          }}
-        >
-          <div className="Tab__Content">{children}</div>
-          <div className="Tab__Label">{label}</div>
-        </button>
-      )}
-    </>
-  );
-};
+import NavTab from 'UI/Header/NavTab';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -219,7 +88,7 @@ const InvIcon = () => {
 const ActivityTabMemo = () => {
   const activeActivity = useSelector((state) => state.UserSettings.activeActivity) || undefined;
   return (
-    <Tab
+    <NavTab
       key={'tab3'}
       path={'/Records/Activity:' + activeActivity + '/form'}
       label="Current Activity"
@@ -229,14 +98,14 @@ const ActivityTabMemo = () => {
       panelFullScreen={false}
     >
       <AssignmentIcon />
-    </Tab>
+    </NavTab>
   );
 };
 
 const IAPPTabMemo = () => {
   const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
   return (
-    <Tab
+    <NavTab
       key={'tab4'}
       path={'/Records/IAPP/' + activeIAPP + '/summary'}
       label="Current IAPP"
@@ -251,7 +120,7 @@ const IAPPTabMemo = () => {
         src={'/assets/iapp_logo.gif'}
         style={{ maxWidth: '1rem', marginBottom: '0px' }}
       />
-    </Tab>
+    </NavTab>
   );
 };
 
@@ -260,7 +129,7 @@ const AdminPanelMemo = () => {
   return (
     <>
       {roles.find((role) => role.role_id === 18) ? (
-        <Tab
+        <NavTab
           key={'tab9'}
           path={'/Admin'}
           label="Admin"
@@ -270,7 +139,7 @@ const AdminPanelMemo = () => {
           panelFullScreen={true}
         >
           <AdminPanelSettings />
-        </Tab>
+        </NavTab>
       ) : (
         <></>
       )}
@@ -281,7 +150,7 @@ const AdminPanelMemo = () => {
 const LoginOrOutMemo = React.memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
-  const { authenticated, offlineUsers, workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
+  const { authenticated } = useSelector(selectAuth);
   const { alerts, prompts } = useSelector((state) => state.AlertsAndPrompts);
   const activated = useSelector((state) => state.UserInfo.activated);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -290,18 +159,6 @@ const LoginOrOutMemo = React.memo(() => {
     setAnchorEl(event.currentTarget);
     dispatch(Alerts.deleteAll());
   };
-
-  const [offlineUserSelectionAvailable, setOfflineUserSelectionAvailable] = useState(false);
-
-  useEffect(() => {
-    if (!MOBILE) {
-      setOfflineUserSelectionAvailable(false);
-    } else if (loggedInOrWorkingOffline) {
-      setOfflineUserSelectionAvailable(false);
-    } else if (offlineUsers.length > 0) {
-      setOfflineUserSelectionAvailable(true);
-    }
-  }, [offlineUsers, loggedInOrWorkingOffline]);
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -366,25 +223,8 @@ const LoginOrOutMemo = React.memo(() => {
             Request Access
           </MenuItem>
         )}
-        {offlineUserSelectionAvailable && (
-          <MenuItem
-            onClick={() => {
-              setAnchorEl(null);
 
-              dispatch(AuthActions.openOfflineUserSelectionDialog(true));
-            }}
-          >
-            <ListItemIcon>
-              <AssignmentIcon />
-            </ListItemIcon>
-            Choose Offline User
-          </MenuItem>
-        )}
-        {workingOffline && [
-          <LoginButton labelText={'Go Online (IDIR)'} idpHint={'idir'} key={'idir-go'} />,
-          <LoginButton labelText={'Login (BCEID Business)'} idpHint={'bceidbusiness'} key={'bceidbusiness-go'} />
-        ]}
-        {loggedInOrWorkingOffline ? (
+        {authenticated ? (
           <LogoutButton />
         ) : (
           [
@@ -397,64 +237,13 @@ const LoginOrOutMemo = React.memo(() => {
   );
 });
 
-const NetworkStateControl: React.FC = () => {
-  const handleNetworkStateChange = () => {
-    dispatch(connected ? NetworkActions.setAdministrativeStatus(false) : NetworkActions.manualReconnect());
-  };
-  const connected = useSelector((state) => state.Network.connected);
-  const dispatch = useDispatch();
-  return (
-    <div className={'network-state-control'}>
-      <FormControl className="network-status-display">
-        <FormControlLabel
-          control={
-            <Switch
-              checked={connected}
-              color={'primary'}
-              size={'medium'}
-              onChange={handleNetworkStateChange}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
-          }
-          label={'Network'}
-          labelPlacement="end"
-        />
-      </FormControl>
-      <div className="network-status-display"></div>
-      {connected && (
-        <div className={'network-status-display'}>
-          <Grow in={true} appear={true}>
-            <SignalWifi4Bar fontSize={'medium'} aria-label={'Online'} />
-          </Grow>
-          <span className={'network-status-label'}>&nbsp;Online</span>
-        </div>
-      )}
-      {connected || (
-        <div className={'network-status-display'}>
-          <Grow in={true} appear={true}>
-            <SignalWifiOff fontSize={'medium'} aria-label={'Offline'} />
-          </Grow>
-          <span className={'network-status-label'}>Offline</span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export const Header: React.FC = () => {
-  const { loggedInOrWorkingOffline } = useSelector(selectAuth);
-  const ref = useRef(0);
-  ref.current += 1;
-  if (RENDER_DEBUG) {
-    console.log('%cHeader render:' + ref.current.toString(), 'color: yellow');
-  }
-
+export const WebHeader: React.FC = () => {
   return (
     <header className="HeaderBar">
       <InvIcon />
 
       <ButtonWrapper>
-        <Tab
+        <NavTab
           key={'tab1'}
           path={'/Landing'}
           predicate={'always'}
@@ -464,9 +253,9 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <Home />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key={'tab2'}
           path="/Records"
           label="Records"
@@ -476,25 +265,13 @@ export const Header: React.FC = () => {
           panelFullScreen={false}
         >
           <ManageSearchIcon />
-        </Tab>
+        </NavTab>
 
         <ActivityTabMemo />
 
         <IAPPTabMemo />
 
-        <Tab
-          key={'tileCache'}
-          path="/OfflineTiles"
-          label={'Tile Cache Status'}
-          predicate={'authenticated_any'}
-          platform={'mobile'}
-          panelOpen={true}
-          panelFullScreen={false}
-        >
-          <OfflineBolt />
-        </Tab>
-
-        <Tab
+        <NavTab
           key={'tab5'}
           path={'/Batch/list'}
           label="Batch"
@@ -504,9 +281,9 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <FileUpload />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key={'tab6'}
           path={'/Reports'}
           label="Reports"
@@ -516,9 +293,9 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <Assessment />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key="tab7-1/2"
           path="/News"
           label="News"
@@ -528,9 +305,9 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <Newspaper />
-        </Tab>
+        </NavTab>
 
-        <Tab
+        <NavTab
           key={'tab7'}
           path={'/Training'}
           label="Training"
@@ -540,11 +317,11 @@ export const Header: React.FC = () => {
           panelFullScreen={true}
         >
           <School />
-        </Tab>
+        </NavTab>
 
         <AdminPanelMemo />
 
-        <Tab
+        <NavTab
           key={'tab8'}
           path={'/Map'}
           label="Map"
@@ -554,11 +331,7 @@ export const Header: React.FC = () => {
           panelOpen={false}
         >
           <Map />
-        </Tab>
-
-        {MOBILE && loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
-
-        {MOBILE && <NetworkStateControl />}
+        </NavTab>
       </ButtonWrapper>
       <LoginOrOutMemo />
     </header>

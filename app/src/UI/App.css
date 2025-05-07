@@ -140,8 +140,10 @@ body {
 @media only screen and (width <= 800px) {
   :root {
     .App {
-      &.web {
-        --header-bar-height: 40px;
+      &.web,
+      &.ios,
+      &.android {
+        --header-bar-height: 60px;
       }
     }
   }
