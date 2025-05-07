@@ -11,13 +11,13 @@ import CommonPrefixComponents from 'UI/AppLayout/Components/CommonPrefixComponen
 import CommonPostfixComponents from 'UI/AppLayout/Components/CommonPostfixComponents';
 
 const ComponentizedMapLayout = () => {
-  const authenticated = useSelector((state) => state.Auth.authenticated);
+  const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
 
   return (
     <MapProvider>
       <CommonPrefixComponents />
 
-      {!authenticated ? (
+      {!loggedInOrWorkingOffline ? (
         <MainMap>
           <Overlay>
             <OverlayContent />

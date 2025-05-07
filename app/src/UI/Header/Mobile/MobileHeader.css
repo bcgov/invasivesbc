@@ -23,9 +23,13 @@
   max-width: 500px;
   padding: 0;
   width: 100%;
-  .offlineSyncButton svg {
-    display: flex;
-    height: 100%;
+  .offlineSyncButton {
+    margin-bottom: auto;
+    margin-top: auto;
+    svg {
+      display: flex;
+      height: 100%;
+    }
   }
   & > * {
     display: flex;

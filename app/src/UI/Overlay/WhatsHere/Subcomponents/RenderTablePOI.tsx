@@ -12,7 +12,7 @@ type PropTypes = {
 };
 const RenderTablePOI = ({ setAnchorEl }: PropTypes) => {
   const dispatch = useDispatch();
-  const { loggedInOrWorkingOffline, roles } = useSelector((state) => state.Auth);
+  const { loggedInOrWorkingOffline } = useSelector((state) => state.Auth);
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
 
   const dispatchUpdatedID = (params) => {
@@ -79,7 +79,7 @@ const RenderTablePOI = ({ setAnchorEl }: PropTypes) => {
               dispatch(WhatsHere.sort_filter_update(RecordSetType.IAPP, c.field));
             }}
             onCellClick={(params: GridCellParams, event: MuiEvent<MouseEvent | TouchEvent>) => {
-              if (loggedInOrWorkingOffline && roles.length > 0) {
+              if (loggedInOrWorkingOffline) {
                 setAnchorEl(event.currentTarget as HTMLElement);
                 highlightPOI(params);
               }
