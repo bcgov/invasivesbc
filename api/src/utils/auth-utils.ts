@@ -33,7 +33,8 @@ export interface InvasivesRequest extends Request {
     preferredUsername: string;
     user: any;
     friendlyUsername?: string;
-    roles: string[];
+    roles: Array<Record<PropertyKey, any>>;
+    permissions: Array<IPermission>;
     filterForSelectable: boolean;
     v2beta?: boolean;
   };
@@ -95,6 +96,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
         friendlyUsername: null,
         user: null,
         roles: [],
+        permissions: [],
         filterForSelectable: filterForSelectable
       };
 
@@ -160,6 +162,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
               friendlyUsername: null,
               user: null,
               roles: [],
+              permissions: [],
               filterForSelectable: false
             };
             req.authContext.preferredUsername = decoded?.preferred_username;
@@ -176,9 +179,12 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
             MDC.request.user = req.authContext.preferredUsername || 'unresolved';
 
             getRolesForUser(user.user_id)
-              .then((roles) => {
-                req.authContext.roles = roles;
-                MDC.additionalContext.authContext = req.authContext;
+              .then((res) => {
+                if (!(res instanceof Error)) {
+                  req.authContext.roles = res.roles;
+                  req.authContext.permissions = res.permissions;
+                  MDC.additionalContext.authContext = req.authContext;
+                }
               })
               .catch((error: Error) => {
                 defaultLog.error({ label: 'authenticate', message: 'failed looking up roles', error });
@@ -189,7 +195,7 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
                 getV2BetaAccessForUser(user.user_id)
                   .then((betaAccess) => {
                     defaultLog.debug({ label: 'authenticate', message: 'looked up v2beta', betaAccess });
-                    req.authContext.v2beta = betaAccess;
+                    req.authContext.v2beta = !!betaAccess;
                     return resolve();
                   })
                   .catch((error: Error) => {

@@ -3,10 +3,11 @@ import { Action, createNextState } from '@reduxjs/toolkit';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { AuthActions } from 'state/actions/auth/Auth';
+import { IPermission } from 'sharedAPI/src/interfaces/IPermission';
 
 interface OfflineUserState {
   roles: { role_id: number; role_name: string }[];
-
+  permissions: Array<IPermission>;
   extendedInfo: {
     user_id: number | null;
     account_status: number | null;
@@ -58,6 +59,7 @@ interface AuthState {
   loginInProgress: boolean;
 
   roles: { role_id: number; role_name: string }[];
+  permissions: Array<IPermission>;
   accessRoles: { role_id: number; role_name: string }[];
   rolesInitialized: boolean;
 
@@ -134,6 +136,7 @@ const initialState: AuthState = {
   idir_userid: null,
   initialized: false,
   roles: [],
+  permissions: [],
   rolesInitialized: false,
   username: null,
   v2BetaAccess: false
@@ -205,6 +208,7 @@ function createAuthReducer(_configuration: AppConfig) {
         draftState.authenticated = false;
         draftState.disrupted = false;
         draftState.roles = [];
+        draftState.permissions = [];
         draftState.accessRoles = [];
         draftState.rolesInitialized = false;
         draftState.extendedInfo = {
@@ -227,6 +231,7 @@ function createAuthReducer(_configuration: AppConfig) {
           const found = draftState.offlineUsers.find((o) => o.displayName === draftState.displayName);
           if (found) {
             found.roles = draftState.roles;
+            found.permissions = draftState.permissions ?? [];
             found.extendedInfo = draftState.extendedInfo;
             found.email = draftState.email;
             found.bceid_userid = draftState.bceid_userid;
@@ -241,6 +246,7 @@ function createAuthReducer(_configuration: AppConfig) {
               extendedInfo: draftState.extendedInfo,
               email: draftState.email,
               bceid_user_guid: draftState.bceid_user_guid,
+              permissions: draftState.permissions,
               bceid_userid: draftState.bceid_userid,
               displayName: draftState.displayName,
               idir_user_guid: draftState.idir_user_guid,
@@ -332,8 +338,9 @@ function createAuthReducer(_configuration: AppConfig) {
           work_phone_number: null
         };
       } else if (AuthActions.refreshRolesComplete.match(action)) {
-        const { all_roles, roles, extendedInfo, v2BetaAccess } = action.payload;
+        const { all_roles, roles, extendedInfo, v2BetaAccess, permissions } = action.payload;
         draftState.roles = roles;
+        draftState.permissions = permissions;
         draftState.loggedInOrWorkingOffline = roles.length > 0;
         draftState.accessRoles = computeAccessRoles(all_roles, roles);
         draftState.extendedInfo = extendedInfo;

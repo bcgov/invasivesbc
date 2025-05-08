@@ -353,6 +353,7 @@ async function getRolesForSelf(req, res, next) {
     request: req.body,
     result: {
       roles: req.authContext.roles,
+      permissions: req.authContext.permissions,
       v2BetaAccess: req.authContext.user.v2beta,
       extendedInfo: {
         user_id: req.authContext.user.user_id,

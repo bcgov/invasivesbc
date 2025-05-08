@@ -91,6 +91,11 @@ export const getRolesForUserSQL = (user_id): SQLStatement => {
   }
 };
 
+export const getPermissionsForUser = (user_id): SQLStatement => {
+  if (!user_id) return null;
+  return SQL`select * from invasivesbc.get_user_permissions(${user_id});`;
+};
+
 export const getBetaAccessForUserSQL = (user_id): SQLStatement => {
   if (!user_id) {
     return null;

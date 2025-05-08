@@ -56,12 +56,12 @@ function* refreshRoles() {
       }
       return { userData: await userAccessResponse.json(), rolesData: await rolesResponse.json() };
     });
-
     yield put(
       AuthActions.refreshRolesComplete({
         all_roles: rolesData.result,
         roles: userData.result.roles,
         extendedInfo: userData.result.extendedInfo,
+        permissions: userData.result.permissions,
         v2BetaAccess: userData.result.v2BetaAccess
       })
     );

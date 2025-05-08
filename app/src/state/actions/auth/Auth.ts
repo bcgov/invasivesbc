@@ -1,4 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
+import { IPermission } from 'sharedAPI/src/interfaces/IPermission';
 
 class AuthActions {
   private static readonly PREFIX = 'Auth';
@@ -31,6 +32,7 @@ class AuthActions {
   static readonly refreshRolesComplete = createAction<{
     all_roles: { role_id: number; role_name: string }[];
     roles: { role_id: number; role_name: string }[];
+    permissions: Array<IPermission>;
     extendedInfo: {
       user_id: number | null;
       account_status: number | null;
