@@ -10,6 +10,7 @@ import {
 } from './user-utils';
 import { MDCAsyncLocal } from 'mdc';
 import { getLogger } from 'utils/logger';
+import { IPermission } from 'sharedAPI/src/interfaces/IPermission';
 
 const defaultLog = getLogger('auth-utils');
 
