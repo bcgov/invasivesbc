@@ -364,12 +364,62 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_ASSIGN_ACCESS_LEVELS is 'Can assign access levels'; 
     `
   );
+
+  // Implement Function for fetching permissions from a user using their user_id
+  await knex.raw(
+    //language=PostgreSQL
+    `
+    CREATE OR REPLACE FUNCTION invasivesbc.get_user_permissions(uid integer)
+    RETURNS TABLE (
+        id VARCHAR,
+        CAN_WRITE BOOLEAN,
+        CAN_READ BOOLEAN,
+        CAN_DELETE BOOLEAN,
+        CAN_DELETE_EMPLOYER BOOLEAN,
+        CAN_DELETE_AGENCY BOOLEAN,
+        CAN_EDIT BOOLEAN,
+        CAN_EDIT_EMPLOYER BOOLEAN,
+        CAN_EDIT_AGENCY BOOLEAN,
+        CAN_REVIEW_AND_PUBLISH BOOLEAN,
+        CAN_REVIEW_AND_PUBLISH_EMPLOYER BOOLEAN,
+        CAN_REVIEW_AND_PUBLISH_AGENCY BOOLEAN,
+        CAN_ASSIGN_ACCESS_LEVELS BOOLEAN
+    )
+    LANGUAGE SQL
+    AS $$
+        SELECT pc.id,
+          BOOL_OR(p.CAN_WRITE) as CAN_WRITE,
+          BOOL_OR(p.CAN_READ) as CAN_READ,
+          BOOL_OR(p.CAN_DELETE) as CAN_DELETE,
+          BOOL_OR(p.CAN_DELETE_EMPLOYER) as CAN_DELETE_EMPLOYER,
+          BOOL_OR(p.CAN_DELETE_AGENCY) as CAN_DELETE_AGENCY,
+          BOOL_OR(p.CAN_EDIT) as CAN_EDIT,
+          BOOL_OR(p.CAN_EDIT_EMPLOYER) as CAN_EDIT_EMPLOYER,
+          BOOL_OR(p.CAN_EDIT_AGENCY) as CAN_EDIT_AGENCY,
+          BOOL_OR(p.CAN_REVIEW_AND_PUBLISH) as CAN_REVIEW_AND_PUBLISH,
+          BOOL_OR(p.CAN_REVIEW_AND_PUBLISH_EMPLOYER) as CAN_REVIEW_AND_PUBLISH_EMPLOYER,
+          BOOL_OR(p.CAN_REVIEW_AND_PUBLISH_AGENCY) as CAN_REVIEW_AND_PUBLISH_AGENCY,
+          BOOL_OR(p.CAN_ASSIGN_ACCESS_LEVELS) as CAN_ASSIGN_ACCESS_LEVELS
+        FROM invasivesbc.user_access ua
+        LEFT JOIN invasivesbc.permissions p
+            ON p.role_id = ua.role_id
+        LEFT JOIN invasivesbc.permission_category pc 
+            ON p.category_id = pc.id
+        WHERE ua.user_id = uid
+        GROUP BY pc.id
+    $$;
+    `
+  );
 }
 
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(
     //language=PostgreSQL
-    `DROP VIEW IF EXISTS invasivesbc.ROLE_PERMISSIONS`
+    `DROP FUNCTION IF EXISTS invasivesbc.get_user_permissions;`
+  );
+  await knex.raw(
+    //language=PostgreSQL
+    `DROP VIEW IF EXISTS invasivesbc.ROLE_PERMISSIONS;`
   );
   await knex.raw(
     //language=PostgreSQL
