@@ -1,7 +1,26 @@
+/**
+ * Introduces New Tables, Views, and DB Function
+ * Tables:
+ *  - PERMISSIONS
+ *  - PERMISSION_CATEGORY
+ *  - ACTIVITY_SUBTYPE_PERMISSION_CATEGORY
+ * Views:
+ *  - SUBTYPE_PERMISSIONS
+ *  - ROLE_PERMISSIONS
+ * Functions:
+ *  - get_user_permissions(uid integer)
+ */
+
 import { Knex } from 'knex';
 import { Role } from '../../constants/roles';
 
 export async function up(knex: Knex): Promise<void> {
+  // Helper function for mapping inserts
+  const addCommaIfNotFirstIndex = (index: number) => {
+    if (index !== 0) {
+      query += ', ';
+    }
+  };
   // Create Table to hold Permission Categories
   enum Category {
     PLANT_OBSERVATION = 'PLANT_OBSERVATION',
@@ -52,6 +71,7 @@ export async function up(knex: Knex): Promise<void> {
         CATEGORY_ID                      VARCHAR(64) REFERENCES invasivesbc.PERMISSION_CATEGORY(ID),
         CAN_WRITE                        BOOLEAN     DEFAULT FALSE,
         CAN_READ                         BOOLEAN     DEFAULT FALSE,
+        CAN_READ_SENSITIVE_BIOCONTROL    BOOLEAN     DEFAULT FALSE,
 
         CAN_DELETE                       BOOLEAN     DEFAULT FALSE,
         CAN_DELETE_EMPLOYER              BOOLEAN     DEFAULT FALSE,
@@ -78,6 +98,7 @@ export async function up(knex: Knex): Promise<void> {
      COMMENT ON COLUMN invasivesbc.PERMISSIONS.CATEGORY_ID                     IS 'Category to which the permission applies';
      COMMENT ON COLUMN invasivesbc.PERMISSIONS.CAN_WRITE                       IS 'Can create new Records';
      COMMENT ON COLUMN invasivesbc.PERMISSIONS.CAN_READ                        IS 'Can read records';
+     COMMENT ON COLUMN invasivesbc.PERMISSIONS.CAN_READ_SENSITIVE_BIOCONTROL   IS 'Can access records containing certain biocontrol species';
 
      COMMENT ON COLUMN invasivesbc.PERMISSIONS.CAN_DELETE                      IS 'Can delete records in category';
      COMMENT ON COLUMN invasivesbc.PERMISSIONS.CAN_DELETE_EMPLOYER             IS 'Can delete records with same employer';
@@ -106,6 +127,7 @@ export async function up(knex: Knex): Promise<void> {
                                        CATEGORY_ID,
                                        CAN_WRITE,
                                        CAN_READ,
+                                       CAN_READ_SENSITIVE_BIOCONTROL,
                                        CAN_DELETE,
                                        CAN_DELETE_EMPLOYER,
                                        CAN_DELETE_AGENCY,
@@ -121,199 +143,194 @@ export async function up(knex: Knex): Promise<void> {
   // We cannot guarantee the role_id, so roll through the results to create the query.
   role_data.rows.forEach(({ role_name, role_id }, index) => {
     // shorthand for manually checking index at each step.
-    const addCommaIfNotFirstIndex = () => {
-      if (index !== 0) {
-        query += ', ';
-      }
-    };
     switch (role_name) {
       case Role.MASTER_ADMINISTRATOR:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE)  
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE)  
         `;
         break;
       case Role.ADMIN_PLANTS:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   )
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   )
         `;
         break;
       case Role.ADMIN_ANIMALS:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE,    TRUE   ),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
         `;
         break;
       case Role.BCGOV_STAFF_ANIMALS:
       case Role.INDIGENOUS_RISO_STAFF_ANIMALS:
       case Role.CONTRACTOR_STAFF_ANIMALS:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
         `;
 
         break;
       case Role.BCGOV_STAFF_PLANTS:
       case Role.INDIGENOUS_RISO_STAFF_PLANTS:
       case Role.CONTRACTOR_STAFF_PLANTS:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
         `;
         break;
       case Role.BCGOV_STAFF_BOTH:
       case Role.INDIGENOUS_RISO_STAFF_BOTH:
       case Role.CONTRACTOR_STAFF_BOTH:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
         `;
         break;
       case Role.CONTRACTOR_MANAGER_ANIMALS:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
         `;
         break;
       case Role.CONTRACTOR_MANAGER_PLANTS:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
         `;
         break;
       case Role.CONTRACTOR_MANAGER_BOTH:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT)
         `;
         break;
       case Role.INDIGENOUS_RISO_MANAGER_ANIMALS:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
         `;
         break;
       case Role.INDIGENOUS_RISO_MANAGER_PLANTS:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)
         `;
         break;
       case Role.INDIGENOUS_RISO_MANAGER_BOTH:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT)
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT, TRUE,    TRUE,    DEFAULT)
         `;
         break;
       case Role.MUSSEL_INSPECTION_OFFICER:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)  
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)  
         `;
         break;
       case Role.BIOCONTROL_USER:
-        addCommaIfNotFirstIndex();
-        //                                                      WRITE    READ     DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
+        addCommaIfNotFirstIndex(index);
+        //                                                      WRITE    READ     BIO_READ DELETE   DEL_EMP  DEL_AGE  EDIT     ED_EMP   ED_AGE   REVIEW   REV_EMP  REV_AGE  ASSIGN
         query += `
-        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
-        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)  
+        (${role_id}, '${Category.PLANT_OBSERVATION}',           DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_OBSERVATION}',          DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TREATMENT_MONITORING}',  DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TREATMENT_MONITORING}', DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_TRANSECT}',              DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.ANIMAL_TRANSECT}',             DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT),
+        (${role_id}, '${Category.PLANT_BIOCONTROL}',            TRUE,    TRUE,    TRUE,    DEFAULT, DEFAULT, DEFAULT, TRUE,    DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT, DEFAULT)  
         `;
         break;
     }
@@ -331,6 +348,7 @@ export async function up(knex: Knex): Promise<void> {
         ur.ROLE_DESCRIPTION,
         ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_WRITE) as CAN_WRITE,
         ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_READ) as CAN_READ,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_READ_SENSITIVE_BIOCONTROL) as CAN_READ_SENSITIVE_BIOCONTROL,
         ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE) as CAN_DELETE,
         ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE_EMPLOYER) as CAN_DELETE_EMPLOYER,
         ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE_AGENCY) as CAN_DELETE_AGENCY,
@@ -351,7 +369,8 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON VIEW invasivesbc.ROLE_PERMISSIONS is 'View Aggregating Permissions to Roles in the DB';
 
     COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_WRITE is 'Can create new Records';
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_READ is 'Can read records'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_READ is 'Can read records';
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_READ_SENSITIVE_BIOCONTROL is 'Can read records containing sensitive biocontrol information';
     COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE is 'Can delete records in category'; 
     COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE_EMPLOYER is 'Can delete records with same employer'; 
     COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE_AGENCY is 'Can delete records with same agency'; 
@@ -374,6 +393,7 @@ export async function up(knex: Knex): Promise<void> {
         id VARCHAR,
         CAN_WRITE BOOLEAN,
         CAN_READ BOOLEAN,
+        CAN_READ_SENSITIVE_BIOCONTROL BOOLEAN,
         CAN_DELETE BOOLEAN,
         CAN_DELETE_EMPLOYER BOOLEAN,
         CAN_DELETE_AGENCY BOOLEAN,
@@ -390,6 +410,7 @@ export async function up(knex: Knex): Promise<void> {
         SELECT pc.id,
           BOOL_OR(p.CAN_WRITE) as CAN_WRITE,
           BOOL_OR(p.CAN_READ) as CAN_READ,
+          BOOL_OR(p.CAN_READ_SENSITIVE_BIOCONTROL) as CAN_READ_SENSITIVE_BIOCONTROL,
           BOOL_OR(p.CAN_DELETE) as CAN_DELETE,
           BOOL_OR(p.CAN_DELETE_EMPLOYER) as CAN_DELETE_EMPLOYER,
           BOOL_OR(p.CAN_DELETE_AGENCY) as CAN_DELETE_AGENCY,
@@ -410,23 +431,158 @@ export async function up(knex: Knex): Promise<void> {
     $$;
     `
   );
+  /*
+   * Create a table that links Activity Record subtypes to a Permissions Category
+   * Example "Activity_Observation_PlantTerrestrial" Records are tied to Permissions under the 'PLANT_OBSERVATION' category.
+   */
+  await knex.raw(
+    //language=PostgreSQL
+    `
+     CREATE TABLE IF NOT EXISTS invasivesbc.ACTIVITY_SUBTYPE_PERMISSION_CATEGORY (
+       ACTIVITY_SUBTYPE SERIAL4 REFERENCES invasivesbc.ACTIVITY_SUBTYPE_MAPPING(MAPPING_ID),
+       PERMISSION_CATEGORY VARCHAR(64) REFERENCES invasivesbc.PERMISSION_CATEGORY(ID),
+
+       PRIMARY KEY (ACTIVITY_SUBTYPE, PERMISSION_CATEGORY)
+     );
+     
+     COMMENT ON TABLE invasivesbc.ACTIVITY_SUBTYPE_PERMISSION_CATEGORY IS 'Relationship linking Activity_Subtypes to permission categories';
+    `
+  );
+
+  // Get Correct IDS For Subtypes
+  const subtypes = await knex.raw(
+    //language=PostgreSQL
+    `SELECT mapping_id, form_subtype 
+     FROM invasivesbc.ACTIVITY_SUBTYPE_MAPPING
+    `
+  );
+
+  query = `
+  INSERT INTO invasivesbc.ACTIVITY_SUBTYPE_PERMISSION_CATEGORY (ACTIVITY_SUBTYPE, PERMISSION_CATEGORY)  
+  VALUES `;
+
+  subtypes.rows.forEach(({ mapping_id, form_subtype }, index: number) => {
+    switch (form_subtype) {
+      case 'Activity_Observation_PlantTerrestrial':
+      case 'Activity_Observation_PlantAquatic':
+        addCommaIfNotFirstIndex(index);
+        query += `(${mapping_id}, '${Category.PLANT_OBSERVATION}')`;
+        break;
+      case 'Activity_AnimalActivity_AnimalTerrestrial':
+      case 'Activity_AnimalActivity_AnimalAquatic':
+        addCommaIfNotFirstIndex(index);
+        query += `(${mapping_id}, '${Category.ANIMAL_OBSERVATION}')`;
+        break;
+      case 'Activity_Treatment_ChemicalPlantTerrestrial':
+      case 'Activity_Treatment_ChemicalPlantAquatic':
+      case 'Activity_Treatment_MechanicalPlantTerrestrial':
+      case 'Activity_Treatment_MechanicalPlantAquatic':
+      case 'Activity_Monitoring_ChemicalTerrestrialAquaticPlant':
+      case 'Activity_Monitoring_MechanicalTerrestrialAquaticPlant':
+        addCommaIfNotFirstIndex(index);
+        query += `(${mapping_id}, '${Category.PLANT_TREATMENT_MONITORING}')`;
+        break;
+      case 'Activity_Biocontrol_Release':
+      case 'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant':
+      case 'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant':
+      case 'Activity_Transect_BiocontrolEfficacy':
+      case 'Activity_Biocontrol_Collection':
+        addCommaIfNotFirstIndex(index);
+        query += `(${mapping_id}, '${Category.PLANT_TREATMENT_MONITORING}'),`;
+        query += `(${mapping_id}, '${Category.PLANT_BIOCONTROL}')`;
+        break;
+      case 'Activity_Treatment_ChemicalAnimalTerrestrial':
+      case 'Activity_Treatment_MechanicalAnimalTerrestrial':
+      case 'Activity_Monitoring_MechanicalAnimalTerrestrial':
+      case 'Activity_Monitoring_ChemicalAnimalTerrestrial':
+        addCommaIfNotFirstIndex(index);
+        query += `(${mapping_id}, '${Category.ANIMAL_TREATMENT_MONITORING}')`;
+        break;
+    }
+  });
+
+  query += ` ON CONFLICT(ACTIVITY_SUBTYPE, PERMISSION_CATEGORY) DO NOTHING`;
+
+  await knex.raw(
+    //language=PostgreSQL
+    query
+  );
+
+  await knex.raw(
+    //language=PostgreSQL
+    `
+    CREATE OR REPLACE VIEW invasivesbc.SUBTYPE_PERMISSIONS AS
+      SELECT asm.form_subtype, ARRAY_AGG(aspc.permission_category)
+      FROM invasivesbc.ACTIVITY_SUBTYPE_PERMISSION_CATEGORY aspc
+      LEFT JOIN invasivesbc.ACTIVITY_SUBTYPE_MAPPING asm
+      ON aspc.activity_subtype = asm.mapping_id
+      GROUP BY asm.FORM_SUBTYPE;
+
+    COMMENT ON VIEW invasivesbc.SUBTYPE_PERMISSIONS IS 'Readable View linking Readable Subtypes to their Permission Categories';
+    `
+  );
+
+  // Create function to get the permissions a user has for a given Record subtype
+  await knex.raw(
+    //language=PostgreSQL
+    `
+    CREATE OR REPLACE FUNCTION invasivesbc.get_user_permissions_for_activity_subtype(uid integer, subtype text)
+      RETURNS TABLE (
+        CAN_WRITE BOOLEAN,
+        CAN_READ BOOLEAN,
+        CAN_READ_SENSITIVE_BIOCONTROL BOOLEAN,
+        CAN_DELETE BOOLEAN,
+        CAN_DELETE_EMPLOYER BOOLEAN,
+        CAN_DELETE_AGENCY BOOLEAN,
+        CAN_EDIT BOOLEAN,
+        CAN_EDIT_EMPLOYER BOOLEAN,
+        CAN_EDIT_AGENCY BOOLEAN,
+        CAN_REVIEW_AND_PUBLISH BOOLEAN,
+        CAN_REVIEW_AND_PUBLISH_EMPLOYER BOOLEAN,
+        CAN_REVIEW_AND_PUBLISH_AGENCY BOOLEAN,
+        CAN_ASSIGN_ACCESS_LEVELS BOOLEAN
+      )
+      LANGUAGE SQL
+      AS $$
+        WITH permission_categories AS (
+        SELECT pc.permission_category 
+        FROM invasivesbc.activity_subtype_permission_category pc
+        LEFT JOIN invasivesbc.activity_subtype_mapping asm
+        ON asm.mapping_id = pc.activity_subtype
+        WHERE asm.form_subtype = subtype
+        )
+        SELECT  
+          BOOL_OR(CAN_WRITE) AS CAN_WRITE,
+          BOOL_OR(CAN_READ) AS CAN_READ,
+          BOOL_OR(CAN_READ_SENSITIVE_BIOCONTROL) AS CAN_READ_SENSITIVE_BIOCONTROL,
+          BOOL_OR(CAN_DELETE) AS CAN_DELETE,
+          BOOL_OR(CAN_DELETE_EMPLOYER) AS CAN_DELETE_EMPLOYER,
+          BOOL_OR(CAN_DELETE_AGENCY) AS CAN_DELETE_AGENCY,
+          BOOL_OR(CAN_EDIT) AS CAN_EDIT,
+          BOOL_OR(CAN_EDIT_EMPLOYER) AS CAN_EDIT_EMPLOYER,
+          BOOL_OR(CAN_EDIT_AGENCY) AS CAN_EDIT_AGENCY,
+          BOOL_OR(CAN_REVIEW_AND_PUBLISH) AS CAN_REVIEW_AND_PUBLISH,
+          BOOL_OR(CAN_REVIEW_AND_PUBLISH_EMPLOYER) AS CAN_REVIEW_AND_PUBLISH_EMPLOYER,
+          BOOL_OR(CAN_REVIEW_AND_PUBLISH_AGENCY) AS CAN_REVIEW_AND_PUBLISH_AGENCY,
+          BOOL_OR(CAN_ASSIGN_ACCESS_LEVELS) AS CAN_ASSIGN_ACCESS_LEVELS
+        FROM invasivesbc.get_user_permissions(uid) p 
+        WHERE p.id in (select permission_category from permission_categories);
+      $$
+    `
+  );
 }
 
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(
     //language=PostgreSQL
-    `DROP FUNCTION IF EXISTS invasivesbc.get_user_permissions;`
-  );
-  await knex.raw(
-    //language=PostgreSQL
-    `DROP VIEW IF EXISTS invasivesbc.ROLE_PERMISSIONS;`
-  );
-  await knex.raw(
-    //language=PostgreSQL
-    `DROP TABLE IF EXISTS invasivesbc.PERMISSIONS;`
-  );
-  await knex.raw(
-    //language=PostgreSQL
-    `DROP TABLE IF EXISTS invasivesbc.PERMISSION_CATEGORY;`
+    `
+    DROP FUNCTION IF EXISTS invasivesbc.get_user_permissions_for_activity_subtype;
+    DROP VIEW     IF EXISTS invasivesbc.SUBTYPE_PERMISSIONS;
+    DROP TABLE    IF EXISTS invasivesbc.ACTIVITY_SUBTYPE_PERMISSION_CATEGORY;
+    DROP FUNCTION IF EXISTS invasivesbc.get_user_permissions;
+    DROP VIEW     IF EXISTS invasivesbc.ROLE_PERMISSIONS;
+    DROP TABLE    IF EXISTS invasivesbc.PERMISSIONS;
+    DROP TABLE    IF EXISTS invasivesbc.PERMISSION_CATEGORY;
+    `
   );
 }
