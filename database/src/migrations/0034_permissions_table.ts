@@ -9,6 +9,7 @@
  *  - ROLE_PERMISSIONS
  * Functions:
  *  - get_user_permissions(uid integer)
+ *  - get_user_permissions_for_activity_subtype(uid integer, subtype text)
  */
 
 import { Knex } from 'knex';
