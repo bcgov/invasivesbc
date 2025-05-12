@@ -3,6 +3,7 @@
  * Functions:
  *  - get_user_permissions(uid integer)
  *  - get_user_permissions_for_activity_subtype(uid integer, subtype text)
+ *  - fetch_activity_with_user_permissions
  *  - [Trigger Func] add_new_permission_category_to_existing_roles
  *  - [Trigger Func] add_new_role_to_existing_permissions
  *
@@ -18,6 +19,9 @@
  * Views:
  *  - SUBTYPE_PERMISSIONS
  *  - ROLE_PERMISSIONS
+ *
+ * Types:
+ *  - activity_record_with_permissions
  */
 
 import { Knex } from 'knex';
@@ -634,12 +638,113 @@ export async function up(knex: Knex): Promise<void> {
       EXECUTE FUNCTION invasivesbc.add_new_role_to_existing_permissions();
     `
   );
+
+  await knex.raw(
+    //language=PostgreSQL
+    `
+    CREATE TYPE invasivesbc.activity_record_with_permissions AS (
+	    activity_incoming_data_id integer,
+	    activity_id uuid,
+	    "version" int4,
+	    activity_type varchar(200),
+	    activity_subtype varchar(200),
+	    created_timestamp timestamp,
+	    received_timestamp timestamp,
+	    deleted_timestamp timestamp,
+	    geom public.geometry(geometry, 3005),
+	    geog public.geography(geometry, 4326),
+	    media_keys _text,
+	    activity_payload jsonb,
+	    biogeoclimatic_zones varchar(30),
+	    regional_invasive_species_organization_areas varchar(100),
+	    invasive_plant_management_areas varchar(100),
+	    ownership varchar(100),
+	    regional_districts varchar(100),
+	    flnro_districts varchar(100),
+	    moti_districts varchar(100),
+	    elevation int4,
+	    well_proximity int4,
+	    utm_zone int4,
+	    utm_northing float4,
+	    utm_easting float4,
+	    albers_northing float4,
+	    albers_easting float4,
+	    created_by varchar(100),
+	    form_status varchar(100),
+	    sync_status varchar(100),
+	    review_status varchar(100),
+	    reviewed_by varchar(100),
+	    reviewed_at timestamp,
+	    species_positive jsonb,
+	    species_negative jsonb,
+	    jurisdiction _varchar,
+	    updated_by varchar(100),
+	    species_treated jsonb,
+	    species_positive_full text,
+	    species_negative_full text,
+	    species_treated_full text,
+	    agency text,
+	    jurisdiction_display text,
+	    short_id text,
+	    created_by_with_guid text,
+	    updated_by_with_guid text,
+	    activity_subtype_full text,
+	    batch_id int4,
+	    row_number int4,
+	    species_biocontrol_full text,
+	    iscurrent bool,
+	    map_symbol text,
+	    invasive_plant text,
+	    centroid public.geometry,
+	    can_edit boolean,
+	    can_delete boolean
+    );
+
+    CREATE OR REPLACE FUNCTION invasivesbc.fetch_activity_with_user_permissions(target_user_id integer, activity_ids uuid[])
+    returns setof invasivesbc.activity_record_with_permissions
+    AS $$
+    BEGIN
+      RETURN QUERY
+      WITH user_details AS (
+        SELECT idir_account_name, bceid_account_name, funding_agencies, employer
+        FROM invasivesbc.application_user
+        WHERE user_id = target_user_id
+      )
+      SELECT
+        aid.*,
+        (aid.created_by = ud.idir_account_name
+        OR aid.created_by = ud.bceid_account_name
+        OR perms.can_edit
+        OR (perms.can_edit_employer AND aid.activity_payload #>> '{form_data, activity_data, employer_code}' = any(string_to_array(ud.employer, ',')))
+        OR (perms.can_edit_agency   AND aid.activity_payload #>> '{form_data, activity_data, invasive_species_agency_code}' = any(string_to_array(ud.funding_agencies, ',')))
+        ) as can_edit,
+        (aid.created_by = ud.idir_account_name
+        OR aid.created_by = ud.bceid_account_name
+        OR perms.can_delete
+        OR (perms.can_delete_employer AND aid.activity_payload #>> '{form_data, activity_data, employer_code}' = any(string_to_array(ud.employer, ',')))
+        OR (perms.can_delete_agency   AND aid.activity_payload #>> '{form_data, activity_data, invasive_species_agency_code}' = any(string_to_array(ud.funding_agencies, ',')))
+        ) AS can_delete
+      FROM invasivesbc.activity_incoming_data aid
+      JOIN LATERAL invasivesbc.get_user_permissions_for_activity_subtype(
+        target_user_id,
+        aid.activity_subtype
+      ) AS perms ON true
+      JOIN user_details ud ON TRUE
+      WHERE aid.activity_id = ANY(activity_ids)
+      AND aid.iscurrent = true
+      AND perms.can_read = true;
+    END;
+    $$ LANGUAGE plpgsql;
+    `
+  );
 }
 
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(
     //language=PostgreSQL
     `
+    DROP FUNCTION IF EXISTS invasivesbc.fetch_activity_with_user_permissions;
+    DROP TYPE     IF EXISTS invasivesbc.activity_record_with_permissions;
     DROP TRIGGER  IF EXISTS t_after_user_role_insert ON invasivesbc.user_role;
     DROP FUNCTION IF EXISTS invasivesbc.add_new_role_to_existing_permissions;
     DROP TRIGGER  IF EXISTS t_after_permission_category_insert ON invasivesbc.permission_category;
