@@ -1,15 +1,23 @@
 /**
- * Introduces New Tables, Views, and DB Function
+ * Introduces New Functions, Tables, Triggers, and Views
+ * Functions:
+ *  - get_user_permissions(uid integer)
+ *  - get_user_permissions_for_activity_subtype(uid integer, subtype text)
+ *  - [Trigger Func] add_new_permission_category_to_existing_roles
+ *  - [Trigger Func] add_new_role_to_existing_permissions
+ *
  * Tables:
  *  - PERMISSIONS
  *  - PERMISSION_CATEGORY
  *  - ACTIVITY_SUBTYPE_PERMISSION_CATEGORY
+ *
+ * Triggers:
+ *  - t_after_user_role_insert
+ *  - t_after_permission_category_insert
+ *
  * Views:
  *  - SUBTYPE_PERMISSIONS
  *  - ROLE_PERMISSIONS
- * Functions:
- *  - get_user_permissions(uid integer)
- *  - get_user_permissions_for_activity_subtype(uid integer, subtype text)
  */
 
 import { Knex } from 'knex';
@@ -68,8 +76,12 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(
     //language=PostgreSQL
     `CREATE TABLE IF NOT EXISTS invasivesbc.PERMISSIONS (
-        ROLE_ID                          SERIAL4     REFERENCES invasivesbc.USER_ROLE(ROLE_ID),
-        CATEGORY_ID                      VARCHAR(64) REFERENCES invasivesbc.PERMISSION_CATEGORY(ID),
+        ROLE_ID                          SERIAL4     REFERENCES invasivesbc.USER_ROLE(ROLE_ID)      
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
+        CATEGORY_ID                      VARCHAR(64) REFERENCES invasivesbc.PERMISSION_CATEGORY(ID) 
+            ON UPDATE CASCADE
+            ON DELETE CASCADE,
         CAN_WRITE                        BOOLEAN     DEFAULT FALSE,
         CAN_READ                         BOOLEAN     DEFAULT FALSE,
         CAN_READ_SENSITIVE_BIOCONTROL    BOOLEAN     DEFAULT FALSE,
@@ -347,19 +359,19 @@ export async function up(knex: Knex): Promise<void> {
       SELECT
         ur.ROLE_ID,
         ur.ROLE_DESCRIPTION,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_WRITE) as CAN_WRITE,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_READ) as CAN_READ,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_READ_SENSITIVE_BIOCONTROL) as CAN_READ_SENSITIVE_BIOCONTROL,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE) as CAN_DELETE,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE_EMPLOYER) as CAN_DELETE_EMPLOYER,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE_AGENCY) as CAN_DELETE_AGENCY,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_EDIT) as CAN_EDIT,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_EDIT_EMPLOYER) as CAN_EDIT_EMPLOYER,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_EDIT_AGENCY) as CAN_EDIT_AGENCY,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_REVIEW_AND_PUBLISH) as CAN_REVIEW_AND_PUBLISH,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_WRITE)                       as CAN_WRITE,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_READ)                        as CAN_READ,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_READ_SENSITIVE_BIOCONTROL)   as CAN_READ_SENSITIVE_BIOCONTROL,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE)                      as CAN_DELETE,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE_EMPLOYER)             as CAN_DELETE_EMPLOYER,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_DELETE_AGENCY)               as CAN_DELETE_AGENCY,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_EDIT)                        as CAN_EDIT,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_EDIT_EMPLOYER)               as CAN_EDIT_EMPLOYER,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_EDIT_AGENCY)                 as CAN_EDIT_AGENCY,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_REVIEW_AND_PUBLISH)          as CAN_REVIEW_AND_PUBLISH,
         ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_REVIEW_AND_PUBLISH_EMPLOYER) as CAN_REVIEW_AND_PUBLISH_EMPLOYER,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_REVIEW_AND_PUBLISH_AGENCY) as CAN_REVIEW_AND_PUBLISH_AGENCY,
-        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_ASSIGN_ACCESS_LEVELS) as CAN_ASSIGN_ACCESS_LEVELS
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_REVIEW_AND_PUBLISH_AGENCY)   as CAN_REVIEW_AND_PUBLISH_AGENCY,
+        ARRAY_AGG(pc.ID ORDER BY pc.ID) FILTER (WHERE p.CAN_ASSIGN_ACCESS_LEVELS)        as CAN_ASSIGN_ACCESS_LEVELS
       FROM invasivesbc.USER_ROLE ur
       LEFT JOIN invasivesbc.PERMISSIONS p  
       ON p.ROLE_ID = ur.ROLE_ID
@@ -369,19 +381,19 @@ export async function up(knex: Knex): Promise<void> {
     
     COMMENT ON VIEW invasivesbc.ROLE_PERMISSIONS is 'View Aggregating Permissions to Roles in the DB';
 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_WRITE is 'Can create new Records';
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_READ is 'Can read records';
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_READ_SENSITIVE_BIOCONTROL is 'Can read records containing sensitive biocontrol information';
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE is 'Can delete records in category'; 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE_EMPLOYER is 'Can delete records with same employer'; 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE_AGENCY is 'Can delete records with same agency'; 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_EDIT is 'Can edit records in category'; 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_EDIT_EMPLOYER is 'Can edit records with same employer'; 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_EDIT_AGENCY is 'Can edit records with same agency'; 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_REVIEW_AND_PUBLISH is 'Can review and publish records in category'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_WRITE                       is 'Can create new Records';
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_READ                        is 'Can read records';
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_READ_SENSITIVE_BIOCONTROL   is 'Can read records containing sensitive biocontrol information';
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE                      is 'Can delete records in category'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE_EMPLOYER             is 'Can delete records with same employer'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_DELETE_AGENCY               is 'Can delete records with same agency'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_EDIT                        is 'Can edit records in category'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_EDIT_EMPLOYER               is 'Can edit records with same employer'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_EDIT_AGENCY                 is 'Can edit records with same agency'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_REVIEW_AND_PUBLISH          is 'Can review and publish records in category'; 
     COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_REVIEW_AND_PUBLISH_EMPLOYER is 'Can review and publish records with same employer'; 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_REVIEW_AND_PUBLISH_AGENCY is 'Can review and publish records with same agency'; 
-    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_ASSIGN_ACCESS_LEVELS is 'Can assign access levels'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_REVIEW_AND_PUBLISH_AGENCY   is 'Can review and publish records with same agency'; 
+    COMMENT ON column invasivesbc.ROLE_PERMISSIONS.CAN_ASSIGN_ACCESS_LEVELS        is 'Can assign access levels'; 
     `
   );
 
@@ -391,37 +403,37 @@ export async function up(knex: Knex): Promise<void> {
     `
     CREATE OR REPLACE FUNCTION invasivesbc.get_user_permissions(uid integer)
     RETURNS TABLE (
-        id VARCHAR,
-        CAN_WRITE BOOLEAN,
-        CAN_READ BOOLEAN,
-        CAN_READ_SENSITIVE_BIOCONTROL BOOLEAN,
-        CAN_DELETE BOOLEAN,
-        CAN_DELETE_EMPLOYER BOOLEAN,
-        CAN_DELETE_AGENCY BOOLEAN,
-        CAN_EDIT BOOLEAN,
-        CAN_EDIT_EMPLOYER BOOLEAN,
-        CAN_EDIT_AGENCY BOOLEAN,
-        CAN_REVIEW_AND_PUBLISH BOOLEAN,
+        id                              VARCHAR,
+        CAN_WRITE                       BOOLEAN,
+        CAN_READ                        BOOLEAN,
+        CAN_READ_SENSITIVE_BIOCONTROL   BOOLEAN,
+        CAN_DELETE                      BOOLEAN,
+        CAN_DELETE_EMPLOYER             BOOLEAN,
+        CAN_DELETE_AGENCY               BOOLEAN,
+        CAN_EDIT                        BOOLEAN,
+        CAN_EDIT_EMPLOYER               BOOLEAN,
+        CAN_EDIT_AGENCY                 BOOLEAN,
+        CAN_REVIEW_AND_PUBLISH          BOOLEAN,
         CAN_REVIEW_AND_PUBLISH_EMPLOYER BOOLEAN,
-        CAN_REVIEW_AND_PUBLISH_AGENCY BOOLEAN,
-        CAN_ASSIGN_ACCESS_LEVELS BOOLEAN
+        CAN_REVIEW_AND_PUBLISH_AGENCY   BOOLEAN,
+        CAN_ASSIGN_ACCESS_LEVELS        BOOLEAN
     )
     LANGUAGE SQL
     AS $$
         SELECT pc.id,
-          BOOL_OR(p.CAN_WRITE) as CAN_WRITE,
-          BOOL_OR(p.CAN_READ) as CAN_READ,
-          BOOL_OR(p.CAN_READ_SENSITIVE_BIOCONTROL) as CAN_READ_SENSITIVE_BIOCONTROL,
-          BOOL_OR(p.CAN_DELETE) as CAN_DELETE,
-          BOOL_OR(p.CAN_DELETE_EMPLOYER) as CAN_DELETE_EMPLOYER,
-          BOOL_OR(p.CAN_DELETE_AGENCY) as CAN_DELETE_AGENCY,
-          BOOL_OR(p.CAN_EDIT) as CAN_EDIT,
-          BOOL_OR(p.CAN_EDIT_EMPLOYER) as CAN_EDIT_EMPLOYER,
-          BOOL_OR(p.CAN_EDIT_AGENCY) as CAN_EDIT_AGENCY,
-          BOOL_OR(p.CAN_REVIEW_AND_PUBLISH) as CAN_REVIEW_AND_PUBLISH,
+          BOOL_OR(p.CAN_WRITE)                       as CAN_WRITE,
+          BOOL_OR(p.CAN_READ)                        as CAN_READ,
+          BOOL_OR(p.CAN_READ_SENSITIVE_BIOCONTROL)   as CAN_READ_SENSITIVE_BIOCONTROL,
+          BOOL_OR(p.CAN_DELETE)                      as CAN_DELETE,
+          BOOL_OR(p.CAN_DELETE_EMPLOYER)             as CAN_DELETE_EMPLOYER,
+          BOOL_OR(p.CAN_DELETE_AGENCY)               as CAN_DELETE_AGENCY,
+          BOOL_OR(p.CAN_EDIT)                        as CAN_EDIT,
+          BOOL_OR(p.CAN_EDIT_EMPLOYER)               as CAN_EDIT_EMPLOYER,
+          BOOL_OR(p.CAN_EDIT_AGENCY)                 as CAN_EDIT_AGENCY,
+          BOOL_OR(p.CAN_REVIEW_AND_PUBLISH)          as CAN_REVIEW_AND_PUBLISH,
           BOOL_OR(p.CAN_REVIEW_AND_PUBLISH_EMPLOYER) as CAN_REVIEW_AND_PUBLISH_EMPLOYER,
-          BOOL_OR(p.CAN_REVIEW_AND_PUBLISH_AGENCY) as CAN_REVIEW_AND_PUBLISH_AGENCY,
-          BOOL_OR(p.CAN_ASSIGN_ACCESS_LEVELS) as CAN_ASSIGN_ACCESS_LEVELS
+          BOOL_OR(p.CAN_REVIEW_AND_PUBLISH_AGENCY)   as CAN_REVIEW_AND_PUBLISH_AGENCY,
+          BOOL_OR(p.CAN_ASSIGN_ACCESS_LEVELS)        as CAN_ASSIGN_ACCESS_LEVELS
         FROM invasivesbc.user_access ua
         LEFT JOIN invasivesbc.permissions p
             ON p.role_id = ua.role_id
@@ -440,8 +452,12 @@ export async function up(knex: Knex): Promise<void> {
     //language=PostgreSQL
     `
      CREATE TABLE IF NOT EXISTS invasivesbc.ACTIVITY_SUBTYPE_PERMISSION_CATEGORY (
-       ACTIVITY_SUBTYPE SERIAL4 REFERENCES invasivesbc.ACTIVITY_SUBTYPE_MAPPING(MAPPING_ID),
-       PERMISSION_CATEGORY VARCHAR(64) REFERENCES invasivesbc.PERMISSION_CATEGORY(ID),
+       ACTIVITY_SUBTYPE SERIAL4 REFERENCES invasivesbc.ACTIVITY_SUBTYPE_MAPPING(MAPPING_ID) 
+          ON UPDATE CASCADE
+          ON DELETE CASCADE,
+       PERMISSION_CATEGORY VARCHAR(64) REFERENCES invasivesbc.PERMISSION_CATEGORY(ID)       
+          ON UPDATE CASCADE
+          ON DELETE CASCADE,
 
        PRIMARY KEY (ACTIVITY_SUBTYPE, PERMISSION_CATEGORY)
      );
@@ -513,7 +529,7 @@ export async function up(knex: Knex): Promise<void> {
     //language=PostgreSQL
     `
     CREATE OR REPLACE VIEW invasivesbc.SUBTYPE_PERMISSIONS AS
-      SELECT asm.form_subtype, ARRAY_AGG(aspc.permission_category)
+      SELECT asm.form_subtype, ARRAY_AGG(aspc.permission_category) AS ASSIGNED_CATEGORIES
       FROM invasivesbc.ACTIVITY_SUBTYPE_PERMISSION_CATEGORY aspc
       LEFT JOIN invasivesbc.ACTIVITY_SUBTYPE_MAPPING asm
       ON aspc.activity_subtype = asm.mapping_id
@@ -571,12 +587,63 @@ export async function up(knex: Knex): Promise<void> {
       $$
     `
   );
+
+  /**
+   * Create new `permission` rows when permission category created
+   */
+  await knex.raw(
+    //language=PostgreSQL
+    `
+    CREATE OR REPLACE FUNCTION invasivesbc.add_new_permission_category_to_existing_roles()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      INSERT INTO invasivesbc.PERMISSIONS(category_id, role_id)
+      SELECT NEW.ID, r.ROLE_ID
+      FROM invasivesbc.USER_ROLE r;
+
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE OR REPLACE TRIGGER t_after_permission_category_insert
+      AFTER INSERT ON invasivesbc.permission_category
+      FOR EACH ROW
+      EXECUTE FUNCTION invasivesbc.add_new_permission_category_to_existing_roles();
+    `
+  );
+
+  /**
+   * Create new `permission` rows when user roles are created
+   */
+  await knex.raw(
+    //language=PostgreSQL
+    `
+    CREATE OR REPLACE FUNCTION invasivesbc.add_new_role_to_existing_permissions()
+    RETURNS TRIGGER AS $$
+    BEGIN
+      INSERT INTO invasivesBC.permissions(category_id, role_id)
+      SELECT pc.ID, NEW.role_id
+      FROM invasivesbc.PERMISSION_CATEGORY pc;
+      RETURN NEW;
+    END;
+    $$ LANGUAGE plpgsql;
+
+    CREATE OR REPLACE TRIGGER t_after_user_role_insert
+      AFTER INSERT ON invasivesbc.user_role
+      FOR EACH ROW
+      EXECUTE FUNCTION invasivesbc.add_new_role_to_existing_permissions();
+    `
+  );
 }
 
 export async function down(knex: Knex): Promise<void> {
   await knex.raw(
     //language=PostgreSQL
     `
+    DROP TRIGGER  IF EXISTS t_after_user_role_insert ON invasivesbc.user_role;
+    DROP FUNCTION IF EXISTS invasivesbc.add_new_role_to_existing_permissions;
+    DROP TRIGGER  IF EXISTS t_after_permission_category_insert ON invasivesbc.permission_category;
+    DROP FUNCTION IF EXISTS invasivesbc.add_new_permission_category_to_existing_roles;
     DROP FUNCTION IF EXISTS invasivesbc.get_user_permissions_for_activity_subtype;
     DROP VIEW     IF EXISTS invasivesbc.SUBTYPE_PERMISSIONS;
     DROP TABLE    IF EXISTS invasivesbc.ACTIVITY_SUBTYPE_PERMISSION_CATEGORY;
