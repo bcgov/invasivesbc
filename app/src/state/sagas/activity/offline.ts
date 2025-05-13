@@ -16,6 +16,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RecordSetId } from 'interfaces/UserRecordSet';
+import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 
 function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
@@ -49,7 +50,8 @@ function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
   const found = serializedActivities[activityID];
 
   if (found) {
-    yield put(Activity.getSuccess(JSON.parse(found.data)));
+    const activity = JSON.parse(found.data);
+    yield put(Activity.getSuccess({ activity, permissions: parseActivityForPermissions(activity, true) }));
     return;
   } else if (connected) {
     // not locally, maybe we can get it from the server if we're online
@@ -63,7 +65,7 @@ function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
         media: networkReturn.data.media || [],
         media_delete_keys: networkReturn.data.media_delete_keys || []
       };
-      yield put(Activity.getSuccess(datav2));
+      yield put(Activity.getSuccess({ activity: datav2, permissions: parseActivityForPermissions(datav2) }));
       return;
     }
   }
@@ -79,7 +81,7 @@ function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
         media: result.media || [],
         media_delete_keys: result.media_delete_keys || []
       };
-      yield put(Activity.getSuccess(datav2));
+      yield put(Activity.getSuccess({ activity: datav2, permissions: parseActivityForPermissions(datav2) }));
       return;
     }
   } catch (e) {

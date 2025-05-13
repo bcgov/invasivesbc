@@ -7,6 +7,8 @@ import Suggestions from './Suggestions';
 import AutoFill from './AutoFill';
 import ChemicalTreatments from './ChemicalTreatments';
 import FilterObjects from 'interfaces/FilterObjects';
+import IActivityPermissions from 'interfaces/IActivityPermissions';
+import UserRecord from 'interfaces/UserRecord';
 
 interface INewActivity {
   type: string;
@@ -57,6 +59,10 @@ interface IGetIdsForRecordsetSuccess extends IGetIdsForRecordset {
   idList: Array<string | number>;
 }
 
+interface IGetSuccess {
+  activity: UserRecord;
+  permissions: IActivityPermissions;
+}
 class Activity {
   private static readonly PREFIX = 'Activity';
   static readonly Offline = Offline;
@@ -84,7 +90,7 @@ class Activity {
   static readonly copySuccess = createAction<Record<string, any>>(`${this.PREFIX}/copySuccess`);
   static readonly get = createAction<string>(`${this.PREFIX}/get`);
   static readonly getLocal = createAction<string>(`${this.PREFIX}/getLocal`);
-  static readonly getSuccess = createAction<Record<string, any>>(`${this.PREFIX}/getSuccess`);
+  static readonly getSuccess = createAction<IGetSuccess>(`${this.PREFIX}/getSuccess`);
   static readonly getFailure = createAction(`${this.PREFIX}/getFailure`, (arg?: Response) => ({
     payload: arg
   }));

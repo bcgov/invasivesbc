@@ -13,11 +13,13 @@ import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offl
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
+import IActivityPermissions from 'interfaces/IActivityPermissions';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
   activity: any;
   activeActivity: string | null;
+  activeActivityPermissions?: IActivityPermissions;
   activityErrors: any[];
   current_activity_hash: string | null;
   error: boolean;
@@ -176,7 +178,9 @@ function createActivityReducer() {
         draftState.failCode = null;
         draftState.loading = true;
       } else if (Activity.getSuccess.match(action)) {
-        draftState.activity = { ...action.payload };
+        const { activity, permissions } = action.payload;
+        draftState.activity = { ...activity };
+        draftState.activeActivityPermissions = { ...permissions };
         draftState.suggestedTreatmentIDs = [];
         draftState.loading = false;
       } else if (Activity.getFailure.match(action)) {

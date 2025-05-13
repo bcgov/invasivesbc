@@ -11,6 +11,7 @@ import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { MOBILE } from 'state/build-time-config';
+import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
   yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
@@ -54,7 +55,7 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
     media_delete_keys: networkReturn.data.media_delete_keys || []
   };
 
-  yield put(Activity.getSuccess(datav2));
+  yield put(Activity.getSuccess({ activity: datav2, permissions: parseActivityForPermissions(datav2) }));
 }
 
 export function* handle_ACTIVITY_SAVE_NETWORK_REQUEST(action) {
