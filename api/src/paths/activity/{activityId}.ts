@@ -4,7 +4,7 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
-import { getActivityHistorySQL, getActivitySQL } from 'queries/activity-queries';
+import { getActivityHistorySQL, getActivitySqlWithPermissions } from 'queries/activity-queries';
 import { getFileFromS3 } from 'utils/file-utils';
 import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from 'paths/media';
@@ -76,7 +76,7 @@ function getActivity(): RequestHandler {
 
     try {
       connection = await getDBConnection();
-      const sqlStatement: SQLStatement = getActivitySQL(activityId);
+      const sqlStatement: SQLStatement = getActivitySqlWithPermissions(activityId, req?.authContext?.user?.user_id);
       const sqlStatement2: SQLStatement = getActivityHistorySQL(activityId);
 
       if (!sqlStatement || !sqlStatement2) {
@@ -92,11 +92,10 @@ function getActivity(): RequestHandler {
       const response1 = await connection.query(sqlStatement.text, sqlStatement.values);
       const response2 = await connection.query(sqlStatement2.text, sqlStatement2.values);
 
-      const result1 = (response1 && response1.rows && response1.rows[0]) || null;
-      const result2 = (response2 && response2.rows) || null;
+      const result1 = response1?.rows?.[0] ?? null;
+      const result2 = response2?.rows ?? null;
 
       defaultLog.debug({ label: '{activityId}', message: 'activity response', body: JSON.stringify(result1) });
-
       req['activity'] = result1;
       req['activity_history'] = result2;
     } catch (error) {

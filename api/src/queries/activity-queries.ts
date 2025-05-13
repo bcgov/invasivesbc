@@ -773,6 +773,17 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
 };
 
 /**
+ * @desc SQL to fetch record with read/edit/delete permissions applied. Will not return records for which read permissions are not granted.
+ * @param {uuid} activityId record Identifier
+ * @param userId User identifier
+ * @returns SQL query
+ */
+export const getActivitySqlWithPermissions = (activityId: string, userId: number): SQLStatement => {
+  if (!userId || !activityId) return;
+  return SQL`select * from invasivesbc.fetch_activity_with_user_permissions(${userId}, array[${activityId}]::uuid[])
+`;
+};
+/**
  * @desc Fetch Records matching list of ID's
  * @param { string } recordIds Records Ids (UUID format) to fetch
  */
