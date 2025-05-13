@@ -184,8 +184,11 @@ function createActivityReducer() {
         draftState.suggestedTreatmentIDs = [];
         draftState.loading = false;
       } else if (Activity.getFailure.match(action)) {
+        draftState.activeActivityPermissions = undefined;
+        draftState.activity = null;
+        draftState.suggestedTreatmentIDs = [];
         draftState.loading = false;
-        draftState.failCode = action.payload?.status ?? null;
+        draftState.failCode = action.payload?.status ?? 404;
       } else if (Activity.setErrors.match(action)) {
         draftState.activityErrors = getCustomErrorTransformer()(action.payload ?? []);
       } else if (Activity.updateGeoFailure.match(action)) {
