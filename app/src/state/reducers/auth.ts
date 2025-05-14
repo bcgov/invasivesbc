@@ -3,11 +3,11 @@ import { Action, createNextState } from '@reduxjs/toolkit';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { AuthActions } from 'state/actions/auth/Auth';
-import { IPermission } from 'sharedAPI/src/interfaces/IPermission';
+import { EPermission_Category, IPermission } from 'sharedAPI/src/interfaces/IPermission';
 
 interface OfflineUserState {
   roles: { role_id: number; role_name: string }[];
-  permissions: Array<IPermission>;
+  permissions: Partial<Record<EPermission_Category, IPermission>>;
   extendedInfo: {
     user_id: number | null;
     account_status: number | null;
@@ -59,7 +59,7 @@ interface AuthState {
   loginInProgress: boolean;
 
   roles: { role_id: number; role_name: string }[];
-  permissions: Array<IPermission>;
+  permissions: Partial<Record<EPermission_Category, IPermission>>;
   accessRoles: { role_id: number; role_name: string }[];
   rolesInitialized: boolean;
 
@@ -136,7 +136,7 @@ const initialState: AuthState = {
   idir_userid: null,
   initialized: false,
   roles: [],
-  permissions: [],
+  permissions: {},
   rolesInitialized: false,
   username: null,
   v2BetaAccess: false
@@ -208,7 +208,7 @@ function createAuthReducer(_configuration: AppConfig) {
         draftState.authenticated = false;
         draftState.disrupted = false;
         draftState.roles = [];
-        draftState.permissions = [];
+        draftState.permissions = {};
         draftState.accessRoles = [];
         draftState.rolesInitialized = false;
         draftState.extendedInfo = {
