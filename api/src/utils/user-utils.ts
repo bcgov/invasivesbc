@@ -84,7 +84,9 @@ export async function getRolesForUser(userId) {
 
     const roleResponse = await connection.query(rolesStatement.text, rolesStatement.values);
     const permissionResponse = await connection.query(permissionStatement.text, permissionStatement.values);
-    return { roles: roleResponse?.rows, permissions: permissionResponse?.rows };
+    const permissions = {};
+    permissionResponse?.rows?.forEach((permission) => (permissions[permission.id] = permission));
+    return { roles: roleResponse?.rows, permissions };
   } catch (error) {
     defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
     return rejectWithErr('Failed to get roles for user', 500);
