@@ -361,19 +361,6 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
       ON aspc.activity_subtype = asm.mapping_id
     JOIN activity_read_permissions arp
       ON arp.id = aspc.permission_category
-    WHERE arp.can_read = TRUE
-    AND (
-        a.species_biocontrol_full is null
-        OR  arp.can_read_sensitive_biocontrol = TRUE
-        or not EXISTS(
-          select 1
-          from unnest(string_to_array(a.species_biocontrol_full, ',')) as val
-          where trim(val) in (
-          SELECT agent_code_description
-      FROM private_biocontrol_agents
-        )
-      )
-    )
 `);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -388,7 +375,22 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
     `);
   }
 
-  sqlStatement.append(')');
+  sqlStatement.append(`
+      WHERE arp.can_read = TRUE
+      AND (
+        a.species_biocontrol_full IS NULL
+        OR  arp.can_read_sensitive_biocontrol = TRUE
+        OR NOT EXISTS(
+          SELECT 1
+          FROM unnest(string_to_array(a.species_biocontrol_full, ',')) as val
+          WHERE trim(val) in (
+            SELECT agent_code_description
+            FROM private_biocontrol_agents
+          )
+        )
+      )
+    )
+  `);
 
   defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
 
