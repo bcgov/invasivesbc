@@ -7,6 +7,8 @@ import { getDBConnection } from 'database/db';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
+import { SQLStatement } from 'sql-template-strings';
+import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity');
 
@@ -92,8 +94,8 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
     const filterObject = sanitizeActivityFilterObject(rawBodyCriteria?.[0], req);
     defaultLog.debug({ label: 'v2/activity', message: 'getActivitiesBySearchFilterCriteria v2', body: '' });
 
-    let connection;
-    let sql;
+    let connection: PoolClient;
+    let sql: SQLStatement;
 
     try {
       connection = await getDBConnection();
