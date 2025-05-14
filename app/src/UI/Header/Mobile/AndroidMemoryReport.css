@@ -1,8 +1,12 @@
 div.memory-report {
-  color: white;
-  padding: 0;
-  margin: 0;
-
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  color: black;
+  top: 124px;
+  left: 60px;
+  width: 135px;
+  background-color: rgb(255 255 255 / 70%);
   dl {
     font-family: monospace;
     font-size: 8px;

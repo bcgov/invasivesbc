@@ -7,6 +7,11 @@ interface DeviceMemoryInformation {
   largeMemoryClass: number;
   VMFree: number;
   VMMax: number;
+  VMUsed: number;
+  nativePrivateDirty: number;
+  nativePss: number;
+  nativeSharedDirty: number;
+  threadCount: number;
 }
 
 interface DeviceInformationPlugin {

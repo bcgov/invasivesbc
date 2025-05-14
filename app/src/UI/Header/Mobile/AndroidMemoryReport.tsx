@@ -30,9 +30,18 @@ const AndroidMemoryReport = () => {
         <dd>{`${Math.floor((memoryInformation.totalBytes - memoryInformation.availableBytes) / (1024 * 1024))} / ${Math.floor(memoryInformation.totalBytes / (1024 * 1024))}`}</dd>
         <dt>VM Mem MiB</dt>
         <dd
-          className={`${memoryInformation.VMFree < (10 * 1024 * 1024)} ? 'red':'green'`}>{`${Math.floor((memoryInformation.VMMax - memoryInformation.VMFree) / (1024 * 1024))} / ${Math.floor(memoryInformation.VMMax / (1024 * 1024))}`}</dd>
+          className={`${memoryInformation.VMFree < 10 * 1024 * 1024} ? 'red':'green'`}
+        >{`${Math.floor((memoryInformation.VMMax - memoryInformation.VMFree) / (1024 * 1024))} / ${Math.floor(memoryInformation.VMMax / (1024 * 1024))}`}</dd>
         <dt>memory class MiB</dt>
         <dd>{`${Math.floor(memoryInformation.largeMemoryClass)}`}</dd>
+        <dt>Native PSS MiB</dt>
+        <dd>{`${Math.floor(memoryInformation.nativePss)} MiB`}</dd>
+        <dt>Native Private Dirty MiB</dt>
+        <dd>{`${Math.floor(memoryInformation.nativePrivateDirty)} MiB`}</dd>
+        <dt>Native Shared Dirty MiB</dt>
+        <dd>{`${Math.floor(memoryInformation.nativeSharedDirty)} MiB`}</dd>
+        <dt>Thread Count</dt>
+        <dd>{memoryInformation.threadCount}</dd>
       </dl>
     </div>
   );

@@ -1,7 +1,6 @@
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
-import { MOBILE } from 'state/build-time-config';
-
+import { MOBILE, MEMORY_CONSTRAINED_DEVICE } from 'state/build-time-config';
 // these layers are used as placeholders so the others can be placed relative to them
 const LAYER_Z_BACKGROUND = 'LAYER_Z_BACKGROUND';
 const LAYER_Z_MID = 'LAYER_Z_MID';
@@ -110,7 +109,7 @@ type MapSourceAndLayerDefinition = {
   predicates: MapDefinitionEligibilityPredicates;
 };
 
-const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
+const BASE_MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
   {
     name: 'Esri-Sat-Label-Source',
 
@@ -1932,6 +1931,11 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
   }
   return true;
 }) as MapSourceAndLayerDefinition[];
+
+// for memory constrained devices
+const MAP_DEFINITIONS = MEMORY_CONSTRAINED_DEVICE
+  ? BASE_MAP_DEFINITIONS.filter((def) => !['offline_base_map', 'Esri-Sat-LayerHD'].includes(def.name))
+  : BASE_MAP_DEFINITIONS;
 
 // used to determine which layers we should turn on for a given group definition
 function allLayerIdsInDefinition(definitionList: MapSourceAndLayerDefinition[], definitionName: string): string[] {

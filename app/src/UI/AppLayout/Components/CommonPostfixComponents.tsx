@@ -1,4 +1,6 @@
 import React from 'react';
+import { AndroidMemoryReport } from 'UI/Header/Mobile/AndroidMemoryReport';
+import { Platform, PLATFORM } from 'state/build-time-config';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import { Footer } from 'UI/Footer/Footer';
 import NewRecordDialog from 'UI/Overlay/Records/NewRecordDialog';
@@ -20,6 +22,7 @@ const CommonPostfixComponents = () => {
       <MobileOnly>
         <OfflineDataSyncDialog />
         <OfflineUserMenu />
+        {PLATFORM == Platform.ANDROID && <AndroidMemoryReport />}
       </MobileOnly>
 
       <CustomizeLayerMenu />

@@ -3,6 +3,7 @@ package bc.gov.invasivesbc;
 import static android.content.Context.ACTIVITY_SERVICE;
 
 import android.app.ActivityManager;
+import android.os.Debug;
 
 import com.getcapacitor.JSObject;
 import com.getcapacitor.Plugin;
@@ -24,6 +25,9 @@ public class DeviceInformation extends Plugin {
     ActivityManager activityManager = (ActivityManager) this.getContext().getSystemService(ACTIVITY_SERVICE);
     activityManager.getMemoryInfo(memoryInfo);
 
+    Debug.MemoryInfo debugMemoryInfo = new Debug.MemoryInfo();
+    Debug.getMemoryInfo(debugMemoryInfo);
+
     JSObject ret = new JSObject();
     ret.put("totalBytes", memoryInfo.totalMem);
     ret.put("availableBytes", memoryInfo.availMem);
@@ -31,6 +35,13 @@ public class DeviceInformation extends Plugin {
     ret.put("largeMemoryClass", activityManager.getLargeMemoryClass());
     ret.put("VMFree", runtime.freeMemory());
     ret.put("VMMax", runtime.maxMemory());
+    ret.put("VMUsed", runtime.totalMemory() - runtime.freeMemory());
+
+    ret.put("nativePrivateDirty", debugMemoryInfo.nativePrivateDirty);
+    ret.put("nativePss", debugMemoryInfo.nativePss);
+    ret.put("nativeSharedDirty", debugMemoryInfo.nativeSharedDirty);
+
+    ret.put("threadCount", Thread.activeCount());
 
     call.resolve(ret);
   }
