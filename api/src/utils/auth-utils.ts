@@ -10,7 +10,7 @@ import {
 } from './user-utils';
 import { MDCAsyncLocal } from 'mdc';
 import { getLogger } from 'utils/logger';
-import { IPermission } from 'sharedAPI/src/interfaces/IPermission';
+import { EPermission_Category, IPermission } from 'sharedAPI/src/interfaces/IPermission';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -35,7 +35,7 @@ export interface InvasivesRequest extends Request {
     user: any;
     friendlyUsername?: string;
     roles: Array<Record<PropertyKey, any>>;
-    permissions: Array<IPermission>;
+    permissions: Partial<Record<EPermission_Category, IPermission>>;
     filterForSelectable: boolean;
     v2beta?: boolean;
   };
