@@ -6,6 +6,7 @@ import { getLogger } from 'utils/logger';
 import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
 import { getDBConnection } from 'database/db';
 import { PoolClient } from 'pg';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const NAMESPACE = 'bbox';
 
@@ -59,7 +60,7 @@ POST.apiDoc = {
  * @desc Create Bounding box based on the filter properties for a given recordset
  */
 function postHandler(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     let connection: PoolClient | undefined;
 
     try {
