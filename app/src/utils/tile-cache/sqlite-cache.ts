@@ -8,6 +8,7 @@ import {
   TileData
 } from 'utils/tile-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
+import { MEMORY_CONSTRAINED_DEVICE } from 'state/build-time-config';
 
 const BAKED_DB_NAME = 'tile_store.db';
 const CACHE_DB_NAME = 'cached_tiles.db';
@@ -358,7 +359,7 @@ class SQLiteTileCacheService extends TileCacheService {
   private async initializeTileCache(sqlite: SQLiteConnection) {
     await sqlite.copyFromAssets(true);
 
-    await this.initializeBakedTileDatabase(sqlite);
+    if (!MEMORY_CONSTRAINED_DEVICE) await this.initializeBakedTileDatabase(sqlite);
     await this.initializeDynamicCacheTileDatabase(sqlite);
   }
 }
