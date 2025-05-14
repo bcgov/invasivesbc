@@ -3,10 +3,11 @@ import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { escapeLiteral } from 'pg';
 import { getLogger } from 'utils/logger';
 import { escapeLiteralUnquoted } from 'utils/dbutils';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('activities-v2-queries');
 
-function sanitizeActivityFilterObject(filterObject: any, req: any) {
+function sanitizeActivityFilterObject(filterObject: any, req: InvasivesRequest) {
   const sanitizedSearchCriteria = {
     serverSideNamedFilters: {},
     selectColumns: [],
@@ -26,66 +27,14 @@ function sanitizeActivityFilterObject(filterObject: any, req: any) {
     sanitizedSearchCriteria.z = req.params.z;
   }
 
-  const roleName = (req as any).authContext.roles[0]?.role_name;
-  //const sanitizedSearchCriteria = new ActivitySearchCriteria(criteria);
-  // sanitizedSearchCriteria.created_by = [req.authContext.user['preferred_username']];
-  const isAuth = req.authContext?.user !== null ? true : false;
-  const user_role = (req as any).authContext?.roles?.[0]?.role_id;
+  const isAuth = req.authContext?.user !== null;
+  sanitizedSearchCriteria.user_id = req.authContext?.user?.user_id;
+  const user_role = req.authContext?.roles?.[0]?.role_id;
   if (user_role) {
     const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
     sanitizedSearchCriteria.user_roles = user_roles;
   }
-
-  const ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES = [
-    /*
-    Expected behaviour for now is nobody sees anyone else's drafts, but if the requirement flip flops we can use this:
-    'administrator_plants',
-    'administrator_animals',
-    'master_administrator'*/
-  ];
-
-  // see if the user has ANY of those roles above (does not need to be the first/primary role)
-  let intersectingRoles = [];
-  if (req.authContext.roles) {
-    intersectingRoles = ROLES_THAT_SHOULD_SEE_ALL_DRAFT_ACTIVITIES.filter((v) =>
-      (req as any).authContext.roles.find((z) => z['role_name'] == v)
-    );
-  }
-
-  if (intersectingRoles.length > 0) {
-    sanitizedSearchCriteria.restrictVisibleDraftActivities = false;
-  } else {
-    sanitizedSearchCriteria.restrictVisibleDraftActivities = true;
-  }
-
-  if (!isAuth || !roleName || roleName.includes('animal')) {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideTreatmentsAndMonitoring = true;
-  } else {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideTreatmentsAndMonitoring = false;
-  }
-  if (
-    !isAuth ||
-    !roleName ||
-    !(roleName.includes('mussel_inspection_officer') || roleName.includes('master_administrator'))
-  ) {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideMusselsInspections = true;
-  } else {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideMusselsInspections = false;
-  }
-  if (!isAuth) {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = true;
-  } else {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = false;
-  }
-  if (
-    !isAuth ||
-    !roleName ||
-    !req.authContext?.roles.some((role: Record<string, any>) =>
-      ['biocontrol_user', 'master_administrator'].includes(role.role_name)
-    )
-  ) {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideBiocontrolReleases = true;
-  }
+  sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = !isAuth;
   sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
   let id_list_valid = true;
@@ -281,7 +230,7 @@ function getActivitiesSQLv2(filterObject: any) {
       // wrap the whole thing into a subquery for the aggregate function
       const wrappedStatement = SQL` WITH userQuery AS ( `.append(sqlStatement.text).append(` )
         SELECT ST_AsText(ST_Extent(geometry(geog))) as bbox
-        FROM invasivesbc.activity_incoming_data
+        FROM activity_incoming_data
         WHERE geog IS not null
           AND activity_id in (SELECT activity_id
                               FROM userQuery)`);
@@ -292,7 +241,7 @@ function getActivitiesSQLv2(filterObject: any) {
     } else if (filterObject.updateCache) {
       const wrappedStatement = SQL` WITH userQuery AS ( `.append(sqlStatement.text).append(` )
         SELECT array_agg(activity_id::text) as ids
-        FROM invasivesbc.activity_incoming_data
+        FROM activity_incoming_data
         WHERE iscurrent = true
           AND form_status = 'Submitted'
           AND created_timestamp >= '${filterObject.timestamp}'::date
@@ -311,153 +260,135 @@ function getActivitiesSQLv2(filterObject: any) {
 }
 
 function initialWithStatement(sqlStatement: SQLStatement) {
-  /*const withStatement = sqlStatement.append(
-    `with not_deleted_activities as (SELECT a.* FROM invasivesbc.activity_incoming_data a
-      where a.iscurrent = true
-      )   `
-  );*/
   return sqlStatement;
 }
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
-  //todo: only do this when applicable
-  //  const cte = sqlStatement.append(`  with placeHolder as (select 1),  `);
-  const cte = sqlStatement.append(`  with CurrentPositiveObservations AS (SELECT cpo.activity_incoming_data_id,
-                                                                                 string_agg(cpo.invasive_plant, ', ') AS current_positive_species
-                                                                          FROM invasivesbc.current_positive_observations_materialized cpo
-                                                                          GROUP BY cpo.activity_incoming_data_id),
-                                          CurrentNegativeObservations AS (SELECT cno.activity_incoming_data_id,
-                                                                                 string_agg(cno.invasive_plant, ', ') AS current_negative_species
-                                                                          FROM invasivesbc.current_negative_observations_materialized cno
-                                                                          GROUP BY cno.activity_incoming_data_id),
+  const cte = sqlStatement.append(`
+    WITH CurrentPositiveObservations AS (
+      SELECT
+        cpo.activity_incoming_data_id,
+        string_agg(cpo.invasive_plant, ', ') AS current_positive_species
+      FROM current_positive_observations_materialized cpo
+      GROUP BY cpo.activity_incoming_data_id
+    ),
+    CurrentNegativeObservations AS (
+      SELECT
+        cno.activity_incoming_data_id,
+        string_agg(cno.invasive_plant, ', ') AS current_negative_species
+      FROM current_negative_observations_materialized cno
+      GROUP BY cno.activity_incoming_data_id
+    ),
+    activity_read_permissions AS (
+      SELECT id, can_read, can_read_sensitive_biocontrol
+      FROM get_user_permissions(${filterObject.user_id})
+    ),
   `);
-
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
-
-        serverFilterGeometryIDs as (
-
-          select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
-
-          ),
-         serverFilterGeometries AS (
-         select a.id, title, st_subdivide(geog::geometry)::geography as geo
-         from invasivesbc.admin_defined_shapes a
-         inner join serverFilterGeometryIDs b on a.id = b.id
-         ),
-
-          serverFilterGeometriesIntersecting as (
-
-         select a.activity_incoming_data_id, b.id
-         from activity_incoming_data a
-         inner join serverFilterGeometries b on st_intersects(a.geog, b.geo)
-         where iscurrent=true
-         group by a.activity_incoming_data_id, b.id
-
-
-         ),
-          serverFilterGeometriesIntersectingAll as (
-
-         select a.activity_incoming_data_id, count(*)
-         from activity_incoming_data a
-         inner join serverFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
-         where iscurrent=true
-         group by a.activity_incoming_data_id
-
-         having count(*) = (select count(*) from serverFilterGeometryIDs)
-         ),
-         `);
+      serverFilterGeometryIDs as (
+        select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
+        ),
+      serverFilterGeometries AS (
+        select a.id, title, st_subdivide(geog::geometry)::geography as geo
+        from admin_defined_shapes a
+        inner join serverFilterGeometryIDs b on a.id = b.id
+      ),
+      serverFilterGeometriesIntersecting as (
+        select a.activity_incoming_data_id, b.id
+        from activity_incoming_data a
+        inner join serverFilterGeometries b on st_intersects(a.geog, b.geo)
+        where iscurrent=true
+        group by a.activity_incoming_data_id, b.id
+      ),
+      serverFilterGeometriesIntersectingAll as (
+        select a.activity_incoming_data_id, count(*)
+        from activity_incoming_data a
+        inner join serverFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
+        where iscurrent=true
+        group by a.activity_incoming_data_id
+        having count(*) = (select count(*) from serverFilterGeometryIDs)
+      ),
+      `);
   }
   if (filterObject?.clientFilterGeometries?.length > 0) {
     sqlStatement.append(`
-         clientFilterGeometries AS (
-             SELECT
-                 unnest(array[${filterObject.clientFilterGeometries
-                   .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
-                   .join(',')}]) AS geojson
-         ),
-
-          clientFilterGeometriesIntersecting as (
-
-         select a.activity_incoming_data_id
-         from activity_incoming_data a
-         inner join clientFilterGeometries on st_intersects(a.geog, geojson)
-         where iscurrent=true
-
-         ),
-          clientFilterGeometriesIntersectingAll as (
-
-         select a.activity_incoming_data_id, count(*)
-         from activity_incoming_data a
-         inner join clientFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
-         where iscurrent=true
-         group by a.activity_incoming_data_id
-
-         having count(*) = (select count(*) from clientFilterGeometries)
-         ),
+        clientFilterGeometries AS (
+          SELECT
+            unnest(array[${filterObject.clientFilterGeometries
+              .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
+              .join(',')}]) AS geojson
+        ),
+        clientFilterGeometriesIntersecting as (
+          select a.activity_incoming_data_id
+          from activity_incoming_data a
+          inner join clientFilterGeometries on st_intersects(a.geog, geojson)
+          where iscurrent=true
+        ),
+        clientFilterGeometriesIntersectingAll as (  
+          select a.activity_incoming_data_id, count(*)
+          from activity_incoming_data a
+          inner join clientFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
+          where iscurrent=true
+          group by a.activity_incoming_data_id
+          having count(*) = (select count(*) from clientFilterGeometries)
+        ),
          `);
   }
-
-  /*
   sqlStatement.append(`
-activities as (
-    select a.*, current_positive_observations_aggregated_invasive_plant.current_positive_species, current_negative_observations_aggregated_invasive_plant.current_negative_species,
-    case when current_positive_observations_aggregated_invasive_plant.current_positive_species is null then false else true end as has_current_positive,
-    case when current_negative_observations_aggregated_invasive_plant.current_negative_species is null then false else true end as has_current_negative,
-    activity_date_for_filters.activity_date_for_filter as activity_date,
-    project_code_for_filters.project_code_for_filter as project_code
-    `);
-    */
-  sqlStatement.append(`
-  activities as (
-  select a.*, CurrentPositiveObservations.current_positive_species, CurrentNegativeObservations.current_negative_species,
-  case when CurrentPositiveObservations.current_positive_species is null then false else true end as has_current_positive,
-  case when CurrentNegativeObservations.current_negative_species is null then false else true end as has_current_negative,
-    activity_date_for_filters.activity_date_for_filter as activity_date,
-    project_code_for_filters.project_code_for_filter as project_code
-    `);
-
-  /*if (filterObject?.serverFilterGeometries?.length > 0) {
-    sqlStatement.append(`
-    ,case when ServerBoundariesToIntersect.geog is null then false else true end as intersects_server_boundary
-    `);
-  }
-  if (filterObject?.clientFilterGeometries?.length > 0) {
-    sqlStatement.append(`
-    ,case when ClientBoundariesToIntersect.geog is null then false else true end as intersects_client_boundary
-    `);
-  }*/
-
-  /*sqlStatement.append(`
-    from activity_incoming_data a
-    left join current_negative_observations_aggregated_invasive_plant on current_negative_observations_aggregated_invasive_plant.activity_incoming_data_id = a.activity_incoming_data_id
-    left join current_positive_observations_aggregated_invasive_plant on current_positive_observations_aggregated_invasive_plant.activity_incoming_data_id = a.activity_incoming_data_id
-    left join activity_date_for_filters on activity_date_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
-    left join project_code_for_filters on project_code_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
-    `);
-    */
-  sqlStatement.append(`
-    from activity_incoming_data a
-    left join CurrentPositiveObservations on CurrentPositiveObservations.activity_incoming_data_id = a.activity_incoming_data_id
-    left join CurrentNegativeObservations on CurrentNegativeObservations.activity_incoming_data_id = a.activity_incoming_data_id
-    left join activity_date_for_filters on activity_date_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
-    left join project_code_for_filters on project_code_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
-    `);
+  activities AS (
+    SELECT
+      DISTINCT
+      a.*,
+      CurrentPositiveObservations.current_positive_species,
+      CurrentNegativeObservations.current_negative_species,
+      COALESCE(CurrentPositiveObservations.current_positive_species IS NOT NULL, FALSE) as has_current_positive,
+      COALESCE(CurrentNegativeObservations.current_negative_species IS NOT NULL, FALSE) as has_current_negative,
+      activity_date_for_filters.activity_date_for_filter as activity_date,
+      project_code_for_filters.project_code_for_filter as project_code  
+    FROM activity_incoming_data a
+    LEFT JOIN CurrentPositiveObservations
+      ON CurrentPositiveObservations.activity_incoming_data_id = a.activity_incoming_data_id
+    LEFT JOIN CurrentNegativeObservations
+      ON CurrentNegativeObservations.activity_incoming_data_id = a.activity_incoming_data_id
+    LEFT JOIN activity_date_for_filters
+      ON activity_date_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
+    LEFT JOIN project_code_for_filters
+      ON project_code_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
+    LEFT JOIN activity_subtype_mapping asm
+      ON asm.form_subtype = a.activity_subtype
+    JOIN activity_subtype_permission_category aspc
+      ON aspc.activity_subtype = asm.mapping_id
+    JOIN activity_read_permissions arp
+      ON arp.id = aspc.permission_category
+    WHERE arp.can_read = TRUE
+    AND (
+        a.species_biocontrol_full is null
+        OR  arp.can_read_sensitive_biocontrol = TRUE
+        or not EXISTS(
+          select 1
+          from unnest(string_to_array(a.species_biocontrol_full, ',')) as val
+          where trim(val) in (
+          SELECT agent_code_description
+      FROM private_biocontrol_agents
+        )
+      )
+    )
+`);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
     sqlStatement.append(`
-      inner join serverFilterGeometriesIntersectingAll c on a.activity_incoming_data_id = c.activity_incoming_data_id
+      INNER JOIN serverFilterGeometriesIntersectingAll c ON a.activity_incoming_data_id = c.activity_incoming_data_id
       `);
   }
 
   if (filterObject?.clientFilterGeometries?.length > 0) {
     sqlStatement.append(`
-      inner join clientFilterGeometriesIntersectingAll d on a.activity_incoming_data_id = d.activity_incoming_data_id
-      `);
+      INNER JOIN clientFilterGeometriesIntersectingAll d ON a.activity_incoming_data_id = d.activity_incoming_data_id
+    `);
   }
 
-  sqlStatement.append(`
-    )  `);
+  sqlStatement.append(')');
 
   defaultLog.debug({ label: 'getActivitiesBySearchFilterCriteria', message: 'sql', body: sqlStatement });
 
@@ -574,17 +505,8 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   const tableAlias = filterObject.isCSV ? 'b' : 'activities';
   const where = filterObject.vt_request
-    ? sqlStatement.append(`and 1=1 and (${tableAlias}.iscurrent = true  `)
-    : sqlStatement.append(`where 1=1 and (${tableAlias}.iscurrent = true  `);
-
-  if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
-    where.append(`and ${tableAlias}.activity_type not in ('Treatment','Monitoring') `);
-  }
-  if (filterObject.serverSideNamedFilters.hideMusselsInspections) {
-    where.append(
-      `and ${tableAlias}.activity_subtype not in ('Activity_Observation_Mussels', 'Activity_Officer_Shift')`
-    );
-  }
+    ? sqlStatement.append(`and (${tableAlias}.iscurrent = true  `)
+    : sqlStatement.append(`where (${tableAlias}.iscurrent = true  `);
 
   // check if there is a filter for drafts:
   const isDraftFilter = filterObject.clientReqTableFilters.some(
@@ -799,19 +721,6 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
       ` and ${tableAlias}.activity_id in (${filterObject.ids_to_filter.map((id) => "'" + id + "'").join(',')}) `
     );
   }
-  if (filterObject.serverSideNamedFilters.hideBiocontrolReleases) {
-    where.append(
-      ` AND (
-          ${tableAlias}.species_biocontrol_full is null
-          OR
-          ${tableAlias}.species_biocontrol_full not in (
-            SELECT agent_code_description
-            FROM invasivesbc.private_biocontrol_agents
-            )
-          ) `
-    );
-  }
-
   return where;
 }
 
@@ -821,23 +730,24 @@ function groupByStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function orderByStatement(sqlStatement: SQLStatement, filterObject: any) {
+  const tableAlias = filterObject.isCSV ? 'b' : 'activities';
   const orderBy = filterObject.orderBy
     ? sqlStatement.append(
-        ` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${
+        ` ORDER BY ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${
           filterObject.ordeByType === 'DESC' ? 'FIRST ' : 'LAST'
         } `
       )
-    : sqlStatement.append(` `);
+    : sqlStatement.append(`ORDER BY ${tableAlias}.created_timestamp DESC`);
   return orderBy;
 }
 
 function limitStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const limit = sqlStatement.append(` limit ${filterObject.limit}`);
+  const limit = sqlStatement.append(` LIMIT ${filterObject.limit}`);
   return limit;
 }
 
 function offSetStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const offset = sqlStatement.append(` offset ${filterObject.offset}`);
+  const offset = sqlStatement.append(` OFFSET ${filterObject.offset}`);
   return offset;
 }
 
