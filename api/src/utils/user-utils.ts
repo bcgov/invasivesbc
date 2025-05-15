@@ -78,15 +78,10 @@ export async function getRolesForUser(userId) {
     if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
 
     const rolesStatement: SQLStatement = getRolesForUserSQL(userId);
-    const permissionStatement: SQLStatement = getPermissionsForUser(userId);
-
-    if (!rolesStatement || !permissionStatement) throw rejectWithErr('Failed to build SQL statement', 400);
+    if (!rolesStatement) throw rejectWithErr('Failed to build SQL statement', 400);
 
     const roleResponse = await connection.query(rolesStatement.text, rolesStatement.values);
-    const permissionResponse = await connection.query(permissionStatement.text, permissionStatement.values);
-    const permissions = {};
-    permissionResponse?.rows?.forEach((permission) => (permissions[permission.id] = permission));
-    return { roles: roleResponse?.rows, permissions };
+    return { roles: roleResponse?.rows };
   } catch (error) {
     defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
     return rejectWithErr('Failed to get roles for user', 500);

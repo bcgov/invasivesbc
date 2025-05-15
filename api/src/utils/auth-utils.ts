@@ -161,7 +161,6 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
               friendlyUsername: null,
               user: null,
               roles: [],
-              permissions: [],
               filterForSelectable: false
             };
             req.authContext.preferredUsername = decoded?.preferred_username;
