@@ -14,12 +14,13 @@ import { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useDispatch } from 'react-redux';
 import { CLOSE_NEW_RECORD_MENU } from 'state/actions';
-import { ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
+import { ActivitySubtype, ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 import './NewRecordDialog.css';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
+import { ActivitySubtypePermissionCategory, EPermission_Category } from 'sharedAPI/src/interfaces/IPermission';
 
 export interface INewRecordDialogState {
   recordCategory: string;
@@ -38,13 +39,17 @@ const NewRecordDialog = () => {
 
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
   const { newRecordDialogState } = useSelector((state) => state.UserSettings);
+  const permissions = useSelector((state) => state.Auth.permissions);
   const dialogueOpen = useSelector((state) => state.UserSettings.newRecordDialogueOpen);
   useSelector((state) => state.Configuration);
   useEffect(() => {
     const categories: string[] = [];
-    categories.push('Plant');
-    if (accessRoles.some((role) => ['frep'].includes(role.role_name))) {
-      categories.push('FREP');
+    const hasWritePermissionOnPlant = Object.keys(permissions).some(
+      (key) => permissions[key].id.includes('PLANT') && permissions[key].can_write
+    );
+
+    if (hasWritePermissionOnPlant) {
+      categories.push('Plant');
     }
     setActivityCategorySelectOptions(categories);
   }, [accessRoles]);
@@ -65,8 +70,18 @@ const NewRecordDialog = () => {
     if (!newRecordDialogState.recordType || !newRecordDialogState.recordCategory) {
       setActivitySubTypeSelectOptions([]);
     } else {
+      const subtypeOptions: Array<ActivitySubtype> = [];
       const subTypes = ActivitySubtypeRelations[newRecordDialogState.recordCategory][newRecordDialogState.recordType];
-      setActivitySubTypeSelectOptions(subTypes);
+      subTypes.forEach((subtype) => {
+        const userHasSubtypeWritePermission = ActivitySubtypePermissionCategory[subtype].some(
+          (permission: EPermission_Category) =>
+            permissions?.[permission]?.can_write && !subtypeOptions.includes(subtype)
+        );
+        if (userHasSubtypeWritePermission) {
+          subtypeOptions.push(subtype);
+        }
+      });
+      setActivitySubTypeSelectOptions(subtypeOptions);
     }
   }, [newRecordDialogState.recordType]);
 
@@ -112,7 +127,7 @@ const NewRecordDialog = () => {
             label="Select Form Type"
           >
             {activityCategorySelectOptions.map((option) => (
-              <MenuItem key={Math.random()} value={option}>
+              <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
             ))}
@@ -129,7 +144,7 @@ const NewRecordDialog = () => {
             label="Select Form Type"
           >
             {activityTypeSelectOptions.map((option) => (
-              <MenuItem key={Math.random()} value={option}>
+              <MenuItem key={option} value={option}>
                 {option}
               </MenuItem>
             ))}
@@ -145,7 +160,7 @@ const NewRecordDialog = () => {
             label="Select Form Type"
           >
             {activitySubTypeSelectOptions.map((option) => (
-              <MenuItem key={Math.random()} value={option}>
+              <MenuItem key={option} value={option}>
                 {ActivitySubtypeShortLabels[option]}
               </MenuItem>
             ))}
