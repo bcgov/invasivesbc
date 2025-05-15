@@ -307,36 +307,6 @@ function createAuthReducer(_configuration: AppConfig) {
         draftState.disrupted = true;
       } else if (AuthActions.recovered.match(action)) {
         draftState.disrupted = false;
-      } else if (AuthActions.refreshRolesRequest.match(action)) {
-        draftState.rolesInitialized = false;
-        draftState.roles = [];
-        draftState.accessRoles = [];
-        draftState.extendedInfo = {
-          account_status: 0,
-          activation_status: 0,
-          employer: null,
-          funding_agencies: [],
-          pac_number: null,
-          pac_service_number_1: null,
-          pac_service_number_2: null,
-          user_id: null,
-          work_phone_number: null
-        };
-      } else if (AuthActions.clearRoles.match(action)) {
-        draftState.rolesInitialized = false;
-        draftState.roles = [];
-        draftState.accessRoles = [];
-        draftState.extendedInfo = {
-          account_status: 0,
-          activation_status: 0,
-          employer: null,
-          funding_agencies: [],
-          pac_number: null,
-          pac_service_number_1: null,
-          pac_service_number_2: null,
-          user_id: null,
-          work_phone_number: null
-        };
       } else if (AuthActions.refreshRolesComplete.match(action)) {
         const { all_roles, roles, extendedInfo, v2BetaAccess, permissions } = action.payload;
         draftState.roles = roles;
@@ -346,7 +316,11 @@ function createAuthReducer(_configuration: AppConfig) {
         draftState.extendedInfo = extendedInfo;
         draftState.rolesInitialized = true;
         draftState.v2BetaAccess = v2BetaAccess;
-      } else if (AuthActions.refreshRolesError.match(action)) {
+      } else if (
+        AuthActions.refreshRolesError.match(action) ||
+        AuthActions.clearRoles.match(action) ||
+        AuthActions.refreshRolesRequest.match(action)
+      ) {
         draftState.rolesInitialized = false;
         draftState.roles = [];
         draftState.accessRoles = [];
