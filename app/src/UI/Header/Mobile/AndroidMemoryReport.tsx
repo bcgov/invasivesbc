@@ -35,11 +35,11 @@ const AndroidMemoryReport = () => {
         <dt>memory class MiB</dt>
         <dd>{`${Math.floor(memoryInformation.largeMemoryClass)}`}</dd>
         <dt>Native PSS MiB</dt>
-        <dd>{`${Math.floor(memoryInformation.nativePss)} MiB`}</dd>
+        <dd>{`${Math.floor(memoryInformation.nativePss / 1024)} MiB`}</dd>
         <dt>Native Private Dirty MiB</dt>
-        <dd>{`${Math.floor(memoryInformation.nativePrivateDirty)} MiB`}</dd>
+        <dd>{`${Math.floor(memoryInformation.nativePrivateDirty / 1024)} MiB`}</dd>
         <dt>Native Shared Dirty MiB</dt>
-        <dd>{`${Math.floor(memoryInformation.nativeSharedDirty)} MiB`}</dd>
+        <dd>{`${Math.floor(memoryInformation.nativeSharedDirty / 1024)} MiB`}</dd>
         <dt>Thread Count</dt>
         <dd>{memoryInformation.threadCount}</dd>
       </dl>
