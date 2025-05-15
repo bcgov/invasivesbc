@@ -8,7 +8,11 @@ import { ActivityPostRequestBody, ActivitySearchCriteria } from 'models/activity
  * @param {ActivityPostRequestBody} activity
  * @returns {SQLStatement} sql query object
  */
-export const postActivitySQL = (activity: ActivityPostRequestBody, user_id: number): SQLStatement => {
+export const postActivitySQL = (
+  activity: ActivityPostRequestBody,
+  user_id: number,
+  updating?: boolean
+): SQLStatement => {
   if (!activity) {
     return null;
   }
@@ -123,14 +127,21 @@ export const postActivitySQL = (activity: ActivityPostRequestBody, user_id: numb
       ,null
     `);
   }
+  if (updating) {
+    sqlStatement.append(`
+      WHERE EXISTS (
+        SELECT 1 FROM fetch_activity_with_user_permissions(${user_id}, array['${activity.activity_id}']::uuid[]) where can_edit
+      )
+    `);
+  } else {
+    sqlStatement.append(`
+      WHERE EXISTS (
+        SELECT 1 from get_user_permissions_for_activity_subtype(${user_id}, '${activity.activity_subtype}') where can_write
+      )
+    `);
+  }
 
-  sqlStatement.append(SQL`
-    WHERE EXISTS (
-      SELECT 1 from get_user_permissions_for_activity_subtype(${user_id}, ${activity.activity_subtype}) where can_write
-    )
-    RETURNING
-      activity_id;
-  `);
+  sqlStatement.append(` RETURNING activity_id;`);
   return sqlStatement;
 };
 
@@ -150,7 +161,7 @@ export const putActivitySQL = (activity: ActivityPostRequestBody, user_id: numbe
   }
 
   // create new activity record
-  const createSQLStatement: SQLStatement = postActivitySQL(activity, user_id);
+  const createSQLStatement: SQLStatement = postActivitySQL(activity, user_id, true);
 
   return { createSQL: createSQLStatement };
 };
