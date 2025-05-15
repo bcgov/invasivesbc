@@ -54,7 +54,7 @@ const NewRecordDialog = () => {
       activityCategories.push('Plant');
     }
     setActivityCategorySelectOptions(activityCategories);
-  }, [accessRoles]);
+  }, [accessRoles, writePrivilege]);
 
   useEffect(() => {
     if (!recordCategory) {
