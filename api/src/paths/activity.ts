@@ -271,9 +271,10 @@ function createActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
+    // Prefilter anybody with no roles.
     if (!req.authContext.roles || req.authContext.roles.length === 0) {
       return res.status(401).json({
-        message: 'Unauthorized, user lacks sufficient roles',
+        message: 'Unauthorized',
         namespace: 'activity',
         code: 401
       });
@@ -301,16 +302,10 @@ function createActivity(): RequestHandler {
     try {
       connection = await getDBConnection();
       const getActivitySQLStatement: SQLStatement = getActivitySQL(sanitizedActivityData.activity_id);
-      const createActivitySQLStatement: SQLStatement = postActivitySQL(sanitizedActivityData);
-
-      if (!getActivitySQLStatement || !createActivitySQLStatement) {
-        return res.status(500).json({
-          message: 'Failed to build SQL statement.',
-          request: req.body,
-          namespace: 'activity',
-          code: 500
-        });
-      }
+      const createActivitySQLStatement: SQLStatement = postActivitySQL(
+        sanitizedActivityData,
+        req?.authContext?.user?.user_id
+      );
 
       let createResponse: QueryResult = null;
 
@@ -323,7 +318,7 @@ function createActivity(): RequestHandler {
           getActivitySQLStatement.values
         );
 
-        if (getResponse && getResponse.rowCount) {
+        if (getResponse?.rowCount) {
           // Found 1 or more rows with matching activity_id (which are not marked as deleted), expecting 0
           await connection.query('COMMIT');
 
@@ -348,10 +343,21 @@ function createActivity(): RequestHandler {
         });
       }
 
-      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+      const result = createResponse?.rows?.[0];
+
+      if (!result) {
+        return res.status(401).json({
+          message: 'You do not have write permission for this activity',
+          request: req.body,
+          namespace: 'activity',
+          code: 401
+        });
+      }
 
       // kick off asynchronous context collection activities
-      if (req.body.form_data.activity_data.latitude) commitContext(result, req);
+      if (req.body.form_data.activity_data.latitude) {
+        commitContext(result, req);
+      }
 
       return res.status(201).json({
         message: 'Activity created.',
@@ -387,18 +393,23 @@ function createActivity(): RequestHandler {
 function updateActivity(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
     defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
-
+    // Prefilter anybody with no roles.
+    if (!req.authContext.roles || req.authContext.roles.length === 0) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+        namespace: 'activity',
+        code: 401
+      });
+    }
     const data = { ...req.body, media_keys: req['media_keys'], user_role: req.authContext?.roles[0] };
-
-    const isAdmin = (req as any).authContext.roles.find((role) => role.role_id === 18);
     const sanitizedActivityData = new ActivityPostRequestBody(data);
 
-    if (!(req.authContext && req.authContext.preferredUsername && req.authContext.friendlyUsername)) {
-      return res.status(401).json({
+    if (!req?.authContext?.preferredUsername || !req?.authContext?.friendlyUsername) {
+      return res.status(400).json({
         message: 'Invalid request, authContext provides insufficient data to complete record metadata',
         request: req.body,
         namespace: 'activity',
-        code: 401
+        code: 400
       });
     }
 
@@ -432,39 +443,7 @@ function updateActivity(): RequestHandler {
 
       const sanitizedSearchCriteria: string = data.activity_id;
       const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
-
-      if (!sqlStatementForCheck) {
-        return res.status(500).json({
-          message: 'Failed to build SQL statement.',
-          request: req.body,
-          namespace: 'activity',
-          code: 500
-        });
-      }
-
       const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
-
-      if (!isAdmin) {
-        // some batch record guids don't have the suffix or id.  this will still work for the new ones though
-        const containsOldIDAndIsOK = sanitizedActivityData.updated_by_with_guid.includes(
-          response.rows[0]?.created_by_with_guid?.toLowerCase()
-        );
-
-        if (
-          sanitizedActivityData.updated_by_with_guid?.replace('bceid-business', 'bceidbusiness') !==
-            response.rows[0]?.created_by_with_guid.replace('bceid-business', 'bceidbusiness') &&
-          !containsOldIDAndIsOK &&
-          response.rows[0].created_by_with_guid !== null
-        ) {
-          // some old records are null
-          return res.status(401).json({
-            message: 'Invalid request, user is not authorized to update this record',
-            request: req.body,
-            namespace: 'activity',
-            code: 401
-          });
-        }
-      }
 
       if (response.rows.length > 0) {
         if (response.rows[0].activity_type === 'Monitoring' && req?.body?.form_data?.activity_type_data?.linked_id) {
@@ -483,22 +462,13 @@ function updateActivity(): RequestHandler {
                 message: 'Invalid request, species in monitoring not included in linked treatment',
                 request: req.body,
                 namespace: 'activity',
-                code: 401
+                code: 400
               });
             }
           });
         }
       }
-      const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData);
-
-      if (!sqlStatements || !sqlStatements.createSQL) {
-        return res.status(500).json({
-          message: 'Failed to build SQL statement.',
-          request: req.body,
-          namespace: 'activity',
-          code: 500
-        });
-      }
+      const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData, req?.authContext?.user?.user_id);
 
       let createResponse = null;
 
@@ -520,10 +490,20 @@ function updateActivity(): RequestHandler {
         });
       }
 
-      const result = (createResponse && createResponse.rows && createResponse.rows[0]) || null;
+      const result = createResponse?.rows?.[0];
+      if (!result) {
+        return res.status(401).json({
+          message: 'You do not have edit permission for this activity',
+          request: req.body,
+          namespace: 'activity',
+          code: 401
+        });
+      }
 
       // kick off asynchronous context collection activities
-      if (req.body.form_data?.activity_data?.latitude) commitContext(result, req);
+      if (req.body.form_data?.activity_data?.latitude) {
+        commitContext(result, req);
+      }
 
       return res.status(200).json(result);
     } catch (error) {
