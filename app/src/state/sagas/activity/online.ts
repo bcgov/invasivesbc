@@ -35,7 +35,7 @@ export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
     const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/activities`, {
       ids: [activityState.activity.activity_id]
     });
-    if (networkReturn?.status == 200) {
+    if (networkReturn?.ok) {
       yield put(Activity.deleteSuccess());
     } else {
       yield put(Activity.deleteFailure());
