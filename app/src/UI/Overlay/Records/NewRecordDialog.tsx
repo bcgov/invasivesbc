@@ -48,7 +48,12 @@ const NewRecordDialog = () => {
   const [recordSubtype, setRecordSubtype] = useState<string>('');
 
   useEffect(() => {
-    setActivityCategorySelectOptions(['Plant']);
+    const activityCategories: Array<string> = [];
+    const plantSubtypes = Object.values(ActivitySubtypeRelations['Plant']).flatMap((value) => value);
+    if (writePrivilege.some((subtype) => plantSubtypes.includes(subtype))) {
+      activityCategories.push('Plant');
+    }
+    setActivityCategorySelectOptions(activityCategories);
   }, [accessRoles]);
 
   useEffect(() => {
