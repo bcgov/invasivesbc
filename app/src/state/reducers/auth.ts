@@ -268,6 +268,7 @@ function createAuthReducer(_configuration: AppConfig) {
           draftState.roles = found.roles;
           draftState.extendedInfo = found.extendedInfo;
           draftState.email = found.email;
+          draftState.writePrivilege = found.writePrivilege;
           draftState.bceid_user_guid = found.bceid_user_guid;
           draftState.bceid_userid = found.bceid_userid;
           draftState.idir_user_guid = found.idir_user_guid;
