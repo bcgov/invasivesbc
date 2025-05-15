@@ -8,7 +8,7 @@ import { ActivityPostRequestBody, ActivitySearchCriteria } from 'models/activity
  * @param {ActivityPostRequestBody} activity
  * @returns {SQLStatement} sql query object
  */
-export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement => {
+export const postActivitySQL = (activity: ActivityPostRequestBody, user_id: number): SQLStatement => {
   if (!activity) {
     return null;
   }
@@ -35,7 +35,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
                                         species_negative,
                                         species_treated,
                                         jurisdiction)
-    VALUES (${activity.activity_id},
+    SELECT ${activity.activity_id},
             ${activity.activity_type},
             ${activity.activity_subtype},
             ${activity.created_timestamp},
@@ -125,6 +125,8 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
   }
 
   sqlStatement.append(SQL`
+    WHERE EXISTS (
+      SELECT 1 from get_user_permissions_for_activity_subtype(${user_id}, ${activity.activity_subtype}) where can_write
     )
     RETURNING
       activity_id;
@@ -142,13 +144,13 @@ export interface IPutActivitySQL {
  * @param {ActivityPostRequestBody} activity
  * @return {*}  {IPutActivitySQL} array of sql query objects
  */
-export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivitySQL => {
+export const putActivitySQL = (activity: ActivityPostRequestBody, user_id: number): IPutActivitySQL => {
   if (!activity) {
     return null;
   }
 
   // create new activity record
-  const createSQLStatement: SQLStatement = postActivitySQL(activity);
+  const createSQLStatement: SQLStatement = postActivitySQL(activity, user_id);
 
   return { createSQL: createSQLStatement };
 };
