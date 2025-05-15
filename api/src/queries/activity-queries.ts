@@ -1,6 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from 'utils/logger';
 import { ActivityPostRequestBody, ActivitySearchCriteria } from 'models/activity';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 /**
  * SQL query to insert a new activity, and return the inserted record.
@@ -791,10 +792,21 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
  * @param userId User identifier
  * @returns SQL query
  */
-export const getActivitySqlWithPermissions = (activityId: string, userId: number): SQLStatement => {
-  if (!userId || !activityId) return;
-  return SQL`select * from invasivesbc.fetch_activity_with_user_permissions(${userId}, array[${activityId}]::uuid[])
-`;
+export const getActivitySqlWithPermissions = (activityIds: string | string[], userId: number): SQLStatement => {
+  if (!userId || !activityIds) return;
+  if (typeof activityIds === 'string') {
+    return SQL`select * from fetch_activity_with_user_permissions(${userId}, array[${activityIds}]::uuid[])`;
+  } else {
+    const sql = SQL`select * from fetch_activity_with_user_permissions(${userId}, array[`;
+    activityIds.forEach((id, index) => {
+      sql.append(`'${id}'`);
+      if (index !== activityIds.length - 1) {
+        sql.append(', ');
+      }
+    });
+    sql.append(']::uuid[])');
+    return sql;
+  }
 };
 /**
  * @desc Fetch Records matching list of ID's
@@ -826,25 +838,33 @@ export const getActivityHistorySQL = (activityId: string): SQLStatement => {
  * @param {string} activityIds
  * @return {SQLStatement} sql query object
  */
-export const deleteActivitiesSQL = (activityIds: Array<string>, req?: any): SQLStatement => {
-  if (!activityIds.length) {
-    return null;
-  }
-
+export const deleteActivitiesSQL = (activityIds: Array<string>, req?: InvasivesRequest): SQLStatement => {
+  const interpolateIds = () => {
+    activityIds.forEach((id, index) => {
+      sqlStatement.append(`'${id}'`);
+      if (index !== activityIds.length - 1) {
+        sqlStatement.append(`, `);
+      }
+    });
+  };
   // update existing activity record
   const sqlStatement: SQLStatement = SQL`
     UPDATE activity_incoming_data
     SET deleted_timestamp    = ${new Date().toISOString()},
         updated_by_with_guid = ${req?.authContext?.preferredUsername},
         updated_by           = ${req?.authContext?.friendlyUsername}
-    WHERE activity_id IN (${activityIds[0]}`;
-
-  for (let i = 1; i < activityIds.length; i++) {
-    sqlStatement.append(SQL`, ${activityIds[i]}`);
-  }
-
-  sqlStatement.append(SQL`)
-    AND deleted_timestamp IS NULL;
+    WHERE activity_id IN (`;
+  interpolateIds();
+  sqlStatement.append(`)
+    AND deleted_timestamp IS NULL
+    AND activity_id IN (
+      SELECT activity_id
+      FROM fetch_activity_with_user_permissions(${req?.authContext?.user?.user_id}, array[`);
+  interpolateIds();
+  sqlStatement.append(`
+      ]::uuid[])
+      WHERE can_delete
+    )
   `);
 
   return sqlStatement;
