@@ -14,8 +14,19 @@ import { MOBILE } from 'state/build-time-config';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
-  yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
-  yield put(Activity.createSuccess(action.payload.activity_id));
+  const response = yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
+  if (response?.ok) {
+    yield put(Activity.createSuccess(action.payload.activity_id));
+  } else {
+    yield put(
+      Alerts.create({
+        content: response?.data?.message ?? 'Error occurred while creating activity.',
+        severity: AlertSeverity.Error,
+        subject: AlertSubjects.Form,
+        autoClose: 5
+      })
+    );
+  }
 }
 
 export function* handle_ACTIVITY_DELETE_NETWORK_REQUEST() {
