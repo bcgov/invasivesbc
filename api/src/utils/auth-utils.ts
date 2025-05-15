@@ -35,7 +35,6 @@ export interface InvasivesRequest extends Request {
     user: any;
     friendlyUsername?: string;
     roles: Array<Record<PropertyKey, any>>;
-    permissions: Partial<Record<EPermission_Category, IPermission>>;
     filterForSelectable: boolean;
     v2beta?: boolean;
   };
@@ -97,7 +96,6 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
         friendlyUsername: null,
         user: null,
         roles: [],
-        permissions: [],
         filterForSelectable: filterForSelectable
       };
 
@@ -183,7 +181,6 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
               .then((res) => {
                 if (!(res instanceof Error)) {
                   req.authContext.roles = res.roles;
-                  req.authContext.permissions = res.permissions;
                   MDC.additionalContext.authContext = req.authContext;
                 }
               })
