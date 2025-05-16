@@ -224,6 +224,16 @@ export const LandingComponent = () => {
               <strong>To update or change your account details: </strong> log in and then choose "update my info" from
               the person icon on the top right.
             </Box>
+            {!MOBILE && (
+              <Box mt={5} className="app-store-links">
+                <h3 className="landing-header">Download the Mobile app:</h3>
+                <p>InvasivesBC is currently available for download in the App Store. Coming soon to Google Play.</p>
+                <div className="download-links">
+                  <IosDownloadLink />
+                  <AndroidDownloadLink />
+                </div>
+              </Box>
+            )}
             <Box mt={8}>
               <u>
                 <strong>FOR MORE INFORMATION: </strong>
