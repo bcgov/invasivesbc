@@ -1,6 +1,6 @@
 import { SQLStatement } from 'sql-template-strings';
 import { getLogger } from 'utils/logger';
-import { getBetaAccessForUserSQL, getRolesForUserSQL } from 'queries/role-queries';
+import { getBetaAccessForUserSQL, getPermissionsForUser, getRolesForUserSQL } from 'queries/role-queries';
 import { getDBConnection } from 'database/db';
 import { createUserSQL, getUserByBCEIDSQL, getUserByIDIRSQL } from 'queries/user-queries';
 import { PoolClient } from 'pg';
@@ -76,11 +76,12 @@ export async function getRolesForUser(userId) {
   try {
     connection = await getDBConnection();
     if (!connection) throw rejectWithErr('Failed to establish database connection', 503);
-    const sqlStatement: SQLStatement = getRolesForUserSQL(userId);
-    if (!sqlStatement) throw rejectWithErr('Failed to build SQL statement', 400);
-    const response = await connection.query(sqlStatement.text, sqlStatement.values);
-    const result = response?.rows;
-    return result;
+
+    const rolesStatement: SQLStatement = getRolesForUserSQL(userId);
+    if (!rolesStatement) throw rejectWithErr('Failed to build SQL statement', 400);
+
+    const roleResponse = await connection.query(rolesStatement.text, rolesStatement.values);
+    return { roles: roleResponse?.rows };
   } catch (error) {
     defaultLog.debug({ label: 'getRolesForUser', message: 'error', error });
     return rejectWithErr('Failed to get roles for user', 500);

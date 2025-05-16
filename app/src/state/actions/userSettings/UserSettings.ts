@@ -79,12 +79,6 @@ class UserSettings {
   static readonly Map = Map;
   static readonly toggleRecordExpand = createAction(`${this.PREFIX}/toggleRecordExpand`);
   static readonly toggleRecordExpandSuccess = createAction(`${this.PREFIX}/toggleRecordExpandSuccess`);
-  static readonly setNewRecordDialogueState = createAction<INewRecordDialogState>(
-    `${this.PREFIX}/setNewRecordDialogueState`
-  );
-  static readonly setNewRecordDialogueStateSuccess = createAction<INewRecordDialogState>(
-    `${this.PREFIX}/setNewRecordDialogueStateSuccess`
-  );
   static readonly toggleLayerPickerAccordion = createAction(`${this.PREFIX}/toggleLayerPickerAccordion`);
 }
 

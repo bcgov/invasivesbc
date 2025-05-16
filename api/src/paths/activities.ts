@@ -11,6 +11,7 @@ import { ActivitySearchCriteria } from 'models/activity';
 import {
   deleteActivitiesSQL,
   getActivitiesSQL,
+  getActivitySqlWithPermissions,
   getLinkedMonitoringRecordsFromTreatmentSQL
 } from 'queries/activity-queries';
 import { getLogger } from 'utils/logger';
@@ -314,16 +315,21 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
  */
 function deleteActivitiesByIds(): RequestHandler {
   return async (req: InvasivesRequest, res) => {
+    // Prefilter anybody with no roles.
+    if (!req.authContext.roles || req.authContext.roles.length === 0) {
+      return res.status(401).json({
+        message: 'Unauthorized',
+        namespace: 'activity',
+        code: 401
+      });
+    }
     let connection: PoolClient | undefined;
     try {
       connection = await getDBConnection();
       defaultLog.debug({ label: 'activity', message: '[deleteActivitiesByIds]', body: req.body });
-
-      const isMasterAdmin = (req as any).authContext.roles.some((role: Record<string, any>) => role.role_id === 18);
-      const preferred_username = req.authContext.friendlyUsername;
       const { ids } = req.body;
 
-      if (ids.length === 0) {
+      if (!ids || ids.length === 0) {
         return res.status(400).json({
           message: 'No ids provided',
           request: req.body,
@@ -336,17 +342,8 @@ function deleteActivitiesByIds(): RequestHandler {
       sanitizedSearchCriteria.activity_ids = ids;
       sanitizedSearchCriteria.hideTreatmentsAndMonitoring = false;
 
-      const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false);
+      const sqlStatement: SQLStatement = getActivitySqlWithPermissions(ids, req.authContext.user.user_id);
       const deleteSQLStatement: SQLStatement = deleteActivitiesSQL(ids, req);
-
-      if (!sqlStatement || !deleteSQLStatement) {
-        return res.status(500).json({
-          message: 'Unable to generate SQL Statement',
-          request: req.body,
-          namespace: 'activities',
-          code: 500
-        });
-      }
 
       const recordsToDelete = await connection.query(sqlStatement.text, sqlStatement.values);
       // Identify Treatment Records and check for any matching IDs, exit early if any exist.
@@ -366,28 +363,20 @@ function deleteActivitiesByIds(): RequestHandler {
         }
       }
 
-      const userCreatedEntries = recordsToDelete.rows.every(
-        (entry) => entry?.activity_payload?.created_by === preferred_username
-      );
+      const deletePermissionOnAllRecords = recordsToDelete.rows.every((entry) => entry?.can_delete);
 
-      if (recordsToDelete.rowCount === 0) {
-        return res.status(404).json({
-          message: "No ID's found matching request",
-          request: req.body,
-          namespace: 'activities',
-          code: 404
-        });
-      }
       if (recordsToDelete.rowCount !== ids.length) {
         return res.status(404).json({
-          message: 'A record matching a supplied id was not found',
+          message:
+            recordsToDelete.rowCount === 0
+              ? "No ID's found matching request"
+              : 'A record matching a supplied id was not found',
           request: req.body,
           namespace: 'activities',
           code: 404
         });
       }
-
-      if (isMasterAdmin || userCreatedEntries) {
+      if (deletePermissionOnAllRecords) {
         const response = await connection.query(deleteSQLStatement.text, deleteSQLStatement.values);
         return res.status(200).json({
           message: 'Deleted activities by ids',
@@ -397,21 +386,22 @@ function deleteActivitiesByIds(): RequestHandler {
           namespace: 'activities',
           code: 200
         });
+      } else {
+        return res.status(401).json({
+          message: 'Unauthorized. User does not have delete privilege on all supplied IDs',
+          request: req.body,
+          namespace: 'activities',
+          code: 401
+        });
       }
-      /* Future Specific-Role Handling Logic applied here */
-      return res.status(401).json({
-        message: 'Unauthorized Access',
-        request: req.body,
+    } catch (e) {
+      defaultLog.error({ label: 'activity', message: '[deleteActivitiesByIds]', body: e });
+      return res.status(500).json({
+        error: e.message,
+        message: 'Server error occurred',
         namespace: 'activities',
-        code: 401
+        request: req.body
       });
-    } catch (ex) {
-      defaultLog.error({
-        label: 'activity',
-        message: '[deleteActivitiesByIds]',
-        body: ex
-      });
-      return res.status(500);
     } finally {
       connection?.release();
     }
