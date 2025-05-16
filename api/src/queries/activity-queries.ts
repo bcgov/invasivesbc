@@ -1,6 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from 'utils/logger';
 import { ActivityPostRequestBody, ActivitySearchCriteria } from 'models/activity';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 /**
  * SQL query to insert a new activity, and return the inserted record.
@@ -8,7 +9,11 @@ import { ActivityPostRequestBody, ActivitySearchCriteria } from 'models/activity
  * @param {ActivityPostRequestBody} activity
  * @returns {SQLStatement} sql query object
  */
-export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement => {
+export const postActivitySQL = (
+  activity: ActivityPostRequestBody,
+  user_id: number,
+  updating?: boolean
+): SQLStatement => {
   if (!activity) {
     return null;
   }
@@ -35,7 +40,7 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
                                         species_negative,
                                         species_treated,
                                         jurisdiction)
-    VALUES (${activity.activity_id},
+    SELECT ${activity.activity_id},
             ${activity.activity_type},
             ${activity.activity_subtype},
             ${activity.created_timestamp},
@@ -123,12 +128,21 @@ export const postActivitySQL = (activity: ActivityPostRequestBody): SQLStatement
       ,null
     `);
   }
+  if (updating) {
+    sqlStatement.append(`
+      WHERE EXISTS (
+        SELECT 1 FROM fetch_activity_with_user_permissions(${user_id}, array['${activity.activity_id}']::uuid[]) where can_edit
+      )
+    `);
+  } else {
+    sqlStatement.append(`
+      WHERE EXISTS (
+        SELECT 1 from get_user_permissions_for_activity_subtype(${user_id}, '${activity.activity_subtype}') where can_write
+      )
+    `);
+  }
 
-  sqlStatement.append(SQL`
-    )
-    RETURNING
-      activity_id;
-  `);
+  sqlStatement.append(` RETURNING activity_id;`);
   return sqlStatement;
 };
 
@@ -142,13 +156,13 @@ export interface IPutActivitySQL {
  * @param {ActivityPostRequestBody} activity
  * @return {*}  {IPutActivitySQL} array of sql query objects
  */
-export const putActivitySQL = (activity: ActivityPostRequestBody): IPutActivitySQL => {
+export const putActivitySQL = (activity: ActivityPostRequestBody, user_id: number): IPutActivitySQL => {
   if (!activity) {
     return null;
   }
 
   // create new activity record
-  const createSQLStatement: SQLStatement = postActivitySQL(activity);
+  const createSQLStatement: SQLStatement = postActivitySQL(activity, user_id, true);
 
   return { createSQL: createSQLStatement };
 };
@@ -778,10 +792,21 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
  * @param userId User identifier
  * @returns SQL query
  */
-export const getActivitySqlWithPermissions = (activityId: string, userId: number): SQLStatement => {
-  if (!userId || !activityId) return;
-  return SQL`select * from invasivesbc.fetch_activity_with_user_permissions(${userId}, array[${activityId}]::uuid[])
-`;
+export const getActivitySqlWithPermissions = (activityIds: string | string[], userId: number): SQLStatement => {
+  if (!userId || !activityIds) return;
+  if (typeof activityIds === 'string') {
+    return SQL`select * from fetch_activity_with_user_permissions(${userId}, array[${activityIds}]::uuid[])`;
+  } else {
+    const sql = SQL`select * from fetch_activity_with_user_permissions(${userId}, array[`;
+    activityIds.forEach((id, index) => {
+      sql.append(`'${id}'`);
+      if (index !== activityIds.length - 1) {
+        sql.append(', ');
+      }
+    });
+    sql.append(']::uuid[])');
+    return sql;
+  }
 };
 /**
  * @desc Fetch Records matching list of ID's
@@ -813,25 +838,33 @@ export const getActivityHistorySQL = (activityId: string): SQLStatement => {
  * @param {string} activityIds
  * @return {SQLStatement} sql query object
  */
-export const deleteActivitiesSQL = (activityIds: Array<string>, req?: any): SQLStatement => {
-  if (!activityIds.length) {
-    return null;
-  }
-
+export const deleteActivitiesSQL = (activityIds: Array<string>, req?: InvasivesRequest): SQLStatement => {
+  const interpolateIds = () => {
+    activityIds.forEach((id, index) => {
+      sqlStatement.append(`'${id}'`);
+      if (index !== activityIds.length - 1) {
+        sqlStatement.append(`, `);
+      }
+    });
+  };
   // update existing activity record
   const sqlStatement: SQLStatement = SQL`
     UPDATE activity_incoming_data
     SET deleted_timestamp    = ${new Date().toISOString()},
         updated_by_with_guid = ${req?.authContext?.preferredUsername},
         updated_by           = ${req?.authContext?.friendlyUsername}
-    WHERE activity_id IN (${activityIds[0]}`;
-
-  for (let i = 1; i < activityIds.length; i++) {
-    sqlStatement.append(SQL`, ${activityIds[i]}`);
-  }
-
-  sqlStatement.append(SQL`)
-    AND deleted_timestamp IS NULL;
+    WHERE activity_id IN (`;
+  interpolateIds();
+  sqlStatement.append(`)
+    AND deleted_timestamp IS NULL
+    AND activity_id IN (
+      SELECT activity_id
+      FROM fetch_activity_with_user_permissions(${req?.authContext?.user?.user_id}, array[`);
+  interpolateIds();
+  sqlStatement.append(`
+      ]::uuid[])
+      WHERE can_delete
+    )
   `);
 
   return sqlStatement;

@@ -1,9 +1,10 @@
-import { RequestHandler } from 'express';
+import { NextFunction, RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
-import { SQLStatement } from 'sql-template-strings';
+import SQL, { SQLStatement } from 'sql-template-strings';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import {
+  getActivitySubtypesUserHasWritePermissionOn,
   getRolesForUserSQL,
   getUsersForRoleSQL,
   grantRoleToUserSQL,
@@ -12,6 +13,7 @@ import {
 import { getLogger } from 'utils/logger';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
 import { PoolClient } from 'pg';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const defaultLog = getLogger('user-access');
 
@@ -347,28 +349,39 @@ async function getRolesForUser(req, res, next, userId) {
   }
 }
 
-async function getRolesForSelf(req, res, next) {
-  return res.status(200).json({
-    message: 'Successfully retrieved roles for self',
-    request: req.body,
-    result: {
-      roles: req.authContext.roles,
-      permissions: req.authContext.permissions,
-      v2BetaAccess: req.authContext.user.v2beta,
-      extendedInfo: {
-        user_id: req.authContext.user.user_id,
-        account_status: req.authContext.user.account_status,
-        activation_status: req.authContext.user.activation_status,
-        work_phone_number: req.authContext.user.work_phone_number,
-        funding_agencies: req.authContext.user.funding_agencies,
-        employer: req.authContext.user.employer,
-        pac_number: req.authContext.user.pac_number,
-        pac_service_number_1: req.authContext.user.pac_service_number_1,
-        pac_service_number_2: req.authContext.user.pac_service_number_2
-      }
-    },
-    count: 1,
-    namespace: 'user-access',
-    code: 200
-  });
+async function getRolesForSelf(req: InvasivesRequest, res: Response, _: NextFunction) {
+  let connection: PoolClient;
+  try {
+    connection = await getDBConnection();
+    const query = getActivitySubtypesUserHasWritePermissionOn(req.authContext.user.user_id);
+    const writePrivilege = await connection.query(query.text, query.values);
+
+    return res.status(200).json({
+      message: 'Successfully retrieved roles for self',
+      request: req.body,
+      result: {
+        roles: req.authContext.roles,
+        writePrivilege: writePrivilege.rows.map((act) => act.form_subtype),
+        v2BetaAccess: req.authContext.user.v2beta,
+        extendedInfo: {
+          user_id: req.authContext.user.user_id,
+          account_status: req.authContext.user.account_status,
+          activation_status: req.authContext.user.activation_status,
+          work_phone_number: req.authContext.user.work_phone_number,
+          funding_agencies: req.authContext.user.funding_agencies,
+          employer: req.authContext.user.employer,
+          pac_number: req.authContext.user.pac_number,
+          pac_service_number_1: req.authContext.user.pac_service_number_1,
+          pac_service_number_2: req.authContext.user.pac_service_number_2
+        }
+      },
+      count: 1,
+      namespace: 'user-access',
+      code: 200
+    });
+  } catch (e) {
+    console.error(e);
+  } finally {
+    connection?.release();
+  }
 }

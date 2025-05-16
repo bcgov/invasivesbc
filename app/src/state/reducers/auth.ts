@@ -3,11 +3,11 @@ import { Action, createNextState } from '@reduxjs/toolkit';
 import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { AuthActions } from 'state/actions/auth/Auth';
-import { IPermission } from 'sharedAPI/src/interfaces/IPermission';
+import { ActivitySubtype } from 'sharedAPI';
 
 interface OfflineUserState {
   roles: { role_id: number; role_name: string }[];
-  permissions: Array<IPermission>;
+  writePrivilege: Array<ActivitySubtype>;
   extendedInfo: {
     user_id: number | null;
     account_status: number | null;
@@ -59,7 +59,7 @@ interface AuthState {
   loginInProgress: boolean;
 
   roles: { role_id: number; role_name: string }[];
-  permissions: Array<IPermission>;
+  writePrivilege: Array<ActivitySubtype>;
   accessRoles: { role_id: number; role_name: string }[];
   rolesInitialized: boolean;
 
@@ -136,7 +136,7 @@ const initialState: AuthState = {
   idir_userid: null,
   initialized: false,
   roles: [],
-  permissions: [],
+  writePrivilege: [],
   rolesInitialized: false,
   username: null,
   v2BetaAccess: false
@@ -208,7 +208,7 @@ function createAuthReducer(_configuration: AppConfig) {
         draftState.authenticated = false;
         draftState.disrupted = false;
         draftState.roles = [];
-        draftState.permissions = [];
+        draftState.writePrivilege = [];
         draftState.accessRoles = [];
         draftState.rolesInitialized = false;
         draftState.extendedInfo = {
@@ -231,7 +231,7 @@ function createAuthReducer(_configuration: AppConfig) {
           const found = draftState.offlineUsers.find((o) => o.displayName === draftState.displayName);
           if (found) {
             found.roles = draftState.roles;
-            found.permissions = draftState.permissions ?? [];
+            found.writePrivilege = draftState.writePrivilege ?? [];
             found.extendedInfo = draftState.extendedInfo;
             found.email = draftState.email;
             found.bceid_userid = draftState.bceid_userid;
@@ -246,7 +246,7 @@ function createAuthReducer(_configuration: AppConfig) {
               extendedInfo: draftState.extendedInfo,
               email: draftState.email,
               bceid_user_guid: draftState.bceid_user_guid,
-              permissions: draftState.permissions,
+              writePrivilege: draftState.writePrivilege,
               bceid_userid: draftState.bceid_userid,
               displayName: draftState.displayName,
               idir_user_guid: draftState.idir_user_guid,
@@ -268,6 +268,7 @@ function createAuthReducer(_configuration: AppConfig) {
           draftState.roles = found.roles;
           draftState.extendedInfo = found.extendedInfo;
           draftState.email = found.email;
+          draftState.writePrivilege = found.writePrivilege;
           draftState.bceid_user_guid = found.bceid_user_guid;
           draftState.bceid_userid = found.bceid_userid;
           draftState.idir_user_guid = found.idir_user_guid;
@@ -307,46 +308,20 @@ function createAuthReducer(_configuration: AppConfig) {
         draftState.disrupted = true;
       } else if (AuthActions.recovered.match(action)) {
         draftState.disrupted = false;
-      } else if (AuthActions.refreshRolesRequest.match(action)) {
-        draftState.rolesInitialized = false;
-        draftState.roles = [];
-        draftState.accessRoles = [];
-        draftState.extendedInfo = {
-          account_status: 0,
-          activation_status: 0,
-          employer: null,
-          funding_agencies: [],
-          pac_number: null,
-          pac_service_number_1: null,
-          pac_service_number_2: null,
-          user_id: null,
-          work_phone_number: null
-        };
-      } else if (AuthActions.clearRoles.match(action)) {
-        draftState.rolesInitialized = false;
-        draftState.roles = [];
-        draftState.accessRoles = [];
-        draftState.extendedInfo = {
-          account_status: 0,
-          activation_status: 0,
-          employer: null,
-          funding_agencies: [],
-          pac_number: null,
-          pac_service_number_1: null,
-          pac_service_number_2: null,
-          user_id: null,
-          work_phone_number: null
-        };
       } else if (AuthActions.refreshRolesComplete.match(action)) {
-        const { all_roles, roles, extendedInfo, v2BetaAccess, permissions } = action.payload;
+        const { all_roles, roles, extendedInfo, v2BetaAccess, writePrivilege } = action.payload;
         draftState.roles = roles;
-        draftState.permissions = permissions;
+        draftState.writePrivilege = writePrivilege;
         draftState.loggedInOrWorkingOffline = roles.length > 0;
         draftState.accessRoles = computeAccessRoles(all_roles, roles);
         draftState.extendedInfo = extendedInfo;
         draftState.rolesInitialized = true;
         draftState.v2BetaAccess = v2BetaAccess;
-      } else if (AuthActions.refreshRolesError.match(action)) {
+      } else if (
+        AuthActions.refreshRolesError.match(action) ||
+        AuthActions.clearRoles.match(action) ||
+        AuthActions.refreshRolesRequest.match(action)
+      ) {
         draftState.rolesInitialized = false;
         draftState.roles = [];
         draftState.accessRoles = [];

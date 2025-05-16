@@ -62,6 +62,7 @@ function* refreshRoles() {
         roles: userData.result.roles,
         extendedInfo: userData.result.extendedInfo,
         permissions: userData.result.permissions,
+        writePrivilege: userData.result.writePrivilege,
         v2BetaAccess: userData.result.v2BetaAccess
       })
     );

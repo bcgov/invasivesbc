@@ -29,7 +29,6 @@ interface UserSettingsState {
   apiDocsWithSelectOptions: object | null;
 
   mapCenter: [number, number];
-  newRecordDialogState: any;
   newRecordDialogueOpen: boolean;
   recordSets: Record<PropertyKey, UserRecordSet>;
   recordsExpanded: boolean;
@@ -62,11 +61,6 @@ const initialState: UserSettingsState = {
   initialized: false,
   darkTheme: false,
   mapCenter: [55, -128],
-  newRecordDialogState: {
-    recordCategory: '',
-    recordType: '',
-    recordSubtype: ''
-  },
   tableColumns: {
     [RecordSetType.Activity]: activityColumnsToDisplay,
     [RecordSetType.IAPP]: iappColumnsToDisplay
@@ -88,8 +82,6 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.boundaries = draftState.boundaries?.filter(
           (boundary: Boundary) => boundary.server_id !== action.payload
         );
-      } else if (UserSettings.setNewRecordDialogueStateSuccess.match(action)) {
-        draftState.newRecordDialogState = action.payload;
       } else if (UserSettings.Boundaries.removeFromSetSuccess.match(action)) {
         draftState.recordSets = { ...action.payload };
       } else if (UserSettings.Boundaries.addToSetSuccess.match(action)) {

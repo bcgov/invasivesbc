@@ -65,7 +65,7 @@ export const Activity = () => {
               setTimeout(() => {
                 history.push('/Records');
               }, 3000);
-              return <div>Activity does not exists, redirecting...</div>;
+              return <div>Activity does not exist, redirecting...</div>;
             }
             if (activity_id && apiDocsWithSelectOptions && apiDocsWithViewOptions && loading === false) {
               return <ActivityForm />;

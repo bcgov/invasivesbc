@@ -1,3 +1,5 @@
+import { ActivitySubtype } from '../constants';
+
 /**
  * @desc Permission Categories. Each role has its own set of rules per each Category
  */

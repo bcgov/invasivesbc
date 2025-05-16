@@ -10,7 +10,7 @@ import {
 } from './user-utils';
 import { MDCAsyncLocal } from 'mdc';
 import { getLogger } from 'utils/logger';
-import { IPermission } from 'sharedAPI/src/interfaces/IPermission';
+import { EPermission_Category, IPermission } from 'sharedAPI/src/interfaces/IPermission';
 
 const defaultLog = getLogger('auth-utils');
 
@@ -35,7 +35,6 @@ export interface InvasivesRequest extends Request {
     user: any;
     friendlyUsername?: string;
     roles: Array<Record<PropertyKey, any>>;
-    permissions: Array<IPermission>;
     filterForSelectable: boolean;
     v2beta?: boolean;
   };
@@ -97,7 +96,6 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
         friendlyUsername: null,
         user: null,
         roles: [],
-        permissions: [],
         filterForSelectable: filterForSelectable
       };
 
@@ -163,7 +161,6 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
               friendlyUsername: null,
               user: null,
               roles: [],
-              permissions: [],
               filterForSelectable: false
             };
             req.authContext.preferredUsername = decoded?.preferred_username;
@@ -183,7 +180,6 @@ export const authenticate = async (req: InvasivesRequest): Promise<void> => {
               .then((res) => {
                 if (!(res instanceof Error)) {
                   req.authContext.roles = res.roles;
-                  req.authContext.permissions = res.permissions;
                   MDC.additionalContext.authContext = req.authContext;
                 }
               })

@@ -195,10 +195,6 @@ function* handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST(action) {
   yield put(UserSettings.IAPP.setActiveSuccess(action.payload));
 }
 
-function* handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST(action) {
-  yield put(UserSettings.setNewRecordDialogueStateSuccess(action.payload));
-}
-
 function* handle_APP_AUTH_READY(action) {
   if (action.payload.authenticated) yield put(UserSettings.InitState.get());
 }
@@ -245,8 +241,6 @@ function* userSettingsSaga() {
     takeEvery(UserSettings.InitState.get, handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST),
     takeEvery(UserSettings.Activity.setActiveActivityId, handle_USER_SETTINGS_SET_ACTIVE_ACTIVITY_REQUEST),
     takeEvery(UserSettings.IAPP.setActive, handle_USER_SETTINGS_SET_ACTIVE_IAPP_REQUEST),
-    takeEvery(UserSettings.setNewRecordDialogueState, handle_USER_SETTINGS_SET_NEW_RECORD_DIALOG_STATE_REQUEST),
-
     takeEvery(UserSettings.Boundaries.addToSet, handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST),
     takeEvery(UserSettings.Boundaries.removeFromSet, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
     takeEvery(UserSettings.Boundaries.set, handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST),
