@@ -49,9 +49,6 @@ function buildSpecificDefines() {
 }
 
 function reactDevOptions() {
-  if (process.env['ENABLE_WDYR'] && process.env['ENABLE_WDYR'].toLowerCase() === 'true') {
-    return { jsxImportSource: '@welldone-software/why-did-you-render' };
-  }
   return {};
 }
 
