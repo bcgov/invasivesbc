@@ -1,4 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
+import { ActivitySubtype } from 'sharedAPI';
+import { EPermission_Category, IPermission } from 'sharedAPI/src/interfaces/IPermission';
 
 class AuthActions {
   private static readonly PREFIX = 'Auth';
@@ -31,6 +33,8 @@ class AuthActions {
   static readonly refreshRolesComplete = createAction<{
     all_roles: { role_id: number; role_name: string }[];
     roles: { role_id: number; role_name: string }[];
+    permissions: Record<EPermission_Category, IPermission>;
+    writePrivilege: Array<ActivitySubtype>;
     extendedInfo: {
       user_id: number | null;
       account_status: number | null;

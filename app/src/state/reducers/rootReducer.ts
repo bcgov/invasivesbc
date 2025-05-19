@@ -137,7 +137,6 @@ function createRootReducer(config: AppConfig) {
           'activeIAPP',
           'recordSets',
           'recordsExpanded',
-          'newRecordDialogState',
           'boundaries',
           'layerPickerIsAccordion',
           'mapCenter',

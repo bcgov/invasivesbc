@@ -68,7 +68,7 @@ export const IAPPRecord = () => {
             setTimeout(() => {
               history.push('/Records');
             }, 3000);
-            return <div>Activity does not exists, redirecting...</div>;
+            return <div>Activity does not exist, redirecting...</div>;
           }
           if ((IAPPState?.site as any)?.site_id && !IAPPState.loading) {
             return <Summary record={IAPPState?.site} />;

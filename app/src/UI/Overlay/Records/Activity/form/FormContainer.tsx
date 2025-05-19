@@ -23,8 +23,7 @@ import AgentSelectAutoComplete from 'rjsf/widgets/AgentSelectAutoComplete';
 import LinkedIdSelectAutoComplete from 'rjsf/widgets/LinkedIdSelectAutoComplete';
 import ErrorListTemplate from './ErrorListTemplate';
 import Activity from 'state/actions/activity/Activity';
-import { selectNetworkState } from 'state/reducers/network';
-import { selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { ActivitySubtype } from 'sharedAPI';
 
 const FormContainer = () => {
   const ref = useRef(0);
@@ -50,22 +49,20 @@ const FormContainer = () => {
     }
   );
 
-  const accessRoles = useSelector((state) => state.Auth.accessRoles);
   const activity_ID = useSelector((state) => state.ActivityPage.activity?.activity_id);
   const activity_subtype = useSelector((state) => state.ActivityPage.activity.activity_subtype);
   const activitySchema = useSelector((state) => state.ActivityPage.schema);
   const activityUISchema = useSelector((state) => state.ActivityPage.uiSchema);
 
-  const { connected } = useSelector(selectNetworkState);
+  const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
   const created_by = useSelector((state) => state.ActivityPage.activity.created_by);
   const pasteCount = useSelector((state) => state.ActivityPage.pasteCount);
   const reported_area = useSelector((state) => state.ActivityPage.activity.form_data.activity_data?.reported_area);
-  const { serializedActivities } = useSelector(selectOfflineActivity);
   const username = useSelector((state) => state.Auth.username);
+
   const [isCreatedByUser, setIsCreatedByUser] = useState<boolean>(username === created_by);
-  const [isCachedRecord, setIsCachedRecord] = useState<boolean>(!serializedActivities?.[activity_ID] && !connected);
-  const [isDisabled, setIsDisabled] = useState<boolean>(!isCreatedByUser || isCachedRecord);
-  const [userIsAdmin] = useState<boolean>(accessRoles?.some((role) => role.role_id === 18));
+  const [isDisabled, setIsDisabled] = useState<boolean>(true);
+
   const theme = useRef<Theme>(createTheme(rjsfTheme as ThemeOptions));
 
   const debouncedFormChange = useCallback(
@@ -89,17 +86,13 @@ const FormContainer = () => {
   }, [formDataState]);
 
   useEffect(() => {
-    setIsCachedRecord(!connected && !serializedActivities?.[activity_ID]);
-  }, [activity_ID, connected, serializedActivities]);
-
-  useEffect(() => {
     setIsCreatedByUser(username === created_by);
-    setIsDisabled(username !== created_by || isCachedRecord);
-  }, [username, created_by, isCachedRecord]);
+    setIsDisabled(username !== created_by || !can_edit);
+  }, [username, created_by]);
 
   const isActivityChemTreatment =
-    activity_subtype === 'Activity_Treatment_ChemicalPlantTerrestrial' ||
-    activity_subtype === 'Activity_Treatment_ChemicalPlantAquatic';
+    activity_subtype === ActivitySubtype.Treatment_ChemicalPlant ||
+    activity_subtype === ActivitySubtype.Treatment_ChemicalPlantAquatic;
 
   if (!activitySchema || !activityUISchema) {
     return <CircularProgress />;
@@ -108,7 +101,7 @@ const FormContainer = () => {
     <Box sx={{ px: '15%' }}>
       <ThemeProvider theme={theme.current}>
         <SelectAutoCompleteContextProvider>
-          {userIsAdmin && !isCreatedByUser && !isCachedRecord && (
+          {!isCreatedByUser && can_edit && (
             <div className="editFormButtonCont">
               <Button variant="contained" color="warning" onClick={() => setIsDisabled((prev) => !prev)}>
                 {isDisabled ? 'Enable Editing' : 'Disable Editing'}

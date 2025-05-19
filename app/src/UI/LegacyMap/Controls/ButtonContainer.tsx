@@ -13,7 +13,7 @@ import { PrimaryLayerSelect } from 'UI/LegacyMap/Controls/PrimaryLayerSelect';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export const ButtonContainer = () => {
-  const { loggedInOrWorkingOffline } = useSelector((state) => state.Auth);
+  const { loggedInOrWorkingOffline, writePrivilege } = useSelector((state) => state.Auth);
   const { positionTracking } = useSelector((state) => state.Map);
 
   return (
@@ -30,7 +30,7 @@ export const ButtonContainer = () => {
 
           <AccuracyToggle />
           <WhatsHereButton />
-          <NewRecord />
+          {writePrivilege.length > 0 && <NewRecord />}
 
           <WebOnly>
             <CenterCurrentRecord type={RecordSetType.Activity} />

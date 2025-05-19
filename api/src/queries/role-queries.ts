@@ -68,6 +68,18 @@ export const revokeRoleFromUserSQL = (user_id, role_id): SQLStatement => {
 };
 
 /**
+ * @desc Fetches list of All Activity Subtypes that a user has CAN_WRITE privilege on
+ * @param user_id ID of user
+ * @returns {SQLStatement} Subtype Write permissions
+ */
+export const getActivitySubtypesUserHasWritePermissionOn = (user_id): SQLStatement =>
+  SQL`
+    SELECT DISTINCT form_subtype
+    FROM get_user_permissions(${user_id})
+    JOIN subtype_permissions ON true
+    WHERE can_write
+  `;
+/**
  * SQL query to get roles for a given user id
  * @param user_id the user id of the user
  * @returns {SQLStatement} sql query object
@@ -89,6 +101,11 @@ export const getRolesForUserSQL = (user_id): SQLStatement => {
     `;
     return sql;
   }
+};
+
+export const getPermissionsForUser = (user_id): SQLStatement => {
+  if (!user_id) return null;
+  return SQL`select * from invasivesbc.get_user_permissions(${user_id});`;
 };
 
 export const getBetaAccessForUserSQL = (user_id): SQLStatement => {
