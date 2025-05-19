@@ -6,6 +6,7 @@ import {
 } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { MOBILE } from 'state/build-time-config';
 import MapActions from 'state/actions/map';
+import { RootState } from '../../reducers/rootReducer';
 
 function* recomputeEligibleMapLayers(action) {
   // don't loop
@@ -14,9 +15,9 @@ function* recomputeEligibleMapLayers(action) {
     return;
   }
 
-  const AUTHENTICATED = yield select((state) => state.Auth.loggedInOrWorkingOffline);
+  const AUTHENTICATED = yield select((state: RootState) => state.Auth.loggedInOrWorkingOffline);
 
-  const CONNECTED = yield select((state) => state.Network.connected);
+  const CONNECTED = yield select((state: RootState) => state.Network.connected);
 
   const CURRENT_ELIGIBLE_BASEMAP_LIST = yield select((state) => state.Map.availableBaseMapLayers);
   const CURRENT_ELIGIBLE_OVERLAY_LIST = yield select((state) => state.Map.availableOverlayLayers);
@@ -24,7 +25,7 @@ function* recomputeEligibleMapLayers(action) {
   const UPDATED_BASEMAP_LIST: string[] = [];
   const UPDATED_OVERLAY_LIST: string[] = [];
 
-  const offlineDefinitions = (yield select((state) => state.TileCache?.mapSpecifications)) ?? [];
+  const offlineDefinitions = (yield select((state: RootState) => state.TileCache?.mapSpecifications)) ?? [];
 
   // evaluate each potential map definition and remove those not eligible at this moment
   for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions] as MapSourceAndLayerDefinition[]) {

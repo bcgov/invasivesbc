@@ -154,6 +154,7 @@ function loadCurrentStateFromIdToken(idToken: string): object {
   const authenticated = !!idToken;
 
   if (authenticated) {
+    loggedInOrWorkingOffline = true;
     try {
       const parsedToken = JSON.parse(
         decodeURIComponent(
