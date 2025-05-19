@@ -122,3 +122,5 @@ app/ios/DerivedData
 invasivesbc.code-workspace
 
 Caddyfile-local
+
+.run
