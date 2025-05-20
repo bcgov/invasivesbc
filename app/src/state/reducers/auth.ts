@@ -274,7 +274,7 @@ function createAuthReducer(_configuration: AppConfig) {
           draftState.username = found.username;
           draftState.displayName = found.displayName;
           draftState.workingOffline = true;
-          draftState.loggedInOrWorkingOffline = !!found?.extendedInfo?.account_status;
+          draftState.loggedInOrWorkingOffline = found?.extendedInfo?.account_status === 1;
         }
       } else if (AuthActions.initializeComplete.match(action)) {
         draftState.initialized = true;
@@ -310,7 +310,7 @@ function createAuthReducer(_configuration: AppConfig) {
         const { all_roles, roles, extendedInfo, v2BetaAccess, writePrivilege } = action.payload;
         draftState.roles = roles;
         draftState.writePrivilege = writePrivilege;
-        draftState.loggedInOrWorkingOffline = !!extendedInfo?.account_status;
+        draftState.loggedInOrWorkingOffline = extendedInfo?.account_status === 1;
         draftState.accessRoles = computeAccessRoles(all_roles, roles);
         draftState.extendedInfo = extendedInfo;
         draftState.rolesInitialized = true;
