@@ -150,11 +150,9 @@ function loadCurrentStateFromIdToken(idToken: string): object {
   let idir_userid = '';
   let bceid_user_guid = '';
   let idir_user_guid = '';
-  let loggedInOrWorkingOffline = false;
   const authenticated = !!idToken;
 
   if (authenticated) {
-    loggedInOrWorkingOffline = true;
     try {
       const parsedToken = JSON.parse(
         decodeURIComponent(
@@ -196,8 +194,7 @@ function loadCurrentStateFromIdToken(idToken: string): object {
     idir_userid,
     bceid_userid,
     idir_user_guid,
-    bceid_user_guid,
-    loggedInOrWorkingOffline
+    bceid_user_guid
   };
 }
 
@@ -277,7 +274,7 @@ function createAuthReducer(_configuration: AppConfig) {
           draftState.username = found.username;
           draftState.displayName = found.displayName;
           draftState.workingOffline = true;
-          draftState.loggedInOrWorkingOffline = found.roles.length > 0;
+          draftState.loggedInOrWorkingOffline = !!found?.extendedInfo?.account_status;
         }
       } else if (AuthActions.initializeComplete.match(action)) {
         draftState.initialized = true;
@@ -313,7 +310,7 @@ function createAuthReducer(_configuration: AppConfig) {
         const { all_roles, roles, extendedInfo, v2BetaAccess, writePrivilege } = action.payload;
         draftState.roles = roles;
         draftState.writePrivilege = writePrivilege;
-        draftState.loggedInOrWorkingOffline = roles.length > 0;
+        draftState.loggedInOrWorkingOffline = !!extendedInfo?.account_status;
         draftState.accessRoles = computeAccessRoles(all_roles, roles);
         draftState.extendedInfo = extendedInfo;
         draftState.rolesInitialized = true;
