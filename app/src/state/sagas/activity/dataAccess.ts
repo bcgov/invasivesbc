@@ -25,7 +25,6 @@ import {
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
-  CLOSE_NEW_RECORD_MENU,
   MAIN_MAP_MOVE
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
@@ -51,6 +50,7 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import UserRecord from 'interfaces/UserRecord';
 import MapActions from 'state/actions/map';
 import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
+import { selectUserSettings } from 'state/reducers/userSettings';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -311,9 +311,19 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivi
 
 export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
   try {
+    const userSettingsState = yield select(selectUserSettings);
+
     yield put(UserSettings.Activity.setActiveActivityId(action.payload));
-    yield put({ type: CLOSE_NEW_RECORD_MENU });
+    yield put(UserSettings.closeNewRecordDialogue());
     yield put(Activity.get(action.payload));
+
+    // If duplicating a record, wait for the success before pasting data in.
+    if (userSettingsState.newRecordDialogueState.mode === 'duplicate') {
+      const result = yield take([Activity.getSuccess, Activity.getFailure]);
+      if (result.type === Activity.getSuccess.type) {
+        yield put(Activity.paste());
+      }
+    }
   } catch (e) {
     console.error(e);
   }
