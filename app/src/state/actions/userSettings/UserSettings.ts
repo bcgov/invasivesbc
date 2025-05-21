@@ -8,7 +8,7 @@ interface IHoverRecordset {
   recordType: RecordSetType;
   id: string | number;
   geom: Point | Polygon | undefined;
-  quickPan: boolean;
+  quickPan?: boolean;
 }
 class Boundaries {
   private static readonly PREFIX = `UserSettings/Boundaries`;
