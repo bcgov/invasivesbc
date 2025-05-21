@@ -64,7 +64,7 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
       )}
       {MOBILE && geom && (
         <Button onClick={handleMarkGeometryOnMap.bind(this, false)} variant="contained">
-          Mark location on map
+          Mark site on map
         </Button>
       )}
     </div>
