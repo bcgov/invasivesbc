@@ -2,6 +2,9 @@ import { Button } from '@mui/material';
 import { useHistory } from 'react-router';
 import './RecordTablePopoverContent.css';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import { useDispatch } from 'utils/use_selector';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import { Feature } from 'maplibre-gl';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -12,9 +15,29 @@ type PropTypes = {
   recordDisplayId: string;
   recordLookupId: string;
   recordType: RecordSetType;
+  geom?: Feature;
 };
-const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, recordType }: PropTypes) => {
+const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, recordType, geom }: PropTypes) => {
+  const handleOpenRecord = () => {
+    const url =
+      recordType === RecordSetType.Activity
+        ? '/Records/Activity:' + recordLookupId + '/form'
+        : '/Records/IAPP/' + recordLookupId + '/summary';
+    history.push(url);
+  };
+
+  const handlePanToRecord = () => {
+    dispatch(
+      UserSettings.Map.setHoveredRecordset({
+        recordType: RecordSetType.Activity,
+        id: recordLookupId,
+        geom: geom,
+        quickPan: true
+      })
+    );
+  };
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const label = (() => {
     switch (recordType) {
@@ -30,18 +53,14 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
       <p>
         {label}: {id}
       </p>
-      <Button
-        onClick={() => {
-          const url =
-            recordType === RecordSetType.Activity
-              ? '/Records/Activity:' + recordLookupId + '/form'
-              : '/Records/IAPP/' + recordLookupId + '/summary';
-          history.push(url);
-        }}
-        variant="contained"
-      >
+      <Button onClick={handleOpenRecord} variant="contained">
         Open
       </Button>
+      {!!geom && (
+        <Button onClick={handlePanToRecord} variant="contained">
+          Pan to Record
+        </Button>
+      )}
     </div>
   );
 };

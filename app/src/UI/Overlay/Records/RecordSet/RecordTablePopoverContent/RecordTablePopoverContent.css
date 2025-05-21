@@ -6,4 +6,8 @@
   background-color: var(--bc-blue);
   color: white;
   text-align: center;
+  button {
+    border-radius: 0;
+    height: 40pt;
+  }
 }
