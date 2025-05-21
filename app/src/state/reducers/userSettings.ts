@@ -2,8 +2,7 @@ import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
 import { AppConfig } from 'state/config';
-import { CLOSE_NEW_RECORD_MENU, OPEN_NEW_RECORD_MENU, RECORDSET_SET_SORT } from 'state/actions';
-
+import { RECORDSET_SET_SORT } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -29,7 +28,10 @@ interface UserSettingsState {
   apiDocsWithSelectOptions: object | null;
 
   mapCenter: [number, number];
-  newRecordDialogueOpen: boolean;
+  newRecordDialogueState: {
+    mode: 'new' | 'duplicate';
+    open: boolean;
+  };
   recordSets: Record<PropertyKey, UserRecordSet>;
   recordsExpanded: boolean;
 
@@ -57,7 +59,10 @@ const initialState: UserSettingsState = {
   error: false,
   recordSets: {},
   recordsExpanded: false,
-  newRecordDialogueOpen: false,
+  newRecordDialogueState: {
+    mode: 'new',
+    open: false
+  },
   initialized: false,
   darkTheme: false,
   mapCenter: [55, -128],
@@ -268,16 +273,17 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         if (foundIndex != -1) {
           draftState.offlineDocs.splice(foundIndex, 1);
         }
+      } else if (Activity.copySuccess.match(action)) {
+        draftState.newRecordDialogueState = {
+          open: true,
+          mode: 'duplicate'
+        };
+      } else if (UserSettings.openNewRecordDialogue.match(action)) {
+        draftState.newRecordDialogueState = { open: true, mode: 'new' };
+      } else if (UserSettings.closeNewRecordDialogue.match(action)) {
+        draftState.newRecordDialogueState.open = false;
       } else {
         switch (action.type) {
-          case OPEN_NEW_RECORD_MENU: {
-            draftState.newRecordDialogueOpen = true;
-            break;
-          }
-          case CLOSE_NEW_RECORD_MENU: {
-            draftState.newRecordDialogueOpen = false;
-            break;
-          }
           case RECORDSET_SET_SORT: {
             //if the sort column is the same as the current sort column, toggle the sort order
             // if its already desc, remove the sort column and order
