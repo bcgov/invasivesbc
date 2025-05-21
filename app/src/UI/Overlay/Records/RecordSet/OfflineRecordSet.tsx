@@ -8,31 +8,34 @@ import { useSelector } from 'utils/use_selector';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { offlineActivityColumnsToDisplay } from './RecordTableHelpers';
-import { USER_HOVERED_RECORD } from 'state/actions';
 import UserRecord from 'interfaces/UserRecord';
 import { transformOfflineActivitiesForRecordTable } from 'utils/addActivity';
 import CustomPopover from 'UI/CustomPopover/CustomPopover';
 import RecordTablePopoverContent from './RecordTablePopoverContent/RecordTablePopoverContent';
 import { MouseEvent, TouchEvent, useState } from 'react';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
+import { Point, Polygon } from 'geojson';
 
 type PropTypes = { setID: string };
 
 export const OfflineRecordSet = ({ setID }: PropTypes) => {
-  const onUserHoveredRecord = (row: UserRecord) => {
-    dispatch({
-      type: USER_HOVERED_RECORD,
-      payload: {
-        recordType: RecordSetType.Activity,
+  const onUserHoveredRecord = (row: IOfflineActivityRow) => {
+    dispatch(
+      UserSettings.Map.setHoveredRecordset({
         id: row.activity_id,
-        row: row
-      }
-    });
+        geom: row?.geometry?.[0] as Polygon | Point,
+        recordType: RecordSetType.Activity
+      })
+    );
   };
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [recordDisplayId, setRecordDisplayId] = useState<string>('');
   const [recordLookupId, setRecordLookupId] = useState<string>('');
+  const [geom, setGeom] = useState<Point | Polygon>();
 
   const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord) => {
+    setGeom(row.geometry?.[0]);
     setRecordDisplayId((row.short_id as string) ?? '');
     setRecordLookupId((row.activity_id as string) ?? '');
     setAnchorEl(evt.currentTarget);
@@ -77,6 +80,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
           recordDisplayId={recordDisplayId}
           recordLookupId={recordLookupId}
           recordType={RecordSetType.Activity}
+          geom={geom}
         />
       </CustomPopover>
       <div className="stickyHeader">
