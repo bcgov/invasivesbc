@@ -1,4 +1,5 @@
 import NewsArticle, { NewsPlatform, NewsSubject } from 'interfaces/NewsArticle';
+import { MOBILE } from 'state/build-time-config';
 
 /**
  * Text content for the '/News' page.
@@ -184,6 +185,13 @@ const newsItems: NewsArticle[] = [
     subject: NewsSubject.New,
     platform: NewsPlatform.BOTH
   }
-].sort((a: NewsArticle, b: NewsArticle) => (a.date < b.date ? 1 : -1));
+]
+  .filter((article) => {
+    if (MOBILE) {
+      return [NewsPlatform.MOBILE, NewsPlatform.BOTH].includes(article.platform);
+    }
+    return [NewsPlatform.WEB, NewsPlatform.BOTH].includes(article.platform);
+  })
+  .sort((a: NewsArticle, b: NewsArticle) => (a.date < b.date ? 1 : -1));
 
 export default newsItems;
