@@ -88,7 +88,7 @@ const FormContainer = () => {
   useEffect(() => {
     setIsCreatedByUser(username === created_by);
     setIsDisabled(username !== created_by || !can_edit);
-  }, [username, created_by]);
+  }, [username, created_by, can_edit]);
 
   const isActivityChemTreatment =
     activity_subtype === ActivitySubtype.Treatment_ChemicalPlant ||

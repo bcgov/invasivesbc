@@ -2,7 +2,6 @@ import { createAction } from '@reduxjs/toolkit';
 import RecordSet from './RecordSet';
 import Boundary from 'interfaces/Boundary';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
-import { INewRecordDialogState } from 'UI/Overlay/Records/NewRecordDialog';
 
 class Boundaries {
   private static readonly PREFIX = `UserSettings/Boundaries`;
@@ -80,6 +79,8 @@ class UserSettings {
   static readonly toggleRecordExpand = createAction(`${this.PREFIX}/toggleRecordExpand`);
   static readonly toggleRecordExpandSuccess = createAction(`${this.PREFIX}/toggleRecordExpandSuccess`);
   static readonly toggleLayerPickerAccordion = createAction(`${this.PREFIX}/toggleLayerPickerAccordion`);
+  static readonly openNewRecordDialogue = createAction(`${this.PREFIX}/openNewRecordDialog`);
+  static readonly closeNewRecordDialogue = createAction(`${this.PREFIX}/closeNewRecordDialog`);
 }
 
 export default UserSettings;
