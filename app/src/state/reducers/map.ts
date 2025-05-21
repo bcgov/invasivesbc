@@ -519,19 +519,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           page: 0,
           limit: 5
         });
-      } else if (WhatsHere.set_highlighted_iapp.match(action)) {
-        draftState.userRecordOnHoverRecordGeometry = state?.whatsHere?.iappRows.filter(
-          (row) => row.site_id === action.payload
-        )[0].geometry;
-      } else if (WhatsHere.set_highlighted_activity.match(action)) {
-        draftState.userRecordOnHoverRecordGeometry = {
-          geometry: [
-            state?.whatsHere?.activityRows.filter((row) => {
-              return row.short_id === action.payload.short_id;
-            })[0].geometry
-          ]
-        };
-        draftState.userRecordOnHoverRecordType = RecordSetType.Activity;
       } else if (WhatsHere.iapp_rows_success.match(action)) {
         draftState.whatsHere.loadingIAPP = false;
         draftState.whatsHere.iappRows = [...action.payload];
@@ -574,7 +561,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.track_me_draw_geo.drawingShape = true;
       } else if (IappActions.getRows.match(action) || Activity.getRows.match(action)) {
         const { recordSetID, page, limit, tableFiltersHash } = action.payload;
-        draftState.recordTables[recordSetID] ??= {};
+        draftState.recordTables[recordSetID] ??= {} as IRecordTable;
         Object.assign(draftState.recordTables[recordSetID], {
           loading: true,
           page: page,
@@ -690,7 +677,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.userRecordOnHoverRecordType = action.payload.recordType;
         draftState.userRecordOnHoverRecordID = action.payload.id;
         draftState.userRecordOnHoverRecordGeometry = action.payload.geom;
-        draftState.quickPanToRecord = action.payload.quickPan;
+        draftState.quickPanToRecord = !!action.payload?.quickPan;
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {
