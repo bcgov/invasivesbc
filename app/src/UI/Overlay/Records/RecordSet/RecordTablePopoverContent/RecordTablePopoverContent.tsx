@@ -5,6 +5,7 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { Point, Polygon } from 'geojson';
+import { MOBILE } from 'state/build-time-config';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -26,13 +27,13 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
     history.push(url);
   };
 
-  const handlePanToRecord = () => {
+  const handleMarkGeometryOnMap = (quickPan: boolean) => {
     dispatch(
       UserSettings.Map.setHoveredRecordset({
         recordType: RecordSetType.Activity,
         id: recordLookupId,
         geom: geom,
-        quickPan: true
+        quickPan: !!quickPan
       })
     );
   };
@@ -57,8 +58,13 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
         Open
       </Button>
       {!!geom && (
-        <Button onClick={handlePanToRecord} variant="contained">
-          Pan to Record
+        <Button onClick={handleMarkGeometryOnMap.bind(this, true)} variant="contained">
+          Pan to record
+        </Button>
+      )}
+      {MOBILE && geom && (
+        <Button onClick={handleMarkGeometryOnMap.bind(this, false)} variant="contained">
+          Mark location on map
         </Button>
       )}
     </div>
