@@ -126,7 +126,7 @@ const HeaderPopover = () => {
               <li>
                 <button onClick={() => history.push('/News')}>
                   <Newspaper />
-                  What's New in InvasivesBC
+                  What's New
                 </button>
               </li>
             )}
