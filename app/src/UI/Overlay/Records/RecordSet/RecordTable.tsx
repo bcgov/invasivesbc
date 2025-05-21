@@ -73,15 +73,9 @@ export const RecordTable = ({ setID }: PropTypes) => {
   const [recordLookupId, setRecordLookupId] = useState<string>('');
   const [geom, setGeom] = useState<Polygon | Point>();
 
-  const mappedRows = unmappedRows?.map((row) => {
-    const unnestedRow =
-      recordSetType === RecordSetType.Activity ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row);
-    const mappedRow = {};
-    Object.keys(unnestedRow).forEach((key) => {
-      mappedRow[key] = unnestedRow[key];
-    });
-    return mappedRow;
-  });
+  const mappedRows = unmappedRows?.map((row) =>
+    recordSetType === RecordSetType.Activity ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row)
+  );
   const sortColumns = (() => {
     switch (recordSetType) {
       case RecordSetType.IAPP:
@@ -132,7 +126,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
                 </th>
               ))}
             </tr>
-            {mappedRows?.map((row: UserRecord) => {
+            {mappedRows?.map((row) => {
               return (
                 <tr
                   onContextMenu={(event) => {
@@ -142,7 +136,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
                   onMouseOver={() => onUserHoveredRecord(row)}
                   onFocus={() => onUserHoveredRecord(row)}
                   className="record_table_row"
-                  key={row?.activity_id ?? row?.site_id}
+                  key={'activity_id' in row ? row?.activity_id : row?.site_id}
                 >
                   {tableColumns.map((col) => (
                     <td
