@@ -8,6 +8,7 @@ import circle from '@turf/circle';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { handlePositionTracking } from 'UI/LegacyMap/helpers/functional/position-tracking';
 import { MOBILE } from 'state/build-time-config';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 const PositionMarkers = ({ mapReady }) => {
   const LATITUDE = 1;
@@ -74,7 +75,7 @@ const PositionMarkers = ({ mapReady }) => {
     refreshHighlightedRecord(map, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
 
     if (quickPanToRecord) {
-      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'IAPP') {
+      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === RecordSetType.IAPP) {
         if (userRecordOnHoverRecordRow.geometry) {
           const c = centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates as LngLatLike;
           if (c) {
@@ -83,7 +84,7 @@ const PositionMarkers = ({ mapReady }) => {
           }
         }
       }
-      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === 'Activity') {
+      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === RecordSetType.Activity) {
         if (userRecordOnHoverRecordRow.geometry?.[0]) {
           const c = centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates as LngLatLike;
           if (c) {
@@ -98,7 +99,7 @@ const PositionMarkers = ({ mapReady }) => {
     }
 
     // Jump Nav
-  }, [userRecordOnHoverRecordRow, map, map?.isStyleLoaded()]);
+  }, [userRecordOnHoverRecordRow, map, map?.isStyleLoaded(), quickPanToRecord]);
 
   useEffect(() => {
     refreshWhatsHereFeature(map, { whatsHereFeature });
