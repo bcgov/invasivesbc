@@ -47,7 +47,7 @@ const PositionMarkers = ({ mapReady }) => {
   const IAPPMarker = new maplibregl.Marker({ element: IAPPMarkerEl });
 
   //Highlighted Record from main records page:
-  const userRecordOnHoverRecordRow = useSelector((state) => state.Map.userRecordOnHoverRecordRow);
+  const userRecordOnHoverRecordGeometry = useSelector((state) => state.Map.userRecordOnHoverRecordGeometry);
   const userRecordOnHoverRecordType = useSelector((state) => state.Map.userRecordOnHoverRecordType);
   const quickPanToRecord = useSelector((state) => state.Map.quickPanToRecord);
 
@@ -59,47 +59,31 @@ const PositionMarkers = ({ mapReady }) => {
       currentActivityShortID,
       currentIAPPID,
       currentIAPPGeo,
-      userRecordOnHoverRecordRow,
+      userRecordOnHoverRecordGeometry,
       activityMarker,
       IAPPMarker,
       whatsHereMarker,
       whatsHereFeature
     });
-  }, [currentActivityShortID, currentIAPPID, map, mapReady, userRecordOnHoverRecordRow]);
+  }, [currentActivityShortID, currentIAPPID, map, mapReady, userRecordOnHoverRecordGeometry]);
 
   //Highlighted Record
   useEffect(() => {
     if (!mapReady) return;
     if (!map) return;
 
-    refreshHighlightedRecord(map, { userRecordOnHoverRecordRow, userRecordOnHoverRecordType });
-
-    if (quickPanToRecord) {
-      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === RecordSetType.IAPP) {
-        if (userRecordOnHoverRecordRow.geometry) {
-          const c = centroid(userRecordOnHoverRecordRow.geometry).geometry.coordinates as LngLatLike;
-          if (c) {
-            c[LATITUDE] += LAT_OFFSET;
-            map.jumpTo({ center: c, zoom: 15 });
-          }
-        }
-      }
-      if (userRecordOnHoverRecordRow && userRecordOnHoverRecordType === RecordSetType.Activity) {
-        if (userRecordOnHoverRecordRow.geometry?.[0]) {
-          const c = centroid(userRecordOnHoverRecordRow.geometry?.[0]).geometry.coordinates as LngLatLike;
-          if (c) {
-            c[LATITUDE] += LAT_OFFSET;
-            map.jumpTo({
-              center: c,
-              zoom: 15
-            });
-          }
-        }
+    refreshHighlightedRecord(map, { userRecordOnHoverRecordGeometry, userRecordOnHoverRecordType });
+    if (quickPanToRecord && userRecordOnHoverRecordGeometry) {
+      const c = centroid(userRecordOnHoverRecordGeometry).geometry.coordinates as LngLatLike;
+      if (c) {
+        c[LATITUDE] += LAT_OFFSET;
+        map.jumpTo({
+          center: c,
+          zoom: 15
+        });
       }
     }
-
-    // Jump Nav
-  }, [userRecordOnHoverRecordRow, map, map?.isStyleLoaded(), quickPanToRecord]);
+  }, [userRecordOnHoverRecordGeometry, map, map?.isStyleLoaded(), quickPanToRecord]);
 
   useEffect(() => {
     refreshWhatsHereFeature(map, { whatsHereFeature });

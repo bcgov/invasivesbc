@@ -4,7 +4,7 @@ import './RecordTablePopoverContent.css';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { Feature } from 'maplibre-gl';
+import { Point, Polygon } from 'geojson';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -15,7 +15,7 @@ type PropTypes = {
   recordDisplayId: string;
   recordLookupId: string;
   recordType: RecordSetType;
-  geom?: Feature;
+  geom?: Point | Polygon;
 };
 const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, recordType, geom }: PropTypes) => {
   const handleOpenRecord = () => {
