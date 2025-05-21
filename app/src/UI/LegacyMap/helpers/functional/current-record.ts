@@ -14,11 +14,12 @@ export const refreshCurrentRecMakers = (map, options: any) => {
 
   if (
     options.whatsHereMarker &&
-    (options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry)
+    (options.userRecordOnHoverRecordGeometry?.geometry?.[0] || options.userRecordOnHoverRecordGeometry?.geometry)
   ) {
     options.whatsHereMarker.setLngLat(
-      centroid(options.userRecordOnHoverRecordRow?.geometry?.[0] || options.userRecordOnHoverRecordRow?.geometry)
-        .geometry?.coordinates
+      centroid(
+        options.userRecordOnHoverRecordGeometry?.geometry?.[0] || options.userRecordOnHoverRecordGeometry?.geometry
+      ).geometry?.coordinates
     );
     options.whatsHereMarker.addTo(map);
   }
@@ -55,13 +56,13 @@ export const refreshHighlightedRecord = (map, options: any) => {
 
   if (
     options.userRecordOnHoverRecordType === RecordSetType.Activity &&
-    options.userRecordOnHoverRecordRow &&
-    options.userRecordOnHoverRecordRow?.geometry?.[0]
+    options.userRecordOnHoverRecordGeometry &&
+    options.userRecordOnHoverRecordGeometry?.geometry?.[0]
   ) {
     map
       .addSource(LAYER_ID, {
         type: 'geojson',
-        data: options.userRecordOnHoverRecordRow.geometry[0]
+        data: options.userRecordOnHoverRecordGeometry.geometry[0]
       })
       .addLayer(
         {
@@ -109,11 +110,11 @@ export const refreshHighlightedRecord = (map, options: any) => {
       );
   }
 
-  if (options.userRecordOnHoverRecordType === RecordSetType.IAPP && options.userRecordOnHoverRecordRow) {
+  if (options.userRecordOnHoverRecordType === RecordSetType.IAPP && options.userRecordOnHoverRecordGeometry) {
     map
       .addSource(LAYER_ID, {
         type: 'geojson',
-        data: options.userRecordOnHoverRecordRow.geometry
+        data: options.userRecordOnHoverRecordGeometry.geometry
       })
       .addLayer(
         {
