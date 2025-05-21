@@ -52,7 +52,7 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
   }
   const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${action.payload}`);
 
-  if (networkReturn.status !== 200) {
+  if (!networkReturn?.ok) {
     yield put(Activity.getFailure(networkReturn));
     return;
   }

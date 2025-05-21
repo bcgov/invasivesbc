@@ -2,8 +2,8 @@ import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
-import { OPEN_NEW_RECORD_MENU } from 'state/actions';
 import 'UI/Global.css';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 export const NewRecord = () => {
   const dispatch = useDispatch();
@@ -25,7 +25,7 @@ export const NewRecord = () => {
           <IconButton
             className={'button'}
             onClick={() => {
-              dispatch({ type: OPEN_NEW_RECORD_MENU });
+              dispatch(UserSettings.openNewRecordDialogue());
             }}
           >
             <FiberNewIcon />
