@@ -111,10 +111,10 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
       limit: 200000
     };
     const [activitiesNetworkReturn, iappNetworkReturn] = yield all([
-      call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
+      yield call(InvasivesAPI_Call, 'POST', `/api/v2/activities/`, {
         filterObjects: [activitiesfilterObj]
       }),
-      call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
+      yield call(InvasivesAPI_Call, 'POST', `/api/v2/iapp/`, {
         filterObjects: [iappfilterObj]
       })
     ]);
