@@ -31,12 +31,16 @@ GET.apiDoc = {
       name: 'idList',
       required: true,
       description: 'A list of IDs to retrieve records for.',
-      schema: {
-        type: 'array',
-        items: {
-          type: 'string'
-        },
-        example: ['id1', 'id2', 'id3']
+      content: {
+        'application/json': {
+          schema: {
+            type: 'array',
+            items: {
+              type: 'string'
+            },
+            example: ['id1', 'id2', 'id3']
+          }
+        }
       }
     }
   ],
