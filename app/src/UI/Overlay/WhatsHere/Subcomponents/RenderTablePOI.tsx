@@ -6,6 +6,7 @@ import NoRowsInSearch from './NoRowsInSearch';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { MouseEvent, TouchEvent } from 'react';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 type PropTypes = {
   setAnchorEl: (anchorEl: HTMLElement | null) => void;
@@ -16,7 +17,13 @@ const RenderTablePOI = ({ setAnchorEl }: PropTypes) => {
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
 
   const dispatchUpdatedID = (params) => {
-    dispatch(WhatsHere.set_highlighted_iapp(params.row.site_id));
+    dispatch(
+      UserSettings.Map.setHoveredRecordset({
+        id: params.row.id,
+        geom: params.row.geometry,
+        recordType: RecordSetType.IAPP
+      })
+    );
   };
 
   // don't use the tables sort or paging - there can be too many records for table to handle, control state externally via store
@@ -61,7 +68,6 @@ const RenderTablePOI = ({ setAnchorEl }: PropTypes) => {
 
   const highlightPOI = async (params) => {
     dispatch(WhatsHere.id_clicked({ type: RecordSetType.IAPP, description: 'IAPP-' + params.id, id: params.row.id }));
-    dispatch(WhatsHere.set_highlighted_iapp(params?.id));
   };
 
   return (
