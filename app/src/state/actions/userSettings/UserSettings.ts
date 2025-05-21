@@ -7,7 +7,7 @@ import { Feature } from 'maplibre-gl';
 interface IHoverRecordset {
   recordType: RecordSetType;
   id: string | number;
-  geom: Feature;
+  geom: Feature | undefined;
   quickPan: boolean;
 }
 class Boundaries {
