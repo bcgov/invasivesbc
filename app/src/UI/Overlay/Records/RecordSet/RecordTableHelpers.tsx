@@ -1,6 +1,8 @@
+import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
+import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
 import { ActivitySubtypeShortLabels } from 'sharedAPI/src/constants';
 
-export const getUnnestedFieldsForActivity = (activity) => {
+export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
   const getArrayString = (inputArray: [], subProp?) => {
     let output = '';
     if (subProp) {
@@ -59,8 +61,8 @@ export const getUnnestedFieldsForActivity = (activity) => {
   return JSON.parse(JSON.stringify(columns));
 };
 
-export const getUnnestedFieldsForIAPP = (record) => {
-  const columns: any = {
+export const getUnnestedFieldsForIAPP = (record): IIappTableRow => {
+  const columns = {
     site_id: record.site_id,
     site_paper_file_id: record.site_paper_file_id,
     jurisdictions_flattened: record.jurisdictions_flattened,
