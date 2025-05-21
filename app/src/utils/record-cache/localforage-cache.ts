@@ -151,7 +151,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     await Promise.all(
       Object.keys(data).map((key) => {
         const parsed = getUnnestedFieldsForActivity(data[key]);
-        parsed.data = data[key];
+        (parsed as Record<PropertyKey, any>).data = data[key];
         this.store?.setItem(key, parsed);
       })
     );
@@ -321,7 +321,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
     for (const id of ids) {
       const data: UserRecord = (await this.loadActivity(id)) as UserRecord;
       const label = data.short_id;
-      const features = data.geometry ?? [];
+      const features = (data.geometry as Feature[]) ?? [];
       features.forEach((feature: Feature) => {
         feature.properties = { name: label + '\n' + data.map_symbol, description: id };
         centroidArr.push(centroid(feature));

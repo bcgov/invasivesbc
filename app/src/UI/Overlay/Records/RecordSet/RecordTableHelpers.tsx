@@ -21,7 +21,7 @@ export const getUnnestedFieldsForActivity = (activity): IActivityTableRow => {
   };
 
   // needs to be consistent with API column names
-  const root = activity.hasOwnProperty('activity_payload') ? activity.activity_payload : activity;
+  const root = activity?.activity_payload ?? activity;
   const columns = {
     activity_id: activity?.activity_id,
     short_id: activity?.short_id,
