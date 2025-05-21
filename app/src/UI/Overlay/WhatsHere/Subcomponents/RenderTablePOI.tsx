@@ -86,6 +86,7 @@ const RenderTablePOI = ({ setAnchorEl }: PropTypes) => {
             }}
             onCellClick={(params: GridCellParams, event: MuiEvent<MouseEvent | TouchEvent>) => {
               if (loggedInOrWorkingOffline) {
+                dispatchUpdatedID(params);
                 setAnchorEl(event.currentTarget as HTMLElement);
                 highlightPOI(params);
               }

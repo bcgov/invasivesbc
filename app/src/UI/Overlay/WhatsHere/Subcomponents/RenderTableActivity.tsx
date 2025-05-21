@@ -99,6 +99,7 @@ const RenderTableActivity = ({ setAnchorEl }: PropTypes) => {
             }}
             onCellClick={(params, evt: MuiEvent<MouseEvent | TouchEvent>) => {
               if (loggedInOrWorkingOffline) {
+                dispatchUpdatedID(params);
                 setAnchorEl(evt.currentTarget as HTMLElement);
                 highlightActivity(params);
               }
