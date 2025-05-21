@@ -1,4 +1,4 @@
-import { Menu, OfflineBolt } from '@mui/icons-material';
+import { Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import CustomPopover from 'UI/CustomPopover/CustomPopover';
 import { NetworkStateControl } from 'UI/Header/NetworkStateControl';
@@ -119,6 +119,14 @@ const HeaderPopover = () => {
                 <button onClick={activated ? navToUpdateRequest : requestAccess}>
                   <AssignmentIcon />
                   Update My Info
+                </button>
+              </li>
+            )}
+            {loggedInOrWorkingOffline && (
+              <li>
+                <button onClick={() => history.push('/News')}>
+                  <Newspaper />
+                  What's New in InvasivesBC
                 </button>
               </li>
             )}
