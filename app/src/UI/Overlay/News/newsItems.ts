@@ -1,4 +1,5 @@
-import NewsArticle, { NewsSubject } from 'interfaces/NewsArticle';
+import NewsArticle, { NewsPlatform, NewsSubject } from 'interfaces/NewsArticle';
+import { MOBILE } from 'state/build-time-config';
 
 /**
  * Text content for the '/News' page.
@@ -11,6 +12,7 @@ const newsItems: NewsArticle[] = [
     date: new Date(),
     content: [],
     subject: NewsSubject.
+    platform: NewsPlatform.
   },
   */
   {
@@ -20,7 +22,8 @@ const newsItems: NewsArticle[] = [
       'We are excited to announce that the InvasivesBC observations data layer is now available in the BC Geographic Warehouse. This new layer includes data on observations for invasive plants in BC.',
       'More information on the layer can be found here: https://catalogue.data.gov.bc.ca/dataset/invasive-species-observations'
     ],
-    subject: NewsSubject.New
+    subject: NewsSubject.New,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Updated Ministry names',
@@ -29,7 +32,8 @@ const newsItems: NewsArticle[] = [
       'We have updated the descriptions of certain ministry names in our system to align with recent changes in government nomenclature. While the underlying codes remain unchanged, the descriptions displayed in relevant contexts have been revised to reflect the updated ministry names accurately. This ensures that our system stays current and consistent with official terminology.',
       'Ministry names can be found here: https://www2.gov.bc.ca/gov/content/governments/organizational-structure/ministries-organizations/ministries'
     ],
-    subject: NewsSubject.Update
+    subject: NewsSubject.Update,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Layer Picker Update',
@@ -37,7 +41,8 @@ const newsItems: NewsArticle[] = [
     content: [
       'The LayerPicker in InvasivesBC has been updated. Along with a new look, users can now enable Recordset layers directly from it. These are some of the initial changes for upcoming features.'
     ],
-    subject: NewsSubject.Update
+    subject: NewsSubject.Update,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Feature: "Record History"',
@@ -45,7 +50,8 @@ const newsItems: NewsArticle[] = [
     content: [
       'Users can view a record\'s update history by selecting the "Record History" button at the top of the form. This button is visible only if the record has updates.'
     ],
-    subject: NewsSubject.New
+    subject: NewsSubject.New,
+    platform: NewsPlatform.BOTH
   },
   {
     title: '"PMBC Parcel Cadastre - Private" Data Layer Added',
@@ -53,7 +59,8 @@ const newsItems: NewsArticle[] = [
     content: [
       "The 'PMBC Parcel Cadastre - Private' layer has been added to InvasivesBC. Users can now select this option from the layer picker on the main map."
     ],
-    subject: NewsSubject.New
+    subject: NewsSubject.New,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Recordsets Overriding',
@@ -61,7 +68,8 @@ const newsItems: NewsArticle[] = [
     content: [
       'Previously, users encountered a bug where deleting a custom recordset would cause new recordsets to override existing ones. This issue has now been resolved.'
     ],
-    subject: NewsSubject.BugFix
+    subject: NewsSubject.BugFix,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Biocontrol Filtering',
@@ -70,7 +78,8 @@ const newsItems: NewsArticle[] = [
       'New "Primary Biocontrol User" role created and has been applied to users currently working with Primary Agents.  Users without this role added will not see Biocontrol Records for primary biocontrol agents.',
       'When creating biocontrol records, the invasive plant chosen in the form will restrict the biocontrol agent drop down menu to only those agents that are relevant for the invasive plant species chosen.  This will help reduce unintentional errors and speed up data entry time.'
     ],
-    subject: NewsSubject.Update
+    subject: NewsSubject.Update,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Draw Tools Duplicating',
@@ -78,7 +87,8 @@ const newsItems: NewsArticle[] = [
     content: [
       'Previously, users encountered a bug where the draw tools would duplicate on the map. This issue has now been resolved.'
     ],
-    subject: NewsSubject.BugFix
+    subject: NewsSubject.BugFix,
+    platform: NewsPlatform.BOTH
   },
 
   {
@@ -89,7 +99,8 @@ const newsItems: NewsArticle[] = [
       'Fixed a bug where alerts would override each other, causing users to see only the most recent alert.',
       'Alerts have been updated to include additional details through an improved color palette and iconography.'
     ],
-    subject: NewsSubject.New
+    subject: NewsSubject.New,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'GeoTracking draw tool, quality of life updates',
@@ -98,7 +109,8 @@ const newsItems: NewsArticle[] = [
       'Added a new feature that allows users to draw activity shapes using their current GPS data. You can now enable GeoTracking and walk the perimeter of your worksite to create shapes accurately based on your GPS location.',
       "GeoTracking can now be paused midway, allowing you to edit your current shape without interruption. Additionally, when using the 'Find Me' feature, you can now disable map panning."
     ],
-    subject: NewsSubject.New
+    subject: NewsSubject.New,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'TEMP Point batch uploaded shapes',
@@ -106,7 +118,8 @@ const newsItems: NewsArticle[] = [
     content: [
       'Shapes associated with Point batch uploads will now appear as octagons instead of circles. This was done to correct issues with the area of the shape not matching the area entered by the user.'
     ],
-    subject: NewsSubject.Update
+    subject: NewsSubject.Update,
+    platform: NewsPlatform.WEB
   },
   {
     title: 'Renaming custom layers/record sets, and boundary check for batch',
@@ -115,7 +128,8 @@ const newsItems: NewsArticle[] = [
       'When you add a new list of records, you will now be able to rename them. Click the pencil icon next to the layer name to do so.',
       'A version update in the database at some point broke the BC boundary check, which has allowed some records to sneak through that are not in BC. This has been fixed, however, we ask people review what they have submitted and clean up anything that is erroneous.'
     ],
-    subject: NewsSubject.Update
+    subject: NewsSubject.Update,
+    platform: NewsPlatform.WEB
   },
   {
     title: 'Crash fix for some devices',
@@ -123,7 +137,8 @@ const newsItems: NewsArticle[] = [
     content: [
       'Some users (particularly those on mobile) may have experienced a crash on startup. This has been resolved.'
     ],
-    subject: NewsSubject.BugFix
+    subject: NewsSubject.BugFix,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Photo editing, Draft Issue, and note on Decimals in the Chem Treatment Form',
@@ -134,7 +149,8 @@ const newsItems: NewsArticle[] = [
       'Decimals on the Chem Treatment form. You can enter decimal values such as "0.5" however note that if you try to add one to the middle of a number such as "15" to "1.5" it won\'t work.',
       'This is because there is always a decimal at the end if not specified. Future versions of this form will make this behaviour less clunky however it is important to note how this works for the time being.'
     ],
-    subject: NewsSubject.BugFix
+    subject: NewsSubject.BugFix,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Heading Indicator',
@@ -145,7 +161,8 @@ const newsItems: NewsArticle[] = [
       'Note that this is not functional on desktop, and works best when outside, moving, and not on WIFI.',
       'Some devices may have the old blue dot image cached, and will need their browser cache cleared to see the new image.'
     ],
-    subject: NewsSubject.Update
+    subject: NewsSubject.Update,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Improvements to sorting and filtering',
@@ -156,7 +173,8 @@ const newsItems: NewsArticle[] = [
       'Click again to change direction, and once more to stop sorting. Note that for certain filter combinations, it is possible that sorting could slow things down.',
       'TIP: If you find yourself waiting a long time, try adding more filters to narrow down your results and then re-enable sorting.'
     ],
-    subject: NewsSubject.Update
+    subject: NewsSubject.Update,
+    platform: NewsPlatform.BOTH
   },
   {
     title: 'Launch of the News Page',
@@ -164,8 +182,16 @@ const newsItems: NewsArticle[] = [
     content: [
       'This page was created to keep you informed of the latest changes and improvements to InvasivesBC. Check back often for updates! We will do our best to keep you in the loop.'
     ],
-    subject: NewsSubject.New
+    subject: NewsSubject.New,
+    platform: NewsPlatform.BOTH
   }
-].sort((a: NewsArticle, b: NewsArticle) => (a.date < b.date ? 1 : -1));
+]
+  .filter((article) => {
+    if (MOBILE) {
+      return [NewsPlatform.MOBILE, NewsPlatform.BOTH].includes(article.platform);
+    }
+    return [NewsPlatform.WEB, NewsPlatform.BOTH].includes(article.platform);
+  })
+  .sort((a: NewsArticle, b: NewsArticle) => (a.date < b.date ? 1 : -1));
 
 export default newsItems;
