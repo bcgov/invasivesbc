@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { refreshWhatsHereFeature } from 'UI/LegacyMap/helpers/functional/whats-here';
 import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/LegacyMap/helpers/functional/current-record';
 import centroid from '@turf/centroid';
@@ -8,7 +8,6 @@ import circle from '@turf/circle';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { handlePositionTracking } from 'UI/LegacyMap/helpers/functional/position-tracking';
 import { MOBILE } from 'state/build-time-config';
-import { RecordSetType } from 'interfaces/UserRecordSet';
 
 const PositionMarkers = ({ mapReady }) => {
   const LATITUDE = 1;
@@ -47,9 +46,9 @@ const PositionMarkers = ({ mapReady }) => {
   const IAPPMarker = new maplibregl.Marker({ element: IAPPMarkerEl });
 
   //Highlighted Record from main records page:
+  const quickPanToRecord = useSelector((state) => state.Map.quickPanToRecord);
   const userRecordOnHoverRecordGeometry = useSelector((state) => state.Map.userRecordOnHoverRecordGeometry);
   const userRecordOnHoverRecordType = useSelector((state) => state.Map.userRecordOnHoverRecordType);
-  const quickPanToRecord = useSelector((state) => state.Map.quickPanToRecord);
 
   //Current Activity & IAPP Markers
   useEffect(() => {
@@ -83,7 +82,7 @@ const PositionMarkers = ({ mapReady }) => {
         });
       }
     }
-  }, [userRecordOnHoverRecordGeometry, map, map?.isStyleLoaded(), quickPanToRecord]);
+  }, [userRecordOnHoverRecordGeometry, quickPanToRecord]);
 
   useEffect(() => {
     refreshWhatsHereFeature(map, { whatsHereFeature });
