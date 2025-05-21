@@ -3,6 +3,7 @@ import {
   Button,
   Dialog,
   DialogActions,
+  DialogContent,
   DialogTitle,
   FormControl,
   InputLabel,
@@ -13,12 +14,12 @@ import { useHistory } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useDispatch } from 'react-redux';
-import { CLOSE_NEW_RECORD_MENU } from 'state/actions';
 import { ActivitySubtype, ActivitySubtypeRelations, ActivitySubtypeShortLabels } from 'sharedAPI';
 
 import './NewRecordDialog.css';
 import { useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 export interface INewRecordDialogState {
   recordCategory: string;
@@ -28,15 +29,15 @@ export interface INewRecordDialogState {
 
 const NewRecordDialog = () => {
   const handleClose = () => {
-    dispatch({ type: CLOSE_NEW_RECORD_MENU });
+    dispatch(UserSettings.closeNewRecordDialogue());
   };
   const dispatch = useDispatch();
   const history = useHistory();
 
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
-  const dialogueOpen = useSelector((state) => state.UserSettings.newRecordDialogueOpen);
+  const open = useSelector((state) => state.UserSettings.newRecordDialogueState.open);
+  const mode = useSelector((state) => state.UserSettings.newRecordDialogueState.mode);
   const writePrivilege = useSelector((state) => state.Auth.writePrivilege);
-
   // Options
   const [activityCategorySelectOptions, setActivityCategorySelectOptions] = useState<string[]>([]);
   const [activityTypeSelectOptions, setActivityTypeSelectOptions] = useState<string[]>([]);
@@ -78,7 +79,7 @@ const NewRecordDialog = () => {
     }
   }, [recordType]);
 
-  const insert_record = async () => {
+  const createNewRecord = async () => {
     dispatch(Activity.createReq({ type: recordType, subType: recordSubtype }));
     history.push('/Records/Activity:/form');
   };
@@ -99,9 +100,9 @@ const NewRecordDialog = () => {
   };
 
   return (
-    <Dialog open={dialogueOpen || false} id="new_record_dialog">
+    <Dialog open={!!open} id="new_record_dialog">
       <DialogTitle>Create New Record</DialogTitle>
-
+      {mode === 'duplicate' && <DialogContent>Select activity subtype you want to copy data into</DialogContent>}
       <Box className={'vertical_grid content'}>
         <FormControl>
           <InputLabel>Record Category</InputLabel>
@@ -155,7 +156,12 @@ const NewRecordDialog = () => {
 
       <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
-        <Button variant="contained" aria-label="Create Record" disabled={recordSubtype === ''} onClick={insert_record}>
+        <Button
+          variant="contained"
+          aria-label="Create Record"
+          disabled={recordSubtype === ''}
+          onClick={createNewRecord}
+        >
           New Record
         </Button>
       </DialogActions>

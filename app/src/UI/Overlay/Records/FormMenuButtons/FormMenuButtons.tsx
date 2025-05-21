@@ -17,6 +17,7 @@ const FormMenuButtons = () => {
 
   const can_delete = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_delete);
   const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
+  const can_write = useSelector((state) => state.Auth?.writePrivilege?.length > 0);
 
   const { connected } = useSelector((state) => state.Network);
   const { serializedActivities } = useSelector(selectOfflineActivity);
@@ -39,11 +40,8 @@ const FormMenuButtons = () => {
   const handlePublish = () => {
     dispatch(Activity.submit());
   };
-  const handleCopy = () => {
+  const handleDuplicate = () => {
     dispatch(Activity.copy());
-  };
-  const handlePaste = () => {
-    dispatch(Activity.paste());
   };
 
   const handleDelete = () => {
@@ -63,11 +61,8 @@ const FormMenuButtons = () => {
       <Button onClick={handlePublish} disabled={saveDisabled || activityErrors?.length > 0} variant="contained">
         SAVE & PUBLISH TO SUBMITTED {connected || '(LOCAL OFFLINE)'}
       </Button>
-      <Button onClick={handleCopy} variant="contained">
-        COPY FORM
-      </Button>
-      <Button disabled={saveDisabled} onClick={handlePaste} variant="contained">
-        PASTE FORM
+      <Button onClick={handleDuplicate} disabled={!can_write} variant="contained">
+        Duplicate Form
       </Button>
       <Button disabled={!can_delete} onClick={handleDelete} variant="contained">
         DELETE {recordIsSerializedActivity && 'FROM LOCAL DEVICE'}
