@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 import { refreshWhatsHereFeature } from 'UI/LegacyMap/helpers/functional/whats-here';
 import { refreshCurrentRecMakers, refreshHighlightedRecord } from 'UI/LegacyMap/helpers/functional/current-record';
 import centroid from '@turf/centroid';

@@ -48,7 +48,6 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import IRecordTable from 'interfaces/recordTable';
-import { Feature } from 'maplibre-gl';
 import { Point, Polygon } from 'geojson';
 
 enum LeafletWhosEditingEnum {
