@@ -1,4 +1,5 @@
 import centroid from '@turf/centroid';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 import { LAYER_Z_FOREGROUND } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 
 export const refreshCurrentRecMakers = (map, options: any) => {
@@ -53,7 +54,7 @@ export const refreshHighlightedRecord = (map, options: any) => {
   }
 
   if (
-    options.userRecordOnHoverRecordType === 'Activity' &&
+    options.userRecordOnHoverRecordType === RecordSetType.Activity &&
     options.userRecordOnHoverRecordRow &&
     options.userRecordOnHoverRecordRow?.geometry?.[0]
   ) {
@@ -108,7 +109,7 @@ export const refreshHighlightedRecord = (map, options: any) => {
       );
   }
 
-  if (options.userRecordOnHoverRecordType === 'IAPP' && options.userRecordOnHoverRecordRow) {
+  if (options.userRecordOnHoverRecordType === RecordSetType.IAPP && options.userRecordOnHoverRecordRow) {
     map
       .addSource(LAYER_ID, {
         type: 'geojson',
