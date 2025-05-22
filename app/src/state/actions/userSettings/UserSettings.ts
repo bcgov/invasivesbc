@@ -1,8 +1,15 @@
 import { createAction } from '@reduxjs/toolkit';
 import RecordSet from './RecordSet';
 import Boundary from 'interfaces/Boundary';
-import { UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { Point, Polygon } from 'geojson';
 
+interface IHoverRecordset {
+  recordType: RecordSetType;
+  id: string | number;
+  geom: Point | Polygon | undefined;
+  quickPan?: boolean;
+}
 class Boundaries {
   private static readonly PREFIX = `UserSettings/Boundaries`;
 
@@ -65,6 +72,7 @@ class Map {
   static readonly setCenter = createAction<number[]>(`${this.PREFIX}/setCenter`);
   static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
   static readonly setCenterFailure = createAction(`${this.PREFIX}/setCenterFailure`);
+  static readonly setHoveredRecordset = createAction<IHoverRecordset>(`${this.PREFIX}/setHoveredRecordset`);
 }
 
 class UserSettings {

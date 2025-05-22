@@ -33,13 +33,6 @@ class WhatsHere {
     })
   );
   static readonly clear_whats_here = createAction(`${this.PREFIX}/clear_whats_here`);
-  static readonly set_highlighted_iapp = createAction<string>(`${this.PREFIX}/set_highlighted_iapp`);
-  static readonly set_highlighted_activity = createAction(
-    `${this.PREFIX}/set_highlighted_activity`,
-    (id: string, short_id: string) => ({
-      payload: { id, short_id }
-    })
-  );
 
   static readonly sort_filter_update = createAction(
     `${this.PREFIX}/sort_filter_update`,

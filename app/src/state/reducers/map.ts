@@ -31,10 +31,8 @@ import {
   TOGGLE_CUSTOMIZE_LAYERS,
   TOGGLE_DRAWN_LAYER,
   TOGGLE_KML_LAYER,
-  TOGGLE_QUICK_PAN_TO_RECORD,
   TOGGLE_WMS_LAYER,
-  URL_CHANGE,
-  USER_HOVERED_RECORD
+  URL_CHANGE
 } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
@@ -50,6 +48,7 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import IRecordTable from 'interfaces/recordTable';
+import { Point, Polygon } from 'geojson';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -226,9 +225,9 @@ interface MapState {
   simplePickerLayers: object | undefined;
   tooManyLabelsDialog: any;
   userCoords: any;
-  userRecordOnHoverRecordID: any;
-  userRecordOnHoverRecordRow: any;
-  userRecordOnHoverRecordType: any;
+  userRecordOnHoverRecordID?: string | number;
+  userRecordOnHoverRecordGeometry?: Point | Polygon;
+  userRecordOnHoverRecordType?: RecordSetType;
   viewFilters: boolean;
   whatsHere: {
     toggle: boolean;
@@ -319,7 +318,7 @@ const initialState: MapState = {
 
   userCoords: null,
   userRecordOnHoverRecordID: undefined,
-  userRecordOnHoverRecordRow: undefined,
+  userRecordOnHoverRecordGeometry: undefined,
   userRecordOnHoverRecordType: undefined,
   viewFilters: true,
   whatsHere: {
@@ -519,22 +518,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           page: 0,
           limit: 5
         });
-      } else if (WhatsHere.set_highlighted_iapp.match(action)) {
-        draftState.userRecordOnHoverRecordRow = {
-          id: action.payload,
-          geometry: state?.whatsHere?.iappRows.filter((row) => row.site_id === action.payload)[0].geometry
-        };
-      } else if (WhatsHere.set_highlighted_activity.match(action)) {
-        draftState.userRecordOnHoverRecordRow = {
-          id: action.payload.id,
-          short_id: action.payload.short_id,
-          geometry: [
-            state?.whatsHere?.activityRows.filter((row) => {
-              return row.short_id === action.payload.short_id;
-            })[0].geometry
-          ]
-        };
-        draftState.userRecordOnHoverRecordType = RecordSetType.Activity;
       } else if (WhatsHere.iapp_rows_success.match(action)) {
         draftState.whatsHere.loadingIAPP = false;
         draftState.whatsHere.iappRows = [...action.payload];
@@ -577,7 +560,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.track_me_draw_geo.drawingShape = true;
       } else if (IappActions.getRows.match(action) || Activity.getRows.match(action)) {
         const { recordSetID, page, limit, tableFiltersHash } = action.payload;
-        draftState.recordTables[recordSetID] ??= {};
+        draftState.recordTables[recordSetID] ??= {} as IRecordTable;
         Object.assign(draftState.recordTables[recordSetID], {
           loading: true,
           page: page,
@@ -689,6 +672,11 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
         draftState.layers[index].loading = false;
+      } else if (UserSettings.Map.setHoveredRecordset.match(action)) {
+        draftState.userRecordOnHoverRecordType = action.payload.recordType;
+        draftState.userRecordOnHoverRecordID = action.payload.id;
+        draftState.userRecordOnHoverRecordGeometry = action.payload.geom;
+        draftState.quickPanToRecord = !!action.payload?.quickPan;
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {
@@ -877,10 +865,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
             break;
           }
-          case TOGGLE_QUICK_PAN_TO_RECORD: {
-            draftState.quickPanToRecord = !state.quickPanToRecord;
-            break;
-          }
           case URL_CHANGE: {
             if (action.payload?.pathname === '/') {
               // draftState.panelOpen = false;
@@ -889,12 +873,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
               draftState.whatsHere.toggle = false;
               draftState.whatsHere.feature = null;
             }
-            break;
-          }
-          case USER_HOVERED_RECORD: {
-            draftState.userRecordOnHoverRecordType = action.payload.recordType;
-            draftState.userRecordOnHoverRecordID = action.payload.id;
-            draftState.userRecordOnHoverRecordRow = action.payload.row;
             break;
           }
           default:

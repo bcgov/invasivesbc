@@ -6,6 +6,7 @@ import NoRowsInSearch from './NoRowsInSearch';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { MouseEvent, TouchEvent } from 'react';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 type PropTypes = {
   setAnchorEl: (anchorEl: HTMLElement | null) => void;
@@ -17,8 +18,13 @@ const RenderTableActivity = ({ setAnchorEl }: PropTypes) => {
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
 
   const dispatchUpdatedID = (params) => {
-    const { id, short_id } = params.row;
-    dispatch(WhatsHere.set_highlighted_activity(id, short_id));
+    dispatch(
+      UserSettings.Map.setHoveredRecordset({
+        id: params.row.id,
+        geom: params.row.geometry,
+        recordType: RecordSetType.Activity
+      })
+    );
   };
 
   const columns = [
@@ -74,7 +80,6 @@ const RenderTableActivity = ({ setAnchorEl }: PropTypes) => {
   const highlightActivity = async (params) => {
     const { id, short_id } = params.row;
     dispatch(WhatsHere.id_clicked({ type: RecordSetType.Activity, description: short_id, id }));
-    dispatch(WhatsHere.set_highlighted_activity(id, short_id));
   };
 
   return (
@@ -94,6 +99,7 @@ const RenderTableActivity = ({ setAnchorEl }: PropTypes) => {
             }}
             onCellClick={(params, evt: MuiEvent<MouseEvent | TouchEvent>) => {
               if (loggedInOrWorkingOffline) {
+                dispatchUpdatedID(params);
                 setAnchorEl(evt.currentTarget as HTMLElement);
                 highlightActivity(params);
               }

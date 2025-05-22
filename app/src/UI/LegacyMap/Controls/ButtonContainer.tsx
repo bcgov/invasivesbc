@@ -5,7 +5,6 @@ import { CenterCurrentRecord } from './CenterCurrentRecord';
 import { FindMeToggle } from './FindMe';
 import { LegendsButton } from './LegendsButton';
 import { NewRecord } from './NewRecord';
-import { QuickPanToRecordToggle } from './QuickPanToRecordToggle';
 import { WhatsHereButton } from './WhatsHereButton';
 import { WebOnly } from 'UI/Predicates/WebOnly';
 import TrackingButtonsContainer from './TrackingButtonsContainer';
@@ -35,7 +34,6 @@ export const ButtonContainer = () => {
           <WebOnly>
             <CenterCurrentRecord type={RecordSetType.Activity} />
             <CenterCurrentRecord type={RecordSetType.IAPP} />
-            <QuickPanToRecordToggle />
           </WebOnly>
         </>
       )}

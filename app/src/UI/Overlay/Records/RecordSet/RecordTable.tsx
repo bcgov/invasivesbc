@@ -1,7 +1,7 @@
 import { useDispatch } from 'react-redux';
 import './RecordTable.css';
 import { getUnnestedFieldsForActivity, getUnnestedFieldsForIAPP } from './RecordTableHelpers';
-import { RECORDSET_SET_SORT, USER_HOVERED_RECORD } from 'state/actions';
+import { RECORDSET_SET_SORT } from 'state/actions';
 import { validActivitySortColumns, validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useSelector } from 'utils/use_selector';
@@ -12,26 +12,44 @@ import { MouseEvent, TouchEvent, useState } from 'react';
 import RecordTablePopoverContent from './RecordTablePopoverContent/RecordTablePopoverContent';
 import IappRecord from 'interfaces/IappRecord';
 import CustomPopover from 'UI/CustomPopover/CustomPopover';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import IActivityTableRow from 'interfaces/TableRows/IActivityTableRow';
+import IIappTableRow from 'interfaces/TableRows/IIappTableRow';
+import { Point, Polygon } from 'geojson';
 
 type PropTypes = {
   setID: string;
 };
 
 export const RecordTable = ({ setID }: PropTypes) => {
-  const onUserHoveredRecord = (row: UserRecord) => {
-    dispatch({
-      type: USER_HOVERED_RECORD,
-      payload: {
-        recordType: recordSetType,
-        id: recordSetType === RecordSetType.Activity ? row.activity_id : row.site_id,
-        row: row
+  const onUserHoveredRecord = (row: IActivityTableRow | IIappTableRow) => {
+    const { id, geom } = (() => {
+      if ('activity_id' in row) {
+        return {
+          id: row.activity_id,
+          geom: row.geometry[0] ?? undefined
+        };
+      } else if ('site_id' in row) {
+        return {
+          id: row.site_id,
+          geom: row.geometry ?? undefined
+        };
       }
-    });
+      return { id: '', geom: undefined };
+    })();
+    dispatch(
+      UserSettings.Map.setHoveredRecordset({
+        recordType: recordSetType,
+        id: id,
+        geom: geom
+      })
+    );
   };
   /**
    * @desc Set anchor point and display information for opening the Popover
    */
   const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord | IappRecord) => {
+    setGeom(row?.geometry?.[0] ?? row?.geometry);
     setRecordDisplayId(row.short_id ?? row.site_id ?? '');
     setRecordLookupId(row.activity_id ?? row.site_id ?? '');
     setAnchorEl(evt.currentTarget);
@@ -53,16 +71,11 @@ export const RecordTable = ({ setID }: PropTypes) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [recordDisplayId, setRecordDisplayId] = useState<string>('');
   const [recordLookupId, setRecordLookupId] = useState<string>('');
+  const [geom, setGeom] = useState<Polygon | Point>();
 
-  const mappedRows = unmappedRows?.map((row) => {
-    const unnestedRow =
-      recordSetType === RecordSetType.Activity ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row);
-    const mappedRow = {};
-    Object.keys(unnestedRow).forEach((key) => {
-      mappedRow[key] = unnestedRow[key];
-    });
-    return mappedRow;
-  });
+  const mappedRows = unmappedRows?.map((row) =>
+    recordSetType === RecordSetType.Activity ? getUnnestedFieldsForActivity(row) : getUnnestedFieldsForIAPP(row)
+  );
   const sortColumns = (() => {
     switch (recordSetType) {
       case RecordSetType.IAPP:
@@ -88,6 +101,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
           recordDisplayId={recordDisplayId}
           recordLookupId={recordLookupId}
           recordType={recordSetType}
+          geom={geom}
         />
       </CustomPopover>
       <RecordTableColumnSelect recordSetType={recordSetType} />
@@ -112,7 +126,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
                 </th>
               ))}
             </tr>
-            {mappedRows?.map((row: UserRecord) => {
+            {mappedRows?.map((row) => {
               return (
                 <tr
                   onContextMenu={(event) => {
@@ -122,7 +136,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
                   onMouseOver={() => onUserHoveredRecord(row)}
                   onFocus={() => onUserHoveredRecord(row)}
                   className="record_table_row"
-                  key={row?.activity_id ?? row?.site_id}
+                  key={'activity_id' in row ? row?.activity_id : row?.site_id}
                 >
                   {tableColumns.map((col) => (
                     <td
