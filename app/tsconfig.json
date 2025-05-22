@@ -29,7 +29,6 @@
     "isolatedModules": true,
     "noEmit": false,
     "types": [
-      "jest",
       "vite/client",
       "vitest/globals"
     ],
