@@ -7,9 +7,10 @@
  *  - Label Layer button Dependent on Map layer toggle state.
  *  - Can Edit name of Recordset
  *  - Mobile
- *     -
+ *     - Warning appears
+ *     - Non-cached recordsets don't render
  */
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within, act } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { Records } from './Records';
@@ -129,7 +130,7 @@ describe('Records.tsx', () => {
     expect(inputField).toBeDefined();
 
     await userEvent.type(inputField, 'Hello World');
-    userEvent.click(editButton);
+    await userEvent.click(editButton);
 
     waitFor(() => {
       expect(getByText(/Hello World/)).toBeDefined();
@@ -145,8 +146,9 @@ describe('Records.tsx', () => {
       );
       const initSets = queryAllByTestId('record-set');
       expect(initSets).toHaveLength(1);
-
-      store.dispatch(NetworkActions.offline());
+      act(() => {
+        store.dispatch(NetworkActions.offline());
+      });
       await waitFor(() => {
         expect(getByText(/Any recordsets that haven't been saved for offline/)).toBeDefined();
       });
