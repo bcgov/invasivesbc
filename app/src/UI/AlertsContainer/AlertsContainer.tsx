@@ -88,7 +88,7 @@ const AlertsContainer = () => {
           Clear All Alerts
         </Button>
       )}
-      {alerts.map(({ id, severity, subject, title, content }) => (
+      {alerts.slice(0, 5).map(({ id, severity, subject, title, content }) => (
         <Alert
           key={id}
           severity={severity}
