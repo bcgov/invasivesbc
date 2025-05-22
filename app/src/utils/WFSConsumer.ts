@@ -1,4 +1,3 @@
-import SLDParser from 'geostyler-sld-parser';
 import proj4 from 'proj4';
 import reproject from 'reproject';
 import encode from 'urlencode';
@@ -41,31 +40,21 @@ export const buildURLForDataBC = (
   return baseURL + layerName + paging + projection + encodedCQL;
 };
 
+<<<<<<< HEAD:app/src/utils/WFSConsumer.tsx
 const buildStylesURLForDataBC = (layerName: string) => {
   const baseURL = 'https://openmaps.gov.bc.ca/geo/pub/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&layers=';
   return baseURL + layerName;
 };
 
 const albersToGeog = (featureCollection: object[]) => {
+=======
+const albersToGeog = (featureCollection: Object[]) => {
+>>>>>>> e54550ea3 (remove unused functions from WFSConsumer.tsx, rename to *.ts):app/src/utils/WFSConsumer.ts
   try {
     return reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
   } catch (e) {
     console.error('error converting back to geog from albers:', e);
   }
-};
-
-export const getStylesDataFromBC: any = async (layerName: string) => {
-  /*if (Object.values(IndependentLayers).includes(layerName as any)) {
-    return {};
-  }*/
-  const stylesURL = buildStylesURLForDataBC(layerName);
-  const resp = await getHTTP(stylesURL);
-  if (resp !== null) {
-    const sldString = await resp.text();
-    const sldParser = new SLDParser();
-    return await sldParser.readStyle(sldString);
-  }
-  return null;
 };
 
 export const getDataFromDataBC: any = async (
