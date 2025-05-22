@@ -88,9 +88,6 @@ export const Records = () => {
     }
   }, [connected]);
 
-  if (!recordSets) {
-    return;
-  }
   return (
     <div id="records-container">
       <ul>
