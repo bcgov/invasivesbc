@@ -38,6 +38,7 @@ const RecordSetDetails = ({
       {isEditing ? (
         <input
           type="text"
+          data-testid="recordset-name-input"
           value={name}
           onChange={(evt) => handleNameChange(evt.target.value, recordsetKey)}
           onClick={(e) => e.stopPropagation()}
@@ -45,7 +46,7 @@ const RecordSetDetails = ({
       ) : (
         <p>{name || `New Recordset - ${recordSetType}`}</p>
       )}
-      <IconButton color="primary" onClick={toggleEdit}>
+      <IconButton data-testid="recordset-edit" color="primary" onClick={toggleEdit}>
         {isEditing ? <Check /> : <Edit />}
       </IconButton>
     </div>
