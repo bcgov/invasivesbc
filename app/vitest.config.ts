@@ -11,9 +11,11 @@ export default defineConfig((configEnv) =>
           reporter: ['text', 'json-summary', 'json'],
           reportOnFailure: true
         },
+        globals: true,
         exclude: ['packages/template/*'],
         setupFiles: ['./src/setupTests.ts'],
         deps: {
+          moduleDirectories: ['node_modules'],
           optimizer: {
             ssr: {
               enabled: true,
