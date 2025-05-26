@@ -1,8 +1,8 @@
 import localForage from 'localforage';
 import centroid from '@turf/centroid';
-import { Feature } from '@turf/helpers';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
+import { Feature } from 'geojson';
 import {
   IappRecordMode,
   RepositoryMetadata,

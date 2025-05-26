@@ -25,7 +25,7 @@ const wktConvert = (input: any) => {
 
 export const buildURLForDataBC = (
   layerName: string,
-  geoJSON: Object,
+  geoJSON: object,
   dataBCAcceptsGeometry: boolean,
   pageSize?: number,
   startIndex?: number
@@ -46,7 +46,7 @@ const buildStylesURLForDataBC = (layerName: string) => {
   return baseURL + layerName;
 };
 
-const albersToGeog = (featureCollection: Object[]) => {
+const albersToGeog = (featureCollection: object[]) => {
   try {
     return reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
   } catch (e) {
@@ -70,7 +70,7 @@ export const getStylesDataFromBC: any = async (layerName: string) => {
 
 export const getDataFromDataBC: any = async (
   layerName: string,
-  geoJSON: Object,
+  geoJSON: object,
   getSimplifiedJSON: any,
   dataBCAcceptsGeometry: boolean,
   pageSize?: number,
@@ -99,8 +99,10 @@ export const getDataFromDataBC: any = async (
 
     try {
       while (returnVal.length < totalInBox) {
-        const moreRecords = await subsequentFetches(startIndex);
-        returnVal.push(...moreRecords);
+        if (startIndex !== undefined) {
+          const moreRecords = await subsequentFetches(startIndex);
+          returnVal.push(...moreRecords);
+        }
       }
       return returnVal;
     } catch (e) {
@@ -112,7 +114,7 @@ export const getDataFromDataBC: any = async (
 
 export function* getDataFromDataBCv2(
   layerName: string,
-  geoJSON: Object,
+  geoJSON: object,
   dataBCAcceptsGeometry: boolean,
   pageSize?: number,
   startIndex?: number
@@ -136,8 +138,10 @@ export function* getDataFromDataBCv2(
 
     try {
       while (returnVal.length < totalInBox) {
-        const moreRecords = yield subsequentFetches(startIndex);
-        returnVal.push(...moreRecords);
+        if (startIndex !== undefined) {
+          const moreRecords = yield subsequentFetches(startIndex);
+          returnVal.push(...moreRecords);
+        }
       }
       return returnVal;
     } catch (e) {

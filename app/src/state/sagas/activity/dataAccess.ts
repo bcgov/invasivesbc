@@ -9,7 +9,8 @@ import {
   MAX_AREA,
   populateSpeciesArrays
 } from 'sharedAPI';
-import { FeatureCollection, kinks } from '@turf/turf';
+import { kinks } from '@turf/turf';
+import { FeatureCollection } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import {

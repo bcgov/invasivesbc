@@ -1,8 +1,8 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
+import { Feature } from 'geojson';
 import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { MOBILE } from 'state/build-time-config';
-import { Feature } from '@turf/helpers';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { CacheDownloadMode } from 'utils/record-cache';

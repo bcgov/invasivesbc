@@ -2,7 +2,6 @@ import { Box, Button, CircularProgress, createTheme, Theme, ThemeOptions, ThemeP
 import { Form } from '@rjsf/mui';
 import CoreForm from '@rjsf/core';
 import { createRef, Fragment, RefObject, useCallback, useEffect, useRef, useState } from 'react';
-import { validatorForActivity } from 'rjsf/business-rules/customValidation';
 import { SelectAutoCompleteContextProvider } from 'UI/Overlay/Records/Activity/form/SelectAutoCompleteContext';
 import ArrayFieldTemplate from 'rjsf/templates/ArrayFieldTemplate';
 import FieldTemplate from 'rjsf/templates/FieldTemplate';
@@ -24,6 +23,7 @@ import LinkedIdSelectAutoComplete from 'rjsf/widgets/LinkedIdSelectAutoComplete'
 import ErrorListTemplate from './ErrorListTemplate';
 import Activity from 'state/actions/activity/Activity';
 import { ActivitySubtype } from 'sharedAPI';
+import { validatorForActivity } from 'rjsf/business-rules/custom-validation/activity';
 
 const FormContainer = () => {
   const ref = useRef(0);

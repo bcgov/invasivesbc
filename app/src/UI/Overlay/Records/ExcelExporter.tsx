@@ -1,12 +1,13 @@
 import { Accordion, Button, MenuItem, Select, Tooltip } from '@mui/material';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { CSV_LINK_CLICKED, RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
 import DownloadIcon from '@mui/icons-material/Download';
 import Spinner from 'UI/Spinner/Spinner';
 import './ExcelExporter.css';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
+import { useSelector } from 'utils/use_selector';
 
 const ExcelExporter = (props) => {
   const dispatch = useDispatch();

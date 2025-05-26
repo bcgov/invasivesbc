@@ -6,14 +6,14 @@ import { FieldTemplateProps } from '@rjsf/utils';
 const FieldTemplate = (props: FieldTemplateProps) => {
   return (
     <WrapIfAdditional
-      classNames={props.classNames}
+      classNames={props.classNames ?? ''}
       disabled={props.disabled}
       id={props.id}
       label={props.label}
       onDropPropertyClick={props.onDropPropertyClick}
       onKeyChange={props.onKeyChange}
       readonly={props.readonly}
-      required={props.required}
+      required={!!props.required}
       schema={props.schema}
     >
       <FormControl

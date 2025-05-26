@@ -1,5 +1,5 @@
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
-import { Feature } from '@turf/helpers';
+import { Feature } from 'geojson';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';

@@ -1,4 +1,5 @@
-import { Feature, Point, Polygon, polygon } from '@turf/helpers';
+import { polygon } from '@turf/helpers';
+import { Feature, Point, Polygon } from 'geojson';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import polygonToLine from '@turf/polygon-to-line';
 import inside from '@turf/inside';
@@ -26,9 +27,11 @@ export function* getClosestWells(inputGeometry: Point | Polygon | LineString) {
   if (networkState.connected) {
     // if online, just get data from WFSonline consumer
     try {
-      const returnVal = yield getDataFromDataBCv2('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo, true);
-      if (returnVal?.features) {
-        return getWellsArray(returnVal.features, firstFeature);
+      if (bufferedGeo) {
+        const returnVal = yield getDataFromDataBCv2('WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW', bufferedGeo, true);
+        if (returnVal?.features) {
+          return getWellsArray(returnVal.features, firstFeature);
+        }
       }
     } catch (ex) {
       console.error('[getClosestWells]:', ex);

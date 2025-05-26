@@ -1,6 +1,7 @@
-import { Feature, FeatureCollection } from '@turf/helpers';
 import bbox from '@turf/bbox';
 import { SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import { Feature, FeatureCollection } from 'geojson';
+import MIGRATIONS from './migrations';
 import {
   IWellCacheProgressCallbackParameters,
   IWellRepositoryMetadata,
@@ -10,7 +11,6 @@ import {
 import WellData from 'interfaces/WellData';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { sqlite } from 'utils/sharedSQLiteInstance';
-import MIGRATIONS from './migrations';
 
 class SQLiteWellCacheService extends WellCacheService {
   private readonly CACHE_DB_NAME = 'well_cache.db';
@@ -39,7 +39,7 @@ class SQLiteWellCacheService extends WellCacheService {
     const wellsInArea = await this.cacheDB.query(
       //language=SQLite
       `SELECT GEOM
-       FROM  CACHED_WELLS
+       FROM CACHED_WELLS
        WHERE LATITUDE BETWEEN ? AND ?
          AND LONGITUDE BETWEEN ? AND ?;
       `,
@@ -238,10 +238,9 @@ class SQLiteWellCacheService extends WellCacheService {
       `INSERT INTO CACHED_WELLS(ID, GEOM, LATITUDE, LONGITUDE)
        VALUES (?, ?, ?, ?)
        ON CONFLICT(ID)
-         DO UPDATE SET
-          GEOM = excluded.GEOM,
-          LATITUDE = excluded.LATITUDE,
-          LONGITUDE = excluded.LONGITUDE`,
+         DO UPDATE SET GEOM      = excluded.GEOM,
+                       LATITUDE  = excluded.LATITUDE,
+                       LONGITUDE = excluded.LONGITUDE`,
       [id, stringifiedGeo, latLong[1], latLong[0]]
     );
   }

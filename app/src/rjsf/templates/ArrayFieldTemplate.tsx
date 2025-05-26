@@ -107,6 +107,10 @@ const DefaultArrayItem = (props: any) => {
 const DefaultFixedArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
   const TitleField = getTemplate('TitleFieldTemplate', props.registry, props.uiSchema);
 
+  if (props.uiSchema == null) {
+    throw new Error('uiSchema is required for a FixedArrayFieldTemplate');
+  }
+
   return (
     <fieldset className={props.className}>
       <ArrayFieldTitle
@@ -114,7 +118,7 @@ const DefaultFixedArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
         TitleField={TitleField}
         idSchema={props.idSchema}
         title={props.uiSchema['ui:title'] || props.title}
-        required={props.required}
+        required={!!props.required}
       />
 
       {(props.uiSchema['ui:description'] || props.schema.description) && (
@@ -138,6 +142,10 @@ const DefaultNormalArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
   const TitleField = getTemplate('TitleFieldTemplate', props.registry, props.uiSchema);
   const DescriptionField = getTemplate('DescriptionFieldTemplate', props.registry, props.uiSchema);
 
+  if (props.uiSchema == null) {
+    throw new Error('uiSchema is required for a NormalArrayFieldTemplate');
+  }
+
   return (
     <Box>
       <ArrayFieldTitle
@@ -145,7 +153,7 @@ const DefaultNormalArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
         TitleField={TitleField}
         idSchema={props.idSchema}
         title={props.uiSchema['ui:title'] || props.title}
-        required={props.required}
+        required={!!props.required}
       />
 
       {(props.uiSchema['ui:description'] || props.schema.description) && (
@@ -153,7 +161,7 @@ const DefaultNormalArrayFieldTemplate = (props: ArrayFieldTemplateProps) => {
           key={`array-field-description-${props.idSchema.$id}`}
           DescriptionField={DescriptionField}
           idSchema={props.idSchema}
-          description={props.uiSchema['ui:description'] || props.schema.description}
+          description={props.uiSchema['ui:description'] || (props.schema.description ?? '')}
         />
       )}
 

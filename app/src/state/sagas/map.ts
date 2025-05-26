@@ -1,4 +1,5 @@
-import { bboxPolygon, buffer, Feature } from '@turf/turf';
+import { bboxPolygon, buffer } from '@turf/turf';
+import { Feature } from 'geojson';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {

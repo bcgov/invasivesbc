@@ -1,6 +1,6 @@
 import { DBSQLiteValues, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import centroid from '@turf/centroid';
-import { Feature } from '@turf/helpers';
+import { Feature } from 'geojson';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
 import bbox from '@turf/bbox';
@@ -10,12 +10,12 @@ import IappTableRow from 'interfaces/IappTableRecord';
 import UserRecord from 'interfaces/UserRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import {
+  CacheDownloadMode,
   IappRecordMode,
-  RepositoryMetadata,
+  IQueryParams,
   RecordCacheService,
   RecordSetSourceMetadata,
-  CacheDownloadMode,
-  IQueryParams
+  RepositoryMetadata
 } from 'utils/record-cache/index';
 import { sqlite } from 'utils/sharedSQLiteInstance';
 import {
@@ -50,26 +50,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return SQLiteRecordCacheService._instance;
   }
 
-  private async initializeRecordCache(sqlite: SQLiteConnection) {
-    await sqlite.addUpgradeStatement(CACHE_DB_NAME, MIGRATIONS);
-
-    const ret = await sqlite.checkConnectionsConsistency();
-    const isConn = (await sqlite.isConnection(CACHE_DB_NAME, false)).result;
-
-    if (ret.result && isConn) {
-      this.cacheDB = await sqlite.retrieveConnection(CACHE_DB_NAME, false);
-    } else {
-      this.cacheDB = await sqlite.createConnection(CACHE_DB_NAME, false, 'no-encryption', MIGRATIONS.length, false);
-    }
-    try {
-      await this.cacheDB.open().catch((e) => {
-        console.error(e);
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   async addOrUpdateRepository(spec: RepositoryMetadata): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
@@ -102,25 +82,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
     } catch (error) {
       console.error(error);
     }
-  }
-
-  /**
-   * @desc Return handler, ensures keys are in lower snakecase
-   * @param {RepositoryMetadata | Partial<RepositoryMetadata> } record entry from Db
-   * @returns {RepositoryMetadata | Partial<RepositoryMetadata> } Parsed Entry.
-   */
-  private cacheMetadataTransformer(
-    record: Partial<RepositoryMetadata> | RepositoryMetadata
-  ): Partial<RepositoryMetadata> | RepositoryMetadata {
-    const primitiveKeys = ['SET_ID', 'SET_NAME', 'RECORD_SET_TYPE', 'STATUS'];
-    const resp: Partial<RepositoryMetadata> | RepositoryMetadata = {};
-    Object.entries(record).forEach(([key, value]) => {
-      if (!primitiveKeys.includes(key)) {
-        value = JSON.parse(value);
-      }
-      resp[key.toLowerCase()] = value;
-    });
-    return resp;
   }
 
   async checkForAbort(repositoryId: string): Promise<boolean> {
@@ -223,28 +184,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
     return { cachedCentroid, cachedGeoJson };
   }
 
-  /**
-   * @desc Gets the date of the most recently updated Activity Record. Used for determining Cache updates.
-   * @returns Most Recent Record Date.
-   */
-  protected async dateOfMostRecentRecord() {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    try {
-      return (
-        await this.cacheDB.query(
-          //language=SQLite
-          `SELECT MAX(DATE(DATE_CREATED)) as MAX_DATE
-           FROM CACHED_RECORDS
-           WHERE DATE_CREATED NOT NULL`
-        )
-      )?.values?.[0]?.['MAX_DATE'];
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
   async deleteCachedRecordsFromIds(idsToDelete: string[], recordSetType: RecordSetType): Promise<void> {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
@@ -303,46 +242,6 @@ class SQLiteRecordCacheService extends RecordCacheService {
        WHERE SET_ID = ?`,
       [repositoryId]
     );
-  }
-
-  protected async getAllCachedIds(): Promise<string[]> {
-    if (this.cacheDB == null) {
-      throw new Error(CACHE_UNAVAILABLE);
-    }
-    const idList: string[] = [];
-    let moreRows = true;
-    let offsetMultiplier = 0;
-    do {
-      const act =
-        (
-          await this.cacheDB.query(
-            //language=SQLite
-            `SELECT ID
-             FROM CACHED_RECORDS
-             ORDER BY ID ASC
-             LIMIT ? OFFSET ?`,
-            [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
-          )
-        )?.values ?? [];
-      const iapp =
-        (
-          await this.cacheDB.query(
-            //language=SQLite
-            `SELECT ID
-             FROM CACHED_IAPP_RECORDS
-             ORDER BY ID ASC
-             LIMIT ? OFFSET ?`,
-            [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
-          )
-        )?.values ?? [];
-
-      offsetMultiplier++;
-      moreRows = act.length + iapp.length !== 0;
-      act.forEach((set) => idList.push(set['ID']));
-      iapp.forEach((set) => idList.push(set['ID']));
-    } while (moreRows);
-
-    return idList;
   }
 
   /**
@@ -474,7 +373,9 @@ class SQLiteRecordCacheService extends RecordCacheService {
   }
 
   getRepository(repositoryId: string, columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>>;
+
   getRepository(repositoryId: string): Promise<RepositoryMetadata>;
+
   async getRepository(
     repositoryId: string,
     columns?: Array<keyof RepositoryMetadata>
@@ -503,7 +404,9 @@ class SQLiteRecordCacheService extends RecordCacheService {
   }
 
   listRepositories(columns: Array<keyof RepositoryMetadata>): Promise<Partial<RepositoryMetadata>[]>;
+
   listRepositories(): Promise<RepositoryMetadata[]>;
+
   async listRepositories(
     columns?: Array<keyof RepositoryMetadata>
   ): Promise<RepositoryMetadata[] | Partial<RepositoryMetadata>[]> {
@@ -606,13 +509,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
     const offset = params?.page != undefined && params?.limit != undefined ? params.page * params.limit : 0;
     const query =
       //language=SQLite
-      `SELECT ${columns} 
-       FROM ${table} 
-       ${where}
-       ${order}
-       LIMIT ${limit}
-       OFFSET ${offset}
-    `;
+      `SELECT ${columns}
+       FROM ${table} ${where} ${order}
+       LIMIT ${limit} OFFSET ${offset}
+      `;
 
     let results = (await this.cacheDB.query(query, values))?.values ?? [];
     if (spatialQueries.length > 0) {
@@ -679,7 +579,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
                                             CREATED_BY,
                                             UPDATED_BY,
                                             AGENCY)
-                 VALUES `;
+    VALUES `;
 
     query += values.map(() => entry).join(', ');
     query += `
@@ -748,7 +648,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
                                                  REGIONAL_DISTRICT,
                                                  REGIONAL_INVASIVE_SPECIES_ORGANIZATION,
                                                  INVASIVE_PLANT_MANAGEMENT_AREA)
-                 VALUES `;
+    VALUES `;
     query += values.map(() => entry).join(', ');
     query += 'ON CONFLICT (ID) DO NOTHING';
     await this.cacheDB.run(query, values.flat(), false);
@@ -765,6 +665,107 @@ class SQLiteRecordCacheService extends RecordCacheService {
        WHERE ID = ?`,
       [status, repositoryId]
     );
+  }
+
+  /**
+   * @desc Gets the date of the most recently updated Activity Record. Used for determining Cache updates.
+   * @returns Most Recent Record Date.
+   */
+  protected async dateOfMostRecentRecord() {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    try {
+      return (
+        await this.cacheDB.query(
+          //language=SQLite
+          `SELECT MAX(DATE(DATE_CREATED)) as MAX_DATE
+           FROM CACHED_RECORDS
+           WHERE DATE_CREATED NOT NULL`
+        )
+      )?.values?.[0]?.['MAX_DATE'];
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  protected async getAllCachedIds(): Promise<string[]> {
+    if (this.cacheDB == null) {
+      throw new Error(CACHE_UNAVAILABLE);
+    }
+    const idList: string[] = [];
+    let moreRows = true;
+    let offsetMultiplier = 0;
+    do {
+      const act =
+        (
+          await this.cacheDB.query(
+            //language=SQLite
+            `SELECT ID
+             FROM CACHED_RECORDS
+             ORDER BY ID ASC
+             LIMIT ? OFFSET ?`,
+            [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
+          )
+        )?.values ?? [];
+      const iapp =
+        (
+          await this.cacheDB.query(
+            //language=SQLite
+            `SELECT ID
+             FROM CACHED_IAPP_RECORDS
+             ORDER BY ID ASC
+             LIMIT ? OFFSET ?`,
+            [this.QUERY_LIMIT, this.QUERY_LIMIT * offsetMultiplier]
+          )
+        )?.values ?? [];
+
+      offsetMultiplier++;
+      moreRows = act.length + iapp.length !== 0;
+      act.forEach((set) => idList.push(set['ID']));
+      iapp.forEach((set) => idList.push(set['ID']));
+    } while (moreRows);
+
+    return idList;
+  }
+
+  private async initializeRecordCache(sqlite: SQLiteConnection) {
+    await sqlite.addUpgradeStatement(CACHE_DB_NAME, MIGRATIONS);
+
+    const ret = await sqlite.checkConnectionsConsistency();
+    const isConn = (await sqlite.isConnection(CACHE_DB_NAME, false)).result;
+
+    if (ret.result && isConn) {
+      this.cacheDB = await sqlite.retrieveConnection(CACHE_DB_NAME, false);
+    } else {
+      this.cacheDB = await sqlite.createConnection(CACHE_DB_NAME, false, 'no-encryption', MIGRATIONS.length, false);
+    }
+    try {
+      await this.cacheDB.open().catch((e) => {
+        console.error(e);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  /**
+   * @desc Return handler, ensures keys are in lower snakecase
+   * @param {RepositoryMetadata | Partial<RepositoryMetadata> } record entry from Db
+   * @returns {RepositoryMetadata | Partial<RepositoryMetadata> } Parsed Entry.
+   */
+  private cacheMetadataTransformer(
+    record: Partial<RepositoryMetadata> | RepositoryMetadata
+  ): Partial<RepositoryMetadata> | RepositoryMetadata {
+    const primitiveKeys = ['SET_ID', 'SET_NAME', 'RECORD_SET_TYPE', 'STATUS'];
+    const resp: Partial<RepositoryMetadata> | RepositoryMetadata = {};
+    Object.entries(record).forEach(([key, value]) => {
+      if (!primitiveKeys.includes(key)) {
+        value = JSON.parse(value);
+      }
+      resp[key.toLowerCase()] = value;
+    });
+    return resp;
   }
 
   /**

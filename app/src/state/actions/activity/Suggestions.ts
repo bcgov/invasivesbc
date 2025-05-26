@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { FeatureCollection, Geometry } from '@turf/helpers';
+import { FeatureCollection, Geometry } from 'geojson';
 import { ActivitySubtype } from 'sharedAPI';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 

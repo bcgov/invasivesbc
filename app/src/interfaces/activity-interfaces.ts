@@ -13,11 +13,11 @@ export interface IActivity {
   sync: {
     ready: boolean;
     status: string;
-    error: string;
+    error: string | null;
   };
   dateCreated: Date;
-  dateUpdated: Date;
-  formData: any;
+  dateUpdated: Date | null;
+  formData: unknown;
   formStatus: string;
   geometry: Feature[];
 }
