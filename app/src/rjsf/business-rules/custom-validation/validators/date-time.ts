@@ -160,6 +160,10 @@ function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValidator {
               if (Date.now() < Date.parse(dispersalPlantData.stop_time)) {
                 bioCollectionErrors?.stop_time?.addError(FUTURE_DATED);
               }
+              if (Date.parse(dispersalPlantData.start_time) > Date.parse(dispersalPlantData.stop_time)) {
+                bioCollectionErrors?.start_time?.addError('Start time must be before stop time');
+                bioCollectionErrors?.stop_time?.addError('Stop time must be after start time');
+              }
             }
           }
         }
@@ -175,13 +179,21 @@ function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValidator {
           if (dispersalErrorArray) {
             const dispersalError = dispersalErrorArray[i];
             const dispersalPlantData = formData.activity_subtype_data?.Monitoring_BiocontrolDispersal_Information[i];
-            dispersalError.start_time.__errors = [];
-            dispersalError.stop_time.__errors = [];
+            if (dispersalError.start_time !== undefined) {
+              dispersalError.start_time.__errors = [];
+            }
+            if (dispersalError.stop_time !== undefined) {
+              dispersalError.stop_time.__errors = [];
+            }
             if (Date.now() < Date.parse(dispersalPlantData.start_time)) {
-              dispersalError.start_time.addError(FUTURE_DATED);
+              dispersalError?.start_time?.addError(FUTURE_DATED);
             }
             if (Date.now() < Date.parse(dispersalPlantData.stop_time)) {
-              dispersalError.stop_time.addError(FUTURE_DATED);
+              dispersalError?.stop_time?.addError(FUTURE_DATED);
+            }
+            if (Date.parse(dispersalPlantData.start_time) > Date.parse(dispersalPlantData.stop_time)) {
+              dispersalError?.start_time?.addError('Start time must be before stop time');
+              dispersalError?.stop_time?.addError('Stop time must be after start time');
             }
           }
         }
@@ -234,6 +246,12 @@ function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValidator {
             if (Date.now() < Date.parse(thisData.stop_time)) {
               thisError?.stop_time?.addError(FUTURE_DATED);
             }
+            if (thisError?.start_time && thisError?.stop_time) {
+              if (Date.parse(thisData.start_time) > Date.parse(thisData.stop_time)) {
+                thisError?.start_time?.addError('Start time must be before stop time');
+                thisError?.stop_time?.addError('Stop time must be after start time');
+              }
+            }
           }
         }
         break;
@@ -260,7 +278,7 @@ function getDateAndTimeValidatorOther(activitySubtype: string): rjsfValidator {
         if (!IsFormDataChemicalTreatmentPlant(formData)) {
           return errors as FormValidation;
         }
-        
+
         if (errors.activity_subtype_data?.Treatment_ChemicalPlant_Information?.application_start_time) {
           errors.activity_subtype_data.Treatment_ChemicalPlant_Information.application_start_time.__errors = [];
         }
