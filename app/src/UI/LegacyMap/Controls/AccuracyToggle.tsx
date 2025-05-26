@@ -10,49 +10,31 @@ import AttributionIcon from '@mui/icons-material/Attribution';
 export const AccuracyToggle = () => {
   const dispatch = useDispatch();
   const accuracyToggle = useSelector((state) => state.Map.accuracyToggle);
-  const positionTracking = useSelector((state) => state.Map.positionTracking);
 
   const [show, setShow] = React.useState(false);
-
   const divRef = useRef<HTMLDivElement | null>(null);
 
-  if (!positionTracking) {
-    return <></>;
-  } else {
-    return (
-      <div ref={divRef} className={accuracyToggle ? 'map-btn-selected' : 'map-btn'}>
-        <Tooltip
-          open={show}
-          onMouseEnter={() => setShow(true)}
-          onMouseLeave={() => setShow(false)}
-          classes={{ tooltip: 'toolTip' }}
-          title={accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
-          placement="top-end"
-        >
-          <span>
-            <IconButton
-              className={'button'}
-              onClick={() => {
-                dispatch({ type: MAP_TOGGLE_ACCURACY });
-              }}
-            >
-              <AttributionIcon />
-            </IconButton>
-          </span>
-        </Tooltip>
-      </div>
-    );
-  }
-};
-
-export const AccuracyMarker = () => {
-  const accuracyToggle = useSelector((state) => state.Map.accuracyToggle);
-  const positionTracking = useSelector((state) => state.Map.positionTracking);
-  const userCoords = useSelector((state) => state.Map.userCoords);
-
-  if (accuracyToggle && positionTracking && userCoords?.long) {
-    return null;
-  } else {
-    return <></>;
-  }
+  return (
+    <div ref={divRef} className={accuracyToggle ? 'map-btn-selected' : 'map-btn'}>
+      <Tooltip
+        open={show}
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        classes={{ tooltip: 'toolTip' }}
+        title={accuracyToggle ? 'Hide Accuracy' : 'Show Accuracy'}
+        placement="top-end"
+      >
+        <span>
+          <IconButton
+            className={'button'}
+            onClick={() => {
+              dispatch({ type: MAP_TOGGLE_ACCURACY });
+            }}
+          >
+            <AttributionIcon />
+          </IconButton>
+        </span>
+      </Tooltip>
+    </div>
+  );
 };
