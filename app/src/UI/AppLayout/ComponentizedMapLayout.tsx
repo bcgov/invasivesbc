@@ -23,7 +23,6 @@ const ComponentizedMapLayout = () => {
             <OverlayContent />
           </Overlay>
           <ButtonContainer />
-          <LayerPicker />
         </MainMap>
       ) : (
         <Map>
