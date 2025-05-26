@@ -1,5 +1,5 @@
 import { Label, LabelOff, Layers, LayersClear, Palette } from '@mui/icons-material';
-import { Tooltip } from '@mui/material';
+import { IconButton, Tooltip } from '@mui/material';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 
 type PropTypes = {
@@ -28,23 +28,23 @@ const LpRecordSetOption = ({
             classes={{ tooltip: 'toolTip' }}
             title="Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time."
           >
-            <button onClick={() => toggleLabelVisibility(recordSet.id!)}>
+            <IconButton disabled={!recordSet.mapToggle} onClick={() => toggleLabelVisibility(recordSet.id!)}>
               {recordSet.labelToggle ? <Label /> : <LabelOff />}
-            </button>
+            </IconButton>
           </Tooltip>
           <Tooltip
             classes={{ tooltip: 'toolTip' }}
             title="Toggle viewing the layer on the map, and including these records in the Whats Here search results."
           >
-            <button onClick={() => toggleVisibility(recordSet.id!)}>
+            <IconButton onClick={() => toggleVisibility(recordSet.id!)}>
               {recordSet?.mapToggle ? <Layers /> : <LayersClear />}
-            </button>
+            </IconButton>
           </Tooltip>
           {canColour && (
             <Tooltip classes={{ tooltip: 'toolTip' }} title="Change the colour of this layer.">
-              <button onClick={() => cycleColour(recordSet.id!)}>
+              <IconButton onClick={() => cycleColour(recordSet.id!)}>
                 <Palette />
-              </button>
+              </IconButton>
             </Tooltip>
           )}
         </div>
