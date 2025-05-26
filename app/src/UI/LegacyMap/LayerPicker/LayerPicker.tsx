@@ -28,7 +28,12 @@ export const LayerPicker = () => {
 
   if (!showLayerPicker) {
     return (
-      <button id="layer-picker-closed-icon" className="layer-picker-pos" onClick={() => setShowLayerPicker(true)}>
+      <button
+        data-testid="lp-open"
+        id="layer-picker-closed-icon"
+        className="layer-picker-pos"
+        onClick={() => setShowLayerPicker(true)}
+      >
         <LayersIcon />
       </button>
     );
@@ -46,12 +51,12 @@ export const LayerPicker = () => {
             </>
           ) : (
             <>
-              <Switch data-testid="lp-accordion-toggle" checked={accordionMode} onChange={toggleLayerPickerAccordion} />
+              <Switch checked={accordionMode} onChange={toggleLayerPickerAccordion} />
               <span className="small">Expand</span>
             </>
           )}
         </div>
-        <IconButton onClick={closeLayerPicker}>
+        <IconButton data-testid="lp-close" onClick={closeLayerPicker}>
           <CloseIcon />
         </IconButton>
       </div>
