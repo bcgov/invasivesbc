@@ -24,7 +24,7 @@ function accessDescriptionMinChars(): rjsfValidator {
       return errors as FormValidation;
     }
 
-    if (formData.activity_data.access_description.length < 5) {
+    if (formData.activity_data.access_description.length > 0 && formData.activity_data.access_description.length < 5) {
       if (errors.activity_data?.access_description) {
         errors.activity_data.access_description.addError(
           'If there is an access description it must be 5 or more characters long.'
