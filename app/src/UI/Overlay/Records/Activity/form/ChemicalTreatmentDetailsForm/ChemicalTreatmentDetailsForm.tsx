@@ -140,7 +140,7 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
 
         //if no errors, perform calculations
         if (newErr.length < 1) {
-          const results = performCalculation(reportedArea, formDetails.form_data, codes);
+          const results = performCalculation(reportedArea, formDetails.form_data);
           setCalculationResults(results);
           onChange(
             {

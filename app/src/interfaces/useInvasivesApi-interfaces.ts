@@ -1,5 +1,4 @@
-import { FeatureCollection } from '@turf/turf';
-import { Feature } from 'geojson';
+import { FeatureCollection , Feature } from 'geojson';
 
 /**
  * Activity search filter criteria.

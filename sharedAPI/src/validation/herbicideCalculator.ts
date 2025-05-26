@@ -24,6 +24,12 @@ export const performCalculation = (area: number, formData: IGeneralFields): IGen
 
   if (tank_mix === false) {
     if (chemical_application_method_type === 'spray') {
+      if (herbicides == null) {
+        throw new Error('No herbicides provided');
+      }
+      if (invasive_plants == null) {
+        throw new Error('No invasive plants provided');
+      }
       //single herb single inv plant
       if (herbicides.length < 2 && invasive_plants.length < 2) {
         const percentages_of_treatment_on_species = [];
@@ -168,7 +174,7 @@ export const sSpecie_sLHerb_spray_usingProdAppRate = (
   product_application_rate_lha: number,
   amount_of_mix: number,
   delivery_rate_of_mix: number
-): Object => {
+): object => {
   let resultObj = {};
 
   if (!area || !product_application_rate_lha || !amount_of_mix || !delivery_rate_of_mix) {
@@ -215,7 +221,7 @@ export const mSpecie_sLHerb_spray_usingProdAppRate = (
   amount_of_mix: number,
   delivery_rate_of_mix: number,
   percentages_of_treatment_on_species: number[]
-): Object => {
+): object => {
   let resultObj = {};
 
   if (
@@ -281,7 +287,7 @@ export const sSpecie_sLHerb_spray_usingDilutionPercent = (
   amount_of_mix: number,
   dilution: number,
   area_treated_sqm: number
-): Object => {
+): object => {
   let resultObj = {};
 
   if (!area || !amount_of_mix || !dilution || !area_treated_sqm) {
@@ -323,7 +329,7 @@ export const mSpecie_sLHerb_spray_usingDilutionPercent = (
   dilution: number,
   area_treated_sqm: number,
   percentages_of_treatment_on_species: number[]
-): Object => {
+): object => {
   let resultObj = {};
 
   if (
@@ -388,7 +394,7 @@ export const mSpecie_sGHerb_spray_usingProdAppRate = (
   amount_of_mix: number,
   delivery_rate_of_mix: number,
   percentages_of_treatment_on_species: number[]
-): Object => {
+): object => {
   let resultObj = {};
 
   if (
@@ -456,7 +462,7 @@ export const mSpecie_sGHerb_spray_usingDilutionPercent = (
   dilution: number,
   area_treated_sqm: number,
   percentages_of_treatment_on_species: number[]
-): Object => {
+): object => {
   let resultObj = {};
 
   if (
@@ -517,8 +523,8 @@ export const sSpecie_sLHerb_direct_usingDilutionPercent = (
   amount_of_mix: number,
   dilution: number,
   area_treated_sqm: number,
-  delivery_rate_of_mix?: number
-): Object => {
+  _delivery_rate_of_mix?: number
+): object => {
   let resultObj = {};
 
   if (!area || !amount_of_mix || !dilution || !area_treated_sqm) {
@@ -576,6 +582,10 @@ export const mSpecie_mLGHerb_spray_usingProdAppRate = (
     outputSpecie.percent_area_covered = (outputSpecie.area_treated_sqm / area) * 100;
 
     outputSpecie.herbicides = [];
+
+    if (herbicides == undefined) {
+      throw new Error('herbicides is undefined');
+    }
 
     herbicides.forEach((herb, index) => {
       const outputHerb: any = {};

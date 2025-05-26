@@ -1,4 +1,4 @@
-import { Feature } from '@turf/helpers';
+import { Feature } from 'geojson';
 
 /**
  * @desc Cleaned up Well data
@@ -6,6 +6,7 @@ import { Feature } from '@turf/helpers';
 interface WellData {
   id: number;
   geometry: Feature;
+
   [key: PropertyKey]: any;
 }
 

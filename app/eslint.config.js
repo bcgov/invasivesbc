@@ -18,10 +18,16 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
       typescript: {
         alwaysTryTypes: true
       }
+    },
+    react: {
+      version: '18.3'
     }
   },
   rules: {
-    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-empty-object-type': 'error',
+    '@typescript-eslint/no-unsafe-function-type': 'error',
+    '@typescript-eslint/no-wrapper-object-types': 'error',
     '@typescript-eslint/no-unused-vars': [
       'error',
       {
@@ -35,7 +41,6 @@ export default tseslint.config(eslint.configs.recommended, ...tseslint.configs.r
         argsIgnorePattern: '^_' /* prefix a function argument with _ to indicate it is intentionally unused */
       }
     ],
-    '@typescript-eslint/ban-types': ['error', { types: { object: false, extendDefaults: true } }],
     'import/no-unresolved': 'error',
     'import/no-duplicates': 'error',
     'import/no-relative-packages': 'error',
