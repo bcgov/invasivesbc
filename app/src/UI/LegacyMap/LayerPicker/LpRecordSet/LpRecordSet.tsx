@@ -55,8 +55,6 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
     const newCustomRecordSets: UserRecordSet[] = [];
 
     filterRecordsetsByNetworkState(recordSets, userIsMobileAndOffline).forEach((recordSet) => {
-      console.dir(recordSet);
-
       if (defaultRecordSetIds.includes(recordSet)) {
         newDefaultRecordSets.push({ ...recordSets[recordSet], id: recordSet });
       } else {
