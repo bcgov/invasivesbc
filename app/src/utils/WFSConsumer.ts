@@ -40,16 +40,7 @@ export const buildURLForDataBC = (
   return baseURL + layerName + paging + projection + encodedCQL;
 };
 
-<<<<<<< HEAD:app/src/utils/WFSConsumer.tsx
-const buildStylesURLForDataBC = (layerName: string) => {
-  const baseURL = 'https://openmaps.gov.bc.ca/geo/pub/wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetStyles&layers=';
-  return baseURL + layerName;
-};
-
 const albersToGeog = (featureCollection: object[]) => {
-=======
-const albersToGeog = (featureCollection: Object[]) => {
->>>>>>> e54550ea3 (remove unused functions from WFSConsumer.tsx, rename to *.ts):app/src/utils/WFSConsumer.ts
   try {
     return reproject.reproject(featureCollection, proj4('EPSG:3005'), proj4.WGS84);
   } catch (e) {
@@ -66,10 +57,6 @@ export const getDataFromDataBC: any = async (
   startIndex?: number
 ) => {
   const totalInBox = 0;
-
-  /*if (Object.values(IndependentLayers).includes(layerName as any)) {
-    return [];
-  }*/
 
   let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
 
