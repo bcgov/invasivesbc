@@ -10,7 +10,6 @@ import {
   LAYER_Z_MID,
   MAP_DEFINITIONS
 } from 'UI/LegacyMap/helpers/functional/layer-definitions';
-import { Context } from 'utils/tile-cache/context';
 import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
@@ -49,6 +48,7 @@ import { toggleLayerOnBool } from 'UI/LegacyMap/helpers/functional/utility-funct
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import { sha1 } from 'utils/sha1';
+import { StartupContext } from 'UI/StartupCoordinator/StartupCoordinator';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -56,7 +56,7 @@ import { sha1 } from 'utils/sha1';
 
  */
 export const Map = ({ children }) => {
-  const tileCache = useContext(Context);
+  const { tileService: tileCache } = useContext(StartupContext);
 
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
 

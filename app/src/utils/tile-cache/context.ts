@@ -1,4 +1,3 @@
-import React from 'react';
 import { TileCacheService } from 'utils/tile-cache/index';
 import { Platform, PLATFORM } from 'state/build-time-config';
 import { SQLiteTileCacheService } from 'utils/tile-cache/sqlite-cache';
@@ -13,6 +12,4 @@ class TileCacheServiceFactory {
   }
 }
 
-const Context = React.createContext<TileCacheService | null>(null);
-
-export { TileCacheServiceFactory, Context };
+export { TileCacheServiceFactory };
