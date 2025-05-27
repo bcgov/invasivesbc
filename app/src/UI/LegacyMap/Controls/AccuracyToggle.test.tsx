@@ -8,7 +8,7 @@ const configurationReducer =
   () =>
   (
     state = {
-      accuracyToggle: false,
+      accuracyToggle: true,
       positionTracking: true
     }
   ) =>
@@ -22,7 +22,7 @@ const createMockStore = () =>
 
 const store = createMockStore();
 
-describe('NewRecord.tsx', () => {
+describe('AccuracyToggle.tsx', () => {
   it('should toggle className with accuracyToggle state', async () => {
     const { container, getByRole } = render(
       <Provider store={store}>
