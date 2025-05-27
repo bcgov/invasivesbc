@@ -1,0 +1,128 @@
+import { configureStore } from '@reduxjs/toolkit';
+import { render, waitFor, within } from '@testing-library/react';
+import { LandingComponent } from './Landing';
+import { Provider } from 'react-redux';
+import userEvent from '@testing-library/user-event';
+
+const createMockAuthReducer =
+  (isAuth: boolean) =>
+  (
+    state = {
+      authenticated: isAuth,
+      loggedInOrWorkingOffline: isAuth,
+      workingOffline: false,
+      username: 'johnsmith',
+      displayName: 'John Smith',
+      email: 'JSmith@mail.ca',
+      roles: isAuth ? [{ role_id: 1, role_name: 'Test Role', role_description: 'Testing Role' }] : []
+    }
+  ) =>
+    state;
+
+const mockUserInfoReducer = (
+  state = {
+    loaded: true,
+    activated: false
+  }
+) => state;
+
+const mockNetworkReducer = (
+  state = {
+    connected: true
+  }
+) => state;
+
+const mockConfigurationReducer = (
+  state = {
+    current: {
+      IOS_APP_STORE_URL: 'http://localhost:3002',
+      ANDROID_APP_STORE_URL: 'http://localhost:3002'
+    }
+  }
+) => state;
+const createMockStore = (auth: boolean) =>
+  configureStore({
+    reducer: {
+      Auth: createMockAuthReducer(auth),
+      UserInfo: mockUserInfoReducer,
+      Network: mockNetworkReducer,
+      Configuration: mockConfigurationReducer
+    }
+  });
+
+describe('Landing.tsx', async () => {
+  it('should Render and display user details + roles', () => {
+    const { getByText } = render(
+      <Provider store={createMockStore(true)}>
+        <LandingComponent />
+      </Provider>
+    );
+    waitFor(() => {
+      expect(getByText(/John Smith/i)).toBeDefined();
+      expect(getByText(/Test Role/i)).toBeDefined();
+      expect(getByText(/JSmith@mail.ca/i)).toBeDefined();
+    });
+  });
+
+  it('should Render with URLs', () => {
+    vi.mock('state/build-time-config', () => ({
+      MOBILE: true
+    }));
+    const { getByText } = render(
+      <Provider store={createMockStore(true)}>
+        <LandingComponent />
+      </Provider>
+    );
+    expect(getByText('Informational Links')).toBeDefined();
+  });
+
+  it('should present call to action to "request access" if not authenticated', async () => {
+    const { getByText, queryAllByRole } = render(
+      <Provider store={createMockStore(false)}>
+        <LandingComponent />
+      </Provider>
+    );
+    await waitFor(() => {
+      expect(getByText(/IF YOU ARE A NEW USER/i)).toBeDefined();
+      expect(
+        getByText(/To gain full access to the InvasivesBC application, please submit an access request./i)
+      ).toBeDefined();
+      const requestAccessButton = queryAllByRole('button').find(
+        (button) => within(button).queryByText('Request Access') !== null
+      );
+      expect(requestAccessButton).toBeTruthy();
+    });
+    const requestAccessButton = queryAllByRole('button').find(
+      (button) => within(button).queryByText('Request Access') !== null
+    );
+    await userEvent.click(requestAccessButton!);
+  });
+});
+
+describe('[Web] Landing.tsx', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+  afterEach(() => {
+    vi.clearAllMocks();
+    vi.resetModules();
+  });
+
+  it('should Render with Download Link section', async () => {
+    vi.doMock('state/build-time-config', () => ({
+      MOBILE: false
+    }));
+
+    // Dynamically Load Component again to have the mock values for this pull.
+    const { LandingComponent } = await import('./Landing');
+    const { getByText } = render(
+      <Provider store={createMockStore(true)}>
+        <LandingComponent />
+      </Provider>
+    );
+    await waitFor(() => {
+      expect(getByText(/Download the Mobile app/i)).toBeDefined();
+    });
+  });
+});
