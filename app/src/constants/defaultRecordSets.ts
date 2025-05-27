@@ -1,5 +1,6 @@
 import { ActivityStatus } from 'sharedAPI';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { MOBILE } from 'state/build-time-config';
 
 const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
   '1': {
@@ -67,5 +68,17 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE
   }
 };
+
+if (MOBILE) {
+  defaultRecordSets['4'] = {
+    recordSetType: RecordSetType.Activity,
+    id: '4',
+    idList: [],
+    recordSetName: 'All Unsynced Offline Activities',
+    cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
+    drawOrder: 4,
+    mapToggle: true // by default
+  };
+}
 
 export default defaultRecordSets;
