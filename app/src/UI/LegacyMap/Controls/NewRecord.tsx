@@ -1,15 +1,15 @@
-import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
+import { useRef, useState } from 'react';
 import { IconButton, Tooltip } from '@mui/material';
 import FiberNewIcon from '@mui/icons-material/FiberNew';
 import 'UI/Global.css';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import { useDispatch } from 'utils/use_selector';
 
 export const NewRecord = () => {
   const dispatch = useDispatch();
   const divRef = useRef();
 
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
 
   return (
     <div ref={divRef} className="map-btn">

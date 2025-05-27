@@ -6,8 +6,10 @@ import { ButtonContainer } from 'UI/LegacyMap/Controls/ButtonContainer';
 import { LayerPicker } from 'UI/LegacyMap/LayerPicker/LayerPicker';
 import CommonPrefixComponents from 'UI/AppLayout/Components/CommonPrefixComponents';
 import CommonPostfixComponents from 'UI/AppLayout/Components/CommonPostfixComponents';
+import { useSelector } from 'utils/use_selector';
 
 const LegacyMapLayout = () => {
+  const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   return (
     <>
       <CommonPrefixComponents />
@@ -17,7 +19,7 @@ const LegacyMapLayout = () => {
           <OverlayContent />
         </Overlay>
         <ButtonContainer />
-        <LayerPicker />
+        {loggedInOrWorkingOffline && <LayerPicker />}
       </Map>
 
       <CommonPostfixComponents />

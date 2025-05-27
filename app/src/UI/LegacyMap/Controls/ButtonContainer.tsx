@@ -21,13 +21,17 @@ export const ButtonContainer = () => {
       {loggedInOrWorkingOffline && (
         <>
           <FindMeToggle />
-          {positionTracking && <TrackingButtonsContainer />}
+          {positionTracking && (
+            <>
+              <TrackingButtonsContainer />
+              <AccuracyToggle />
+            </>
+          )}
 
           <WebOnly>
             <LegendsButton />
           </WebOnly>
 
-          <AccuracyToggle />
           <WhatsHereButton />
           {writePrivilege.length > 0 && <NewRecord />}
 

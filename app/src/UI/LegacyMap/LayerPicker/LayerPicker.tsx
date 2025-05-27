@@ -23,16 +23,17 @@ export const LayerPicker = () => {
   const toggleLayerPickerAccordion = () => dispatch(UserSettings.toggleLayerPickerAccordion());
   const [pickerPath, setPickerPath] = useState<LpModules>(LpModules.Init);
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
-  const isAuth = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   const accordionMode = useSelector((state) => state.UserSettings.layerPickerIsAccordion);
   const dispatch = useDispatch();
 
-  if (!isAuth) {
-    return;
-  }
   if (!showLayerPicker) {
     return (
-      <button id="layer-picker-closed-icon" className="layer-picker-pos" onClick={() => setShowLayerPicker(true)}>
+      <button
+        data-testid="lp-open"
+        id="layer-picker-closed-icon"
+        className="layer-picker-pos"
+        onClick={() => setShowLayerPicker(true)}
+      >
         <LayersIcon />
       </button>
     );
@@ -55,7 +56,7 @@ export const LayerPicker = () => {
             </>
           )}
         </div>
-        <IconButton onClick={closeLayerPicker}>
+        <IconButton data-testid="lp-close" onClick={closeLayerPicker}>
           <CloseIcon />
         </IconButton>
       </div>

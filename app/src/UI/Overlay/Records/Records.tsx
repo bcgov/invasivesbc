@@ -13,26 +13,6 @@ import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState
 import Activity from 'state/actions/activity/Activity';
 
 export const Records = () => {
-  const recordSets = useSelector((state) => state.UserSettings.recordSets);
-  const defaultRecordSetIds = Object.values(RecordSetId);
-  const defaultRecordSetTypes = defaultRecordSetIds
-    .map((key) => recordSets[parseInt(key)]?.recordSetName)
-    .filter((value) => value !== undefined);
-
-  const connected = useSelector((state) => state.Network.connected);
-  const [highlightedSet, setHighlightedSet] = useState<string | null>();
-
-  const history = useHistory();
-  const dispatch = useDispatch();
-
-  const handleNameChange = (val: string, setKey: string) =>
-    dispatch(UserSettings.RecordSet.set({ recordSetName: val }, setKey));
-
-  useEffect(() => {
-    // make sure the displayed status accurately reflects the contents of the cache
-    dispatch(UserSettings.RecordSet.syncCacheStatusWithCacheService());
-  }, []);
-
   //Record set handlers:
   const handleToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -75,9 +55,30 @@ export const Records = () => {
     );
   };
 
+  const handleNameChange = (val: string, setKey: string) =>
+    dispatch(UserSettings.RecordSet.set({ recordSetName: val }, setKey));
+
   const highlightSet = (set: string) => setHighlightedSet(set);
   const unHighlightSet = () => setHighlightedSet(null);
+
+  const history = useHistory();
+  const dispatch = useDispatch();
+
+  const recordSets = useSelector((state) => state.UserSettings.recordSets);
+  const connected = useSelector((state) => state.Network.connected);
+
+  const [highlightedSet, setHighlightedSet] = useState<string | null>();
   const [userIsMobileAndOffline, setUserIsMobileAndOffline] = useState(false);
+
+  const defaultRecordSetIds = Object.values(RecordSetId);
+  const defaultRecordSetTypes = defaultRecordSetIds
+    .map((key) => recordSets[parseInt(key)]?.recordSetName)
+    .filter((value) => value !== undefined);
+
+  useEffect(() => {
+    // make sure the displayed status accurately reflects the contents of the cache
+    dispatch(UserSettings.RecordSet.syncCacheStatusWithCacheService());
+  }, []);
 
   useEffect(() => {
     if (MOBILE && !connected) {
@@ -86,10 +87,6 @@ export const Records = () => {
       setUserIsMobileAndOffline(false);
     }
   }, [connected]);
-
-  if (!recordSets) {
-    return;
-  }
 
   return (
     <div id="records-container">
@@ -103,6 +100,7 @@ export const Records = () => {
             onMouseOut={unHighlightSet}
             onBlur={unHighlightSet}
             className="record-set-option"
+            data-testid="record-set"
             style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
           >
             <RecordSetDetails
@@ -111,7 +109,7 @@ export const Records = () => {
               handleNameChange={handleNameChange}
               recordSetType={recordSets[set].recordSetType}
               recordsetKey={set}
-            ></RecordSetDetails>
+            />
 
             <RecordSetControl
               isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
@@ -132,12 +130,14 @@ export const Records = () => {
           <Button
             onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.Activity))}
             className={'new-recordset-button'}
+            data-testid="add-activity-layer"
           >
             Add Layer of Records
           </Button>
           <Button
             onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.IAPP))}
             className={'new-recordset-button'}
+            data-testid="add-iapp-layer"
           >
             Add IAPP Layer of Records
           </Button>

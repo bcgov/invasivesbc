@@ -58,6 +58,7 @@ const RecordSetControl = ({
               disabled={!recordset?.mapToggle}
               onClick={(e) => onClickToggleLabel(recordsetKey, e)}
               color="primary"
+              data-testid="label-toggle"
             >
               {recordset?.labelToggle && recordset?.mapToggle ? <Label /> : <LabelOff />}
             </IconButton>
@@ -65,7 +66,7 @@ const RecordSetControl = ({
         </Tooltip>
 
         <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
-          <IconButton onClick={(e) => onClickToggleLayer(recordsetKey, e)} color="primary">
+          <IconButton data-testid="layer-toggle" onClick={(e) => onClickToggleLayer(recordsetKey, e)} color="primary">
             {recordset?.mapToggle ? <Layers /> : <LayersClear />}
           </IconButton>
         </Tooltip>
@@ -73,12 +74,20 @@ const RecordSetControl = ({
         {!isDefaultRecordset && (
           <>
             <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
-              <IconButton onClick={(e) => onClickCycleColour(recordsetKey, e)} color="primary">
+              <IconButton
+                data-testid="cycle-color"
+                onClick={(e) => onClickCycleColour(recordsetKey, e)}
+                color="primary"
+              >
                 <ColorLens />
               </IconButton>
             </Tooltip>
             <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
-              <IconButton onClick={(e) => onClickDeleteRecordSet(recordsetKey, e)} color="primary">
+              <IconButton
+                data-testid="delete-recordset"
+                onClick={(e) => onClickDeleteRecordSet(recordsetKey, e)}
+                color="primary"
+              >
                 <Delete />
               </IconButton>
             </Tooltip>

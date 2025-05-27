@@ -29,8 +29,8 @@
     "isolatedModules": true,
     "noEmit": false,
     "types": [
-      "jest",
-      "vite/client"
+      "vite/client",
+      "vitest/globals"
     ],
     "typeRoots": [
       "node_modules/@types",

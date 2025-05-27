@@ -61,7 +61,7 @@ li > hr {
     overflow-y: auto;
   }
 
-  * > button {
+  * > button:not(:disabled) {
     color: black;
   }
 }
