@@ -2,7 +2,7 @@ import { all, put, select, takeEvery } from 'redux-saga/effects';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
@@ -84,33 +84,21 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   const defaultRecordSet = defaultRecordSets;
   // add offline activities for mobile
-  if (MOBILE) {
-    defaultRecordSet['4'] = {
-      recordSetType: RecordSetType.Activity,
-      id: '4',
-      idList: [],
-      recordSetName: 'All Unsynced Offline Activities',
-      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
-      drawOrder: 4,
-      mapToggle: true // by default
-    };
-
-    if (!recordSets || Object.keys(recordSets).length === 0) {
-      // RecordSets are empty, try to recover whats in the local database
-      const service = yield RecordCacheServiceFactory.getPlatformInstance();
-      const repos = yield service.listRepositories(['filter_objects', 'status', 'record_set_type', 'set_id']);
-      repos.forEach((repo: RepositoryMetadata) => {
-        // recordSet is immutable, so append it to defaultRecordSet
-        if (repo.status === UserRecordCacheStatus.CACHED && !defaultRecordSet[repo.set_id]) {
-          const backedUpRecordSet = UserSettings.RecordSet.createDefaultRecordset(repo.record_set_type, repo?.set_id);
-          backedUpRecordSet.tableFilters = repo?.filter_objects?.tableFilters;
-          backedUpRecordSet.id = repo?.set_id;
-          backedUpRecordSet.cacheMetadataStatus = repo.status;
-          backedUpRecordSet.recordSetName = repo.set_name ?? '';
-          defaultRecordSet[repo.set_id] = backedUpRecordSet;
-        }
-      });
-    }
+  if (MOBILE && (!recordSets || Object.keys(recordSets).length === 0)) {
+    // RecordSets are empty, try to recover whats in the local database
+    const service = yield RecordCacheServiceFactory.getPlatformInstance();
+    const repos = yield service.listRepositories(['filter_objects', 'status', 'record_set_type', 'set_id']);
+    repos.forEach((repo: RepositoryMetadata) => {
+      // recordSet is immutable, so append it to defaultRecordSet
+      if (repo.status === UserRecordCacheStatus.CACHED && !defaultRecordSet[repo.set_id]) {
+        const backedUpRecordSet = UserSettings.RecordSet.createDefaultRecordset(repo.record_set_type, repo?.set_id);
+        backedUpRecordSet.tableFilters = repo?.filter_objects?.tableFilters;
+        backedUpRecordSet.id = repo?.set_id;
+        backedUpRecordSet.cacheMetadataStatus = repo.status;
+        backedUpRecordSet.recordSetName = repo.set_name ?? '';
+        defaultRecordSet[repo.set_id] = backedUpRecordSet;
+      }
+    });
   }
 
   if (action?.payload?.offlineAPIDocsDisplayName) {
