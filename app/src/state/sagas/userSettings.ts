@@ -1,9 +1,8 @@
 import { all, put, select, takeEvery } from 'redux-saga/effects';
-import { ActivityStatus } from 'sharedAPI';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import Activity from 'state/actions/activity/Activity';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
@@ -11,6 +10,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { MOBILE } from 'state/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RepositoryMetadata } from 'utils/record-cache';
+import defaultRecordSets from 'constants/defaultRecordSets';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -81,73 +81,8 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   if (!UserSettings.InitState.get.match(action)) {
     return;
   }
-  const defaultRecordSet: Record<PropertyKey, Partial<UserRecordSet>> = {
-    '1': {
-      id: '1',
-      idList: [],
-      recordSetType: RecordSetType.Activity,
-      recordSetName: 'My Drafts',
-      // add draft key
-      tableFilters: [
-        {
-          id: '1',
-          field: 'form_status',
-          filterType: 'tableFilter',
-          filter: ActivityStatus.DRAFT,
-          operator: 'CONTAINS',
-          operator2: 'AND'
-        }
-      ],
-      colorScheme: {
-        Activity_Biocontrol_Collection: '#845ec2',
-        Activity_Biocontrol_Release: '#845ec2',
-        Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant: '#845ec2',
-        Activity_Monitoring_BiocontrolRelease_TerrestrialPlant: '#845ec2',
-        Activity_Monitoring_ChemicalTerrestrialAquaticPlant: '#2138e0',
-        Activity_Monitoring_MechanicalTerrestrialAquaticPlant: '#2138e0',
-        Activity_Observation_PlantAquatic: '#399c3e',
-        Activity_Observation_PlantTerrestrial: '#399c3e',
-        Activity_Treatment_ChemicalPlantAquatic: '#c6c617',
-        Activity_Treatment_ChemicalPlantTerrestrial: '#c6c617',
-        Activity_Treatment_MechanicalPlantAquatic: '#c6c617',
-        Activity_Treatment_MechanicalPlantTerrestrial: '#c6c617'
-      },
-      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
-      drawOrder: 1
-    },
-    '2': {
-      id: '2',
-      idList: [],
-      recordSetType: RecordSetType.Activity,
-      recordSetName: 'All InvasivesBC Activities',
-      colorScheme: {
-        Activity_Biocontrol_Collection: '#845ec2',
-        Activity_Biocontrol_Release: '#845ec2',
-        Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant: '#845ec2',
-        Activity_Monitoring_BiocontrolRelease_TerrestrialPlant: '#845ec2',
-        Activity_Monitoring_ChemicalTerrestrialAquaticPlant: '#2138e0',
-        Activity_Monitoring_MechanicalTerrestrialAquaticPlant: '#2138e0',
-        Activity_Observation_PlantAquatic: '#399c3e',
-        Activity_Observation_PlantTerrestrial: '#399c3e',
-        Activity_Treatment_ChemicalPlantAquatic: '#c6c617',
-        Activity_Treatment_ChemicalPlantTerrestrial: '#c6c617',
-        Activity_Treatment_MechanicalPlantAquatic: '#c6c617',
-        Activity_Treatment_MechanicalPlantTerrestrial: '#c6c617'
-      },
-      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
-      drawOrder: 2
-    },
-    '3': {
-      recordSetType: RecordSetType.IAPP,
-      id: '3',
-      idList: [],
-      recordSetName: 'All IAPP Records',
-      color: '#21f34f',
-      drawOrder: 3,
-      cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE
-    }
-  };
 
+  const defaultRecordSet = defaultRecordSets;
   // add offline activities for mobile
   if (MOBILE) {
     defaultRecordSet['4'] = {
@@ -178,7 +113,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
     }
   }
 
-  if (action.payload && action.payload.offlineAPIDocsDisplayName) {
+  if (action?.payload?.offlineAPIDocsDisplayName) {
     yield put(APIDocs.load({ displayName: action.payload.offlineAPIDocsDisplayName }));
   } else {
     yield put(APIDocs.getRequest());
