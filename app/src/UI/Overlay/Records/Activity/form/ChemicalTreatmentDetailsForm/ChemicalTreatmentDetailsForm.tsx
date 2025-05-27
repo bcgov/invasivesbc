@@ -29,10 +29,10 @@ import CalculationResultsTable from './Components/single-objects/CalculationResu
 import { useSelector } from 'react-redux';
 
 type PropTypes = {
-  activitySubType: Record<PropertyKey, any>;
+  activitySubType: Record<PropertyKey, unknown>;
   disabled: boolean;
-  form_data: Record<PropertyKey, any>;
-  onChange: (form_data: Record<PropertyKey, any>, callback: Function | null) => void;
+  form_data: Record<PropertyKey, unknown>;
+  onChange: (form_data: Record<PropertyKey, unknown>, callback: (() => void) | null) => void;
 };
 
 const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, onChange }: PropTypes) => {
@@ -42,8 +42,8 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
     dialogTitle: '',
     dialogContentText: undefined
   });
-  const [calculationResults, setCalculationResults] = useState<Record<PropertyKey, any> | null>();
-  const [localErrors, setLocalErrors] = useState<any[]>([]);
+  const [calculationResults, setCalculationResults] = useState<Record<PropertyKey, unknown> | null>();
+  const [localErrors, setLocalErrors] = useState<unknown[]>([]);
   const [reportedArea, setReportedArea] = useState(0);
   const [formDetails, setFormDetails] = useState<IChemicalDetailsContextformDetails>({
     form_data: { ...form_data.activity_subtype_data.chemical_treatment_details }
@@ -57,9 +57,9 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
    * @desc Grabs codes from the apiSpec tailored to ChemicalTreatmentDetails sections
    * @returns {Record<PropertyKey, any>[]}
    */
-  const createCodes = (): Record<PropertyKey, any[]> => {
+  const createCodes = (): Record<PropertyKey, unknown[]> => {
     const sharedcodes = apiDocsWithViewOptions;
-    const newCodes: Record<PropertyKey, any> = {};
+    const newCodes: Record<PropertyKey, unknown> = {};
     for (const key of Object.keys(sharedcodes)) {
       newCodes[key] = sharedcodes[key].options.map(({ value, label }) => ({
         value,
@@ -73,14 +73,14 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
    * @desc Creates an object containing all codesets used by the component
    * @returns {Record<PropertyKey, any>}
    */
-  const createDictionary = (): Record<PropertyKey, any> => {
-    const herbicideDictionary: Record<PropertyKey, any> = {};
+  const createDictionary = (): Record<PropertyKey, unknown> => {
+    const herbicideDictionary: Record<PropertyKey, unknown> = {};
     [...codes.liquid_herbicide_code, ...codes.granular_herbicide_code].forEach(
       (item) => (herbicideDictionary[item.value] = item.label)
     );
 
     const chemicalMethodsDirect = codes.chemical_method_direct;
-    const chemicalApplicationMethodChoices: any[] = formDetails.form_data.tank_mix
+    const chemicalApplicationMethodChoices: unknown[] = formDetails.form_data.tank_mix
       ? [...codes.chemical_method_spray]
       : [...codes.chemical_method_spray, ...chemicalMethodsDirect];
     const chemical_method_direct_code_values: string[] = chemicalMethodsDirect.map((code) => code.value);
@@ -94,11 +94,11 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
 
   const subtypeSchema = 'ChemicalTreatment_Species_Codes';
   const apiDocsWithViewOptions = useSelector(
-    (state: Record<PropertyKey, any>) =>
+    (state: Record<PropertyKey, unknown>) =>
       state.UserSettings.apiDocsWithViewOptions.components?.schemas[subtypeSchema].properties
   );
-  const codes: Record<PropertyKey, any> = createCodes();
-  const codeDictionary: Record<PropertyKey, any[]> = createDictionary();
+  const codes: Record<PropertyKey, unknown> = createCodes();
+  const codeDictionary: Record<PropertyKey, unknown[]> = createDictionary();
 
   // After initial load, setFormDetails to contain all needed keys
   useEffect(() => {
@@ -110,7 +110,7 @@ const ChemicalTreatmentDetailsForm = ({ activitySubType, disabled, form_data, on
       disabled: disabled,
       errors: []
     });
-  }, []);
+  }, [disabled]);
 
   useEffect(() => {
     setReportedArea(form_data.activity_data.reported_area);
