@@ -11,15 +11,18 @@
 import { act, render, waitFor } from '@testing-library/react';
 import { userEvent } from '@testing-library/user-event';
 import { Provider } from 'react-redux';
-import setupStore from 'state/store';
-import { CONFIG } from 'state/config';
 import AlertsContainer from './AlertsContainer';
 import AlertMessage from 'interfaces/AlertMessage';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
+import { createAlertsAndPromptsReducer } from 'state/reducers/alertsAndPrompts';
+import { configureStore } from '@reduxjs/toolkit';
 
-// Setup default Redux store for tests
-const { store } = setupStore(CONFIG);
+const createMockStore = () =>
+  configureStore({
+    reducer: { AlertsAndPrompts: createAlertsAndPromptsReducer() }
+  });
+const store = createMockStore();
 
 const testAlerts: Array<AlertMessage> = [
   {
