@@ -1,8 +1,8 @@
 import { createAction } from '@reduxjs/toolkit';
+import { Point, Polygon } from 'geojson';
 import RecordSet from './RecordSet';
 import Boundary from 'interfaces/Boundary';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
-import { Point, Polygon } from 'geojson';
 
 interface IHoverRecordset {
   recordType: RecordSetType;
