@@ -38,7 +38,6 @@ const LpLayers = () => {
   const WmsLayers = useSelector((state) => state.Map?.simplePickerLayers2);
   const KmlLayers = useSelector((state) => state.Map?.serverBoundaries);
   const drawnLayers = useSelector((state) => state.Map?.clientBoundaries);
-
   return (
     <div id="lp-layers">
       <h3>
@@ -109,7 +108,7 @@ const LpLayers = () => {
           <EmptyCollection text={'You do not have any custom layers'} />
         )}
         <div className="control">
-          <button className="create-custom-layers" onClick={handleCreateCustom}>
+          <button data-testid="custom-layer-button" className="create-custom-layers" onClick={handleCreateCustom}>
             Edit Custom Layers
             <Layers />
             <Settings />

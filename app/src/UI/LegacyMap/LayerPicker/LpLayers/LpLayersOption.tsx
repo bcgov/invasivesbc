@@ -14,7 +14,9 @@ const LpLayersOption = ({ onClick, layer, lastChild }: PropTypes) => {
   return (
     <>
       <li className="lp-layers-item">
-        <button onClick={() => onClick(layer)}>{layer?.toggle ? <Visibility /> : <VisibilityOff />}</button>
+        <button data-testid="lp-layers-option-button" onClick={() => onClick(layer)}>
+          {layer?.toggle ? <Visibility /> : <VisibilityOff />}
+        </button>
         <p>{layer.title ?? 'Layer name is null'}</p>
       </li>
       {!lastChild && (
