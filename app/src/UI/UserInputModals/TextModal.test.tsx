@@ -1,18 +1,11 @@
 import { act, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import UserInputModalController from './UserInputModalController';
-import { configureStore } from '@reduxjs/toolkit';
 import { createAlertsAndPromptsReducer } from 'state/reducers/alertsAndPrompts';
 import Prompt from 'state/actions/prompts/Prompt';
 import { TextModalInterface } from 'interfaces/prompt-interfaces';
 import userEvent from '@testing-library/user-event';
-
-const createMockStore = () =>
-  configureStore({
-    reducer: {
-      AlertsAndPrompts: createAlertsAndPromptsReducer()
-    }
-  });
+import { createMockStore } from '../../../testutils';
 
 const textCallBack = (str: string) => {
   if (str) {
@@ -56,7 +49,9 @@ const testD: TextModalInterface = {
 };
 
 describe('TextModal.tsx', () => {
-  const store = createMockStore();
+  const store = createMockStore({
+    AlertsAndPrompts: createAlertsAndPromptsReducer()
+  });
   let utils;
   beforeEach(() => {
     utils = render(
