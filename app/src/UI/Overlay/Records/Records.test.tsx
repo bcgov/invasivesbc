@@ -19,6 +19,7 @@ import UserInputModalController from 'UI/UserInputModals/UserInputModalControlle
 import NetworkActions from 'state/actions/network/NetworkActions';
 import { constructUnifiedConfig, UnifiedConfig } from 'state/configuration/unified-config';
 import { beforeAll } from 'vitest';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 let store;
 let config: UnifiedConfig;
@@ -150,7 +151,7 @@ describe('Records.tsx', () => {
     });
   });
 
-  if (config.build.MOBILE) {
+  if (buildTimeConfig.MOBILE) {
     it('[Mobile] Check offline Render', async () => {
       const { queryAllByTestId, getByText } = render(
         <Provider store={store}>

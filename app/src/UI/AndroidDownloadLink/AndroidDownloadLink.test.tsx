@@ -8,7 +8,9 @@ const configurationReducer =
   (
     state = {
       current: {
-        ANDROID_APP_STORE_URL: base_url
+        runtime: {
+          ANDROID_APP_STORE_URL: base_url
+        }
       }
     }
   ) =>
