@@ -19,11 +19,13 @@ import { CONFIG } from 'state/config';
 import UserInputModalController from 'UI/UserInputModals/UserInputModalController';
 import { MOBILE } from 'state/build-time-config';
 import NetworkActions from 'state/actions/network/NetworkActions';
+import defaultRecordSets from 'constants/defaultRecordSets';
 
-// Setup default Redux store for tests
-const { store } = setupStore(CONFIG);
+const NUMBER_OF_DEFAULT_RECORDSETS = Object.keys(defaultRecordSets).length;
 
 describe('Records.tsx', () => {
+  // Setup default Redux store for tests
+  const { store } = setupStore(CONFIG);
   it('should render', () => {
     render(
       <Provider store={store}>
@@ -41,15 +43,15 @@ describe('Records.tsx', () => {
     );
     const getRecordSets = () => queryAllByTestId('record-set');
 
-    expect(getRecordSets()).toHaveLength(0);
+    expect(getRecordSets()).toHaveLength(NUMBER_OF_DEFAULT_RECORDSETS);
     await userEvent.click(getByTestId('add-activity-layer'));
     await waitFor(() => {
-      expect(getRecordSets()).toHaveLength(1);
+      expect(getRecordSets()).toHaveLength(NUMBER_OF_DEFAULT_RECORDSETS + 1);
     });
 
     await userEvent.click(getByTestId('add-iapp-layer'));
     await waitFor(() => {
-      expect(getRecordSets()).toHaveLength(2);
+      expect(getRecordSets()).toHaveLength(NUMBER_OF_DEFAULT_RECORDSETS + 2);
     });
   });
 
@@ -61,7 +63,7 @@ describe('Records.tsx', () => {
       </Provider>
     );
     let recordsets = getAllByTestId('record-set') ?? [];
-    const activityDelete = within(recordsets[0]).getByTestId('delete-recordset');
+    const activityDelete = within(recordsets[NUMBER_OF_DEFAULT_RECORDSETS + 1]).getByTestId('delete-recordset');
     expect(activityDelete).toBeDefined();
     await userEvent.click(activityDelete);
 
@@ -69,7 +71,7 @@ describe('Records.tsx', () => {
     await userEvent.click(getByTestId('confirmation-modal-confirm'));
     await waitFor(() => {
       recordsets = getAllByTestId('record-set');
-      expect(recordsets.length).toEqual(1);
+      expect(recordsets.length).toEqual(NUMBER_OF_DEFAULT_RECORDSETS + 1);
     });
   });
 
@@ -79,25 +81,25 @@ describe('Records.tsx', () => {
         <Records />
       </Provider>
     );
-    const recordsets = getAllByTestId('record-set');
-    const initialColour = getComputedStyle(recordsets[0]).backgroundColor;
+    const recordset = getAllByTestId('record-set')[NUMBER_OF_DEFAULT_RECORDSETS];
+    const initialColour = getComputedStyle(recordset).backgroundColor;
     expect(initialColour).toBeDefined();
-    const colourCycle = within(recordsets[0]).getByTestId('cycle-color');
+    const colourCycle = within(recordset).getByTestId('cycle-color');
     await userEvent.click(colourCycle);
     await waitFor(() => {
-      expect(getComputedStyle(recordsets[0]).backgroundColor).not.toBe(initialColour);
+      expect(getComputedStyle(recordset).backgroundColor).not.toBe(initialColour);
     });
   });
 
   it('Toggling Map layers enables label layer button', async () => {
-    const { getByTestId } = render(
+    const { getAllByTestId } = render(
       <Provider store={store}>
         <Records />
       </Provider>
     );
 
-    const getMapLayerButton = () => getByTestId('layer-toggle') as HTMLButtonElement;
-    const getLabelLayerButton = () => getByTestId('label-toggle') as HTMLButtonElement;
+    const getMapLayerButton = () => getAllByTestId('layer-toggle')[0] as HTMLButtonElement;
+    const getLabelLayerButton = () => getAllByTestId('label-toggle')[0] as HTMLButtonElement;
 
     expect(getLabelLayerButton().disabled).toBe(true);
 
@@ -111,7 +113,7 @@ describe('Records.tsx', () => {
     await userEvent.click(getLabelLayerButton());
 
     await waitFor(() => {
-      expect(getByTestId('LabelIcon')).toBeDefined();
+      expect(getAllByTestId('LabelIcon')[0]).toBeDefined();
     });
   });
 
@@ -145,14 +147,14 @@ describe('Records.tsx', () => {
         </Provider>
       );
       const initSets = queryAllByTestId('record-set');
-      expect(initSets).toHaveLength(1);
+      expect(initSets).toHaveLength(NUMBER_OF_DEFAULT_RECORDSETS + 1);
       act(() => {
         store.dispatch(NetworkActions.offline());
       });
       await waitFor(() => {
         expect(getByText(/Any recordsets that haven't been saved for offline/)).toBeDefined();
       });
-      expect(queryAllByTestId('record-set')).toHaveLength(0);
+      expect(queryAllByTestId('record-set')).toHaveLength(MOBILE ? 1 : 0); // Offline Recordset will be rendered on Mobile
     });
   }
 });

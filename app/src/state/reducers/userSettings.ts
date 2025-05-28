@@ -14,6 +14,7 @@ import IappActions from 'state/actions/activity/Iapp';
 import { CacheDownloadMode } from 'utils/record-cache';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
+import defaultRecordSets from 'constants/defaultRecordSets';
 
 interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
@@ -57,7 +58,7 @@ const initialState: UserSettingsState = {
   layerPickerIsAccordion: false,
   boundaries: [],
   error: false,
-  recordSets: {},
+  recordSets: { ...(defaultRecordSets as Record<PropertyKey, UserRecordSet>) },
   recordsExpanded: false,
   newRecordDialogueState: {
     mode: 'new',
