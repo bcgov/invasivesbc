@@ -2,7 +2,7 @@ import iosDownload from '/assets/iosDownload.svg';
 import { useSelector } from 'utils/use_selector';
 
 const IosDownloadLink = () => {
-  const LINK = useSelector((state) => state.Configuration.current.IOS_APP_STORE_URL);
+  const LINK = useSelector((state) => state.Configuration.current.runtime.IOS_APP_STORE_URL);
 
   if (!LINK || LINK === 'unset') return;
   return (

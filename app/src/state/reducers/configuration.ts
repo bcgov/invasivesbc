@@ -1,17 +1,18 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import moment from 'moment/moment';
-import { AppConfig } from 'state/config';
+import { AppConfig } from 'state/configuration/runtime-config';
 import { EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS } from 'state/actions';
+import { UnifiedConfig } from 'state/configuration/unified-config';
 
 interface ConfigurationState {
-  current: AppConfig;
+  current: UnifiedConfig;
   exportConfigLoading: boolean;
   exportConfigFreshUntil: number | null;
   exportConfig: null | unknown;
 }
 
-function createConfigurationReducerWithDefaultState(configuration: AppConfig) {
+function createConfigurationReducerWithDefaultState(configuration: UnifiedConfig) {
   const initialState: ConfigurationState = {
     current: configuration,
     exportConfig: null,
@@ -45,7 +46,7 @@ function createConfigurationReducerWithDefaultState(configuration: AppConfig) {
   };
 }
 
-const selectConfiguration: (state) => AppConfig = (state) => state.Configuration.current;
+const selectConfiguration: (state) => AppConfig = (state) => state.Configuration.current.runtime;
 
 const selectRootConfiguration: (state) => AppConfig = (state) => state.Configuration;
 

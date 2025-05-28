@@ -38,7 +38,6 @@ import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/LegacyMap/InvasivesMap';
 import { PositionMarkers } from 'UI/LegacyMap/helpers/components/PositionMarkers';
 import maplibregl from 'maplibre-gl';
-import { MEMORY_CONSTRAINED_DEVICE, MOBILE } from 'state/build-time-config';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
 import { ReactiveLayers } from 'UI/LegacyMap/helpers/components/ReactiveLayers';
@@ -65,7 +64,7 @@ export const Map = ({ children }) => {
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   const rolesInitialized = useSelector((state) => state.Auth.rolesInitialized);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
-  const { API_BASE, PUBLIC_MAP_URL } = useSelector((state) => state.Configuration.current);
+  const configuration = useSelector((state) => state.Configuration.current);
 
   // RecordSet Layers
   const storeLayers = useSelector((state) => state.Map.layers);
@@ -113,13 +112,13 @@ export const Map = ({ children }) => {
       });
     });
 
-    const PMTILES_URL = PUBLIC_MAP_URL || `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
+    const PMTILES_URL = configuration.runtime.PUBLIC_MAP_URL || `https://nrs.objectstore.gov.bc.ca/uphjps/invasives-local.pmtiles`;
     const p = new PMTiles(PMTILES_URL);
 
     // this is so we share one instance across the JS code and the map renderer
     pmtilesProtocol.add(p);
 
-    if (MOBILE) {
+    if (configuration.build.MOBILE) {
       if (!tileCache) {
         throw new Error('tile cache unexpectedly not available');
       }
@@ -136,7 +135,7 @@ export const Map = ({ children }) => {
     }
 
     const tileCacheSettings = (() => {
-      if (MEMORY_CONSTRAINED_DEVICE) {
+      if (configuration.features.MAP_RESTRICT_TILE_CACHE_SIZE.enabled) {
         // disable maplibre's builtin tile cache
         return { maxTileCacheSize: 0, minTileCacheSize: 0 };
       }
@@ -151,7 +150,7 @@ export const Map = ({ children }) => {
         zoom: 3,
         minZoom: 0,
         transformRequest: (url) => {
-          if (url.includes(API_BASE)) {
+          if (url.includes(configuration.runtime.API_BASE)) {
             return {
               url,
               headers: {
@@ -171,8 +170,7 @@ export const Map = ({ children }) => {
         },
         center: [map_center[1], map_center[0]],
         style: {
-          ...(MOBILE && { sprite: '/assets/basemaps/sprite/sprite' }),
-          glyphs: MOBILE
+          glyphs: configuration.build.MOBILE
             ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
             : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
           version: 8,
@@ -251,7 +249,7 @@ export const Map = ({ children }) => {
 
   useEffect(() => {
     // update cacheStatusHash when any recordset is added/removed or has a cache status change. this will force a redraw.
-    if (!MOBILE) {
+    if (!configuration.build.MOBILE) {
       return;
     }
     let cacheStatusTuples = '';
@@ -274,7 +272,7 @@ export const Map = ({ children }) => {
     if (!mapReady) return;
     if (!map) return;
     (async () => {
-      await rebuildLayersOnTableHashUpdate(storeLayers, map, API_BASE, connectedToNetwork);
+      await rebuildLayersOnTableHashUpdate(storeLayers, map,  configuration.runtime.API_BASE, connectedToNetwork);
       refreshColoursOnColourUpdate(storeLayers, map);
       refreshVisibilityOnToggleUpdate(storeLayers, map);
     })();
@@ -282,7 +280,7 @@ export const Map = ({ children }) => {
 
   // Offline Activities Layer:
   useEffect(() => {
-    if (!map || !mapReady || !MOBILE) return;
+    if (!map || !mapReady || !configuration.build.MOBILE) return;
 
     if (!mapToggle || !loggedInOrWorkingOffline) {
       removeOfflineActivitiesLayer(map);
@@ -303,7 +301,7 @@ export const Map = ({ children }) => {
 
   // Offline Activities Label:
   useEffect(() => {
-    if (!map || !mapReady || !MOBILE) return;
+    if (!map || !mapReady || !configuration.build.MOBILE) return;
     (async () => {
       await toggleOfflineActivityLabels(map, labelToggle);
     })();
@@ -319,7 +317,7 @@ export const Map = ({ children }) => {
       return;
     }
 
-    addWMSLayersIfNotExist(layers, map, API_BASE);
+    addWMSLayersIfNotExist(layers, map, configuration.runtime.API_BASE);
     refreshWMSOnToggle(layers, map);
   }, [simplePickerLayers2, map, mapReady, baseMapLayer, connectedToNetwork, authenticated, rolesInitialized]);
 

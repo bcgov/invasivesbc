@@ -9,11 +9,8 @@ import { TileCacheService } from '../../utils/tile-cache';
 import { PersistorContext } from 'utils/PersistorContext';
 import { createContext } from 'react';
 import { RecordCacheService } from '../../utils/record-cache';
-
-type FeatureFlag = {
-  name: string;
-  enabled: boolean;
-};
+import { Store } from 'redux';
+import { UnifiedConfig } from 'state/configuration/unified-config';
 
 type StartupContext = {
   tileService?: TileCacheService;
@@ -22,15 +19,20 @@ type StartupContext = {
 
 const StartupContext = createContext<StartupContext>({});
 
+type StartupTaskParameters = {
+  CONFIG: UnifiedConfig;
+  store: Store;
+};
+
 type StartupTask = {
   name: string;
-  run: ({ CONFIG, store }: { CONFIG; store }) => Promise<Partial<StartupContext> | undefined>;
+  run: (parameters: StartupTaskParameters) => Promise<Partial<StartupContext> | undefined>;
 };
 
 const LOAD_TILE_CACHES: StartupTask = {
   name: 'Load Tile Caches',
   run: async ({ CONFIG }) => {
-    if (CONFIG.MOBILE) {
+    if (CONFIG.build.MOBILE) {
       const tileCache = await TileCacheServiceFactory.getPlatformInstance();
       return { tileService: tileCache };
     }
@@ -38,9 +40,10 @@ const LOAD_TILE_CACHES: StartupTask = {
 };
 
 async function StartupCoordinator() {
-  const { CONFIG } = await import('../../state/config');
+  const { constructUnifiedConfig } = await import('state/configuration/unified-config');
+  const unifiedConfig = await constructUnifiedConfig();
 
-  const { store, persistor } = setupStore(CONFIG);
+  const { store, persistor } = setupStore(unifiedConfig);
 
   const tasks: StartupTask[] = [LOAD_TILE_CACHES];
 
@@ -48,13 +51,12 @@ async function StartupCoordinator() {
 
   for (const task of tasks) {
     console.debug(`Running Startup Task: ${task.name}`);
-    const result = await task.run({ CONFIG, store });
+    const result = await task.run({ CONFIG: unifiedConfig, store });
 
     if (result) {
       providedContext = { ...providedContext, ...result };
     }
   }
-
 
   console.dir(providedContext);
 

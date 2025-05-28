@@ -1,5 +1,5 @@
 import booleanIntersects from '@turf/boolean-intersects';
-import { Feature, FeatureCollection } from '@turf/helpers';
+import { Feature, FeatureCollection } from 'geojson';
 import WellData from 'interfaces/WellData';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import bboxToPolygon from 'utils/bboxToPolygon';

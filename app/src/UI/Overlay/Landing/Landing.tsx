@@ -11,9 +11,10 @@ import { INFORMATIONAL_LINKS } from 'constants/links';
 import { MobileOnly } from 'UI/Predicates/MobileOnly';
 import { AuthActions } from 'state/actions/auth/Auth';
 import DataSharingAgreement from './DataSharingAgreement/DataSharingAgreement';
-import { MOBILE } from 'state/build-time-config';
 import IosDownloadLink from 'UI/IosDownloadLink/IosDownloadLink';
 import AndroidDownloadLink from 'UI/AndroidDownloadLink/AndroidDownloadLink';
+import { WebOnly } from 'UI/Predicates/WebOnly';
+import { FeatureGated } from 'UI/Predicates/FeatureGated';
 
 const InformationalLinkBox = () => {
   return (
@@ -59,6 +60,15 @@ export const LandingComponent = () => {
     <section id="landing">
       <div className="content">
         <h2>Welcome to the InvasivesBC Application!</h2>
+        <FeatureGated requires={'DEGRADED_EXPERIENCE_WARNING'}>
+          <Box mt={2} className="degraded-experience-warning">
+            <h3>Reduced Experience Warning</h3>
+            <p>
+              Your device does not report sufficient available memory to reliably enable all features. Some features
+              have been disabled.
+            </p>
+          </Box>
+        </FeatureGated>
         {(userInfoLoaded || loggedInOrWorkingOffline) && (
           <>
             <Box mt={2}>
@@ -148,6 +158,33 @@ export const LandingComponent = () => {
             <Box mt={1}>
               <DataSharingAgreement />
             </Box>
+            <WebOnly>
+              <Box mt={5} className="app-store-links">
+                <h3 className="landing-header">Download the Mobile app:</h3>
+                <p>InvasivesBC is currently available for download in the App Store. Coming soon to Google Play.</p>
+                <div className="download-links">
+                  <IosDownloadLink />
+                  <AndroidDownloadLink />
+                </div>
+              </Box>
+            </WebOnly>
+            <Box mt={5}>
+              <h3 className="landing-header">FOR MORE INFORMATION:</h3>
+            </Box>
+            <Box mt={4}>
+              For training materials and more info:{' '}
+              <a
+                href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc"
+                target="_blank"
+                rel="noreferrer"
+              >
+                www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species/invasivesbc
+              </a>
+            </Box>
+            <Box mt={4}>
+              Or email us at <a href="mailto:InvasivesBC@gov.bc.ca">InvasivesBC@gov.bc.ca</a>
+            </Box>
+            <InformationalLinkBox />
           </>
         )}
         {roles.length === 0 && (
@@ -197,37 +234,37 @@ export const LandingComponent = () => {
               <strong>To update or change your account details: </strong> log in and then choose "update my info" from
               the person icon on the top right.
             </Box>
+            <WebOnly>
+              <Box mt={5} className="app-store-links">
+                <h3 className="landing-header">Download the Mobile app:</h3>
+                <p>InvasivesBC is currently available for download in the App Store. Coming soon to Google Play.</p>
+                <div className="download-links">
+                  <IosDownloadLink />
+                  <AndroidDownloadLink />
+                </div>
+              </Box>
+            </WebOnly>
+            <Box mt={8}>
+              <u>
+                <strong>FOR MORE INFORMATION: </strong>
+              </u>
+            </Box>
+            <Box mt={4}>
+              For training materials and more info:{' '}
+              <a
+                href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
+                target="_blank"
+                rel="noreferrer"
+              >
+                www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species
+              </a>
+            </Box>
+            <Box mt={4}>
+              Or email us at <a href="mailto:InvasivesBC@gov.bc.ca">InvasivesBC@gov.bc.ca</a>
+            </Box>
+            <InformationalLinkBox />
           </>
         )}
-        {!MOBILE && (
-          <Box mt={5} className="app-store-links">
-            <h3 className="landing-header">Download the Mobile app:</h3>
-            <p>InvasivesBC is currently available for download in the App Store. Coming soon to Google Play.</p>
-            <div className="download-links">
-              <IosDownloadLink />
-              <AndroidDownloadLink />
-            </div>
-          </Box>
-        )}
-        <Box mt={8}>
-          <u>
-            <strong>FOR MORE INFORMATION: </strong>
-          </u>
-        </Box>
-        <Box mt={4}>
-          For training materials and more info:{' '}
-          <a
-            href="https://www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species"
-            target="_blank"
-            rel="noreferrer"
-          >
-            www2.gov.bc.ca/gov/content/environment/plants-animals-ecosystems/invasive-species
-          </a>
-        </Box>
-        <Box mt={4}>
-          Or email us at <a href="mailto:InvasivesBC@gov.bc.ca">InvasivesBC@gov.bc.ca</a>
-        </Box>
-        <InformationalLinkBox />
       </div>
     </section>
   );

@@ -13,7 +13,6 @@ import ExcelExporter from '../ExcelExporter';
 import RecordSetFooter from './RecordSetFooter';
 import Filter from './Filter';
 import { useSelector } from 'utils/use_selector';
-import { MOBILE } from 'state/build-time-config';
 import { useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
@@ -21,9 +20,11 @@ import { IFilter } from 'state/actions/userSettings/RecordSet';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 type PropTypes = { setID: string };
+
 interface ExtendedFilter extends IFilter {
   disabled: boolean;
 }
+
 export const RecordSet = ({ setID }: PropTypes) => {
   const viewFilters = useSelector((state) => state.Map.viewFilters);
   const history = useHistory();
@@ -38,6 +39,8 @@ export const RecordSet = ({ setID }: PropTypes) => {
 
   const [cacheFilters, setCacheFilters] = useState<IFilter[]>([]);
   const [filters, setFilters] = useState<ExtendedFilter[]>([]);
+
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
 
   /**
    * Get filters from recordset metadata that were applied at time of caching.

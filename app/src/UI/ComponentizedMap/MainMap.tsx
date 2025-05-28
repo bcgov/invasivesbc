@@ -4,7 +4,7 @@ import Map, { NavigationControl, ScaleControl } from 'react-map-gl/maplibre';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import maplibregl from 'maplibre-gl';
 import { PublicLayer } from 'UI/ComponentizedMap/PublicLayer';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 // to make base layers work on this map, will be refactored in the next iteration
 const wmsBaseLayersValue: Record<string, string> = {
@@ -106,7 +106,7 @@ const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
 
 // name will be changed to 'Map' upon full transition
 export const MainMap = ({ children }) => {
-  const API_BASE = useSelector((state) => state.Configuration.current.API_BASE);
+  const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
   const authenticated = useSelector((state) => state.Auth.authenticated);
   const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
   const authHeaderRef = useRef<string>();
@@ -122,7 +122,7 @@ export const MainMap = ({ children }) => {
 
   /* map can have platform-specific options */
   const platformOptions = (() => {
-    if (MOBILE) {
+    if (buildTimeConfig.MOBILE) {
       return {
         maxBounds: [-141.7761, 46.41459, -114.049, 60.00678] as maplibregl.LngLatBoundsLike
       };
@@ -189,8 +189,8 @@ export const MainMap = ({ children }) => {
           transformRequest={transformRequest}
           mapLib={maplibregl}
           mapStyle={{
-            ...(MOBILE && { sprite: '/assets/basemaps/sprite/sprite' }),
-            glyphs: MOBILE
+            ...(buildTimeConfig.MOBILE && { sprite: '/assets/basemaps/sprite/sprite' }),
+            glyphs: buildTimeConfig.MOBILE
               ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
               : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
             version: 8,

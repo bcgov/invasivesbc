@@ -1,5 +1,5 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
-import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
+import { buildTimeConfig, Platform } from 'state/configuration/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
@@ -15,7 +15,7 @@ type withCurrentJWTCallback = (header: string) => Promise<any>;
 
 async function withCurrentJWT(callback: withCurrentJWTCallback) {
   // make a build-time determination about which version of the function to use
-  if (MOBILE && [Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
+  if (buildTimeConfig.MOBILE && [Platform.IOS, Platform.ANDROID].includes(buildTimeConfig.PLATFORM)) {
     const { idToken } = await AuthBridge.token({});
     const header = `Bearer ${idToken}`;
     return await callback(header);
@@ -101,7 +101,7 @@ function* authenticationSaga() {
     takeLatest(AuthActions.makeOfflineUserCurrent.type, handle_AUTH_MAKE_OFFLINE_USER_CURRENT),
     takeLatest(AuthActions.forgetOfflineUser.type, handle_AUTH_FORGET_OFFLINE_USER)
   ];
-  if (MOBILE && [Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
+  if (buildTimeConfig.MOBILE && [Platform.IOS, Platform.ANDROID].includes(buildTimeConfig.PLATFORM)) {
     // use native authentication bridge for better user experience
     yield all([...baseSaga, ...nativeAuthEffects]);
   } else {

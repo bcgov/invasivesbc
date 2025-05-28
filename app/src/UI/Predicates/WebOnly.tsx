@@ -1,7 +1,9 @@
 import { PropsWithChildren } from 'react';
-import { MOBILE } from 'state/build-time-config';
+import { useSelector } from 'utils/use_selector';
 
 const WebOnly = ({ children }: PropsWithChildren) => {
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
+
   if (!MOBILE) {
     return children;
   }

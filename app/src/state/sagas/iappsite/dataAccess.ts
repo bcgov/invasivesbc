@@ -6,15 +6,15 @@ import { MAIN_MAP_MOVE } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { selectNetworkConnected } from 'state/reducers/network';
-import { MOBILE } from 'state/build-time-config';
 import { IappRecordMode } from 'utils/record-cache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import IappActions from 'state/actions/activity/Iapp';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 export function* handle_IAPP_GET_REQUEST(iappId: PayloadAction<string>) {
   try {
     const connected = yield select(selectNetworkConnected);
-    if (MOBILE && !connected) {
+    if (buildTimeConfig.MOBILE && !connected) {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const result = yield service.loadIapp(iappId.payload, IappRecordMode.Record);
       yield put(IappActions.getSuccess(result));

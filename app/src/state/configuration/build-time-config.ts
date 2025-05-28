@@ -53,15 +53,17 @@ const usePlatformClasses = () => {
   return appClasses;
 };
 
-/* Used to disable certain memory-intensive features on small devices */
-const MEMORY_CONSTRAINED_DEVICE = (() => {
-  if (PLATFORM == Platform.ANDROID) {
-    //@todo actually detect the amount of memory available via capacitor native call (navigator.deviceMemory does not appear to be supported)
-    console.warn('running on android - disabling memory-intensive features');
-    return true;
-  }
+type BuildTimeConfig = {
+  MOBILE: boolean;
+  DEBUG: boolean;
+  PLATFORM: Platform;
+};
 
-  return false;
-})();
+const buildTimeConfig: BuildTimeConfig = {
+  MOBILE: MOBILE,
+  DEBUG: DEBUG,
+  PLATFORM: PLATFORM
+};
 
-export { DEBUG, MOBILE, PLATFORM, MEMORY_CONSTRAINED_DEVICE, Platform, usePlatformClasses };
+export { buildTimeConfig, Platform, usePlatformClasses };
+export type { BuildTimeConfig };

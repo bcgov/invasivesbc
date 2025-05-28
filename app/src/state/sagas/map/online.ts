@@ -8,7 +8,7 @@ import { selectRootConfiguration } from 'state/reducers/configuration';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordsetOnline } from 'state/actions/activity/Activity';
 import UserRecord from 'interfaces/UserRecord';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 function* refreshExportConfigIfRequired() {
   const config = yield select(selectRootConfiguration);
@@ -72,7 +72,7 @@ export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<A
         limit: action.payload.limit
       })
     );
-  } else if (MOBILE) {
+  } else if (buildTimeConfig.MOBILE) {
     // API Request Failed, see if we can rows from a cache
     yield getRowsFromCachedRecordset(action.payload);
   }
@@ -98,7 +98,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_ONLINE(action: PayloadAction<IappTab
         limit: action.payload.limit
       })
     );
-  } else if (MOBILE) {
+  } else if (buildTimeConfig.MOBILE) {
     yield getIappRowsFromCache(action.payload);
   } else {
     yield put(
@@ -142,7 +142,7 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE(action: PayloadA
         tableFiltersHash: action.payload.tableFiltersHash
       })
     );
-  } else if (MOBILE) {
+  } else if (buildTimeConfig.MOBILE) {
     yield getIdsForRecordsetFromCache(action.payload);
   }
 }
@@ -178,7 +178,7 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE(action) {
         tableFiltersHash: action.payload.tableFiltersHash
       })
     );
-  } else if (MOBILE) {
+  } else if (buildTimeConfig.MOBILE) {
     yield getIdsForRecordsetFromCache(action.payload);
   }
 }

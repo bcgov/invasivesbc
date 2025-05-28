@@ -10,7 +10,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { AuthActions } from 'state/actions/auth/Auth';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
@@ -233,7 +233,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
         }));
       }
       yield put(Activity.Suggestions.treatmentIdsSuccess(treatments));
-    } else if (MOBILE) {
+    } else if (buildTimeConfig.MOBILE) {
       yield getLinkedTreatmentsFromCachedRecords(action.payload);
     }
   } catch (e) {

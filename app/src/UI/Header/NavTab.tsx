@@ -1,9 +1,9 @@
 import { PropsWithChildren, useCallback, useEffect, useRef } from 'react';
 import { useHistory } from 'react-router';
 import { TOGGLE_PANEL } from 'state/actions';
-import { MOBILE } from 'state/build-time-config';
 import { selectAuth } from 'state/reducers/auth';
 import { useDispatch, useSelector } from 'utils/use_selector';
+import { FeatureFlags } from 'state/configuration/feature-flags';
 
 type TabPredicate =
   | 'authenticated_any'
@@ -22,9 +22,19 @@ interface PropTypes extends PropsWithChildren {
   label: string;
   panelOpen: boolean;
   panelFullScreen: boolean;
+  requiresFeature?: keyof FeatureFlags;
 }
 
-const NavTab = ({ predicate, platform, children, path, label, panelOpen, panelFullScreen }: PropTypes) => {
+const NavTab = ({
+                  predicate,
+                  platform,
+                  children,
+                  path,
+                  label,
+                  panelOpen,
+                  panelFullScreen,
+                  requiresFeature
+                }: PropTypes) => {
   const ref = useRef(0);
   ref.current += 1;
 
@@ -35,6 +45,8 @@ const NavTab = ({ predicate, platform, children, path, label, panelOpen, panelFu
   const dispatch = useDispatch();
   const authenticated = useSelector((state) => state.Auth.authenticated && state?.Auth.roles.length > 0);
   const { workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
+  const { features } = useSelector(state => state.Configuration.current);
 
   const canDisplayCallBack = useCallback(() => {
     if (platform === 'mobile' && !MOBILE) {
@@ -43,6 +55,13 @@ const NavTab = ({ predicate, platform, children, path, label, panelOpen, panelFu
     if (platform === 'web' && MOBILE) {
       return false;
     }
+
+    if (requiresFeature !== undefined) {
+      if (!features[requiresFeature].enabled) {
+        return false;
+      }
+    }
+
 
     switch (predicate) {
       case 'always':
@@ -58,7 +77,7 @@ const NavTab = ({ predicate, platform, children, path, label, panelOpen, panelFu
       case 'authenticated_any':
         return loggedInOrWorkingOffline;
     }
-  }, [authenticated, workingOffline, predicate, platform, MOBILE, JSON.stringify(path)]);
+  }, [authenticated, workingOffline, predicate, platform, MOBILE, requiresFeature, JSON.stringify(path)]);
 
   useEffect(() => {
     const scrollContainer = document.getElementById('ButtonWrapper');

@@ -3,7 +3,7 @@ import { channel } from 'redux-saga';
 import { Geolocation } from '@capacitor/geolocation';
 import { registerPlugin } from '@capacitor/core';
 import { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
-import { PLATFORM, Platform } from 'state/build-time-config';
+import { Platform } from 'state/configuration/build-time-config';
 import { selectMap } from 'state/reducers/map';
 import { MAP_SET_COORDS, MAP_TOGGLE_TRACKING } from 'state/actions';
 
@@ -129,6 +129,9 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
 }
 
 function* handle_MAP_TOGGLE_TRACKING() {
+
+  const PLATFORM = yield select(state=>state.Configuration.current.runtime.PLATFORM)
+
   switch (PLATFORM) {
     case Platform.IOS:
       yield handle_MAP_TOGGLE_TRACKING_BACKGROUND();

@@ -67,7 +67,7 @@ class RecordCache {
 
       const downloadMode: CacheDownloadMode = await service.download(
         {
-          API_BASE: state.Configuration.current.API_BASE,
+          API_BASE: state.Configuration.current.runtime.API_BASE,
           bbox,
           idsToCache,
           setName: recordSet.recordSetName,

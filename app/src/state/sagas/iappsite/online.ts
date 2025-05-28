@@ -4,7 +4,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import IappActions from 'state/actions/activity/Iapp';
 import { AuthActions } from 'state/actions/auth/Auth';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { IappRecordMode } from 'utils/record-cache';
 
@@ -22,7 +22,7 @@ export function* handle_IAPP_GET_NETWORK_REQUEST(iappId: PayloadAction<string>) 
   if (networkReturn?.ok) {
     const data = networkReturn?.data?.result?.rows[0];
     yield put(IappActions.getSuccess(data));
-  } else if (MOBILE) {
+  } else if (buildTimeConfig.MOBILE) {
     try {
       const service = yield RecordCacheServiceFactory.getPlatformInstance();
       const result = yield service.loadIapp(iappId.payload, IappRecordMode.Record);

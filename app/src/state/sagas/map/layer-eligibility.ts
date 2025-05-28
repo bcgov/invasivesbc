@@ -4,13 +4,15 @@ import {
   MapSourceAndLayerDefinition,
   MapSourceAndLayerDefinitionMode
 } from 'UI/LegacyMap/helpers/functional/layer-definitions';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import MapActions from 'state/actions/map';
-import { RootState } from '../../reducers/rootReducer';
+import { RootState } from 'state/reducers/rootReducer';
+import { FeatureFlags } from 'state/configuration/feature-flags';
 
 function* recomputeEligibleMapLayers(action) {
   // don't loop
   const FILTERED_ACTIONS = [MapActions.updateAvailableOverlays.type, MapActions.updateAvailableBaseMaps.type];
+  const features: FeatureFlags = yield select(state=>state.Configuration.current.features);
   if (FILTERED_ACTIONS.includes(action.type)) {
     return;
   }
@@ -35,12 +37,18 @@ function* recomputeEligibleMapLayers(action) {
       pass = false;
     }
 
-    if (l.predicates.mobileOnly && !MOBILE) {
+    if (l.predicates.mobileOnly && !buildTimeConfig.MOBILE) {
       pass = false;
     }
 
-    if (l.predicates.webOnly && MOBILE) {
+    if (l.predicates.webOnly && buildTimeConfig.MOBILE) {
       pass = false;
+    }
+
+    if (l.predicates.requiresFeature !== undefined) {
+      if (!features[l.predicates.requiresFeature].enabled) {
+        pass = false;
+      }
     }
 
     if (l.predicates.requiresAuthentication && !AUTHENTICATED) {

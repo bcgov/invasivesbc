@@ -8,7 +8,6 @@ import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
-import { MOBILE } from 'state/build-time-config';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import Activity from 'state/actions/activity/Activity';
 
@@ -69,6 +68,8 @@ export const Records = () => {
 
   const [highlightedSet, setHighlightedSet] = useState<string | null>();
   const [userIsMobileAndOffline, setUserIsMobileAndOffline] = useState(false);
+
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
 
   const defaultRecordSetIds = Object.values(RecordSetId);
   const defaultRecordSetTypes = defaultRecordSetIds

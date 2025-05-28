@@ -1,6 +1,6 @@
 import { Draft } from 'immer';
 import { Action, createNextState } from '@reduxjs/toolkit';
-import { AppConfig } from 'state/config';
+import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { ActivitySubtype } from 'sharedAPI';

@@ -6,7 +6,7 @@ import { ConnectivityErrorHandler } from 'UI/ErrorHandler/ConnectivityErrorHandl
 import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
 import Spinner from 'UI/Spinner/Spinner';
-import { usePlatformClasses } from 'state/build-time-config';
+import { usePlatformClasses } from 'state/configuration/build-time-config';
 
 const ComponentizedMapLayout = React.lazy(() => import('UI/AppLayout/ComponentizedMapLayout'));
 const LegacyMapLayout = React.lazy(() => import('UI/AppLayout/LegacyMapLayout'));
@@ -15,7 +15,7 @@ export const RENDER_DEBUG = false;
 
 const App = () => {
   const authInitiated = useSelector((state) => state.Auth.initialized);
-  const { COMPONENTIZED_MAP } = useSelector((state) => state.Configuration.current.FEATURE_GATE);
+  const COMPONENTIZED_MAP= useSelector((state) => state.Configuration.current.features.MAP_MODE_COMPONENTIZED.enabled);
 
   const { detail: errorDetail, hasCrashed } = useSelector(selectGlobalErrorState);
   const { disrupted } = useSelector(selectAuth);

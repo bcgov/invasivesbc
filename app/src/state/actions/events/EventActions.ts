@@ -1,6 +1,6 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import DeviceInformation from 'utils/memory-report/memoryReport';
-import { Platform, PLATFORM } from 'state/build-time-config';
+import { Platform, buildTimeConfig } from 'state/configuration/build-time-config';
 
 interface ViewportResizePayload {
   width: number;
@@ -14,7 +14,7 @@ class EventActions {
   static readonly wakeup = createAction(`${this.PREFIX}/wakeup`);
   static readonly viewportResize = createAction<ViewportResizePayload>(`${this.PREFIX}/viewportResize`);
   static readonly deviceMemoryReport = createAsyncThunk(`${this.PREFIX}/deviceMemoryReport`, async () => {
-    if (PLATFORM !== Platform.ANDROID) {
+    if (buildTimeConfig.PLATFORM !== Platform.ANDROID) {
       throw new Error('This action is only meaningful on Android');
     }
     return await DeviceInformation.deviceCharacteristics({});

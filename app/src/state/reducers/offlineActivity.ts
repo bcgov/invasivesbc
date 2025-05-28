@@ -8,7 +8,7 @@ import {
   ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_SYNC_STATE
 } from 'state/actions';
-import { AppConfig } from 'state/config';
+import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import Activity from 'state/actions/activity/Activity';
 

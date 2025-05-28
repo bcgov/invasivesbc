@@ -41,7 +41,6 @@ import GeoShapes from 'constants/geoShapes';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
-import { MOBILE } from 'state/build-time-config';
 import Alerts from 'state/actions/alerts/Alerts';
 import Prompt from 'state/actions/prompts/Prompt';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -52,10 +51,11 @@ import UserRecord from 'interfaces/UserRecord';
 import MapActions from 'state/actions/map';
 import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
-    if (MOBILE) {
+    if (buildTimeConfig.MOBILE) {
       yield put(Activity.getLocal(action.payload));
     } else {
       yield put(Activity.getNetworkRequest(action.payload));
@@ -265,7 +265,7 @@ export function* handle_ACTIVITY_SAVE_SUCCESS() {
 export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   const activityState = yield select(selectActivity);
 
-  if (MOBILE) {
+  if (buildTimeConfig.MOBILE) {
     yield put({
       type: ACTIVITY_SAVE_OFFLINE,
       payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }
@@ -300,7 +300,7 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivi
       authState.extendedInfo.pac_number
     );
 
-    if (MOBILE) {
+    if (buildTimeConfig.MOBILE) {
       yield put(Activity.createLocal({ id: newActivity.activity_id, data: newActivity }));
     } else {
       yield put(Activity.createNetwork(newActivity));
@@ -382,7 +382,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
           linked_geo = networkReturn.data.geometry;
         }
       }
-      if (!linked_geo && MOBILE) {
+      if (!linked_geo && buildTimeConfig.MOBILE) {
         const service = yield RecordCacheServiceFactory.getPlatformInstance();
         const record = yield service.loadActivity(linked_id);
         linked_geo = record.geometry;
@@ -407,7 +407,7 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   const activityState = yield select(selectActivity);
   if (activityState?.activity?.geometry?.properties?.error == 'true') return;
 
-  if (MOBILE) {
+  if (buildTimeConfig.MOBILE) {
     yield put({
       type: ACTIVITY_SAVE_OFFLINE,
       payload: {
