@@ -115,8 +115,12 @@ const ManualUtmModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
-          <Button onClick={handleConfirmation} disabled={results.length === 0}>
+          {!disableCancel && (
+            <Button data-testid="utm-modal-cancel" onClick={handleClose}>
+              {cancelText ?? 'Cancel'}
+            </Button>
+          )}
+          <Button data-testid="utm-modal-confirm" onClick={handleConfirmation} disabled={results.length === 0}>
             {confirmText ?? 'Confirm'}
           </Button>
         </DialogActions>
