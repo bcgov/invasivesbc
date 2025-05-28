@@ -35,7 +35,7 @@ const testB: TextModalInterface = {
   max: 8,
   min: 6,
   prompt: ['Testing response', 'for set length'],
-  title: 'Length Test'
+  title: 'TestB'
 };
 
 const testC: TextModalInterface = {
@@ -44,7 +44,7 @@ const testC: TextModalInterface = {
   prompt: 'Testing Regex',
   regex: /^Hello World$/,
   regexErrorText: 'does not conform to pattern',
-  title: 'Regex Text'
+  title: 'TestC'
 };
 
 const testD: TextModalInterface = {
@@ -52,7 +52,7 @@ const testD: TextModalInterface = {
   callback: textCallBack,
   label: 'Select Options',
   selectOptions: ['Hello', 'World'],
-  title: 'Test Select'
+  title: 'TestD'
 };
 
 describe('TextModal.tsx', () => {
