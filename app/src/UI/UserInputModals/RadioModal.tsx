@@ -86,8 +86,16 @@ const RadioModal = ({
         </DialogContent>
         <Divider />
         <DialogActions>
-          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
-          <Button onClick={handleConfirmation} disabled={!(options as any[]).includes(userInput)}>
+          {!disableCancel && (
+            <Button data-testid="radio-modal-cancel" onClick={handleClose}>
+              {cancelText ?? 'Cancel'}
+            </Button>
+          )}
+          <Button
+            data-testid="radio-modal-confirm"
+            onClick={handleConfirmation}
+            disabled={!(options as Array<string | number>).includes(userInput)}
+          >
             {confirmText ?? 'Confirm'}
           </Button>
         </DialogActions>
