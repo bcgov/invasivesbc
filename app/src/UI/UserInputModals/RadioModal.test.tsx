@@ -73,6 +73,9 @@ describe('RadioModal.tsx', () => {
   });
 
   it('should close on cancel', async () => {
+    act(() => {
+      store.dispatch(Prompt.radio(testA));
+    });
     const { queryByText, getByTestId } = utils;
 
     await waitFor(() => {
