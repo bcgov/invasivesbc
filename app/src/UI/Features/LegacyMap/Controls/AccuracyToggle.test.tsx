@@ -1,26 +1,15 @@
 import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AccuracyToggle } from 'UI/Features/LegacyMap/Controls/AccuracyToggle';
-import { configureStore } from '@reduxjs/toolkit';
 import { Provider } from 'react-redux';
+import { createMockStore, mockSliceReducer } from 'test/testUtils';
 
-const configurationReducer =
-  () =>
-  (
-    state = {
-      accuracyToggle: true,
-      positionTracking: true
-    }
-  ) =>
-    state;
-const createMockStore = () =>
-  configureStore({
-    reducer: {
-      Map: configurationReducer()
-    }
-  });
-
-const store = createMockStore();
+const store = createMockStore({
+  ...mockSliceReducer('Map', {
+    accuracyToggle: true,
+    positionTracking: true
+  })
+});
 
 describe('AccuracyToggle.tsx', () => {
   it('should toggle className with accuracyToggle state', async () => {

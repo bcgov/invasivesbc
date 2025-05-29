@@ -16,13 +16,7 @@ import AlertMessage from 'interfaces/AlertMessage';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import { createAlertsAndPromptsReducer } from 'state/reducers/alertsAndPrompts';
-import { configureStore } from '@reduxjs/toolkit';
-
-const createMockStore = () =>
-  configureStore({
-    reducer: { AlertsAndPrompts: createAlertsAndPromptsReducer() }
-  });
-const store = createMockStore();
+import { createMockStore } from 'test/testUtils';
 
 const testAlerts: Array<AlertMessage> = [
   {
@@ -57,7 +51,12 @@ const testAlerts: Array<AlertMessage> = [
     severity: AlertSeverity.Info
   }
 ];
+
 describe('Records.tsx', () => {
+  const store = createMockStore({
+    AlertsAndPrompts: createAlertsAndPromptsReducer()
+  });
+
   it('shouldRender', () => {
     render(
       <Provider store={store}>
