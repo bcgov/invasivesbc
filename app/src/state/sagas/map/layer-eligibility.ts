@@ -3,7 +3,7 @@ import {
   MAP_DEFINITIONS,
   MapSourceAndLayerDefinition,
   MapSourceAndLayerDefinitionMode
-} from 'UI/LegacyMap/helpers/functional/layer-definitions';
+} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import MapActions from 'state/actions/map';
 import { RootState } from 'state/reducers/rootReducer';
@@ -12,7 +12,7 @@ import { FeatureFlags } from 'state/configuration/feature-flags';
 function* recomputeEligibleMapLayers(action) {
   // don't loop
   const FILTERED_ACTIONS = [MapActions.updateAvailableOverlays.type, MapActions.updateAvailableBaseMaps.type];
-  const features: FeatureFlags = yield select(state=>state.Configuration.current.features);
+  const features: FeatureFlags = yield select((state) => state.Configuration.current.features);
   if (FILTERED_ACTIONS.includes(action.type)) {
     return;
   }

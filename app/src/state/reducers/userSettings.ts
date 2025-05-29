@@ -13,7 +13,7 @@ import RecordCache from 'state/actions/cache/RecordCache';
 import IappActions from 'state/actions/activity/Iapp';
 import { CacheDownloadMode } from 'utils/record-cache';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
-import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
+import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import defaultRecordSets from 'constants/defaultRecordSets';
 
 interface UserSettingsState {

@@ -16,7 +16,7 @@ import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import bboxToPolygon from 'utils/bboxToPolygon';
-import { getUnnestedFieldsForActivity } from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
+import { getUnnestedFieldsForActivity } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
