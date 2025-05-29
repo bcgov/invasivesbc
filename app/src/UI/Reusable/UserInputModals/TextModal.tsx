@@ -112,8 +112,14 @@ const TextModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
-          <Button onClick={handleConfirmation}>{confirmText ?? 'Confirm'}</Button>
+          {!disableCancel && (
+            <Button data-testid="text-modal-cancel" onClick={handleClose}>
+              {cancelText ?? 'Cancel'}
+            </Button>
+          )}
+          <Button data-testid="text-modal-confirm" onClick={handleConfirmation}>
+            {confirmText ?? 'Confirm'}
+          </Button>
         </DialogActions>
       </Box>
     </Modal>
