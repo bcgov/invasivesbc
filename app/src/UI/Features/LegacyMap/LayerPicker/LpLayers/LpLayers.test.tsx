@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import LpLayers from './LpLayers';
-import { createMockStore, mockState } from 'test/testUtils';
+import { createMockStore, mockSliceReducer } from 'test/testUtils';
 import { createMapReducer, DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import userEvent from '@testing-library/user-event';
 
@@ -9,12 +9,12 @@ describe('LpLayers.tsx', () => {
   const store = (online: boolean) =>
     createMockStore({
       Map: createMapReducer(),
-      Network: mockState({
+      ...mockSliceReducer('Network', {
         connected: online
       })
     });
   const storeWithShapes = createMockStore({
-    Map: mockState({
+    ...mockSliceReducer('Map', {
       simplePickerLayers2: [],
       serverBoundaries: [
         {
@@ -68,7 +68,7 @@ describe('LpLayers.tsx', () => {
         }
       ]
     }),
-    Network: mockState({
+    ...mockSliceReducer('Network', {
       connected: false
     })
   });

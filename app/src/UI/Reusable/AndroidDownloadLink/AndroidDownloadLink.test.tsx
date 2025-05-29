@@ -1,30 +1,22 @@
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { createMockStore, DEFAULT_TEST_CONFIGURATION, mockSliceReducer } from 'test/testUtils';
 import AndroidDownloadLink from 'UI/Reusable/AndroidDownloadLink/AndroidDownloadLink';
-import { configureStore } from '@reduxjs/toolkit';
-
-const configurationReducer =
-  (base_url) =>
-  (
-    state = {
-      current: {
-        runtime: {
-          ANDROID_APP_STORE_URL: base_url
-        }
-      }
-    }
-  ) =>
-    state;
-const createMockStore = (urlValue) =>
-  configureStore({
-    reducer: {
-      Configuration: configurationReducer(urlValue)
-    }
-  });
 
 describe('AndroidDownloadLink.tsx', () => {
+  const createStore = (base_url: string) =>
+    createMockStore({
+      ...mockSliceReducer('Configuration', {
+        current: {
+          build: DEFAULT_TEST_CONFIGURATION.build,
+          features: DEFAULT_TEST_CONFIGURATION.features,
+          runtime: { ...DEFAULT_TEST_CONFIGURATION.runtime, ANDROID_APP_STORE_URL: base_url }
+        }
+      })
+    });
+
   it('should render null', () => {
-    const mockStore = createMockStore('unset');
+    const mockStore = createStore('unset');
     const { queryByAltText } = render(
       <Provider store={mockStore}>
         <AndroidDownloadLink />
@@ -34,7 +26,7 @@ describe('AndroidDownloadLink.tsx', () => {
   });
   it('should render with url', () => {
     const url = 'http://localhost:3000';
-    const mockStore = createMockStore(url);
+    const mockStore = createStore(url);
     const { getByAltText } = render(
       <Provider store={mockStore}>
         <AndroidDownloadLink />

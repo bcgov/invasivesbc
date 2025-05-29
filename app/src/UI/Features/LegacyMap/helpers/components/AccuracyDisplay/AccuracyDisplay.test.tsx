@@ -1,12 +1,11 @@
 import { render, waitFor } from '@testing-library/react';
 import AccuracyDisplay from 'UI/Features/LegacyMap/helpers/components/AccuracyDisplay/AccuracyDisplay';
 import { Provider } from 'react-redux';
-import { configureStore } from '@reduxjs/toolkit';
+import { createMockStore, mockSliceReducer } from 'test/testUtils';
 
-const configurationReducerRender =
-  () =>
-  (
-    state = {
+describe('AccuracyDisplay.tsx', () => {
+  const accuracyOnStore = createMockStore({
+    ...mockSliceReducer('Map', {
       accuracyToggle: true,
       positionTracking: true,
       userCoords: {
@@ -15,14 +14,11 @@ const configurationReducerRender =
         accuracy: 3,
         heading: 20
       }
-    }
-  ) =>
-    state;
-const configurationReducerNullRender =
-  () =>
-  (
-    state = {
-      accuracyToggle: false,
+    })
+  });
+  const accuracyOffStore = createMockStore({
+    ...mockSliceReducer('Map', {
+      accuracyToggle: true,
       positionTracking: true,
       userCoords: {
         lat: 54.1,
@@ -30,21 +26,11 @@ const configurationReducerNullRender =
         accuracy: 3,
         heading: 20
       }
-    }
-  ) =>
-    state;
-const createMockStore = (reducerCase) =>
-  configureStore({
-    reducer: {
-      Map: reducerCase
-    }
+    })
   });
-
-describe('AccuracyDisplay.tsx', () => {
   it('should render', async () => {
-    const store = createMockStore(configurationReducerRender);
     const { getByText } = render(
-      <Provider store={store}>
+      <Provider store={accuracyOnStore}>
         <AccuracyDisplay />
       </Provider>
     );
@@ -54,9 +40,8 @@ describe('AccuracyDisplay.tsx', () => {
   });
 
   it('should return blank if "accuracyToggle" is false', async () => {
-    const store = createMockStore(configurationReducerNullRender);
     const { queryByText } = render(
-      <Provider store={store}>
+      <Provider store={accuracyOffStore}>
         <AccuracyDisplay />
       </Provider>
     );

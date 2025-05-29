@@ -1,31 +1,30 @@
 /**
  * Helpers and Shorthand functions for Writing Tests and Mocks
  */
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, Reducer } from '@reduxjs/toolkit';
 import { UnifiedConfig } from 'state/configuration/unified-config';
 import { Platform } from 'state/configuration/build-time-config';
 import { BASELINE_FEATURES } from 'state/configuration/feature-flags';
+import { RootState } from 'state/reducers/rootReducer';
 
 /**
- * @param stateProperties Mocked state properties
- * @returns reducer
+ * @param key Key of { RootState } Enforces Type Guards for creation
+ * @param config Slice of RootState key to create
+ * @returns mock reducer with type guards added
  */
-const mockState =
-  // eslint-disable-next-line
-  (stateProps: Record<PropertyKey, any>) =>
-    (
-      state = {
-        ...stateProps
-      }
-    ) =>
-      state;
+function mockSliceReducer<K extends keyof RootState>(
+  key: K,
+  config: Partial<RootState[K]>
+): { [P in K]: (state: Partial<RootState[K]>) => Partial<RootState[K]> } {
+  const reducer = (state: Partial<RootState[K]> = config): Partial<RootState[K]> => state;
+  return { [key]: reducer } as { [P in K]: (state: Partial<RootState[K]>) => Partial<RootState[K]> };
+}
 
 /**
- * @desc Shorthand Mock Store creator
+ * @desc Shorthand for creating and implementing a mock redux store
  * @param reducers Supplied reducers for creation. e.g. {Configuration: createConfigurationReducer()}
  */
-// eslint-disable-next-line
-const createMockStore = (reducers: Record<PropertyKey, any>) =>
+const createMockStore = (reducers: Record<PropertyKey, Reducer>) =>
   configureStore({
     reducer: {
       ...reducers
@@ -53,7 +52,6 @@ const DEFAULT_TEST_CONFIGURATION: UnifiedConfig = {
   features: BASELINE_FEATURES
 };
 
-
 const IOS_TEST_CONFIGURATION: UnifiedConfig = {
   runtime: {
     API_BASE: 'http://localhost/',
@@ -74,7 +72,6 @@ const IOS_TEST_CONFIGURATION: UnifiedConfig = {
   },
   features: BASELINE_FEATURES
 };
-
 
 const ANDROID_TEST_CONFIGURATION: UnifiedConfig = {
   runtime: {
@@ -97,7 +94,6 @@ const ANDROID_TEST_CONFIGURATION: UnifiedConfig = {
   features: BASELINE_FEATURES
 };
 
-
 /**
  * @desc type-safe configuration reducer mock
  **/
@@ -109,4 +105,11 @@ function createMockConfigurationReducer(config: UnifiedConfig = DEFAULT_TEST_CON
   ) => state;
 }
 
-export { createMockStore, mockState, createMockConfigurationReducer, DEFAULT_TEST_CONFIGURATION, ANDROID_TEST_CONFIGURATION, IOS_TEST_CONFIGURATION };
+export {
+  createMockStore,
+  createMockConfigurationReducer,
+  mockSliceReducer,
+  DEFAULT_TEST_CONFIGURATION,
+  ANDROID_TEST_CONFIGURATION,
+  IOS_TEST_CONFIGURATION
+};

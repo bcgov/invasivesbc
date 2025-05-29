@@ -1,34 +1,26 @@
-import { configureStore } from '@reduxjs/toolkit';
 import { render, waitFor, within } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 import userEvent from '@testing-library/user-event';
 import { act } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-
-const userSettingsReducer = (state = { layerPickerIsAccordion: false }, action) => {
-  if (UserSettings.toggleLayerPickerAccordion.match(action)) {
-    return {
-      ...state,
-      layerPickerIsAccordion: !state.layerPickerIsAccordion
-    };
-  }
-  return state;
-};
-const networkReducer = (state = { connected: false }) => state;
-const configurationReducer = (state = { current: { build: { MOBILE: true } } }) => state;
-
-const createMockStore = () =>
-  configureStore({
-    reducer: {
-      Configuration: configurationReducer,
-      UserSettings: userSettingsReducer,
-      Network: networkReducer
-    }
-  });
+import { createMockConfigurationReducer, createMockStore, mockSliceReducer } from 'test/testUtils';
 
 describe('LayerPicker.tsx', () => {
-  const store = createMockStore();
+  const userSettingsReducer = (state = { layerPickerIsAccordion: false }, action) => {
+    if (UserSettings.toggleLayerPickerAccordion.match(action)) {
+      return {
+        ...state,
+        layerPickerIsAccordion: !state.layerPickerIsAccordion
+      };
+    }
+    return state;
+  };
+  const store = createMockStore({
+    ...mockSliceReducer('Network', { connected: false }),
+    Configuration: createMockConfigurationReducer(),
+    UserSettings: userSettingsReducer
+  });
 
   it('should initial render to button and toggle between open/closed', async () => {
     const { container, getByTestId } = render(

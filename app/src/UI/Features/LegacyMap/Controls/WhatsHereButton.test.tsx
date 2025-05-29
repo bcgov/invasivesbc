@@ -1,4 +1,3 @@
-import { configureStore } from '@reduxjs/toolkit';
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { WhatsHereButton } from 'UI/Features/LegacyMap/Controls/WhatsHereButton';
@@ -8,14 +7,12 @@ import userEvent from '@testing-library/user-event';
 import { createMapReducer } from 'state/reducers/map';
 import Alerts from 'state/actions/alerts/Alerts';
 import AlertMessage from 'interfaces/AlertMessage';
-
-const createMockStore = () =>
-  configureStore({
-    reducer: { Map: createMapReducer() }
-  });
+import { createMockStore } from 'test/testUtils';
 
 describe('WhatsHereButton.tsx', () => {
-  const store = createMockStore();
+  const store = createMockStore({
+    Map: createMapReducer()
+  });
   const dispatchSpy = vi.spyOn(store, 'dispatch');
   it('should render', async () => {
     const { getByTestId } = render(

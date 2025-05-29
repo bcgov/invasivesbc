@@ -1,18 +1,11 @@
 import { act, render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import UserInputModalController from 'UI/Reusable/UserInputModals/UserInputModalController';
-import { configureStore } from '@reduxjs/toolkit';
 import { createAlertsAndPromptsReducer } from 'state/reducers/alertsAndPrompts';
 import Prompt from 'state/actions/prompts/Prompt';
 import { ConfirmationModalInterface } from 'interfaces/prompt-interfaces';
 import userEvent from '@testing-library/user-event';
-
-const createMockStore = () =>
-  configureStore({
-    reducer: {
-      AlertsAndPrompts: createAlertsAndPromptsReducer()
-    }
-  });
+import { createMockStore } from 'test/testUtils';
 
 const confirmationCallBack = (bool: boolean) => {
   if (bool) {
@@ -36,7 +29,9 @@ const testB: ConfirmationModalInterface = {
 };
 
 describe('ConfirmationModal.tsx', () => {
-  const store = createMockStore();
+  const store = createMockStore({
+    AlertsAndPrompts: createAlertsAndPromptsReducer()
+  });
   let utils;
   beforeEach(() => {
     utils = render(

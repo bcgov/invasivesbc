@@ -1,4 +1,4 @@
-import { createMockStore, mockState } from 'test/testUtils';
+import { createMockStore, mockSliceReducer } from 'test/testUtils';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import NoRowsInSearch from './NoRowsInSearch';
@@ -9,7 +9,7 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 
 describe('NoRowsInSearch.tsx', () => {
   const storeWithoutRecordSetToggled = createMockStore({
-    UserSettings: mockState({
+    ...mockSliceReducer('UserSettings', {
       recordSets: { '1': UserSettings.RecordSet.createDefaultRecordset(RecordSetType.Activity) }
     })
   });
@@ -18,7 +18,7 @@ describe('NoRowsInSearch.tsx', () => {
   recordSet.mapToggle = true;
 
   const storeWithRecordSetToggled = createMockStore({
-    UserSettings: mockState({
+    ...mockSliceReducer('UserSettings', {
       recordSets: { '1': recordSet }
     })
   });
