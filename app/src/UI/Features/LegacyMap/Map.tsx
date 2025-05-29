@@ -24,15 +24,7 @@ import {
   refreshWMSOnToggle,
   removeWMSLayers
 } from 'UI/Features/LegacyMap/helpers/functional/wms-layers';
-import {
-  addServerBoundariesIfNotExists,
-  refreshServerBoundariesOnToggle
-} from 'UI/Features/LegacyMap/helpers/functional/server-boundaries';
-import {
-  addClientBoundariesIfNotExists,
-  refreshClientBoundariesOnToggle,
-  removeClientBoundaries
-} from 'UI/Features/LegacyMap/helpers/functional/client-boundaries';
+
 import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
@@ -48,6 +40,13 @@ import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import { sha1 } from 'utils/sha1';
 import { StartupContext } from 'UI/StartupCoordinator/StartupCoordinator';
+import {
+  addClientBoundariesIfNotExists,
+  addServerBoundariesIfNotExists,
+  refreshClientBoundariesOnToggle,
+  refreshServerBoundariesOnToggle,
+  removeClientBoundaries
+} from './helpers/functional/handleBoundaries';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -128,7 +127,7 @@ export const Map = ({ children }) => {
           const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
 
           return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
-        } catch (e) {
+        } catch {
           // this is a blank 256x256 image
           return TileCacheService.generateFallbackTile();
         }
@@ -323,7 +322,7 @@ export const Map = ({ children }) => {
   }, [simplePickerLayers2, map, mapReady, baseMapLayer, connectedToNetwork, authenticated, rolesInitialized]);
 
   useEffect(() => {
-    if (!mapReady) return;
+    if (!mapReady || !map) return;
     if (authenticated && loggedInOrWorkingOffline) {
       addServerBoundariesIfNotExists(serverBoundaries, map);
       refreshServerBoundariesOnToggle(serverBoundaries, map);
