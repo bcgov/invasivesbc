@@ -1,21 +1,21 @@
 import React, { Suspense, useRef } from 'react';
 import './App.css';
 import { selectGlobalErrorState } from 'state/reducers/error_handler';
-import { ErrorHandler } from './ErrorHandler/ErrorHandler';
-import { ConnectivityErrorHandler } from 'UI/ErrorHandler/ConnectivityErrorHandler';
+import { ErrorHandler } from 'UI/Layout/ErrorHandler/ErrorHandler';
+import { ConnectivityErrorHandler } from 'UI/Layout/ErrorHandler/ConnectivityErrorHandler';
 import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
-import Spinner from 'UI/Spinner/Spinner';
+import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { usePlatformClasses } from 'state/configuration/build-time-config';
 
-const ComponentizedMapLayout = React.lazy(() => import('UI/AppLayout/ComponentizedMapLayout'));
-const LegacyMapLayout = React.lazy(() => import('UI/AppLayout/LegacyMapLayout'));
+const ComponentizedMapLayout = React.lazy(() => import('UI/Layout/AppLayout/ComponentizedMapLayout'));
+const LegacyMapLayout = React.lazy(() => import('UI/Layout/AppLayout/LegacyMapLayout'));
 
 export const RENDER_DEBUG = false;
 
 const App = () => {
   const authInitiated = useSelector((state) => state.Auth.initialized);
-  const COMPONENTIZED_MAP= useSelector((state) => state.Configuration.current.features.MAP_MODE_COMPONENTIZED.enabled);
+  const COMPONENTIZED_MAP = useSelector((state) => state.Configuration.current.features.MAP_MODE_COMPONENTIZED.enabled);
 
   const { detail: errorDetail, hasCrashed } = useSelector(selectGlobalErrorState);
   const { disrupted } = useSelector(selectAuth);

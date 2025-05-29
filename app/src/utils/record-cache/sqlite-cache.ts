@@ -21,7 +21,7 @@ import { sqlite } from 'utils/sharedSQLiteInstance';
 import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
-} from 'UI/Overlay/Records/RecordSet/RecordTableHelpers';
+} from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import { IFilter } from 'state/actions/userSettings/RecordSet';
 
 const CACHE_DB_NAME = 'record_cache.db';

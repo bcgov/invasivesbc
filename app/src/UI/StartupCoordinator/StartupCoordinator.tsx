@@ -1,6 +1,5 @@
 import { createRoot } from 'react-dom/client';
 import { PersistGate } from 'redux-persist/integration/react';
-import { TileCacheServiceFactory } from 'utils/tile-cache/context';
 import { Router } from 'react-router-dom';
 import setupStore, { historySingleton } from 'state/store';
 import { Provider } from 'react-redux';
@@ -11,6 +10,8 @@ import { createContext } from 'react';
 import { RecordCacheService } from 'utils/record-cache';
 import { Store } from 'redux';
 import { UnifiedConfig } from 'state/configuration/unified-config';
+import { LOAD_TILE_CACHES } from 'UI/StartupCoordinator/Tasks/TileCache';
+import { LOAD_RECORDSET_CACHES } from './Tasks/RecordsetCache';
 
 type StartupContext = {
   tileService?: TileCacheService;
@@ -27,25 +28,6 @@ type StartupTaskParameters = {
 type StartupTask = {
   name: string;
   run: (parameters: StartupTaskParameters) => Promise<Partial<StartupContext> | void | undefined>;
-};
-
-const LOAD_TILE_CACHES: StartupTask = {
-  name: 'Load Tile Caches',
-  run: async ({ CONFIG }) => {
-    if (CONFIG.build.MOBILE && CONFIG.features.CACHE_TILES.enabled) {
-      const tileCache = await TileCacheServiceFactory.getPlatformInstance();
-      return { tileService: tileCache };
-    }
-  }
-};
-
-const LOAD_RECORDSET_CACHES: StartupTask = {
-  name: 'Load Recordset Caches',
-  run: async ({ CONFIG }) => {
-    if (CONFIG.build.MOBILE && CONFIG.features.CACHE_RECORDSETS.enabled) {
-      await RecordCacheService.getInstance();
-    }
-  }
 };
 
 async function StartupCoordinator() {
@@ -89,3 +71,4 @@ async function StartupCoordinator() {
 }
 
 export { StartupCoordinator, StartupContext };
+export type { StartupTask, StartupTaskParameters };

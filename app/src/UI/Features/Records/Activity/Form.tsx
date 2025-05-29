@@ -1,0 +1,186 @@
+import { useRef, useState } from 'react';
+import FormContainer from 'UI/Features/Records/Activity/form/FormContainer';
+import { useDispatch } from 'react-redux';
+import 'UI/Features/Records/Activity/Form.css';
+
+import { ActivitySubtypeShortLabels } from 'sharedAPI';
+import { RENDER_DEBUG } from 'UI/App';
+import { Button } from '@mui/material';
+import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACKING_ON } from 'state/actions';
+import GeoShapes from 'constants/geoShapes';
+import { UtmInputObj } from 'interfaces/prompt-interfaces';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import Prompt from 'state/actions/prompts/Prompt';
+import RecordHistory from 'UI/Features/Records/RecordHistory/RecordHistory';
+import { useSelector } from 'utils/use_selector';
+
+export const ActivityForm = () => {
+  const ref = useRef(0);
+  ref.current += 1;
+  if (RENDER_DEBUG) {
+    console.log('%c Activity Form render:' + ref.current.toString(), 'color: yellow');
+  }
+  const closeRecordHistoryModal = () => setShowRecordHistory(false);
+  const [showRecordHistory, setShowRecordHistory] = useState(false);
+
+  const dispatch = useDispatch();
+
+  const {
+    short_id,
+    form_status,
+    activity_type,
+    activity_subtype,
+    form_data,
+    created_by,
+    date_created,
+    updated_by,
+    received_timestamp,
+    batch_id,
+    activity_history
+  } = useSelector((state) => state.ActivityPage?.activity);
+
+  const invasive_plant = useSelector((state) => state.ActivityPage?.activity?.invasive_plant);
+  const drawGeometryTracking = useSelector((state) => state.Map?.track_me_draw_geo);
+
+  /**
+   * @desc Handler for creating a manual UTM Entry initiated by user
+   */
+  const manualUTMEntry = () => {
+    const utmCallback = (input: UtmInputObj) => {
+      const geo = {
+        type: 'Feature',
+        geometry: {
+          type: GeoShapes.Point,
+          coordinates: [input.results[0], input.results[1]]
+        },
+        properties: {}
+      };
+      dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [geo] } });
+    };
+
+    dispatch(
+      Prompt.utm({
+        title: 'Enter a manual UTM',
+        prompt: 'Fill in the fields below to create your own UTM Coordinates',
+        callback: utmCallback
+      })
+    );
+  };
+  const clickHandler = () => {
+    if (drawGeometryTracking.isTracking) {
+      dispatch(GeoTracking.stop());
+    } else {
+      const callback = (input: string | number) => {
+        dispatch({ type: MAP_TOGGLE_TRACKING_ON });
+        dispatch(GeoTracking.start(input as GeoShapes));
+      };
+      dispatch(
+        Prompt.radio({
+          callback,
+          options: [GeoShapes.LineString, GeoShapes.Polygon],
+          prompt: [
+            'You are about to enable GeoTracking, a tool that uses GPS coordinates to draw a shape on the map.',
+            'To complete the shape, select the GeoTracking button again.'
+          ],
+          title: 'Are you sure you want to track your path?',
+          confirmText: 'Start Tracking'
+        })
+      );
+    }
+  };
+
+  return (
+    <>
+      <section id={'record-header-info'}>
+        <div className="content">
+          <table>
+            <tbody>
+              <tr>
+                <td>Activity ID:</td>
+                <td>{short_id}</td>
+              </tr>
+              <tr>
+                <td>Form Status:</td>
+                <td>{form_status}</td>
+              </tr>
+              <tr>
+                <td>Activity Type:</td>
+                <td>{activity_type}</td>
+              </tr>
+              <tr>
+                <td>Activity Sub-type:</td>
+                <td>{ActivitySubtypeShortLabels[activity_subtype]}</td>
+              </tr>
+              <tr>
+                <td>Activity Date:</td>
+                <td>{new Date(form_data.activity_data.activity_date_time).toLocaleDateString()}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table>
+            <tbody>
+              <tr>
+                <td>Created By:</td>
+                <td>{created_by}</td>
+              </tr>
+              <tr>
+                <td>Created At:</td>
+                <td>{new Date(date_created).toLocaleDateString()}</td>
+              </tr>
+              {activity_history?.length > 1 && (
+                <>
+                  <tr>
+                    <td>Updated By:</td>
+                    <td>{updated_by}</td>
+                  </tr>
+                  <tr>
+                    <td>Updated At:</td>
+                    <td>{new Date(received_timestamp ?? date_created).toLocaleDateString()}</td>
+                  </tr>
+                  <tr>
+                    <td>Record History:</td>
+                    <td>
+                      <Button onClick={setShowRecordHistory.bind(this, true)} variant="outlined">
+                        Click to view
+                      </Button>
+                    </td>
+                  </tr>
+                </>
+              )}
+              <tr>
+                <td>Batch ID</td>
+                <td>{batch_id}</td>
+              </tr>
+              {invasive_plant && invasive_plant != '' && (
+                <tr>
+                  <td>Invasive Plant</td>
+                  <td>{invasive_plant}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <Button
+        onClick={manualUTMEntry}
+        variant="outlined"
+        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}
+      >
+        Click to enter UTM manually
+      </Button>
+      <RecordHistory
+        show={showRecordHistory}
+        handleClick={closeRecordHistoryModal}
+        activityHistory={activity_history}
+      />
+      <Button
+        onClick={clickHandler}
+        variant="outlined"
+        sx={{ backgroundColor: 'white', color: '#003366', fontSize: 24, fontWeight: 'medium' }}
+      >
+        Click to draw a geometry by tracing your GPS movement
+      </Button>
+      <FormContainer />
+    </>
+  );
+};
