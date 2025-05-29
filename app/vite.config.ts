@@ -6,7 +6,7 @@ import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfil
 import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import { visualizer } from 'rollup-plugin-visualizer';
 
-// sets up constants in the code, based on build environment
+// sets up constants in the code, based on the build environment
 function buildSpecificDefines() {
   const defines = {};
 
@@ -93,8 +93,11 @@ export default defineConfig({
           if (id.includes('node_modules')) {
             return 'vendor';
           }
-          if (id.includes('state/config')) {
+          if (id.includes('state/configuration/runtime-config')) {
             return 'configuration';
+          }
+          if (id.includes('state/configuration/injected-features')) {
+            return 'injected-features';
           }
         }
       }

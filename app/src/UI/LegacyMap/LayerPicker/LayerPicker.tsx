@@ -1,4 +1,3 @@
-import { MOBILE } from 'state/build-time-config';
 import LayersIcon from '@mui/icons-material/Layers';
 import CloseIcon from '@mui/icons-material/Close';
 import { IconButton, Switch } from '@mui/material';
@@ -25,6 +24,7 @@ export const LayerPicker = () => {
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
   const accordionMode = useSelector((state) => state.UserSettings.layerPickerIsAccordion);
   const dispatch = useDispatch();
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
 
   if (!showLayerPicker) {
     return (

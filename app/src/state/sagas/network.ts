@@ -4,7 +4,7 @@ import networkAlertMessages from 'constants/alerts/networkAlerts';
 import { HEALTH_ENDPOINT } from 'constants/misc';
 import Alerts from 'state/actions/alerts/Alerts';
 import NetworkActions from 'state/actions/network/NetworkActions';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkState } from 'state/reducers/network';
@@ -68,7 +68,7 @@ function* handle_MANUAL_RECONNECT() {
  * @desc Rolling function that targets the API to determine our online status.
  */
 function* handle_MONITOR_HEARTBEAT(cancel: PayloadAction<boolean>) {
-  if (!MOBILE || cancel.payload) {
+  if (!buildTimeConfig.MOBILE || cancel.payload) {
     return;
   }
   const configuration = yield select(selectConfiguration);

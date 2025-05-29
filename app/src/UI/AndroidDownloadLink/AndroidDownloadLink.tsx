@@ -2,7 +2,7 @@ import androidDownload from '/assets/androidDownload.png';
 import { useSelector } from 'utils/use_selector';
 
 const AndroidDownloadLink = () => {
-  const LINK = useSelector((state) => state.Configuration.current.ANDROID_APP_STORE_URL);
+  const LINK = useSelector((state) => state.Configuration.current.runtime.ANDROID_APP_STORE_URL);
 
   if (!LINK || LINK === 'unset') return;
   return (

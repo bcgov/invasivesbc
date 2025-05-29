@@ -5,7 +5,7 @@ import { createAlertsAndPromptsReducer } from 'state/reducers/alertsAndPrompts';
 import Prompt from 'state/actions/prompts/Prompt';
 import { NumberModalInterface } from 'interfaces/prompt-interfaces';
 import userEvent from '@testing-library/user-event';
-import { createMockStore } from '../../../testutils';
+import { createMockStore } from 'test/testUtils';
 
 const numberCallback = (num: number) => {
   if (num) {

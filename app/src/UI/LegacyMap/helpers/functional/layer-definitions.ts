@@ -1,6 +1,7 @@
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
+import { FeatureFlags } from 'state/configuration/feature-flags';
 
 // these layers are used as placeholders so the others can be placed relative to them
 const LAYER_Z_BACKGROUND = 'LAYER_Z_BACKGROUND';
@@ -15,6 +16,7 @@ type MapDefinitionEligibilityPredicates = {
   requiresNetwork: boolean;
   requiresAuthentication: boolean;
   requiresAnonymous: boolean;
+  requiresFeature?: keyof FeatureFlags;
 };
 
 // fluent convenience object builder
@@ -82,6 +84,13 @@ class MapDefinitionEligibilityPredicatesBuilder {
     return this;
   }
 
+
+  requiresFeature(f: keyof FeatureFlags) {
+    this.state.requiresFeature = f;
+    return this;
+  }
+
+
   build() {
     return this.state;
   }
@@ -142,7 +151,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
 
     mode: MapSourceAndLayerDefinitionMode.BASEMAP,
 
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().build(),
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresFeature('MAP_BASE_IMAGERY_LAYER').build(),
     source: {
       type: 'raster',
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
@@ -174,7 +183,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
 
     mode: MapSourceAndLayerDefinitionMode.BASEMAP,
 
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().build(),
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresFeature('MAP_BASE_IMAGERY_LAYER').build(),
     source: {
       type: 'raster',
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
@@ -206,7 +215,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
 
     mode: MapSourceAndLayerDefinitionMode.BASEMAP,
 
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().build(),
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresFeature('MAP_TOPO_LAYER').build(),
     source: {
       type: 'raster',
       tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}'],
@@ -235,7 +244,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
 
     mode: MapSourceAndLayerDefinitionMode.OVERLAY,
 
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresAnonymous(true).build(),
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresAnonymous(true).requiresFeature('MAP_PUBLIC_VECTOR_LAYER').build(),
     source: {
       type: 'vector',
       url: 'pmtiles://https://nrs.objectstore.gov.bc.ca/rzivsz/invasives-prod.pmtiles'
@@ -330,7 +339,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     icon: 'OfflineSatellite',
     tooltip: 'Locally-stored low-resolution base map',
     mode: MapSourceAndLayerDefinitionMode.BASEMAP,
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).build(),
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).requiresFeature('MAP_BAKED_RASTER_TILES').build(),
     source: {
       type: 'raster',
       tiles: ['baked://offline/{z}/{x}/{y}'],
@@ -883,7 +892,7 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     name: 'offline_vector_map',
     icon: 'OfflineVector',
     tooltip: 'Locally-stored high-resolution vector base map',
-    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).build(),
+    predicates: new MapDefinitionEligibilityPredicatesBuilder().requiresNetwork(false).mobileOnly(true).requiresFeature('MAP_BAKED_VECTOR_TILES').build(),
 
     mode: MapSourceAndLayerDefinitionMode.BASEMAP,
 
@@ -1924,10 +1933,10 @@ const MAP_DEFINITIONS: MapSourceAndLayerDefinition[] = [
     ]
   }
 ].filter((m) => {
-  if (m.predicates.mobileOnly && !MOBILE) {
+  if (m.predicates.mobileOnly && !buildTimeConfig.MOBILE) {
     return false;
   }
-  if (m.predicates.webOnly && MOBILE) {
+  if (m.predicates.webOnly && buildTimeConfig.MOBILE) {
     return false;
   }
   return true;

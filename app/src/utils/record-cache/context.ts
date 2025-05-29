@@ -1,11 +1,11 @@
-import { Platform, PLATFORM } from 'state/build-time-config';
+import { Platform, buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheService } from 'utils/record-cache/index';
 import { SQLiteRecordCacheService } from 'utils/record-cache/sqlite-cache';
 import { LocalForageRecordCacheService } from 'utils/record-cache/localforage-cache';
 
 class RecordCacheServiceFactory {
   static async getPlatformInstance(): Promise<RecordCacheService> {
-    if ([Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
+    if ([Platform.IOS, Platform.ANDROID].includes(buildTimeConfig.PLATFORM)) {
       return SQLiteRecordCacheService.getInstance();
     }
     return LocalForageRecordCacheService.getInstance();

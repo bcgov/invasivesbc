@@ -28,6 +28,19 @@ body {
     margin-bottom: 5pt;
     font-size: 14pt;
   }
+
+  .degraded-experience-warning {
+    border: 1px solid grey;
+    box-shadow: 0 0 5px grey;
+    background: #e5c47f;
+
+    p {
+      text-align: justify;
+      line-height: 1.5;
+    }
+    padding: 1rem;
+
+  }
   .app-store-links {
     p {
       margin-bottom: 0.5rem;

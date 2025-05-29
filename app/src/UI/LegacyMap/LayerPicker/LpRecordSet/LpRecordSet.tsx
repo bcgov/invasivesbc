@@ -5,7 +5,6 @@ import LpRecordSetOption from './LpRecordSetOption';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, UserRecordSet } from 'interfaces/UserRecordSet';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
-import { MOBILE } from 'state/build-time-config';
 import Activity from 'state/actions/activity/Activity';
 import { useEffect, useState } from 'react';
 
@@ -34,6 +33,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
     dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
   };
   const connected = useSelector((state) => state.Network.connected);
+  const { MOBILE } = useSelector(state=>state.Configuration.current.build);
   const recordSets = useSelector((state) => state.UserSettings.recordSets);
 
   const [defaultRecordSets, setDefaultRecordSets] = useState<UserRecordSet[]>([]);

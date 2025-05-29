@@ -20,24 +20,13 @@ import { errorHandlerReducer } from './error_handler';
 import { createOfflineActivityReducer, OfflineActivityState } from './offlineActivity';
 import { createAlertsAndPromptsReducer } from './alertsAndPrompts';
 import { createDownloadStateReducer } from './downloads';
-import { AppConfig } from 'state/config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { createTileCacheReducer } from 'state/reducers/tile_cache';
-import { MOBILE, PLATFORM, Platform } from 'state/build-time-config';
+import { Platform } from 'state/configuration/build-time-config';
 import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { CacheDownloadMode } from 'utils/record-cache';
 import { SQLiteStorage } from 'utils/redux-persist-sqlite';
-
-// intended to be more durable than localStorage, and not purged when the application is reset
-const durableStorage = (() => {
-  if (PLATFORM == Platform.IOS) {
-    return new SQLiteStorage();
-  } else {
-    return localForage;
-  }
-})();
-
-const platformStorage = localForage;
+import { UnifiedConfig } from 'state/configuration/unified-config';
 
 const purgeOldStateOnVersionUpgrade = async (state: any) => {
   // finer-grained or per-reducer controls are possible -- this is a big hammer to reset saved state when this version changes
@@ -87,7 +76,17 @@ const handleSyncTermination = createTransform(
   { whitelist: ['working'] }
 );
 
-function createRootReducer(config: AppConfig) {
+function createRootReducer(config: UnifiedConfig) {
+  const platformStorage = localForage;
+
+  const durableStorage = (() => {
+    if (config.build.PLATFORM == Platform.IOS) {
+      return new SQLiteStorage();
+    } else {
+      return localForage;
+    }
+  })();
+
   return combineReducers({
     AppMode: appMode,
     AlertsAndPrompts: createAlertsAndPromptsReducer(),
@@ -101,7 +100,7 @@ function createRootReducer(config: AppConfig) {
         migrate: purgeOldStateOnVersionUpgrade,
         whitelist: [MIGRATION_VERSION_KEY, 'offlineUsers']
       },
-      createAuthReducer(config)
+      createAuthReducer(config.runtime)
     ),
     UserInfo: createUserInfoReducer({ loaded: false, accessRequested: false, activated: false }),
     Network: persistReducer<NetworkState>(
@@ -145,7 +144,7 @@ function createRootReducer(config: AppConfig) {
         ],
         transforms: [handleActiveDownloadsOnRehydration]
       },
-      createUserSettingsReducer(config)
+      createUserSettingsReducer(config.runtime)
     ),
     Map: persistReducer<MapState>(
       {
@@ -178,7 +177,7 @@ function createRootReducer(config: AppConfig) {
           stateReconciler: autoMergeLevel1,
           transforms: [handleSyncTermination]
         },
-        createOfflineActivityReducer(config)
+        createOfflineActivityReducer(config.runtime)
       );
 
       return (state, action) => {
@@ -191,7 +190,7 @@ function createRootReducer(config: AppConfig) {
       };
     })(),
     ...(() => {
-      if (MOBILE) {
+      if (config.build.MOBILE) {
         return { TileCache: createTileCacheReducer() };
       }
       return {};

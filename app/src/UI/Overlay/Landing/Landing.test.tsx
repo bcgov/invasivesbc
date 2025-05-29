@@ -3,6 +3,8 @@ import { render, waitFor, within } from '@testing-library/react';
 import { LandingComponent } from './Landing';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
+import { createMockConfigurationReducer, DEFAULT_TEST_CONFIGURATION, IOS_TEST_CONFIGURATION } from 'test/testUtils';
+import { UnifiedConfig } from 'state/configuration/unified-config';
 
 const createMockAuthReducer =
   (isAuth: boolean) =>
@@ -32,28 +34,20 @@ const mockNetworkReducer = (
   }
 ) => state;
 
-const mockConfigurationReducer = (
-  state = {
-    current: {
-      IOS_APP_STORE_URL: 'http://localhost:3002',
-      ANDROID_APP_STORE_URL: 'http://localhost:3002'
-    }
-  }
-) => state;
-const createMockStore = (auth: boolean) =>
+const createMockStore = (auth: boolean, config: UnifiedConfig) =>
   configureStore({
     reducer: {
       Auth: createMockAuthReducer(auth),
       UserInfo: mockUserInfoReducer,
       Network: mockNetworkReducer,
-      Configuration: mockConfigurationReducer
+      Configuration: createMockConfigurationReducer(config)
     }
   });
 
 describe('Landing.tsx', async () => {
   it('should Render and display user details + roles', () => {
     const { getByText } = render(
-      <Provider store={createMockStore(true)}>
+      <Provider store={createMockStore(true, DEFAULT_TEST_CONFIGURATION)}>
         <LandingComponent />
       </Provider>
     );
@@ -69,7 +63,7 @@ describe('Landing.tsx', async () => {
       MOBILE: true
     }));
     const { getByText } = render(
-      <Provider store={createMockStore(true)}>
+      <Provider store={createMockStore(true, IOS_TEST_CONFIGURATION)}>
         <LandingComponent />
       </Provider>
     );
@@ -78,7 +72,7 @@ describe('Landing.tsx', async () => {
 
   it('should present call to action to "request access" if not authenticated', async () => {
     const { getByText, queryAllByRole } = render(
-      <Provider store={createMockStore(false)}>
+      <Provider store={createMockStore(false, DEFAULT_TEST_CONFIGURATION)}>
         <LandingComponent />
       </Provider>
     );
@@ -110,14 +104,8 @@ describe('[Web] Landing.tsx', () => {
   });
 
   it('should Render with Download Link section', async () => {
-    vi.doMock('state/build-time-config', () => ({
-      MOBILE: false
-    }));
-
-    // Dynamically Load Component again to have the mock values for this pull.
-    const { LandingComponent } = await import('./Landing');
     const { getByText } = render(
-      <Provider store={createMockStore(true)}>
+      <Provider store={createMockStore(true, DEFAULT_TEST_CONFIGURATION)}>
         <LandingComponent />
       </Provider>
     );

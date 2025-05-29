@@ -5,7 +5,7 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { Point, Polygon } from 'geojson';
-import { MOBILE } from 'state/build-time-config';
+import { MobileOnly } from 'UI/Predicates/MobileOnly';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -62,11 +62,13 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
           Pan to record
         </Button>
       )}
-      {MOBILE && geom && (
-        <Button onClick={handleMarkGeometryOnMap.bind(this, false)} variant="contained">
-          Mark site on map
-        </Button>
-      )}
+      <MobileOnly>
+        {geom && (
+          <Button onClick={handleMarkGeometryOnMap.bind(this, false)} variant="contained">
+            Mark site on map
+          </Button>
+        )}
+      </MobileOnly>
     </div>
   );
 };

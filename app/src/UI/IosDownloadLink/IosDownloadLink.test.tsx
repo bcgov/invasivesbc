@@ -9,7 +9,9 @@ const configurationReducer =
   (
     state = {
       current: {
-        IOS_APP_STORE_URL: base_url
+        runtime: {
+          IOS_APP_STORE_URL: base_url
+        }
       }
     }
   ) =>

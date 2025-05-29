@@ -63,7 +63,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import { selectMap } from 'state/reducers/map';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import cacheAlertMessages from 'constants/alerts/cacheAlerts';
 import MapActions from 'state/actions/map';
@@ -407,7 +407,7 @@ function* handle_ACTIVITY_GET_SUGGESTED_BIOCONTROL_REQUEST_ONLINE() {
 function* handle_UPDATE_CACHED_RECORDS() {
   try {
     const { connected } = yield select(selectNetworkState);
-    if (MOBILE && connected) {
+    if (buildTimeConfig.MOBILE && connected) {
       const recordsWereUpdated = yield (yield RecordCacheServiceFactory.getPlatformInstance()).updateActivityCaches();
       if (recordsWereUpdated) {
         yield Alerts.create(cacheAlertMessages.updateCachesSuccess);

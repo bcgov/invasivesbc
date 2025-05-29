@@ -4,10 +4,10 @@ import { Provider } from 'react-redux';
 import { Router } from 'react-router';
 import setupStore, { historySingleton } from 'state/store';
 import userEvent from '@testing-library/user-event';
-import { CONFIG } from 'state/config';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import defaultRecordSets from 'constants/defaultRecordSets';
+import { DEFAULT_TEST_CONFIGURATION } from 'test/testUtils';
 
 const NUMBER_OF_DEFAULT_RECORDSETS = Object.keys(defaultRecordSets).length;
 
@@ -17,7 +17,8 @@ const TestRender = () => {
 };
 
 describe('LpRecordSet.tsx', () => {
-  const { store } = setupStore(CONFIG);
+  const { store } = setupStore(DEFAULT_TEST_CONFIGURATION);
+
   it('will render with custom and default recordsets', async () => {
     const { getAllByTestId } = render(
       <Provider store={store}>

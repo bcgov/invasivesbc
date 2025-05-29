@@ -7,7 +7,7 @@ import { useSelector } from 'utils/use_selector';
 import circle from '@turf/circle';
 import { MapContext } from 'UI/LegacyMap/helpers/components/MapContext';
 import { handlePositionTracking } from 'UI/LegacyMap/helpers/functional/position-tracking';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 const PositionMarkers = ({ mapReady }) => {
   const LATITUDE = 1;
@@ -110,7 +110,7 @@ const PositionMarkers = ({ mapReady }) => {
 };
 
 const positionMarkerEl = document.createElement('div');
-positionMarkerEl.className = MOBILE ? 'userTrackingMarker userTrackingMarkerCone' : 'userTrackingMarker';
+positionMarkerEl.className = buildTimeConfig.MOBILE ? 'userTrackingMarker userTrackingMarkerCone' : 'userTrackingMarker';
 positionMarkerEl.innerHTML = `<img src='/assets/icon/circle.svg' />`;
 
 const activityMarkerEl = document.createElement('div');

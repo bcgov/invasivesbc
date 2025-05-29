@@ -1,6 +1,6 @@
 import { call, cancelled, delay, fork, put, select, takeLatest } from 'redux-saga/effects';
 import Keycloak, { KeycloakLogoutOptions } from 'keycloak-js';
-import { AppConfig } from 'state/config';
+import { AppConfig } from 'state/configuration/runtime-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { historySingleton } from 'state/store';
 import { USERINFO_CLEAR_REQUEST } from 'state/actions';
@@ -188,7 +188,7 @@ function* reinitAuth() {
 }
 
 function* initializeAuthentication() {
-  const config: AppConfig = yield select(selectConfiguration);
+  const config: AppConfig = yield select((state) => state.Configuration.current.runtime);
 
   keycloakInstance = new Keycloak({
     clientId: config.KEYCLOAK_CLIENT_ID,

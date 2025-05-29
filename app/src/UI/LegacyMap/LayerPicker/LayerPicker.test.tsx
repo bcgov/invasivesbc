@@ -16,10 +16,12 @@ const userSettingsReducer = (state = { layerPickerIsAccordion: false }, action) 
   return state;
 };
 const networkReducer = (state = { connected: false }) => state;
+const configurationReducer = (state = { current: { build: { MOBILE: true } } }) => state;
 
 const createMockStore = () =>
   configureStore({
     reducer: {
+      Configuration: configurationReducer,
       UserSettings: userSettingsReducer,
       Network: networkReducer
     }

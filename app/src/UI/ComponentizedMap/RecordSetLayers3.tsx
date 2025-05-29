@@ -39,7 +39,7 @@ const getPaintBySchemeOrColor = (layer) => {
 };
 export const RecordSetLayers = () => {
   const layersInStore = useSelector((state) => state.Map.layers);
-  const API_BASE = useSelector((state) => state.Configuration.current.API_BASE);
+  const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
 
   return (
     <>

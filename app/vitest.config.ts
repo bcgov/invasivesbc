@@ -14,7 +14,7 @@ export default defineConfig(() =>
         },
         globals: true,
         exclude: ['packages/template/*'],
-        setupFiles: ['./src/setupTests.ts'],
+        setupFiles: ['./src/test/setupTests.ts'],
         deps: {
           moduleDirectories: ['node_modules'],
           optimizer: {

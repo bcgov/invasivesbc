@@ -20,7 +20,7 @@ class WellCache {
       const wellService = await WellCacheServiceFactory.getPlatformInstance();
 
       await wellService.download({
-        API_BASE: state.Configuration.current.API_BASE,
+        API_BASE: state.Configuration.current.runtime.API_BASE,
         bounds: spec.bounds,
         id: id
       });

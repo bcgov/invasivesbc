@@ -8,13 +8,15 @@ import { Home, Map } from '@mui/icons-material';
 import HeaderPopover from 'UI/Header/Mobile/HeaderPopover';
 import { OfflineSyncHeaderButton } from 'UI/Header/OfflineSyncHeaderButton';
 import { AndroidMemoryReport } from 'UI/Header/Mobile/AndroidMemoryReport';
-import { Platform, PLATFORM } from 'state/build-time-config';
+import { Platform } from 'state/configuration/build-time-config';
 
 const MobileHeader = () => {
   const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
   const activeActivity = useSelector((state) => state.UserSettings.activeActivity) || undefined;
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
+
+  const { PLATFORM } = useSelector((state) => state.Configuration.current.build);
 
   return (
     <header id="nav-header">
@@ -36,6 +38,7 @@ const MobileHeader = () => {
           path={'/Map'}
           label="Map"
           predicate={'unauthenticated'}
+          requiresFeature={'MAP'}
           platform={'both'}
           panelFullScreen={false}
           panelOpen={false}

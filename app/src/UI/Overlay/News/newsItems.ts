@@ -1,5 +1,5 @@
 import NewsArticle, { NewsPlatform, NewsSubject } from 'interfaces/NewsArticle';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 /**
  * Text content for the '/News' page.
@@ -187,7 +187,7 @@ const newsItems: NewsArticle[] = [
   }
 ]
   .filter((article) => {
-    if (MOBILE) {
+    if (buildTimeConfig) {
       return [NewsPlatform.MOBILE, NewsPlatform.BOTH].includes(article.platform);
     }
     return [NewsPlatform.WEB, NewsPlatform.BOTH].includes(article.platform);

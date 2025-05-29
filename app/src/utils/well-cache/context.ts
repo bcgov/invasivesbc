@@ -1,12 +1,12 @@
 import React from 'react';
 import SQLiteWellCacheService from './sqlite-cache';
 import { WellCacheService } from '.';
-import { Platform, PLATFORM } from 'state/build-time-config';
+import { Platform, buildTimeConfig } from 'state/configuration/build-time-config';
 import { LocalForageWellCacheService } from 'utils/well-cache/localforage-cache';
 
 class WellCacheServiceFactory {
   static async getPlatformInstance(): Promise<WellCacheService> {
-    if ([Platform.IOS, Platform.ANDROID].includes(PLATFORM)) {
+    if ([Platform.IOS, Platform.ANDROID].includes(buildTimeConfig.PLATFORM)) {
       return SQLiteWellCacheService.getInstance();
     }
     return await LocalForageWellCacheService.getInstance();

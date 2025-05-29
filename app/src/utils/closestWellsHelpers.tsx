@@ -11,7 +11,7 @@ import { WellCacheServiceFactory } from './well-cache/context';
 import GeoShapes from 'constants/geoShapes';
 import WellData from 'interfaces/WellData';
 import { LineString } from 'geojson';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 /**
  * @desc Fetch list of Wells within a surrounding area
@@ -37,7 +37,7 @@ export function* getClosestWells(inputGeometry: Point | Polygon | LineString) {
       console.error('[getClosestWells]:', ex);
     }
   }
-  if (MOBILE) {
+  if (buildTimeConfig.MOBILE) {
     const service = yield WellCacheServiceFactory.getPlatformInstance();
     const wellsInArea = yield service.getNearbyWells(bufferedGeo) ?? [];
     if (wellsInArea.length > 0) {

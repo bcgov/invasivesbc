@@ -48,7 +48,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) 
         })
       );
 
-      await fetch(state.Configuration.current.API_BASE + `/api/error/`, {
+      await fetch(state.Configuration.current.runtime.API_BASE + `/api/error/`, {
         method: 'POST',
         headers: {
           Authorization: await getCurrentJWT(),
@@ -57,7 +57,7 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) 
         body: JSON.stringify({
           error: { message: error.message + '\n' + error.stack + '\n' + errorInfo.sagaStack },
           clientState: loggingState,
-          commitHash: state.Configuration.current.COMMIT_HASH
+          commitHash: state.Configuration.current.runtime.COMMIT_HASH
         })
       });
     }

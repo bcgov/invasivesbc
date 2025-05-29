@@ -14,7 +14,6 @@ import MapActions from 'state/actions/map';
 import { TOGGLE_PANEL } from 'state/actions';
 import { selectAuth } from 'state/reducers/auth';
 import 'UI/Header/Mobile/MobileHeader.css';
-import { MOBILE } from 'state/build-time-config';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
@@ -87,13 +86,15 @@ const HeaderPopover = () => {
   const [offlineUserSelectionAvailable, setOfflineUserSelectionAvailable] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
+
   useEffect(() => {
     if (!MOBILE || authenticated || workingOffline) {
       setOfflineUserSelectionAvailable(false);
     } else if (offlineUsers.length > 0) {
       setOfflineUserSelectionAvailable(true);
     }
-  }, [offlineUsers, authenticated, workingOffline]);
+  }, [offlineUsers, authenticated, workingOffline, MOBILE]);
 
   return (
     <>

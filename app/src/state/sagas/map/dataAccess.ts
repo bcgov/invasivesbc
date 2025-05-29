@@ -5,7 +5,7 @@ import { ACTIVITY_GET_INITIAL_STATE_FAILURE, FILTERS_PREPPED_FOR_VECTOR_ENDPOINT
 import { selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -178,9 +178,9 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
       filter.filterType !== 'spatialFilterDrawn'
         ? filter
         : {
-            ...filter,
-            geojson: getFilterWithDrawnShape(filter.filter)
-          }
+          ...filter,
+          geojson: getFilterWithDrawnShape(filter.filter)
+        }
     );
 
     modifiedTableFilters ??= [];
@@ -204,7 +204,7 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action: PayloadAction<Activity
     const connected = yield select(selectNetworkConnected);
     const mapState = yield select(selectMap);
     const { recordSetID, page, limit, tableFiltersHash } = action.payload;
-    const userMobileOffline = MOBILE && !connected;
+    const userMobileOffline = buildTimeConfig.MOBILE && !connected;
 
     const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState, mapState?.clientBoundaries);
     if (filterObject == null) {
@@ -286,7 +286,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
     const connected = yield select(selectNetworkConnected);
     const mapState = yield select(selectMap);
     const { recordSetID, page, limit, tableFiltersHash } = action.payload;
-    const userMobileOffline = MOBILE && !connected;
+    const userMobileOffline = buildTimeConfig.MOBILE && !connected;
 
     const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState, mapState?.clientBoundaries);
     if (filterObject == null) {

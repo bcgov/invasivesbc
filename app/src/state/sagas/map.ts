@@ -53,7 +53,6 @@ import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { SortFilter } from 'interfaces/filterParams';
 import Activity from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
@@ -62,7 +61,7 @@ import { RECORD_COLOURS } from 'constants/colors';
 import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import IappActions from 'state/actions/activity/Iapp';
 import IappRecord from 'interfaces/IappRecord';
@@ -197,7 +196,7 @@ function* handle_WHATS_HERE_IAPP_ROWS_REQUEST() {
     return;
   }
   let records: IappRecord[];
-  if (MOBILE && !connected) {
+  if (buildTimeConfig.MOBILE && !connected) {
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     records = yield service.getPaginatedCachedIappRecords(
       whatsHere.IAPPIDs.map((id) => id.toString()),
@@ -260,7 +259,7 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
   }
 
   let records: UserRecord[];
-  if (MOBILE && !connected) {
+  if (buildTimeConfig.MOBILE && !connected) {
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     records = yield service.getPaginatedCachedActivityRecords(
       whatsHere.ActivityIDs,

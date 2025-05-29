@@ -10,7 +10,7 @@ import { FeatureCollection } from 'geojson';
 import { LAYER_Z_BACKGROUND, LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/LegacyMap/helpers/functional/layer-definitions';
 import { FALLBACK_COLOR } from 'UI/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/LegacyMap/helpers/functional/utility-functions';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
@@ -490,7 +490,7 @@ export const rebuildLayersOnTableHashUpdate = async (
   API_BASE: string,
   connectedToNetwork: boolean
 ) => {
-  const MOBILE_OFFLINE = MOBILE && !connectedToNetwork;
+  const MOBILE_OFFLINE = buildTimeConfig.MOBILE && !connectedToNetwork;
   /* First need to delete the layers who's record set was deleted altogether: */
   const storeLayersIds = storeLayers.map((layer) => formatLayerID(layer.recordSetID, layer.tableFiltersHash));
   const allLayersOnMap = map.getLayersOrder();

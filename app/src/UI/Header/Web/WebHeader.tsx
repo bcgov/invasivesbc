@@ -275,6 +275,7 @@ export const WebHeader: React.FC = () => {
           key={'tab5'}
           path={'/Batch/list'}
           label="Batch"
+          requiresFeature={'BATCH'}
           predicate={'authenticated_online'}
           platform={'web'}
           panelOpen={true}
@@ -287,6 +288,7 @@ export const WebHeader: React.FC = () => {
           key={'tab6'}
           path={'/Reports'}
           label="Reports"
+          requiresFeature={'EMBEDDED_REPORTS'}
           predicate={'authenticated_online'}
           platform={'web'}
           panelOpen={true}
@@ -311,6 +313,7 @@ export const WebHeader: React.FC = () => {
           key={'tab7'}
           path={'/Training'}
           label="Training"
+          requiresFeature={'TRAINING_PAGE'}
           predicate={'always'}
           platform={'web'}
           panelOpen={true}
@@ -325,6 +328,7 @@ export const WebHeader: React.FC = () => {
           key={'tab8'}
           path={'/Map'}
           label="Map"
+          requiresFeature={'MAP'}
           predicate={'unauthenticated'}
           platform={'both'}
           panelFullScreen={false}

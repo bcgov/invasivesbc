@@ -15,6 +15,10 @@ templates /assets/configuration* {
   mime application/javascript
 }
 
+templates /assets/injected-features* {
+  mime application/javascript
+}
+
 route {
   header /assets/* Cache-Control max-age=3600
 }

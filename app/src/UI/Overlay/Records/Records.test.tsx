@@ -15,17 +15,29 @@ import { userEvent } from '@testing-library/user-event';
 import { Provider } from 'react-redux';
 import { Records } from './Records';
 import setupStore from 'state/store';
-import { CONFIG } from 'state/config';
 import UserInputModalController from 'UI/UserInputModals/UserInputModalController';
-import { MOBILE } from 'state/build-time-config';
 import NetworkActions from 'state/actions/network/NetworkActions';
+import { constructUnifiedConfig, UnifiedConfig } from 'state/configuration/unified-config';
+import { beforeAll } from 'vitest';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
+
+let store;
+let config: UnifiedConfig;
+
 import defaultRecordSets from 'constants/defaultRecordSets';
 
-const NUMBER_OF_DEFAULT_RECORDSETS = Object.keys(defaultRecordSets).length;
+// Setup default Redux store for tests
+beforeAll(async () => {
+  config = await constructUnifiedConfig();
+  const { store: configuredStore } = setupStore(config);
+
+  store = configuredStore;
+});
 
 describe('Records.tsx', () => {
+  const NUMBER_OF_DEFAULT_RECORDSETS = Object.keys(defaultRecordSets).length;
+
   // Setup default Redux store for tests
-  const { store } = setupStore(CONFIG);
   it('should render', () => {
     render(
       <Provider store={store}>
@@ -139,7 +151,7 @@ describe('Records.tsx', () => {
     });
   });
 
-  if (MOBILE) {
+  if (buildTimeConfig.MOBILE) {
     it('[Mobile] Check offline Render', async () => {
       const { queryAllByTestId, getByText } = render(
         <Provider store={store}>
@@ -154,7 +166,7 @@ describe('Records.tsx', () => {
       await waitFor(() => {
         expect(getByText(/Any recordsets that haven't been saved for offline/)).toBeDefined();
       });
-      expect(queryAllByTestId('record-set')).toHaveLength(MOBILE ? 1 : 0); // Offline Recordset will be rendered on Mobile
+      expect(queryAllByTestId('record-set')).toHaveLength(config.build.MOBILE ? 1 : 0); // Offline Recordset will be rendered on Mobile
     });
   }
 });

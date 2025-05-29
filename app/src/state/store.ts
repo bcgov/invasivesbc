@@ -18,15 +18,14 @@ import networkSaga from './sagas/network';
 import trainingVideosSaga from './sagas/training_videos';
 import userSettingsSaga from './sagas/userSettings';
 import { createSagaCrashHandler } from './sagas/error_handler';
-import { AppConfig } from './config';
-import { DEBUG } from './build-time-config';
 import NetworkActions from './actions/network/NetworkActions';
 import { AuthActions } from 'state/actions/auth/Auth';
 import EventActions from 'state/actions/events/EventActions';
+import { UnifiedConfig } from 'state/configuration/unified-config';
 
 const historySingleton = createBrowserHistory();
 
-export function setupStore(configuration: AppConfig) {
+export function setupStore(configuration: UnifiedConfig) {
   const storeRef: { store: Store | null } = {
     store: null
   };
@@ -45,7 +44,7 @@ export function setupStore(configuration: AppConfig) {
   });
 
   const store = (() => {
-    if (DEBUG) {
+    if (configuration.build.DEBUG) {
       return configureStore({
         reducer: createRootReducer(configuration),
         middleware: (getDefaultMiddleware) => {

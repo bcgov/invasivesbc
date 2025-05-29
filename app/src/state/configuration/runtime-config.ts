@@ -13,14 +13,6 @@ interface AppConfig {
   PUBLIC_MAP_URL: string;
   IOS_APP_STORE_URL: string;
   ANDROID_APP_STORE_URL: string;
-
-  // to easily disable features not ready for prod-use (or disable them on mobile/web)
-  FEATURE_GATE: {
-    PLAN_MY_TRIP: boolean;
-    EMBEDDED_REPORTS: boolean;
-    BATCH: boolean;
-    COMPONENTIZED_MAP: boolean;
-  };
 }
 
 /* global CONFIGURATION_SOURCE */
@@ -36,14 +28,13 @@ declare global {
   const CONFIGURATION_ANDROID_APP_STORE_URL: string | null;
   const CONFIGURATION_PUBLIC_MAP_URL: string | null;
   const INJECTED_COMMIT_HASH: string | null;
-  const CONFIGURATION_COMPONENTIZED_MAP: string | null;
 }
 
-let CONFIG: AppConfig;
+let runtimeConfig: AppConfig;
 
 switch (CONFIGURATION_SOURCE) {
   case 'Caddy':
-    CONFIG = {
+    runtimeConfig = {
       COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       API_BASE: '{{env "API_BASE"}}',
       KEYCLOAK_CLIENT_ID: '{{env "KEYCLOAK_CLIENT_ID"}}',
@@ -53,17 +44,11 @@ switch (CONFIGURATION_SOURCE) {
       PUBLIC_MAP_URL: '{{env "PUBLIC_MAP_URL"}}',
       SILENT_CHECK_URI: '{{env "SILENT_CHECK_URI"}}',
       IOS_APP_STORE_URL: '{{env "IOS_APP_STORE_URL"}}',
-      ANDROID_APP_STORE_URL: '{{env "ANDROID_APP_STORE_URL"}}',
-      FEATURE_GATE: {
-        PLAN_MY_TRIP: true,
-        EMBEDDED_REPORTS: true,
-        BATCH: '{{env "FEATURE_GATE_BATCH_ENABLED"}}'.toLowerCase() === 'true',
-        COMPONENTIZED_MAP: '{{env "FEATURE_GATE_COMPONENTIZED_MAP_ENABLED"}}'.toLowerCase() === 'true'
-      }
+      ANDROID_APP_STORE_URL: '{{env "ANDROID_APP_STORE_URL"}}'
     };
     break;
   case 'Provided':
-    CONFIG = {
+    runtimeConfig = {
       COMMIT_HASH: INJECTED_COMMIT_HASH && INJECTED_COMMIT_HASH.length > 0 ? INJECTED_COMMIT_HASH : 'unknown',
       API_BASE: CONFIGURATION_API_BASE || 'unset',
       KEYCLOAK_CLIENT_ID: CONFIGURATION_KEYCLOAK_CLIENT_ID || 'unset',
@@ -73,19 +58,12 @@ switch (CONFIGURATION_SOURCE) {
       PUBLIC_MAP_URL: CONFIGURATION_PUBLIC_MAP_URL || 'unset',
       SILENT_CHECK_URI: CONFIGURATION_SILENT_CHECK_URI || 'unset',
       IOS_APP_STORE_URL: CONFIGURATION_IOS_APP_STORE_URL || 'unset',
-      ANDROID_APP_STORE_URL: CONFIGURATION_ANDROID_APP_STORE_URL || 'unset',
-      FEATURE_GATE: {
-        PLAN_MY_TRIP: true,
-        EMBEDDED_REPORTS: true,
-        BATCH: true,
-        COMPONENTIZED_MAP:
-          (CONFIGURATION_COMPONENTIZED_MAP && CONFIGURATION_COMPONENTIZED_MAP.toLowerCase() == 'true') || false
-      }
+      ANDROID_APP_STORE_URL: CONFIGURATION_ANDROID_APP_STORE_URL || 'unset'
     };
     break;
   default:
     throw new Error('unconfigured');
 }
 
-export { CONFIG };
+export { runtimeConfig };
 export type { AppConfig };

@@ -2,9 +2,11 @@ import React from 'react';
 import { Source, Layer } from 'react-map-gl/maplibre';
 import maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
-import { MOBILE } from 'state/build-time-config';
+import { useSelector } from 'utils/use_selector';
 
 export const PublicLayer = () => {
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
+
   const pmtilesProtocol = new Protocol();
   maplibregl.addProtocol('pmtiles', (request) => {
     return new Promise((resolve, reject) => {

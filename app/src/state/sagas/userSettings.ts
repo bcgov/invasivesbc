@@ -7,7 +7,7 @@ import Activity from 'state/actions/activity/Activity';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { selectAuth } from 'state/reducers/auth';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RepositoryMetadata } from 'utils/record-cache';
 import defaultRecordSets from 'constants/defaultRecordSets';
@@ -84,7 +84,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   const defaultRecordSet = defaultRecordSets;
   // add offline activities for mobile
-  if (MOBILE && (!recordSets || Object.keys(recordSets).length === 0)) {
+  if (buildTimeConfig.MOBILE && (!recordSets || Object.keys(recordSets).length === 0)) {
     // RecordSets are empty, try to recover whats in the local database
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     const repos = yield service.listRepositories(['filter_objects', 'status', 'record_set_type', 'set_id']);

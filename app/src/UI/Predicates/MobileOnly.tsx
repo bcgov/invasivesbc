@@ -1,7 +1,6 @@
 import { PropsWithChildren, useEffect, useState } from 'react';
 import { useSelector } from 'utils/use_selector';
 import { selectNetworkConnected } from 'state/reducers/network';
-import { MOBILE } from 'state/build-time-config';
 
 interface MobileOnlyProps extends PropsWithChildren {
   networkRequirement?: 'connected' | 'disconnected' | 'either';
@@ -9,6 +8,7 @@ interface MobileOnlyProps extends PropsWithChildren {
 
 const MobileOnly = ({ children, networkRequirement = 'either' }: MobileOnlyProps) => {
   const connected = useSelector(selectNetworkConnected);
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
 
   const [networkPredicate, setNetworkPredicate] = useState(true);
 
