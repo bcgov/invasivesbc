@@ -1,4 +1,4 @@
-import { createMockStore, mockState } from '../../../../../testutils';
+import { createMockStore, mockState } from 'test/testUtils';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import NoRowsInSearch from './NoRowsInSearch';

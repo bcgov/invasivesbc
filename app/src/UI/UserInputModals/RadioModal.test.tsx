@@ -5,7 +5,7 @@ import { createAlertsAndPromptsReducer } from 'state/reducers/alertsAndPrompts';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RadioModalInterface } from 'interfaces/prompt-interfaces';
 import userEvent from '@testing-library/user-event';
-import { createMockStore } from '../../../testutils';
+import { createMockStore } from 'test/testUtils';
 
 const textCallBack = (str: string | number) => {
   if (str) {

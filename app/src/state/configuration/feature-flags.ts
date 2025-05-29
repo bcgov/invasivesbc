@@ -102,5 +102,6 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
   return COMPUTED_FEATURES;
 }
 
-export { computeFeatures };
+/* Baseline is only exported so that the tests don't need to be kept in sync manually as features change (they will, by default, get the defaults) */
+export { computeFeatures, BASELINE_FEATURES };
 export type { FeatureFlag, FeatureFlags };

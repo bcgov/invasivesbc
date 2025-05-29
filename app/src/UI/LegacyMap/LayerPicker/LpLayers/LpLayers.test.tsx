@@ -1,7 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import LpLayers from './LpLayers';
-import { createMockStore, mockState } from '../../../../../testutils';
+import { createMockStore, mockState } from 'test/testUtils';
 import { createMapReducer, DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import userEvent from '@testing-library/user-event';
 

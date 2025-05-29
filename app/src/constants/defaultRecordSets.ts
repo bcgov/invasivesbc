@@ -1,6 +1,6 @@
 import { ActivityStatus } from 'sharedAPI';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
-import { MOBILE } from 'state/build-time-config';
+import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
   '1': {
@@ -69,7 +69,7 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
   }
 };
 
-if (MOBILE) {
+if (buildTimeConfig.MOBILE) {
   defaultRecordSets['4'] = {
     recordSetType: RecordSetType.Activity,
     id: '4',
