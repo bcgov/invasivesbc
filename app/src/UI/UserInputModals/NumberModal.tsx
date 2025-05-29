@@ -130,8 +130,16 @@ const NumberModal = ({
         </FormControl>
         <Divider />
         <DialogActions>
-          {!disableCancel && <Button onClick={handleClose}>{cancelText ?? 'Cancel'}</Button>}
-          <Button onClick={handleConfirmation} disabled={validationError !== '' || !userNumber}>
+          {!disableCancel && (
+            <Button data-testid="number-modal-cancel" onClick={handleClose}>
+              {cancelText ?? 'Cancel'}
+            </Button>
+          )}
+          <Button
+            data-testid="number-modal-confirm"
+            onClick={handleConfirmation}
+            disabled={validationError !== '' || !userNumber}
+          >
             {confirmText ?? 'Confirm'}
           </Button>
         </DialogActions>
