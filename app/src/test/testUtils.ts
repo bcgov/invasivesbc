@@ -36,8 +36,8 @@ const DEFAULT_TEST_CONFIGURATION: UnifiedConfig = {
   runtime: {
     API_BASE: 'http://localhost/',
     COMMIT_HASH: 'testtesttest',
-    KEYCLOAK_CLIENT_ID: '',
-    KEYCLOAK_REALM: '',
+    KEYCLOAK_CLIENT_ID: 'test',
+    KEYCLOAK_REALM: 'test',
     KEYCLOAK_URL: 'http://localhost',
     REDIRECT_URI: '',
     SILENT_CHECK_URI: '',
@@ -58,8 +58,8 @@ const IOS_TEST_CONFIGURATION: UnifiedConfig = {
   runtime: {
     API_BASE: 'http://localhost/',
     COMMIT_HASH: 'testtesttest',
-    KEYCLOAK_CLIENT_ID: '',
-    KEYCLOAK_REALM: '',
+    KEYCLOAK_CLIENT_ID: 'test',
+    KEYCLOAK_REALM: 'test',
     KEYCLOAK_URL: 'http://localhost',
     REDIRECT_URI: '',
     SILENT_CHECK_URI: '',
@@ -80,8 +80,8 @@ const ANDROID_TEST_CONFIGURATION: UnifiedConfig = {
   runtime: {
     API_BASE: 'http://localhost/',
     COMMIT_HASH: 'testtesttest',
-    KEYCLOAK_CLIENT_ID: '',
-    KEYCLOAK_REALM: '',
+    KEYCLOAK_CLIENT_ID: 'test',
+    KEYCLOAK_REALM: 'test',
     KEYCLOAK_URL: 'http://localhost',
     REDIRECT_URI: '',
     SILENT_CHECK_URI: '',
