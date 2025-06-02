@@ -30,12 +30,12 @@ export const RecordTable = ({ setID }: PropTypes) => {
       if ('activity_id' in row) {
         return {
           id: row.activity_id,
-          geom: row.geometry[0] ?? undefined
+          geom: row?.geometry?.[0]
         };
       } else if ('site_id' in row) {
         return {
           id: row.site_id,
-          geom: row.geometry ?? undefined
+          geom: row?.geometry
         };
       }
       return { id: '', geom: undefined };
