@@ -17,6 +17,7 @@ import Activity, { ICreateLocal } from 'state/actions/activity/Activity';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RecordSetId } from 'interfaces/UserRecordSet';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
+import { selectActivity } from 'state/reducers/activity';
 
 function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
@@ -92,7 +93,7 @@ function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
 
 function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
   const { serializedActivities } = yield select(selectOfflineActivity);
-
+  const { activeActivity, activeActivityPermissions } = yield select(selectActivity);
   const toSync: OfflineActivityRecord[] = Object.values(serializedActivities).filter(
     (s) =>
       typeof s === 'object' &&
@@ -132,12 +133,18 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
             sync_state: OfflineActivitySyncState.SYNCHRONIZED
           }
         });
-        yield put(
-          Activity.getSuccess({
-            ...hydrated,
-            sync_status: sync_status
-          })
-        );
+
+        if (hydrated.activity_id === activeActivity) {
+          yield put(
+            Activity.getSuccess({
+              activity: {
+                ...hydrated,
+                sync_status
+              },
+              permissions: activeActivityPermissions
+            })
+          );
+        }
         yield put(Activity.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
       } else {
         yield put({
