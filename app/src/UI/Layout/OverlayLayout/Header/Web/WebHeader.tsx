@@ -1,13 +1,10 @@
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import LogoutIcon from '@mui/icons-material/Logout';
 import React, { useEffect } from 'react';
-import 'UI/Layout/Header/Web/WebHeader.css';
+import 'UI/Layout/OverlayLayout/Header/Web/WebHeader.css';
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
-import { TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router-dom';
-import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import AssignmentIcon from '@mui/icons-material/Assignment';
-import { AdminPanelSettings, Assessment, FileUpload, Home, Map, Newspaper, School } from '@mui/icons-material';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
@@ -16,7 +13,8 @@ import { selectAuth } from 'state/reducers/auth';
 import MapActions from 'state/actions/map';
 import { AuthActions } from 'state/actions/auth/Auth';
 import Alerts from 'state/actions/alerts/Alerts';
-import NavTab from 'UI/Layout/Header/NavTab';
+import NavTab from 'UI/Layout/OverlayLayout/Header/NavTab';
+import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -54,10 +52,6 @@ const LogoutButton = () => {
   const dispatch = useDispatch();
   const signOutAndTogglePanel = () => {
     return (dispatch: AppDispatch) => {
-      dispatch({
-        type: TOGGLE_PANEL,
-        payload: { panelOpen: false }
-      });
       dispatch(AuthActions.signoutRequest());
       dispatch(MapActions.toggleOverlay('public_layer'));
     };
@@ -85,68 +79,6 @@ const InvIcon = () => {
   );
 };
 
-const ActivityTabMemo = () => {
-  const activeActivity = useSelector((state) => state.UserSettings.activeActivity) || undefined;
-  return (
-    <NavTab
-      key={'tab3'}
-      path={'/Records/Activity:' + activeActivity + '/form'}
-      label="Current Activity"
-      predicate={'authenticated_any'}
-      platform={'both'}
-      panelOpen={true}
-      panelFullScreen={false}
-    >
-      <AssignmentIcon />
-    </NavTab>
-  );
-};
-
-const IAPPTabMemo = () => {
-  const activeIAPP = useSelector((state) => state.UserSettings.activeIAPP) || undefined;
-  return (
-    <NavTab
-      key={'tab4'}
-      path={'/Records/IAPP/' + activeIAPP + '/summary'}
-      label="Current IAPP"
-      predicate={'authenticated_any'}
-      platform={'both'}
-      panelOpen={true}
-      panelFullScreen={false}
-    >
-      <img
-        alt="iapp logo"
-        className="iapp-logo"
-        src={'/assets/iapp_logo.gif'}
-        style={{ maxWidth: '1rem', marginBottom: '0px' }}
-      />
-    </NavTab>
-  );
-};
-
-const AdminPanelMemo = () => {
-  const roles = useSelector((state) => state.Auth.roles);
-  return (
-    <>
-      {roles.find((role) => role.role_id === 18) ? (
-        <NavTab
-          key={'tab9'}
-          path={'/Admin'}
-          label="Admin"
-          panelOpen={true}
-          predicate={'authenticated_online'}
-          platform={'web'}
-          panelFullScreen={true}
-        >
-          <AdminPanelSettings />
-        </NavTab>
-      ) : (
-        <></>
-      )}
-    </>
-  );
-};
-
 const LoginOrOutMemo = React.memo(() => {
   const dispatch = useDispatch();
   const history = useHistory();
@@ -166,10 +98,6 @@ const LoginOrOutMemo = React.memo(() => {
 
   const navToUpdateRequest = () => {
     history.push({ pathname: '/AccessRequest' });
-    dispatch({
-      type: TOGGLE_PANEL,
-      payload: { panelOpen: true, fullScreen: true }
-    });
   };
 
   const requestAccess = async () => {
@@ -177,10 +105,6 @@ const LoginOrOutMemo = React.memo(() => {
       dispatch(AuthActions.signinRequest({}));
     } else {
       history.push('/AccessRequest');
-      dispatch({
-        type: TOGGLE_PANEL,
-        payload: { panelOpen: true, fullScreen: true }
-      });
     }
   };
 
@@ -238,104 +162,16 @@ const LoginOrOutMemo = React.memo(() => {
 });
 
 export const WebHeader: React.FC = () => {
+  const { filteredLinks } = usePrimaryNavigationLinks();
+
   return (
     <header className="HeaderBar">
       <InvIcon />
 
       <ButtonWrapper>
-        <NavTab
-          key={'tab1'}
-          path={'/Landing'}
-          predicate={'always'}
-          platform={'both'}
-          label="Home"
-          panelOpen={true}
-          panelFullScreen={true}
-        >
-          <Home />
-        </NavTab>
-
-        <NavTab
-          key={'tab2'}
-          path="/Records"
-          label="Records"
-          predicate={'authenticated_any'}
-          platform={'both'}
-          panelOpen={true}
-          panelFullScreen={false}
-        >
-          <ManageSearchIcon />
-        </NavTab>
-
-        <ActivityTabMemo />
-
-        <IAPPTabMemo />
-
-        <NavTab
-          key={'tab5'}
-          path={'/Batch/list'}
-          label="Batch"
-          requiresFeature={'BATCH'}
-          predicate={'authenticated_online'}
-          platform={'web'}
-          panelOpen={true}
-          panelFullScreen={true}
-        >
-          <FileUpload />
-        </NavTab>
-
-        <NavTab
-          key={'tab6'}
-          path={'/Reports'}
-          label="Reports"
-          requiresFeature={'EMBEDDED_REPORTS'}
-          predicate={'authenticated_online'}
-          platform={'web'}
-          panelOpen={true}
-          panelFullScreen={true}
-        >
-          <Assessment />
-        </NavTab>
-
-        <NavTab
-          key="tab7-1/2"
-          path="/News"
-          label="News"
-          predicate={'authenticated_online'}
-          platform={'web'}
-          panelOpen={true}
-          panelFullScreen={true}
-        >
-          <Newspaper />
-        </NavTab>
-
-        <NavTab
-          key={'tab7'}
-          path={'/Training'}
-          label="Training"
-          requiresFeature={'TRAINING_PAGE'}
-          predicate={'always'}
-          platform={'web'}
-          panelOpen={true}
-          panelFullScreen={true}
-        >
-          <School />
-        </NavTab>
-
-        <AdminPanelMemo />
-
-        <NavTab
-          key={'tab8'}
-          path={'/Map'}
-          label="Map"
-          requiresFeature={'MAP'}
-          predicate={'unauthenticated'}
-          platform={'both'}
-          panelFullScreen={false}
-          panelOpen={false}
-        >
-          <Map />
-        </NavTab>
+        {filteredLinks.map((link) => {
+          return <NavTab key={link.id} {...link} />;
+        })}
       </ButtonWrapper>
       <LoginOrOutMemo />
     </header>

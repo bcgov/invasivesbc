@@ -1,7 +1,8 @@
 import { createNextState } from '@reduxjs/toolkit';
-import { SET_APP_MODE, TOGGLE_PANEL, URL_CHANGE } from 'state/actions';
+import { SET_APP_MODE, URL_CHANGE } from 'state/actions';
 import EventActions from 'state/actions/events/EventActions';
 import { DeviceMemoryInformation } from 'utils/memory-report/memoryReport';
+import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 
 enum appModeEnum {
   'Records',
@@ -14,20 +15,22 @@ enum appModeEnum {
 
 interface AppModeState {
   mode: appModeEnum;
-  panelOpen: boolean;
-  panelFullScreen: boolean;
   url: string | null;
   constraints: {
     memory: DeviceMemoryInformation | null;
     screenWidth: number | undefined;
     tinyScreen: boolean;
   };
+  layout: {
+    mode: LayoutMode;
+  };
 }
 
 const initialState: AppModeState = {
   mode: appModeEnum.Landing,
-  panelOpen: false,
-  panelFullScreen: false,
+  layout: {
+    mode: LayoutMode.MAP_HIDDEN
+  },
   url: null,
   constraints: {
     memory: null,
@@ -36,7 +39,7 @@ const initialState: AppModeState = {
   }
 };
 
-export default function appMode(state = initialState, action: any): AppModeState {
+export default function appMode(state = initialState, action) {
   if (EventActions.viewportResize.match(action)) {
     return {
       ...state,
@@ -54,6 +57,13 @@ export default function appMode(state = initialState, action: any): AppModeState
         memory: action.payload
       }
     };
+  } else if (EventActions.setLayoutParameters.match(action)) {
+    return {
+      ...state,
+      layout: {
+        ...action.payload
+      }
+    };
   } else {
     switch (action.type) {
       case SET_APP_MODE:
@@ -61,28 +71,17 @@ export default function appMode(state = initialState, action: any): AppModeState
           ...state,
           mode: action.payload.mode
         };
-      case TOGGLE_PANEL: {
-        const panelStateInPayload = action?.payload?.panelOpen !== undefined ? true : false;
-        return {
-          ...state,
-          panelOpen: panelStateInPayload ? action.payload.panelOpen : !state.panelOpen,
-          panelFullScreen: action?.payload?.fullScreen ? action.payload.fullScreen : false
-        };
-      }
       case URL_CHANGE: {
-        return createNextState(state, (draftState: any) => {
+        return createNextState(state, (draftState) => {
           draftState.url = action?.payload?.url;
           if (
-            ['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News'].includes(action.payload.url.split('/')[1])
+            ['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News', 'Admin'].includes(
+              action.payload.url.split('/')[1]
+            )
           ) {
-            draftState.panelFullScreen = true;
+            draftState.layout.mode = LayoutMode.MAP_HIDDEN;
           } else {
-            draftState.panelFullScreen = false;
-          }
-          if (action.payload.url === '/') {
-            draftState.panelOpen = false;
-          } else {
-            draftState.panelOpen = true;
+            draftState.layout.mode = LayoutMode.MAP_FOCUSED;
           }
         });
       }

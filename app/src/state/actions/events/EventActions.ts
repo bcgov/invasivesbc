@@ -1,10 +1,15 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import DeviceInformation from 'utils/memory-report/memoryReport';
 import { Platform, buildTimeConfig } from 'state/configuration/build-time-config';
+import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 
 interface ViewportResizePayload {
   width: number;
   height: number;
+}
+
+interface SetLayoutParametersPayload {
+  mode: LayoutMode;
 }
 
 class EventActions {
@@ -13,6 +18,9 @@ class EventActions {
   /* fired for window.onfocus and window.visibilitychange (with document.hidden == false). for detecting wakeups on mobile. */
   static readonly wakeup = createAction(`${this.PREFIX}/wakeup`);
   static readonly viewportResize = createAction<ViewportResizePayload>(`${this.PREFIX}/viewportResize`);
+
+  static readonly setLayoutParameters = createAction<SetLayoutParametersPayload>(`${this.PREFIX}/setLayoutParameters`);
+  
   static readonly deviceMemoryReport = createAsyncThunk(`${this.PREFIX}/deviceMemoryReport`, async () => {
     if (buildTimeConfig.PLATFORM !== Platform.ANDROID) {
       throw new Error('This action is only meaningful on Android');

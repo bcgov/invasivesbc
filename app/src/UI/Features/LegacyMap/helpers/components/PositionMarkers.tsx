@@ -11,6 +11,7 @@ import circle from '@turf/circle';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { handlePositionTracking } from 'UI/Features/LegacyMap/helpers/functional/position-tracking';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
+import { useHistory } from 'react-router';
 
 const PositionMarkers = ({ mapReady }) => {
   const LATITUDE = 1;
@@ -37,7 +38,8 @@ const PositionMarkers = ({ mapReady }) => {
   const whatsHereFeature = useSelector((state) => state.Map.whatsHere?.feature);
   const whatsHereMarker = new maplibregl.Marker({ element: whatsHereMarkerEl });
 
-  const appModeUrl = useSelector((state) => state.AppMode.url);
+  const { location } = useHistory();
+
   // also used with current marker below:
   const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry);
 
@@ -89,7 +91,7 @@ const PositionMarkers = ({ mapReady }) => {
 
   useEffect(() => {
     refreshWhatsHereFeature(map, { whatsHereFeature });
-  }, [whatsHereFeature, appModeUrl, map, mapReady]);
+  }, [whatsHereFeature, location, map, mapReady]);
 
   useEffect(() => {
     try {

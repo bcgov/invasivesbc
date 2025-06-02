@@ -1,11 +1,11 @@
-import { RecordCacheService } from 'utils/record-cache';
 import { StartupTask } from 'UI/StartupCoordinator/StartupCoordinator';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 const LOAD_RECORDSET_CACHES: StartupTask = {
   name: 'Load Recordset Caches',
   run: async ({ CONFIG }) => {
     if (CONFIG.build.MOBILE && CONFIG.features.CACHE_RECORDSETS.enabled) {
-      await RecordCacheService.getInstance();
+      await RecordCacheServiceFactory.getPlatformInstance();
     }
   }
 };

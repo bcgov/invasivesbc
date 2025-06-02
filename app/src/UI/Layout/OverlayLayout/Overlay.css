@@ -1,6 +1,25 @@
+:root {
+  --overlay-top: var(--header-bar-height);
+  --overlay-grip-height: 25px; /* grab handle */
+}
+
 .overlayMenuResizeButtons {
   display: flex;
   flex-direction: row;
+}
+
+#overlay-anchor {
+  position: absolute;
+  inset: var(--header-bar-height) 0 var(--footer-bar-height) 0;
+  pointer-events: none;
+  overflow: clip;
+}
+
+.overlay-content {
+  pointer-events: all;
+  overflow: scroll;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .map__overlay {
@@ -15,13 +34,14 @@
   height: 0;
 
   &.map__overlay--show {
-    height: calc(var(--overlay-height));
+    top: var(--overlay-top);
+    bottom: 0;
+    height: 100%;
     overflow-y: auto;
   }
 
   &.map__overlay--show-fullscreen {
-    top: 0;
-    height: auto;
+    height: 100%;
     overflow-y: visible;
   }
 }
@@ -30,4 +50,42 @@
   height: 100%;
   width: 100%;
   overflow-y: auto;
+}
+
+
+.map-containing-block {
+  position: relative;
+  flex-grow: 1;
+  width: 100%;
+  height: 100px;
+}
+
+.MapWrapper {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.Map {
+  width: 100%;
+  height: 100%;
+}
+
+
+.maplibregl-ctrl-bottom-right {
+  top: calc(var(--overlay-top) - 48px) !important;
+  bottom: initial !important;
+  transition: top 0.1s ease 0.3s !important;
+
+}
+
+.maplibregl-ctrl-bottom-left {
+  top: calc(var(--overlay-top) - 48px) !important;
+  bottom: initial !important;
+  transition: top 0.1s ease 0.3s !important;
+}
+
+#map-btn-container {
+  bottom: 0 !important;
+  top: calc(var(--overlay-top) - var(--map-button-bar-height) - 4px) !important;
 }

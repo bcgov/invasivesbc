@@ -7,68 +7,62 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import FormMenuButtons from 'UI/Features/Records/FormMenuButtons/FormMenuButtons';
-import { useSelector } from 'utils/use_selector';
 
 const maximize = () => {
-  setOverlayHeight('100%');
+  setOverlayStyle({ top: '0' });
 };
 
 const minimize = () => {
-  setOverlayHeight('0px');
+  setOverlayStyle({ top: getOverlayAnchorDimensions().height });
 };
 
-const setOverlayHeight = (height) => {
+const setOverlayStyle = ({ top }) => {
   const sel = document.querySelector(':root');
   if (sel instanceof HTMLElement) {
-    const MIN = `var(--overlay-grip-height)`;
-    const MAX = `100%`;
-    sel.style.setProperty('--overlay-height', `clamp(${MIN}, ${height}, ${MAX})`);
+    const MIN = `0px`;
+    const MAX = `${getOverlayAnchorDimensions().height} - var(--overlay-grip-height)`;
+    sel.style.setProperty('--overlay-top', `clamp(${MIN}, ${top}, ${MAX})`);
   }
 };
 
-const getAppHeight = () => {
-  const appElement = document.getElementById('app');
+const getOverlayAnchorDimensions = () => {
+  const appElement = document.getElementById('overlay-anchor');
+
   if (appElement !== null) {
     const currentAppStyle = window.getComputedStyle(appElement);
-    return parseInt(currentAppStyle.height.split('px')[0]);
+    return {
+      height: currentAppStyle.height,
+      top: currentAppStyle.top
+    };
   }
-  return 0;
+
+  return {
+    height: '0',
+    top: '0'
+  };
 };
 
-const computeDesiredDragHandleHeightFromMousePosition = (mouseY) => {
-  const appHeight = getAppHeight();
-  const SNAP_TO_NEAREST = 10; // set to 1 for no snap
-  return Math.floor((appHeight - mouseY) / SNAP_TO_NEAREST) * SNAP_TO_NEAREST;
-};
-
-const throttledResize = debounce(
-  (height) => {
-    setOverlayHeight(`${height}px`);
+const throttledRestyle = debounce(
+  (newStyle) => {
+    setOverlayStyle(newStyle);
   },
   3,
   { leading: true }
 );
 
-const drag = (e) => {
+const drag = (e: PointerEvent) => {
   e.preventDefault();
 
-  let newOverlayHeight;
+  const correctedClientY = e.clientY - 60;
 
-  if (e.type.includes('touch')) {
-    const pos = e.touches[0].clientY;
-    newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(pos);
-  } else {
-    const mousePos = e.y;
-    newOverlayHeight = computeDesiredDragHandleHeightFromMousePosition(mousePos);
-  }
+  const SNAP_TO_NEAREST = 10; // set to 1 for no snap
 
-  throttledResize(newOverlayHeight);
+  throttledRestyle({ top: `${Math.floor(correctedClientY / SNAP_TO_NEAREST) * SNAP_TO_NEAREST}px` });
 };
 
 const cleanup = () => {
   try {
-    document.removeEventListener('mousemove', drag, false);
-    document.removeEventListener('touchmove', drag, false);
+    document.removeEventListener('pointermove', drag, false);
   } catch (e) {
     console.error(e);
   }
@@ -76,18 +70,12 @@ const cleanup = () => {
 
 const onClickDragButton = (e) => {
   e.preventDefault();
-
-  if (e.type.includes('touch')) {
-    document.addEventListener('touchmove', drag, false);
-    document.addEventListener('touchend', cleanup, true);
-  } else {
-    document.addEventListener('mousemove', drag, false);
-    document.addEventListener('mouseup', cleanup, true);
-  }
+  document.addEventListener('pointermove', drag, false);
+  document.addEventListener('pointerup', cleanup, true);
 };
 
 export const OverlayHeader = () => {
-  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
+  const isCellPhoneWidth = false; //useSelector((state) => state.AppMode.constraints.tinyScreen);
 
   return (
     <div className="overlay-header">
@@ -96,8 +84,8 @@ export const OverlayHeader = () => {
         <IconButton className="overlay-control" onClick={maximize}>
           <ArrowDropUpIcon />
         </IconButton>
-        <div onMouseDown={onClickDragButton} onTouchStart={onClickDragButton} className="dragMeToResize">
-          <IconButton className="overlay-control">
+        <div onPointerDown={onClickDragButton} className="dragMeToResize">
+          <IconButton className="overlay-control resize-handle">
             <DragHandleIcon />
           </IconButton>
         </div>

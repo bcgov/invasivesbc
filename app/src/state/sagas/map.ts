@@ -42,7 +42,6 @@ import {
   REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
   SET_CURRENT_OPEN_SET,
-  TOGGLE_PANEL,
   URL_CHANGE
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -598,17 +597,17 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
 }
 
 function* handle_DRAW_CUSTOM_LAYER() {
-  const panelState = yield select((state) => state.AppMode.panelOpen);
-  if (panelState) {
-    yield put({ type: TOGGLE_PANEL });
-  }
+  // const panelState = yield select((state) => state.AppMode.layout.mode);
+  // if (panelState) {
+  //   yield put({ type: TOGGLE_PANEL });
+  // }
 }
 
 function* handle_CUSTOM_LAYER_DRAWN() {
-  const panelState = yield select((state) => state.AppMode.panelOpen);
-  if (!panelState) {
-    yield put({ type: TOGGLE_PANEL });
-  }
+  // const panelState = yield select((state) => state.AppMode.panelOpen);
+  // if (!panelState) {
+  //   yield put({ type: TOGGLE_PANEL });
+  // }
 }
 
 function* handle_MAP_ON_SHAPE_CREATE(action) {
