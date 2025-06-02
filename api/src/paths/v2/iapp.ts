@@ -13,7 +13,7 @@ import { escapeLiteralUnquoted } from 'utils/dbutils';
 
 const defaultLog = getLogger('IAPP');
 
-export const POST: Operation = [getIAPPSitesBySearchFilterCriteria()];
+const POST: Operation = [getIAPPSitesBySearchFilterCriteria()];
 
 POST.apiDoc = {
   description: 'Fetches all sites based on search criteria.',
@@ -79,7 +79,7 @@ POST.apiDoc = {
   }
 };
 
-export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
+function sanitizeIAPPFilterObject(filterObject: any, req: InvasivesRequest) {
   const sanitizedSearchCriteria = {
     serverSideNamedFilters: {},
     selectColumns: [],
@@ -94,21 +94,16 @@ export function sanitizeIAPPFilterObject(filterObject: any, req: any) {
     sanitizedSearchCriteria.z = req.params.z;
   }
 
-  const roleName = req.authContext.roles?.[0]?.role_name;
   const isAuth = req.authContext?.user !== null;
   const user_role = req.authContext?.roles?.[0]?.role_id;
   if (user_role) {
     const user_roles = Array.from({ length: user_role }, (_, i) => i + 1);
     sanitizedSearchCriteria.user_roles = user_roles;
   }
-  if (!isAuth || !roleName || roleName.includes('animal')) {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideTreatmentsAndMonitoring = true;
-  } else {
-    sanitizedSearchCriteria.serverSideNamedFilters.hideTreatmentsAndMonitoring = false;
-  }
   if (!isAuth) {
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = true;
   } else {
+    sanitizedSearchCriteria.user_id = req.authContext.user.user_id;
     sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = false;
   }
 
@@ -285,7 +280,6 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
       }
 
       sql = getIAPPSQLv2(filterObject);
-
       if (filterObject.isCSV) {
         await streamIAPPResult(filterObject, res, sql);
       } else {
@@ -314,7 +308,7 @@ function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
   };
 }
 
-export function getIAPPSQLv2(filterObject: any) {
+function getIAPPSQLv2(filterObject: any) {
   try {
     let sqlStatement: SQLStatement = SQL``;
     sqlStatement = initialWithStatement(sqlStatement);
@@ -445,8 +439,8 @@ sites as (
   b.regional_invasive_species_organization,
   b.invasive_plant_management_area,
   b.geojson,
-  b.geog as geog
-
+  b.geog as geog,
+  b.protected
   `);
 
   sqlStatement.append(`
@@ -544,11 +538,7 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   const where = filterObject.vt_request ? sqlStatement.append(`and 1=1 `) : sqlStatement.append(`where 1=1  `);
-  if (filterObject.serverSideNamedFilters.hideTreatmentsAndMonitoring) {
-    //TODO do i need to hide any    where.append(`and iapp_sites.activity_type not in ('Treatment','Monitoring') `);
-  }
 
-  where.append(' and ( 1=1 ');
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
       case 'site_id':
@@ -673,6 +663,17 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
     }
   });
+  if (filterObject?.user_id) {
+    where.append(
+      `AND (
+        sites.protected = FALSE 
+        OR (
+        SELECT BOOL_OR(can_read_sensitive_biocontrol)
+        FROM get_user_permissions(${filterObject.user_id})
+       ) 
+      `
+    );
+  }
   where.append(' )  ');
 
   if (filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0) {
@@ -682,7 +683,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   return where;
 }
 
-function groupByStatement(sqlStatement: SQLStatement, filterObject: any) {
+function groupByStatement(sqlStatement: SQLStatement, _: any) {
   const groupBy = sqlStatement.append(``);
   return groupBy;
 }
@@ -705,3 +706,5 @@ function offSetStatement(sqlStatement: SQLStatement, filterObject: any) {
   const offset = sqlStatement.append(` offset ${filterObject.offset};`);
   return offset;
 }
+
+export { getIAPPSQLv2, POST, sanitizeIAPPFilterObject };
