@@ -16,14 +16,21 @@
 
 .recordSet_header {
   box-sizing: border-box;
-  padding-left: 5px;
-  height: 45px;
+  padding: 5px;
   width: 100%;
   top: 0;
   align-items: center;
   display: flex;
   flex-direction: row;
+  min-height: 45px;
+  max-height: 80px;
   justify-content: flex-start;
+  flex-wrap: wrap;
+  border-bottom: 1px solid black;
+  .recordset-cache-control {
+    margin-left: auto;
+    margin-right: 5pt;
+  }
 }
 
 .stickyHeader {
@@ -57,6 +64,7 @@
   padding-left: 2vw;
   font-size: large;
   font-weight: bold;
+  text-wrap: wrap;
   width: auto;
 }
 
