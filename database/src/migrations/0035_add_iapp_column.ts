@@ -1,5 +1,6 @@
 /**
- * @desc recreates the IAPP table views adding a new column to the site extracts table
+ * @desc recreates the IAPP table views adding a new column 'Protected' to the site extracts table and subsequent views
+ * used for adding site level filtering for biocontrol agents
  * @author brennanwebster
  */
 
