@@ -71,7 +71,7 @@ GET.apiDoc = {
 
 const propertyParser = (feature): IParsedAddress => {
   const suggestedAddress = feature.properties.fullAddress;
-  delete feature.properties?.geometry?.crs;
+  delete feature.geometry?.crs;
   const strippedFeature = {
     type: feature.type,
     geometry: feature.geometry,
