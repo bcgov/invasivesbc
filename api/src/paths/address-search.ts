@@ -104,7 +104,7 @@ function getHandler(): RequestHandler {
 
       const BASE_URL = process.env.GEOCODER_API_BASE;
 
-      const { data } = await axios.get(BASE_URL + params, { headers: { 'x-api-key': API_KEY } });
+      const { data } = await axios.get(BASE_URL + '?' + params, { headers: { 'x-api-key': API_KEY } });
 
       const response = {
         results: [],
