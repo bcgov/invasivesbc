@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { createMockConfigurationReducer, createMockStore } from 'test/testUtils';
+import { createMockConfigurationReducer, createMockStore, mockSliceReducer } from 'test/testUtils';
 import AddressLookup from './AddressLookup';
 import userEvent from '@testing-library/user-event';
 
@@ -29,7 +29,8 @@ describe('AddressLookup.tsx', () => {
   };
 
   const store = createMockStore({
-    Configuration: createMockConfigurationReducer()
+    Configuration: createMockConfigurationReducer(),
+    ...mockSliceReducer('Network', { connected: true })
   });
 
   beforeEach(() => {

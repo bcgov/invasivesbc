@@ -1,4 +1,4 @@
-import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import IParsedAddress from 'sharedAPI/src/interfaces/IParsedAddress';
 import './AddressLookup.css';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -71,7 +71,9 @@ const AddressLookup = () => {
   };
 
   const dispatch = useDispatch();
+
   const base_url = useSelector((state) => state.Configuration.current.runtime.API_BASE);
+  const connected = useSelector((state) => state.Network.connected);
 
   const [address, setAddress] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -85,91 +87,90 @@ const AddressLookup = () => {
     setDisabled(!lat || !long);
   }, [lat, long]);
 
+  if (!connected) return;
   return (
-    <>
-      <div id="address-lookup">
+    <div id="address-lookup">
+      {
         {
-          {
-            [Mode.ADDRESS]: (
-              <>
-                <div className="flex-row">
+          [Mode.ADDRESS]: (
+            <>
+              <div className="flex-row">
+                <input
+                  type="text"
+                  placeholder="Search by address"
+                  value={address}
+                  onBlur={() => {
+                    setTimeout(() => {
+                      setShowSuggestions(false);
+                    }, 150);
+                  }}
+                  onFocus={() => setShowSuggestions(true)}
+                  onChange={handleAddressChange}
+                />
+                <IconButton onClick={handleModeChange}>
+                  <Home />
+                </IconButton>
+              </div>
+              {showSuggestions && suggestions.length > 0 && (
+                <ul className="address-suggestions">
+                  {suggestions.map((suggestion) => (
+                    <li key={suggestion.suggestedAddress}>
+                      <button onClick={markLocationOnMap.bind(this, suggestion.feature)}>
+                        <Place />
+                        <span>{suggestion.suggestedAddress}</span>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
+          ),
+          [Mode.COORDINATE]: (
+            <>
+              <div className="flex-row">
+                <div>
                   <input
                     type="text"
-                    placeholder="Search by address"
-                    value={address}
-                    onBlur={() => {
-                      setTimeout(() => {
-                        setShowSuggestions(false);
-                      }, 150);
+                    data-testid="latitude"
+                    onChange={(evt) => coordChangeHandler(evt.target.value, -90, 90, setLat)}
+                    onKeyDown={(event) => {
+                      if (event.code === 'Enter') {
+                        handleGoToCoordinates();
+                      }
                     }}
-                    onFocus={() => setShowSuggestions(true)}
-                    onChange={handleAddressChange}
+                    value={lat}
+                    placeholder="Lat, e.g. 54.321"
                   />
-                  <IconButton onClick={handleModeChange}>
-                    <Home />
-                  </IconButton>
+                  <input
+                    type="text"
+                    data-testid="longitude"
+                    value={long}
+                    onChange={(evt) => coordChangeHandler(evt.target.value, -180, 180, setLong)}
+                    onKeyDown={(event) => {
+                      if (event.code === 'Enter') {
+                        handleGoToCoordinates();
+                      }
+                    }}
+                    placeholder="Long, e.g. -123.21"
+                  />
                 </div>
-                {showSuggestions && suggestions.length > 0 && (
-                  <ul className="address-suggestions">
-                    {suggestions.map((suggestion) => (
-                      <li key={suggestion.suggestedAddress}>
-                        <button onClick={markLocationOnMap.bind(this, suggestion.feature)}>
-                          <Place />
-                          <span>{suggestion.suggestedAddress}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            ),
-            [Mode.COORDINATE]: (
-              <>
-                <div className="flex-row">
-                  <div>
-                    <input
-                      type="text"
-                      data-testid="latitude"
-                      onChange={(evt) => coordChangeHandler(evt.target.value, -90, 90, setLat)}
-                      onKeyDown={(event) => {
-                        if (event.code === 'Enter') {
-                          handleGoToCoordinates();
-                        }
-                      }}
-                      value={lat}
-                      placeholder="Lat, e.g. 54.321"
-                    />
-                    <input
-                      type="text"
-                      data-testid="longitude"
-                      value={long}
-                      onChange={(evt) => coordChangeHandler(evt.target.value, -180, 180, setLong)}
-                      onKeyDown={(event) => {
-                        if (event.code === 'Enter') {
-                          handleGoToCoordinates();
-                        }
-                      }}
-                      placeholder="Long, e.g. -123.21"
-                    />
-                  </div>
-                  <IconButton onClick={handleModeChange}>
-                    <Place />
-                  </IconButton>
-                </div>
-                <button
-                  data-testid="coordinate-button"
-                  className="coordinate-button"
-                  disabled={disabled}
-                  onClick={handleGoToCoordinates}
-                >
-                  Go
-                </button>
-              </>
-            )
-          }[mode]
-        }
-      </div>
-    </>
+                <IconButton onClick={handleModeChange} disabled={!connected}>
+                  <Place />
+                </IconButton>
+              </div>
+              <button
+                data-testid="coordinate-button"
+                className="coordinate-button"
+                disabled={disabled}
+                onClick={handleGoToCoordinates}
+              >
+                Go to Location
+              </button>
+            </>
+          )
+        }[mode]
+      }
+    </div>
   );
 };
 
