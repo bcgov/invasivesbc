@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { ChangeEvent, KeyboardEvent, useCallback, useEffect, useState } from 'react';
 import IParsedAddress from 'sharedAPI/src/interfaces/IParsedAddress';
 import './AddressLookup.css';
 import { useDispatch, useSelector } from 'utils/use_selector';
@@ -60,7 +60,9 @@ const AddressLookup = () => {
   const markLocationOnMap = (feature: Feature) => {
     dispatch(UserSettings.Map.markCoordinate(feature));
   };
+
   const handleGoToCoordinates = () => {
+    if (disabled) return;
     try {
       markLocationOnMap(point([parseFloat(long), parseFloat(lat)]));
     } catch (e) {
@@ -129,6 +131,11 @@ const AddressLookup = () => {
                       type="text"
                       data-testid="latitude"
                       onChange={(evt) => coordChangeHandler(evt.target.value, -90, 90, setLat)}
+                      onKeyDown={(event) => {
+                        if (event.code === 'Enter') {
+                          handleGoToCoordinates();
+                        }
+                      }}
                       value={lat}
                       placeholder="Lat, e.g. 54.321"
                     />
@@ -137,6 +144,11 @@ const AddressLookup = () => {
                       data-testid="longitude"
                       value={long}
                       onChange={(evt) => coordChangeHandler(evt.target.value, -180, 180, setLong)}
+                      onKeyDown={(event) => {
+                        if (event.code === 'Enter') {
+                          handleGoToCoordinates();
+                        }
+                      }}
                       placeholder="Long, e.g. -123.21"
                     />
                   </div>
