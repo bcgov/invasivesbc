@@ -73,6 +73,7 @@ class Map {
   static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
   static readonly setCenterFailure = createAction(`${this.PREFIX}/setCenterFailure`);
   static readonly setHoveredRecordset = createAction<IHoverRecordset>(`${this.PREFIX}/setHoveredRecordset`);
+  static readonly markCoordinate = createAction<[number, number]>(`${this.PREFIX}/markCoordinate`);
 }
 
 class UserSettings {

@@ -1,5 +1,6 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
+import { Feature, Point, Polygon } from 'geojson';
 import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
@@ -48,7 +49,6 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import IRecordTable from 'interfaces/recordTable';
-import { Point, Polygon } from 'geojson';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -226,7 +226,7 @@ interface MapState {
   tooManyLabelsDialog: any;
   userCoords: any;
   userRecordOnHoverRecordID?: string | number;
-  userRecordOnHoverRecordGeometry?: Point | Polygon;
+  userRecordOnHoverRecordGeometry?: Feature | Polygon | Point;
   userRecordOnHoverRecordType?: RecordSetType;
   viewFilters: boolean;
   whatsHere: {
@@ -677,6 +677,11 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.userRecordOnHoverRecordID = action.payload.id;
         draftState.userRecordOnHoverRecordGeometry = action.payload.geom;
         draftState.quickPanToRecord = !!action.payload?.quickPan;
+      } else if (UserSettings.Map.markCoordinate.match(action)) {
+        draftState.userRecordOnHoverRecordType = undefined;
+        draftState.userRecordOnHoverRecordID = undefined;
+        draftState.userRecordOnHoverRecordGeometry = action.payload;
+        draftState.quickPanToRecord = true;
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {
