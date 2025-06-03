@@ -46,7 +46,7 @@ GET.apiDoc = {
                       type: 'string',
                       description: 'Suggested Full address string'
                     },
-                    shape: {
+                    feature: {
                       $ref: '#/components/schemas/Feature'
                     }
                   }
