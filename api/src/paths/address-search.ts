@@ -14,7 +14,7 @@ const GET: Operation = [getHandler()];
 GET.apiDoc = {
   description: 'Partial Address Lookup via BC Geocoder API',
   tags: [NAMESPACE],
-  security: !SECURITY_ON ? [{ Bearer: ALL_ROLES }] : [],
+  security: SECURITY_ON ? [{ Bearer: ALL_ROLES }] : [],
   parameters: [
     {
       in: 'query',
