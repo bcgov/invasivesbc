@@ -89,7 +89,9 @@ function getHandler(): RequestHandler {
     try {
       const addrString: string = req.query.addr as string;
 
-      const API_KEY = process.env.API_KEY;
+      // They advertise an API Key but the endpoints works without one.
+      // If that changes, this is ready to go
+      const GEOCODER_API_KEY = process.env.GEOCODER_API_KEY;
 
       const params = new URLSearchParams({
         maxResults: '5',
@@ -104,7 +106,7 @@ function getHandler(): RequestHandler {
 
       const BASE_URL = process.env.GEOCODER_API_BASE;
 
-      const { data } = await axios.get(BASE_URL + '?' + params, { headers: { 'x-api-key': API_KEY } });
+      const { data } = await axios.get(BASE_URL + '?' + params, { headers: { 'x-api-key': GEOCODER_API_KEY } });
 
       const response = {
         results: [],
