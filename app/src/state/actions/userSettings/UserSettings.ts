@@ -1,5 +1,5 @@
 import { createAction } from '@reduxjs/toolkit';
-import { Point, Polygon } from 'geojson';
+import { Feature, Point, Polygon } from 'geojson';
 import RecordSet from './RecordSet';
 import Boundary from 'interfaces/Boundary';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
@@ -73,7 +73,7 @@ class Map {
   static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
   static readonly setCenterFailure = createAction(`${this.PREFIX}/setCenterFailure`);
   static readonly setHoveredRecordset = createAction<IHoverRecordset>(`${this.PREFIX}/setHoveredRecordset`);
-  static readonly markCoordinate = createAction<[number, number]>(`${this.PREFIX}/markCoordinate`);
+  static readonly markCoordinate = createAction<Feature>(`${this.PREFIX}/markCoordinate`);
 }
 
 class UserSettings {
