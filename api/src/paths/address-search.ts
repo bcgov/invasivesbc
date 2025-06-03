@@ -14,7 +14,7 @@ const GET: Operation = [getHandler()];
 GET.apiDoc = {
   description: 'Partial Address Lookup via BC Geocoder API',
   tags: [NAMESPACE],
-  security: SECURITY_ON ? [{ Bearer: ALL_ROLES }] : [],
+  security: !SECURITY_ON ? [{ Bearer: ALL_ROLES }] : [],
   parameters: [
     {
       in: 'query',
@@ -71,13 +71,14 @@ GET.apiDoc = {
 
 const propertyParser = (feature): IParsedAddress => {
   const suggestedAddress = feature.properties.fullAddress;
-  const shape = {
+  delete feature.properties?.geometry?.crs;
+  const strippedFeature = {
     type: feature.type,
     geometry: feature.geometry,
     coordinates: feature.coordinates
   };
 
-  return { suggestedAddress, shape };
+  return { suggestedAddress, feature: strippedFeature };
 };
 
 /**

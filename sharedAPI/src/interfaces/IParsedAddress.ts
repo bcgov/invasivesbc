@@ -2,7 +2,7 @@ import { Feature } from 'geojson';
 
 interface IParsedAddress {
   suggestedAddress: string;
-  shape: Feature;
+  feature: Feature;
 }
 
 export default IParsedAddress;
