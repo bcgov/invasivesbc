@@ -1,5 +1,13 @@
 import { NewsPlatform } from './NewsArticle';
 
+interface ReferenceImage {
+  imgSource: string;
+  caption?: string;
+}
+interface Content {
+  text: Array<string>;
+  images?: Array<ReferenceImage>;
+}
 /**
  * @desc Entries for the User Guides
  * @property { string } title Heading of section
@@ -10,17 +18,7 @@ interface UserGuideEntry {
   titleIcon?: string;
   tags: Array<string>;
   platform: NewsPlatform;
-  content: [
-    {
-      text: Array<string>;
-      images?: [
-        {
-          imgSource: string;
-          caption?: string;
-        }
-      ];
-    }
-  ];
+  content: Array<Content>;
 }
 
 export default UserGuideEntry;
