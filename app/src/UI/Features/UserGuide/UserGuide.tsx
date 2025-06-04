@@ -1,6 +1,6 @@
-import faqEntries from './Faq/faqEntries';
+import faqEntries from './faqEntries';
 import Guide from './Guide/Guide';
-import guideEntries from './Guide/guideEntries';
+import guideEntries from './guideEntries';
 import './UserGuide.css';
 
 const UserGuide = () => (
