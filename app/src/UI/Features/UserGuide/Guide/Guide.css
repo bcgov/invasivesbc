@@ -57,7 +57,7 @@
     display: block;
 
     .content-images {
-      align-items: end;
+      align-items: center;
       float: right;
       width: auto;
     }
