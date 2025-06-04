@@ -45,12 +45,12 @@ const Coordinates = () => {
   }
   return (
     <div id="coordinates-display">
-      <div>
+      <p>
         {coords.lat.toFixed(6)}, {coords.lng.toFixed(6)}
-      </div>
-      <div>
+      </p>
+      <p>
         Zone: {coords.utmZone}, E: {coords.utm[0].toFixed(0)}, N: {coords.utm[1].toFixed(0)}
-      </div>
+      </p>
     </div>
   );
 };

@@ -90,7 +90,7 @@ export const api_doc = {
   ],
   externalDocs: {
     description: 'Visit GitHub to find out more about this API',
-    url: 'https://github.com/bcgov/lucy-web.git'
+    url: 'https://github.com/bcgov/invasivesbc'
   },
   paths: {},
   components: {

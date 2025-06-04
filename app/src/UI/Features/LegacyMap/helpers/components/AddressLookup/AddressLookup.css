@@ -1,0 +1,84 @@
+#address-lookup {
+  position: relative;
+  background: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  width: 100%;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+
+  .flex-row {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  input {
+    margin: 5px 0 5px 5px;
+    width: 90%;
+  }
+
+  textarea:focus,
+  input:focus {
+    outline: none;
+  }
+
+  .coordinate-button {
+    border-radius: 0 0 5px 5px;
+    border: none;
+    background-color: transparent;
+    border-top: 1pt solid #aaa;
+    padding: 5px;
+  }
+
+  button:hover {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+  .address-suggestions {
+    list-style-type: none;
+    position: absolute;
+    top: 90%;
+    left: 0;
+    padding: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.97);
+    box-sizing: border-box;
+    margin: 0;
+    border-radius: 0 0 5px 5px;
+    z-index: 5;
+    li {
+      display: flex;
+      height: 33px;
+      button {
+        font-size: 12px;
+        margin: 0;
+        width: 100%;
+        border: none;
+        background-color: transparent;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        /* Due to limitations with text-overflow in buttons, style the span*/
+        span {
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+    li:nth-child(odd) {
+      background-color: #efefef97;
+    }
+    li:not(:last-child) {
+      border-bottom: 1pt solid #ddd;
+    }
+  }
+}

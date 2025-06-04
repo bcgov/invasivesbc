@@ -3,10 +3,17 @@
   top: 10px;
   left: 60px;
   display: flex;
-  flex-direction: column;
-  width: 184px;
-  box-sizing: border-box;
-  & > *:not(:last-child) {
-    margin-bottom: 5px;
+  flex-direction: row;
+  .composite-box {
+    display: flex;
+    flex-direction: column;
+    width: 194px;
+    box-sizing: border-box;
+    & > *:not(:last-child) {
+      margin-bottom: 5px;
+    }
+  }
+  .composite-box:not(:last-child) {
+    margin-right: 5px;
   }
 }
