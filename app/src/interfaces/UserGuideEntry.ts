@@ -17,7 +17,6 @@ interface UserGuideEntry {
   title: string;
   titleIcon?: string;
   tags: Array<string>;
-  platform: NewsPlatform;
   content: Array<Content>;
 }
 
