@@ -1,5 +1,3 @@
-import { NewsPlatform } from './NewsArticle';
-
 interface ReferenceImage {
   imgSource: string;
   caption?: string;
