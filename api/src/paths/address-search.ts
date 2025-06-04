@@ -1,6 +1,6 @@
-import axios from 'axios';
+import fetch from 'node-fetch';
 import { RequestHandler } from 'express';
-import { IParsedAddress } from 'sharedAPI/src/interfaces/IParsedAddress';
+import IParsedAddress from 'sharedAPI/src/interfaces/IParsedAddress';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
@@ -73,9 +73,10 @@ const propertyParser = (feature): IParsedAddress => {
   const suggestedAddress = feature.properties.fullAddress;
   delete feature.geometry?.crs;
   const strippedFeature = {
-    type: feature.type,
+    coordinates: feature.coordinates,
     geometry: feature.geometry,
-    coordinates: feature.coordinates
+    properties: {},
+    type: feature.type
   };
 
   return { suggestedAddress, feature: strippedFeature };
@@ -106,9 +107,9 @@ function getHandler(): RequestHandler {
 
       const BASE_URL = process.env.GEOCODER_API_BASE;
 
-      const { data } = await axios.get(BASE_URL + '?' + params, { headers: { 'x-api-key': GEOCODER_API_KEY } });
-
-      const response = {
+      const response = await fetch(BASE_URL + '?' + params, { headers: { 'x-api-key': GEOCODER_API_KEY } });
+      const data = (await response.json()) as Record<PropertyKey, any>;
+      const templateResponse = {
         results: [],
         request: addrString,
         namespace: NAMESPACE
@@ -120,16 +121,16 @@ function getHandler(): RequestHandler {
           results: parsedResults
         });
       }
-      return res.status(400).json(response);
+      return res.status(400).json(templateResponse);
     } catch (err) {
-      const response = {
+      const templateResponse = {
         error: err,
         request: req.query.addr as string,
         namespace: NAMESPACE
       };
 
-      defaultLog.error(response);
-      return res.status(500).json(response);
+      defaultLog.error(templateResponse);
+      return res.status(500).json(templateResponse);
     }
   };
 }
