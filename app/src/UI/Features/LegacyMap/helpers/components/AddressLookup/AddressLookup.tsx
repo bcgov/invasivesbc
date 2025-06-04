@@ -74,6 +74,7 @@ const AddressLookup = () => {
 
   const base_url = useSelector((state) => state.Configuration.current.runtime.API_BASE);
   const connected = useSelector((state) => state.Network.connected);
+  const authorizedUser = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
 
   const [address, setAddress] = useState<string>('');
   const [disabled, setDisabled] = useState<boolean>(true);
@@ -87,7 +88,7 @@ const AddressLookup = () => {
     setDisabled(!lat || !long);
   }, [lat, long]);
 
-  if (!connected) return;
+  if (!connected || !authorizedUser) return;
   return (
     <div id="address-lookup">
       {
