@@ -1,4 +1,4 @@
-import { Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
+import { HelpCenter, Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -117,12 +117,20 @@ const HeaderPopover = () => {
               </li>
             )}
             {loggedInOrWorkingOffline && (
-              <li>
-                <button onClick={() => history.push('/News')}>
-                  <Newspaper />
-                  What's New
-                </button>
-              </li>
+              <>
+                <li>
+                  <button onClick={() => history.push('/News')}>
+                    <Newspaper />
+                    What's New
+                  </button>
+                </li>
+                <li>
+                  <button onClick={() => history.push('/Guide')}>
+                    <HelpCenter />
+                    User Guide
+                  </button>
+                </li>
+              </>
             )}
             {offlineUserSelectionAvailable && (
               <li>

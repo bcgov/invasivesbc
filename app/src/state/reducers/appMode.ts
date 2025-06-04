@@ -89,7 +89,7 @@ function createAppModeReducer(config: UnifiedConfig) {
           return createNextState(state, (draftState) => {
             draftState.url = action?.payload?.url;
             if (
-              ['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News', 'Admin'].includes(
+              ['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News', 'Admin', 'Guide'].includes(
                 action.payload.url.split('/')[1]
               )
             ) {
