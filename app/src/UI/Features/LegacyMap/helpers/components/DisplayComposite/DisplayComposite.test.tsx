@@ -6,6 +6,8 @@ import { createMockConfigurationReducer, createMockStore, mockSliceReducer } fro
 describe('DisplayComposite.tsx', () => {
   const store = createMockStore({
     ...mockSliceReducer('Map', { accuracyToggle: false, positionTracking: true }),
+    ...mockSliceReducer('Auth', { loggedInOrWorkingOffline: true }),
+    ...mockSliceReducer('Network', { connected: true }),
     Configuration: createMockConfigurationReducer()
   });
 

@@ -28,10 +28,12 @@ describe('AddressLookup.tsx', () => {
     namespace: 'address-search'
   };
 
-  const store = createMockStore({
-    Configuration: createMockConfigurationReducer(),
-    ...mockSliceReducer('Network', { connected: true })
-  });
+  const mockStore = () =>
+    createMockStore({
+      Configuration: createMockConfigurationReducer(),
+      ...mockSliceReducer('Network', { connected: true }),
+      ...mockSliceReducer('Auth', { loggedInOrWorkingOffline: true })
+    });
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -39,7 +41,7 @@ describe('AddressLookup.tsx', () => {
 
   it('should render', () => {
     render(
-      <Provider store={store}>
+      <Provider store={mockStore()}>
         <AddressLookup />
       </Provider>
     );
@@ -57,7 +59,7 @@ describe('AddressLookup.tsx', () => {
       )
     );
     const { queryAllByRole } = render(
-      <Provider store={store}>
+      <Provider store={mockStore()}>
         <AddressLookup />
       </Provider>
     );
@@ -82,7 +84,9 @@ describe('AddressLookup.tsx', () => {
 
   it('Should Fire event when clicking result', async () => {
     const dispatchTestStore = createMockStore({
-      Configuration: createMockConfigurationReducer()
+      Configuration: createMockConfigurationReducer(),
+      ...mockSliceReducer('Network', { connected: true }),
+      ...mockSliceReducer('Auth', { loggedInOrWorkingOffline: true })
     });
     const dispatchSpy = vi.spyOn(dispatchTestStore, 'dispatch');
     const { getByText } = render(
@@ -105,7 +109,7 @@ describe('AddressLookup.tsx', () => {
 
   it('Should toggle to Coordinates', async () => {
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={mockStore()}>
         <AddressLookup />
       </Provider>
     );
@@ -119,7 +123,7 @@ describe('AddressLookup.tsx', () => {
   });
   it('Should enable when Lat/long are both populated', async () => {
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={mockStore()}>
         <AddressLookup />
       </Provider>
     );
@@ -146,9 +150,7 @@ describe('AddressLookup.tsx', () => {
   });
 
   it('Should Fire Redux event with shape information', async () => {
-    const dispatchTestStore = createMockStore({
-      Configuration: createMockConfigurationReducer()
-    });
+    const dispatchTestStore = mockStore();
     const dispatchSpy = vi.spyOn(dispatchTestStore, 'dispatch');
     const { getByTestId } = render(
       <Provider store={dispatchTestStore}>
@@ -172,7 +174,7 @@ describe('AddressLookup.tsx', () => {
 
   it('Should not allow numbers out of bounds or letters', async () => {
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={mockStore()}>
         <AddressLookup />
       </Provider>
     );
