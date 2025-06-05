@@ -24,7 +24,6 @@ import {
 import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   CUSTOM_LAYER_DRAWN,
-  DRAW_CUSTOM_LAYER,
   FILTER_PREP_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
@@ -596,20 +595,6 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
   yield put(UserSettings.KML.delete(action.payload.id));
 }
 
-function* handle_DRAW_CUSTOM_LAYER() {
-  // const panelState = yield select((state) => state.AppMode.layout.mode);
-  // if (panelState) {
-  //   yield put({ type: TOGGLE_PANEL });
-  // }
-}
-
-function* handle_CUSTOM_LAYER_DRAWN() {
-  // const panelState = yield select((state) => state.AppMode.panelOpen);
-  // if (!panelState) {
-  //   yield put({ type: TOGGLE_PANEL });
-  // }
-}
-
 function* handle_MAP_ON_SHAPE_CREATE(action) {
   const callback = (width: number) => {
     const newGeo = buffer(action.payload.geometry, width / 10000) ?? action.payload;
@@ -698,10 +683,6 @@ function* activitiesPageSaga() {
     takeEvery(REMOVE_CLIENT_BOUNDARY, handle_REMOVE_CLIENT_BOUNDARY),
 
     takeEvery(RECORDSET_SET_SORT, handle_RECORDSET_SET_SORT),
-
-    // handle hiding and showing the panel when drawing boundaries:
-    takeEvery(DRAW_CUSTOM_LAYER, handle_DRAW_CUSTOM_LAYER),
-    takeEvery(CUSTOM_LAYER_DRAWN, handle_CUSTOM_LAYER_DRAWN),
 
     //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
     takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),

@@ -22,7 +22,7 @@ const Overlay = () => {
   const [panelOpen, setPanelOpen] = React.useState(true);
   const [fullScreen, setFullScreen] = React.useState(false);
 
-  const layoutMode = useSelector((state) => state.AppMode.layout.mode);
+  const layoutMode = useSelector((state) => state.AppMode.layout.viewLayout);
 
   useEffect(() => {
     switch (layoutMode) {

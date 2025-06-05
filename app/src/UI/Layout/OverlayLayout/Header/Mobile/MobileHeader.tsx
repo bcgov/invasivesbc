@@ -9,16 +9,19 @@ import { Platform } from 'state/configuration/build-time-config';
 import 'UI/Layout/OverlayLayout/Header/Mobile/MobileHeader.css';
 import React from 'react';
 import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
+import LayoutSwitch from 'UI/Layout/LayoutSwitch';
 
 const MobileHeader = () => {
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
-  
+
   const { PLATFORM } = useSelector((state) => state.Configuration.current.build);
   const { filteredLinks } = usePrimaryNavigationLinks();
 
   return (
     <header id="nav-header">
       <InvBcLogo />
+      <LayoutSwitch />
+
       <nav>
         {filteredLinks.map((link) => {
           return <NavTab key={link.id} {...link} />;

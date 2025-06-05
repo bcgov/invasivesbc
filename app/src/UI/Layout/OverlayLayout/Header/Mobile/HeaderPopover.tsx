@@ -21,7 +21,7 @@ const LogoutButton = () => {
   const dispatch = useDispatch();
   const signOutAndTogglePanel = () => {
     return (dispatch: AppDispatch) => {
-      dispatch(EventActions.setLayoutParameters({ mode: LayoutMode.MAP_EXCLUSIVE }));
+      dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_EXCLUSIVE }));
       dispatch(AuthActions.signoutRequest());
       dispatch(MapActions.toggleOverlay('public_layer'));
     };
@@ -59,7 +59,7 @@ const HeaderPopover = () => {
   };
   const navToUpdateRequest = () => {
     history.push({ pathname: '/AccessRequest' });
-    dispatch(EventActions.setLayoutParameters({ mode: LayoutMode.MAP_HIDDEN }));
+    dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
   };
 
   const requestAccess = async () => {
@@ -67,7 +67,7 @@ const HeaderPopover = () => {
       dispatch(AuthActions.signinRequest({}));
     } else {
       history.push('/AccessRequest');
-      dispatch(EventActions.setLayoutParameters({ mode: LayoutMode.MAP_HIDDEN }));
+      dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
     }
   };
   const history = useHistory();

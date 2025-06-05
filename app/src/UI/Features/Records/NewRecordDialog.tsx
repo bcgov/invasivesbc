@@ -36,7 +36,7 @@ const NewRecordDialog = () => {
 
   const accessRoles = useSelector((state) => state.Auth.accessRoles);
   const open = useSelector((state) => state.UserSettings.newRecordDialogueState.open);
-  const mode = useSelector((state) => state.UserSettings.newRecordDialogueState.mode);
+  const mode = useSelector((state) => state.UserSettings.newRecordDialogueState.viewLayout);
   const writePrivilege = useSelector((state) => state.Auth.writePrivilege);
   // Options
   const [activityCategorySelectOptions, setActivityCategorySelectOptions] = useState<string[]>([]);

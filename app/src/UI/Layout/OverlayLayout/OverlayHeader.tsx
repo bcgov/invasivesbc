@@ -7,6 +7,9 @@ import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import FormMenuButtons from 'UI/Features/Records/FormMenuButtons/FormMenuButtons';
+import React, { useEffect } from 'react';
+import { useSelector } from 'utils/use_selector';
+import ContextRoutes from 'UI/Layout/Routes/ContextRoutes';
 
 const maximize = () => {
   setOverlayStyle({ top: '0' });
@@ -14,6 +17,10 @@ const maximize = () => {
 
 const minimize = () => {
   setOverlayStyle({ top: getOverlayAnchorDimensions().height });
+};
+
+const defaultPosition = () => {
+  setOverlayStyle({ top: '50vh' });
 };
 
 const setOverlayStyle = ({ top }) => {
@@ -75,7 +82,9 @@ const onClickDragButton = (e) => {
 };
 
 export const OverlayHeader = () => {
-  const isCellPhoneWidth = false; //useSelector((state) => state.AppMode.constraints.tinyScreen);
+  useEffect(() => {
+    defaultPosition();
+  }, []);
 
   return (
     <div className="overlay-header">
@@ -94,19 +103,7 @@ export const OverlayHeader = () => {
         </IconButton>
       </div>
       <div className={'right'}>
-        <Route
-          path="/Records/Activity:*"
-          exact={false}
-          render={() => (
-            <CustomPopover
-              buttonClasses={'overlay-menu'}
-              buttonText={isCellPhoneWidth ? 'Save' : 'Save Menu'}
-              closeAfterPress={true}
-            >
-              <FormMenuButtons />
-            </CustomPopover>
-          )}
-        />
+        <ContextRoutes />
       </div>
     </div>
   );

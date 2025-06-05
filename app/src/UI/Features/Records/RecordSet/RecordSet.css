@@ -123,18 +123,29 @@
 }
 
 .recordSet_footer {
+  background-color: #036;
+  height: var(--record-table-footer-height);
   flex-direction: row;
   justify-content: center;
   color: white;
-  bottom: calc(var(--footer-bar-height) + env(safe-area-inset-bottom, 0));
-  height: var(--record-table-footer-height);
-  width: 100%;
-  background-color: #036;
   display: flex;
-  position: fixed;
 
   & > * {
     display: flex;
     flex-direction: column;
+  }
+}
+
+#app.overlay-layout {
+  .recordSet_footer {
+    bottom: calc(var(--footer-bar-height) + env(safe-area-inset-bottom, 0));
+    width: 100%;
+    position: fixed;
+  }
+}
+
+#app.wide-layout {
+  .recordSet_footer {
+    
   }
 }

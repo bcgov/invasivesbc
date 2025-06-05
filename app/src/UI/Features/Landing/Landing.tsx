@@ -47,7 +47,7 @@ export const LandingComponent = () => {
       dispatch(AuthActions.signinRequest({}));
     } else {
       history.push('/AccessRequest');
-      dispatch(EventActions.setLayoutParameters({ mode: LayoutMode.MAP_HIDDEN }));
+      dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
     }
   };
 
