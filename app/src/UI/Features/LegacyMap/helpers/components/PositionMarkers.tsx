@@ -1,17 +1,18 @@
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { refreshWhatsHereFeature } from 'UI/Features/LegacyMap/helpers/functional/whats-here';
 import {
   refreshCurrentRecMakers,
   refreshHighlightedRecord
 } from 'UI/Features/LegacyMap/helpers/functional/current-record';
 import centroid from '@turf/centroid';
-import maplibregl, { LngLatLike } from 'maplibre-gl';
+import maplibregl, { LngLatLike, Popup } from 'maplibre-gl';
 import { useSelector } from 'utils/use_selector';
 import circle from '@turf/circle';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { handlePositionTracking } from 'UI/Features/LegacyMap/helpers/functional/position-tracking';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-
+import { RecordSetType } from 'interfaces/UserRecordSet';
+import { makeMapMarker, makeMarkerElement, markerPopoverContents } from 'utils/makeMapMarker';
 const PositionMarkers = ({ mapReady }) => {
   const LATITUDE = 1;
   const LAT_OFFSET = -0.00325;
@@ -22,7 +23,6 @@ const PositionMarkers = ({ mapReady }) => {
   const accuracyToggle = useSelector((state) => state.Map.accuracyToggle);
   const positionTracking = useSelector((state) => state.Map.positionTracking);
   const panned = useSelector((state) => state.Map.panned);
-  const positionMarker = new maplibregl.Marker({ element: positionMarkerEl });
   const accuracyCircle = useSelector((state) => {
     if (state.Map.userCoords?.long) {
       return circle([state.Map?.userCoords?.long, state.Map?.userCoords?.lat], state.Map?.userCoords?.accuracy, {
@@ -34,42 +34,93 @@ const PositionMarkers = ({ mapReady }) => {
   });
 
   // Draw tools - determine who needs edit and where the geos get dispatched, what tools to display etc
-  const whatsHereFeature = useSelector((state) => state.Map.whatsHere?.feature);
-  const whatsHereMarker = new maplibregl.Marker({ element: whatsHereMarkerEl });
-
+  const hoveredFeature = useSelector((state) => state.Map.whatsHere?.feature);
   const appModeUrl = useSelector((state) => state.AppMode.url);
-  // also used with current marker below:
+
   const activityGeo = useSelector((state) => state.ActivityPage.activity?.geometry);
 
-  //Current rec markers:
   const currentActivityShortID = useSelector((state) => state.ActivityPage.activity?.short_id);
   const currentIAPPID = useSelector((state) => state.IAPPSitePage.site?.site_id);
   const currentIAPPGeo = useSelector((state) => state.IAPPSitePage.site?.geom);
-  const activityMarker = new maplibregl.Marker({ element: activityMarkerEl });
-  const IAPPMarker = new maplibregl.Marker({ element: IAPPMarkerEl });
 
   //Highlighted Record from main records page:
   const quickPanToRecord = useSelector((state) => state.Map.quickPanToRecord);
   const userRecordOnHoverRecordGeometry = useSelector((state) => state.Map.userRecordOnHoverRecordGeometry);
   const userRecordOnHoverRecordType = useSelector((state) => state.Map.userRecordOnHoverRecordType);
+  const userRecordOnHoverRecordID = useSelector((state) => state.Map.userRecordOnHoverRecordID);
 
-  //Current Activity & IAPP Markers
+  // Map Marker Refs
+  const activityMarker = useRef<maplibregl.Marker>();
+  const IAPPMarker = useRef<maplibregl.Marker>();
+  const hoveredFeatureMarker = useRef<maplibregl.Marker>();
+  const positionMarker = useRef(
+    new maplibregl.Marker({
+      element: makeMarkerElement(
+        '/assets/icon/circle.svg',
+        buildTimeConfig.MOBILE ? 'userTrackingMarker userTrackingMarkerCone' : 'userTrackingMarker'
+      )
+    })
+  );
+
+  // Sets Map Marker for Currently Hovered Record
   useEffect(() => {
     if (!mapReady) return;
+
+    hoveredFeatureMarker?.current?.remove();
+    hoveredFeatureMarker.current = new maplibregl.Marker().setPopup(
+      new Popup({
+        closeButton: false,
+        closeOnMove: true,
+        className: 'map-marker-popup'
+      }).setDOMContent(markerPopoverContents(hoveredFeatureMarker))
+    );
+    refreshCurrentRecMakers(map, {
+      userRecordOnHoverRecordGeometry,
+      whatsHereMarker: hoveredFeatureMarker.current,
+      whatsHereFeature: hoveredFeature
+    });
+  }, [hoveredFeature, userRecordOnHoverRecordID]);
+
+  // Sets Map Marker for Active IAPP
+  useEffect(() => {
+    if (!mapReady) return;
+    hoveredFeature?.current?.remove();
+    IAPPMarker?.current?.remove();
+    IAPPMarker.current = makeMapMarker({
+      ref: IAPPMarker,
+      iconSrc: '/assets/iapp_logo.gif',
+      classes: 'IAPPMarkerEl',
+      id: currentIAPPID,
+      recordType: RecordSetType.IAPP
+    });
+    refreshCurrentRecMakers(map, {
+      currentIAPPID,
+      currentIAPPGeo,
+      IAPPMarker: IAPPMarker.current
+    });
+  }, [currentIAPPID, currentIAPPGeo]);
+
+  // Sets Map Marker for Active Activity
+  useEffect(() => {
+    if (!mapReady) return;
+    hoveredFeature?.current?.remove();
+    activityMarker?.current?.remove();
+    activityMarker.current = makeMapMarker({
+      ref: activityMarker,
+      iconSrc: '/assets/InvasivesBC_Icon.svg',
+      classes: 'activityMarkerEl',
+      id: currentActivityShortID,
+      recordType: RecordSetType.Activity
+    });
+
     refreshCurrentRecMakers(map, {
       activityGeo,
       currentActivityShortID,
-      currentIAPPID,
-      currentIAPPGeo,
-      userRecordOnHoverRecordGeometry,
-      activityMarker,
-      IAPPMarker,
-      whatsHereMarker,
-      whatsHereFeature
+      activityMarker: activityMarker.current
     });
-  }, [currentActivityShortID, currentIAPPID, map, mapReady, userRecordOnHoverRecordGeometry]);
+  }, [currentActivityShortID, activityGeo]);
 
-  //Highlighted Record
+  // Highlighted Record
   useEffect(() => {
     if (!mapReady) return;
     if (!map) return;
@@ -88,52 +139,36 @@ const PositionMarkers = ({ mapReady }) => {
   }, [userRecordOnHoverRecordGeometry, quickPanToRecord]);
 
   useEffect(() => {
-    refreshWhatsHereFeature(map, { whatsHereFeature });
-  }, [whatsHereFeature, appModeUrl, map, mapReady]);
+    refreshWhatsHereFeature(map, { whatsHereFeature: hoveredFeature });
+  }, [hoveredFeature, appModeUrl, map, mapReady]);
 
   useEffect(() => {
     try {
       if (!mapReady) return;
       if (!userCoords?.heading) return;
-      if (positionMarker?.getRotation() === userCoords?.heading) return;
-      positionMarker?.setRotationAlignment('map');
-      positionMarker?.setRotation(userCoords?.heading);
+      if (positionMarker?.current.getRotation() === userCoords?.heading) return;
+      positionMarker?.current.setRotationAlignment('map');
+      positionMarker?.current.setRotation(userCoords?.heading);
     } catch (e) {
       console.error(e);
     }
   }, [userCoords?.heading, mapReady]);
 
-  // User position tracking and marker
+  // User position tracking marker
   useEffect(() => {
     if (!mapReady) return;
-    handlePositionTracking(map, positionMarker, userCoords, accuracyCircle, accuracyToggle, positionTracking, panned);
+    handlePositionTracking(
+      map,
+      positionMarker.current,
+      userCoords,
+      accuracyCircle,
+      accuracyToggle,
+      positionTracking,
+      panned
+    );
   }, [userCoords, positionTracking, accuracyToggle, mapReady, panned]);
 
   return null;
 };
-
-const positionMarkerEl = document.createElement('div');
-positionMarkerEl.className = buildTimeConfig.MOBILE
-  ? 'userTrackingMarker userTrackingMarkerCone'
-  : 'userTrackingMarker';
-positionMarkerEl.innerHTML = `<img src='/assets/icon/circle.svg' />`;
-
-const activityMarkerEl = document.createElement('div');
-activityMarkerEl.className = 'activityMarkerEl';
-activityMarkerEl.style.backgroundImage = 'url(/assets/icon/clip.png)';
-activityMarkerEl.style.width = `32px`;
-activityMarkerEl.style.height = `32px`;
-
-const IAPPMarkerEl = document.createElement('div');
-IAPPMarkerEl.className = 'IAPPMarkerEl';
-IAPPMarkerEl.style.backgroundImage = 'url(/assets/iapp_logo.gif)';
-IAPPMarkerEl.style.width = `32px`;
-IAPPMarkerEl.style.height = `32px`;
-
-const whatsHereMarkerEl = document.createElement('div');
-whatsHereMarkerEl.className = 'whatsHereMarkerEl';
-whatsHereMarkerEl.style.backgroundImage = 'url(/assets/icon/pin.svg)';
-whatsHereMarkerEl.style.width = `32px`;
-whatsHereMarkerEl.style.height = `32px`;
 
 export { PositionMarkers };
