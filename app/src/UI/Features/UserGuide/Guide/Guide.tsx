@@ -11,10 +11,10 @@ const Guide = ({ entry }: PropTypes) => {
       <div className="guide-content">
         <h3>{entry.title}</h3>
         {entry.content.map((content) => (
-          <div className="guide-inner">
+          <div className="guide-inner" key={content.text[0]}>
             <div className="content-images">
               {content.images?.map((image) => (
-                <figure>
+                <figure key={image.imgSource}>
                   <img src={image.imgSource} alt={image?.caption} />
                   {image?.caption && <figcaption>{image.caption}</figcaption>}
                 </figure>
@@ -22,7 +22,7 @@ const Guide = ({ entry }: PropTypes) => {
             </div>
             <div className="content-text">
               {content.text.map((text) => (
-                <p>{text}</p>
+                <p key={text}>{text}</p>
               ))}
             </div>
           </div>

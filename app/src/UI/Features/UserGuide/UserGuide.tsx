@@ -12,7 +12,7 @@ const UserGuide = () => (
         <section className="user-guide-section">
           <h2>User Guide</h2>
           {guideEntries.map((guide) => (
-            <Guide entry={guide} />
+            <Guide entry={guide} key={guide.title} />
           ))}
         </section>
       )}
@@ -24,7 +24,7 @@ const UserGuide = () => (
             need more information.
           </p>
           {faqEntries.map((faq) => (
-            <Guide entry={faq} />
+            <Guide entry={faq} key={faq.title} />
           ))}
         </section>
       )}
