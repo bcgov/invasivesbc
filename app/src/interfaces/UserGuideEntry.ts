@@ -14,7 +14,6 @@ interface Content {
 interface UserGuideEntry {
   title: string;
   titleIcon?: string;
-  tags: Array<string>;
   content: Array<Content>;
 }
 

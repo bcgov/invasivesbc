@@ -4,7 +4,6 @@ const guideEntries: Array<UserGuideEntry> = [
   // {
   //   title: '',
   //   titleIcon: '',
-  //   tags: [''],
   //   content: [
   //     {
   //       text: [''],

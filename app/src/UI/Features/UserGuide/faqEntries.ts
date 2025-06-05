@@ -4,7 +4,6 @@ const faqEntries: Array<UserGuideEntry> = [
   // {
   //   title: '',
   //   titleIcon: '',
-  //   tags: [''],
   //   content: [
   //     {
   //       text: [''],

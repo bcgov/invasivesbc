@@ -8,7 +8,6 @@ vi.mock('./guideEntries', () => ({
     {
       title: 'First Entry Test',
       titleIcon: 'map',
-      tags: ['test', 'entry', 'mock information'],
       content: [
         {
           text: [
@@ -43,7 +42,6 @@ vi.mock('./faqEntries', () => ({
     {
       title: 'First Entry Test',
       titleIcon: 'map',
-      tags: ['test', 'entry', 'mock information'],
       content: [
         {
           text: [
