@@ -6,7 +6,6 @@ import { Tooltip } from '@mui/material';
 import { RecordTable } from './RecordTable';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import ExcelExporter from '../ExcelExporter';
@@ -15,9 +14,10 @@ import Filter from './Filter';
 import { useSelector } from 'utils/use_selector';
 import { useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import { IFilter } from 'state/actions/userSettings/RecordSet';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
+import { RecordSetCacheButtons } from '../RecordSetCacheButtons';
 
 type PropTypes = { setID: string };
 
@@ -34,14 +34,16 @@ export const RecordSet = ({ setID }: PropTypes) => {
     history.push('/Records');
   };
 
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
+  const CACHE_RECORDSETS = useSelector((state) => state.Configuration.current.features.CACHE_RECORDSETS.enabled);
+  const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);
   const tableType = recordSet?.recordSetType;
 
   const [cacheFilters, setCacheFilters] = useState<IFilter[]>([]);
   const [filters, setFilters] = useState<ExtendedFilter[]>([]);
 
-  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
-
+  const canCacheRecordset = MOBILE && CACHE_RECORDSETS && !Object.values(RecordSetId).includes(setID as RecordSetId);
   /**
    * Get filters from recordset metadata that were applied at time of caching.
    */
@@ -53,9 +55,11 @@ export const RecordSet = ({ setID }: PropTypes) => {
         const filtersInCache =
           (await service.getRepository(setID, ['filter_objects']))?.filter_objects?.tableFilters ?? [];
         setCacheFilters(filtersInCache);
+      } else {
+        setCacheFilters([]);
       }
     })();
-  }, []);
+  }, [recordSet?.cacheMetadataStatus]);
 
   /**
    * Disabled modification of filters that part of the Cache.
@@ -88,6 +92,11 @@ export const RecordSet = ({ setID }: PropTypes) => {
           <div className="recordSet_header_name">
             {recordSet?.recordSetName || `New Recordset - ${recordSet?.recordSetType}`}
           </div>
+          {canCacheRecordset && !isCellPhoneWidth && (
+            <div className="recordset-cache-control">
+              <RecordSetCacheButtons recordSet={recordSet} setId={setID} onCacheStateChange={() => {}} />
+            </div>
+          )}
         </div>
       </div>
       <div className="recordSet_container">

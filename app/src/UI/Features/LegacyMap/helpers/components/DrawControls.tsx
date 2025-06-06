@@ -364,6 +364,7 @@ class DrawModeDisplay implements IControl {
     control.style.background = 'rgba(255, 255, 255, 0.8)';
     control.style.padding = '0 5px';
     control.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+    control.id = 'draw-mode-display';
 
     this._root = createRoot(control);
 

@@ -14,6 +14,10 @@
   }
 }
 
+#draw-mode-display {
+  margin-top: 18px;
+}
+
 .userTrackingMarkerCone {
   background-image: conic-gradient(
     #00b0ff20 0deg,
