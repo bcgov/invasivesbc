@@ -29,28 +29,50 @@
   );
 }
 
-.whatsHereMarkerEl {
-  display: block;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  padding: 0;
+.activityMarkerEl img,
+.IAPPMarkerEl img {
+  height: 32px;
+  width: 32px;
+  border-radius: 45%;
 }
 
-.IAPPMarkerEl {
-  display: block;
-  border: none;
-  border-radius: 50%;
-  cursor: pointer;
-  padding: 0;
+.map-marker-popup {
+  .maplibregl-popup-content {
+    background-color: var(--bc-blue);
+    color: white;
+    padding: 0;
+    height: auto;
+    border-radius: 4px;
+    overflow: hidden;
+
+    p {
+      font-size: 1rem;
+      margin: 10pt;
+
+      span {
+        font-weight: 500;
+      }
+    }
+
+    button {
+      width: 100%;
+      height: 35px;
+      background-color: var(--blue-primary);
+      color: white;
+      font-size: 0.875rem;
+      padding: 5pt;
+      border: none;
+      text-transform: uppercase;
+    }
+
+    button:hover {
+      cursor: pointer;
+    }
+  }
 }
 
-.activityMarkerEl {
-  display: block;
-  border: none;
-  border-radius: 50%;
+.marker-close-button:hover {
   cursor: pointer;
-  padding: 0;
 }
 
 .loadingMap {
@@ -91,7 +113,6 @@
   bottom: 4px;
   transition: bottom 0.1s ease 0.3s;
 }
-
 
 .map-containing-block {
   background: #999;
