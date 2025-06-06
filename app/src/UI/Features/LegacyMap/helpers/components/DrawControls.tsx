@@ -45,6 +45,7 @@ const DrawControls = () => {
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
+  const editControls = useRef<EditControls>();
 
   const uHistory = useHistory();
 
@@ -227,12 +228,16 @@ const DrawControls = () => {
     }
 
     drawInstance.current = new MapboxDraw({
-      displayControlsDefault: true,
-      touchEnabled: true,
+      displayControlsDefault: false,
       controls: {
+        polygon: true,
+        line_string: true,
+        point: true,
+        trash: true,
         combine_features: false,
         uncombine_features: false
       },
+      touchEnabled: true,
       userProperties: true,
       modes: {
         ...MapboxDraw.modes,
@@ -305,11 +310,13 @@ const DrawControls = () => {
       ]
     });
     drawModeDisplay.current = new DrawModeDisplay(mode);
+    editControls.current = new EditControls();
 
     map.on('draw.create', drawCreate);
     map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
+    map.addControl(editControls.current, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
 
     // cleanup
@@ -329,6 +336,10 @@ const DrawControls = () => {
       if (drawModeDisplay.current) {
         map.removeControl(drawModeDisplay.current);
         drawModeDisplay.current = undefined;
+      }
+      if (editControls.current) {
+        map.removeControl(editControls.current);
+        editControls.current = undefined;
       }
     };
   }, [map]);
@@ -373,6 +384,48 @@ class DrawModeDisplay implements IControl {
     this._container = control;
 
     return this._container;
+  }
+
+  onRemove() {
+    if (this._root) {
+      this._root.unmount();
+      this._root = undefined;
+    }
+    if (this._container?.parentNode) {
+      this._container.parentNode.removeChild(this._container);
+      this._container = undefined;
+    }
+  }
+}
+
+class EditControls implements IControl {
+  _container?: HTMLDivElement;
+  _map?: maplibregl.Map;
+  _root?: Root;
+
+  onAdd(map: maplibregl.Map): HTMLElement {
+    this._map = map;
+    const container = document.createElement('div');
+    container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+    container.style.background = 'rgba(255, 255, 255, 1.0)';
+    container.style.marginTop = '0px';
+    container.style.borderRadius = '0px 0px 4px 4px';
+    container.id = 'custom-edit-tool';
+
+    this._root = createRoot(container);
+    this._root.render(
+      <>
+        <button title="Edit" onClick={() => console.log('Edit clicked')}>
+          ✏️
+        </button>
+        <button title="Save" onClick={() => console.log('Save clicked')}>
+          💾
+        </button>
+      </>
+    );
+
+    this._container = container;
+    return container;
   }
 
   onRemove() {
