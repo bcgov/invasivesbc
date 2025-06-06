@@ -9,7 +9,8 @@ import { useHistory } from 'react-router-dom';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
 import maplibregl, { IControl } from 'maplibre-gl';
 import { createRoot, Root } from 'react-dom/client';
-
+import editButton from '/assets/icon/edit.png';
+import saveButton from '/assets/icon/save.png';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -375,6 +376,7 @@ class DrawModeDisplay implements IControl {
     control.style.background = 'rgba(255, 255, 255, 0.8)';
     control.style.padding = '0 5px';
     control.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+    control.style.borderRadius = '4px';
     control.id = 'draw-mode-display';
 
     this._root = createRoot(control);
@@ -416,10 +418,10 @@ class EditControls implements IControl {
     this._root.render(
       <>
         <button title="Edit" onClick={() => console.log('Edit clicked')}>
-          ✏️
+          <img src={editButton} alt="✏️" style={{ width: 15, height: 15, marginTop: 3 }} />
         </button>
         <button title="Save" onClick={() => console.log('Save clicked')}>
-          💾
+          <img src={saveButton} alt="💾" style={{ width: 15, height: 15, marginTop: 3 }} />
         </button>
       </>
     );

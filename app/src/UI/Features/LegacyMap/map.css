@@ -127,3 +127,7 @@
 .map-containing-block {
   background: #999;
 }
+
+.maplibregl-ctrl-group {
+  border-radius: 4px 4px 0px 0px;
+}
