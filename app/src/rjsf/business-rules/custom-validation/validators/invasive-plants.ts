@@ -187,25 +187,26 @@ function getTerrestrialAquaticPlantsValidator(): rjsfValidator {
       return errors as FormValidation;
     }
 
-    if (informationArray?.length > 0)
-      for (const object of informationArray) {
-        if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
-          const baseError = (() =>
-            isChemical
-              ? errors?.activity_subtype_data?.Monitoring_ChemicalTerrestrialAquaticPlant_Information
-              : errors?.activity_subtype_data?.Monitoring_MechanicalTerrestrialAquaticPlant_Information)();
-
-          baseError?.addError('Either Aquatic or Terrestrial plant has to be specified.');
-        }
-
-        if (object.invasive_plant_aquatic_code && object.invasive_plant_code) {
-          const baseError = (() =>
-            isChemical
-              ? errors?.activity_subtype_data?.Monitoring_ChemicalTerrestrialAquaticPlant_Information
-              : errors?.activity_subtype_data?.Monitoring_MechanicalTerrestrialAquaticPlant_Information)();
-          baseError?.addError("You can't specify both aquatic and terrestrial plants.");
-        }
+    informationArray?.forEach((object, i) => {
+      if (!object.invasive_plant_aquatic_code && !object.invasive_plant_code) {
+        const violation = 'Either Aquatic or Terrestrial plant has to be specified.';
+        const baseError = (() =>
+          isChemical
+            ? errors?.activity_subtype_data?.Monitoring_ChemicalTerrestrialAquaticPlant_Information
+            : errors?.activity_subtype_data?.Monitoring_MechanicalTerrestrialAquaticPlant_Information)();
+        baseError?.[i]?.addError(violation);
+        baseError?.addError(violation);
+      } else if (object.invasive_plant_aquatic_code && object.invasive_plant_code) {
+        const violation = "You can't specify both aquatic and terrestrial plants.";
+        const baseError = (() =>
+          isChemical
+            ? errors?.activity_subtype_data?.Monitoring_ChemicalTerrestrialAquaticPlant_Information
+            : errors?.activity_subtype_data?.Monitoring_MechanicalTerrestrialAquaticPlant_Information)();
+        baseError?.addError(violation);
+        baseError?.[i]?.invasive_plant_aquatic_code?.addError(violation);
+        baseError?.[i]?.invasive_plant_code?.addError(violation);
       }
+    });
 
     return errors as FormValidation;
   }) as unknown as rjsfValidator;
