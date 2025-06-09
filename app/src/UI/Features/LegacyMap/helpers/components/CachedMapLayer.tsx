@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState, Fragment } from 'react';
 import { MapContext } from './MapContext';
-import { FillLayerSpecification, SymbolLayerSpecification } from 'maplibre-gl';
+import { FillLayerSpecification, GeoJSONSource, SymbolLayerSpecification } from 'maplibre-gl';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { useSelector } from 'utils/use_selector';
 import bboxToPolygon from 'utils/bboxToPolygon';
@@ -90,12 +90,22 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
     setData(features);
   }, [repositories]);
 
-  // Rebuild layers when Data changes
+  // Update layer data on change instead of destroying/recreating each time there's an update
   useEffect(() => {
-    if (!map || !mapReady || !repositories) return;
-    teardown();
+    if (!map || !mapReady) return;
+    const source = map.getSource(MAP_ID) as GeoJSONSource;
+    if (!source) return;
+    source.setData({
+      type: 'FeatureCollection',
+      features: data
+    });
+  }, [data]);
+
+  useEffect(() => {
+    if (!map || !mapReady) return;
     setup();
-  }, [data, mapReady]);
+    return () => teardown();
+  }, [mapReady]);
 
   useEffect(() => {
     setUserOnOfflineTilePage(!!url?.includes('/OfflineTiles'));
