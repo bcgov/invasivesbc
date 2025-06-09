@@ -1,5 +1,5 @@
 import './Landing.css';
-import { Box, Button, Divider, Grid } from '@mui/material';
+import { Alert, Box, Button, Divider, Grid } from '@mui/material';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserInfo } from 'state/reducers/userInfo';
@@ -37,10 +37,6 @@ const InformationalLinkBox = () => {
 };
 
 export const LandingComponent = () => {
-  const connected = useSelector(selectNetworkConnected);
-  const dispatch = useDispatch();
-  const history = useHistory();
-
   const requestAccess = async () => {
     if (connected && !authenticated) {
       dispatch(AuthActions.signinRequest({}));
@@ -53,9 +49,16 @@ export const LandingComponent = () => {
     }
   };
 
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const connected = useSelector(selectNetworkConnected);
   const { authenticated, loggedInOrWorkingOffline, workingOffline, username, displayName, email, roles } =
     useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
+
+  const isChromeUserAgent = navigator.userAgent.includes('Chrome');
+
   return (
     <section id="landing">
       <div className="content">
@@ -69,6 +72,16 @@ export const LandingComponent = () => {
             </p>
           </Box>
         </FeatureGated>
+        {!isChromeUserAgent && (
+          <WebOnly>
+            {/* Training Materials suggest using InvasivesBC, and some users using non-chromium browsers like Safari report bugs when using tools like /Reports (which uses iFrames) */}
+            <Box>
+              <Alert variant="outlined" severity="warning">
+                For optimal compatibility and performance, we recommend using Google Chrome.
+              </Alert>
+            </Box>
+          </WebOnly>
+        )}
         {(userInfoLoaded || loggedInOrWorkingOffline) && (
           <>
             <Box mt={2}>
