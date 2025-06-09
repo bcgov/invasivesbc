@@ -1,6 +1,6 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, Fragment } from 'react';
 import { MapContext } from './MapContext';
-import { FillLayerSpecification, GeoJSONSourceSpecification, SymbolLayerSpecification } from 'maplibre-gl';
+import { FillLayerSpecification, SymbolLayerSpecification } from 'maplibre-gl';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { useSelector } from 'utils/use_selector';
 import bboxToPolygon from 'utils/bboxToPolygon';
@@ -10,11 +10,12 @@ import { LAYER_Z_FOREGROUND, LAYER_Z_MID } from '../functional/layer-definitions
 type PropTypes = {
   mapReady: boolean;
 };
+
 const CachedMapLayer = ({ mapReady }: PropTypes) => {
-  const MAP_ID = 'cached-tiles-source';
   const map = useContext(MapContext);
 
-  const createShapeLayerDefinition = (): FillLayerSpecification => ({
+  const MAP_ID = 'cached-tiles-source';
+  const LAYER_DEFINITION: FillLayerSpecification = {
     id: `fill-${MAP_ID}`,
     type: 'fill',
     source: MAP_ID,
@@ -22,9 +23,8 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
       'fill-color': 'orange',
       'fill-opacity': 0.4
     }
-  });
-
-  const createLabelLayerDefinition = (): SymbolLayerSpecification => ({
+  };
+  const LABEL_DEFINITION: SymbolLayerSpecification = {
     id: `label-${MAP_ID}`,
     source: MAP_ID,
     type: 'symbol',
@@ -41,68 +41,74 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
       'text-halo-width': 1,
       'text-halo-blur': 1
     }
-  });
+  };
 
   const setup = () => {
-    if (!map) return;
-    map.addSource(MAP_ID, createSourceDefinition());
-    map.addLayer(createLabelLayerDefinition(), LAYER_Z_FOREGROUND);
-    map.addLayer(createShapeLayerDefinition(), LAYER_Z_MID);
-  };
-  const tearDown = () => {
-    if (!map) return;
-    const allLayersOnMap = map.getLayersOrder();
-    const cachedMapLayers = allLayersOnMap.filter((layer) => layer.includes(MAP_ID));
-    cachedMapLayers.forEach((layer) => {
-      try {
-        map.removeLayer(layer);
-      } catch (e) {
-        console.error(e);
+    map?.addSource(MAP_ID, {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: data
       }
     });
+    map?.addLayer(LABEL_DEFINITION, LAYER_Z_FOREGROUND);
+    map?.addLayer(LAYER_DEFINITION, LAYER_Z_MID);
+  };
+
+  const teardown = () => {
+    if (!map?.getSource(MAP_ID) || !mapReady) return;
     try {
+      const allLayersOnMap = map.getLayersOrder();
+      const cachedMapLayers = allLayersOnMap.filter((layer) => layer.includes(MAP_ID));
+      cachedMapLayers.forEach((layer) => {
+        try {
+          map.removeLayer(layer);
+        } catch (e) {
+          console.error('Failed to remove Offline Tile layer', e);
+        }
+      });
       map.removeSource(MAP_ID);
     } catch (e) {
-      console.error(e);
+      console.error('Failed to remove Offline Tile Source', e);
     }
   };
-  const createSourceDefinition = (): GeoJSONSourceSpecification => ({
-    type: 'geojson',
-    data: {
-      type: 'FeatureCollection',
-      features: data
-    }
-  });
 
   const repositories = useSelector((state) => state.TileCache?.repositories);
   const url = useSelector((state) => state.AppMode.url);
-  const [data, setData] = useState<Array<Feature<Polygon>>>([]);
-  const [onTilePage, setOnTilePage] = useState<boolean>(false);
-  useEffect(() => {
-    setOnTilePage(!!url?.includes('/OfflineTiles'));
-  }, [url]);
-  useEffect(() => {
-    if (!mapReady || !map || !repositories) return;
-    tearDown();
-    setup();
-  }, [data, mapReady]);
 
-  useEffect(() => {
-    if (!map) return;
-    const visibility = onTilePage ? 'visible' : 'none';
-    map.setLayoutProperty(`label-${MAP_ID}`, 'visibility', visibility);
-    map.setLayoutProperty(`fill-${MAP_ID}`, 'visibility', visibility);
-  }, [onTilePage]);
+  const [data, setData] = useState<Array<Feature<Polygon>>>([]);
+  const [userOnOfflineTilePage, setUserOnOfflineTilePage] = useState<boolean>(false);
+
+  // Rebuild Dataset when repository state updates
   useEffect(() => {
     const features =
-      repositories?.map((repo) => {
-        const shape = bboxToPolygon(repo.bounds);
-        shape.properties = { description: repo.description };
+      repositories?.map(({ bounds, description }) => {
+        const shape = bboxToPolygon(bounds);
+        shape.properties = { description };
         return shape;
       }) ?? [];
     setData(features);
   }, [repositories]);
 
-  return null;
+  // Rebuild layers when Data changes
+  useEffect(() => {
+    if (!map || !mapReady || !repositories) return;
+    teardown();
+    setup();
+  }, [data, mapReady]);
+
+  useEffect(() => {
+    setUserOnOfflineTilePage(!!url?.includes('/OfflineTiles'));
+  }, [url]);
+
+  // Toggle Layer Visibility
+  useEffect(() => {
+    if (!map || !mapReady) return;
+    const visibility = userOnOfflineTilePage ? 'visible' : 'none';
+    map.setLayoutProperty(`label-${MAP_ID}`, 'visibility', visibility);
+    map.setLayoutProperty(`fill-${MAP_ID}`, 'visibility', visibility);
+  }, [userOnOfflineTilePage]);
+
+  return Fragment;
 };
 export default CachedMapLayer;
