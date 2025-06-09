@@ -1,17 +1,17 @@
 import { ActivityStatus } from 'sharedAPI';
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
-  '1': {
-    id: '1',
+  [RecordSetId.Drafts]: {
+    id: RecordSetId.Drafts,
     idList: [],
     recordSetType: RecordSetType.Activity,
     recordSetName: 'My Drafts',
     // add draft key
     tableFilters: [
       {
-        id: '1',
+        id: RecordSetId.Drafts,
         field: 'form_status',
         filterType: 'tableFilter',
         filter: ActivityStatus.DRAFT,
@@ -36,8 +36,8 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
     drawOrder: 1
   },
-  '2': {
-    id: '2',
+  [RecordSetId.Activity]: {
+    id: RecordSetId.Activity,
     idList: [],
     recordSetType: RecordSetType.Activity,
     recordSetName: 'All InvasivesBC Activities',
@@ -58,9 +58,9 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
     drawOrder: 2
   },
-  '3': {
+  [RecordSetId.IAPP]: {
     recordSetType: RecordSetType.IAPP,
-    id: '3',
+    id: RecordSetId.IAPP,
     idList: [],
     recordSetName: 'All IAPP Records',
     color: '#21f34f',
@@ -70,9 +70,9 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
 };
 
 if (buildTimeConfig.MOBILE) {
-  defaultRecordSets['4'] = {
+  defaultRecordSets[RecordSetId.OfflineActivities] = {
     recordSetType: RecordSetType.Activity,
-    id: '4',
+    id: RecordSetId.OfflineActivities,
     idList: [],
     recordSetName: 'All Unsynced Offline Activities',
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
