@@ -62,9 +62,12 @@ const Overlay = () => {
       <div id="overlay-anchor">
         <div
           id="overlaydiv"
-          className={`map__overlay ${panelOpen && !fullScreen ? 'map__overlay--show' : ''} ${
-            panelOpen && fullScreen ? 'map__overlay--show-fullscreen' : ''
-          }`}
+          className={`map__overlay ${(() => {
+            if (panelOpen) {
+              return fullScreen ? 'map__overlay--show-fullscreen' : 'map__overlay--show';
+            }
+            return '';
+          })()}`}
         >
           <div className={`mapOverlayContents `}>
             {!fullScreen && <OverlayHeader />}
