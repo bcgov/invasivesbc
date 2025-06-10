@@ -8,7 +8,7 @@ import React, { useEffect } from 'react';
 import ContextRoutes from 'UI/Layout/Routes/ContextRoutes';
 
 const maximize = () => {
-  setOverlayStyle({ top: '0' });
+  setOverlayStyle({ top: '0px' });
 };
 
 const minimize = () => {
@@ -74,9 +74,8 @@ const cleanup = () => {
 const onClickDragButton = (e) => {
   e.preventDefault();
   document.addEventListener('pointermove', drag, false);
-  document.addEventListener('pointerup', cleanup, {once: true, passive: true});
+  document.addEventListener('pointerup', cleanup, { once: true, passive: true });
 };
-
 
 export const OverlayHeader = () => {
   useEffect(() => {

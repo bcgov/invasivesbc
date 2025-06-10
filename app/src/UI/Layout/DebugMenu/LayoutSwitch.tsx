@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import { useEffect, useState } from 'react';
 import EventActions from 'state/actions/events/EventActions';
 import { LayoutComponent } from 'UI/App';
-import { Debug } from 'UI/Reusable/Predicates/Debug';
 
 /** @description Debug component for testing alternative layouts */
 const LayoutSwitch = () => {
@@ -18,11 +17,9 @@ const LayoutSwitch = () => {
   }, [layout]);
 
   return (
-    <Debug>
-      <button style={{ cursor: 'pointer' }} onClick={() => dispatch(EventActions.setLayoutComponent(nextLayout))}>
-        ⚡{nextLayout}
-      </button>
-    </Debug>
+    <button style={{ cursor: 'pointer' }} onClick={() => dispatch(EventActions.setLayoutComponent(nextLayout))}>
+      switch to {nextLayout}
+    </button>
   );
 };
 

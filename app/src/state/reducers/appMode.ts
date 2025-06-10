@@ -94,6 +94,8 @@ function createAppModeReducer(config: UnifiedConfig) {
               )
             ) {
               draftState.layout.viewLayout = LayoutMode.MAP_HIDDEN;
+            } else if (['Map'].includes(action.payload.url.split('/')[1])) {
+              draftState.layout.viewLayout = LayoutMode.MAP_EXCLUSIVE;
             } else {
               draftState.layout.viewLayout = LayoutMode.MAP_FOCUSED;
             }

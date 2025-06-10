@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import 'UI/Layout/OverlayLayout/Overlay.css';
 import { useSelector } from 'utils/use_selector';
 import { OverlayHeader } from 'UI/Layout/OverlayLayout/OverlayHeader';
@@ -21,6 +21,7 @@ import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 const Overlay = () => {
   const [panelOpen, setPanelOpen] = React.useState(true);
   const [fullScreen, setFullScreen] = React.useState(false);
+  const [additionalClasses, setAdditionalClasses] = useState<string>('');
 
   const layoutMode = useSelector((state) => state.AppMode.layout.viewLayout);
 
@@ -42,53 +43,46 @@ const Overlay = () => {
     }
   }, [layoutMode]);
 
+  useEffect(() => {
+    const classesToAdd: string[] = [];
+    if (panelOpen) {
+      classesToAdd.push('shown');
+    }
+    if (fullScreen) {
+      classesToAdd.push('fullscreen');
+    }
+    setAdditionalClasses(classesToAdd.join(' '));
+  }, [fullScreen, panelOpen]);
+
   return (
     <>
       <AlertsContainer />
       <UserInputModalController />
-
       <MobileOnly>
         <MobileHeader />
       </MobileOnly>
-
       <WebOnly>
         <WebHeader />
       </WebOnly>
-
       <Suspense fallback={<Spinner />}>
         <DynamicMapComponent />
       </Suspense>
-
       <div id="overlay-anchor">
-        <div
-          id="overlaydiv"
-          className={`map__overlay ${(() => {
-            if (panelOpen) {
-              return fullScreen ? 'map__overlay--show-fullscreen' : 'map__overlay--show';
-            }
-            return '';
-          })()}`}
-        >
-          <div className={`mapOverlayContents `}>
-            {!fullScreen && <OverlayHeader />}
-            <div className={`overlay-content ${fullScreen ? 'overlay-content-fullscreen' : ''}`}>
-              <AppRoutes />
-            </div>
+        <div className={`overlay-panel ${additionalClasses}`}>
+          {panelOpen && !fullScreen && <OverlayHeader />}
+          <div className={`overlay-content`}>
+            <AppRoutes />
           </div>
         </div>
       </div>
-
       <WebOnly>
         <Footer />
       </WebOnly>
-
       <NewRecordDialog />
-
       <MobileOnly>
         <OfflineDataSyncDialog />
         <OfflineUserMenu />
       </MobileOnly>
-
       <CustomizeLayerMenu />
     </>
   );

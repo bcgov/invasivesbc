@@ -21,12 +21,12 @@
   top: 0;
   align-items: center;
   display: flex;
-  flex-direction: row;
+  flex-flow: row wrap;
   min-height: 45px;
   max-height: 80px;
   justify-content: flex-start;
-  flex-wrap: wrap;
   border-bottom: 1px solid black;
+
   .recordset-cache-control {
     margin-left: auto;
     margin-right: 5pt;
@@ -34,11 +34,15 @@
 }
 
 .stickyHeader {
-  position: sticky;
-  top: 0;
-  left: 0;
-  background-color: white;
-  z-index: 9999;
+  /* position: sticky; */
+
+  /* top: 0; */
+
+  /* left: 0; */
+
+  /* background-color: white; */
+
+  /* z-index: 9999; */
 }
 
 .excelExporter {
@@ -145,15 +149,18 @@
 }
 
 #app.overlay-layout {
-  .recordSet_footer {
-    bottom: calc(var(--footer-bar-height) + env(safe-area-inset-bottom, 0));
-    width: 100%;
-    position: fixed;
-  }
+  /* .recordSet_footer { */
+
+  /*  bottom: calc(var(--footer-bar-height) + env(safe-area-inset-bottom, 0)); */
+
+  /*  width: 100%; */
+
+  /*  position: fixed; */
+
+  /* } */
 }
 
 #app.wide-layout {
   .recordSet_footer {
-    
   }
 }

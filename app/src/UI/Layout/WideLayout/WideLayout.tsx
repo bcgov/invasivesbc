@@ -12,13 +12,13 @@ import UserInputModalController from 'UI/Reusable/UserInputModals/UserInputModal
 import { AuthActions } from 'state/actions/auth/Auth';
 import ContextRoutes from 'UI/Layout/Routes/ContextRoutes';
 import { selectAuth } from 'state/reducers/auth';
-import LayoutSwitch from 'UI/Layout/LayoutSwitch';
 import { Menu } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import { OfflineSyncHeaderButton } from 'UI/Layout/OverlayLayout/Header/OfflineSyncHeaderButton';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { OfflineDataSyncDialog } from 'UI/Features/OfflineDataSync/OfflineDataSyncDialog';
 import { OfflineUserMenu } from 'UI/Features/OfflineUserMenu/OfflineUserMenu';
+import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 
 const WideLayout = () => {
   const { filteredLinks } = usePrimaryNavigationLinks();
@@ -64,8 +64,6 @@ const WideLayout = () => {
           <>
             <h3>InvasivesBC</h3>
 
-            <LayoutSwitch />
-
             <ul className={'primary-nav'}>
               {filteredLinks.map((link) => (
                 <li key={link.id}>
@@ -76,6 +74,7 @@ const WideLayout = () => {
               ))}
             </ul>
             <div className={'spacer'} />
+            <DebugMenu />
             <ul className={'user-actions'}>
               {loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
               {authenticated || (
@@ -132,7 +131,7 @@ const WideLayout = () => {
         <OfflineDataSyncDialog />
         <OfflineUserMenu />
       </MobileOnly>
-      
+
       <NewRecordDialog />
       <CustomizeLayerMenu />
     </div>

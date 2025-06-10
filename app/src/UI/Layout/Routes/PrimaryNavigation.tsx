@@ -187,7 +187,7 @@ function usePrimaryNavigationLinks() {
       path: '/News',
       label: 'News',
       predicate: TabPredicate.AUTHENTICATED_ONLINE,
-      platform: PlatformPredicate.BOTH,
+      platform: PlatformPredicate.WEB,
       layout: LayoutMode.MAP_HIDDEN,
       icon: <Newspaper />
     },

@@ -16,44 +16,32 @@
     overflow: clip;
   }
 
-  .overlay-content {
-    pointer-events: all;
-    overflow: auto;
-    width: 100%;
-    box-sizing: border-box;
-    padding-bottom: var(--footer-bar-height) + var(--record-table-footer-height) + 10px;
-  }
-
-  .map__overlay {
+  .overlay-panel {
     position: absolute;
-    box-sizing: border-box;
-    bottom: 0;
     left: 0;
     right: 0;
-    background-color: #fff;
+    bottom: 0;
+    box-sizing: border-box;
     z-index: 400;
-    transition: all 0.002s ease-in-out 0.002s;
-    height: 0;
+    background: #fff;
 
-    &.map__overlay--show {
+    &.shown {
       top: var(--overlay-top);
-      bottom: 0;
-      height: 100%;
-      overflow-y: auto;
+      padding-bottom: 1rem;
     }
 
-    &.map__overlay--show-fullscreen {
+    &.fullscreen {
+      top: 0;
+    }
+
+    .overlay-content {
+      pointer-events: auto;
       height: 100%;
-      overflow-y: visible;
+      width: 100%;
+      overflow: auto;
+      box-sizing: border-box;
     }
   }
-
-  .mapOverlayContents {
-    height: 100%;
-    width: 100%;
-    overflow-y: auto;
-  }
-
 
   .map-containing-block {
     position: relative;
@@ -73,23 +61,41 @@
     height: 100%;
   }
 
+  .map-containing-block:has(+ #overlay-anchor > .overlay-panel.shown) {
+    #map-btn-container {
+      bottom: 0 !important;
+      top: calc(var(--overlay-top) - var(--map-button-bar-height) - 4px) !important;
+    }
 
-  .maplibregl-ctrl-bottom-right {
-    top: calc(var(--overlay-top) - 48px) !important;
-    bottom: initial !important;
-    transition: top 0.1s ease 0.3s !important;
+    .maplibregl-ctrl-bottom-right {
+      top: calc(var(--overlay-top) - 48px) !important;
+      bottom: initial !important;
+      transition: top 0.1s ease 0.3s !important;
+    }
 
+    .maplibregl-ctrl-bottom-left {
+      top: calc(var(--overlay-top) - 48px) !important;
+      bottom: initial !important;
+      transition: top 0.1s ease 0.3s !important;
+    }
   }
 
-  .maplibregl-ctrl-bottom-left {
-    top: calc(var(--overlay-top) - 48px) !important;
-    bottom: initial !important;
-    transition: top 0.1s ease 0.3s !important;
-  }
+  .map-containing-block:has(+ #overlay-anchor > .overlay-panel:not(.shown)) {
+    #map-btn-container {
+      bottom: 0 !important;
+      top: auto;
+    }
 
-  #map-btn-container {
-    bottom: 0 !important;
-    top: calc(var(--overlay-top) - var(--map-button-bar-height) - 4px) !important;
-  }
+    .maplibregl-ctrl-bottom-right {
+      top: auto;
+      bottom: 0 !important;
+      transition: top 0.1s ease 0.3s !important;
+    }
 
+    .maplibregl-ctrl-bottom-left {
+      top: auto;
+      bottom: 0 !important;
+      transition: top 0.1s ease 0.3s !important;
+    }
+  }
 }

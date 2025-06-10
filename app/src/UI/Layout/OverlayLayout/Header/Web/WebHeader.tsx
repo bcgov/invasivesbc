@@ -15,8 +15,7 @@ import { AuthActions } from 'state/actions/auth/Auth';
 import Alerts from 'state/actions/alerts/Alerts';
 import NavTab from 'UI/Layout/OverlayLayout/Header/NavTab';
 import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
-import EventActions from 'state/actions/events/EventActions';
-import LayoutSwitch from 'UI/Layout/LayoutSwitch';
+import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -169,14 +168,13 @@ export const WebHeader: React.FC = () => {
   return (
     <header className="HeaderBar">
       <InvIcon />
-      
-      <LayoutSwitch />
 
       <ButtonWrapper>
         {filteredLinks.map((link) => {
           return <NavTab key={link.id} {...link} />;
         })}
       </ButtonWrapper>
+      <DebugMenu />
       <LoginOrOutMemo />
     </header>
   );

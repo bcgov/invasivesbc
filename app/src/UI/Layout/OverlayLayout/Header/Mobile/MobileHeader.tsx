@@ -9,7 +9,7 @@ import { Platform } from 'state/configuration/build-time-config';
 import 'UI/Layout/OverlayLayout/Header/Mobile/MobileHeader.css';
 import React from 'react';
 import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
-import LayoutSwitch from 'UI/Layout/LayoutSwitch';
+import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 
 const MobileHeader = () => {
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
@@ -20,7 +20,6 @@ const MobileHeader = () => {
   return (
     <header id="nav-header">
       <InvBcLogo />
-      <LayoutSwitch />
 
       <nav>
         {filteredLinks.map((link) => {
@@ -28,8 +27,11 @@ const MobileHeader = () => {
         })}
         {loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
       </nav>
-      {PLATFORM == Platform.ANDROID && <AndroidMemoryReport />}
-      <HeaderPopover />
+      <div>
+        {PLATFORM == Platform.ANDROID && <AndroidMemoryReport />}
+        <DebugMenu />
+        <HeaderPopover />
+      </div>
     </header>
   );
 };
