@@ -18,9 +18,10 @@
 
   .overlay-content {
     pointer-events: all;
-    overflow: scroll;
+    overflow: auto;
     width: 100%;
     box-sizing: border-box;
+    padding-bottom: var(--footer-bar-height) + var(--record-table-footer-height) + 10px;
   }
 
   .map__overlay {

@@ -1,14 +1,10 @@
 import { IconButton } from '@mui/material';
-import { Route } from 'react-router';
 import debounce from 'lodash.debounce';
 import 'UI/Layout/OverlayLayout/OverlayHeader.css';
 import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
-import FormMenuButtons from 'UI/Features/Records/FormMenuButtons/FormMenuButtons';
 import React, { useEffect } from 'react';
-import { useSelector } from 'utils/use_selector';
 import ContextRoutes from 'UI/Layout/Routes/ContextRoutes';
 
 const maximize = () => {
@@ -53,8 +49,8 @@ const throttledRestyle = debounce(
   (newStyle) => {
     setOverlayStyle(newStyle);
   },
-  3,
-  { leading: true }
+  8,
+  { maxWait: 10, trailing: true }
 );
 
 const drag = (e: PointerEvent) => {
@@ -62,7 +58,7 @@ const drag = (e: PointerEvent) => {
 
   const correctedClientY = e.clientY - 60;
 
-  const SNAP_TO_NEAREST = 10; // set to 1 for no snap
+  const SNAP_TO_NEAREST = 1; // set to 1 for no snap
 
   throttledRestyle({ top: `${Math.floor(correctedClientY / SNAP_TO_NEAREST) * SNAP_TO_NEAREST}px` });
 };
@@ -78,8 +74,9 @@ const cleanup = () => {
 const onClickDragButton = (e) => {
   e.preventDefault();
   document.addEventListener('pointermove', drag, false);
-  document.addEventListener('pointerup', cleanup, true);
+  document.addEventListener('pointerup', cleanup, {once: true, passive: true});
 };
+
 
 export const OverlayHeader = () => {
   useEffect(() => {
