@@ -40,7 +40,9 @@ const BASELINE_FEATURES = {
   CUSTOM_RECORDSETS: new FeatureFlag('CUSTOM_RECORDSETS', true),
   OFFLINE_SYNC: new FeatureFlag('OFFLINE_SYNC', true),
 
-  DEGRADED_EXPERIENCE_WARNING: new FeatureFlag('DEGRADED_EXPERIENCE_WARNING', false)
+  DEGRADED_EXPERIENCE_WARNING: new FeatureFlag('DEGRADED_EXPERIENCE_WARNING', false),
+
+  SIMPLIFIED_LAYOUT: new FeatureFlag('SIMPLIFIED_LAYOUT', false)
 };
 
 type FeatureFlags = typeof BASELINE_FEATURES;
@@ -82,6 +84,7 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
       COMPUTED_FEATURES.OFFLINE_SYNC.enabled = false;
       COMPUTED_FEATURES.MAP_SIMPLIFIED_BAKED_VECTOR_TILES.enabled = true; /*not yet implemented*/
       COMPUTED_FEATURES.DEGRADED_EXPERIENCE_WARNING.enabled = true;
+      COMPUTED_FEATURES.SIMPLIFIED_LAYOUT.enabled = true;
     }
     if (totalMemoryGB < 2 || lowVMMemory) {
       console.warn(
@@ -90,6 +93,7 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
       // we're on something tiny
       COMPUTED_FEATURES.MAP.enabled = false;
       COMPUTED_FEATURES.DEGRADED_EXPERIENCE_WARNING.enabled = true;
+      COMPUTED_FEATURES.SIMPLIFIED_LAYOUT.enabled = true;
     }
   }
 

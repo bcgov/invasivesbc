@@ -1,7 +1,7 @@
-import { useDispatch, useSelector } from 'utils/use_selector';
 import { useEffect } from 'react';
 import EventActions from 'state/actions/events/EventActions';
-import 'UI/Layout/Header/Mobile/AndroidMemoryReport.css';
+import 'UI/Layout/OverlayLayout/Header/Mobile/AndroidMemoryReport.css';
+import { useDispatch, useSelector } from 'utils/use_selector';
 
 const AndroidMemoryReport = () => {
   const memoryInformation = useSelector((state) => state.AppMode.constraints.memory);
@@ -30,11 +30,13 @@ const AndroidMemoryReport = () => {
         <dd>{`${Math.floor((memoryInformation.totalBytes - memoryInformation.availableBytes) / (1024 * 1024))} / ${Math.floor(memoryInformation.totalBytes / (1024 * 1024))}`}</dd>
         <dt>VM Mem MiB</dt>
         <dd
-          className={`${memoryInformation.VMFree < (10 * 1024 * 1024)} ? 'red':'green'`}>{`${Math.floor((memoryInformation.VMMax - memoryInformation.VMFree) / (1024 * 1024))} / ${Math.floor(memoryInformation.VMMax / (1024 * 1024))}`}</dd>
+          className={`${memoryInformation.VMFree < 10 * 1024 * 1024} ? 'red':'green'`}
+        >{`${Math.floor((memoryInformation.VMMax - memoryInformation.VMFree) / (1024 * 1024))} / ${Math.floor(memoryInformation.VMMax / (1024 * 1024))}`}</dd>
         <dt>memory class MiB</dt>
         <dd>{`${Math.floor(memoryInformation.largeMemoryClass)}`}</dd>
       </dl>
     </div>
   );
+  return null;
 };
 export { AndroidMemoryReport };

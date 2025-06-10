@@ -30,7 +30,7 @@ interface UserSettingsState {
 
   mapCenter: [number, number];
   newRecordDialogueState: {
-    mode: 'new' | 'duplicate';
+    viewLayout: 'new' | 'duplicate';
     open: boolean;
   };
   recordSets: Record<PropertyKey, UserRecordSet>;
@@ -61,7 +61,7 @@ const initialState: UserSettingsState = {
   recordSets: { ...(defaultRecordSets as Record<PropertyKey, UserRecordSet>) },
   recordsExpanded: false,
   newRecordDialogueState: {
-    mode: 'new',
+    viewLayout: 'new',
     open: false
   },
   initialized: false,
@@ -277,10 +277,10 @@ function createUserSettingsReducer(_configuration: AppConfig) {
       } else if (Activity.copySuccess.match(action)) {
         draftState.newRecordDialogueState = {
           open: true,
-          mode: 'duplicate'
+          viewLayout: 'duplicate'
         };
       } else if (UserSettings.openNewRecordDialogue.match(action)) {
-        draftState.newRecordDialogueState = { open: true, mode: 'new' };
+        draftState.newRecordDialogueState = { open: true, viewLayout: 'new' };
       } else if (UserSettings.closeNewRecordDialogue.match(action)) {
         draftState.newRecordDialogueState.open = false;
       } else {

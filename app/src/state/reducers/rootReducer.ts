@@ -3,7 +3,6 @@ import localForage from 'localforage';
 import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import { createTransform, persistReducer } from 'redux-persist';
-import appMode from './appMode';
 import { ActivityState, createActivityReducer } from './activity';
 import { AuthState, createAuthReducer } from './auth';
 import { createBatchReducer } from './batch';
@@ -27,6 +26,7 @@ import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { CacheDownloadMode } from 'utils/record-cache';
 import { SQLiteStorage } from 'utils/redux-persist-sqlite';
 import { UnifiedConfig } from 'state/configuration/unified-config';
+import { createAppModeReducer } from 'state/reducers/appMode';
 
 const purgeOldStateOnVersionUpgrade = async (state: any) => {
   // finer-grained or per-reducer controls are possible -- this is a big hammer to reset saved state when this version changes
@@ -88,7 +88,7 @@ function createRootReducer(config: UnifiedConfig) {
   })();
 
   return combineReducers({
-    AppMode: appMode,
+    AppMode: createAppModeReducer(config),
     AlertsAndPrompts: createAlertsAndPromptsReducer(),
     Configuration: createConfigurationReducerWithDefaultState(config),
     DownloadState: createDownloadStateReducer,

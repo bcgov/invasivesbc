@@ -3,7 +3,7 @@ import { ThemeOptions } from '@mui/material';
 export const appTheme: ThemeOptions = {
   palette: {
     // https://material-ui.com/customization/palette/
-    mode: 'light',
+    viewLayout: 'light',
     common: {
       black: '#000',
       white: '#fff'

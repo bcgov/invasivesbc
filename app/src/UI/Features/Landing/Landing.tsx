@@ -1,11 +1,10 @@
 import './Landing.css';
-import { Box, Button, Divider, Grid } from '@mui/material';
+import { Alert, Box, Button, Divider, Grid } from '@mui/material';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { selectAuth } from 'state/reducers/auth';
 import { selectUserInfo } from 'state/reducers/userInfo';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
-import { TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router';
 import { INFORMATIONAL_LINKS } from 'constants/links';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
@@ -15,6 +14,8 @@ import IosDownloadLink from 'UI/Reusable/IosDownloadLink/IosDownloadLink';
 import AndroidDownloadLink from 'UI/Reusable/AndroidDownloadLink/AndroidDownloadLink';
 import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import EventActions from 'state/actions/events/EventActions';
+import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 
 const InformationalLinkBox = () => {
   return (
@@ -37,25 +38,25 @@ const InformationalLinkBox = () => {
 };
 
 export const LandingComponent = () => {
-  const connected = useSelector(selectNetworkConnected);
-  const dispatch = useDispatch();
-  const history = useHistory();
-
   const requestAccess = async () => {
     if (connected && !authenticated) {
       dispatch(AuthActions.signinRequest({}));
     } else {
       history.push('/AccessRequest');
-      dispatch({
-        type: TOGGLE_PANEL,
-        payload: { panelOpen: true, fullScreen: true }
-      });
+      dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
     }
   };
 
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const connected = useSelector(selectNetworkConnected);
   const { authenticated, loggedInOrWorkingOffline, workingOffline, username, displayName, email, roles } =
     useSelector(selectAuth);
   const { loaded: userInfoLoaded, activated } = useSelector(selectUserInfo);
+
+  const isChromeUserAgent = navigator.userAgent.includes('Chrome');
+
   return (
     <section id="landing">
       <div className="content">
@@ -69,6 +70,16 @@ export const LandingComponent = () => {
             </p>
           </Box>
         </FeatureGated>
+        {!isChromeUserAgent && (
+          <WebOnly>
+            {/* Training Materials suggest using InvasivesBC, and some users using non-chromium browsers like Safari report bugs when using tools like /Reports (which uses iFrames) */}
+            <Box>
+              <Alert variant="outlined" severity="warning">
+                For optimal compatibility and performance, we recommend using Google Chrome.
+              </Alert>
+            </Box>
+          </WebOnly>
+        )}
         {(userInfoLoaded || loggedInOrWorkingOffline) && (
           <>
             <Box mt={2}>
