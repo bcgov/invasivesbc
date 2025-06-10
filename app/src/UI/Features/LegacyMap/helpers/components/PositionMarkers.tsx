@@ -48,6 +48,7 @@ const PositionMarkers = ({ mapReady }) => {
   const userRecordOnHoverRecordGeometry = useSelector((state) => state.Map.userRecordOnHoverRecordGeometry);
   const userRecordOnHoverRecordType = useSelector((state) => state.Map.userRecordOnHoverRecordType);
   const userRecordOnHoverRecordID = useSelector((state) => state.Map.userRecordOnHoverRecordID);
+  const readableIdentifier = useSelector((state) => state.Map?.readableIdentifier);
 
   // Map Marker Refs
   const activityMarker = useRef<maplibregl.Marker>();
@@ -72,14 +73,14 @@ const PositionMarkers = ({ mapReady }) => {
         closeButton: false,
         closeOnMove: true,
         className: 'map-marker-popup'
-      }).setDOMContent(markerPopoverContents(hoveredFeatureMarker))
+      }).setDOMContent(markerPopoverContents(hoveredFeatureMarker, readableIdentifier, userRecordOnHoverRecordType))
     );
     refreshCurrentRecMakers(map, {
       userRecordOnHoverRecordGeometry,
       whatsHereMarker: hoveredFeatureMarker.current,
       whatsHereFeature: hoveredFeature
     });
-  }, [hoveredFeature, userRecordOnHoverRecordID]);
+  }, [hoveredFeature, userRecordOnHoverRecordID, readableIdentifier]);
 
   // Sets Map Marker for Active IAPP
   useEffect(() => {
