@@ -3,7 +3,7 @@
  *  - It Renders (no moving parts)
  */
 import { render } from '@testing-library/react';
-import { Footer } from 'UI/Layout/Footer/Footer';
+import { Footer } from 'UI/Layout/OverlayLayout/Footer/Footer';
 
 describe('Footer.tsx', () => {
   it('Should Render', () => {

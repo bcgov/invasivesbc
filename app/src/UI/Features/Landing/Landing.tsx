@@ -5,7 +5,6 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectUserInfo } from 'state/reducers/userInfo';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
-import { TOGGLE_PANEL } from 'state/actions';
 import { useHistory } from 'react-router';
 import { INFORMATIONAL_LINKS } from 'constants/links';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
@@ -15,6 +14,8 @@ import IosDownloadLink from 'UI/Reusable/IosDownloadLink/IosDownloadLink';
 import AndroidDownloadLink from 'UI/Reusable/AndroidDownloadLink/AndroidDownloadLink';
 import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import EventActions from 'state/actions/events/EventActions';
+import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 
 const InformationalLinkBox = () => {
   return (
@@ -42,10 +43,7 @@ export const LandingComponent = () => {
       dispatch(AuthActions.signinRequest({}));
     } else {
       history.push('/AccessRequest');
-      dispatch({
-        type: TOGGLE_PANEL,
-        payload: { panelOpen: true, fullScreen: true }
-      });
+      dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
     }
   };
 

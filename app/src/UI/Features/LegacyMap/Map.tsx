@@ -15,8 +15,8 @@ import {
   refreshColoursOnColourUpdate,
   refreshOfflineActivitiesLayer,
   refreshVisibilityOnToggleUpdate,
-  removeRecordsetLayersOnForcedRedraw,
   removeOfflineActivitiesLayer,
+  removeRecordsetLayersOnForcedRedraw,
   toggleOfflineActivityLabels
 } from 'UI/Features/LegacyMap/helpers/functional/recordset-layers';
 import {
@@ -47,13 +47,15 @@ import {
   refreshServerBoundariesOnToggle,
   removeClientBoundaries
 } from './helpers/functional/handleBoundaries';
+import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer';
+import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
   I've tried to make it so the handlers can safely run more than once, and no destructing and recreating when not necessary.
 
  */
-export const Map = ({ children }) => {
+export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { tileService: tileCache } = useContext(StartupContext);
 
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
@@ -387,13 +389,18 @@ export const Map = ({ children }) => {
         <MapContext.Provider value={map}>
           <DisplayComposite />
           <DrawControls />
+          <ButtonContainer />
           <ReactiveLayers mapReady={mapReady} />
           <PositionMarkers mapReady={mapReady} />
           <CurrentActivityLayer mapReady={mapReady} />
+          {loggedInOrWorkingOffline && <LayerPicker />}
         </MapContext.Provider>
-
         {children}
       </div>
     </div>
   );
 };
+
+type LegacyMapType = typeof Map;
+
+export type { LegacyMapType };

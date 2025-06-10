@@ -1,32 +1,41 @@
-import React, { Suspense, useRef } from 'react';
+import React, { LazyExoticComponent, Suspense, useEffect, useState } from 'react';
 import './App.css';
 import { selectGlobalErrorState } from 'state/reducers/error_handler';
 import { ErrorHandler } from 'UI/Layout/ErrorHandler/ErrorHandler';
 import { ConnectivityErrorHandler } from 'UI/Layout/ErrorHandler/ConnectivityErrorHandler';
 import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
-import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { usePlatformClasses } from 'state/configuration/build-time-config';
-
-const ComponentizedMapLayout = React.lazy(() => import('UI/Layout/AppLayout/ComponentizedMapLayout'));
-const LegacyMapLayout = React.lazy(() => import('UI/Layout/AppLayout/LegacyMapLayout'));
+import WideLayout from 'UI/Layout/WideLayout/WideLayout';
+import Overlay from 'UI/Layout/OverlayLayout/Overlay';
 
 export const RENDER_DEBUG = false;
 
+export type LayoutComponent = 'overlay-layout' | 'wide-layout';
+
 const App = () => {
   const authInitiated = useSelector((state) => state.Auth.initialized);
-  const COMPONENTIZED_MAP = useSelector((state) => state.Configuration.current.features.MAP_MODE_COMPONENTIZED.enabled);
 
   const { detail: errorDetail, hasCrashed } = useSelector(selectGlobalErrorState);
   const { disrupted } = useSelector(selectAuth);
-  const ref = useRef(0);
+
+  const selectedLayout = useSelector((state) => state.AppMode.layout.layout);
+
+  const [LazyLoadedLayout, setLazyLoadedLayout] = useState<LazyExoticComponent<typeof WideLayout | typeof Overlay>>();
 
   const platformClasses = usePlatformClasses();
 
-  ref.current += 1;
-  if (RENDER_DEBUG) {
-    console.log('%cApp.tsx render:' + ref.current.toString(), 'color: yellow');
-  }
+  useEffect(() => {
+    switch (selectedLayout) {
+      case 'wide-layout':
+        setLazyLoadedLayout(React.lazy(() => import('UI/Layout/WideLayout/WideLayout')));
+        break;
+      case 'overlay-layout':
+      default:
+        setLazyLoadedLayout(React.lazy(() => import('UI/Layout/OverlayLayout/Overlay')));
+        break;
+    }
+  }, [selectedLayout]);
 
   if (!authInitiated) return <div id="app-pre-auth-init" />;
 
@@ -38,23 +47,17 @@ const App = () => {
     return <ErrorHandler detail={errorDetail} />;
   }
 
-  if (COMPONENTIZED_MAP) {
-    return (
-      <div id="app" className={platformClasses}>
-        <Suspense fallback={<Spinner />}>
-          <ComponentizedMapLayout />
-        </Suspense>
-      </div>
-    );
-  } else {
-    return (
-      <div id="app" className={platformClasses}>
-        <Suspense fallback={<Spinner />}>
-          <LegacyMapLayout />
-        </Suspense>
-      </div>
-    );
+  if (!LazyLoadedLayout) {
+    return <div>Loading...</div>;
   }
+
+  return (
+    <div id="app" className={`${platformClasses} ${selectedLayout}`}>
+      <Suspense fallback={<div>Loading...</div>}>
+        <LazyLoadedLayout />
+      </Suspense>
+    </div>
+  );
 };
 
 export default App;
