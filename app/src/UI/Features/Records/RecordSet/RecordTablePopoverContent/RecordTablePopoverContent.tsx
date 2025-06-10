@@ -30,7 +30,7 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
   const handleMarkGeometryOnMap = (quickPan: boolean) => {
     dispatch(
       UserSettings.Map.setHoveredRecordset({
-        recordType: RecordSetType.Activity,
+        recordType: recordType,
         id: recordLookupId,
         geom: geom,
         quickPan: !!quickPan,
