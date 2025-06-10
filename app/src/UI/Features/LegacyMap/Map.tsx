@@ -49,6 +49,8 @@ import {
 } from './helpers/functional/handleBoundaries';
 import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer';
 import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
+import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import CachedMapLayer from './helpers/components/CachedMapLayer';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -394,6 +396,9 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           <PositionMarkers mapReady={mapReady} />
           <CurrentActivityLayer mapReady={mapReady} />
           {loggedInOrWorkingOffline && <LayerPicker />}
+          <MobileOnly>
+            <CachedMapLayer mapReady={mapReady} />
+          </MobileOnly>
         </MapContext.Provider>
         {children}
       </div>
