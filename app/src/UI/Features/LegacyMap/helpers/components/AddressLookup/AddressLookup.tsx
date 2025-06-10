@@ -65,7 +65,7 @@ const AddressLookup = () => {
     if (disabled) return;
     try {
       const shape = point([parseFloat(long), parseFloat(lat)]);
-      const label = `[${lat}, ${long}]`;
+      const label = `Lat: ${lat},<br/>Long: ${long}`;
       markLocationOnMap(shape, label);
     } catch (e) {
       console.error(e);
