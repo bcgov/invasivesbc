@@ -3,23 +3,21 @@
   z-index: 100000000;
   position: fixed;
   background-color: #00000035;
+  box-sizing: border-box;
   top: 0;
   left: 0;
   height: 100%;
   width: 100%;
+  justify-content: center;
+  align-items: center;
   overflow: auto;
 
   .styled-modal {
     --title-control-height: 45px;
-    border-radius: 4px;
     overflow: hidden;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     background-color: white;
     width: 100%;
-    max-width: 500px;
+    max-width: 550px;
     box-sizing: border-box;
 
     /* Set Colour Variables depending on Variant Choice */
@@ -66,6 +64,14 @@
       button:not(:first-child) {
         margin-left: 5pt;
       }
+    }
+  }
+}
+
+@media screen and (width > 550) {
+  .styled-modal-outter {
+    .styled-modal {
+      border-radius: 4px;
     }
   }
 }
