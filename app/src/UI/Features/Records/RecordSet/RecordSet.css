@@ -2,7 +2,7 @@
   max-width: 100%;
   display: flex;
   flex-direction: column;
-
+  padding-bottom: var(--record-table-footer-height);
   .content-container {
     padding: 0 5pt;
     margin-top: var(--overlay-grip-height);
@@ -34,15 +34,11 @@
 }
 
 .stickyHeader {
-  /* position: sticky; */
-
-  /* top: 0; */
-
-  /* left: 0; */
-
-  /* background-color: white; */
-
-  /* z-index: 9999; */
+  position: sticky;
+  top: 0;
+  left: 0;
+  background-color: white;
+  z-index: 9999;
 }
 
 .excelExporter {
@@ -149,18 +145,9 @@
 }
 
 #app.overlay-layout {
-  /* .recordSet_footer { */
-
-  /*  bottom: calc(var(--footer-bar-height) + env(safe-area-inset-bottom, 0)); */
-
-  /*  width: 100%; */
-
-  /*  position: fixed; */
-
-  /* } */
-}
-
-#app.wide-layout {
   .recordSet_footer {
+    bottom: calc(var(--footer-bar-height) + env(safe-area-inset-bottom, 0));
+    width: 100%;
+    position: fixed;
   }
 }
