@@ -26,16 +26,18 @@ type PropTypes = {
 
 export const RecordTable = ({ setID }: PropTypes) => {
   const onUserHoveredRecord = (row: IActivityTableRow | IIappTableRow) => {
-    const { id, geom } = (() => {
+    const { id, geom, identifier } = (() => {
       if ('activity_id' in row) {
         return {
           id: row.activity_id,
-          geom: row?.geometry?.[0]
+          geom: row?.geometry?.[0],
+          identifier: row.short_id
         };
       } else if ('site_id' in row) {
         return {
           id: row.site_id,
-          geom: row?.geometry
+          geom: row?.geometry,
+          identifier: row.site_id.toString()
         };
       }
       return { id: '', geom: undefined };
@@ -44,7 +46,8 @@ export const RecordTable = ({ setID }: PropTypes) => {
       UserSettings.Map.setHoveredRecordset({
         recordType: recordSetType,
         id: id,
-        geom: geom
+        geom: geom,
+        readableIdentifier: identifier
       })
     );
   };

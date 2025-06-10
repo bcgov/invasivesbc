@@ -33,7 +33,8 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
         recordType: RecordSetType.Activity,
         id: recordLookupId,
         geom: geom,
-        quickPan: !!quickPan
+        quickPan: !!quickPan,
+        readableIdentifier: id
       })
     );
   };
