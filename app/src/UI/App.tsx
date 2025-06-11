@@ -53,9 +53,11 @@ const App = () => {
 
   return (
     <div id="app" className={`${platformClasses} ${selectedLayout}`}>
-      <Suspense fallback={<div>Loading...</div>}>
-        <LazyLoadedLayout />
-      </Suspense>
+      <div id="safe-inset">
+        <Suspense fallback={<div>Loading...</div>}>
+          <LazyLoadedLayout />
+        </Suspense>
+      </div>
     </div>
   );
 };

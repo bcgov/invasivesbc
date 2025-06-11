@@ -240,10 +240,18 @@ class LocalForageCacheService extends TileCacheService {
 
   private async initializeCache() {
     this.store = localForage.createInstance({
+      name: 'tile-cache',
       storeName: 'tile-cache',
       version: 20241014
     });
   }
+
+  public async waitForStore(): Promise<void> {
+    if (this.store) {
+      return this.store.ready();
+    }
+    throw new Error('store is not ready');
+  };
 }
 
 export { LocalForageCacheService };

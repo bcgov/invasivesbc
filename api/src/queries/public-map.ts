@@ -1,7 +1,7 @@
 import { SQL } from 'sql-template-strings';
 
 export const PUBLIC_IAPP_SQL = SQL`SELECT i.geojson as feature
-                                   from iapp_site_summary_and_geojson i`;
+                                   from iapp_site_summary_and_geojson i where i.protected=false`;
 
 export const PUBLIC_ACTIVITY_SQL = SQL`select jsonb_build_object(
                                                 'type', 'Feature',

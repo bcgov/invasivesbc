@@ -17,7 +17,7 @@ const LayoutSwitch = () => {
   }, [layout]);
 
   return (
-    <button style={{ cursor: 'pointer' }} onClick={() => dispatch(EventActions.setLayoutComponent(nextLayout))}>
+    <button onClick={() => dispatch(EventActions.setLayoutComponent(nextLayout))}>
       switch to {nextLayout}
     </button>
   );

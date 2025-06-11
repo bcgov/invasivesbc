@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, Fragment } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { MapContext } from './MapContext';
 import { FillLayerSpecification, GeoJSONSource, SymbolLayerSpecification } from 'maplibre-gl';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
@@ -119,6 +119,6 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
     map.setLayoutProperty(`fill-${MAP_ID}`, 'visibility', visibility);
   }, [userOnOfflineTilePage]);
 
-  return Fragment;
+  return null;
 };
 export default CachedMapLayer;

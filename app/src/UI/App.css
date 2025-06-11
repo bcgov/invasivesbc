@@ -29,7 +29,7 @@ body {
   padding: 0;
 }
 
-.App {
+#app {
   width: 100%;
   text-align: center;
   margin: 0;
@@ -40,6 +40,14 @@ body {
   padding: max(env(safe-area-inset-top, 0), var(--extra-top-padding)) env(safe-area-inset-right, 0) max(env(safe-area-inset-bottom, 0), var(--extra-bottom-padding)) env(safe-area-inset-left, 0);
   overflow: hidden;
   height: 100svh;
+
+  #safe-inset {
+    padding: inherit;
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+  }
 
   --record-table-footer-height: 2rem;
 
