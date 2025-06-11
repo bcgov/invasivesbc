@@ -25,6 +25,8 @@ const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'))
 
 const TileCachePanel = React.lazy(() => import('UI/Features/TileCache/TileCachePanel'));
 
+const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
+
 const BatchRoutes: React.FC = () => {
   return (
     <>
@@ -150,6 +152,14 @@ const AppRoutes = () => {
         render={() => (
           <Suspense fallback={<Spinner />}>
             <TileCachePanel />
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/Guide"
+        render={() => (
+          <Suspense fallback={<Spinner />}>
+            <UserGuide />
           </Suspense>
         )}
       />

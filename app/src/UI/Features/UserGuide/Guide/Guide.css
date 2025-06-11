@@ -1,0 +1,51 @@
+article {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  width: 100%;
+  box-shadow: var(--bc-blue) 0 0 4px 1px;
+  margin-bottom: 8px;
+
+  h3 {
+    font-weight: bold;
+  }
+
+  p:not(:first-child) {
+    margin-top: 0;
+  }
+
+  p {
+    text-align: left;
+  }
+
+  figure {
+    align-items: center;
+
+    background-color: #fafafa;
+    border: 1pt solid #ababab;
+    border-radius: 4pt;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    max-width: 300px;
+    margin: 5px 10px;
+    padding: 5pt;
+    width: auto;
+
+    img {
+      width: 100%;
+    }
+
+    figcaption {
+      font-size: 0.85rem;
+    }
+  }
+}
+
+@media only screen and (width >= 768px) {
+  article {
+    display: block;
+  }
+}

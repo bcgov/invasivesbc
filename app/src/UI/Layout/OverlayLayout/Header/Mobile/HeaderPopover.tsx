@@ -1,4 +1,4 @@
-import { Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
+import { HelpCenter, Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -16,6 +16,8 @@ import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
 import 'UI/Layout/OverlayLayout/Header/Mobile/MobileHeader.css';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 import EventActions from 'state/actions/events/EventActions';
+import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
@@ -117,12 +119,24 @@ const HeaderPopover = () => {
               </li>
             )}
             {loggedInOrWorkingOffline && (
-              <li>
-                <button onClick={() => history.push('/News')}>
-                  <Newspaper />
-                  What's New
-                </button>
-              </li>
+              <>
+                <li>
+                  <button onClick={() => history.push('/News')}>
+                    <Newspaper />
+                    What's New
+                  </button>
+                </li>
+                <MobileOnly>
+                  <FeatureGated requires={'USER_GUIDE'}>
+                    <li>
+                      <button onClick={() => history.push('/Guide')}>
+                        <HelpCenter />
+                        User Guide
+                      </button>
+                    </li>
+                  </FeatureGated>
+                </MobileOnly>
+              </>
             )}
             {offlineUserSelectionAvailable && (
               <li>
