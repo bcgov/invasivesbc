@@ -12,12 +12,7 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  REMOVE_CLIENT_BOUNDARY,
-  REMOVE_SERVER_BOUNDARY,
-  TOGGLE_CUSTOMIZE_LAYERS,
-  TOGGLE_LAYER_PICKER_OPEN
-} from 'state/actions';
+import { REMOVE_SERVER_BOUNDARY, TOGGLE_CUSTOMIZE_LAYERS, TOGGLE_LAYER_PICKER_OPEN } from 'state/actions';
 import 'UI/Features/LegacyMap/Controls/CustomizeLayerDialog.css';
 
 import KMLShapesUpload from 'UI/Features/LegacyMap/Controls/KMLShapesUpload';
@@ -87,7 +82,7 @@ const CustomizeLayerMenu = () => {
     const type = customLayers.filter((layer) => layer.id === layerToDelete)?.[0]?.type;
     switch (type) {
       case 'Client':
-        dispatch({ type: REMOVE_CLIENT_BOUNDARY, payload: { id: layerToDelete } });
+        dispatch(UserSettings.Boundaries.removeCustomLayer(layerToDelete!));
         dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
         cleanup();
         break;
