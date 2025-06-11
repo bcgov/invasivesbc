@@ -10,6 +10,7 @@ import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import Activity from 'state/actions/activity/Activity';
+import UploadSiteList from '../SiteLists/UploadSiteList/UploadSiteList';
 
 export const Records = () => {
   //Record set handlers:
@@ -142,6 +143,7 @@ export const Records = () => {
           >
             Add IAPP Layer of Records
           </Button>
+          <UploadSiteList />
         </div>
       )}
     </div>
