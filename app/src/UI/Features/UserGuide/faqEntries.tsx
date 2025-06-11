@@ -7,12 +7,12 @@ import UserGuideEntry from 'interfaces/UserGuideEntry';
  *  - title keys are wrapped in <h3> elements.
  *  - titleIcon uses any Mui Icon @external {@link https://mui.com/material-ui/material-icons/}
  */
-const guideEntries: Array<UserGuideEntry> = [
+const faqEntries: Array<UserGuideEntry> = [
   // {
-  //   title: '',
-  //   titleIcon: <MuiIcon />,
+  //   title: 'Android Link',
+  //   titleIcon: <Android />,
   //   content: (
-  //    <>
+  //     <>
   //       <p>Test user guide entry</p>
   //       <figure>
   //         <img src={AndroidDownloadLink} alt="Google Store Link" />
@@ -21,7 +21,7 @@ const guideEntries: Array<UserGuideEntry> = [
   //       <p>Another paragraph</p>
   //     </>
   //   )
-  // },
+  // }
 ];
 
-export default guideEntries;
+export default faqEntries;
