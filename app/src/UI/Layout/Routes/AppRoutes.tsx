@@ -9,7 +9,6 @@ import { RecordSet } from 'UI/Features/Records/RecordSet/RecordSet';
 import React, { Suspense } from 'react';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
-import UserGuide from 'UI/Features/UserGuide/UserGuide';
 
 const UserAccessPage = React.lazy(() => import('UI/Features/Admin/userAccess/UserAccessPage'));
 const EmbeddedReportsPage = React.lazy(() => import('UI/Features/Reports/EmbeddedReportsPage'));
@@ -25,6 +24,8 @@ const BatchTemplates = React.lazy(() => import('UI/Features/Batch/BatchTemplates
 const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'));
 
 const TileCachePanel = React.lazy(() => import('UI/Features/TileCache/TileCachePanel'));
+
+const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
 
 const BatchRoutes: React.FC = () => {
   return (
