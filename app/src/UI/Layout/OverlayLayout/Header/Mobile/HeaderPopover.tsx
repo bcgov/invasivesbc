@@ -16,8 +16,6 @@ import { NetworkStateControl } from 'UI/Layout/OverlayLayout/Header/NetworkState
 import 'UI/Layout/OverlayLayout/Header/Mobile/MobileHeader.css';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 import EventActions from 'state/actions/events/EventActions';
-import guideEntries from 'UI/Features/UserGuide/guideEntries';
-import faqEntries from 'UI/Features/UserGuide/faqEntries';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 

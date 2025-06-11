@@ -4,7 +4,7 @@ import { IconButton, Switch } from '@mui/material';
 import { useState } from 'react';
 import LpModules from 'constants/LpModules';
 import LayerPickerPathOption from './LayerPickerPathRow';
-import { ArrowBackIos, Google, ManageSearchOutlined, ManageSearchTwoTone, Save } from '@mui/icons-material';
+import { ArrowBackIos, Save } from '@mui/icons-material';
 import LpLayers from './LpLayers/LpLayers';
 import LpRecordSet from './LpRecordSet/LpRecordSet';
 import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
@@ -73,7 +73,7 @@ export const LayerPicker = () => {
                     <Accordion icon={<MapIcon />} title={LpModules.DataBcLayers}>
                       <LpLayers />
                     </Accordion>
-                    <Accordion icon={<ManageSearchIcon/>} title={LpModules.Recordsets}>
+                    <Accordion icon={<ManageSearchIcon />} title={LpModules.Recordsets}>
                       <LpRecordSet closePicker={closeLayerPicker} />
                     </Accordion>
                     {MOBILE && (
