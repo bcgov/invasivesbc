@@ -57,14 +57,16 @@ const AddressLookup = () => {
     }
   };
 
-  const markLocationOnMap = (feature: Feature) => {
-    dispatch(UserSettings.Map.markCoordinate(feature));
+  const markLocationOnMap = (feature: Feature, suggestedAddress?: string) => {
+    dispatch(UserSettings.Map.markCoordinate({ feature, readableIdentifier: suggestedAddress }));
   };
 
   const handleGoToCoordinates = () => {
     if (disabled) return;
     try {
-      markLocationOnMap(point([parseFloat(long), parseFloat(lat)]));
+      const shape = point([parseFloat(long), parseFloat(lat)]);
+      const label = `Lat: ${lat},<br/>Long: ${long}`;
+      markLocationOnMap(shape, label);
     } catch (e) {
       console.error(e);
     }
@@ -114,11 +116,11 @@ const AddressLookup = () => {
               </div>
               {showSuggestions && suggestions.length > 0 && (
                 <ul className="address-suggestions">
-                  {suggestions.map((suggestion) => (
-                    <li key={suggestion.suggestedAddress}>
-                      <button onClick={markLocationOnMap.bind(this, suggestion.feature)}>
+                  {suggestions.map(({ feature, suggestedAddress }) => (
+                    <li key={suggestedAddress}>
+                      <button onClick={markLocationOnMap.bind(this, feature, suggestedAddress)}>
                         <Place />
-                        <span>{suggestion.suggestedAddress}</span>
+                        <span>{suggestedAddress}</span>
                       </button>
                     </li>
                   ))}

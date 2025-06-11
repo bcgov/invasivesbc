@@ -38,8 +38,16 @@ const markerPopoverContents = (
   const main = document.createElement('div');
   if (id) {
     const p = document.createElement('p');
-    p.innerHTML =
-      recordType === RecordSetType.Activity ? `<span>Record ID</span>: ${id}` : `<span>Site ID</span>: ${id}`;
+    p.innerHTML = (() => {
+      switch (recordType) {
+        case RecordSetType.Activity:
+          return `<span>Record ID</span>: ${id}`;
+        case RecordSetType.IAPP:
+          return `<span>Site ID</span>: ${id}`;
+        default:
+          return id.toString();
+      }
+    })();
     main.appendChild(p);
   }
   const button = document.createElement('button');
