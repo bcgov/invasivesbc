@@ -7,27 +7,11 @@ type PropTypes = {
 };
 const Guide = ({ entry }: PropTypes) => {
   return (
-    <Accordion icon={entry?.titleIcon} title={entry.title}>
-      <div className="guide-content">
+    <Accordion icon={entry.titleIcon} title={entry.title}>
+      <article>
         <h3>{entry.title}</h3>
-        {entry.content.map((content) => (
-          <div className="guide-inner" key={content.text[0]}>
-            <div className="content-images">
-              {content.images?.map((image) => (
-                <figure key={image.imgSource}>
-                  <img src={image.imgSource} alt={image?.caption} />
-                  {image?.caption && <figcaption>{image.caption}</figcaption>}
-                </figure>
-              ))}
-            </div>
-            <div className="content-text">
-              {content.text.map((text) => (
-                <p key={text}>{text}</p>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
+        {entry.content}
+      </article>
     </Accordion>
   );
 };

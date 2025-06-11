@@ -4,7 +4,7 @@ import { IconButton, Switch } from '@mui/material';
 import { useState } from 'react';
 import LpModules from 'constants/LpModules';
 import LayerPickerPathOption from './LayerPickerPathRow';
-import { ArrowBackIos } from '@mui/icons-material';
+import { ArrowBackIos, Google, ManageSearchOutlined, ManageSearchTwoTone, Save } from '@mui/icons-material';
 import LpLayers from './LpLayers/LpLayers';
 import LpRecordSet from './LpRecordSet/LpRecordSet';
 import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
@@ -12,7 +12,10 @@ import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 
+import MapIcon from '@mui/icons-material/Map';
+
 import './LayerPicker.css';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 
 export const LayerPicker = () => {
   const closeLayerPicker = () => {
@@ -67,14 +70,14 @@ export const LayerPicker = () => {
               <>
                 {accordionMode ? (
                   <>
-                    <Accordion icon={'map'} title={LpModules.DataBcLayers}>
+                    <Accordion icon={<MapIcon />} title={LpModules.DataBcLayers}>
                       <LpLayers />
                     </Accordion>
-                    <Accordion icon={'manage_search'} title={LpModules.Recordsets}>
+                    <Accordion icon={<ManageSearchIcon/>} title={LpModules.Recordsets}>
                       <LpRecordSet closePicker={closeLayerPicker} />
                     </Accordion>
                     {MOBILE && (
-                      <Accordion icon="save" title={LpModules.MapTiles}>
+                      <Accordion icon={<Save />} title={LpModules.MapTiles}>
                         <LpOfflineMaps closePicker={closeLayerPicker} />
                       </Accordion>
                     )}

@@ -18,11 +18,11 @@
     justify-content: center;
     max-width: 800px;
     width: 100%;
+
     .user-guide-section,
     .faq-section {
       display: flex;
       flex-direction: column;
-      justify-content: flex;
       margin-bottom: 2rem;
       width: 100%;
     }
