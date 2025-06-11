@@ -90,16 +90,31 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const baseMapLayer = useSelector((state) => state.Map.baseMapLayer);
 
   const [cacheStatusHash, setCacheStatusHash] = useState<string>('init');
-  const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
   const [map, setMap] = useState<InvasivesMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [mapReady, setMapReady] = useState<boolean>(false);
+
+  const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
 
   useEffect(() => {
     if (!mapContainer.current) {
       console.error('Mapinit invoked with invalid reference');
       throw new Error('Mapinit invoked with invalid reference');
     }
+
+    maplibregl.addProtocol('api', async (request) => {
+      const fetchRequest = new Request(request.url.replace("api://", API_BASE));
+      fetchRequest.headers.set("Authorization", await getCurrentJWT())
+      const result = await fetch(fetchRequest);
+      if (result.ok) {
+        return {
+          data: await result.bytes()
+        };
+      }
+      return {
+        data: undefined
+      };
+    });
 
     const pmtilesProtocol = new Protocol();
     maplibregl.addProtocol('pmtiles', (request) => {
@@ -124,18 +139,23 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     if (configuration.build.MOBILE) {
       if (!tileCache) {
-        throw new Error('tile cache unexpectedly not available');
-      }
-      maplibregl.addProtocol('baked', async (request) => {
-        try {
-          const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
-
-          return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
-        } catch {
+        console.error('tile cache unexpectedly not available');
+        maplibregl.addProtocol('baked', async () => {
           // this is a blank 256x256 image
           return TileCacheService.generateFallbackTile();
-        }
-      });
+        });
+      } else {
+        maplibregl.addProtocol('baked', async (request) => {
+          try {
+            const [repository, z, x, y] = request.url.replace('baked://', '').split('/');
+
+            return await tileCache.getTile(repository, Number(z), Number(x), Number(y));
+          } catch {
+            // this is a blank 256x256 image
+            return TileCacheService.generateFallbackTile();
+          }
+        });
+      }
     }
 
     const tileCacheSettings = (() => {
@@ -153,25 +173,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         ...tileCacheSettings,
         zoom: 3,
         minZoom: 0,
-        transformRequest: (url) => {
-          if (url.includes(configuration.runtime.API_BASE)) {
-            return {
-              url,
-              headers: {
-                Authorization: (() => {
-                  if (authHeaderRef.current === undefined) {
-                    console.error('requested access before header received');
-                    return '';
-                  }
-                  return authHeaderRef.current;
-                })()
-              }
-            };
-          }
-          return {
-            url
-          };
-        },
         center: [map_center[1], map_center[0]],
         style: {
           glyphs: configuration.build.MOBILE
@@ -226,31 +227,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
   }, [map?.isStyleLoaded()]);
 
-  const authHeaderRef = useRef<string>();
-  authHeaderRef.current = currentAuthHeader;
-
-  useEffect(() => {
-    if (!authenticated) {
-      return;
-    }
-
-    // get it once with no delay
-    getCurrentJWT().then((header) => {
-      setCurrentAuthHeader(header);
-    });
-
-    // and then regularly thereafter
-    const id = setInterval(() => {
-      getCurrentJWT().then((header) => {
-        setCurrentAuthHeader(header);
-      });
-    }, 10000);
-
-    return () => {
-      clearInterval(id);
-    };
-  }, [authenticated]);
-
   useEffect(() => {
     // update cacheStatusHash when any recordset is added/removed or has a cache status change. this will force a redraw.
     if (!configuration.build.MOBILE) {
@@ -276,7 +252,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     if (!mapReady) return;
     if (!map) return;
     (async () => {
-      await rebuildLayersOnTableHashUpdate(storeLayers, map, configuration.runtime.API_BASE, connectedToNetwork);
+      await rebuildLayersOnTableHashUpdate(storeLayers, map, connectedToNetwork);
       refreshColoursOnColourUpdate(storeLayers, map);
       refreshVisibilityOnToggleUpdate(storeLayers, map);
     })();

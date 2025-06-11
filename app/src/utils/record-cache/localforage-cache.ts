@@ -119,8 +119,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
   async isCached(repositoryId: string): Promise<boolean> {
     try {
       return (await this.getRepository(repositoryId, ['status'])).status === UserRecordCacheStatus.CACHED;
-    } catch (e) {
-      console.error(e);
+    } catch (_e) {
       return false;
     }
   }
@@ -455,6 +454,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
 
   private async initializeCache() {
     this.store = localForage.createInstance({
+      name: 'record-cache',
       storeName: 'record-cache',
       version: 20241030
     });

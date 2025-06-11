@@ -197,8 +197,9 @@ class LocalForageWellCacheService extends WellCacheService {
 
   private async initializeCache() {
     this.store = localForage.createInstance({
+      name: 'well-cache',
       storeName: 'well-cache',
-      version: 20241030
+      version: 2
     });
   }
 }

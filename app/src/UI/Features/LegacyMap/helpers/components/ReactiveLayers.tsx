@@ -101,7 +101,7 @@ const ReactiveLayers = ({ mapReady }) => {
       }
     }
 
-    // finally add the overlay layers (which can also depend on the sources)
+    // finally, add the overlay layers (which can also depend on the sources)
     for (const overlayLayer of enabledOverlayLayers) {
       for (const layerSpec of layersForDefinition([...MAP_DEFINITIONS, ...(offlineDefinitions || [])], overlayLayer)) {
         if (!map.getLayer(layerSpec.id)) {

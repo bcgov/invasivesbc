@@ -11,7 +11,7 @@ import { RecordCacheService } from 'utils/record-cache';
 import { Store } from 'redux';
 import { UnifiedConfig } from 'state/configuration/unified-config';
 import { LOAD_TILE_CACHES } from 'UI/StartupCoordinator/Tasks/TileCache';
-import { LOAD_RECORDSET_CACHES } from './Tasks/RecordsetCache';
+import { LOAD_RECORDSET_CACHES } from 'UI/StartupCoordinator/Tasks/RecordsetCache';
 
 type StartupContext = {
   tileService?: TileCacheService;
