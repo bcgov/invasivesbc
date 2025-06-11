@@ -23,7 +23,6 @@ import {
 } from './map/offline';
 import {
   ACTIVITY_UPDATE_GEO_REQUEST,
-  CUSTOM_LAYER_DRAWN,
   FILTER_PREP_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
@@ -38,7 +37,6 @@ import {
   RECORD_SET_TO_EXCEL_SUCCESS,
   RECORDSET_SET_SORT,
   REFETCH_SERVER_BOUNDARIES,
-  REMOVE_CLIENT_BOUNDARY,
   REMOVE_SERVER_BOUNDARY,
   SET_CURRENT_OPEN_SET,
   URL_CHANGE
@@ -559,7 +557,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   yield all(actionsToPut.map((action) => put(action)));
 }
 
-function* handle_REMOVE_CLIENT_BOUNDARY(action) {
+function* handle_REMOVE_CUSTOM_LAYER(action) {
   // remove from record sets applied
   const state = yield select(selectUserSettings);
   const recordSets = state?.recordSets;
@@ -638,7 +636,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
     const { id, geometry } = action.payload;
 
     if (drawingCustomLayer) {
-      yield put({ type: CUSTOM_LAYER_DRAWN, payload: action.payload });
+      yield put(UserSettings.Boundaries.drawCustomLayer(action.payload));
       return;
     }
 
@@ -734,7 +732,7 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.RecordSet.clearFilters, handle_UserFilterChange),
     takeEvery(UserSettings.RecordSet.removeFilter, handle_UserFilterChange),
 
-    takeEvery(REMOVE_CLIENT_BOUNDARY, handle_REMOVE_CLIENT_BOUNDARY),
+    takeEvery(UserSettings.Boundaries.removeCustomLayer, handle_REMOVE_CUSTOM_LAYER),
 
     takeEvery(RECORDSET_SET_SORT, handle_RECORDSET_SET_SORT),
 

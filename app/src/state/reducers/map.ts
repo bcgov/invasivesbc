@@ -4,8 +4,6 @@ import { Feature, Point, Polygon } from 'geojson';
 import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
-  CUSTOM_LAYER_DRAWN,
-  DRAW_CUSTOM_LAYER,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_PAN_AND_ZOOM,
@@ -25,7 +23,6 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  REMOVE_CLIENT_BOUNDARY,
   SET_CURRENT_OPEN_SET,
   SET_TOO_MANY_LABELS_DIALOG,
   TOGGLE_BASIC_PICKER_LAYER,
@@ -690,6 +687,21 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.userRecordOnHoverRecordGeometry = action.payload.feature;
         draftState.quickPanToRecord = true;
         draftState.readableIdentifier = action.payload?.readableIdentifier;
+      } else if (UserSettings.Boundaries.drawCustomLayerRequest.match(action)) {
+        draftState.drawingCustomLayer = true;
+        draftState.drawingCustomLayerName = action.payload;
+      } else if (UserSettings.Boundaries.drawCustomLayer.match(action)) {
+        draftState.drawingCustomLayer = false;
+        draftState.clientBoundaries.push({
+          id: nanoid(),
+          geojson: action.payload,
+          toggle: true,
+          title: draftState.drawingCustomLayerName
+        });
+        draftState.drawingCustomLayerName = '';
+      } else if (UserSettings.Boundaries.removeCustomLayer.match(action)) {
+        const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload);
+        draftState.clientBoundaries.splice(index, 1);
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {
@@ -723,22 +735,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           case CSV_LINK_CLICKED: {
             draftState.linkToCSV = null;
             draftState.recordSetForCSV = null;
-            break;
-          }
-          case CUSTOM_LAYER_DRAWN: {
-            draftState.drawingCustomLayer = false;
-            draftState.clientBoundaries.push({
-              id: nanoid(),
-              geojson: action.payload,
-              toggle: true,
-              title: draftState.drawingCustomLayerName
-            });
-            draftState.drawingCustomLayerName = '';
-            break;
-          }
-          case DRAW_CUSTOM_LAYER: {
-            draftState.drawingCustomLayer = true;
-            draftState.drawingCustomLayerName = action.payload.name;
             break;
           }
 
@@ -843,11 +839,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.recordSetForCSV = action.payload.id;
             break;
           }
-          case REMOVE_CLIENT_BOUNDARY: {
-            const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload.id);
-            draftState.clientBoundaries.splice(index, 1);
-            break;
-          }
+
           case SET_CURRENT_OPEN_SET: {
             draftState.currentOpenSet = action.payload.set;
             break;
