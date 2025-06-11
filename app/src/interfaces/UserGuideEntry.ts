@@ -1,20 +1,16 @@
-interface ReferenceImage {
-  imgSource: string;
-  caption?: string;
-}
-interface Content {
-  text: Array<string>;
-  images?: Array<ReferenceImage>;
-}
+import { ReactElement, ReactNode } from 'react';
+import { SvgIconProps } from '@mui/material';
+
+
 /**
  * @desc Entries for the User Guides
  * @property { string } title Heading of section
- * @property { titleIcon } String MUI Icon for Accordion
+ * @property { titleIcon } ReactElement MUI Icon
  */
 interface UserGuideEntry {
   title: string;
-  titleIcon?: string;
-  content: Array<Content>;
+  titleIcon: ReactElement<SvgIconProps>;
+  content: ReactNode;
 }
 
 export default UserGuideEntry;

@@ -16,8 +16,8 @@ import { NetworkStateControl } from 'UI/Layout/OverlayLayout/Header/NetworkState
 import 'UI/Layout/OverlayLayout/Header/Mobile/MobileHeader.css';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 import EventActions from 'state/actions/events/EventActions';
-import guideEntries from 'UI/Features/UserGuide/guideEntries';
-import faqEntries from 'UI/Features/UserGuide/faqEntries';
+import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
@@ -83,9 +83,6 @@ const HeaderPopover = () => {
 
   const { MOBILE } = useSelector((state) => state.Configuration.current.build);
 
-  // Since populating the content is separate work, apply a temporary boolean to not render beforehand
-  const shouldLoadMobileUserGuide = guideEntries.length + faqEntries.length > 0;
-
   useEffect(() => {
     if (!MOBILE || authenticated || workingOffline) {
       setOfflineUserSelectionAvailable(false);
@@ -129,14 +126,16 @@ const HeaderPopover = () => {
                     What's New
                   </button>
                 </li>
-                {MOBILE && shouldLoadMobileUserGuide && (
-                  <li>
-                    <button onClick={() => history.push('/Guide')}>
-                      <HelpCenter />
-                      User Guide
-                    </button>
-                  </li>
-                )}
+                <MobileOnly>
+                  <FeatureGated requires={'USER_GUIDE'}>
+                    <li>
+                      <button onClick={() => history.push('/Guide')}>
+                        <HelpCenter />
+                        User Guide
+                      </button>
+                    </li>
+                  </FeatureGated>
+                </MobileOnly>
               </>
             )}
             {offlineUserSelectionAvailable && (

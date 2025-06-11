@@ -1,11 +1,11 @@
-import { ReactNode, useState } from 'react';
+import { ReactElement, ReactNode, useState } from 'react';
 import 'UI/Reusable/Accordion/Accordion.css';
-import { Icon } from '@mui/material';
+import { SvgIconProps } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 /**
  * @desc Common Accordion Component
- * @property {string} title MUI font icon name
+ * @property {ReactElement} icon MUI font icon
  * @external {@link https://mui.com/material-ui/icons/#icon-font-icons}
  * @property {ReactNode} children Accordion Contents
  * @property {string} title Title text for Accordion
@@ -13,7 +13,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material';
 interface PropTypes {
   title: string;
   children: ReactNode;
-  icon?: string;
+  icon?: ReactElement<SvgIconProps>;
 }
 
 const Accordion = ({ title, children, icon }: PropTypes) => {
@@ -22,7 +22,7 @@ const Accordion = ({ title, children, icon }: PropTypes) => {
   return (
     <>
       <button className={`accordion-control ${open && 'active'}`} onClick={() => setOpen((prev) => !prev)}>
-        {icon && <Icon>{icon}</Icon>}
+        {icon !== undefined && icon}
         {title}
         {open ? <ExpandLess color="disabled" /> : <ExpandMore color="disabled" />}
       </button>
