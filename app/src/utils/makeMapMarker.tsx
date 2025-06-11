@@ -59,25 +59,30 @@ const markerPopoverContents = (
 };
 
 interface IMarkerOptions {
-  marker?: maplibregl.Marker;
   ref: MutableRefObject<maplibregl.Marker | undefined>;
-  iconSrc: string;
-  classes: string;
+  classes?: string;
   id?: string | number;
   recordType?: RecordSetType;
+}
+interface IMarkerOptionsIcon extends IMarkerOptions {
+  iconSrc: string;
+}
+interface IMarkerSupplyMarker extends IMarkerOptions {
+  marker: maplibregl.Marker;
 }
 /**
  * Creates a Map Marker With removable Popup Menu using supplied options
  * @param options Configuration
  * @returns Maplibre Map Marker
  */
-const makeMapMarker = (options: IMarkerOptions) => {
-  const { ref, iconSrc, classes, id, recordType, marker } = options;
+const makeMapMarker = (options: IMarkerOptionsIcon | IMarkerSupplyMarker) => {
+  const { ref, classes = '', id, recordType } = options;
   const newMarker =
-    marker ??
-    new maplibregl.Marker({
-      element: makeMarkerElement(iconSrc, classes)
-    });
+    'marker' in options
+      ? options.marker
+      : new maplibregl.Marker({
+          element: makeMarkerElement(options.iconSrc, classes)
+        });
 
   newMarker.setPopup(
     new Popup({
