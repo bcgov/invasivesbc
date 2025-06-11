@@ -105,9 +105,13 @@ export function setupStore(configuration: UnifiedConfig) {
   });
 
   // throttled updates. used to control some layouts (eg alternative button text on very tiny screens)
-  const debouncedResize = debounce(() => {
-    store.dispatch(EventActions.viewportResize({ width: window.innerWidth, height: window.innerHeight }));
-  }, 1000);
+  const debouncedResize = debounce(
+    () => {
+      store.dispatch(EventActions.viewportResize({ width: window.innerWidth, height: window.innerHeight }));
+    },
+    1000,
+    { trailing: true }
+  );
 
   window.addEventListener('resize', debouncedResize);
 

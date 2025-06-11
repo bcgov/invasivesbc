@@ -28,9 +28,9 @@ import { SQLiteStorage } from 'utils/redux-persist-sqlite';
 import { UnifiedConfig } from 'state/configuration/unified-config';
 import { createAppModeReducer } from 'state/reducers/appMode';
 
-const purgeOldStateOnVersionUpgrade = async (state: any) => {
+const purgeOldStateOnVersionUpgrade = async (state) => {
   // finer-grained or per-reducer controls are possible -- this is a big hammer to reset saved state when this version changes
-  if (state[MIGRATION_VERSION_KEY] && state[MIGRATION_VERSION_KEY] < CURRENT_MIGRATION_VERSION) {
+  if (state && state[MIGRATION_VERSION_KEY] && state[MIGRATION_VERSION_KEY] < CURRENT_MIGRATION_VERSION) {
     console.warn(
       `${state[MIGRATION_VERSION_KEY]} older than current version ${CURRENT_MIGRATION_VERSION}, purging old persistent data`
     );

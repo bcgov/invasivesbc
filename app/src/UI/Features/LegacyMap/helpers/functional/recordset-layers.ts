@@ -56,12 +56,11 @@ export const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => 
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 };
 
-export const createOnlineIappLayer = (map: any, layer: any, API_BASE: string) => {
+export const createOnlineIappLayer = (map: any, layer: any) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
-  let source: SourceSpecification;
-  source = {
+  const source: SourceSpecification = {
     type: 'vector',
-    tiles: [`${API_BASE}/api/vectors/iapp/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
+    tiles: [`api:///api/vectors/iapp/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
     minzoom: 0,
     maxzoom: 24
   };
@@ -249,7 +248,7 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   map.addLayer(circleMarkerZoomedOutLayerCentroid, LAYER_Z_FOREGROUND);
 };
 
-export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, API_BASE) => {
+export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
 
   if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
@@ -257,12 +256,10 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any, API_B
   }
 
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
-  let source: SourceSpecification;
-
-  source = {
+  const source: SourceSpecification = {
     type: 'vector',
     tiles: [
-      `${API_BASE}/api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`
+      `api:///api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`
     ],
     minzoom: 0,
     maxzoom: 24
@@ -489,11 +486,7 @@ export const removeRecordsetLayersOnForcedRedraw = (map: maplibregl.Map) => {
 };
 
 export const rebuildLayersOnTableHashUpdate = async (
-  storeLayers: Record<PropertyKey, any>,
-  map: maplibregl.Map,
-  API_BASE: string,
-  connectedToNetwork: boolean
-) => {
+  storeLayers: Record<PropertyKey, any>, map: maplibregl.Map, connectedToNetwork: boolean) => {
   const MOBILE_OFFLINE = buildTimeConfig.MOBILE && !connectedToNetwork;
   /* First need to delete the layers who's record set was deleted altogether: */
   const storeLayersIds = storeLayers.map((layer) => formatLayerID(layer.recordSetID, layer.tableFiltersHash));
@@ -511,7 +504,7 @@ export const rebuildLayersOnTableHashUpdate = async (
       deleteStaleRecordsetLayer(map, layer); // cleans up recordset layers with filters
       const existingSource = map.getSource(sourceId);
       if (existingSource) return;
-      await createMapLayer(map, layer, API_BASE, MOBILE_OFFLINE);
+      await createMapLayer(map, layer, MOBILE_OFFLINE);
     }
   });
 };
@@ -522,20 +515,19 @@ export const rebuildLayersOnTableHashUpdate = async (
 const createMapLayer = async (
   map: maplibregl.Map,
   layer: Record<PropertyKey, any>,
-  apiBase: string,
   isOfflineLayer: boolean
 ): Promise<void> => {
   if (layer.type === RecordSetType.Activity) {
     if (isOfflineLayer) {
       await createCachedActivityLayer(map, layer);
     } else {
-      createOnlineActivityLayer(map, layer, apiBase);
+      createOnlineActivityLayer(map, layer);
     }
   } else if (layer.type === RecordSetType.IAPP) {
     if (isOfflineLayer) {
       await createCachedIappLayer(map, layer);
     } else {
-      createOnlineIappLayer(map, layer, apiBase);
+      createOnlineIappLayer(map, layer);
     }
   }
 };

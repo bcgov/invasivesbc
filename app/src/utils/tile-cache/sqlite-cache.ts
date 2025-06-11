@@ -361,6 +361,13 @@ class SQLiteTileCacheService extends TileCacheService {
     await this.initializeBakedTileDatabase(sqlite);
     await this.initializeDynamicCacheTileDatabase(sqlite);
   }
+
+  public async waitForStore(): Promise<void> {
+    if (this.cacheDB?.isDBOpen() && this.bakedDB?.isDBOpen()) {
+      return;
+    }
+    throw new Error('store is not ready');
+  };
 }
 
 export { SQLiteTileCacheService };
