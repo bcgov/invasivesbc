@@ -1,3 +1,17 @@
 .debug-button {
   flex-grow: 0;
 }
+
+#debug-panel {
+  display: flex;
+  flex-direction: column;
+
+  background-color: midnightblue;
+  padding: 4px;
+
+  button {
+    width: 100%;
+    text-align: justify;
+    line-height: 1.5;
+  }
+}

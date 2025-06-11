@@ -19,6 +19,7 @@ import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { OfflineDataSyncDialog } from 'UI/Features/OfflineDataSync/OfflineDataSyncDialog';
 import { OfflineUserMenu } from 'UI/Features/OfflineUserMenu/OfflineUserMenu';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
+import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
 
 const WideLayout = () => {
   const { filteredLinks } = usePrimaryNavigationLinks();
@@ -75,6 +76,9 @@ const WideLayout = () => {
             </ul>
             <div className={'spacer'} />
             <DebugMenu />
+
+            <MobileOnly><NetworkStateControl/></MobileOnly>
+
             <ul className={'user-actions'}>
               {loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
               {authenticated || (

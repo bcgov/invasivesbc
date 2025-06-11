@@ -11,7 +11,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import { AuthActions } from 'state/actions/auth/Auth';
 import MapActions from 'state/actions/map';
 import { selectAuth } from 'state/reducers/auth';
-import { NetworkStateControl } from 'UI/Layout/OverlayLayout/Header/NetworkStateControl';
+import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
 
 import 'UI/Layout/OverlayLayout/Header/Mobile/MobileHeader.css';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';

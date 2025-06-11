@@ -1,63 +1,66 @@
-.overlay-header {
-  pointer-events: all;
-  height: var(--overlay-grip-height);
-  width: 100%;
-  top: -1px;
-  position: sticky;
-  background-color: #036;
-  z-index: 99999;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+:root:has(#app.overlay-layout) {
 
-  .overlay-menu {
-    color: black;
-    background-color: white;
-    border-radius: 2px;
-    border: 1px solid darkgrey;
-    height: 100%;
-    vertical-align: baseline;
-    box-shadow: none;
-
-    &:hover {
-      border: 1px solid #036;
-    }
-  }
-
-  .left {
-    width: 33%;
-  }
-
-  .center {
-    place-items: center center;
-    justify-content: center;
+  .overlay-header {
+    pointer-events: all;
+    height: var(--overlay-grip-height);
+    width: 100%;
+    top: -1px;
+    position: sticky;
+    background-color: #036;
+    z-index: 99999;
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
 
-
-    .overlay-control {
+    .overlay-menu {
       color: black;
       background-color: white;
       border-radius: 2px;
       border: 1px solid darkgrey;
       height: 100%;
       vertical-align: baseline;
+      box-shadow: none;
 
-      &.resize-handle {
-        cursor: ns-resize;
+      &:hover {
+        border: 1px solid #036;
       }
     }
 
-    .dragMeToResize {
-      height: 100%;
-      width: 50px;
+    .left {
+      width: 33%;
     }
-  }
 
-  .right {
-    width: 33%;
-    justify-content: right;
-    display: flex;
-    flex-direction: row;
+    .center {
+      place-items: center center;
+      justify-content: center;
+      display: flex;
+      flex-direction: row;
+
+
+      .overlay-control {
+        color: black;
+        background-color: white;
+        border-radius: 2px;
+        border: 1px solid darkgrey;
+        height: 100%;
+        vertical-align: baseline;
+
+        &.resize-handle {
+          cursor: ns-resize;
+        }
+      }
+
+      .dragMeToResize {
+        height: 100%;
+        width: 50px;
+      }
+    }
+
+    .right {
+      width: 33%;
+      justify-content: right;
+      display: flex;
+      flex-direction: row;
+    }
   }
 }

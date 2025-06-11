@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import EventActions from 'state/actions/events/EventActions';
-import 'UI/Layout/OverlayLayout/Header/Mobile/AndroidMemoryReport.css';
+import 'UI/Layout/DebugMenu/AndroidMemoryReport.css';
 import { useDispatch, useSelector } from 'utils/use_selector';
 
 const AndroidMemoryReport = () => {
@@ -37,6 +37,5 @@ const AndroidMemoryReport = () => {
       </dl>
     </div>
   );
-  return null;
 };
 export { AndroidMemoryReport };

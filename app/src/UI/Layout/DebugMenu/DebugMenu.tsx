@@ -6,6 +6,9 @@ import { Debug } from 'UI/Reusable/Predicates/Debug';
 import { BugReport } from '@mui/icons-material';
 import { bcYellow } from 'constants/colors';
 import './DebugMenu.css';
+import { Platform } from 'state/configuration/build-time-config';
+import { AndroidMemoryReport } from 'UI/Layout/DebugMenu/AndroidMemoryReport';
+import { PlatformGated } from 'UI/Reusable/Predicates/PlatformGated';
 
 const DebugMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -16,7 +19,13 @@ const DebugMenu = () => {
         <BugReport sx={{ color: bcYellow }} />
       </IconButton>
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }} closeAfterPress={true}>
-        <LayoutSwitch />
+        <div id={'debug-panel'}>
+          <LayoutSwitch />
+
+          <PlatformGated requires={Platform.ANDROID}>
+            <AndroidMemoryReport />
+          </PlatformGated>
+        </div>
       </CustomPopover>
     </Debug>
   );

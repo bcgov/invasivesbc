@@ -1,119 +1,122 @@
-#app.wide-layout {
-  #wide-layout {
-    display: flex;
-    flex-direction: row;
-    position: absolute;
-    inset: 0;
+:root:has(#app.wide-layout) {
 
-    #nav {
-      .menu-button {
-        margin-left: auto;
-        margin-right: 0;
-        width: 40px;
-        color: white;
-      }
-
-      box-sizing: border-box;
-
-      &:not(.collapsed) {
-        width: 180px;
-      }
-
-      &.collapsed {
-        width: 48px;
-      }
-      
-      flex-shrink: 0;
-      background: #036;
-      border-right: 3px solid var(--bc-yellow);
+  #app.wide-layout {
+    #wide-layout {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      position: absolute;
+      inset: 0;
 
-      .spacer {
-        flex-grow: 1;
-      }
+      #nav {
+        .menu-button {
+          margin-left: auto;
+          margin-right: 0;
+          width: 40px;
+          color: white;
+        }
 
-      ul {
-        width: 100%;
-        padding: 0;
-        margin: 0;
+        box-sizing: border-box;
+
+        &:not(.collapsed) {
+          width: 180px;
+        }
+
+        &.collapsed {
+          width: 48px;
+        }
+
+        flex-shrink: 0;
+        background: #036;
+        border-right: 3px solid var(--bc-yellow);
         display: flex;
         flex-direction: column;
 
-        li {
-          list-style: none;
-          text-align: right;
-          padding: 0 10px;
+        .spacer {
+          flex-grow: 1;
+        }
+
+        ul {
+          width: 100%;
+          padding: 0;
           margin: 0;
-          display: block;
+          display: flex;
+          flex-direction: column;
 
-          a {
-            text-decoration: none;
-            color: white;
-            font-size: 16px;
-            font-family: BCSans, sans-serif;
-            font-weight: 600;
-            transition: 0.2s background-color;
-            cursor: pointer;
+          li {
+            list-style: none;
+            text-align: right;
+            padding: 0 10px;
+            margin: 0;
+            display: block;
 
-            &.active {
-              color: var(--bc-yellow);
+            a {
+              text-decoration: none;
+              color: white;
+              font-size: 16px;
+              font-family: BCSans, sans-serif;
+              font-weight: 600;
+              transition: 0.2s background-color;
+              cursor: pointer;
+
+              &.active {
+                color: var(--bc-yellow);
+              }
             }
           }
         }
+
+        ul.user-actions {
+          margin-bottom: 10px;
+        }
+
+        ul.primary-nav {
+
+        }
+
+        color: white;
       }
 
-      ul.user-actions {
-        margin-bottom: 10px;
+      #content {
+        background: white;
+
+        /* width: 100%; */
+
+        flex-grow: 1;
+        padding-left: 20px;
+        padding-right: 20px;
+        overflow: scroll;
+
+        #map {
+          box-sizing: border-box;
+          box-shadow: 0 0 10px;
+          width: 100%;
+          padding: 12px;
+          margin-bottom: 20px;
+          height: 70dvh;
+        }
       }
 
-      ul.primary-nav {
-
-      }
-
-      color: white;
     }
 
-    #content {
-      background: white;
-
-      /* width: 100%; */
-
-      flex-grow: 1;
-      padding-left: 20px;
-      padding-right: 20px;
-      overflow: scroll;
-
-      #map {
-        box-sizing: border-box;
-        box-shadow: 0 0 10px;
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 20px;
-        height: 70dvh;
-      }
+    .map-containing-block {
+      position: relative;
+      width: 100%;
+      height: 100%;
     }
 
-  }
+    .MapWrapper {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
 
-  .map-containing-block {
-    position: relative;
-    width: 100%;
-    height: 100%;
-  }
+    .Map {
+      width: 100%;
+      height: 100%;
+    }
 
-  .MapWrapper {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-  }
-
-  .Map {
-    width: 100%;
-    height: 100%;
-  }
-
-  #map-btn-container {
-    bottom: 10px;
+    #map-btn-container {
+      bottom: 10px;
+    }
   }
 }
