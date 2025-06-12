@@ -699,6 +699,12 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           title: draftState.drawingCustomLayerName
         });
         draftState.drawingCustomLayerName = '';
+      } else if (UserSettings.Boundaries.createSiteListLayer.match(action)) {
+        draftState.clientBoundaries.push({
+          id: nanoid(),
+          geojson: action.payload.feature,
+          title: action.payload.name
+        });
       } else if (UserSettings.Boundaries.removeCustomLayer.match(action)) {
         const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload);
         draftState.clientBoundaries.splice(index, 1);
