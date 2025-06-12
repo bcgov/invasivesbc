@@ -2,3 +2,71 @@
   height: 100px;
   width: 100px;
 }
+
+#upload-site-list {
+  .content {
+    .form-inputs {
+      label {
+        margin-right: 5pt;
+      }
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: column;
+      div {
+        display: flex;
+        align-items: center;
+        margin-bottom: 5pt;
+      }
+    }
+
+    .file-input {
+      display: flex;
+      width: 100%;
+
+      label {
+        border: 1pt solid var(--bc-blue);
+        color: var(--bc-blue);
+        padding: 5pt;
+        border-radius: 5pt;
+        &:hover {
+          cursor: pointer;
+          background-color: #efefef;
+        }
+      }
+      .file-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        width: 60%;
+      }
+    }
+
+    input[type='file'] {
+      font-weight: bold;
+      width: 40%;
+    }
+
+    input[type='text'] {
+      height: 25pt;
+      width: 50%;
+      padding-left: 0.5rem;
+    }
+
+    input[type='checkbox'] {
+      width: 25px;
+      height: 25px;
+    }
+
+    .warning {
+      ul {
+        box-sizing: border-box;
+        list-style-type: disc;
+        padding-left: 15pt;
+      }
+    }
+  }
+}
+
+#site-list-file-input {
+  display: none;
+}
