@@ -121,7 +121,7 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
               ...hydrated,
               sync_status: sync_status
             });
-      if (networkReturn.status >= 200 && networkReturn.status < 300) {
+      if (networkReturn?.ok) {
         yield put({
           type: ACTIVITY_UPDATE_SYNC_STATE,
           payload: {
