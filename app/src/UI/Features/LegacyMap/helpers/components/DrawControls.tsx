@@ -2,18 +2,29 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
+import {
+  ACTIVITY_UPDATE_GEO_REQUEST,
+  ACTIVITY_UPDATE_GEO_SUCCESS,
+  MAP_ON_SHAPE_CREATE,
+  MAP_ON_SHAPE_UPDATE
+} from 'state/actions';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
 import maplibregl, { IControl } from 'maplibre-gl';
 import { createRoot, Root } from 'react-dom/client';
-
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
+import {
+  GeoTrackingMode,
+  convertLineToPolygon,
+  updateGPSCoordinate
+} from 'UI/Features/LegacyMap/helpers/functional/geo-tracking-mode';
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
+import GeoShapes from 'constants/geoShapes';
+import { GEO_TRACKING_FEATURE } from '../functional/constants';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -28,6 +39,7 @@ enum TargetMode {
   WHATS_HERE = 'WHATS_HERE',
   CUSTOM_LAYER = 'CUSTOM_LAYER',
   ACTIVITY = 'ACTIVITY',
+  ACTIVITY_GEO_TRACK = 'ACTIVITY_GEO_TRACK',
   TILE_CACHE = 'TILE_CACHE'
 }
 
@@ -38,7 +50,8 @@ const DrawControls = () => {
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
   const appModeURL = useSelector((state) => state.AppMode.url);
-
+  const currGeoTrackingMode = useSelector((state) => state.Map.track_me_draw_geo.drawingShape);
+  const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean | undefined>(undefined);
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
 
@@ -57,19 +70,81 @@ const DrawControls = () => {
     modeRef.current = mode;
   }, [mode]);
 
-  // update the drawn LineString or Polygon to a red dotted line if an error occurs
+  // update drawn LineString or Polygon to a red dotted line if an error occurs
   useEffect(() => {
-    const feature = drawInstance?.current?.getAll().features[0];
-    if (feature) {
-      feature.properties = { error: activityGeo?.properties?.error ?? 'false' };
-      try {
-        drawInstance?.current?.deleteAll();
-        drawInstance?.current?.add(feature);
-      } catch (e) {
-        console.error(e);
-      }
+    if (!activityGeo?.properties?.error) return;
+    const feature = drawInstance?.current?.getAll()?.features?.[0];
+
+    if (!feature) return;
+
+    // Update feature properties to reflect error state
+    feature.properties = {
+      ...feature.properties,
+      error: activityGeo.properties.error,
+      user_error: activityGeo.properties.error
+    };
+
+    if (activityGeo.geometry?.type && activityGeo.geometry?.coordinates) {
+      feature.geometry = {
+        type: activityGeo.geometry.type,
+        coordinates: activityGeo.geometry.coordinates
+      };
+    }
+
+    try {
+      drawInstance?.current?.deleteAll();
+      drawInstance?.current?.add(feature);
+    } catch (error) {
+      console.error('Failed to update feature with error styling:', error);
     }
   }, [activityGeo?.properties?.error, activityGeo?.geometry]);
+
+  useEffect(() => {
+    const feature = drawInstance?.current?.get(GEO_TRACKING_FEATURE);
+
+    // activityGeo is empty and feature has some values
+    if (Object.keys(activityGeo).length === 0 && feature && Object.keys(feature).length > 0) {
+      drawInstance?.current?.deleteAll();
+      return;
+    }
+
+    if (!activityGeo?.geometry) return;
+
+    const isPolygon = activityGeo.geometry.type === GeoShapes.Polygon;
+    const coordinates = activityGeo.geometry.coordinates;
+    const hasError = String(activityGeo?.properties?.error || 'false') === 'true';
+
+    const isInitialDraw = !feature || coordinates.length === 1;
+
+    if (mode === TargetMode.ACTIVITY_GEO_TRACK) {
+      if (isInitialDraw) {
+        setPrevGeoTrackingMode(currGeoTrackingMode);
+      } else {
+        updateGPSCoordinate(coordinates, hasError ? 'true' : 'false');
+        if (hasError) {
+          setPrevGeoTrackingMode(false); // allow user to adjust shape after error
+        }
+      }
+    }
+
+    const justExitedTracking = prevGeoTrackingMode && !currGeoTrackingMode;
+
+    if (justExitedTracking && isPolygon) {
+      convertLineToPolygon(coordinates, hasError ? 'true' : 'false');
+      setPrevGeoTrackingMode(currGeoTrackingMode);
+    }
+  }, [activityGeo?.geometry, currGeoTrackingMode]);
+
+  useEffect(() => {
+    const feature = drawInstance?.current?.get(GEO_TRACKING_FEATURE);
+    const hasError = feature?.properties?.error === 'true';
+
+    // Either intersection occurs or activity is reset in the store due to another error
+    if (currGeoTrackingMode && hasError) {
+      drawInstance?.current?.deleteAll();
+      drawInstance?.current?.changeMode('geo_tracking_mode'); // force reset geo-tracking instance
+    }
+  }, [currGeoTrackingMode]);
 
   /**
    * @desc Override the delete button to clear all shapes from drawn tools and to update the Form activity with null shape.
@@ -91,6 +166,7 @@ const DrawControls = () => {
         });
       }
     };
+
     if (!drawInstance.current) return;
     if (mode === TargetMode.ACTIVITY) {
       dispatch(
@@ -107,6 +183,7 @@ const DrawControls = () => {
       } else if (mode === TargetMode.WHATS_HERE) {
         dispatch(WhatsHere.clear_whats_here());
       }
+
       drawInstance.current.deleteAll();
     }
   };
@@ -137,6 +214,10 @@ const DrawControls = () => {
         dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
         break;
       }
+      case TargetMode.ACTIVITY_GEO_TRACK: {
+        // don't do anything
+        break;
+      }
       case TargetMode.TILE_CACHE: {
         dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
         break;
@@ -164,11 +245,15 @@ const DrawControls = () => {
       setMode(TargetMode.CUSTOM_LAYER);
       return;
     } else if (appModeURL?.includes('Activity')) {
-      setMode(TargetMode.ACTIVITY);
+      if (currGeoTrackingMode || prevGeoTrackingMode) {
+        setMode(TargetMode.ACTIVITY_GEO_TRACK);
+      } else {
+        setMode(TargetMode.ACTIVITY);
+      }
     } else {
       setMode(TargetMode.DISABLED);
     }
-  }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, appModeURL]);
+  }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, appModeURL, currGeoTrackingMode, prevGeoTrackingMode]);
 
   /**
    * @desc Update the Drawn Shape.
@@ -211,8 +296,13 @@ const DrawControls = () => {
         case TargetMode.WHATS_HERE:
           drawInstance.current.changeMode('whats_here_box_mode');
           break;
-        case TargetMode.DISABLED:
+        case TargetMode.ACTIVITY_GEO_TRACK:
+          drawInstance.current.changeMode('geo_tracking_mode');
+          break;
         case TargetMode.ACTIVITY:
+          drawInstance.current.changeMode('simple_select');
+          break;
+        case TargetMode.DISABLED:
           drawInstance.current.changeMode('do_nothing');
           break;
         default:
@@ -237,7 +327,8 @@ const DrawControls = () => {
       modes: {
         ...MapboxDraw.modes,
         do_nothing: DoNothing,
-        whats_here_box_mode: WhatsHereBoxMode
+        whats_here_box_mode: WhatsHereBoxMode,
+        geo_tracking_mode: GeoTrackingMode
       },
       styles: [
         {
@@ -268,13 +359,22 @@ const DrawControls = () => {
           }
         },
         {
+          id: 'gl-drawn-fill',
+          type: 'fill',
+          layout: {},
+          filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true']],
+          paint: {
+            'fill-color': 'white',
+            'fill-opacity': 0.5
+          }
+        },
+        {
           id: 'gl-error-line',
           type: 'line',
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
           },
-          filter: ['all', ['==', 'active', 'false']],
           paint: {
             'line-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
             'line-dasharray': [1, 2],

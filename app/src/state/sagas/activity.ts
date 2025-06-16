@@ -69,6 +69,7 @@ import cacheAlertMessages from 'constants/alerts/cacheAlerts';
 import MapActions from 'state/actions/map';
 import { selectAuth } from 'state/reducers/auth';
 import { Role } from 'constants/roles';
+import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -187,6 +188,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
   const userHasTrackingEnabled = coords?.hasOwnProperty('long');
   if (userHasTrackingEnabled) {
     const initGeo = {
+      id: GEO_TRACKING_FEATURE,
       type: 'Feature',
       properties: {},
       geometry: {

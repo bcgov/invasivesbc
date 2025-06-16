@@ -558,6 +558,12 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.track_me_draw_geo.drawingShape = false;
       } else if (GeoTracking.resume.match(action)) {
         draftState.track_me_draw_geo.drawingShape = true;
+      } else if (GeoTracking.exitDrawing.match(action)) {
+        draftState.track_me_draw_geo = {
+          isTracking: false,
+          type: draftState.track_me_draw_geo.type,
+          drawingShape: false
+        };
       } else if (IappActions.getRows.match(action) || Activity.getRows.match(action)) {
         const { recordSetID, page, limit, tableFiltersHash } = action.payload;
         draftState.recordTables[recordSetID] ??= {} as IRecordTable;

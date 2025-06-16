@@ -66,6 +66,9 @@ import IappRecord from 'interfaces/IappRecord';
 import NetworkActions from 'state/actions/network/NetworkActions';
 import MapActions from 'state/actions/map';
 import GeoShapes from 'constants/geoShapes';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
+import { normalizeToPolygonCoordinates } from 'utils/geometryHelpers';
+import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -602,9 +605,18 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
       return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
     }
   };
+
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
-  if (action?.payload?.geometry?.type === GeoShapes.LineString) {
+  const { isTracking, type } = yield select((state) => state.Map.track_me_draw_geo);
+
+  const isGeoTrackingLineString = isTracking && type === GeoShapes.LineString;
+  const isLineString = action?.payload?.geometry?.type === GeoShapes.LineString;
+  const hasCoordinates = action?.payload?.geometry?.coordinates?.length > 0;
+  const noUserError = action?.payload?.properties?.user_error !== 'true';
+
+  if (isLineString && hasCoordinates && noUserError) {
+    if (!isGeoTrackingLineString && action.payload.id === GEO_TRACKING_FEATURE) return; // no prompt for polygon
     yield put(
       Prompt.number({
         title: 'Buffer needed',
@@ -619,16 +631,58 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
 }
 
 function* handle_MAP_ON_SHAPE_UPDATE(action) {
-  const { url } = yield select((state) => state.AppMode);
-  const { drawingCustomLayer, whatsHere, tileCacheMode } = yield select((state: RootState) => state.Map);
+  try {
+    const { url } = yield select((state) => state.AppMode);
+    const { drawingCustomLayer, whatsHere, tileCacheMode } = yield select((state: RootState) => state.Map);
+    const { isTracking, type } = yield select((state) => state.Map.track_me_draw_geo);
+    const { id, geometry } = action.payload;
 
-  if (drawingCustomLayer) {
-    yield put({ type: CUSTOM_LAYER_DRAWN, payload: action.payload });
-  } else if (url && /Activity/.test(url) && !whatsHere.toggle) {
-    if (action.payload.geometry.type === GeoShapes.LineString) return; // prevent updating LineString on outside click
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [action.payload] } });
-  } else if (tileCacheMode) {
-    yield put(TileCache.setTileCacheShape({ geometry: action.payload.geometry }));
+    if (drawingCustomLayer) {
+      yield put({ type: CUSTOM_LAYER_DRAWN, payload: action.payload });
+      return;
+    }
+
+    const callback = (width: number) => {
+      const newGeo = buffer(action.payload.geometry, width / 10000) ?? action.payload;
+      if (isActivityPage && !whatsHere.toggle) {
+        return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
+      }
+    };
+    const isActivityPage = url && /Activity/.test(url);
+    const isGeoTrackingFeature = id === GEO_TRACKING_FEATURE;
+
+    if (isActivityPage && !whatsHere.toggle) {
+      if (isGeoTrackingFeature && type === GeoShapes.Polygon) {
+        geometry.type = type;
+        geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
+      } else if (type === GeoShapes.LineString && action?.payload?.geometry?.type === GeoShapes.LineString) {
+        yield put(
+          Prompt.number({
+            title: 'Buffer needed',
+            prompt: 'Enter width in meters for line to be buffered:',
+            min: 0.001,
+            acceptFloats: true,
+            callback,
+            label: 'Meters'
+          })
+        );
+        return;
+      } else if (isTracking) {
+        yield put(GeoTracking.exitDrawing());
+      }
+
+      yield put({
+        type: ACTIVITY_UPDATE_GEO_REQUEST,
+        payload: { geometry: [action.payload] }
+      });
+      return;
+    }
+
+    if (tileCacheMode) {
+      yield put(TileCache.setTileCacheShape({ geometry }));
+    }
+  } catch (error) {
+    console.error('Error in handle_MAP_ON_SHAPE_UPDATE:', error);
   }
 }
 

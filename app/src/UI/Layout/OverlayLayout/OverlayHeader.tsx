@@ -75,7 +75,6 @@ const onClickDragButton = (e) => {
   e.preventDefault();
   document.addEventListener('pointermove', drag, false);
   document.addEventListener('pointerup', cleanup, { once: true, passive: true });
-  document.addEventListener('pointercancel', cleanup, { once: true, passive: true }); //Android needs this
 };
 
 export const OverlayHeader = () => {

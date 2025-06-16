@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';
+import { GEO_TRACKING_FEATURE } from '../helpers/functional/constants';
 
 /**
  * TrackMeButton
@@ -28,7 +29,7 @@ export const GeoTrackingButton = () => {
 
   useEffect(() => {
     if (activityGeo && activityGeo?.properties?.error == 'true') {
-      dispatch(GeoTracking.stop());
+      dispatch(GeoTracking.exitDrawing());
     }
   }, [activityGeo?.properties]);
 
