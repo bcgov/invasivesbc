@@ -88,7 +88,7 @@ function getActivity(): RequestHandler {
       const resObj: Record<PropertyKey, any> = {};
       const filterObject = { ids_to_filter: idList, selectColumns: getSelectColumnsByRecordSetType('IAPP') };
       const sql = getIAPPSQLv2(sanitizeIAPPFilterObject(filterObject, req));
-      const search = new PointOfInterestSearchCriteria({ point_of_interest_ids: idList });
+      const search = new PointOfInterestSearchCriteria({ point_of_interest_ids: idList }, req);
       const baseIappRecordSQL = getSitesBasedOnSearchCriteriaSQL(search);
       const [iappRecordResult, iappTableResult] = await Promise.all([
         mapSitesRowsToJSON(await connection.query(baseIappRecordSQL.text, baseIappRecordSQL.values), search),
