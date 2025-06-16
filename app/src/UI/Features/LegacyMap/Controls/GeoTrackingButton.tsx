@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';
-import { GEO_TRACKING_FEATURE } from '../helpers/functional/constants';
 
 /**
  * TrackMeButton

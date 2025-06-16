@@ -2,12 +2,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import {
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_ON_SHAPE_CREATE,
-  MAP_ON_SHAPE_UPDATE
-} from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
@@ -101,9 +96,10 @@ const DrawControls = () => {
 
   useEffect(() => {
     const feature = drawInstance?.current?.get(GEO_TRACKING_FEATURE);
+    const isActivityGeoEmpty = Object.keys(activityGeo).length === 0;
+    const isFeaturePresent = feature && Object.keys(feature).length > 0;
 
-    // activityGeo is empty and feature has some values
-    if (Object.keys(activityGeo).length === 0 && feature && Object.keys(feature).length > 0) {
+    if (isActivityGeoEmpty && isFeaturePresent) {
       drawInstance?.current?.deleteAll();
       return;
     }
@@ -112,26 +108,36 @@ const DrawControls = () => {
 
     const isPolygon = activityGeo.geometry.type === GeoShapes.Polygon;
     const coordinates = activityGeo.geometry.coordinates;
-    const hasError = String(activityGeo?.properties?.error || 'false') === 'true';
-
+    const hasError = String(activityGeo?.properties?.error ?? 'false') === 'true';
     const isInitialDraw = !feature || coordinates.length === 1;
+    const justExitedTracking = prevGeoTrackingMode && !currGeoTrackingMode;
+
+    const handleInitialDraw = () => {
+      setPrevGeoTrackingMode(currGeoTrackingMode);
+    };
+
+    const handleUpdate = () => {
+      updateGPSCoordinate(coordinates, hasError ? 'true' : 'false');
+      if (hasError) {
+        setPrevGeoTrackingMode(false); // allow user to adjust shape after error
+      }
+    };
+
+    const handlePolygonConversion = () => {
+      convertLineToPolygon(coordinates, hasError ? 'true' : 'false');
+      setPrevGeoTrackingMode(currGeoTrackingMode);
+    };
 
     if (mode === TargetMode.ACTIVITY_GEO_TRACK) {
       if (isInitialDraw) {
-        setPrevGeoTrackingMode(currGeoTrackingMode);
+        handleInitialDraw();
       } else {
-        updateGPSCoordinate(coordinates, hasError ? 'true' : 'false');
-        if (hasError) {
-          setPrevGeoTrackingMode(false); // allow user to adjust shape after error
-        }
+        handleUpdate();
       }
     }
 
-    const justExitedTracking = prevGeoTrackingMode && !currGeoTrackingMode;
-
     if (justExitedTracking && isPolygon) {
-      convertLineToPolygon(coordinates, hasError ? 'true' : 'false');
-      setPrevGeoTrackingMode(currGeoTrackingMode);
+      handlePolygonConversion();
     }
   }, [activityGeo?.geometry, currGeoTrackingMode]);
 
