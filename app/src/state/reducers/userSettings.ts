@@ -207,7 +207,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
       } else if (Activity.get.match(action)) {
         draftState.activeActivity = action.payload;
       } else if (IappActions.getSuccess.match(action)) {
-        draftState.activeIAPP = action.payload.iapp?.site_id;
+        draftState.activeIAPP = action.payload?.iapp?.site_id;
       } else if (
         Activity.Offline.getIdsForRecordsetSuccess.match(action) ||
         Activity.getIdsForRecordsetSuccess.match(action) ||
