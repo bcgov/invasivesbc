@@ -104,8 +104,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         criteria.species_negative = negativeNames;
       }
     }
-
-    const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
+    const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria, req);
     defaultLog.debug({ message: 'sanitizedSearchCriteria', sanitizedSearchCriteria });
 
     const responseCacheHeaders = {};
@@ -145,11 +144,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
 
         res.set(responseCacheHeaders);
+      } catch (e) {
+        console.error(e);
       } finally {
         cacheCheckConnection.release();
       }
     }
-
     if (isIAPPrelated(sanitizedSearchCriteria)) {
       res.status(200);
       await streamIAPPResult(sanitizedSearchCriteria, res);
@@ -168,7 +168,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
             code: 500
           });
         }
-
         const responseIAPP = await connection.query(sqlStatement.text, sqlStatement.values);
 
         // parse the rows from the response
