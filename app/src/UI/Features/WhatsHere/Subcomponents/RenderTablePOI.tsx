@@ -21,7 +21,8 @@ const RenderTablePOI = ({ setAnchorEl }: PropTypes) => {
       UserSettings.Map.setHoveredRecordset({
         id: params.row.id,
         geom: params.row.geometry,
-        recordType: RecordSetType.IAPP
+        recordType: RecordSetType.IAPP,
+        readableIdentifier: params.row.id.toString()
       })
     );
   };

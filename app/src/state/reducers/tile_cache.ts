@@ -36,7 +36,7 @@ function buildMapSpecificationFromRepositoryMetadata(spec: RepositoryMetadata): 
       name: `bounds-${spec.id}`,
       displayName: spec.description,
       icon: 'N/A',
-      mode: MapSourceAndLayerDefinitionMode.BASEMAP,
+      viewLayout: MapSourceAndLayerDefinitionMode.BASEMAP,
       tooltip: ``,
       predicates: new MapDefinitionEligibilityPredicatesBuilder().directlySelectable(false).build(),
       source: {
@@ -66,7 +66,7 @@ function buildMapSpecificationFromRepositoryMetadata(spec: RepositoryMetadata): 
       name: spec.id,
       displayName: spec.description,
       icon: 'OfflineSatellite',
-      mode: MapSourceAndLayerDefinitionMode.OVERLAY,
+      viewLayout: MapSourceAndLayerDefinitionMode.OVERLAY,
       tooltip: `${spec.id} - ${spec.description} - ${spec.status}`,
       predicates: new MapDefinitionEligibilityPredicatesBuilder().mobileOnly().requiresNetwork(false).build(),
       source: {

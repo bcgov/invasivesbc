@@ -1,5 +1,5 @@
-import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { StartupTask } from 'UI/StartupCoordinator/StartupCoordinator';
+import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 
 const LOAD_RECORDSET_CACHES: StartupTask = {
   name: 'Load Recordset Caches',

@@ -28,7 +28,7 @@ export const Activity = () => {
 
   useEffect(() => {
     if (wrapperRef.current) {
-      wrapperRef.current.scrollIntoView({ behavior: 'smooth' });
+      wrapperRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
     }
   }, [activity_id]);
 

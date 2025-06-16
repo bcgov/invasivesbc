@@ -1,6 +1,6 @@
 import React from 'react';
-import 'UI/Layout/Footer/Footer.css';
-import sunriseLogo from 'UI/Layout/Footer/bcGovSunriseLogo.png';
+import 'UI/Layout/OverlayLayout/Footer/Footer.css';
+import sunriseLogo from 'UI/Layout/OverlayLayout/Footer/bcGovSunriseLogo.png';
 import { INFORMATIONAL_LINKS } from 'constants/links';
 
 export const Footer: React.FC = () => {

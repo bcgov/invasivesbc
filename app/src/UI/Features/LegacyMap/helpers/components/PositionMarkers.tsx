@@ -5,14 +5,14 @@ import {
   refreshHighlightedRecord
 } from 'UI/Features/LegacyMap/helpers/functional/current-record';
 import centroid from '@turf/centroid';
-import maplibregl, { LngLatLike, Popup } from 'maplibre-gl';
+import maplibregl, { LngLatLike } from 'maplibre-gl';
 import { useSelector } from 'utils/use_selector';
 import circle from '@turf/circle';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { handlePositionTracking } from 'UI/Features/LegacyMap/helpers/functional/position-tracking';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { makeMapMarker, makeMarkerElement, markerPopoverContents } from 'utils/makeMapMarker';
+import { makeMapMarker, makeMarkerElement } from 'utils/makeMapMarker';
 const PositionMarkers = ({ mapReady }) => {
   const LATITUDE = 1;
   const LAT_OFFSET = -0.00325;
@@ -48,6 +48,7 @@ const PositionMarkers = ({ mapReady }) => {
   const userRecordOnHoverRecordGeometry = useSelector((state) => state.Map.userRecordOnHoverRecordGeometry);
   const userRecordOnHoverRecordType = useSelector((state) => state.Map.userRecordOnHoverRecordType);
   const userRecordOnHoverRecordID = useSelector((state) => state.Map.userRecordOnHoverRecordID);
+  const readableIdentifier = useSelector((state) => state.Map?.readableIdentifier);
 
   // Map Marker Refs
   const activityMarker = useRef<maplibregl.Marker>();
@@ -67,19 +68,18 @@ const PositionMarkers = ({ mapReady }) => {
     if (!mapReady) return;
 
     hoveredFeatureMarker?.current?.remove();
-    hoveredFeatureMarker.current = new maplibregl.Marker().setPopup(
-      new Popup({
-        closeButton: false,
-        closeOnMove: true,
-        className: 'map-marker-popup'
-      }).setDOMContent(markerPopoverContents(hoveredFeatureMarker))
-    );
+    hoveredFeatureMarker.current = makeMapMarker({
+      marker: new maplibregl.Marker(),
+      ref: hoveredFeatureMarker,
+      id: readableIdentifier,
+      recordType: userRecordOnHoverRecordType
+    });
     refreshCurrentRecMakers(map, {
       userRecordOnHoverRecordGeometry,
       whatsHereMarker: hoveredFeatureMarker.current,
       whatsHereFeature: hoveredFeature
     });
-  }, [hoveredFeature, userRecordOnHoverRecordID]);
+  }, [hoveredFeature, userRecordOnHoverRecordID, readableIdentifier]);
 
   // Sets Map Marker for Active IAPP
   useEffect(() => {

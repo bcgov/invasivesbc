@@ -5,6 +5,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import maplibregl from 'maplibre-gl';
 import { PublicLayer } from 'UI/Features/ComponentizedMap/PublicLayer';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
+import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer';
 
 // to make base layers work on this map, will be refactored in the next iteration
 const wmsBaseLayersValue: Record<string, string> = {
@@ -105,7 +106,7 @@ const mapStyleLayers: Record<string, maplibregl.LayerSpecification[]> = {
 };
 
 // name will be changed to 'Map' upon full transition
-export const MainMap = ({ children }) => {
+export const MainMap: React.FC<React.PropsWithChildren> = ({ children }) => {
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
   const authenticated = useSelector((state) => state.Auth.authenticated);
   const [currentAuthHeader, setCurrentAuthHeader] = useState<string>('');
@@ -211,8 +212,13 @@ export const MainMap = ({ children }) => {
         <div id="LoadingMap" className={'loadedMap'}>
           Loading tiles...
         </div>
+        <ButtonContainer />
+
         {children}
       </div>
     </div>
   );
 };
+
+type MainMapType = typeof MainMap;
+export type { MainMapType };

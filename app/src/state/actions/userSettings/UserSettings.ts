@@ -8,7 +8,12 @@ interface IHoverRecordset {
   recordType: RecordSetType;
   id: string | number;
   geom: Point | Polygon | undefined;
-  quickPan?: boolean;
+  quickPan?: boolean; // Map should pan to this site when update occurs
+  readableIdentifier?: string; // Readable ID Format. e.g. Short ID or Site ID
+}
+interface IMarkLocation {
+  feature: Feature;
+  readableIdentifier?: string;
 }
 class Boundaries {
   private static readonly PREFIX = `UserSettings/Boundaries`;
@@ -73,7 +78,7 @@ class Map {
   static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
   static readonly setCenterFailure = createAction(`${this.PREFIX}/setCenterFailure`);
   static readonly setHoveredRecordset = createAction<IHoverRecordset>(`${this.PREFIX}/setHoveredRecordset`);
-  static readonly markCoordinate = createAction<Feature>(`${this.PREFIX}/markCoordinate`);
+  static readonly markCoordinate = createAction<IMarkLocation>(`${this.PREFIX}/markCoordinate`);
 }
 
 class UserSettings {

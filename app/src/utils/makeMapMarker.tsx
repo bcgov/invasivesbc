@@ -38,8 +38,16 @@ const markerPopoverContents = (
   const main = document.createElement('div');
   if (id) {
     const p = document.createElement('p');
-    p.innerHTML =
-      recordType === RecordSetType.Activity ? `<span>Record ID</span>: ${id}` : `<span>Site ID</span>: ${id}`;
+    p.innerHTML = (() => {
+      switch (recordType) {
+        case RecordSetType.Activity:
+          return `<span>Record ID</span>: ${id}`;
+        case RecordSetType.IAPP:
+          return `<span>Site ID</span>: ${id}`;
+        default:
+          return id.toString();
+      }
+    })();
     main.appendChild(p);
   }
   const button = document.createElement('button');
@@ -51,25 +59,30 @@ const markerPopoverContents = (
 };
 
 interface IMarkerOptions {
-  marker?: maplibregl.Marker;
   ref: MutableRefObject<maplibregl.Marker | undefined>;
-  iconSrc: string;
-  classes: string;
+  classes?: string;
   id?: string | number;
   recordType?: RecordSetType;
+}
+interface IMarkerOptionsIcon extends IMarkerOptions {
+  iconSrc: string;
+}
+interface IMarkerSupplyMarker extends IMarkerOptions {
+  marker: maplibregl.Marker;
 }
 /**
  * Creates a Map Marker With removable Popup Menu using supplied options
  * @param options Configuration
  * @returns Maplibre Map Marker
  */
-const makeMapMarker = (options: IMarkerOptions) => {
-  const { ref, iconSrc, classes, id, recordType, marker } = options;
+const makeMapMarker = (options: IMarkerOptionsIcon | IMarkerSupplyMarker) => {
+  const { ref, classes = '', id, recordType } = options;
   const newMarker =
-    marker ??
-    new maplibregl.Marker({
-      element: makeMarkerElement(iconSrc, classes)
-    });
+    'marker' in options
+      ? options.marker
+      : new maplibregl.Marker({
+          element: makeMarkerElement(options.iconSrc, classes)
+        });
 
   newMarker.setPopup(
     new Popup({

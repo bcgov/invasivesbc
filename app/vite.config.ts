@@ -112,6 +112,7 @@ export default defineConfig({
     react({
       // Use React plugin in all *.jsx and *.tsx files
       include: '**/*.{jsx,tsx}',
+
       ...reactDevOptions()
     })
   ],

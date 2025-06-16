@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import 'UI/Features/LegacyMap/helpers/components/Coordinates/Coordinates.css';
 import proj4 from 'proj4';
+import debounce from 'lodash.debounce';
 
 interface CoordsData {
   lng: number;
@@ -11,20 +12,24 @@ interface CoordsData {
 }
 
 const Coordinates = () => {
-  const updateCoordinates = (x: number, y: number) => {
-    if (!map) return;
-    const proj4_setdef = (utmZone: number): string => {
-      return `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
-    };
-    const { lng, lat } = map.unproject([x, y]);
-    const utmZone = Math.floor((lng + 180) / 6) + 1;
-    proj4.defs([
-      ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs'],
-      ['EPSG:AUTO', proj4_setdef(utmZone)]
-    ]);
-    const utm: [number, number] = proj4('EPSG:4326', 'EPSG:AUTO', [lng, lat]);
-    setCoords({ lng, lat, utm, utmZone });
-  };
+  const updateCoordinates = debounce(
+    (x: number, y: number) => {
+      if (!map) return;
+      const proj4_setdef = (utmZone: number): string => {
+        return `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
+      };
+      const { lng, lat } = map.unproject([x, y]);
+      const utmZone = Math.floor((lng + 180) / 6) + 1;
+      proj4.defs([
+        ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs'],
+        ['EPSG:AUTO', proj4_setdef(utmZone)]
+      ]);
+      const utm: [number, number] = proj4('EPSG:4326', 'EPSG:AUTO', [lng, lat]);
+      setCoords({ lng, lat, utm, utmZone });
+    },
+    100,
+    { trailing: true, maxWait: 200 }
+  );
 
   const map = useContext(MapContext);
   const [coords, setCoords] = useState<CoordsData>();

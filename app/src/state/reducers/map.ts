@@ -218,6 +218,7 @@ interface MapState {
     drawingShape: boolean;
   };
   quickPanToRecord: boolean;
+  readableIdentifier?: string;
   recordSetForCSV: number | null;
   recordTables: Record<PropertyKey, IRecordTable>;
   serverBoundaries: any[];
@@ -305,7 +306,6 @@ const initialState: MapState = {
     drawingShape: false
   },
   quickPanToRecord: false,
-
   recordSetForCSV: 0,
   recordTables: {},
 
@@ -677,11 +677,13 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.userRecordOnHoverRecordID = action.payload.id;
         draftState.userRecordOnHoverRecordGeometry = action.payload.geom;
         draftState.quickPanToRecord = !!action.payload?.quickPan;
+        draftState.readableIdentifier = action.payload?.readableIdentifier;
       } else if (UserSettings.Map.markCoordinate.match(action)) {
         draftState.userRecordOnHoverRecordType = undefined;
         draftState.userRecordOnHoverRecordID = undefined;
-        draftState.userRecordOnHoverRecordGeometry = action.payload;
+        draftState.userRecordOnHoverRecordGeometry = action.payload.feature;
         draftState.quickPanToRecord = true;
+        draftState.readableIdentifier = action.payload?.readableIdentifier;
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {
@@ -742,9 +744,9 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.serverBoundaries =
               action.payload.data?.map((incomingItem) => {
                 const returnVal = { ...incomingItem };
-                const existingToggleVal = draftState.serverBoundaries.find((oldItem) => {
-                  oldItem.id === incomingItem;
-                })?.toggle;
+                const existingToggleVal = draftState.serverBoundaries.find(
+                  (oldItem) => oldItem.id === incomingItem
+                )?.toggle;
                 returnVal.toggle =
                   existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
                 return returnVal;

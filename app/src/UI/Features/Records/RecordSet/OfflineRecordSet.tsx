@@ -25,7 +25,8 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
       UserSettings.Map.setHoveredRecordset({
         id: row.activity_id,
         geom: row.geometry?.[0] as Polygon | Point,
-        recordType: RecordSetType.Activity
+        recordType: RecordSetType.Activity,
+        readableIdentifier: row.short_id
       })
     );
   };

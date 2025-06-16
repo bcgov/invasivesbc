@@ -1,18 +1,3 @@
-:root:has(#map-btn-container, #overlaydiv.map__overlay--show) {
-  #map-btn-container {
-    bottom: clamp(
-      calc(var(--overlay-grip-height)),
-      calc(var(--overlay-grip-height) + var(--overlay-height) + 4px),
-      calc(100svh - (var(--map-button-bar-height) + var(--header-bar-height)))
-    );
-  }
-}
-
-:root:has(#map-btn-container):not(:has(#overlaydiv.map__overlay--show)) {
-  #map-btn-container {
-    bottom: 4px;
-  }
-}
 
 #map-btn-container {
   z-index: 2;
@@ -27,10 +12,11 @@
   box-sizing: border-box;
   position: absolute;
   height: var(--map-button-bar-height);
-  transition: bottom 0.1s ease 0.3s;
+  transition: bottom 0.1s ease 0.3s, top 0.1s ease 0.3s;
 
   /* Enable clickthrough on div, but keep children clickable */
   pointer-events: none;
+
   & > * {
     pointer-events: auto;
   }
@@ -49,6 +35,7 @@
 
   .basemap-btn-group {
     display: flex;
+
     div {
       border-right: 1px solid darkgrey;
 
@@ -77,14 +64,17 @@
         .basemap-btn {
           border-radius: 0 20% 20% 0;
         }
+
         border-right: none;
       }
 
       &:only-child {
         /* the special case when there's only one button */
+
         .basemap-btn {
           border-radius: 20%;
         }
+
         border: none;
       }
     }

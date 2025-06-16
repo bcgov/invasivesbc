@@ -1,7 +1,6 @@
-import { Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
+import { HelpCenter, Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
-import { NetworkStateControl } from 'UI/Layout/Header/NetworkStateControl';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import LogoutIcon from '@mui/icons-material/Logout';
 import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
@@ -11,18 +10,20 @@ import { useHistory } from 'react-router-dom';
 import Alerts from 'state/actions/alerts/Alerts';
 import { AuthActions } from 'state/actions/auth/Auth';
 import MapActions from 'state/actions/map';
-import { TOGGLE_PANEL } from 'state/actions';
 import { selectAuth } from 'state/reducers/auth';
-import 'UI/Layout/Header/Mobile/MobileHeader.css';
+import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
+
+import 'UI/Layout/OverlayLayout/Header/Mobile/MobileHeader.css';
+import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
+import EventActions from 'state/actions/events/EventActions';
+import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
   const signOutAndTogglePanel = () => {
     return (dispatch: AppDispatch) => {
-      dispatch({
-        type: TOGGLE_PANEL,
-        payload: { panelOpen: false }
-      });
+      dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_EXCLUSIVE }));
       dispatch(AuthActions.signoutRequest());
       dispatch(MapActions.toggleOverlay('public_layer'));
     };
@@ -60,10 +61,7 @@ const HeaderPopover = () => {
   };
   const navToUpdateRequest = () => {
     history.push({ pathname: '/AccessRequest' });
-    dispatch({
-      type: TOGGLE_PANEL,
-      payload: { panelOpen: true, fullScreen: true }
-    });
+    dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
   };
 
   const requestAccess = async () => {
@@ -71,10 +69,7 @@ const HeaderPopover = () => {
       dispatch(AuthActions.signinRequest({}));
     } else {
       history.push('/AccessRequest');
-      dispatch({
-        type: TOGGLE_PANEL,
-        payload: { panelOpen: true, fullScreen: true }
-      });
+      dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
     }
   };
   const history = useHistory();
@@ -124,12 +119,24 @@ const HeaderPopover = () => {
               </li>
             )}
             {loggedInOrWorkingOffline && (
-              <li>
-                <button onClick={() => history.push('/News')}>
-                  <Newspaper />
-                  What's New
-                </button>
-              </li>
+              <>
+                <li>
+                  <button onClick={() => history.push('/News')}>
+                    <Newspaper />
+                    What's New
+                  </button>
+                </li>
+                <MobileOnly>
+                  <FeatureGated requires={'USER_GUIDE'}>
+                    <li>
+                      <button onClick={() => history.push('/Guide')}>
+                        <HelpCenter />
+                        User Guide
+                      </button>
+                    </li>
+                  </FeatureGated>
+                </MobileOnly>
+              </>
             )}
             {offlineUserSelectionAvailable && (
               <li>
