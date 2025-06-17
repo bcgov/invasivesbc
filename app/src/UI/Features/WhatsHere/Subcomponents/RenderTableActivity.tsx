@@ -18,7 +18,6 @@ const RenderTableActivity = ({ setAnchorEl }: PropTypes) => {
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
 
   const dispatchUpdatedID = (params) => {
-    console.log(params);
     dispatch(
       UserSettings.Map.setHoveredRecordset({
         id: params.row.id,
