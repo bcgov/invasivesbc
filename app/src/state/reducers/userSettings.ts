@@ -104,16 +104,18 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.recordSets[action.payload.id] ??= action.payload;
       } else if (UserSettings.SiteLists.createRecordsetsFromSiteList.match(action)) {
         const { activityIds, iappIds, name } = action.payload;
-        const activityRecord = UserSettings.RecordSet.createDefaultRecordset(RecordSetType.Activity);
-        activityRecord.ids_to_filter = activityIds;
-        activityRecord.recordSetName = `${name} - Activity`;
-
-        const iappRecord = UserSettings.RecordSet.createDefaultRecordset(RecordSetType.IAPP);
-        iappRecord.recordSetName = `${name} - IAPP`;
-        iappRecord.ids_to_filter = iappIds;
-
-        draftState.recordSets[iappRecord.id] = iappRecord;
-        draftState.recordSets[activityRecord.id] = activityRecord;
+        if (activityIds.length > 0) {
+          const activityRecord = UserSettings.RecordSet.createDefaultRecordset(RecordSetType.Activity);
+          activityRecord.ids_to_filter = activityIds;
+          activityRecord.recordSetName = `${name} - Activity`;
+          draftState.recordSets[activityRecord.id] = activityRecord;
+        }
+        if (iappIds.length > 0) {
+          const iappRecord = UserSettings.RecordSet.createDefaultRecordset(RecordSetType.IAPP);
+          iappRecord.recordSetName = `${name} - IAPP`;
+          iappRecord.ids_to_filter = iappIds;
+          draftState.recordSets[iappRecord.id] = iappRecord;
+        }
       } else if (UserSettings.RecordSet.requestRemoval.fulfilled.match(action)) {
         delete draftState.recordSets[action.payload];
       } else if (UserSettings.RecordSet.set.match(action)) {
