@@ -1,5 +1,6 @@
 import { SEARCH_LIMIT_MAX } from 'constants/misc';
 import { IMediaItem } from 'models/media';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 /**
  * PointOfInterest post request body.
@@ -105,6 +106,7 @@ export class PointOfInterestSearchCriteria {
 
   order: any[]; // [{columnKey: "columnname1", direction: "ASC"}, {columnKey: "columnname2", direction: "DESC"}]
 
+  user_id: number;
   jurisdiction: string[];
   species_positive: string[];
   species_negative: string[];
@@ -116,7 +118,7 @@ export class PointOfInterestSearchCriteria {
    * @memberof PointOfInterestSearchCriteria
    */
   //NOSONAR
-  constructor(obj?: any) {
+  constructor(obj: any, req: InvasivesRequest) {
     //csv export stuff:
     this.isCSV = obj.isCSV ?? false;
     this.CSVType = obj.CSVType ?? null;
@@ -144,7 +146,7 @@ export class PointOfInterestSearchCriteria {
     this.column_names = obj.column_names ?? [];
 
     this.order = obj.order ?? [];
-
+    this.user_id = req.authContext.user.user_id;
     this.jurisdiction = obj.jurisdiction || [];
     this.species_positive = obj?.species_positive || [];
     this.species_negative = obj?.species_negative || [];

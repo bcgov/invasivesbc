@@ -537,7 +537,7 @@ function fromStatement(sqlStatement: SQLStatement, filterObject: any) {
 }
 
 function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
-  const where = filterObject.vt_request ? sqlStatement.append(`and 1=1 `) : sqlStatement.append(`where 1=1  `);
+  const where = filterObject.vt_request ? sqlStatement.append(`and 1=1 `) : sqlStatement.append(`where ( 1=1  `);
 
   filterObject.clientReqTableFilters.forEach((filter) => {
     switch (filter.field) {
@@ -663,6 +663,12 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         break;
     }
   });
+  if (!filterObject?.vt_request) {
+    where.append(' )');
+  }
+  if (filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0) {
+    where.append(`and sites.site_id in (${filterObject.ids_to_filter.join(',')}) `);
+  }
   if (filterObject?.user_id) {
     where.append(
       `AND (
@@ -670,16 +676,10 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
         OR (
         SELECT BOOL_OR(can_read_sensitive_biocontrol)
         FROM get_user_permissions(${filterObject.user_id})
-       ) 
+      ))
       `
     );
   }
-  where.append(' )  ');
-
-  if (filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0) {
-    where.append(`and sites.site_id in (${filterObject.ids_to_filter.join(',')}) `);
-  }
-
   return where;
 }
 

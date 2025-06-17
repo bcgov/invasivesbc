@@ -20,7 +20,7 @@ export function* handle_IAPP_GET_NETWORK_REQUEST(iappId: PayloadAction<string>) 
     site_id_only: false
   });
   if (networkReturn?.ok) {
-    const data = networkReturn?.data?.result?.rows[0];
+    const data = networkReturn?.data?.result?.rows?.[0];
     yield put(IappActions.getSuccess(data));
   } else if (buildTimeConfig.MOBILE) {
     try {
