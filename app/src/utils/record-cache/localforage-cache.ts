@@ -14,7 +14,7 @@ import {
 import UserRecord from 'interfaces/UserRecord';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
-import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import { getUnnestedFieldsForActivity } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 
@@ -46,8 +46,14 @@ class LocalForageRecordCacheService extends RecordCacheService {
       throw new Error('Cache not available');
     }
     let records: Array<UserRecord | IappRecord> = [];
+    const containsLetters = new RegExp(/[a-zA-Z]/);
     await this.store.iterate((value: Record<PropertyKey, any>, key: PropertyKey) => {
-      if (key === LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY) return;
+      const keyIsCacheKey = key === LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY;
+      const idsNotInIdsToFilter = params?.ids_to_filter && !params.ids_to_filter.includes(key as string | number);
+      const incorrectKeyType =
+        (params.recordSetType === RecordSetType.Activity && !containsLetters.test(key.toString())) ||
+        (params.recordSetType === RecordSetType.IAPP && containsLetters.test(key.toString()));
+      if (keyIsCacheKey || idsNotInIdsToFilter || incorrectKeyType) return;
       if (
         params.tableFilters.every((filter) => {
           if (filter.filterType === 'spatialFilterDrawn') {
@@ -238,7 +244,9 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const endPos = Math.min((page + 1) * limit, recordSetIdList.length);
     for (let i = startPos; i < endPos; i++) {
       const entry: IappRecord = await this.loadIapp(recordSetIdList[i], type);
-      results.push(entry);
+      if (entry) {
+        results.push(entry);
+      }
     }
     return results;
   }
