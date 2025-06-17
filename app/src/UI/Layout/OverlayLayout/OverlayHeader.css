@@ -1,9 +1,7 @@
 :root:has(#app.overlay-layout) {
-
   .overlay-header {
     pointer-events: all;
     height: var(--overlay-grip-height);
-    touch-action: none;
     width: 100%;
     top: -1px;
     position: sticky;
@@ -36,7 +34,6 @@
       justify-content: center;
       display: flex;
       flex-direction: row;
-
 
       .overlay-control {
         color: black;

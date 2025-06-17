@@ -1,7 +1,7 @@
 import area from '@turf/area';
 import centroid from '@turf/centroid';
 import * as turf from '@turf/helpers';
-import { Feature } from 'geojson';
+import { Feature, Position } from 'geojson';
 import GeoShapes from 'constants/geoShapes';
 
 /**
@@ -80,7 +80,7 @@ export function calculateLatLng(geom: Feature[]) {
     latitude = firstCoord[0][1];
     longitude = firstCoord[0][0];
   } else {
-    const centerPoint = centroid(geom[0] as any); //center(turf.polygon(geo['coordinates'])).geometry;
+    const centerPoint = centroid(geom[0] as any) || centroid(geom as any); //center(turf.polygon(geo['coordinates'])).geometry;
     latitude = centerPoint.geometry.coordinates[1];
     longitude = centerPoint.geometry.coordinates[0];
   }
@@ -92,4 +92,24 @@ export function calculateLatLng(geom: Feature[]) {
     latitude: parseFloat(latitude.toFixed(6)),
     longitude: parseFloat(longitude.toFixed(6))
   };
+}
+
+export function normalizeToPolygonCoordinates(coords: Position[] | Position[][]): Position[][] {
+  let normalized: Position[][];
+
+  if (!Array.isArray(coords[0][0])) {
+    normalized = [coords as Position[]];
+  } else {
+    normalized = coords as Position[][];
+  }
+
+  const ring = normalized[0];
+  const first = ring[0];
+  const last = ring[ring.length - 1];
+
+  if (first[0] !== last[0] || first[1] !== last[1]) {
+    ring.push(first);
+  }
+
+  return normalized;
 }

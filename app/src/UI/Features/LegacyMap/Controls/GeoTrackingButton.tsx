@@ -28,7 +28,7 @@ export const GeoTrackingButton = () => {
 
   useEffect(() => {
     if (activityGeo && activityGeo?.properties?.error == 'true') {
-      dispatch(GeoTracking.stop());
+      dispatch(GeoTracking.exitDrawing());
     }
   }, [activityGeo?.properties]);
 
