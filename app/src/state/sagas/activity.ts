@@ -266,10 +266,10 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     console.error(err);
   }
   if (geographyWillContainIntersections) {
-    // validationErrors.push(mappingAlertMessages.willContainIntersections);
     yield put(GeoTracking.earlyExit());
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
+    yield put(Alerts.create(mappingAlertMessages.willContainIntersections));
     return;
   }
   if (!geometryHasPositiveArea) {
