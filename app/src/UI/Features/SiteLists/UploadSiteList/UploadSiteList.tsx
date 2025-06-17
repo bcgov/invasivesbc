@@ -3,23 +3,19 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import StyledModal from 'UI/Reusable/StyledModal/StyledModal';
 import './UploadSiteList.css';
 import * as xlsx from 'xlsx';
-import { useDispatch, useSelector } from 'utils/use_selector';
-import { multiPoint } from '@turf/helpers';
+import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import { buffer, convex } from '@turf/turf';
 
 const UploadSiteList = () => {
   interface IRequiredColumns {
     SiteID: number | string;
-    Latitude: number;
-    Longitude: number;
   }
-  const REQUIRED_COLUMNS = ['SiteID', 'Latitude', 'Longitude'];
-  enum ComponentState {
-    Api_Response_Failed,
+  const REQUIRED_COLUMNS = ['SiteID'];
+
+  enum ValidationStatus {
     Default,
     Missing_Columns,
-    Missing_Geospatial_Data,
+    Blank_Entries,
     No_Data,
     Success
   }
@@ -50,7 +46,7 @@ const UploadSiteList = () => {
 
     if (!data) {
       // File could not be read
-      setComponentState(ComponentState.No_Data);
+      setComponentState(ValidationStatus.No_Data);
       return;
     }
 
@@ -61,63 +57,44 @@ const UploadSiteList = () => {
     const extractedJSON: Array<IRequiredColumns> = xlsx.utils.sheet_to_json(worksheet);
 
     if (extractedJSON.length === 0) {
-      setComponentState(ComponentState.No_Data);
+      setComponentState(ValidationStatus.No_Data);
       return;
     }
     const fileColumns = Object.keys(extractedJSON[0]);
     if (!REQUIRED_COLUMNS.every((key) => fileColumns.includes(key))) {
-      setComponentState(ComponentState.Missing_Columns);
+      setComponentState(ValidationStatus.Missing_Columns);
       return;
     }
-    const entriesWithCoords = extractedJSON.filter((entry) => !!entry.Longitude && !!entry.Longitude);
+    const entriesWithCoords = extractedJSON.filter((entry) => !!entry.SiteID);
     setFileData(entriesWithCoords);
     if (entriesWithCoords.length !== extractedJSON.length) {
-      setComponentState(ComponentState.Missing_Geospatial_Data);
+      setComponentState(ValidationStatus.Blank_Entries);
     } else {
-      setComponentState(ComponentState.Success);
+      setComponentState(ValidationStatus.Success);
     }
-  };
-
-  const createShape = (filledInInfo: Array<[number, number]> = []) => {
-    const latLongs = fileData.map((entry) => [entry.Longitude, entry.Latitude]);
-    const pointCollection = multiPoint([...latLongs, ...filledInInfo]);
-    const convexShape = convex(pointCollection);
-    if (!convexShape) return;
-    const shape = buffer(convexShape, 5, { units: 'meters' });
-    if (!shape) return;
-    dispatch(UserSettings.Boundaries.createSiteListLayer({ feature: shape, name: userSiteListName }));
   };
 
   const handleConfirm = () => {
-    (async () => {
-      try {
-        if (shouldFetchFromApi) {
-          //Do the API Thing
-          const re = RegExp(/[a-zA-Z]/);
-          const iappIds: Array<string | number> = [];
-          const activityIds: Array<string> = [];
-          const missingData = fileData.filter((entry) => !entry.Latitude || !entry.Longitude);
-          missingData.forEach((entry) => {
-            if (typeof entry.SiteID === 'string' && re.test(entry.SiteID)) {
-              activityIds.push(entry.SiteID);
-            } else {
-              iappIds.push(entry.SiteID);
-            }
-          });
-          const response = await fetch(`${API_BASE}`);
-          if (response?.ok) {
-            const parsed = await response.json();
-            createShape(parsed);
-          }
-        } else {
-          createShape();
-        }
-        cleanup(true);
-      } catch (e) {
-        console.error(e);
-        cleanup();
+    const re = RegExp(/[a-zA-Z]/);
+    const iappIds: Array<string> = [];
+    const activityIds: Array<string> = [];
+    const ids = fileData.filter((entry) => !!entry.SiteID);
+    ids.forEach((entry) => {
+      if (!entry.SiteID) return;
+      if (typeof entry.SiteID === 'string' && re.test(entry.SiteID)) {
+        activityIds.push(entry.SiteID);
+      } else {
+        iappIds.push(entry.SiteID.toString());
       }
-    })();
+    });
+    dispatch(
+      UserSettings.SiteLists.createRecordsetsFromSiteList({
+        iappIds: iappIds,
+        activityIds,
+        name: userSiteListName
+      })
+    );
+    cleanup(true);
   };
 
   /**
@@ -126,21 +103,18 @@ const UploadSiteList = () => {
    */
   const cleanup = (close: boolean = false) => {
     setOpen(!close);
-    setComponentState(ComponentState.Default);
+    setComponentState(ValidationStatus.Default);
     setFile(undefined);
     setFileData([]);
     setUserSiteListName('');
-    setShouldFetchFromApi(false);
   };
 
   const dispatch = useDispatch();
-  const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
 
-  const [componentState, setComponentState] = useState<ComponentState>(ComponentState.Default);
+  const [componentState, setComponentState] = useState<ValidationStatus>(ValidationStatus.Default);
   const [file, setFile] = useState<File>();
   const [fileData, setFileData] = useState<IRequiredColumns[]>([]);
   const [open, setOpen] = useState<boolean>(false);
-  const [shouldFetchFromApi, setShouldFetchFromApi] = useState<boolean>(false);
   const [userSiteListName, setUserSiteListName] = useState<string>('');
 
   useEffect(() => {
@@ -190,7 +164,7 @@ const UploadSiteList = () => {
               <div className="warning">
                 {
                   {
-                    [ComponentState.Missing_Columns]: (
+                    [ValidationStatus.Missing_Columns]: (
                       <>
                         <p>
                           <span>The uploaded file is invalid.</span> Please ensure it contains the following columns:
@@ -203,34 +177,18 @@ const UploadSiteList = () => {
                         <p>Note: these columns are case-sensitive</p>
                       </>
                     ),
-                    [ComponentState.Missing_Geospatial_Data]: (
+                    [ValidationStatus.Blank_Entries]: (
                       <div className="missing-coordinates">
                         <p className="warn">
-                          The Excel sheet is <span className="deep-red">missing geospatial data</span> in some entries.
+                          Some entries in the Excel sheet are <span className="deep-red">missing record IDs</span>.
                         </p>
-                        <p>Would you like to supplement the missing data using information from the database?</p>
-                        <div className="form-inputs">
-                          <div>
-                            <label htmlFor="fill-from-api">Get Missing Information</label>
-
-                            <input
-                              className="checkbox"
-                              id="fill-from-api"
-                              type="checkbox"
-                              checked={shouldFetchFromApi}
-                              onChange={() => setShouldFetchFromApi((prev) => !prev)}
-                            />
-                          </div>
-                        </div>
+                        <p>You may proceed with the upload, but records without IDs will be excluded.</p>
                       </div>
                     ),
-                    [ComponentState.No_Data]: (
-                      <>
-                        <p className="deep-red">No data could be extracted from the provided Excel document.</p>
-                      </>
+                    [ValidationStatus.No_Data]: (
+                      <p className="deep-red">No data could be extracted from the provided document.</p>
                     ),
-                    [ComponentState.Api_Response_Failed]: <p>Error Occured in API</p>,
-                    [ComponentState.Success]: <p className="green">File Upload Successful.</p>
+                    [ValidationStatus.Success]: <p className="green">File Ready to Upload.</p>
                   }[componentState]
                 }
               </div>
@@ -241,7 +199,7 @@ const UploadSiteList = () => {
               Cancel
             </Button>
             <Button
-              disabled={![ComponentState.Success, ComponentState.Missing_Geospatial_Data].includes(componentState)}
+              disabled={![ValidationStatus.Success, ValidationStatus.Blank_Entries].includes(componentState)}
               variant="contained"
               size="small"
               onClick={handleConfirm}
