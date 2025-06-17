@@ -41,8 +41,6 @@ class Boundaries {
   static readonly drawCustomLayer = createAction<Feature>(`${this.PREFIX}/drawCustomLayer`);
   static readonly drawCustomLayerRequest = createAction<string>(`${this.PREFIX}/drawCustomLayerRequest`);
   static readonly removeCustomLayer = createAction<string>(`${this.PREFIX}/removeCustomLayer`);
-
-  static readonly createSiteListLayer = createAction<ICreateSiteListLayer>(`${this.PREFIX}/createSiteListLayer`);
 }
 
 class KML {
