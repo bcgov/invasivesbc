@@ -15,9 +15,10 @@ interface IMarkLocation {
   feature: Feature;
   readableIdentifier?: string;
 }
-interface ICreateSiteListLayer {
+interface ICreateRecordsetsFromSiteList {
+  activityIds: Array<string>;
+  iappIds: Array<string>;
   name: string;
-  feature: Feature;
 }
 class Boundaries {
   private static readonly PREFIX = `UserSettings/Boundaries`;
@@ -89,15 +90,23 @@ class Map {
   static readonly markCoordinate = createAction<IMarkLocation>(`${this.PREFIX}/markCoordinate`);
 }
 
+class SiteLists {
+  private static readonly PREFIX = 'UserSettings/SiteLists';
+
+  static readonly createRecordsetsFromSiteList = createAction<ICreateRecordsetsFromSiteList>(
+    `${this.PREFIX}/createRecordsetsFromSiteList`
+  );
+}
 class UserSettings {
   private static readonly PREFIX = `UserSettings`;
-  static readonly Boundaries = Boundaries;
-  static readonly KML = KML;
-  static readonly InitState = InitState;
-  static readonly IAPP = IAPP;
   static readonly Activity = Activity;
-  static readonly RecordSet = RecordSet;
+  static readonly Boundaries = Boundaries;
+  static readonly IAPP = IAPP;
+  static readonly InitState = InitState;
+  static readonly KML = KML;
   static readonly Map = Map;
+  static readonly RecordSet = RecordSet;
+  static readonly SiteLists = SiteLists;
   static readonly toggleRecordExpand = createAction(`${this.PREFIX}/toggleRecordExpand`);
   static readonly toggleRecordExpandSuccess = createAction(`${this.PREFIX}/toggleRecordExpandSuccess`);
   static readonly toggleLayerPickerAccordion = createAction(`${this.PREFIX}/toggleLayerPickerAccordion`);
