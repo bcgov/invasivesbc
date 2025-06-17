@@ -178,9 +178,9 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
       filter.filterType !== 'spatialFilterDrawn'
         ? filter
         : {
-          ...filter,
-          geojson: getFilterWithDrawnShape(filter.filter)
-        }
+            ...filter,
+            geojson: getFilterWithDrawnShape(filter.filter)
+          }
     );
 
     modifiedTableFilters ??= [];
@@ -188,6 +188,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
 
     return {
       recordSetType: recordSetType,
+      ids_to_filter: recordSet?.ids_to_filter,
       sortColumn: sortColumn,
       sortOrder: sortOrder,
       tableFilters: modifiedTableFilters,
