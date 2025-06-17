@@ -739,6 +739,7 @@ function* activitiesPageSaga() {
     //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
     takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(UserSettings.SiteLists.createRecordsetsFromSiteList, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(MapActions.initForRecordset, handle_MAP_INIT_FOR_RECORDSETS),
 
     takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
