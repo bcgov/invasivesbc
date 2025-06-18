@@ -269,7 +269,6 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     yield put(GeoTracking.earlyExit());
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
-    yield put(Alerts.create(mappingAlertMessages.willContainIntersections));
     return;
   }
   if (!geometryHasPositiveArea) {
@@ -341,6 +340,10 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
   yield put(Alerts.create(mappingAlertMessages.trackingPaused));
 }
 
+function* handle_GEO_TRACKING_MODE_LOCKED() {
+  yield put(Alerts.create(mappingAlertMessages.geoTrackingModeLocked));
+}
+
 /**
  * @desc Handles new coordinates coming in from the TRACK_ME_GEO featureset.
  *       Evaluates distance between new and previous points to eliminate micro adjustments from GPS sway.
@@ -351,43 +354,46 @@ function* handle_MAP_SET_COORDS(action) {
   const {
     track_me_draw_geo: { isTracking, drawingShape }
   } = activityState;
+  try {
+    if (isTracking && drawingShape) {
+      let currentGeo = activityState?.activity?.geometry?.[0];
+      if (!currentGeo) {
+        currentGeo = {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: GeoShapes.LineString,
+            coordinates: []
+          }
+        };
+      }
+      const nextCoords = [action.payload.position.coords.longitude, action.payload.position.coords.latitude];
+      const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
 
-  if (isTracking && drawingShape) {
-    let currentGeo = activityState?.activity?.geometry?.[0];
-    if (!currentGeo) {
-      currentGeo = {
+      if (haveCoordinatesToCompare) {
+        const distanceBetweenPoints = distance(
+          currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
+          nextCoords,
+          { units: 'meters' }
+        );
+
+        if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
+          return;
+        }
+      }
+      const newGeo = {
         type: 'Feature',
         properties: {},
         geometry: {
-          type: GeoShapes.LineString,
-          coordinates: []
+          type: currentGeo?.geometry?.type || GeoShapes.LineString,
+          coordinates: [...currentGeo.geometry.coordinates, nextCoords]
         }
       };
+      //append to linestring
+      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     }
-
-    const nextCoords = [action.payload.position.coords.longitude, action.payload.position.coords.latitude];
-    const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
-    if (haveCoordinatesToCompare) {
-      const distanceBetweenPoints = distance(
-        currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
-        nextCoords,
-        { units: 'meters' }
-      );
-      if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
-        return;
-      }
-    }
-    const newGeo = {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: currentGeo?.geometry?.type || GeoShapes.LineString,
-        coordinates: [...currentGeo.geometry.coordinates, nextCoords]
-      }
-    };
-
-    //append to linestring
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+  } catch (err) {
+    console.log(err);
   }
 }
 
@@ -470,6 +476,7 @@ function* activityPageSaga() {
     takeEvery(GeoTracking.stop, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP),
     takeEvery(GeoTracking.pause, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE),
     takeEvery(GeoTracking.resume, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME),
+    takeEvery(GeoTracking.modeLocked, handle_GEO_TRACKING_MODE_LOCKED),
     ...OFFLINE_ACTIVITY_SAGA_HANDLERS
   ]);
 }

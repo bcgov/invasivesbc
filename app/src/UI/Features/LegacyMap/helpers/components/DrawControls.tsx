@@ -20,6 +20,7 @@ import {
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
 import GeoShapes from 'constants/geoShapes';
 import { GEO_TRACKING_FEATURE } from '../functional/constants';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -194,6 +195,14 @@ const DrawControls = () => {
     }
   };
 
+  const disableDrawButtons = (disabled: boolean) => {
+    const buttons = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
+    buttons.forEach((btn) => {
+      (btn as HTMLButtonElement).disabled = disabled;
+      btn.classList.toggle('disabled', disabled);
+    });
+  };
+
   const drawCreate = useCallback((event) => {
     if (!drawInstance.current) return;
 
@@ -239,6 +248,15 @@ const DrawControls = () => {
     }
   }, []);
 
+  const handleModeChange = useCallback((e) => {
+    if (
+      modeRef.current === TargetMode.ACTIVITY_GEO_TRACK &&
+      ['draw_line_string', 'draw_polygon', 'draw_point'].includes(e.mode)
+    ) {
+      dispatch(GeoTracking.modeLocked());
+    }
+  }, []);
+
   // setup mode based on what's going on in the redux store / current url
   useEffect(() => {
     if (whatsHereToggle) {
@@ -253,8 +271,11 @@ const DrawControls = () => {
     } else if (appModeURL?.includes('Activity')) {
       if (currGeoTrackingMode || prevGeoTrackingMode) {
         setMode(TargetMode.ACTIVITY_GEO_TRACK);
+        disableDrawButtons(true);
+        dispatch(GeoTracking.modeLocked());
       } else {
         setMode(TargetMode.ACTIVITY);
+        disableDrawButtons(false);
       }
     } else {
       setMode(TargetMode.DISABLED);
@@ -415,6 +436,8 @@ const DrawControls = () => {
     map.on('draw.create', drawCreate);
     map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
 
+    // map.on('draw.modechange', handleModeChange);
+
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
 
@@ -426,7 +449,7 @@ const DrawControls = () => {
 
       map.off('draw.create', drawCreate);
       map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
-
+      // map.off('draw.modechange', handleModeChange);
       if (drawInstance.current) {
         (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
         drawInstance.current = undefined;

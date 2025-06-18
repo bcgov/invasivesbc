@@ -74,6 +74,12 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
     subject: AlertSubjects.Map,
     autoClose: 3
   },
+  geoTrackingModeLocked: {
+    content: 'GeoTracking is in progress. To change modes, please stop GeoTracking first.',
+    severity: AlertSeverity.Warning,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
   // Success
   trackingStarted: {
     content: 'Start walking to draw a geometry. Click the button again to stop.',
