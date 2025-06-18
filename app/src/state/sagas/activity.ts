@@ -198,6 +198,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
     };
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [initGeo] } });
     yield put(Alerts.create(message));
+    yield put(Alerts.create(mappingAlertMessages.geoTrackingModeLocked));
   } else {
     yield put(GeoTracking.stop());
     yield put(Alerts.create(mappingAlertMessages.cannotGetUsersCoordinates));
@@ -266,9 +267,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     console.error(err);
   }
   if (geographyWillContainIntersections) {
-    // validationErrors.push(mappingAlertMessages.willContainIntersections);
     yield put(GeoTracking.earlyExit());
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
     return;
   }
@@ -351,43 +351,46 @@ function* handle_MAP_SET_COORDS(action) {
   const {
     track_me_draw_geo: { isTracking, drawingShape }
   } = activityState;
+  try {
+    if (isTracking && drawingShape) {
+      let currentGeo = activityState?.activity?.geometry?.[0];
+      if (!currentGeo) {
+        currentGeo = {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: GeoShapes.LineString,
+            coordinates: []
+          }
+        };
+      }
+      const nextCoords = [action.payload.position.coords.longitude, action.payload.position.coords.latitude];
+      const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
 
-  if (isTracking && drawingShape) {
-    let currentGeo = activityState?.activity?.geometry?.[0];
-    if (!currentGeo) {
-      currentGeo = {
+      if (haveCoordinatesToCompare) {
+        const distanceBetweenPoints = distance(
+          currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
+          nextCoords,
+          { units: 'meters' }
+        );
+
+        if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
+          return;
+        }
+      }
+      const newGeo = {
         type: 'Feature',
         properties: {},
         geometry: {
-          type: GeoShapes.LineString,
-          coordinates: []
+          type: currentGeo?.geometry?.type || GeoShapes.LineString,
+          coordinates: [...currentGeo.geometry.coordinates, nextCoords]
         }
       };
+      //append to linestring
+      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     }
-
-    const nextCoords = [action.payload.position.coords.longitude, action.payload.position.coords.latitude];
-    const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
-    if (haveCoordinatesToCompare) {
-      const distanceBetweenPoints = distance(
-        currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
-        nextCoords,
-        { units: 'meters' }
-      );
-      if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
-        return;
-      }
-    }
-    const newGeo = {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: currentGeo?.geometry?.type || GeoShapes.LineString,
-        coordinates: [...currentGeo.geometry.coordinates, nextCoords]
-      }
-    };
-
-    //append to linestring
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+  } catch (err) {
+    console.log(err);
   }
 }
 

@@ -45,8 +45,8 @@ const DrawControls = () => {
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
   const appModeURL = useSelector((state) => state.AppMode.url);
-  const currGeoTrackingMode = useSelector((state) => state.Map.track_me_draw_geo.drawingShape);
-  const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean | undefined>(undefined);
+  const currGeoTrackingMode = useSelector((state) => state.Map.track_me_draw_geo.isTracking);
+  const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
 
@@ -150,6 +150,9 @@ const DrawControls = () => {
       drawInstance?.current?.deleteAll();
       drawInstance?.current?.changeMode('geo_tracking_mode'); // force reset geo-tracking instance
     }
+
+    // early exit
+    if (!currGeoTrackingMode && prevGeoTrackingMode) setPrevGeoTrackingMode(false);
   }, [currGeoTrackingMode]);
 
   /**
@@ -192,6 +195,14 @@ const DrawControls = () => {
 
       drawInstance.current.deleteAll();
     }
+  };
+
+  const disableDrawButtons = (disabled: boolean) => {
+    const buttons = document.querySelectorAll('.mapbox-gl-draw_ctrl-draw-btn');
+    buttons.forEach((btn) => {
+      (btn as HTMLButtonElement).disabled = disabled;
+      btn.classList.toggle('disabled', disabled);
+    });
   };
 
   const drawCreate = useCallback((event) => {
@@ -253,8 +264,10 @@ const DrawControls = () => {
     } else if (appModeURL?.includes('Activity')) {
       if (currGeoTrackingMode || prevGeoTrackingMode) {
         setMode(TargetMode.ACTIVITY_GEO_TRACK);
+        disableDrawButtons(true);
       } else {
         setMode(TargetMode.ACTIVITY);
+        disableDrawButtons(false);
       }
     } else {
       setMode(TargetMode.DISABLED);
