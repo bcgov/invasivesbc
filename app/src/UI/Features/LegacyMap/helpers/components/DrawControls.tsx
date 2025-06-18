@@ -20,7 +20,6 @@ import {
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
 import GeoShapes from 'constants/geoShapes';
 import { GEO_TRACKING_FEATURE } from '../functional/constants';
-import GeoTracking from 'state/actions/geotracking/GeoTracking';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -46,8 +45,8 @@ const DrawControls = () => {
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
   const appModeURL = useSelector((state) => state.AppMode.url);
-  const currGeoTrackingMode = useSelector((state) => state.Map.track_me_draw_geo.drawingShape);
-  const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean | undefined>(undefined);
+  const currGeoTrackingMode = useSelector((state) => state.Map.track_me_draw_geo.isTracking);
+  const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
 
@@ -151,6 +150,9 @@ const DrawControls = () => {
       drawInstance?.current?.deleteAll();
       drawInstance?.current?.changeMode('geo_tracking_mode'); // force reset geo-tracking instance
     }
+
+    // early exit
+    if (!currGeoTrackingMode && prevGeoTrackingMode) setPrevGeoTrackingMode(false);
   }, [currGeoTrackingMode]);
 
   /**
@@ -248,15 +250,6 @@ const DrawControls = () => {
     }
   }, []);
 
-  const handleModeChange = useCallback((e) => {
-    if (
-      modeRef.current === TargetMode.ACTIVITY_GEO_TRACK &&
-      ['draw_line_string', 'draw_polygon', 'draw_point'].includes(e.mode)
-    ) {
-      dispatch(GeoTracking.modeLocked());
-    }
-  }, []);
-
   // setup mode based on what's going on in the redux store / current url
   useEffect(() => {
     if (whatsHereToggle) {
@@ -272,7 +265,6 @@ const DrawControls = () => {
       if (currGeoTrackingMode || prevGeoTrackingMode) {
         setMode(TargetMode.ACTIVITY_GEO_TRACK);
         disableDrawButtons(true);
-        dispatch(GeoTracking.modeLocked());
       } else {
         setMode(TargetMode.ACTIVITY);
         disableDrawButtons(false);
@@ -436,8 +428,6 @@ const DrawControls = () => {
     map.on('draw.create', drawCreate);
     map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
 
-    // map.on('draw.modechange', handleModeChange);
-
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
 
@@ -449,7 +439,7 @@ const DrawControls = () => {
 
       map.off('draw.create', drawCreate);
       map.off('draw.selectionChange', (evt) => drawShapeUpdate(evt, map));
-      // map.off('draw.modechange', handleModeChange);
+
       if (drawInstance.current) {
         (map as unknown as mapboxgl.Map).removeControl(drawInstance.current);
         drawInstance.current = undefined;

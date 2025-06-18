@@ -198,6 +198,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
     };
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [initGeo] } });
     yield put(Alerts.create(message));
+    yield put(Alerts.create(mappingAlertMessages.geoTrackingModeLocked));
   } else {
     yield put(GeoTracking.stop());
     yield put(Alerts.create(mappingAlertMessages.cannotGetUsersCoordinates));
@@ -340,10 +341,6 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
   yield put(Alerts.create(mappingAlertMessages.trackingPaused));
 }
 
-function* handle_GEO_TRACKING_MODE_LOCKED() {
-  yield put(Alerts.create(mappingAlertMessages.geoTrackingModeLocked));
-}
-
 /**
  * @desc Handles new coordinates coming in from the TRACK_ME_GEO featureset.
  *       Evaluates distance between new and previous points to eliminate micro adjustments from GPS sway.
@@ -476,7 +473,6 @@ function* activityPageSaga() {
     takeEvery(GeoTracking.stop, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP),
     takeEvery(GeoTracking.pause, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE),
     takeEvery(GeoTracking.resume, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME),
-    takeEvery(GeoTracking.modeLocked, handle_GEO_TRACKING_MODE_LOCKED),
     ...OFFLINE_ACTIVITY_SAGA_HANDLERS
   ]);
 }

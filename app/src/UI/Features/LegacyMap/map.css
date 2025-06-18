@@ -117,3 +117,9 @@
 .map-containing-block {
   background: #999;
 }
+
+.mapbox-gl-draw_ctrl-draw-btn.disabled {
+  opacity: 0.5;
+  background-color: #c1c0c0 !important;
+  border-color: #a0a0a0 !important;
+}
