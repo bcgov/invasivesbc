@@ -378,6 +378,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       let linked_geo;
       if (connected) {
         const networkReturn = yield InvasivesAPI_Call('GET', `/api/activity/${linked_id}`);
+
         if (networkReturn?.ok) {
           linked_geo = networkReturn.data.geometry;
         }
@@ -594,7 +595,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     const created_by = action.payload.created_by;
     const createdByUser = userName === created_by;
 
-    const isViewing = !createdByUser;
+    const isViewing = !activityState.activeActivityPermissions.can_edit;
 
     // Don't fetch suggestions if the record doesn't belong to the user
     if (createdByUser) {
