@@ -148,7 +148,7 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   const activity_subtype = activityState?.activity?.activity_subtype;
   const uiSchema = RootUISchemas[activity_subtype];
   const isAdmin = ((yield select(selectAuth))?.accessRoles ?? []).some(
-    (role) => role.role_name === Role.MASTER_ADMINISTRATOR
+    (role) => role.role_name === Role.MASTER_ADMINISTRATOR || role.role_name === Role.ADMIN_PLANTS
   );
   let apiSpec;
   let userSettings = yield select(selectUserSettings);
@@ -156,12 +156,14 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
     yield take(UserSettings.InitState.getSuccess);
     userSettings = yield select(selectUserSettings);
   }
+
   if (isViewing || isAdmin) {
     // Admins get all codes as they fill out data on behalf of other users
     apiSpec = userSettings.apiDocsWithViewOptions;
   } else {
     apiSpec = userSettings.apiDocsWithSelectOptions;
   }
+
   const components = apiSpec.components;
   const subtypeSchema = components?.schemas?.[activity_subtype];
 
