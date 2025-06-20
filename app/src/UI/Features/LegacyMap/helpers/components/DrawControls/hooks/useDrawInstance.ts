@@ -19,7 +19,7 @@ MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
 
 export default function useDrawInstance() {
   const map = useContext(MapContext);
-  const mode = useDrawMode();
+  const { prevMode, mode } = useDrawMode();
   const drawRef = useRef<MapboxDraw>();
   const displayRef = useRef<DrawModeDisplay>();
 
@@ -147,7 +147,6 @@ export default function useDrawInstance() {
     if (!draw || !display) return;
 
     display.setMode(mode);
-    console.log('mode---->', mode, mode === TargetMode.DISABLED, draw);
 
     if (mode === TargetMode.DISABLED) {
       disableDrawButtons(true);
