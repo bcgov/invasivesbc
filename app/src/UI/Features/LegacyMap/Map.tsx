@@ -34,7 +34,7 @@ import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
 import { ReactiveLayers } from 'UI/Features/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
-import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
+import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls/DrawControls';
 import { toggleLayerOnBool } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
@@ -103,8 +103,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
 
     maplibregl.addProtocol('api', async (request) => {
-      const fetchRequest = new Request(request.url.replace("api://", API_BASE));
-      fetchRequest.headers.set("Authorization", await getCurrentJWT())
+      const fetchRequest = new Request(request.url.replace('api://', API_BASE));
+      fetchRequest.headers.set('Authorization', await getCurrentJWT());
       const result = await fetch(fetchRequest);
       if (result.ok) {
         return {

@@ -1,0 +1,8 @@
+export enum TargetMode {
+  DISABLED,
+  ACTIVITY,
+  GEO_TRACK,
+  WHATS_HERE,
+  TILE_CACHE,
+  CUSTOM_LAYER
+}
