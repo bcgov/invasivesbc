@@ -61,6 +61,7 @@ const DrawControls = () => {
   const uHistory = useHistory();
 
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
+  const isEditDisabled = mode !== TargetMode.ACTIVITY;
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
   const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
@@ -85,6 +86,7 @@ const DrawControls = () => {
 
   useEffect(() => {
     modeRef.current = mode;
+    editControls.current?.setDisabled(isEditDisabled);
   }, [mode]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
@@ -293,6 +295,7 @@ const DrawControls = () => {
       }
     } else {
       setMode(TargetMode.DISABLED);
+      disableDrawButtons(true);
     }
   }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, appModeURL, currGeoTrackingMode, prevGeoTrackingMode]);
 
@@ -451,7 +454,7 @@ const DrawControls = () => {
       ]
     });
     drawModeDisplay.current = new DrawModeDisplay(mode);
-    editControls.current = new EditControls(handleEdit, handleSave);
+    editControls.current = new EditControls(handleEdit, handleSave, isEditDisabled);
 
     map.on('draw.create', drawCreate);
     map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
@@ -546,10 +549,19 @@ class EditControls implements IControl {
   _root?: Root;
   _onEdit?: () => void;
   _onSave?: () => void;
+  _isDisabled?: boolean;
 
-  constructor(onEdit?: () => void, onSave?: () => void) {
+  constructor(onEdit?: () => void, onSave?: () => void, isDisabled: boolean = false) {
     this._onEdit = onEdit;
     this._onSave = onSave;
+    this._isDisabled = isDisabled;
+  }
+
+  setDisabled(isDisabled: boolean) {
+    this._isDisabled = isDisabled;
+    if (this._root && this._container) {
+      this._root.render(<EditControlUI onEdit={this._onEdit} onSave={this._onSave} isDisabled={this._isDisabled} />);
+    }
   }
 
   onAdd(map: maplibregl.Map): HTMLElement {
@@ -562,7 +574,9 @@ class EditControls implements IControl {
     container.id = 'custom-edit-tool';
 
     this._root = createRoot(container);
-    this._root.render(<EditControlUI onEdit={this._onEdit} onSave={this._onSave} />);
+    this._root.render(
+      <EditControlUI onEdit={this._onEdit} onSave={this._onSave} isDisabled={this._isDisabled ?? false} />
+    );
 
     this._container = container;
     return container;
@@ -584,9 +598,10 @@ class EditControls implements IControl {
 type EditControlUIProps = {
   onEdit?: () => void;
   onSave?: () => void;
+  isDisabled: boolean;
 };
 
-const EditControlUI: React.FC<EditControlUIProps> = ({ onEdit, onSave }) => {
+const EditControlUI: React.FC<EditControlUIProps> = ({ onEdit, onSave, isDisabled }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleEditClick = () => {
@@ -602,7 +617,11 @@ const EditControlUI: React.FC<EditControlUIProps> = ({ onEdit, onSave }) => {
   return (
     <>
       {!isEditing ? (
-        <button title="Edit" onClick={handleEditClick}>
+        <button
+          onClick={handleEditClick}
+          disabled={isDisabled}
+          className={`${isDisabled ? 'custom-edit-button disabled' : ''}`}
+        >
           <img src={editButton} alt="✏️" style={{ width: 15, height: 15, marginTop: 3 }} />
         </button>
       ) : (
