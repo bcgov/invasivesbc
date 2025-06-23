@@ -134,7 +134,16 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
   }
 
   sqlStatement.append(SQL` WHERE 1 = 1 `);
-
+  sqlStatement.append(
+    `AND (
+      i.protected = FALSE 
+      OR (
+      SELECT BOOL_OR(can_read_sensitive_biocontrol)
+      FROM get_user_permissions(${searchCriteria.user_id})
+      )
+    )
+    `
+  );
   if (searchCriteria.iappSiteID) {
     sqlStatement.append(SQL` AND i.site_id = ${parseInt(searchCriteria.iappSiteID)}`);
   } else if (searchCriteria.point_of_interest_ids) {
@@ -270,7 +279,6 @@ export const getSitesBasedOnSearchCriteriaSQL = (searchCriteria: PointOfInterest
         sqlStatement.append(SQL`))`);
       }
     }
-
     // filter negative species encounters
     if (searchCriteria.species_negative && searchCriteria.species_negative.length) {
       for (let i = 0; i < searchCriteria.species_negative.length; i++) {

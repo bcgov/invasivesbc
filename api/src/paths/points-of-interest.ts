@@ -2,6 +2,7 @@ import { createHash } from 'crypto';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
+import { PoolClient } from 'pg';
 import { streamIAPPResult } from 'utils/iapp-json-utils';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
@@ -10,11 +11,10 @@ import { getPointsOfInterestSQL, getSpeciesMapSQL } from 'queries/point-of-inter
 import { getLogger } from 'utils/logger';
 import { versionedKey } from 'utils/cache/cache-utils';
 import { InvasivesRequest } from 'utils/auth-utils';
-import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('point-of-interest');
 
-export const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
+const GET: Operation = [getPointsOfInterestBySearchFilterCriteria()];
 
 GET.apiDoc = {
   description: 'Fetches all points of interest based on search criteria.',
@@ -70,9 +70,7 @@ GET.apiDoc = {
   }
 };
 
-export const isIAPPrelated = (PointOfInterestSearchCriteria: any) => {
-  return PointOfInterestSearchCriteria.isIAPP;
-};
+const isIAPPrelated = (PointOfInterestSearchCriteria: any) => PointOfInterestSearchCriteria.isIAPP;
 
 /**
  * Fetches all point-of-interest records based on request search filter criteria.
@@ -106,8 +104,7 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         criteria.species_negative = negativeNames;
       }
     }
-
-    const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria);
+    const sanitizedSearchCriteria = new PointOfInterestSearchCriteria(criteria, req);
     defaultLog.debug({ message: 'sanitizedSearchCriteria', sanitizedSearchCriteria });
 
     const responseCacheHeaders = {};
@@ -147,11 +144,12 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
         responseCacheHeaders['Cache-Control'] = 'must-revalidate, max-age=0';
 
         res.set(responseCacheHeaders);
+      } catch (e) {
+        console.error(e);
       } finally {
         cacheCheckConnection.release();
       }
     }
-
     if (isIAPPrelated(sanitizedSearchCriteria)) {
       res.status(200);
       await streamIAPPResult(sanitizedSearchCriteria, res);
@@ -170,7 +168,6 @@ function getPointsOfInterestBySearchFilterCriteria(): RequestHandler {
             code: 500
           });
         }
-
         const responseIAPP = await connection.query(sqlStatement.text, sqlStatement.values);
 
         // parse the rows from the response
@@ -229,3 +226,5 @@ async function getMappedFilterRows(codeArray) {
 
   return speciesNames;
 }
+
+export { GET };

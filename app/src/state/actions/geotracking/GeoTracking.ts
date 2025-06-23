@@ -30,6 +30,16 @@ class GeoTracking {
    * @desc Action Creator for pausing Geotracking, stopping points from being plotted
    */
   static readonly pause = createAction(`${this.PREFIX}/pause`);
+
+  /**
+   * @desc Action Creator for clearing Geotracking feature and nothing else
+   */
+  static readonly exitDrawing = createAction(`${this.PREFIX}/exitDrawing`);
+
+  /**
+   * @desc Action creator to notify users that the Geo-tracking feature must be stopped before using other draw tools
+   */
+  static readonly modeLocked = createAction(`${this.PREFIX}/modeLocked`);
 }
 
 export default GeoTracking;

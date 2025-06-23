@@ -91,6 +91,12 @@ function createActivityReducer() {
         draftState.track_me_draw_geo.drawingShape = false;
       } else if (GeoTracking.resume.match(action)) {
         draftState.track_me_draw_geo.drawingShape = true;
+      } else if (GeoTracking.exitDrawing.match(action)) {
+        draftState.track_me_draw_geo = {
+          isTracking: false,
+          type: draftState.track_me_draw_geo.type,
+          drawingShape: false
+        };
       } else if (Activity.Photo.addSuccess.match(action)) {
         if (draftState.activity.media == undefined) {
           draftState.activity.media = [];

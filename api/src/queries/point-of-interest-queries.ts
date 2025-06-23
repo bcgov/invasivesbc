@@ -1,6 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
-
 /**
  * SQL query to fetch point_of_interest records based on search criteria.
  *
@@ -11,13 +10,6 @@ import { PointOfInterestSearchCriteria } from 'models/point-of-interest';
 export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCriteria): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`SELECT`;
 
-  /*
-  select poi.*, ot.survey_date
-  from point_of_interest_incoming_data poi
-  left join other_table ot on poi.id_column = ot.id_column
-  —where ot.iapp_type = ‘survey’ and ot.survey_date > ‘inputdate1’ and ot.survey_date < ‘input_date2’
-  */
-
   if (searchCriteria?.column_names.length) {
     // do not include the `SQL` template string prefix, as column names can not be parameterized
     sqlStatement.append(` ${searchCriteria.column_names.join(', ')}`);
@@ -27,11 +19,10 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
   }
 
   // include the total count of results that would be returned if the limit and offset constraints weren't applied
-  //sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
 
   if (searchCriteria.iappType) {
-    sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary_and_geojson ON
-    point_of_interest_incoming_data.point_of_interest_incoming_data_id = iapp_site_summary_and_geojson.id WHERE 1 = 1
+    sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary_and_geojson issg ON
+    point_of_interest_incoming_data.point_of_interest_incoming_data_id = issg.id WHERE 1 = 1
     `);
   } else {
     sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
@@ -81,7 +72,16 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
       sqlStatement.append(SQL` AND received_timestamp <= ${searchCriteria.date_range_end}::DATE`);
     }
   }
-
+  sqlStatement.append(
+    `AND (
+      ssgi.protected = FALSE 
+      OR (
+      SELECT BOOL_OR(can_read_sensitive_biocontrol)
+      FROM get_user_permissions(${searchCriteria.user_id})
+      )
+    )
+  `
+  );
   if (searchCriteria?.point_of_interest_ids.length) {
     sqlStatement.append(SQL` AND point_of_interest_id IN (`);
     sqlStatement.append(SQL`${searchCriteria.point_of_interest_ids[0]}`);

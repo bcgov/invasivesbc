@@ -69,6 +69,7 @@ import cacheAlertMessages from 'constants/alerts/cacheAlerts';
 import MapActions from 'state/actions/map';
 import { selectAuth } from 'state/reducers/auth';
 import { Role } from 'constants/roles';
+import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -147,7 +148,7 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
   const activity_subtype = activityState?.activity?.activity_subtype;
   const uiSchema = RootUISchemas[activity_subtype];
   const isAdmin = ((yield select(selectAuth))?.accessRoles ?? []).some(
-    (role) => role.role_name === Role.MASTER_ADMINISTRATOR
+    (role) => role.role_name === Role.MASTER_ADMINISTRATOR || role.role_name === Role.ADMIN_PLANTS
   );
   let apiSpec;
   let userSettings = yield select(selectUserSettings);
@@ -155,12 +156,14 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
     yield take(UserSettings.InitState.getSuccess);
     userSettings = yield select(selectUserSettings);
   }
+
   if (isViewing || isAdmin) {
     // Admins get all codes as they fill out data on behalf of other users
     apiSpec = userSettings.apiDocsWithViewOptions;
   } else {
     apiSpec = userSettings.apiDocsWithSelectOptions;
   }
+
   const components = apiSpec.components;
   const subtypeSchema = components?.schemas?.[activity_subtype];
 
@@ -187,6 +190,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
   const userHasTrackingEnabled = coords?.hasOwnProperty('long');
   if (userHasTrackingEnabled) {
     const initGeo = {
+      id: GEO_TRACKING_FEATURE,
       type: 'Feature',
       properties: {},
       geometry: {
@@ -196,6 +200,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
     };
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [initGeo] } });
     yield put(Alerts.create(message));
+    yield put(Alerts.create(mappingAlertMessages.geoTrackingModeLocked));
   } else {
     yield put(GeoTracking.stop());
     yield put(Alerts.create(mappingAlertMessages.cannotGetUsersCoordinates));
@@ -264,9 +269,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     console.error(err);
   }
   if (geographyWillContainIntersections) {
-    // validationErrors.push(mappingAlertMessages.willContainIntersections);
     yield put(GeoTracking.earlyExit());
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
     return;
   }
@@ -349,43 +353,46 @@ function* handle_MAP_SET_COORDS(action) {
   const {
     track_me_draw_geo: { isTracking, drawingShape }
   } = activityState;
+  try {
+    if (isTracking && drawingShape) {
+      let currentGeo = activityState?.activity?.geometry?.[0];
+      if (!currentGeo) {
+        currentGeo = {
+          type: 'Feature',
+          properties: {},
+          geometry: {
+            type: GeoShapes.LineString,
+            coordinates: []
+          }
+        };
+      }
+      const nextCoords = [action.payload.position.coords.longitude, action.payload.position.coords.latitude];
+      const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
 
-  if (isTracking && drawingShape) {
-    let currentGeo = activityState?.activity?.geometry?.[0];
-    if (!currentGeo) {
-      currentGeo = {
+      if (haveCoordinatesToCompare) {
+        const distanceBetweenPoints = distance(
+          currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
+          nextCoords,
+          { units: 'meters' }
+        );
+
+        if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
+          return;
+        }
+      }
+      const newGeo = {
         type: 'Feature',
         properties: {},
         geometry: {
-          type: GeoShapes.LineString,
-          coordinates: []
+          type: currentGeo?.geometry?.type || GeoShapes.LineString,
+          coordinates: [...currentGeo.geometry.coordinates, nextCoords]
         }
       };
+      //append to linestring
+      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     }
-
-    const nextCoords = [action.payload.position.coords.longitude, action.payload.position.coords.latitude];
-    const haveCoordinatesToCompare = currentGeo.geometry.coordinates.length > 0;
-    if (haveCoordinatesToCompare) {
-      const distanceBetweenPoints = distance(
-        currentGeo.geometry.coordinates[currentGeo.geometry.coordinates.length - 1],
-        nextCoords,
-        { units: 'meters' }
-      );
-      if (distanceBetweenPoints <= MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS) {
-        return;
-      }
-    }
-    const newGeo = {
-      type: 'Feature',
-      properties: {},
-      geometry: {
-        type: currentGeo?.geometry?.type || GeoShapes.LineString,
-        coordinates: [...currentGeo.geometry.coordinates, nextCoords]
-      }
-    };
-
-    //append to linestring
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+  } catch (err) {
+    console.log(err);
   }
 }
 
