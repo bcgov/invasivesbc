@@ -56,6 +56,7 @@ const DrawControls = () => {
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
   const editControls = useRef<EditControls>();
+  const isEditing = useRef(false);
 
   const uHistory = useHistory();
 
@@ -63,6 +64,24 @@ const DrawControls = () => {
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
   const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
+
+  const handleEdit = () => {
+    const features = drawInstance.current?.getAll().features;
+    if (features && features?.length > 0) {
+      isEditing.current = true;
+      drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
+    }
+  };
+
+  const handleSave = () => {
+    isEditing.current = false;
+    drawInstance.current?.changeMode('simple_select');
+
+    const updatedFeature = drawInstance.current?.getAll().features[0];
+    if (updatedFeature) {
+      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
+    }
+  };
 
   useEffect(() => {
     modeRef.current = mode;
@@ -285,9 +304,20 @@ const DrawControls = () => {
    */
   const drawShapeUpdate = useCallback((event, map: InvasivesMap | undefined) => {
     if (!drawInstance.current) return;
+    const featureId = event.features?.[0]?.id;
+
+    // custom edit button
+    if (!isEditing.current) {
+      if (featureId) {
+        drawInstance.current?.changeMode('simple_select');
+      }
+      return;
+    } else {
+      if (featureId === undefined) return;
+      drawInstance.current?.changeMode('direct_select', { featureId });
+    }
 
     const currentMode = drawInstance.current.getMode();
-
     if ('direct_select' === currentMode) {
       map?.touchZoomRotate.disable();
     } else if ('simple_select' === currentMode) {
@@ -299,7 +329,6 @@ const DrawControls = () => {
     }
 
     const editedGeo = drawInstance.current.getAll().features[0];
-
     if (editedGeo?.id !== event?.features?.[0]?.id) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
@@ -339,12 +368,8 @@ const DrawControls = () => {
     }
 
     drawInstance.current = new MapboxDraw({
-      displayControlsDefault: false,
+      displayControlsDefault: true,
       controls: {
-        polygon: true,
-        line_string: true,
-        point: true,
-        trash: true,
         combine_features: false,
         uncombine_features: false
       },
@@ -431,7 +456,7 @@ const DrawControls = () => {
       ]
     });
     drawModeDisplay.current = new DrawModeDisplay(mode);
-    editControls.current = new EditControls();
+    editControls.current = new EditControls(handleEdit, handleSave);
 
     map.on('draw.create', drawCreate);
     map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
@@ -524,6 +549,13 @@ class EditControls implements IControl {
   _container?: HTMLDivElement;
   _map?: maplibregl.Map;
   _root?: Root;
+  _onEdit?: () => void;
+  _onSave?: () => void;
+
+  constructor(onEdit?: () => void, onSave?: () => void) {
+    this._onEdit = onEdit;
+    this._onSave = onSave;
+  }
 
   onAdd(map: maplibregl.Map): HTMLElement {
     this._map = map;
@@ -535,16 +567,7 @@ class EditControls implements IControl {
     container.id = 'custom-edit-tool';
 
     this._root = createRoot(container);
-    this._root.render(
-      <>
-        <button title="Edit" onClick={() => console.log('Edit clicked')}>
-          <img src={editButton} alt="✏️" style={{ width: 15, height: 15, marginTop: 3 }} />
-        </button>
-        <button title="Save" onClick={() => console.log('Save clicked')}>
-          <img src={saveButton} alt="💾" style={{ width: 15, height: 15, marginTop: 3 }} />
-        </button>
-      </>
-    );
+    this._root.render(<EditControlUI onEdit={this._onEdit} onSave={this._onSave} />);
 
     this._container = container;
     return container;
@@ -557,9 +580,43 @@ class EditControls implements IControl {
     }
     if (this._container?.parentNode) {
       this._container.parentNode.removeChild(this._container);
+      this._container?.remove();
       this._container = undefined;
     }
   }
 }
+
+type EditControlUIProps = {
+  onEdit?: () => void;
+  onSave?: () => void;
+};
+
+const EditControlUI: React.FC<EditControlUIProps> = ({ onEdit, onSave }) => {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    onEdit?.();
+  };
+
+  const handleSaveClick = () => {
+    setIsEditing(false);
+    onSave?.();
+  };
+
+  return (
+    <>
+      {!isEditing ? (
+        <button title="Edit" onClick={handleEditClick}>
+          <img src={editButton} alt="✏️" style={{ width: 15, height: 15, marginTop: 3 }} />
+        </button>
+      ) : (
+        <button title="Save" onClick={handleSaveClick}>
+          <img src={saveButton} alt="💾" style={{ width: 15, height: 15, marginTop: 3 }} />
+        </button>
+      )}
+    </>
+  );
+};
 
 export { DrawControls };
