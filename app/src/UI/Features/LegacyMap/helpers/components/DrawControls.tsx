@@ -304,62 +304,57 @@ const DrawControls = () => {
    */
   const drawShapeUpdate = useCallback((event, map: InvasivesMap | undefined) => {
     if (!drawInstance.current) return;
+
     const featureId = event.features?.[0]?.id;
-
-    // custom edit button
-    if (!isEditing.current) {
-      if (featureId) {
-        drawInstance.current?.changeMode('simple_select');
-      }
-      return;
-    } else {
-      if (featureId === undefined) return;
-      drawInstance.current?.changeMode('direct_select', { featureId });
-    }
-
     const currentMode = drawInstance.current.getMode();
-    if ('direct_select' === currentMode) {
+
+    if (currentMode === 'direct_select') {
       map?.touchZoomRotate.disable();
-    } else if ('simple_select' === currentMode) {
+    } else if (currentMode === 'simple_select') {
       map?.touchZoomRotate.enable();
       map?.dragPan.enable();
-    } else {
-      // we're not done drawing until we revert to one of these modes
+    }
+
+    if (!isEditing.current) {
+      if (featureId) {
+        drawInstance.current.changeMode('simple_select');
+      }
       return;
     }
 
+    if (!featureId) return;
+
+    drawInstance.current.changeMode('direct_select', { featureId });
+
     const editedGeo = drawInstance.current.getAll().features[0];
-    if (editedGeo?.id !== event?.features?.[0]?.id) {
+    if (editedGeo?.id !== featureId) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
   }, []);
 
   useEffect(() => {
-    if (drawModeDisplay.current) {
-      drawModeDisplay.current.setMode(mode);
+    if (!drawInstance.current) return;
+
+    drawInstance.current.deleteAll();
+
+    switch (mode) {
+      case TargetMode.WHATS_HERE:
+        drawInstance.current.changeMode('whats_here_box_mode');
+        break;
+      case TargetMode.ACTIVITY_GEO_TRACK:
+        drawInstance.current.changeMode('geo_tracking_mode');
+        break;
+      case TargetMode.ACTIVITY:
+        drawInstance.current.changeMode('simple_select');
+        break;
+      case TargetMode.DISABLED:
+        drawInstance.current.changeMode('do_nothing');
+        break;
+      default:
+        break;
     }
 
-    if (drawInstance.current) {
-      // we changed modes, so reset everything
-      drawInstance.current.deleteAll();
-
-      switch (mode) {
-        case TargetMode.WHATS_HERE:
-          drawInstance.current.changeMode('whats_here_box_mode');
-          break;
-        case TargetMode.ACTIVITY_GEO_TRACK:
-          drawInstance.current.changeMode('geo_tracking_mode');
-          break;
-        case TargetMode.ACTIVITY:
-          drawInstance.current.changeMode('simple_select');
-          break;
-        case TargetMode.DISABLED:
-          drawInstance.current.changeMode('do_nothing');
-          break;
-        default:
-          break;
-      }
-    }
+    drawModeDisplay.current?.setMode(mode);
   }, [mode]);
 
   useEffect(() => {
