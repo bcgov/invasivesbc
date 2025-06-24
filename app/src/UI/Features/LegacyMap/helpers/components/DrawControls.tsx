@@ -68,10 +68,13 @@ const DrawControls = () => {
 
   const handleEdit = () => {
     const features = drawInstance.current?.getAll().features;
-    if (features && features?.length > 0) {
-      isEditing.current = true;
-      drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
+
+    if (!features || features.length === 0) {
+      return;
     }
+
+    isEditing.current = true;
+    drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
   };
 
   const handleSave = () => {
@@ -276,11 +279,13 @@ const DrawControls = () => {
 
   // setup mode based on what's going on in the redux store / current url
   useEffect(() => {
+    disableDrawButtons(false);
     if (whatsHereToggle) {
       setMode(TargetMode.WHATS_HERE);
       return;
     } else if (tileCacheMode) {
       setMode(TargetMode.TILE_CACHE);
+
       return;
     } else if (drawingCustomLayer) {
       setMode(TargetMode.CUSTOM_LAYER);
@@ -291,7 +296,6 @@ const DrawControls = () => {
         disableDrawButtons(true);
       } else {
         setMode(TargetMode.ACTIVITY);
-        disableDrawButtons(false);
       }
     } else {
       setMode(TargetMode.DISABLED);
