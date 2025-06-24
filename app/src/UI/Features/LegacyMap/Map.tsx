@@ -5,12 +5,6 @@ import './map.css';
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 import {
-  LAYER_Z_BACKGROUND,
-  LAYER_Z_FOREGROUND,
-  LAYER_Z_MID,
-  MAP_DEFINITIONS
-} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
-import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
   refreshOfflineActivitiesLayer,
@@ -32,10 +26,8 @@ import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/Positi
 import maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
-import { ReactiveLayers } from 'UI/Features/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
-import { toggleLayerOnBool } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import { sha1 } from 'utils/sha1';
@@ -51,6 +43,10 @@ import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer'
 import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import CachedMapLayer from './helpers/components/CachedMapLayer';
+import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
+import { SourceComponent } from 'UI/Features/LegacyMap/helpers/components/SourceComponent';
+import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerComponent';
+import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -96,6 +92,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
 
+  const { sources, layers, filteredLayerDefinitions } = useInvasivesMapLayers();
+
   useEffect(() => {
     if (!mapContainer.current) {
       console.error('Mapinit invoked with invalid reference');
@@ -103,8 +101,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
 
     maplibregl.addProtocol('api', async (request) => {
-      const fetchRequest = new Request(request.url.replace("api://", API_BASE));
-      fetchRequest.headers.set("Authorization", await getCurrentJWT())
+      const fetchRequest = new Request(request.url.replace('api://', API_BASE));
+      fetchRequest.headers.set('Authorization', await getCurrentJWT());
       const result = await fetch(fetchRequest);
       if (result.ok) {
         return {
@@ -179,35 +177,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
             ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
             : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
           version: 8,
-          sources: {
-            ...MAP_DEFINITIONS.reduce((result, item) => {
-              result[item.name] = item.source;
-              return result;
-            }, {})
-          },
-          layers: [
-            {
-              id: LAYER_Z_BACKGROUND,
-              type: 'background',
-              layout: {
-                visibility: 'none'
-              }
-            },
-            {
-              id: LAYER_Z_MID,
-              type: 'background',
-              layout: {
-                visibility: 'none'
-              }
-            },
-            {
-              id: LAYER_Z_FOREGROUND,
-              type: 'background',
-              layout: {
-                visibility: 'none'
-              }
-            }
-          ]
+          sources: {},
+          layers: []
         }
       })
     );
@@ -334,7 +305,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     } catch (e) {
       console.error(e);
     }
-  }, [map_center, map_zoom]);
+  }, [map, mapReady, map_center, map_zoom]);
 
   useEffect(() => {
     setInterval(() => {
@@ -345,16 +316,16 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   }, [map]);
 
   // toggle public map pmtile layer
-  useEffect(() => {
-    if (!mapReady) return;
-    if (!map) return;
-    if (loggedInOrWorkingOffline) {
-      toggleLayerOnBool(map, 'invasivesbc-pmtile-vector', false);
-      toggleLayerOnBool(map, 'iapp-pmtile-vector', false);
-      toggleLayerOnBool(map, 'invasivesbc-pmtile-vector-label', false);
-      toggleLayerOnBool(map, 'iapp-pmtile-vector-label', false);
-    }
-  }, [loggedInOrWorkingOffline, map, mapReady]);
+  // useEffect(() => {
+  //   if (!mapReady) return;
+  //   if (!map) return;
+  //   if (loggedInOrWorkingOffline) {
+  //     toggleLayerOnBool(map, 'invasivesbc-pmtile-vector', false);
+  //     toggleLayerOnBool(map, 'iapp-pmtile-vector', false);
+  //     toggleLayerOnBool(map, 'invasivesbc-pmtile-vector-label', false);
+  //     toggleLayerOnBool(map, 'iapp-pmtile-vector-label', false);
+  //   }
+  // }, [loggedInOrWorkingOffline, map, mapReady]);
 
   return (
     <div className="map-containing-block">
@@ -367,8 +338,21 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         <MapContext.Provider value={map}>
           <DisplayComposite />
           <DrawControls />
-          <ButtonContainer />
-          <ReactiveLayers mapReady={mapReady} />
+
+          <ButtonContainer selectLayer={() => {}} layers={filteredLayerDefinitions} selectedLayer={'x'} />
+
+          {POSITIONING_LAYERS.map((layer) => (
+            <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
+          ))}
+
+          {Object.entries(sources).map(([key, source]) => (
+            <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
+          ))}
+
+          {layers.map((layer) => (
+            <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
+          ))}
+
           <PositionMarkers mapReady={mapReady} />
           <CurrentActivityLayer mapReady={mapReady} />
           {loggedInOrWorkingOffline && <LayerPicker />}

@@ -52,7 +52,6 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import Activity from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
-import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 import { RECORD_COLOURS } from 'constants/colors';
 import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
@@ -785,8 +784,7 @@ function* activitiesPageSaga() {
     takeEvery(URL_CHANGE, handle_URL_CHANGE),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
-    ...TRACKING_SAGA_HANDLERS,
-    ...LAYER_ELIGIBILITY_UPDATE
+    ...TRACKING_SAGA_HANDLERS
   ]);
 }
 

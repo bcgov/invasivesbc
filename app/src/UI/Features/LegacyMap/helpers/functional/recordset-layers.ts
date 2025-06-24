@@ -11,7 +11,7 @@ import {
   LAYER_Z_BACKGROUND,
   LAYER_Z_FOREGROUND,
   LAYER_Z_MID
-} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
+} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
@@ -258,9 +258,7 @@ export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any) => {
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
   const source: SourceSpecification = {
     type: 'vector',
-    tiles: [
-      `api:///api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`
-    ],
+    tiles: [`api:///api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
     minzoom: 0,
     maxzoom: 24
   };
@@ -486,7 +484,10 @@ export const removeRecordsetLayersOnForcedRedraw = (map: maplibregl.Map) => {
 };
 
 export const rebuildLayersOnTableHashUpdate = async (
-  storeLayers: Record<PropertyKey, any>, map: maplibregl.Map, connectedToNetwork: boolean) => {
+  storeLayers: Record<PropertyKey, any>,
+  map: maplibregl.Map,
+  connectedToNetwork: boolean
+) => {
   const MOBILE_OFFLINE = buildTimeConfig.MOBILE && !connectedToNetwork;
   /* First need to delete the layers who's record set was deleted altogether: */
   const storeLayersIds = storeLayers.map((layer) => formatLayerID(layer.recordSetID, layer.tableFiltersHash));

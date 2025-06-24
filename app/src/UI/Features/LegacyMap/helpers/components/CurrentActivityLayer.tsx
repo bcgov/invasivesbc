@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
-import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
+import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { useSelector } from 'utils/use_selector';
 
 const CurrentActivityLayer = ({ mapReady }) => {
@@ -91,7 +91,7 @@ const CurrentActivityLayer = ({ mapReady }) => {
         map.removeSource(LAYER_ID);
       };
     }
-  }, [geo]);
+  }, [map, mapReady, geo]);
 
   return null;
 };

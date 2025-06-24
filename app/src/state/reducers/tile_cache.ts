@@ -5,12 +5,11 @@ import { TileCacheProgressCallbackParameters, RepositoryMetadata, RepositoryStat
 import TileCache from 'state/actions/cache/TileCache';
 import {
   MapDefinitionEligibilityPredicatesBuilder,
-  MapSourceAndLayerDefinition,
-  MapSourceAndLayerDefinitionMode
-} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
+  InvasivesMapLayerDefinition
+} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 interface TileCacheState {
-  mapSpecifications: MapSourceAndLayerDefinition[];
+  mapSpecifications: InvasivesMapLayerDefinition[];
   repositories: RepositoryMetadata[];
   downloadProgress: Record<string, TileCacheProgressCallbackParameters>;
   drawnShapeBounds: {
@@ -30,13 +29,12 @@ const initialState: TileCacheState = {
   drawnShapeBounds: null
 };
 
-function buildMapSpecificationFromRepositoryMetadata(spec: RepositoryMetadata): MapSourceAndLayerDefinition[] {
+function buildMapSpecificationFromRepositoryMetadata(spec: RepositoryMetadata): InvasivesMapLayerDefinition[] {
   return [
     {
       name: `bounds-${spec.id}`,
       displayName: spec.description,
       icon: 'N/A',
-      viewLayout: MapSourceAndLayerDefinitionMode.BASEMAP,
       tooltip: ``,
       predicates: new MapDefinitionEligibilityPredicatesBuilder().directlySelectable(false).build(),
       source: {
@@ -66,7 +64,7 @@ function buildMapSpecificationFromRepositoryMetadata(spec: RepositoryMetadata): 
       name: spec.id,
       displayName: spec.description,
       icon: 'OfflineSatellite',
-      viewLayout: MapSourceAndLayerDefinitionMode.OVERLAY,
+      mode: 'overlay',
       tooltip: `${spec.id} - ${spec.description} - ${spec.status}`,
       predicates: new MapDefinitionEligibilityPredicatesBuilder().mobileOnly().requiresNetwork(false).build(),
       source: {

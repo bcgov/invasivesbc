@@ -1,21 +1,21 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
-import { useSelector } from 'utils/use_selector';
 import 'UI/Global.css';
-import { MAP_DEFINITIONS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
 import { DeviceUnknown, Hd, Landscape, Map, SaveAlt, Sd, SignalCellularNodata } from '@mui/icons-material';
-import MapActions from 'state/actions/map';
+import { InvasivesMapLayerDefinition } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
-export const PrimaryLayerSelect = () => {
-  const dispatch = useDispatch();
+type PrimaryLayerSelectProps = {
+  layers: InvasivesMapLayerDefinition[];
+  selectedLayer: string;
+  selectLayer: (layer: InvasivesMapLayerDefinition) => void;
+};
 
-  const { baseMapLayer, availableBaseMapLayers } = useSelector((state) => state.Map);
-  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications) ?? [];
+const PrimaryLayerSelect = ({ layers, selectedLayer, selectLayer }: PrimaryLayerSelectProps) => {
+  // const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications) ?? [];
 
   const [toolTip, setToolTip] = useState('');
 
-  function renderIcon(def) {
+  function renderIcon(def: InvasivesMapLayerDefinition) {
     switch (def.icon) {
       case 'Hd':
         return <Hd />;
@@ -41,29 +41,24 @@ export const PrimaryLayerSelect = () => {
 
   return (
     <div className={'basemap-btn-group'}>
-      {availableBaseMapLayers.map((l) => {
-        const found = [...MAP_DEFINITIONS, ...offlineDefinitions].find((d) => d.name == l);
-        if (!found) {
-          return;
-        }
-
+      {layers.map((l) => {
         return (
-          <div className={baseMapLayer == l ? 'selected' : ''} key={l}>
+          <div className={selectedLayer == l.name ? 'selected' : ''} key={l.name}>
             <Tooltip
-              open={toolTip == l}
-              onMouseEnter={() => setToolTip(l)}
+              open={toolTip == l.name}
+              onMouseEnter={() => setToolTip(l.name)}
               onMouseLeave={() => setToolTip('')}
               classes={{ tooltip: 'toolTip' }}
-              title={found.tooltip}
+              title={l.tooltip}
               placement="top-end"
             >
               <IconButton
                 className={'basemap-btn'}
                 onClick={() => {
-                  dispatch(MapActions.chooseBaseMap(l));
+                  setToolTip(l.name);
                 }}
               >
-                {renderIcon(found)}
+                {renderIcon(l)}
               </IconButton>
             </Tooltip>
           </div>
@@ -72,3 +67,6 @@ export const PrimaryLayerSelect = () => {
     </div>
   );
 };
+
+export type { PrimaryLayerSelectProps };
+export default PrimaryLayerSelect;
