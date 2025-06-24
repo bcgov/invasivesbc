@@ -10,7 +10,7 @@ import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-m
 import maplibregl, { IControl } from 'maplibre-gl';
 import { createRoot, Root } from 'react-dom/client';
 import editButton from '/assets/icon/edit.png';
-import saveButton from '/assets/icon/save.png';
+import saveButton from '/assets/icon/save-outline.png';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -61,7 +61,7 @@ const DrawControls = () => {
   const uHistory = useHistory();
 
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
-  const isEditDisabled = mode !== TargetMode.ACTIVITY;
+  const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
   const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
@@ -258,10 +258,14 @@ const DrawControls = () => {
         dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
         break;
       }
+
       case TargetMode.ACTIVITY_GEO_TRACK: {
         // don't do anything
         break;
       }
+      case TargetMode.CUSTOM_LAYER:
+        dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature });
+        break;
       case TargetMode.TILE_CACHE: {
         dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
         break;
@@ -312,7 +316,6 @@ const DrawControls = () => {
   const drawShapeUpdate = useCallback((event, map: InvasivesMap | undefined) => {
     if (!drawInstance.current) return;
 
-    const featureId = event.features?.[0]?.id;
     const currentMode = drawInstance.current.getMode();
 
     if (currentMode === 'direct_select') {
@@ -320,8 +323,12 @@ const DrawControls = () => {
     } else if (currentMode === 'simple_select') {
       map?.touchZoomRotate.enable();
       map?.dragPan.enable();
+    } else {
+      // we're not done drawing until we revert to one of these modes
+      return;
     }
 
+    const featureId = event.features?.[0]?.id;
     if (!isEditing.current) {
       if (featureId) {
         drawInstance.current.changeMode('simple_select');
