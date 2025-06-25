@@ -657,11 +657,6 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
       return;
     }
 
-    if (tileCacheMode) {
-      yield put(TileCache.setTileCacheShape({ geometry }));
-      return;
-    }
-
     if (isActivityPage && !whatsHere.toggle) {
       if (isGeoTrackingFeature && type === GeoShapes.Polygon) {
         geometry.type = type;
@@ -689,6 +684,11 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
         type: ACTIVITY_UPDATE_GEO_REQUEST,
         payload: { geometry: [action.payload] }
       });
+      return;
+    }
+
+    if (tileCacheMode) {
+      yield put(TileCache.setTileCacheShape({ geometry }));
     }
   } catch (error) {
     console.error('Error in handle_MAP_ON_SHAPE_UPDATE:', error);

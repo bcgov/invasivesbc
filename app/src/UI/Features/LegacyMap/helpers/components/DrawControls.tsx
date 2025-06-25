@@ -59,9 +59,7 @@ const DrawControls = () => {
   const handleEdit = () => {
     const features = drawInstance.current?.getAll().features;
 
-    if (!features || features.length === 0) {
-      return;
-    }
+    if (!features || features.length === 0 || features[0].geometry.type === GeoShapes.Point) return;
 
     isEditing.current = true;
     drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
@@ -73,9 +71,9 @@ const DrawControls = () => {
     drawInstance.current?.changeMode('simple_select');
 
     const updatedFeature = drawInstance.current?.getAll().features[0];
-    if (updatedFeature) {
-      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
-    }
+    if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
+
+    dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
   };
 
   useEffect(() => {
@@ -369,11 +367,11 @@ const DrawControls = () => {
 
     drawInstance.current = new MapboxDraw({
       displayControlsDefault: true,
+      touchEnabled: true,
       controls: {
         combine_features: false,
         uncombine_features: false
       },
-      touchEnabled: true,
       userProperties: true,
       modes: {
         ...MapboxDraw.modes,
