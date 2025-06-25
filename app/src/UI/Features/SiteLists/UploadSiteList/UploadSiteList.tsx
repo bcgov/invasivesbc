@@ -5,6 +5,7 @@ import './UploadSiteList.css';
 import * as xlsx from 'xlsx';
 import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import { reShortId, reUuid } from 'sharedAPI/src/regex';
 
 const UploadSiteList = () => {
   interface IRequiredColumns {
@@ -75,15 +76,15 @@ const UploadSiteList = () => {
   };
 
   const handleConfirm = () => {
-    const re = RegExp(/[a-zA-Z]/);
+    const reIappSite = new RegExp(/^\d+$/);
     const iappIds: Array<string> = [];
     const activityIds: Array<string> = [];
     const ids = fileData.filter((entry) => !!entry.ID);
     ids.forEach((entry) => {
       if (!entry.ID) return;
-      if (typeof entry.ID === 'string' && re.test(entry.ID)) {
+      if (typeof entry.ID === 'string' && (reShortId.test(entry.ID) || reUuid.test(entry.ID))) {
         activityIds.push(entry.ID);
-      } else {
+      } else if (reIappSite.test(entry.ID.toString())) {
         iappIds.push(entry.ID.toString());
       }
     });
