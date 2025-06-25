@@ -7,10 +7,7 @@ import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
-import maplibregl, { IControl } from 'maplibre-gl';
-import { createRoot, Root } from 'react-dom/client';
-import editButton from '/assets/icon/edit.png';
-import saveButton from '/assets/icon/save-outline.png';
+import { IControl } from 'maplibre-gl';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -21,7 +18,10 @@ import {
 } from 'UI/Features/LegacyMap/helpers/functional/geo-tracking-mode';
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
 import GeoShapes from 'constants/geoShapes';
-import { GEO_TRACKING_FEATURE } from '../functional/constants';
+import TargetMode from 'constants/targetModes';
+import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
+import Activity from 'state/actions/activity/Activity';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -29,16 +29,6 @@ MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
 MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
-
-enum TargetMode {
-  DISABLED = 'DISABLED',
-  GENERIC = 'GENERIC',
-  WHATS_HERE = 'WHATS_HERE',
-  CUSTOM_LAYER = 'CUSTOM_LAYER',
-  ACTIVITY = 'ACTIVITY',
-  ACTIVITY_GEO_TRACK = 'ACTIVITY_GEO_TRACK',
-  TILE_CACHE = 'TILE_CACHE'
-}
 
 const DrawControls = () => {
   const map = useContext(MapContext);
@@ -75,6 +65,7 @@ const DrawControls = () => {
 
     isEditing.current = true;
     drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
+    dispatch(Activity.alertToSaveShape());
   };
 
   const handleSave = () => {
@@ -500,148 +491,6 @@ const DrawControls = () => {
   }, [map]);
 
   return null;
-};
-
-class DrawModeDisplay implements IControl {
-  _text: string;
-  _map: maplibregl.Map | undefined;
-  _container: HTMLDivElement | undefined;
-
-  _root: Root | undefined = undefined;
-
-  constructor(mode: TargetMode) {
-    this._text = mode;
-  }
-
-  setMode(mode: TargetMode) {
-    this._text = mode;
-    this._rerender();
-  }
-
-  _rerender() {
-    if (this._root) {
-      this._root.render(<>Drawing mode: {this._text}</>);
-    }
-  }
-
-  onAdd(map: maplibregl.Map): HTMLElement {
-    this._map = map;
-    const control = document.createElement('div');
-    control.style.background = 'rgba(255, 255, 255, 0.8)';
-    control.style.padding = '0 5px';
-    control.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-    control.style.borderRadius = '4px';
-    control.id = 'draw-mode-display';
-
-    this._root = createRoot(control);
-
-    this._rerender();
-
-    this._container = control;
-
-    return this._container;
-  }
-
-  onRemove() {
-    if (this._root) {
-      this._root.unmount();
-      this._root = undefined;
-    }
-    if (this._container?.parentNode) {
-      this._container.parentNode.removeChild(this._container);
-      this._container = undefined;
-    }
-  }
-}
-
-class EditControls implements IControl {
-  _container?: HTMLDivElement;
-  _map?: maplibregl.Map;
-  _root?: Root;
-  _onEdit?: () => void;
-  _onSave?: () => void;
-  _isDisabled?: boolean;
-
-  constructor(onEdit?: () => void, onSave?: () => void, isDisabled: boolean = false) {
-    this._onEdit = onEdit;
-    this._onSave = onSave;
-    this._isDisabled = isDisabled;
-  }
-
-  setDisabled(isDisabled: boolean) {
-    this._isDisabled = isDisabled;
-    if (this._root && this._container) {
-      this._root.render(<EditControlUI onEdit={this._onEdit} onSave={this._onSave} isDisabled={this._isDisabled} />);
-    }
-  }
-
-  onAdd(map: maplibregl.Map): HTMLElement {
-    this._map = map;
-    const container = document.createElement('div');
-    container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-    container.style.background = 'rgba(255, 255, 255, 1.0)';
-    container.style.marginTop = '0px';
-    container.style.borderRadius = '0px 0px 4px 4px';
-    container.id = 'custom-edit-tool';
-
-    this._root = createRoot(container);
-    this._root.render(
-      <EditControlUI onEdit={this._onEdit} onSave={this._onSave} isDisabled={this._isDisabled ?? false} />
-    );
-
-    this._container = container;
-    return container;
-  }
-
-  onRemove() {
-    if (this._root) {
-      this._root.unmount();
-      this._root = undefined;
-    }
-    if (this._container?.parentNode) {
-      this._container.parentNode.removeChild(this._container);
-      this._container?.remove();
-      this._container = undefined;
-    }
-  }
-}
-
-type EditControlUIProps = {
-  onEdit?: () => void;
-  onSave?: () => void;
-  isDisabled: boolean;
-};
-
-const EditControlUI: React.FC<EditControlUIProps> = ({ onEdit, onSave, isDisabled }) => {
-  const [isEditing, setIsEditing] = useState(false);
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-    onEdit?.();
-  };
-
-  const handleSaveClick = () => {
-    setIsEditing(false);
-    onSave?.();
-  };
-
-  return (
-    <>
-      {!isEditing ? (
-        <button
-          onClick={handleEditClick}
-          disabled={isDisabled}
-          className={`${isDisabled ? 'custom-edit-button disabled' : ''}`}
-        >
-          <img src={editButton} alt="✏️" style={{ width: 15, height: 15, marginTop: 3 }} />
-        </button>
-      ) : (
-        <button title="Save" onClick={handleSaveClick}>
-          <img src={saveButton} alt="💾" style={{ width: 15, height: 15, marginTop: 3 }} />
-        </button>
-      )}
-    </>
-  );
 };
 
 export { DrawControls };
