@@ -605,11 +605,11 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
 
   const geometry = action.payload.geometry;
   const isLineString = geometry?.type === GeoShapes.LineString;
-  const isPolygon = geometry?.type === GeoShapes.Polygon;
+  const isPolygonOrPoint = geometry?.type === GeoShapes.Polygon || geometry?.type === GeoShapes.Point;
   const hasCoordinates = geometry?.coordinates?.length > 0;
   const noUserError = action?.payload?.properties?.user_error !== 'true';
 
-  if (isPolygon && hasCoordinates && noUserError) {
+  if (isPolygonOrPoint && hasCoordinates && noUserError) {
     const isActivityPage = appModeUrl && /Activity/.test(appModeUrl);
     if (isActivityPage && !whatsHereToggle) {
       yield put({

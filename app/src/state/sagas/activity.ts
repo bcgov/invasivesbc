@@ -188,6 +188,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
     }
   })();
   const userHasTrackingEnabled = coords?.hasOwnProperty('long');
+
   if (userHasTrackingEnabled) {
     const initGeo = {
       id: GEO_TRACKING_FEATURE,
@@ -223,6 +224,11 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   let minNumberCoords: number = 0;
   const activityState = yield select(selectActivity);
   const shape = activityState.track_me_draw_geo.type;
+  const coords = (yield select(selectMap))?.userCoords;
+  const userHasTrackingEnabled = coords?.hasOwnProperty('long');
+
+  // early return
+  if (!userHasTrackingEnabled) return;
 
   // Early exit on non-existent/zero-length geometry arrays
   if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
