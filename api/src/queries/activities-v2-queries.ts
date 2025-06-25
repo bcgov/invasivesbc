@@ -1,6 +1,7 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { escapeLiteral } from 'pg';
+import { reShortId, reUuid } from 'sharedAPI/src/regex';
 import { getLogger } from 'utils/logger';
 import { escapeLiteralUnquoted } from 'utils/dbutils';
 import { InvasivesRequest } from 'utils/auth-utils';
@@ -37,13 +38,13 @@ function sanitizeActivityFilterObject(filterObject: any, req: InvasivesRequest) 
   sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
   if (filterObject?.ids_to_filter?.length > 0) {
-    const activityIdReg = new RegExp(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/);
+    const activityIdReg = new RegExp(reUuid);
     const activityIdsValid = filterObject.ids_to_filter.every((id) => activityIdReg.test(id));
 
     if (activityIdsValid) {
       sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
     } else {
-      const shortIdReg = new RegExp(/[0-9]{2}[A-Za-z]{2,3}[0-9a-zA-Z]{8}/);
+      const shortIdReg = new RegExp(reShortId);
       const shortIdsValid = filterObject.ids_to_filter.every((id) => shortIdReg.test(id));
       if (!shortIdsValid) {
         throw new Error('Supplied ID List contains malformed IDs');
