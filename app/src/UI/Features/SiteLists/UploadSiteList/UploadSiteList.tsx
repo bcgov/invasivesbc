@@ -66,9 +66,9 @@ const UploadSiteList = () => {
       setComponentState(ValidationStatus.Missing_Columns);
       return;
     }
-    const entriesWithCoords = extractedJSON.filter((entry) => !!entry.ID);
-    setFileData(entriesWithCoords);
-    if (entriesWithCoords.length !== extractedJSON.length) {
+    const entriesWithIds = extractedJSON.filter((entry) => !!entry.ID);
+    setFileData(entriesWithIds);
+    if (entriesWithIds.length !== extractedJSON.length) {
       setComponentState(ValidationStatus.Blank_Entries);
     } else {
       setComponentState(ValidationStatus.Success);
