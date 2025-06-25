@@ -1,4 +1,3 @@
-import { LayerSpecification } from 'maplibre-gl';
 import { InvasivesMapLayerDefinition } from './types';
 import { ESRI_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/esri';
 import { BAKED_VECTOR_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/baked-vector-full';
@@ -62,76 +61,4 @@ const MAP_DEFINITIONS: InvasivesMapLayerDefinition[] = [
   ...PUBLIC_VECTOR_LAYERS
 ];
 
-// used to determine which layers we should turn on for a given group definition
-function allLayerIdsInDefinition(definitionList: InvasivesMapLayerDefinition[], definitionName: string): string[] {
-  const group = definitionList.find((m) => m.name === definitionName);
-  if (!group) {
-    console.error(`invalid definition name ${definitionName}`);
-    throw Error(`invalid definition name ${definitionName}`);
-  }
-  return group.layers.map((l) => l.id);
-}
-
-function layersForDefinition(
-  definitionList: InvasivesMapLayerDefinition[],
-  definitionName: string
-): LayerSpecification[] {
-  const group = definitionList.find((m) => m.name === definitionName);
-  if (!group) {
-    console.error(`invalid definition name ${definitionName}`);
-    throw Error(`invalid definition name ${definitionName}`);
-  }
-  return group.layers;
-}
-
-// ...and those we should turn off when it is deactivated
-function allOverlayLayerIdsNotInDefinitions(
-  definitionList: InvasivesMapLayerDefinition[],
-  definitionNames: string[]
-): string[] {
-  const groups = definitionList.filter((m) => definitionNames.includes(m.name));
-
-  return definitionList
-    .filter((m) => m.mode == 'overlay')
-    .flatMap((m) => m.layers)
-    .filter((x) => {
-      return !groups.some((group) => group.layers.some((groupLayer) => groupLayer.id == x.id));
-    })
-    .map((l) => l.id);
-}
-
-// ...and those we should turn off when it is deactivated
-function allBaseMapLayerIdsNotInDefinition(
-  definitionList: InvasivesMapLayerDefinition[],
-  definitionName: string
-): string[] {
-  const group = definitionList.find((m) => m.name === definitionName);
-  if (!group) {
-    console.error(`invalid definition name ${definitionName}`);
-    throw Error(`invalid definition name ${definitionName}`);
-  }
-  return definitionList
-    .filter((m) => m.mode == 'basemap')
-    .flatMap((m) => m.layers)
-    .filter((x) => !group.layers.map((l) => l.id).includes(x.id))
-    .map((l) => l.id);
-}
-
-function allSourceIDsRequiredForDefinition(definitionList: InvasivesMapLayerDefinition[], definitionName: string) {
-  const group = definitionList.find((m) => m.name === definitionName);
-  if (!group) {
-    console.error(`invalid definition name ${definitionName}`);
-    throw Error(`invalid definition name ${definitionName}`);
-  }
-  return group.layers.map((l) => l['source'] as string);
-}
-
-export {
-  MAP_DEFINITIONS,
-  SOURCES,
-  allLayerIdsInDefinition,
-  allBaseMapLayerIdsNotInDefinition,
-  layersForDefinition,
-  allOverlayLayerIdsNotInDefinitions,
-  allSourceIDsRequiredForDefinition
-};
+export { MAP_DEFINITIONS, SOURCES };

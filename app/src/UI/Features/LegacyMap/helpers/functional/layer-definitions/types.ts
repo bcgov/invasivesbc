@@ -9,6 +9,7 @@ type InvasivesLayerSpecification = LayerSpecification & { source?: keyof typeof 
 const LAYER_Z_BACKGROUND = 'LAYER_Z_BACKGROUND';
 const LAYER_Z_MID = 'LAYER_Z_MID';
 const LAYER_Z_FOREGROUND = 'LAYER_Z_FOREGROUND';
+type POSITIONING_LAYER = typeof LAYER_Z_FOREGROUND | typeof LAYER_Z_BACKGROUND | typeof LAYER_Z_MID;
 
 type MapDefinitionEligibilityPredicates = {
   // not directly selectable means there won't be a button for it (but it can still be enabled by another definition requiring it)
@@ -117,13 +118,27 @@ type InvasivesMapLayerDefinition = {
   predicates: MapDefinitionEligibilityPredicates;
 };
 
-type FilteredLayerDefinition = InvasivesMapLayerDefinition & { active: boolean };
+function layerStacking(l: InvasivesMapLayerDefinition): POSITIONING_LAYER {
+  switch (l.mode) {
+    case 'overlay':
+      return LAYER_Z_MID;
+    case 'basemap':
+    default:
+      return LAYER_Z_BACKGROUND;
+  }
+}
 
-export { MapDefinitionEligibilityPredicatesBuilder, LAYER_Z_MID, LAYER_Z_FOREGROUND, LAYER_Z_BACKGROUND };
+export {
+  MapDefinitionEligibilityPredicatesBuilder,
+  layerStacking,
+  LAYER_Z_FOREGROUND,
+  LAYER_Z_BACKGROUND,
+  LAYER_Z_MID
+};
 
 export type {
   MapDefinitionEligibilityPredicates,
   InvasivesMapLayerDefinition,
   InvasivesLayerSpecification,
-  FilteredLayerDefinition
+  POSITIONING_LAYER
 };

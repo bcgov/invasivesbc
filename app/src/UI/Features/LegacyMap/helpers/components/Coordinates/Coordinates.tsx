@@ -40,9 +40,13 @@ const Coordinates = () => {
     cont.addEventListener('mousemove', (e) => {
       updateCoordinates(e.clientX, e.clientY);
     });
-    cont.addEventListener('touchstart', (e) => {
-      updateCoordinates(e.targetTouches[0].clientX, e.targetTouches[0].clientY);
-    });
+    cont.addEventListener(
+      'touchstart',
+      (e) => {
+        updateCoordinates(e.targetTouches[0].clientX, e.targetTouches[0].clientY);
+      },
+      { passive: true }
+    );
   }, [map]);
 
   if (!coords) {

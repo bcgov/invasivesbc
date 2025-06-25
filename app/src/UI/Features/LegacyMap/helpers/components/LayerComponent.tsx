@@ -1,11 +1,11 @@
 import { useContext, useEffect } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
-import { LayerSpecification } from 'maplibre-gl';
+import { LayerSpecificationWithStackingOrder } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 
 type LayerComponentProps = {
   mapReady: boolean;
   id: string;
-  layer: LayerSpecification;
+  layer: LayerSpecificationWithStackingOrder;
 };
 
 const LayerComponent = ({ mapReady, id, layer }: LayerComponentProps) => {
@@ -14,8 +14,12 @@ const LayerComponent = ({ mapReady, id, layer }: LayerComponentProps) => {
   useEffect(() => {
     if (!map || !mapReady) return;
 
-    map.addLayer(layer);
+    console.dir('adding layer: ' + id);
+
+    map.addLayer(layer, layer.stackLayer);
+
     return () => {
+      console.dir('removing layer: ' + id);
       map.removeLayer(id);
     };
   }, [map, mapReady]);

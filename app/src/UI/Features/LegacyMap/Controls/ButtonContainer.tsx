@@ -13,13 +13,13 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 
 type ButtonContainerProps = PrimaryLayerSelectProps & {};
 
-export const ButtonContainer = ({ layers, selectLayer, selectedLayer }: ButtonContainerProps) => {
+export const ButtonContainer = ({ layers, selectLayer }: ButtonContainerProps) => {
   const { loggedInOrWorkingOffline, writePrivilege } = useSelector((state) => state.Auth);
   const { positionTracking } = useSelector((state) => state.Map);
 
   return (
     <div id="map-btn-container">
-      <PrimaryLayerSelect layers={layers} selectedLayer={selectedLayer} selectLayer={selectLayer} />
+      <PrimaryLayerSelect layers={layers} selectLayer={selectLayer} />
 
       {loggedInOrWorkingOffline && (
         <>

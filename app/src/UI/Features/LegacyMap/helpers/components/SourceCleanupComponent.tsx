@@ -1,24 +1,23 @@
 import { useContext, useEffect } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
-import { SourceSpecification } from 'maplibre-gl';
 
-type SourceComponentProps = {
+type SourceCleanupComponentProps = {
   mapReady: boolean;
   id: string;
-  source: SourceSpecification;
 };
 
-const SourceComponent = ({ mapReady, id, source }: SourceComponentProps) => {
+const SourceCleanupComponent = ({ mapReady, id }: SourceCleanupComponentProps) => {
   const map = useContext(MapContext);
 
   useEffect(() => {
     if (!map || !mapReady) return;
 
-    console.dir('adding source: ' + id);
-    map.addSource(id, source);
+    return () => {
+      map.removeSource(id);
+    };
   }, [map, mapReady]);
 
   return null;
 };
 
-export { SourceComponent };
+export { SourceCleanupComponent };

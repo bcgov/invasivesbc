@@ -47,6 +47,7 @@ import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/
 import { SourceComponent } from 'UI/Features/LegacyMap/helpers/components/SourceComponent';
 import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerComponent';
 import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
+import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -92,7 +93,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
 
-  const { sources, layers, filteredLayerDefinitions } = useInvasivesMapLayers();
+  const { sources, layers, availableLayerDefinitions, setActiveBaseMap } = useInvasivesMapLayers();
 
   useEffect(() => {
     if (!mapContainer.current) {
@@ -315,18 +316,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }, 1000);
   }, [map]);
 
-  // toggle public map pmtile layer
-  // useEffect(() => {
-  //   if (!mapReady) return;
-  //   if (!map) return;
-  //   if (loggedInOrWorkingOffline) {
-  //     toggleLayerOnBool(map, 'invasivesbc-pmtile-vector', false);
-  //     toggleLayerOnBool(map, 'iapp-pmtile-vector', false);
-  //     toggleLayerOnBool(map, 'invasivesbc-pmtile-vector-label', false);
-  //     toggleLayerOnBool(map, 'iapp-pmtile-vector-label', false);
-  //   }
-  // }, [loggedInOrWorkingOffline, map, mapReady]);
-
   return (
     <div className="map-containing-block">
       <div className="MapWrapper">
@@ -339,7 +328,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           <DisplayComposite />
           <DrawControls />
 
-          <ButtonContainer selectLayer={() => {}} layers={filteredLayerDefinitions} selectedLayer={'x'} />
+          <ButtonContainer selectLayer={setActiveBaseMap} layers={availableLayerDefinitions} />
 
           {POSITIONING_LAYERS.map((layer) => (
             <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
@@ -351,6 +340,10 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
           {layers.map((layer) => (
             <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
+          ))}
+
+          {Object.keys(sources).map((key) => (
+            <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
           ))}
 
           <PositionMarkers mapReady={mapReady} />
