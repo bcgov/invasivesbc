@@ -136,8 +136,9 @@ const UploadSiteList = () => {
           <div className="header">Upload Site List</div>
           <div className="content">
             <p>
-              Uploading your site list will generate a custom boundary based on the provided locations. This boundary
-              can then be used to filter Activity and IAPP Recordsets to include only those within the surrounding area.
+              When you upload your site list, two new recordsets will be generated: one for IAPP data and one for
+              Activity data. These recordsets will be prefiltered to include only the records matching the IDs in your
+              uploaded file.
             </p>
             <div className="form-inputs">
               <div className="file-input">
