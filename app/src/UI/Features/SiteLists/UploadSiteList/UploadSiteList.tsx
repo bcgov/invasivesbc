@@ -25,7 +25,7 @@ const UploadSiteList = () => {
   // Input Handler for Files coming in
   const handleFileChange = (evt: ChangeEvent<HTMLInputElement>) => {
     cleanup();
-    const selectedFile = evt.target.files?.[0] || null;
+    const selectedFile = evt.target.files?.[0] ?? null;
     setUserSiteListName(selectedFile?.name ?? '');
     setFile(selectedFile ?? undefined);
   };
@@ -39,15 +39,16 @@ const UploadSiteList = () => {
    */
   const handleUpload = async () => {
     if (!file) return;
-    const data = await new Promise<ArrayBuffer | null>((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as ArrayBuffer);
-      reader.onerror = (e) => reject(e);
-      reader.readAsArrayBuffer(file);
-    });
-
-    if (!data) {
-      // File could not be read
+    let data: ArrayBuffer | null;
+    try {
+      data = await new Promise<ArrayBuffer | null>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = (e) => reject(e);
+        reader.readAsArrayBuffer(file);
+      });
+    } catch (e) {
+      console.error('Failed to read file: ', e);
       setComponentState(ValidationStatus.No_Data);
       return;
     }
@@ -174,7 +175,7 @@ const UploadSiteList = () => {
                         </p>
                         <ul>
                           {REQUIRED_COLUMNS.map((col) => (
-                            <li>{col}</li>
+                            <li key={col}>{col}</li>
                           ))}
                         </ul>
                         <p>Note: these columns are case-sensitive</p>
