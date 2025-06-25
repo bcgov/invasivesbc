@@ -8,9 +8,9 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 
 const UploadSiteList = () => {
   interface IRequiredColumns {
-    SiteID: number | string;
+    ID: number | string;
   }
-  const REQUIRED_COLUMNS = ['SiteID'];
+  const REQUIRED_COLUMNS = ['ID'];
 
   enum ValidationStatus {
     Default,
@@ -65,7 +65,7 @@ const UploadSiteList = () => {
       setComponentState(ValidationStatus.Missing_Columns);
       return;
     }
-    const entriesWithCoords = extractedJSON.filter((entry) => !!entry.SiteID);
+    const entriesWithCoords = extractedJSON.filter((entry) => !!entry.ID);
     setFileData(entriesWithCoords);
     if (entriesWithCoords.length !== extractedJSON.length) {
       setComponentState(ValidationStatus.Blank_Entries);
@@ -78,13 +78,13 @@ const UploadSiteList = () => {
     const re = RegExp(/[a-zA-Z]/);
     const iappIds: Array<string> = [];
     const activityIds: Array<string> = [];
-    const ids = fileData.filter((entry) => !!entry.SiteID);
+    const ids = fileData.filter((entry) => !!entry.ID);
     ids.forEach((entry) => {
-      if (!entry.SiteID) return;
-      if (typeof entry.SiteID === 'string' && re.test(entry.SiteID)) {
-        activityIds.push(entry.SiteID);
+      if (!entry.ID) return;
+      if (typeof entry.ID === 'string' && re.test(entry.ID)) {
+        activityIds.push(entry.ID);
       } else {
-        iappIds.push(entry.SiteID.toString());
+        iappIds.push(entry.ID.toString());
       }
     });
     dispatch(
