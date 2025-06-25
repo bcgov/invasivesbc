@@ -4,6 +4,7 @@ import { Feature } from 'geojson';
 import { GeoJSONSourceSpecification } from 'maplibre-gl';
 import booleanIntersects from '@turf/boolean-intersects';
 import bbox from '@turf/bbox';
+import { reShortId } from 'sharedAPI/src/regex';
 import MIGRATIONS from './migrations';
 import IappRecord from 'interfaces/IappRecord';
 import IappTableRow from 'interfaces/IappTableRecord';
@@ -489,10 +490,10 @@ class SQLiteRecordCacheService extends RecordCacheService {
       params.selectColumns.push('GEOJSON');
     }
     const columns = params.selectColumns.length > 0 ? params.selectColumns.join(', ') : '*';
-    let where = '';
+    let where = 'WHERE 1=1 ';
 
-    params.tableFilters.forEach((filter: IFilter, i: number) => {
-      where += i === 0 ? '\n WHERE ' : '\n AND ';
+    params.tableFilters.forEach((filter: IFilter) => {
+      where += '\n AND ';
       if (filter.filterType === 'spatialFilterDrawn') {
         const [minX, minY, maxX, maxY] = bbox(filter.geojson);
         where += `LATITUDE BETWEEN ${minY} AND ${maxY} AND LONGITUDE BETWEEN ${minX} AND ${maxX}`;
@@ -500,6 +501,16 @@ class SQLiteRecordCacheService extends RecordCacheService {
         where += `${filter.field} ${filter.operator === 'CONTAINS' ? 'LIKE' : 'NOT LIKE'} '%${filter.filter}%'`;
       }
     });
+    if (params?.ids_to_filter && params?.ids_to_filter?.length > 0) {
+      const stringifiedStrings = params.ids_to_filter.map((id) => `'${id}'`).join(', ');
+      if (params.recordSetType === RecordSetType.Activity) {
+        const isShortId = new RegExp(reShortId).test(params.ids_to_filter[0].toString());
+        const idColumn = isShortId ? 'SHORT_ID' : 'ACTIVITY_ID';
+        where += `\n AND ${idColumn} IN (${stringifiedStrings})`;
+      } else {
+        where += `\n AND SITE_ID IN (${stringifiedStrings})`;
+      }
+    }
     let order = '';
     if (params?.sort?.by) {
       order = `ORDER BY ${params.sort.by} ${params.sort.order ?? 'ASC'}
