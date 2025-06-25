@@ -38,16 +38,17 @@ interface RecordCacheDownloadRequestSpec {
  * @property { UserRecordCacheStatus } status Cache Status.
  */
 interface RepositoryMetadata {
+  bbox?: RepositoryBoundingBoxSpec;
+  cache_time: Date;
+  cached_centroid?: GeoJSONSourceSpecification;
+  cached_geojson?: GeoJSONSourceSpecification;
+  cached_ids: string[];
+  filter_objects: FilterObjects;
+  ids_to_filter?: string[];
+  record_set_type: RecordSetType;
   set_id: string;
   set_name?: string;
-  cache_time: Date;
-  cached_ids: string[];
-  record_set_type: RecordSetType;
-  cached_geojson?: GeoJSONSourceSpecification;
-  cached_centroid?: GeoJSONSourceSpecification;
-  bbox?: RepositoryBoundingBoxSpec;
   status: UserRecordCacheStatus;
-  filter_objects: FilterObjects;
 }
 
 interface RecordSetSourceMetadata {
@@ -72,6 +73,7 @@ interface CacheDownloadSpec {
   setName: string;
   API_BASE: string;
   recordSetType: RecordSetType;
+  ids_to_filter?: string[];
   recordSetCacheStatus: UserRecordCacheStatus;
   pausedActivityIdx: number;
   processedActivities: number;
@@ -165,6 +167,7 @@ abstract class RecordCacheService extends BaseCacheService<
       cache_time: new Date(),
       cached_ids: spec.idsToCache,
       record_set_type: spec.recordSetType,
+      ids_to_filter: spec?.ids_to_filter,
       status: UserRecordCacheStatus.DOWNLOADING,
       bbox: spec.bbox,
       filter_objects: spec.filterObjects
