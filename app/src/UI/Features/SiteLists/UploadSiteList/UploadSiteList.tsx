@@ -6,6 +6,7 @@ import * as xlsx from 'xlsx';
 import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { reShortId, reUuid } from 'sharedAPI/src/regex';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const UploadSiteList = () => {
   interface IRequiredColumns {
@@ -126,7 +127,7 @@ const UploadSiteList = () => {
   }, [file]);
 
   return (
-    <>
+    <FeatureGated requires="USER_SITE_LIST">
       <Button className="site-list-button" data-testid="add-site-list" onClick={setOpen.bind(this, true)}>
         Add Site List from xlsx
       </Button>
@@ -210,7 +211,7 @@ const UploadSiteList = () => {
           </div>
         </div>
       </StyledModal>
-    </>
+    </FeatureGated>
   );
 };
 
