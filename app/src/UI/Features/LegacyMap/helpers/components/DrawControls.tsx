@@ -7,8 +7,7 @@ import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
-import maplibregl, { IControl } from 'maplibre-gl';
-import { createRoot, Root } from 'react-dom/client';
+import { IControl } from 'maplibre-gl';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
@@ -19,7 +18,11 @@ import {
 } from 'UI/Features/LegacyMap/helpers/functional/geo-tracking-mode';
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
 import GeoShapes from 'constants/geoShapes';
-import { GEO_TRACKING_FEATURE } from '../functional/constants';
+import TargetMode from 'constants/targetModes';
+import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
+import Alerts from 'state/actions/alerts/Alerts';
+import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -27,16 +30,6 @@ MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
 MapboxDraw.constants.classes.CONTROL_PREFIX = 'maplibregl-ctrl-';
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_GROUP = 'maplibregl-ctrl-group';
-
-enum TargetMode {
-  DISABLED = 'DISABLED',
-  GENERIC = 'GENERIC',
-  WHATS_HERE = 'WHATS_HERE',
-  CUSTOM_LAYER = 'CUSTOM_LAYER',
-  ACTIVITY = 'ACTIVITY',
-  ACTIVITY_GEO_TRACK = 'ACTIVITY_GEO_TRACK',
-  TILE_CACHE = 'TILE_CACHE'
-}
 
 const DrawControls = () => {
   const map = useContext(MapContext);
@@ -53,16 +46,52 @@ const DrawControls = () => {
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
+  const editControls = useRef<EditControls>();
+  const isEditing = useRef(false);
 
   const uHistory = useHistory();
 
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
+  const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
   const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
 
+  const handleEdit = () => {
+    const features = drawInstance.current?.getAll().features;
+
+    if (!features || features.length === 0 || features[0].geometry.type === GeoShapes.Point) return;
+
+    isEditing.current = true;
+    drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
+    dispatch(Alerts.create(mappingAlertMessages.saveActivityShape));
+  };
+
+  const handleSave = () => {
+    isEditing.current = false;
+    drawInstance.current?.changeMode('simple_select');
+
+    const updatedFeature = drawInstance.current?.getAll().features[0];
+    if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
+
+    dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
+  };
+
+  const hasEditableShape = () => {
+    const features = drawInstance.current?.getAll().features;
+    return features && features.length > 0 && features[0].geometry.type !== GeoShapes.Point;
+  };
+
+  const updateEditControlState = () => {
+    const shouldEnableEdit = hasEditableShape();
+    editControls.current?.setDisabled(!shouldEnableEdit);
+  };
+
   useEffect(() => {
     modeRef.current = mode;
+
+    const shouldEnableEdit = hasEditableShape() && !isEditDisabled;
+    editControls.current?.setDisabled(!shouldEnableEdit);
   }, [mode]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
@@ -173,6 +202,7 @@ const DrawControls = () => {
             Well_Information: undefined
           }
         });
+        updateEditControlState();
       }
     };
 
@@ -231,10 +261,14 @@ const DrawControls = () => {
         dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
         break;
       }
+
       case TargetMode.ACTIVITY_GEO_TRACK: {
         // don't do anything
         break;
       }
+      case TargetMode.CUSTOM_LAYER:
+        dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature });
+        break;
       case TargetMode.TILE_CACHE: {
         dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
         break;
@@ -248,15 +282,19 @@ const DrawControls = () => {
         break;
       }
     }
+
+    updateEditControlState();
   }, []);
 
   // setup mode based on what's going on in the redux store / current url
   useEffect(() => {
+    disableDrawButtons(false);
     if (whatsHereToggle) {
       setMode(TargetMode.WHATS_HERE);
       return;
     } else if (tileCacheMode) {
       setMode(TargetMode.TILE_CACHE);
+
       return;
     } else if (drawingCustomLayer) {
       setMode(TargetMode.CUSTOM_LAYER);
@@ -267,10 +305,10 @@ const DrawControls = () => {
         disableDrawButtons(true);
       } else {
         setMode(TargetMode.ACTIVITY);
-        disableDrawButtons(false);
       }
     } else {
       setMode(TargetMode.DISABLED);
+      disableDrawButtons(true);
     }
   }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, appModeURL, currGeoTrackingMode, prevGeoTrackingMode]);
 
@@ -285,9 +323,9 @@ const DrawControls = () => {
 
     const currentMode = drawInstance.current.getMode();
 
-    if ('direct_select' === currentMode) {
+    if (currentMode === 'direct_select') {
       map?.touchZoomRotate.disable();
-    } else if ('simple_select' === currentMode) {
+    } else if (currentMode === 'simple_select') {
       map?.touchZoomRotate.enable();
       map?.dragPan.enable();
     } else {
@@ -295,39 +333,48 @@ const DrawControls = () => {
       return;
     }
 
-    const editedGeo = drawInstance.current.getAll().features[0];
+    const featureId = event.features?.[0]?.id;
+    if (!isEditing.current) {
+      if (featureId) {
+        drawInstance.current.changeMode('simple_select');
+      }
+      return;
+    }
 
-    if (editedGeo?.id !== event?.features?.[0]?.id) {
+    if (!featureId) return;
+
+    drawInstance.current.changeMode('direct_select', { featureId });
+
+    const editedGeo = drawInstance.current.getAll().features[0];
+    if (editedGeo?.id !== featureId) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
+    updateEditControlState();
   }, []);
 
   useEffect(() => {
-    if (drawModeDisplay.current) {
-      drawModeDisplay.current.setMode(mode);
+    if (!drawInstance.current) return;
+
+    drawInstance.current.deleteAll();
+
+    switch (mode) {
+      case TargetMode.WHATS_HERE:
+        drawInstance.current.changeMode('whats_here_box_mode');
+        break;
+      case TargetMode.ACTIVITY_GEO_TRACK:
+        drawInstance.current.changeMode('geo_tracking_mode');
+        break;
+      case TargetMode.ACTIVITY:
+        drawInstance.current.changeMode('simple_select');
+        break;
+      case TargetMode.DISABLED:
+        drawInstance.current.changeMode('do_nothing');
+        break;
+      default:
+        break;
     }
 
-    if (drawInstance.current) {
-      // we changed modes, so reset everything
-      drawInstance.current.deleteAll();
-
-      switch (mode) {
-        case TargetMode.WHATS_HERE:
-          drawInstance.current.changeMode('whats_here_box_mode');
-          break;
-        case TargetMode.ACTIVITY_GEO_TRACK:
-          drawInstance.current.changeMode('geo_tracking_mode');
-          break;
-        case TargetMode.ACTIVITY:
-          drawInstance.current.changeMode('simple_select');
-          break;
-        case TargetMode.DISABLED:
-          drawInstance.current.changeMode('do_nothing');
-          break;
-        default:
-          break;
-      }
-    }
+    drawModeDisplay.current?.setMode(mode);
   }, [mode]);
 
   useEffect(() => {
@@ -424,11 +471,13 @@ const DrawControls = () => {
       ]
     });
     drawModeDisplay.current = new DrawModeDisplay(mode);
+    editControls.current = new EditControls(handleEdit, handleSave, isEditDisabled);
 
     map.on('draw.create', drawCreate);
     map.on('draw.selectionchange', (evt) => drawShapeUpdate(evt, map));
 
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
+    map.addControl(editControls.current, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
 
     // cleanup
@@ -449,61 +498,14 @@ const DrawControls = () => {
         map.removeControl(drawModeDisplay.current);
         drawModeDisplay.current = undefined;
       }
+      if (editControls.current) {
+        map.removeControl(editControls.current);
+        editControls.current = undefined;
+      }
     };
   }, [map]);
 
   return null;
 };
-
-class DrawModeDisplay implements IControl {
-  _text: string;
-  _map: maplibregl.Map | undefined;
-  _container: HTMLDivElement | undefined;
-
-  _root: Root | undefined = undefined;
-
-  constructor(mode: TargetMode) {
-    this._text = mode;
-  }
-
-  setMode(mode: TargetMode) {
-    this._text = mode;
-    this._rerender();
-  }
-
-  _rerender() {
-    if (this._root) {
-      this._root.render(<>Drawing mode: {this._text}</>);
-    }
-  }
-
-  onAdd(map: maplibregl.Map): HTMLElement {
-    this._map = map;
-    const control = document.createElement('div');
-    control.style.background = 'rgba(255, 255, 255, 0.8)';
-    control.style.padding = '0 5px';
-    control.className = 'maplibregl-ctrl maplibregl-ctrl-group';
-    control.id = 'draw-mode-display';
-
-    this._root = createRoot(control);
-
-    this._rerender();
-
-    this._container = control;
-
-    return this._container;
-  }
-
-  onRemove() {
-    if (this._root) {
-      this._root.unmount();
-      this._root = undefined;
-    }
-    if (this._container?.parentNode) {
-      this._container.parentNode.removeChild(this._container);
-      this._container = undefined;
-    }
-  }
-}
 
 export { DrawControls };

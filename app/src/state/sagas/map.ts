@@ -599,31 +599,43 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
 }
 
 function* handle_MAP_ON_SHAPE_CREATE(action) {
-  const callback = (width: number) => {
-    const newGeo = buffer(action.payload.geometry, width / 10000) ?? action.payload;
-    if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-      return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
-    }
-  };
-
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
   const { isTracking, type } = yield select((state) => state.Map.track_me_draw_geo);
 
-  const isGeoTrackingLineString = isTracking && type === GeoShapes.LineString;
-  const isLineString = action?.payload?.geometry?.type === GeoShapes.LineString;
-  const hasCoordinates = action?.payload?.geometry?.coordinates?.length > 0;
+  const geometry = action.payload.geometry;
+  const isLineString = geometry?.type === GeoShapes.LineString;
+  const isPolygonOrPoint = geometry?.type === GeoShapes.Polygon || geometry?.type === GeoShapes.Point;
+  const hasCoordinates = geometry?.coordinates?.length > 0;
   const noUserError = action?.payload?.properties?.user_error !== 'true';
 
+  if (isPolygonOrPoint && hasCoordinates && noUserError) {
+    const isActivityPage = appModeUrl && /Activity/.test(appModeUrl);
+    if (isActivityPage && !whatsHereToggle) {
+      yield put({
+        type: ACTIVITY_UPDATE_GEO_REQUEST,
+        payload: { geometry: [action.payload] }
+      });
+      return;
+    }
+  }
+
   if (isLineString && hasCoordinates && noUserError) {
-    if (!isGeoTrackingLineString && action.payload.id === GEO_TRACKING_FEATURE) return; // no prompt for polygon
+    const isGeoTrackingLineString = isTracking && type === GeoShapes.LineString;
+    if (!isGeoTrackingLineString && action.payload.id === GEO_TRACKING_FEATURE) return;
+
     yield put(
       Prompt.number({
         title: 'Buffer needed',
         prompt: 'Enter width in meters for line to be buffered:',
         min: 0.001,
         acceptFloats: true,
-        callback,
+        callback: (width: number) => {
+          const newGeo = buffer(geometry, width / 10000) ?? geometry;
+          if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
+            return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
+          }
+        },
         label: 'Meters'
       })
     );
@@ -637,32 +649,29 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
     const { isTracking, type } = yield select((state) => state.Map.track_me_draw_geo);
     const { id, geometry } = action.payload;
 
+    const isActivityPage = url && /Activity/.test(url);
+    const isGeoTrackingFeature = id === GEO_TRACKING_FEATURE;
+
     if (drawingCustomLayer) {
       yield put({ type: CUSTOM_LAYER_DRAWN, payload: action.payload });
       return;
     }
 
-    const callback = (width: number) => {
-      const newGeo = buffer(action.payload.geometry, width / 10000) ?? action.payload;
-      if (isActivityPage && !whatsHere.toggle) {
-        return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
-      }
-    };
-    const isActivityPage = url && /Activity/.test(url);
-    const isGeoTrackingFeature = id === GEO_TRACKING_FEATURE;
-
     if (isActivityPage && !whatsHere.toggle) {
       if (isGeoTrackingFeature && type === GeoShapes.Polygon) {
         geometry.type = type;
         geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
-      } else if (type === GeoShapes.LineString && action?.payload?.geometry?.type === GeoShapes.LineString) {
+      } else if (type === GeoShapes.LineString && geometry?.type === GeoShapes.LineString) {
         yield put(
           Prompt.number({
             title: 'Buffer needed',
             prompt: 'Enter width in meters for line to be buffered:',
             min: 0.001,
             acceptFloats: true,
-            callback,
+            callback: (width: number) => {
+              const newGeo = buffer(geometry, width / 10000) ?? geometry;
+              return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
+            },
             label: 'Meters'
           })
         );
