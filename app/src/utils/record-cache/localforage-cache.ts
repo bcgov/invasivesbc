@@ -49,7 +49,10 @@ class LocalForageRecordCacheService extends RecordCacheService {
     const containsLetters = new RegExp(/[a-zA-Z]/);
     await this.store.iterate((value: Record<PropertyKey, any>, key: PropertyKey) => {
       const keyIsCacheKey = key === LocalForageRecordCacheService.CACHED_SETS_METADATA_KEY;
-      const idsNotInIdsToFilter = params?.ids_to_filter && !params.ids_to_filter.includes(key as string | number);
+      const idsNotInIdsToFilter =
+        params?.ids_to_filter &&
+        !params.ids_to_filter.includes(key as string | number) &&
+        !params.ids_to_filter?.includes(value?.short_id);
       const incorrectKeyType =
         (params.recordSetType === RecordSetType.Activity && !containsLetters.test(key.toString())) ||
         (params.recordSetType === RecordSetType.IAPP && containsLetters.test(key.toString()));
