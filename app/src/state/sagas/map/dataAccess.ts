@@ -110,6 +110,7 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
       const queryObj: IQueryParams = {
         tableFilters: filters.tableFilters,
         recordSetType: filters.recordSetType,
+        ids_to_filter: filters?.ids_to_filter,
         selectColumns: ['id'],
         limit: 1000000 // Override 50k limit of query tool since known size is small.
       };
@@ -178,9 +179,9 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
       filter.filterType !== 'spatialFilterDrawn'
         ? filter
         : {
-          ...filter,
-          geojson: getFilterWithDrawnShape(filter.filter)
-        }
+            ...filter,
+            geojson: getFilterWithDrawnShape(filter.filter)
+          }
     );
 
     modifiedTableFilters ??= [];
@@ -188,6 +189,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
 
     return {
       recordSetType: recordSetType,
+      ids_to_filter: recordSet?.ids_to_filter,
       sortColumn: sortColumn,
       sortOrder: sortOrder,
       tableFilters: modifiedTableFilters,
@@ -261,6 +263,7 @@ export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
       limit: limit,
       page: page,
       tableFilters: filters?.tableFilters,
+      ids_to_filter: filters?.ids_to_filter,
       recordSetType: filters?.recordSetType,
       selectColumns: ['data'],
       sort: { by: filters.sortColumn, order: filters.sortOrder }
@@ -340,6 +343,7 @@ export function* getIappRowsFromCache(payload: IappTableRowRequest) {
       limit: limit,
       page: page,
       tableFilters: filters?.tableFilters,
+      ids_to_filter: filters?.ids_to_filter,
       recordSetType: filters?.recordSetType,
       selectColumns: ['table_data'],
       sort: {

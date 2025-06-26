@@ -18,8 +18,8 @@ const BASELINE_FEATURES = {
   BATCH: new FeatureFlag('BATCH', true),
   EMBEDDED_REPORTS: new FeatureFlag('EMBEDDED_REPORTS', true),
   TRAINING_PAGE: new FeatureFlag('TRAINING_PAGE', true),
-  USER_GUIDE: new FeatureFlag('USER_GUIDE', false), /* set to true when there are entries to display */
-
+  USER_GUIDE: new FeatureFlag('USER_GUIDE', false) /* set to true when there are entries to display */,
+  USER_SITE_LIST: new FeatureFlag('USER_SITE_LIST', true),
   MAP: new FeatureFlag('MAP', true),
 
   MAP_MODE_COMPONENTIZED: new FeatureFlag('MAP_MODE_COMPONENTIZED', false),

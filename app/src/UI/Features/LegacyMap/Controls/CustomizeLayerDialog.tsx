@@ -12,19 +12,14 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  DRAW_CUSTOM_LAYER,
-  REMOVE_CLIENT_BOUNDARY,
-  REMOVE_SERVER_BOUNDARY,
-  TOGGLE_CUSTOMIZE_LAYERS,
-  TOGGLE_LAYER_PICKER_OPEN
-} from 'state/actions';
+import { REMOVE_SERVER_BOUNDARY, TOGGLE_CUSTOMIZE_LAYERS, TOGGLE_LAYER_PICKER_OPEN } from 'state/actions';
 import 'UI/Features/LegacyMap/Controls/CustomizeLayerDialog.css';
 
 import KMLShapesUpload from 'UI/Features/LegacyMap/Controls/KMLShapesUpload';
 import { useSelector } from 'utils/use_selector';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 const CustomizeLayerMenu = () => {
   enum MenuState {
@@ -67,7 +62,7 @@ const CustomizeLayerMenu = () => {
         break;
       case LayerOptions.Draw:
         dispatch({ type: TOGGLE_LAYER_PICKER_OPEN });
-        dispatch({ type: DRAW_CUSTOM_LAYER, payload: { name: newLayerName } });
+        dispatch(UserSettings.Boundaries.drawCustomLayerRequest(newLayerName ?? ''));
         dispatch(
           Alerts.create({
             content: 'Complete your layer by drawing a shape with the map tools.',
@@ -87,7 +82,7 @@ const CustomizeLayerMenu = () => {
     const type = customLayers.filter((layer) => layer.id === layerToDelete)?.[0]?.type;
     switch (type) {
       case 'Client':
-        dispatch({ type: REMOVE_CLIENT_BOUNDARY, payload: { id: layerToDelete } });
+        dispatch(UserSettings.Boundaries.removeCustomLayer(layerToDelete!));
         dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
         cleanup();
         break;

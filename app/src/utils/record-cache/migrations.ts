@@ -120,6 +120,11 @@ const RECORD_CACHE_DB_MIGRATIONS_6 = [
    );`
 ];
 
+const RECORD_CACHE_DB_MIGRATIONS_7 = [
+  `ALTER TABLE CACHE_METADATA
+    ADD COLUMN IDS_TO_FILTER TEXT`
+];
+
 // Hold Migrations as named variable so we can use length to update the Db version automagically
 // Note: toVersion must be an integer.
 const MIGRATIONS = [
@@ -146,6 +151,10 @@ const MIGRATIONS = [
   {
     toVersion: 6,
     statements: RECORD_CACHE_DB_MIGRATIONS_6
+  },
+  {
+    toVersion: 7,
+    statements: RECORD_CACHE_DB_MIGRATIONS_7
   }
 ];
 

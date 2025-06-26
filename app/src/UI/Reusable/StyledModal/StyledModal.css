@@ -1,0 +1,77 @@
+.styled-modal-outter {
+  display: flex;
+  z-index: 100000000;
+  position: fixed;
+  background-color: #00000035;
+  box-sizing: border-box;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+
+  .styled-modal {
+    --title-control-height: 45px;
+    overflow: hidden;
+    background-color: white;
+    width: 100%;
+    max-width: 550px;
+    box-sizing: border-box;
+
+    /* Set Colour Variables depending on Variant Choice */
+    &.primary {
+      --header-color: var(--bc-blue);
+      --header-text-color: white;
+      --header-border-color: var(--bc-yellow);
+    }
+
+    /* Demonstration of adding new colors until secondary variant available */
+    &.secondary {
+      --header-color: green;
+      --header-text-color: white;
+      --header-border-color: red;
+    }
+
+    .header {
+      height: var(--title-control-height);
+      background-color: var(--header-color);
+      border-bottom: 2pt solid var(--header-border-color);
+      color: var(--header-text-color);
+      align-items: center;
+      display: flex;
+      padding-left: 0.5rem;
+      font-size: 1.25rem;
+      text-transform: capitalize;
+    }
+
+    .content {
+      min-height: 115px;
+      padding: 0.75rem 0.5rem;
+      text-align: left;
+    }
+
+    .control {
+      display: flex;
+      box-sizing: border-box;
+      height: var(--title-control-height);
+      padding: 5pt;
+      border-top: 1pt solid #cdcdcd;
+      width: 100%;
+      justify-content: flex-end;
+
+      button:not(:first-child) {
+        margin-left: 5pt;
+      }
+    }
+  }
+}
+
+@media screen and (width > 550) {
+  .styled-modal-outter {
+    .styled-modal {
+      border-radius: 4px;
+    }
+  }
+}

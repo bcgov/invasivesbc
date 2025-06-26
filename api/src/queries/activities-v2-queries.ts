@@ -1,6 +1,7 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { validActivitySortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { escapeLiteral } from 'pg';
+import { reShortId, reUuid } from 'sharedAPI/src/regex';
 import { getLogger } from 'utils/logger';
 import { escapeLiteralUnquoted } from 'utils/dbutils';
 import { InvasivesRequest } from 'utils/auth-utils';
@@ -14,7 +15,6 @@ function sanitizeActivityFilterObject(filterObject: any, req: InvasivesRequest) 
     clientReqTableFilters: [],
     ids_to_filter: []
   } as any;
-
   defaultLog.debug({
     label: 'sanitizeActivityFilterObject',
     message: 'sql',
@@ -37,26 +37,23 @@ function sanitizeActivityFilterObject(filterObject: any, req: InvasivesRequest) 
   sanitizedSearchCriteria.serverSideNamedFilters.hideEditedByFields = !isAuth;
   sanitizedSearchCriteria.preferredUsername = req.authContext?.user?.preferred_username;
 
-  let id_list_valid = true;
-  try {
-    for (let i = 0; i < filterObject?.ids_to_filter?.length - 1; i++) {
-      if (typeof filterObject?.ids_to_filter[i] !== 'string' || filterObject.ids_to_filter[i].length !== 36) {
-        id_list_valid = false;
-        break;
+  if (filterObject?.ids_to_filter?.length > 0) {
+    const activityIdReg = new RegExp(reUuid);
+    const activityIdsValid = filterObject.ids_to_filter.every((id) => activityIdReg.test(id));
+
+    if (activityIdsValid) {
+      sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
+    } else {
+      const shortIdReg = new RegExp(reShortId);
+      const shortIdsValid = filterObject.ids_to_filter.every((id) => shortIdReg.test(id));
+      if (!shortIdsValid) {
+        throw new Error('Supplied ID List contains malformed IDs');
       }
+      sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
     }
-  } catch (e) {
-    defaultLog.debug({ label: 'id_list_valid', message: 'error', body: e });
-    id_list_valid = false;
   }
 
-  if (id_list_valid && filterObject?.ids_to_filter?.length > 0) {
-    sanitizedSearchCriteria.ids_to_filter = filterObject.ids_to_filter;
-  } else if (filterObject?.ids_to_filter?.length > 0 && !id_list_valid) {
-    throw new Error('Invalid id list');
-  }
-
-  let selectColumns = [];
+  let selectColumns: Array<string> = [];
 
   if (filterObject?.selectColumns?.length > 0) {
     filterObject.selectColumns.forEach((column) => {
@@ -718,10 +715,15 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   });
   where.append(` ) `);
 
-  if (filterObject.ids_to_filter && filterObject.ids_to_filter.length > 0) {
-    where.append(
-      ` and ${tableAlias}.activity_id in (${filterObject.ids_to_filter.map((id) => "'" + id + "'").join(',')}) `
-    );
+  if (filterObject?.ids_to_filter?.length > 0) {
+    const UUID_LENGTH = 36;
+    const isUuidList = filterObject?.ids_to_filter[0].length === UUID_LENGTH;
+    const stringifiedIds = filterObject.ids_to_filter.map((id) => "'" + id + "'").join(',');
+    if (isUuidList) {
+      where.append(` and ${tableAlias}.activity_id in (${stringifiedIds}) `);
+    } else {
+      where.append(` and ${tableAlias}.short_id in (${stringifiedIds})`);
+    }
   }
   return where;
 }
