@@ -77,7 +77,6 @@ class Activity {
   static readonly getNetworkRequest = createAction<string>(`${this.PREFIX}/getNetworkRequest`);
   static readonly save = createAction(`${this.PREFIX}/save`);
   static readonly saveSuccess = createAction<Record<string, any>>(`${this.PREFIX}/saveSuccess`);
-  static readonly alertToSaveShape = createAction(`${this.PREFIX}/alertToSaveShape`);
   static readonly setSavedHashSuccess = createAction<string>(`${this.PREFIX}/setSavedHashSuccess`);
   static readonly createLocal = createAction<ICreateLocal>(`${this.PREFIX}/createLocal`);
   static readonly createSuccess = createAction<string>(`${this.PREFIX}/createSuccess`);

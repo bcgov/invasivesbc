@@ -349,10 +349,6 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
   yield put(Alerts.create(mappingAlertMessages.trackingPaused));
 }
 
-function* handle_ACTIVITY_SAVE_SHAPE_PROMPT() {
-  yield put(Alerts.create(mappingAlertMessages.saveActivityShape));
-}
-
 /**
  * @desc Handles new coordinates coming in from the TRACK_ME_GEO featureset.
  *       Evaluates distance between new and previous points to eliminate micro adjustments from GPS sway.
@@ -462,7 +458,6 @@ function* activityPageSaga() {
     takeEvery(Activity.save, handle_ACTIVITY_SAVE_REQUEST),
     takeEvery(Activity.saveSuccess, handle_ACTIVITY_SAVE_SUCCESS),
     takeEvery(Activity.saveNetworkRequest, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
-    takeEvery(Activity.alertToSaveShape, handle_ACTIVITY_SAVE_SHAPE_PROMPT),
     takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
     takeEvery(Activity.createReq, handle_ACTIVITY_CREATE_REQUEST),
     takeEvery(Activity.createNetwork, handle_ACTIVITY_CREATE_NETWORK),

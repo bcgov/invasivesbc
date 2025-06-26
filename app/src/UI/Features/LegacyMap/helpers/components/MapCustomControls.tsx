@@ -84,11 +84,11 @@ const EditControlUI: React.FC<EditControlUIProps> = ({ onEdit, onSave, isDisable
           disabled={isDisabled}
           className={`${isDisabled ? 'custom-edit-button disabled' : ''}`}
         >
-          <img src={editButton} alt="✏️" style={{ width: 15, height: 15, marginTop: 3 }} />
+          <img src={editButton} alt="Edit" style={{ width: 15, height: 15, marginTop: 3 }} />
         </button>
       ) : (
         <button title="Save" onClick={handleSaveClick}>
-          <img src={saveButton} alt="💾" style={{ width: 15, height: 15, marginTop: 3 }} />
+          <img src={saveButton} alt="Save" style={{ width: 15, height: 15, marginTop: 3 }} />
         </button>
       )}
     </>

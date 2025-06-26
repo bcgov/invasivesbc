@@ -21,7 +21,8 @@ import GeoShapes from 'constants/geoShapes';
 import TargetMode from 'constants/targetModes';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
-import Activity from 'state/actions/activity/Activity';
+import Alerts from 'state/actions/alerts/Alerts';
+import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -63,7 +64,7 @@ const DrawControls = () => {
 
     isEditing.current = true;
     drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
-    dispatch(Activity.alertToSaveShape());
+    dispatch(Alerts.create(mappingAlertMessages.saveActivityShape));
   };
 
   const handleSave = () => {
@@ -76,9 +77,21 @@ const DrawControls = () => {
     dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
   };
 
+  const hasEditableShape = () => {
+    const features = drawInstance.current?.getAll().features;
+    return features && features.length > 0 && features[0].geometry.type !== GeoShapes.Point;
+  };
+
+  const updateEditControlState = () => {
+    const shouldEnableEdit = hasEditableShape();
+    editControls.current?.setDisabled(!shouldEnableEdit);
+  };
+
   useEffect(() => {
     modeRef.current = mode;
-    editControls.current?.setDisabled(isEditDisabled);
+
+    const shouldEnableEdit = hasEditableShape() && !isEditDisabled;
+    editControls.current?.setDisabled(!shouldEnableEdit);
   }, [mode]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
@@ -189,6 +202,7 @@ const DrawControls = () => {
             Well_Information: undefined
           }
         });
+        updateEditControlState();
       }
     };
 
@@ -268,6 +282,8 @@ const DrawControls = () => {
         break;
       }
     }
+
+    updateEditControlState();
   }, []);
 
   // setup mode based on what's going on in the redux store / current url
@@ -333,6 +349,7 @@ const DrawControls = () => {
     if (editedGeo?.id !== featureId) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
+    updateEditControlState();
   }, []);
 
   useEffect(() => {
