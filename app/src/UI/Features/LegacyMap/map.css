@@ -118,7 +118,12 @@
   background: #999;
 }
 
-.mapbox-gl-draw_ctrl-draw-btn.disabled {
+.maplibregl-ctrl-group {
+  border-radius: 4px 4px 0px 0px;
+}
+
+.mapbox-gl-draw_ctrl-draw-btn.disabled,
+.custom-edit-button.disabled {
   opacity: 0.5;
   background-color: #c1c0c0 !important;
   border-color: #a0a0a0 !important;

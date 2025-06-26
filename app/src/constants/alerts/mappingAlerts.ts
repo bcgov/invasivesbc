@@ -55,6 +55,12 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
     subject: AlertSubjects.Map,
     autoClose: 5
   },
+  saveActivityShape: {
+    content: 'Make sure to save your updated shape using the draw tools on the left.',
+    severity: AlertSeverity.Warning,
+    subject: AlertSubjects.Map,
+    autoClose: 5
+  },
 
   // Warnings
   wellsInsideTreatmentArea: {
