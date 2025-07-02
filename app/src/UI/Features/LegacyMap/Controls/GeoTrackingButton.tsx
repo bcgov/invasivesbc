@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';
+import { isTracking } from 'utils/geoTrackingHelpers';
 
 /**
  * TrackMeButton
@@ -14,7 +15,7 @@ import Prompt from 'state/actions/prompts/Prompt';
  * @returns {void}
  */
 export const GeoTrackingButton = () => {
-  const { isTracking } = useSelector((state) => state.Map.track_me_draw_geo);
+  const { status } = useSelector((state) => state.Map.track_me_draw_geo);
 
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
@@ -34,7 +35,7 @@ export const GeoTrackingButton = () => {
 
   const clickHandler = () => {
     setShow(false);
-    if (isTracking) {
+    if (isTracking(status)) {
       dispatch(GeoTracking.stop());
     } else {
       dispatch(
@@ -53,7 +54,7 @@ export const GeoTrackingButton = () => {
   };
   // this is to stop user from clicking it again while things are happening
   return (
-    <div ref={divRef} className={isTracking ? 'map-btn-selected' : 'map-btn'}>
+    <div ref={divRef} className={isTracking(status) ? 'map-btn-selected' : 'map-btn'}>
       <Tooltip
         open={show}
         classes={{ tooltip: 'toolTip' }}

@@ -14,6 +14,7 @@ import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
+import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -35,9 +36,10 @@ interface ActivityState {
   suggestedPersons: Record<string, any>[];
   suggestedTreatmentIDs: SuggestedTreatmentId[];
   track_me_draw_geo: {
-    isTracking: boolean;
-    type: GeoShapes | null;
-    drawingShape: boolean;
+    status: GeoTrackingStatus;
+    shapeType: GeoShapes | null;
+    // type: GeoShapes | null;
+    // drawingShape: boolean;
   };
   activity_copy_buffer: Record<string, any> | null;
   uiSchema: UiSchema | undefined;
@@ -56,9 +58,10 @@ const initialState: ActivityState = {
   initialized: false,
   loading: false,
   track_me_draw_geo: {
-    isTracking: false,
-    type: null,
-    drawingShape: false
+    status: GeoTrackingStatus.IDLE,
+    shapeType: null
+    // type: null,
+    // drawingShape: false
   },
   saved_activity_hash: null,
   biocontrol: {
@@ -77,25 +80,33 @@ function createActivityReducer() {
     return createNextState(state, (draftState: Draft<ActivityState>) => {
       if (GeoTracking.start.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: true,
-          type: action.payload.type,
-          drawingShape: true
+          status: GeoTrackingStatus.TRACKING_AND_DRAWING,
+          shapeType: action.payload.type
+          // isTracking: true,
+          // type: action.payload.type,
+          // drawingShape: true
         };
       } else if (GeoTracking.earlyExit.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: false,
-          type: null,
-          drawingShape: false
+          status: GeoTrackingStatus.EXITED,
+          shapeType: null
+          // isTracking: false,
+          // type: null,
+          // drawingShape: false
         };
       } else if (GeoTracking.pause.match(action)) {
-        draftState.track_me_draw_geo.drawingShape = false;
+        draftState.track_me_draw_geo.status = GeoTrackingStatus.ONLY_TRACKING;
+        // draftState.track_me_draw_geo.drawingShape = false;
       } else if (GeoTracking.resume.match(action)) {
-        draftState.track_me_draw_geo.drawingShape = true;
+        draftState.track_me_draw_geo.status = GeoTrackingStatus.TRACKING_AND_DRAWING;
+        // draftState.track_me_draw_geo.drawingShape = true
       } else if (GeoTracking.exitDrawing.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: false,
-          type: draftState.track_me_draw_geo.type,
-          drawingShape: false
+          status: GeoTrackingStatus.EXITED,
+          shapeType: draftState.track_me_draw_geo.shapeType
+          // isTracking: false,
+          // type: draftState.track_me_draw_geo.type,
+          // drawingShape: false
         };
       } else if (Activity.Photo.addSuccess.match(action)) {
         if (draftState.activity.media == undefined) {

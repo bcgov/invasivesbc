@@ -124,6 +124,7 @@ export function updateGPSCoordinate(coord: Position[], error: string) {
 export function convertLineToPolygon(coords: Position[], error: string) {
   const state = GeoTrackingContext.getState();
   if (!state || !state.shape || !state.shape.geometry) return;
+  console.log('Before', state.shape);
 
   state.shape = {
     ...state.shape,
@@ -139,4 +140,5 @@ export function convertLineToPolygon(coords: Position[], error: string) {
       _updated: Date.now()
     }
   };
+  console.log('After', state.shape);
 }

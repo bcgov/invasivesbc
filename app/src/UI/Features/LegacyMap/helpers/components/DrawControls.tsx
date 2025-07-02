@@ -18,11 +18,12 @@ import {
 } from 'UI/Features/LegacyMap/helpers/functional/geo-tracking-mode';
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
 import GeoShapes from 'constants/geoShapes';
-import TargetMode from 'constants/targetModes';
+import { TargetMode } from 'constants/targetModes';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
 import Alerts from 'state/actions/alerts/Alerts';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
+import { isDrawing, isTracking } from 'utils/geoTrackingHelpers';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -38,7 +39,11 @@ const DrawControls = () => {
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
   const appModeURL = useSelector((state) => state.AppMode.url);
-  const currGeoTrackingMode = useSelector((state) => state.Map.track_me_draw_geo.isTracking);
+
+  const geoTrackingStatus = useSelector((state) => state.Map.track_me_draw_geo.status);
+
+  const currGeoTrackingMode = isTracking(geoTrackingStatus);
+  const isDrawingShape = isDrawing(geoTrackingStatus);
   const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
@@ -74,12 +79,18 @@ const DrawControls = () => {
     const updatedFeature = drawInstance.current?.getAll().features[0];
     if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
 
+    console.log('updated feature', updatedFeature.geometry);
+
     dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
   };
 
   const hasEditableShape = () => {
     const features = drawInstance.current?.getAll().features;
-    return features && features.length > 0 && features[0].geometry.type !== GeoShapes.Point;
+
+    if (!features || features.length === 0) return false;
+    const isGeoTrackingEditable = mode === TargetMode.ACTIVITY_GEO_TRACK && currGeoTrackingMode && !isDrawingShape;
+
+    return features[0].geometry.type !== GeoShapes.Point || isGeoTrackingEditable;
   };
 
   const updateEditControlState = () => {
@@ -93,6 +104,11 @@ const DrawControls = () => {
     const shouldEnableEdit = hasEditableShape() && !isEditDisabled;
     editControls.current?.setDisabled(!shouldEnableEdit);
   }, [mode]);
+
+  useEffect(() => {
+    if (isDrawingShape) return;
+    updateEditControlState();
+  }, [isDrawingShape]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
   useEffect(() => {
@@ -139,7 +155,7 @@ const DrawControls = () => {
     const coordinates = activityGeo.geometry.coordinates;
     const hasError = String(activityGeo?.properties?.error ?? 'false') === 'true';
     const isInitialDraw = !feature || coordinates.length === 1;
-    const justExitedTracking = prevGeoTrackingMode && !currGeoTrackingMode;
+    const exitedTrackingAndDrawing = prevGeoTrackingMode && !currGeoTrackingMode && isDrawingShape;
 
     const handleInitialDraw = () => {
       setPrevGeoTrackingMode(currGeoTrackingMode);
@@ -165,7 +181,8 @@ const DrawControls = () => {
       }
     }
 
-    if (justExitedTracking && isPolygon) {
+    if (exitedTrackingAndDrawing && isPolygon) {
+      console.log('just exited tracking', exitedTrackingAndDrawing, isPolygon);
       handlePolygonConversion();
     }
   }, [activityGeo?.geometry, currGeoTrackingMode]);
@@ -237,6 +254,7 @@ const DrawControls = () => {
 
   const drawCreate = useCallback((event) => {
     if (!drawInstance.current) return;
+    console.log('is it here?1');
 
     const currentMode = modeRef.current;
 
@@ -320,7 +338,7 @@ const DrawControls = () => {
    */
   const drawShapeUpdate = useCallback((event, map: InvasivesMap | undefined) => {
     if (!drawInstance.current) return;
-
+    console.log('is it here?2');
     const currentMode = drawInstance.current.getMode();
 
     if (currentMode === 'direct_select') {

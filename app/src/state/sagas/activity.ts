@@ -70,6 +70,7 @@ import MapActions from 'state/actions/map';
 import { selectAuth } from 'state/reducers/auth';
 import { Role } from 'constants/roles';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import { isDrawing } from 'utils/geoTrackingHelpers';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -174,7 +175,7 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
  * @desc Handler for starting GPS drawn shapes. Sets geometry to empty array, alerts user feature live.
  */
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
-  const shape = (yield select(selectActivity)).track_me_draw_geo.type;
+  const shape = (yield select(selectActivity)).track_me_draw_geo.shapeType;
   const coords = (yield select(selectMap))?.userCoords;
 
   const message = (() => {
@@ -223,7 +224,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   });
   let minNumberCoords: number = 0;
   const activityState = yield select(selectActivity);
-  const shape = activityState.track_me_draw_geo.type;
+  const shape = activityState.track_me_draw_geo.shapeType;
   const coords = (yield select(selectMap))?.userCoords;
   const userHasTrackingEnabled = coords?.hasOwnProperty('long');
 
@@ -357,10 +358,11 @@ function* handle_MAP_SET_COORDS(action) {
   const MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS = 1;
   const activityState = yield select(selectActivity);
   const {
-    track_me_draw_geo: { isTracking, drawingShape }
+    track_me_draw_geo: { status }
   } = activityState;
   try {
-    if (isTracking && drawingShape) {
+    // if (isTracking && drawingShape) {
+    if (isDrawing(status)) {
       let currentGeo = activityState?.activity?.geometry?.[0];
       if (!currentGeo) {
         currentGeo = {
