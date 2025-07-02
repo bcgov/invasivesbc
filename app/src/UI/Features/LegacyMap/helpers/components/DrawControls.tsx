@@ -23,7 +23,7 @@ import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/c
 import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
 import Alerts from 'state/actions/alerts/Alerts';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
-import { isDrawing, isTracking } from 'utils/geoTrackingHelpers';
+import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -44,6 +44,7 @@ const DrawControls = () => {
 
   const currGeoTrackingMode = isTracking(geoTrackingStatus);
   const isDrawingShape = isDrawing(geoTrackingStatus);
+  const isPausedDrawing = isPaused(geoTrackingStatus);
   const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
@@ -87,10 +88,14 @@ const DrawControls = () => {
   const hasEditableShape = () => {
     const features = drawInstance.current?.getAll().features;
 
-    if (!features || features.length === 0) return false;
-    const isGeoTrackingEditable = mode === TargetMode.ACTIVITY_GEO_TRACK && currGeoTrackingMode && !isDrawingShape;
+    if (!features || features.length === 0 || features?.[0]?.geometry?.coordinates?.length === 1) return false;
 
-    return features[0].geometry.type !== GeoShapes.Point || isGeoTrackingEditable;
+    const isGeoTracking = mode === TargetMode.ACTIVITY_GEO_TRACK;
+    if (isGeoTracking) {
+      return isPausedDrawing;
+    }
+
+    return features[0].geometry.type !== GeoShapes.Point;
   };
 
   const updateEditControlState = () => {
@@ -106,7 +111,7 @@ const DrawControls = () => {
   }, [mode]);
 
   useEffect(() => {
-    if (isDrawingShape) return;
+    // if (isDrawingShape) return;
     updateEditControlState();
   }, [isDrawingShape]);
 
@@ -155,7 +160,7 @@ const DrawControls = () => {
     const coordinates = activityGeo.geometry.coordinates;
     const hasError = String(activityGeo?.properties?.error ?? 'false') === 'true';
     const isInitialDraw = !feature || coordinates.length === 1;
-    const exitedTrackingAndDrawing = prevGeoTrackingMode && !currGeoTrackingMode && isDrawingShape;
+    const exitedTrackingAndDrawing = !prevGeoTrackingMode;
 
     const handleInitialDraw = () => {
       setPrevGeoTrackingMode(currGeoTrackingMode);
@@ -182,7 +187,6 @@ const DrawControls = () => {
     }
 
     if (exitedTrackingAndDrawing && isPolygon) {
-      console.log('just exited tracking', exitedTrackingAndDrawing, isPolygon);
       handlePolygonConversion();
     }
   }, [activityGeo?.geometry, currGeoTrackingMode]);

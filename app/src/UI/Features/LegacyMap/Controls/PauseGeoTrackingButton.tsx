@@ -3,7 +3,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
-import { isDrawing } from 'utils/geoTrackingHelpers';
+import { isDrawing, isPaused } from 'utils/geoTrackingHelpers';
 import { useSelector } from 'utils/use_selector';
 
 const PauseGeoTrackingButton = () => {
@@ -26,12 +26,12 @@ const PauseGeoTrackingButton = () => {
         classes={{ tooltip: 'toolTip' }}
         onMouseEnter={() => setShow(true)}
         onMouseLeave={() => setShow(false)}
-        title={isDrawing(status) ? 'Pause Drawing Shape' : 'Resume Drawing Shape'}
+        title={isPaused(status) ? 'Resume Drawing Shape' : 'Pause Drawing Shape'}
         placement="top-end"
       >
         <span>
           <IconButton className="button" onClick={handleClick}>
-            {isDrawing(status) ? <Pause /> : <PlayArrow />}
+            {isPaused(status) ? <PlayArrow /> : <Pause />}
           </IconButton>
         </span>
       </Tooltip>

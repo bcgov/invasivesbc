@@ -67,7 +67,7 @@ import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { normalizeToPolygonCoordinates } from 'utils/geometryHelpers';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
-import { isTracking } from 'utils/geoTrackingHelpers';
+import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -657,9 +657,14 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
     }
 
     if (isActivityPage && !whatsHere.toggle) {
-      if (isGeoTrackingFeature && shapeType === GeoShapes.Polygon) {
-        geometry.type = shapeType;
-        geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
+      if (isGeoTrackingFeature) {
+        if (isPaused(status)) {
+          // don't do anything, just call ACTIVITY_UPDATE_GEO_REQUEST
+          // TO DO: this works, but the yellow line disappears on completing the line
+        } else if (shapeType === GeoShapes.Polygon) {
+          geometry.type = shapeType;
+          geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
+        }
       } else if (shapeType === GeoShapes.LineString && geometry?.type === GeoShapes.LineString) {
         yield put(
           Prompt.number({
