@@ -123,7 +123,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
         });
       } else if (UserSettings.RecordSet.updateFilter.match(action)) {
-        const { setID, filterType, filterID } = action.payload;
+        const { setID, filterType, filterID, geojson } = action.payload;
         const recordSet = draftState.recordSets[setID];
         const tableFilter = recordSet?.tableFilters.find((filter) => filter.id === filterID);
         if (!tableFilter) return;
@@ -133,11 +133,11 @@ function createUserSettingsReducer(_configuration: AppConfig) {
             tableFilter[key] = action.payload[key];
           }
         });
-
         if (action.payload?.filterType === 'spatialFilterDrawn' || filterType === 'spatialFilterUploaded') {
           tableFilter.field = '';
           tableFilter.operator ??= 'CONTAINED IN';
           tableFilter.filter ??= '';
+          tableFilter.geojson = geojson;
         }
 
         const tableFiltersNotBlank = recordSet?.tableFilters.filter((filter) => !!filter.filter);

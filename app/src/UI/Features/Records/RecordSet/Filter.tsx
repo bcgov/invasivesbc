@@ -40,6 +40,13 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
     []
   );
 
+  const updateSpatialFilter = (id: string, filterType: string) => {
+    const shape =
+      filterType === 'spatialFilterUploaded'
+        ? serverBoundariesToDisplay.find((boundary) => boundary.value === id)
+        : clientBoundariesToDisplay.find((boundary) => boundary.value === id);
+    updateFilter({ filter: shape.id, geojson: shape.geojson, filterType: filterType });
+  };
   /**
    * Update the Recordsets filters
    * @param newVal additional object keys
@@ -84,7 +91,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
           <select
             className="filterSelect"
             disabled={disabled}
-            onChange={(e) => updateFilter({ filter: e.target.value })}
+            onChange={(e) => updateSpatialFilter(e.target.value, 'spatialFilterUploaded')}
             value={filterSet.filter}
           >
             {serverBoundariesToDisplay?.map((option) => (
@@ -99,7 +106,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
           <select
             className="filterSelect"
             disabled={disabled}
-            onChange={(e) => updateFilter({ filter: e.target.value })}
+            onChange={(e) => updateSpatialFilter(e.target.value, 'spatialFilterDrawn')}
             value={filterSet.filter}
           >
             {clientBoundariesToDisplay?.map((option) => (
@@ -118,11 +125,13 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
 
   const serverBoundariesToDisplay = useSelector((state) => state.Map.serverBoundaries)?.map((boundary) => ({
     label: boundary.title,
-    value: boundary.id
+    value: boundary.id,
+    ...boundary
   }));
   const clientBoundariesToDisplay = useSelector((state) => state.Map.clientBoundaries)?.map((boundary) => ({
     label: boundary.title,
-    value: boundary.id
+    value: boundary.id,
+    ...boundary
   }));
   const filterColumns = recordSetType === RecordSetType.Activity ? activityColumnsToDisplay : iappColumnsToDisplay;
   const filterOptions = filterColumns.map((option) => ({ label: option.name, value: option.key }));
