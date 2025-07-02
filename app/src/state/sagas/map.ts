@@ -304,13 +304,12 @@ function* handle_WHATS_HERE_PAGE_ACTIVITY() {
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   const userSettings = yield select(selectUserSettings);
   const set = userSettings?.recordSets?.[action.payload.id];
-  const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
   try {
     let conditionallyUnnestedURL;
     if (set.recordSetType === 'IAPP') {
       const currentState = yield select((state) => state.UserSettings);
 
-      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
+      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
       if (filterObject == null) {
         yield put({
           type: RECORD_SET_TO_EXCEL_FAILURE
@@ -335,7 +334,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     } else {
       const currentState = yield select((state) => state.UserSettings);
 
-      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
+      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
       if (filterObject == null) {
         yield put({
           type: RECORD_SET_TO_EXCEL_FAILURE
