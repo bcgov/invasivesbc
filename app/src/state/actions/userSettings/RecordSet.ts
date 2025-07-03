@@ -1,12 +1,12 @@
 import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
 import { Feature } from 'geojson';
+import { buildTimeConfig } from '../../configuration/build-time-config';
 import { RECORD_COLOURS } from 'constants/colors';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { CacheDownloadMode } from 'utils/record-cache';
 import RecordCache from 'state/actions/cache/RecordCache';
-import { buildTimeConfig } from '../../configuration/build-time-config';
 
 interface IUpdateFilter extends Partial<IFilter> {
   setID: string | number;
@@ -19,6 +19,11 @@ interface IRemoveFilter {
   filterID: string | number;
 }
 
+enum EFilterType {
+  Drawn = 'spatialFilterDrawn',
+  Uploaded = 'spatialFilterUploaded',
+  Table = 'tableFilter'
+}
 interface IFilter {
   id: string;
   field: string;
@@ -137,4 +142,5 @@ class RecordSet {
 }
 
 export default RecordSet;
+export { EFilterType };
 export type { IUpdateFilter, IRemoveFilter, IFilter, IAddFilter };
