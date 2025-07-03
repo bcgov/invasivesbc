@@ -15,11 +15,12 @@ import {
 import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
 import { getConcatenatedCodes, findSpeciesCodes } from 'utils/addActivity';
+import { EFilterType, IFilter } from 'state/actions/userSettings/RecordSet';
 
 const LAYER_ID_PREFIX = 'recordset-layer-';
 const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
@@ -58,9 +59,16 @@ const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => {
 
 const createOnlineIappLayer = (map: any, layer: any) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
+  const filterObject = structuredClone(layer.filterObject);
+
+  filterObject?.tableFilters?.forEach((filter: IFilter, i: number) => {
+    if (filter.filterType === EFilterType.Uploaded) {
+      delete filterObject?.tableFilters?.[i]?.geojson;
+    }
+  });
   const source: SourceSpecification = {
     type: 'vector',
-    tiles: [`api:///api/vectors/iapp/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
+    tiles: [`api:///api/vectors/iapp/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(filterObject))}`],
     minzoom: 0,
     maxzoom: 24
   };
@@ -251,14 +259,21 @@ const createCachedActivityLayer = async (map: maplibregl.Map, layer: any) => {
 const createOnlineActivityLayer = (map: maplibregl.Map, layer: any) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
 
-  if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
+  if ([RecordSetId.Drafts, RecordSetId.Activity].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
     return;
   }
+  const filterObject = structuredClone(layer.filterObject);
+
+  filterObject?.tableFilters?.forEach((filter: IFilter, i: number) => {
+    if (filter.filterType === EFilterType.Uploaded) {
+      delete filterObject?.tableFilters?.[i]?.geojson;
+    }
+  });
 
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
   const source: SourceSpecification = {
     type: 'vector',
-    tiles: [`api:///api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
+    tiles: [`api:///api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(filterObject))}`],
     minzoom: 0,
     maxzoom: 24
   };
