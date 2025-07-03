@@ -23,7 +23,7 @@ import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
 } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
-import { EFilterType, IFilter } from 'state/actions/userSettings/RecordSet';
+import { IFilter } from 'state/actions/userSettings/RecordSet';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -359,7 +359,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     (shapesInBufferedArea.values ?? []).forEach((entry) => {
       entry = JSON.parse(entry['GEOJSON']);
       // IAPP is Shape, but InvBC records are Array<Shape>
-      const recordIsActivity = Object.hasOwn(entry, 'length');
+      const recordIsActivity = Array.isArray(entry);
       if (recordIsActivity) {
         entry?.forEach((shape: Feature) => {
           if (booleanIntersects(geom, shape)) {
@@ -479,8 +479,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const filteredFilterTypes = [EFilterType.Drawn, EFilterType.Uploaded];
-    const spatialQueries = params.tableFilters.filter((filter) => filteredFilterTypes.includes(filter.filterType));
+    const spatialQueries = params.tableFilters.filter((filter) => filter?.geojson);
     const values: Array<string | number> = [];
     const table = {
       [RecordSetType.Activity]: 'CACHED_RECORDS',
@@ -527,15 +526,16 @@ class SQLiteRecordCacheService extends RecordCacheService {
       `;
 
     let results = (await this.cacheDB.query(query, values))?.values ?? [];
+
     if (spatialQueries.length > 0) {
       results = results.filter((result) => {
-        const geojson = JSON.parse(result['GEOJSON']);
-        if (Object.hasOwn(geojson, 'length')) {
-          return geojson.every((shape: Feature) =>
-            spatialQueries.every((query) => booleanIntersects(shape, query.geojson))
-          );
-        }
-        return spatialQueries.every((spatialFilter) => booleanIntersects(spatialFilter.geojson, geojson));
+        return spatialQueries.every((query) => {
+          const geojson = JSON.parse(result['GEOJSON']);
+          if (Array.isArray(geojson)) {
+            return geojson.some((feature) => booleanIntersects(feature, query.geojson));
+          }
+          return booleanIntersects(geojson, query.geojson);
+        });
       });
     }
     return (
