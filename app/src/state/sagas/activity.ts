@@ -225,16 +225,17 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   let minNumberCoords: number = 0;
   const activityState = yield select(selectActivity);
   const shape = activityState.track_me_draw_geo.shapeType;
-  const coords = (yield select(selectMap))?.userCoords;
-  const userHasTrackingEnabled = coords?.hasOwnProperty('long');
+  // const coords = (yield select(selectMap))?.userCoords;
+  // const userHasTrackingEnabled = coords?.hasOwnProperty('long');
 
-  // early return
-  if (!userHasTrackingEnabled) return;
+  // // early return
+  // if (!userHasTrackingEnabled) return;
 
   // Early exit on non-existent/zero-length geometry arrays
   if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
     yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
-    yield put(GeoTracking.earlyExit());
+    // yield put(GeoTracking.earlyExit());
+    yield put(GeoTracking.exit());
     return;
   }
 
@@ -276,7 +277,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     console.error(err);
   }
   if (geographyWillContainIntersections) {
-    yield put(GeoTracking.earlyExit());
+    // yield put(GeoTracking.earlyExit());
+    yield put(GeoTracking.exit());
     yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
     return;
@@ -294,7 +296,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
         const bufferedLine = buffer(newGeo, width / 10000);
         return [
           { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [bufferedLine] } },
-          GeoTracking.earlyExit(),
+          GeoTracking.end(),
+          // GeoTracking.earlyExit(),
           Alerts.create(mappingAlertMessages.trackingStoppedSuccess)
         ];
       };
@@ -311,7 +314,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
       );
     } else {
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
-      yield put(GeoTracking.earlyExit());
+      // yield put(GeoTracking.earlyExit());
+      yield put(GeoTracking.end());
       yield put(Alerts.create(mappingAlertMessages.trackingStoppedSuccess));
     }
   } else {
@@ -324,7 +328,8 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
       if (userConfirmsExit) {
         return [
           Alerts.deleteAll(),
-          GeoTracking.earlyExit(),
+          // GeoTracking.earlyExit(),
+          GeoTracking.exit(),
           { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];

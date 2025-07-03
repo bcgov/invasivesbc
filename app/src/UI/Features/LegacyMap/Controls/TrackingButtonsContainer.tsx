@@ -6,6 +6,7 @@ import { isTracking } from 'utils/geoTrackingHelpers';
 
 const TrackingButtonsContainer = () => {
   const { status } = useSelector((state) => state.Map.track_me_draw_geo);
+  const tracking = isTracking(status);
   const url = useSelector((state) => state.AppMode.url);
   const isInActivity = url?.includes('Activity:');
 
@@ -15,7 +16,7 @@ const TrackingButtonsContainer = () => {
       {isInActivity && (
         <>
           <GeoTrackingButton />
-          {isTracking(status) && <PauseGeoTrackingButton />}
+          {tracking && <PauseGeoTrackingButton />}
         </>
       )}
     </>

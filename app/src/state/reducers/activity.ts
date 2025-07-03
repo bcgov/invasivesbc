@@ -82,31 +82,30 @@ function createActivityReducer() {
         draftState.track_me_draw_geo = {
           status: GeoTrackingStatus.TRACKING_AND_DRAWING,
           shapeType: action.payload.type
-          // isTracking: true,
-          // type: action.payload.type,
-          // drawingShape: true
         };
       } else if (GeoTracking.earlyExit.match(action)) {
         draftState.track_me_draw_geo = {
           status: GeoTrackingStatus.EXITED,
           shapeType: null
-          // isTracking: false,
-          // type: null,
-          // drawingShape: false
         };
       } else if (GeoTracking.pause.match(action)) {
         draftState.track_me_draw_geo.status = GeoTrackingStatus.ONLY_TRACKING;
-        // draftState.track_me_draw_geo.drawingShape = false;
       } else if (GeoTracking.resume.match(action)) {
         draftState.track_me_draw_geo.status = GeoTrackingStatus.TRACKING_AND_DRAWING;
-        // draftState.track_me_draw_geo.drawingShape = true
       } else if (GeoTracking.exitDrawing.match(action)) {
         draftState.track_me_draw_geo = {
           status: GeoTrackingStatus.EXITED,
           shapeType: draftState.track_me_draw_geo.shapeType
-          // isTracking: false,
-          // type: draftState.track_me_draw_geo.type,
-          // drawingShape: false
+        };
+      } else if (GeoTracking.exit.match(action)) {
+        draftState.track_me_draw_geo = {
+          status: GeoTrackingStatus.EXITED,
+          shapeType: null
+        };
+      } else if (GeoTracking.end.match(action)) {
+        draftState.track_me_draw_geo = {
+          status: GeoTrackingStatus.COMPLETED,
+          shapeType: null
         };
       } else if (Activity.Photo.addSuccess.match(action)) {
         if (draftState.activity.media == undefined) {
@@ -225,6 +224,8 @@ function createActivityReducer() {
             break;
           }
           case ACTIVITY_UPDATE_GEO_SUCCESS: {
+            console.log('ACTIVITY_UPDATE_GEO', action.payload.geometry);
+
             draftState.activity.geometry = action.payload.geometry;
             draftState.activity.form_data.activity_data.latitude = action.payload.lat ? action.payload.lat : null;
             draftState.activity.form_data.activity_data.longitude = action.payload.long ? action.payload.long : null;
@@ -237,7 +238,7 @@ function createActivityReducer() {
               ? action.payload.reported_area
               : null;
             draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
-
+            console.log('AFTER ACTIVITY_UPDATE_GEO', draftState.activity.geometry);
             break;
           }
           case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {

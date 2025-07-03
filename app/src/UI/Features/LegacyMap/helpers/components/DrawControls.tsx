@@ -24,6 +24,7 @@ import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/com
 import Alerts from 'state/actions/alerts/Alerts';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
+import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -58,6 +59,10 @@ const DrawControls = () => {
   const uHistory = useHistory();
 
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
+
+  const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
+  const [hasStartedManualDraw, setHasStartedManualDraw] = useState(false);
+
   const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
 
   // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
@@ -80,26 +85,29 @@ const DrawControls = () => {
     const updatedFeature = drawInstance.current?.getAll().features[0];
     if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
 
-    console.log('updated feature', updatedFeature.geometry);
-
     dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
   };
 
   const hasEditableShape = () => {
     const features = drawInstance.current?.getAll().features;
 
-    if (!features || features.length === 0 || features?.[0]?.geometry?.coordinates?.length === 1) return false;
+    //|| features?.[0]?.geometry?.coordinates?.length === 1
+    if (!features || features.length === 0) return false;
 
     const isGeoTracking = mode === TargetMode.ACTIVITY_GEO_TRACK;
+
     if (isGeoTracking) {
-      return isPausedDrawing;
+      return isPausedDrawing || geoTrackingStatus === GeoTrackingStatus.COMPLETED;
     }
 
     return features[0].geometry.type !== GeoShapes.Point;
   };
 
-  const updateEditControlState = () => {
+  const updateEditControlState = (debug) => {
+    console.log('Called by: ', debug);
+
     const shouldEnableEdit = hasEditableShape();
+
     editControls.current?.setDisabled(!shouldEnableEdit);
   };
 
@@ -112,7 +120,7 @@ const DrawControls = () => {
 
   useEffect(() => {
     // if (isDrawingShape) return;
-    updateEditControlState();
+    updateEditControlState('isdrawingshape useeffect');
   }, [isDrawingShape]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
@@ -147,20 +155,9 @@ const DrawControls = () => {
   useEffect(() => {
     const feature = drawInstance?.current?.get(GEO_TRACKING_FEATURE);
     const isActivityGeoEmpty = Object.keys(activityGeo).length === 0;
-    const isFeaturePresent = feature && Object.keys(feature).length > 0;
-
-    if (isActivityGeoEmpty && isFeaturePresent) {
-      drawInstance?.current?.deleteAll();
-      return;
-    }
-
-    if (!activityGeo?.geometry) return;
-
-    const isPolygon = activityGeo.geometry.type === GeoShapes.Polygon;
-    const coordinates = activityGeo.geometry.coordinates;
+    const isFeaturePresent = feature && feature?.geometry?.coordinates?.length > 0;
+    const coordinates = activityGeo?.geometry?.coordinates || [];
     const hasError = String(activityGeo?.properties?.error ?? 'false') === 'true';
-    const isInitialDraw = !feature || coordinates.length === 1;
-    const exitedTrackingAndDrawing = !prevGeoTrackingMode;
 
     const handleInitialDraw = () => {
       setPrevGeoTrackingMode(currGeoTrackingMode);
@@ -178,6 +175,17 @@ const DrawControls = () => {
       setPrevGeoTrackingMode(currGeoTrackingMode);
     };
 
+    if (isActivityGeoEmpty && isFeaturePresent) {
+      drawInstance?.current?.deleteAll();
+      handleUpdate();
+      return;
+    }
+
+    if (!activityGeo?.geometry || !isFeaturePresent) return;
+    const isPolygon = activityGeo.geometry.type === GeoShapes.Polygon;
+
+    const isInitialDraw = !feature || coordinates.length === 1;
+    const exitedTrackingAndDrawing = !prevGeoTrackingMode;
     if (mode === TargetMode.ACTIVITY_GEO_TRACK) {
       if (isInitialDraw) {
         handleInitialDraw();
@@ -223,7 +231,7 @@ const DrawControls = () => {
             Well_Information: undefined
           }
         });
-        updateEditControlState();
+        updateEditControlState('trash');
       }
     };
 
@@ -258,7 +266,7 @@ const DrawControls = () => {
 
   const drawCreate = useCallback((event) => {
     if (!drawInstance.current) return;
-    console.log('is it here?1');
+    console.log('Draw create event:', event.features[0]);
 
     const currentMode = modeRef.current;
 
@@ -305,7 +313,7 @@ const DrawControls = () => {
       }
     }
 
-    updateEditControlState();
+    updateEditControlState('drawcreate');
   }, []);
 
   // setup mode based on what's going on in the redux store / current url
@@ -316,7 +324,6 @@ const DrawControls = () => {
       return;
     } else if (tileCacheMode) {
       setMode(TargetMode.TILE_CACHE);
-
       return;
     } else if (drawingCustomLayer) {
       setMode(TargetMode.CUSTOM_LAYER);
@@ -342,9 +349,8 @@ const DrawControls = () => {
    */
   const drawShapeUpdate = useCallback((event, map: InvasivesMap | undefined) => {
     if (!drawInstance.current) return;
-    console.log('is it here?2');
     const currentMode = drawInstance.current.getMode();
-
+    console.log('Draw update event:', event.features[0]);
     if (currentMode === 'direct_select') {
       map?.touchZoomRotate.disable();
     } else if (currentMode === 'simple_select') {
@@ -371,13 +377,17 @@ const DrawControls = () => {
     if (editedGeo?.id !== featureId) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
-    updateEditControlState();
+    updateEditControlState('drawupdate');
   }, []);
 
   useEffect(() => {
     if (!drawInstance.current) return;
 
-    drawInstance.current.deleteAll();
+    const shouldPreserveShape = prevMode.current === TargetMode.ACTIVITY_GEO_TRACK && mode === TargetMode.ACTIVITY;
+
+    if (!shouldPreserveShape) {
+      drawInstance.current.deleteAll();
+    }
 
     switch (mode) {
       case TargetMode.WHATS_HERE:
@@ -397,6 +407,7 @@ const DrawControls = () => {
     }
 
     drawModeDisplay.current?.setMode(mode);
+    prevMode.current = mode;
   }, [mode]);
 
   useEffect(() => {

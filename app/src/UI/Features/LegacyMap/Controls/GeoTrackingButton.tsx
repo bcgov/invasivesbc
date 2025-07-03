@@ -20,7 +20,7 @@ export const GeoTrackingButton = () => {
   const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const divRef = useRef<HTMLDivElement | null>(null);
-
+  const tracking = isTracking(status);
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? {};
 
   const promptHandler = (input: string | number) => {
@@ -35,7 +35,7 @@ export const GeoTrackingButton = () => {
 
   const clickHandler = () => {
     setShow(false);
-    if (isTracking(status)) {
+    if (tracking) {
       dispatch(GeoTracking.stop());
     } else {
       dispatch(
@@ -54,7 +54,7 @@ export const GeoTrackingButton = () => {
   };
   // this is to stop user from clicking it again while things are happening
   return (
-    <div ref={divRef} className={isTracking(status) ? 'map-btn-selected' : 'map-btn'}>
+    <div ref={divRef} className={tracking ? 'map-btn-selected' : 'map-btn'}>
       <Tooltip
         open={show}
         classes={{ tooltip: 'toolTip' }}
