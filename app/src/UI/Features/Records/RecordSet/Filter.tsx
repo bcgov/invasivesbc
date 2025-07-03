@@ -15,6 +15,11 @@ type PropTypes = {
 };
 
 const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
+  enum FilterType {
+    Drawn = 'spatialFilterDrawn',
+    Uploaded = 'spatialFilterUploaded',
+    Table = 'tableFilter'
+  }
   const TIME_TO_AUTO_UPDATE_IN_SECONDS = 0.75;
 
   /**
@@ -30,7 +35,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
     debounce((value: string) => {
       dispatch(
         UserSettings.RecordSet.updateFilter({
-          filterType: 'tableFilter',
+          filterType: FilterType.Table,
           setID: setID,
           filterID: filterSet.id,
           filter: value
@@ -41,11 +46,15 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
   );
 
   const updateSpatialFilter = (id: string, filterType: string) => {
-    const shape =
-      filterType === 'spatialFilterUploaded'
-        ? serverBoundariesToDisplay.find((boundary) => boundary.value === id)
-        : clientBoundariesToDisplay.find((boundary) => boundary.value === id);
-    updateFilter({ filter: shape.id, geojson: shape.geojson, filterType: filterType });
+    let payload;
+    if (filterType === FilterType.Uploaded) {
+      const shape = serverBoundariesToDisplay.find(({ value }) => value == id);
+      payload = { filter: shape.id };
+    } else {
+      const shape = clientBoundariesToDisplay.find(({ value }) => value === id);
+      payload = { filter: shape.id, geojson: shape?.geojson };
+    }
+    updateFilter({ filterType: filterType, ...payload });
   };
   /**
    * Update the Recordsets filters
@@ -76,7 +85,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
 
   const getFilterType = (filterType: string) => {
     switch (filterType) {
-      case 'tableFilter':
+      case FilterType.Table:
         return (
           <input
             className="filterSelect"
@@ -86,12 +95,12 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             value={inputValue}
           />
         );
-      case 'spatialFilterUploaded':
+      case FilterType.Uploaded:
         return (
           <select
             className="filterSelect"
             disabled={disabled}
-            onChange={(e) => updateSpatialFilter(e.target.value, 'spatialFilterUploaded')}
+            onChange={(e) => updateSpatialFilter(e.target.value, FilterType.Uploaded)}
             value={filterSet.filter}
           >
             {serverBoundariesToDisplay?.map((option) => (
@@ -101,12 +110,12 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             ))}
           </select>
         );
-      case 'spatialFilterDrawn':
+      case FilterType.Drawn:
         return (
           <select
             className="filterSelect"
             disabled={disabled}
-            onChange={(e) => updateSpatialFilter(e.target.value, 'spatialFilterDrawn')}
+            onChange={(e) => updateSpatialFilter(e.target.value, FilterType.Drawn)}
             value={filterSet.filter}
           >
             {clientBoundariesToDisplay?.map((option) => (
@@ -149,7 +158,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
         >
           {
             {
-              tableFilter: (
+              [FilterType.Table]: (
                 <>
                   <option value={'AND'} label={'AND'}>
                     AND
@@ -159,7 +168,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                   </option>
                 </>
               ),
-              spatialFilterDrawn: (
+              [FilterType.Drawn]: (
                 <>
                   <option value={'AND'} label={'AND'}>
                     AND
@@ -169,7 +178,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                   </option>
                 </>
               ),
-              spatialFilterUploaded: (
+              [FilterType.Uploaded]: (
                 <>
                   <option value={'AND'} label={'AND'}>
                     AND
@@ -192,7 +201,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
         >
           {
             {
-              tableFilter: (
+              [FilterType.Table]: (
                 <>
                   <option value={'CONTAINS'} label={'CONTAINS'}>
                     CONTAINS
@@ -202,7 +211,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                   </option>
                 </>
               ),
-              spatialFilterDrawn: (
+              [FilterType.Drawn]: (
                 <>
                   <option value={'CONTAINED IN'} label={'CONTAINED IN'}>
                     CONTAINED IN
@@ -212,7 +221,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                   </option>
                 </>
               ),
-              spatialFilterUploaded: (
+              [FilterType.Uploaded]: (
                 <>
                   <option value={'CONTAINED IN'} label={'CONTAINED IN'}>
                     CONTAINED IN
@@ -237,28 +246,25 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
               filterID: filterSet.id
             };
 
-            if (e.target.value === 'spatialFilterUploaded') {
-              payload.filter = serverBoundariesToDisplay[0].value;
-            } else if (e.target.value === 'spatialFilterDrawn') {
-              payload.filter = clientBoundariesToDisplay[0].value;
+            if (e.target.value === FilterType.Uploaded) {
+              updateSpatialFilter(serverBoundariesToDisplay[0].value, FilterType.Uploaded);
+            } else if (e.target.value === FilterType.Drawn) {
+              updateSpatialFilter(clientBoundariesToDisplay[0].value, FilterType.Drawn);
+            } else {
+              updateFilter(payload);
             }
-            updateFilter(payload);
           }}
           value={filterSet.filterType}
         >
-          <option value={'tableFilter'} label={'Field/Column'}>
+          <option value={FilterType.Table} label={'Field/Column'}>
             Field/Column
           </option>
-          <option
-            disabled={clientBoundariesToDisplay.length < 1}
-            value={'spatialFilterDrawn'}
-            label={'Spatial - Drawn'}
-          >
+          <option disabled={clientBoundariesToDisplay.length < 1} value={FilterType.Drawn} label={'Spatial - Drawn'}>
             Spatial - Drawn
           </option>
           <option
             disabled={serverBoundariesToDisplay.length < 1}
-            value={'spatialFilterUploaded'}
+            value={FilterType.Uploaded}
             label={'Spatial - Uploaded'}
           >
             Spatial - Uploaded
@@ -270,9 +276,11 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
           className="filterSelect"
           disabled={disabled}
           value={filterSet.field}
-          onChange={(e) => updateFilter({ filterID: filterSet.id, field: e.target.value, filterType: 'tableFilter' })}
+          onChange={(e) =>
+            updateFilter({ filterID: filterSet.id, field: e.target.value, filterType: FilterType.Table })
+          }
         >
-          {filterSet.filterType === 'tableFilter' ? (
+          {filterSet.filterType === FilterType.Table ? (
             filterOptions.map((option) => (
               <option key={option.value + option.label} value={option.value}>
                 {option.label}
@@ -292,7 +300,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             <Button
               className={'deleteButton'}
               disabled={disabled}
-              onClick={() => removeFilter('tableFilter')}
+              onClick={() => removeFilter(FilterType.Table)}
               variant="contained"
             >
               Delete
