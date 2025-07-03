@@ -352,6 +352,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME() {
 }
 
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
+  yield put(Alerts.create(mappingAlertMessages.canEditInfo));
   yield put(Alerts.create(mappingAlertMessages.trackingPaused));
 }
 
