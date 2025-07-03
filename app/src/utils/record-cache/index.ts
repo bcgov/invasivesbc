@@ -8,6 +8,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import FilterObjects from 'interfaces/FilterObjects';
+import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
 enum IappRecordMode {
   Record = 'record',
@@ -386,8 +387,14 @@ abstract class RecordCacheService extends BaseCacheService<
    * @returns { string[] } new Records or IDs updated since provided date.
    */
   private async getListOfNewIds(filterObjects: FilterObjects, cacheTime: Date): Promise<string[]> {
+    const filterObjs = structuredClone(filterObjects);
+    filterObjs.tableFilters.forEach((filter, i) => {
+      if (filter.filterType === EFilterType.Uploaded) {
+        delete filterObjs?.tableFilters?.[i]?.geojson;
+      }
+    });
     const rez = await fetch(
-      `${CONFIGURATION_API_BASE}/api/v2/activities/cache-update-ids?filterObjects=${JSON.stringify([filterObjects])}&lastUpdated=${cacheTime.toISOString()}`,
+      `${CONFIGURATION_API_BASE}/api/v2/activities/cache-update-ids?filterObjects=${JSON.stringify([filterObjs])}&lastUpdated=${cacheTime.toISOString()}`,
       { headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' } }
     );
     return (await rez.json()) ?? [];
