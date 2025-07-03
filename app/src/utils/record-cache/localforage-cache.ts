@@ -61,7 +61,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
         params.tableFilters.every((filter) => {
           if (filter?.geojson) {
             const shape = value?.record?.geom?.geometry ?? value?.geometry ?? null;
-            if (Object.hasOwn(shape, 'length')) {
+            if (Array.isArray(shape)) {
               return shape.some((cachedFeature: Feature) => booleanIntersects(cachedFeature, filter.geojson));
             } else if (shape) {
               return booleanIntersects(shape, filter.geojson);
