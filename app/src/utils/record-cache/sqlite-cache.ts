@@ -495,7 +495,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
     params.tableFilters.forEach((filter: IFilter) => {
       where += '\n AND ';
-      if ([EFilterType.Drawn, EFilterType.Uploaded].includes(filter.filterType)) {
+      if (filter?.geojson) {
         const [minX, minY, maxX, maxY] = bbox(filter.geojson);
         where += `LATITUDE BETWEEN ${minY} AND ${maxY} AND LONGITUDE BETWEEN ${minX} AND ${maxX}`;
       } else {
