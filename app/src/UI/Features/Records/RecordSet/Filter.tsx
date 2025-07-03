@@ -103,11 +103,17 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             onChange={(e) => updateSpatialFilter(e.target.value, FilterType.Uploaded)}
             value={filterSet.filter}
           >
-            {serverBoundariesToDisplay?.map((option) => (
-              <option key={option.value + option.label} value={option.value}>
-                {option.label}
+            {serverBoundariesToDisplay.length > 0 ? (
+              serverBoundariesToDisplay?.map((option) => (
+                <option key={option.value + option.label} value={option.value}>
+                  {option.label}
+                </option>
+              ))
+            ) : (
+              <option selected disabled value="">
+                Original source removed
               </option>
-            ))}
+            )}
           </select>
         );
       case FilterType.Drawn:
@@ -118,11 +124,17 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             onChange={(e) => updateSpatialFilter(e.target.value, FilterType.Drawn)}
             value={filterSet.filter}
           >
-            {clientBoundariesToDisplay?.map((option) => (
-              <option key={option.value + option.label} value={option.value}>
-                {option.label}
+            {clientBoundariesToDisplay.length > 0 ? (
+              clientBoundariesToDisplay?.map((option) => (
+                <option key={option.value + option.label} value={option.value}>
+                  {option.label}
+                </option>
+              ))
+            ) : (
+              <option selected disabled value="">
+                Original source removed
               </option>
-            ))}
+            )}
           </select>
         );
       default:
@@ -240,18 +252,16 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
           className="filterTypeSelect"
           disabled={disabled}
           onChange={(e) => {
-            const payload: Partial<IUpdateFilter> = {
-              filterType: e.target.value,
-              setID: setID,
-              filterID: filterSet.id
-            };
-
             if (e.target.value === FilterType.Uploaded) {
               updateSpatialFilter(serverBoundariesToDisplay[0].value, FilterType.Uploaded);
             } else if (e.target.value === FilterType.Drawn) {
               updateSpatialFilter(clientBoundariesToDisplay[0].value, FilterType.Drawn);
             } else {
-              updateFilter(payload);
+              updateFilter({
+                filterType: e.target.value,
+                setID: setID,
+                filterID: filterSet.id
+              });
             }
           }}
           value={filterSet.filterType}
