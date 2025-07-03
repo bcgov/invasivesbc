@@ -17,6 +17,7 @@ import IappTableRow from 'interfaces/IappTableRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import { getUnnestedFieldsForActivity } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
+import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -59,7 +60,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
       if (keyIsCacheKey || idsNotInIdsToFilter || incorrectKeyType) return;
       if (
         params.tableFilters.every((filter) => {
-          if (['spatialFilterDrawn', 'spatialFilterUploaded'].includes(filter.filterType)) {
+          if ([EFilterType.Drawn, EFilterType.Uploaded].includes(filter.filterType)) {
             const shape = value?.record?.geom?.geometry ?? value?.geometry ?? null;
             if (Object.hasOwn(shape, 'length')) {
               return shape.some((cachedFeature: Feature) => booleanIntersects(cachedFeature, filter.geojson));

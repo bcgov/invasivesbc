@@ -54,7 +54,7 @@ import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 import { RECORD_COLOURS } from 'constants/colors';
-import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import { EFilterType, IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
@@ -92,7 +92,7 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
     const tableFilters = [
       {
         id: '0.81778552637744651712083357942',
-        filterType: 'spatialFilterDrawn',
+        filterType: EFilterType.Drawn,
         operator: 'CONTAINED IN',
         filter: '0.652479498272151712093656568',
         geojson: whatsHereFeature.payload
