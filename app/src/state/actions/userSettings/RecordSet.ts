@@ -27,7 +27,7 @@ enum EFilterType {
 interface IFilter {
   id: string;
   field: string;
-  filterType: string;
+  filterType: EFilterType;
   filter: string;
   operator: string;
   operator2: string;

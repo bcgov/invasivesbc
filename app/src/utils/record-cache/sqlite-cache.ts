@@ -23,7 +23,7 @@ import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
 } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
-import { IFilter } from 'state/actions/userSettings/RecordSet';
+import { EFilterType, IFilter } from 'state/actions/userSettings/RecordSet';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -479,7 +479,8 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const spatialQueries = params.tableFilters.filter((filter) => filter.filterType === 'spatialFilterDrawn');
+    const filteredFilterTypes = [EFilterType.Drawn, EFilterType.Uploaded];
+    const spatialQueries = params.tableFilters.filter((filter) => filteredFilterTypes.includes(filter.filterType));
     const values: Array<string | number> = [];
     const table = {
       [RecordSetType.Activity]: 'CACHED_RECORDS',
@@ -494,7 +495,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
 
     params.tableFilters.forEach((filter: IFilter) => {
       where += '\n AND ';
-      if (filter.filterType === 'spatialFilterDrawn') {
+      if ([EFilterType.Drawn, EFilterType.Uploaded].includes(filter.filterType)) {
         const [minX, minY, maxX, maxY] = bbox(filter.geojson);
         where += `LATITUDE BETWEEN ${minY} AND ${maxY} AND LONGITUDE BETWEEN ${minX} AND ${maxX}`;
       } else {

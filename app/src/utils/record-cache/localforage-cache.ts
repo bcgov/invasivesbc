@@ -59,7 +59,7 @@ class LocalForageRecordCacheService extends RecordCacheService {
       if (keyIsCacheKey || idsNotInIdsToFilter || incorrectKeyType) return;
       if (
         params.tableFilters.every((filter) => {
-          if (filter.filterType === 'spatialFilterDrawn') {
+          if (['spatialFilterDrawn', 'spatialFilterUploaded'].includes(filter.filterType)) {
             const shape = value?.record?.geom?.geometry ?? value?.geometry ?? null;
             if (Object.hasOwn(shape, 'length')) {
               return shape.some((cachedFeature: Feature) => booleanIntersects(cachedFeature, filter.geojson));

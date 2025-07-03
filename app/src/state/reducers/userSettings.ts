@@ -15,6 +15,7 @@ import { CacheDownloadMode } from 'utils/record-cache';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import defaultRecordSets from 'constants/defaultRecordSets';
+import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
 interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
@@ -133,7 +134,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
             tableFilter[key] = action.payload[key];
           }
         });
-        if (action.payload?.filterType === 'spatialFilterDrawn' || filterType === 'spatialFilterUploaded') {
+        if (filterType && [EFilterType.Drawn, EFilterType.Uploaded].includes(filterType)) {
           tableFilter.field = '';
           tableFilter.operator ??= 'CONTAINED IN';
           tableFilter.filter ??= '';
