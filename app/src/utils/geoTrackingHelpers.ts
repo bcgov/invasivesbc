@@ -7,6 +7,8 @@ export const isDrawing = (status: GeoTrackingStatus) => status === GeoTrackingSt
 
 export const isPaused = (status: GeoTrackingStatus) => status === GeoTrackingStatus.ONLY_TRACKING;
 
+export const isEditing = (status: GeoTrackingStatus, isEditActive: boolean) => isPaused(status) && isEditActive;
+
 export const hasCompleted = (status: GeoTrackingStatus) => status === GeoTrackingStatus.COMPLETED;
 
 export const hasExited = (status: GeoTrackingStatus) => status === GeoTrackingStatus.EXITED;

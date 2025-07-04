@@ -213,8 +213,7 @@ interface MapState {
   track_me_draw_geo: {
     status: GeoTrackingStatus;
     shapeType: GeoShapes | null;
-    // type: GeoShapes | null;
-    // drawingShape: boolean;
+    isEditingShape: boolean;
   };
   quickPanToRecord: boolean;
   readableIdentifier?: string;
@@ -301,9 +300,8 @@ const initialState: MapState = {
   positionTracking: false,
   track_me_draw_geo: {
     status: GeoTrackingStatus.IDLE,
-    shapeType: null
-    // type: null,
-    // drawingShape: false
+    shapeType: null,
+    isEditingShape: false
   },
   quickPanToRecord: false,
   recordSetForCSV: 0,
@@ -544,27 +542,40 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.tileCacheMode = action.payload;
       } else if (GeoTracking.start.match(action)) {
         draftState.track_me_draw_geo = {
+          ...draftState.track_me_draw_geo,
           status: GeoTrackingStatus.TRACKING_AND_DRAWING,
           shapeType: action.payload.type ?? null
+        };
+      } else if (GeoTracking.edit.match(action)) {
+        draftState.track_me_draw_geo = {
+          ...draftState.track_me_draw_geo,
+          isEditingShape: action.payload
         };
       } else if (GeoTracking.exit.match(action)) {
         draftState.track_me_draw_geo = {
           status: GeoTrackingStatus.EXITED,
-          shapeType: null
+          shapeType: null,
+          isEditingShape: false
         };
       } else if (GeoTracking.pause.match(action)) {
         draftState.track_me_draw_geo.status = GeoTrackingStatus.ONLY_TRACKING;
       } else if (GeoTracking.resume.match(action)) {
-        draftState.track_me_draw_geo.status = GeoTrackingStatus.TRACKING_AND_DRAWING;
+        draftState.track_me_draw_geo = {
+          ...draftState.track_me_draw_geo,
+          status: GeoTrackingStatus.TRACKING_AND_DRAWING,
+          isEditingShape: false
+        };
       } else if (GeoTracking.exitDrawing.match(action)) {
         draftState.track_me_draw_geo = {
           status: GeoTrackingStatus.EXITED,
-          shapeType: draftState.track_me_draw_geo.shapeType
+          shapeType: draftState.track_me_draw_geo.shapeType,
+          isEditingShape: false
         };
       } else if (GeoTracking.end.match(action)) {
         draftState.track_me_draw_geo = {
           status: GeoTrackingStatus.COMPLETED,
-          shapeType: null
+          shapeType: null,
+          isEditingShape: false
         };
       } else if (IappActions.getRows.match(action) || Activity.getRows.match(action)) {
         const { recordSetID, page, limit, tableFiltersHash } = action.payload;

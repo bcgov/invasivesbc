@@ -18,14 +18,14 @@ class GeoTracking {
   static readonly pause = createAction(`${this.PREFIX}/pause`);
 
   /**
+   * @desc Action Creator for editing Geotracking shape
+   */
+  static readonly edit = createAction<boolean>(`${this.PREFIX}/edit`);
+
+  /**
    * @desc Action Creator for resuming Geotracking, allowing points to start being placed again
    */
   static readonly resume = createAction(`${this.PREFIX}/resume`);
-
-  /**
-   * @desc Action Creator for premature exit of GeoTracking Feature on activity
-   */
-  static readonly earlyExit = createAction(`${this.PREFIX}/earlyExit`);
 
   /**
    * @desc Action Creator for clearing Geotracking feature and nothing else
@@ -33,12 +33,12 @@ class GeoTracking {
   static readonly exitDrawing = createAction(`${this.PREFIX}/exitDrawing`);
 
   /**
-   * @desc Action Creator for exiting GeoTracking feature on map
+   * @desc Action Creator for exiting GeoTracking feature
    */
   static readonly exit = createAction(`${this.PREFIX}/exit`);
 
   /**
-   * @desc Action Creator for triggering saga to evaluate and end geotracking
+   * @desc Action creator that triggers a saga to evaluate and either end or exit Geotracking
    */
   static readonly stop = createAction(`${this.PREFIX}/stop`);
 

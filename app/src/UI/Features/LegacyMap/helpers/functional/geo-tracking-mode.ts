@@ -89,8 +89,6 @@ const GeoTrackingMode: DrawCustomMode<GeoTrackingState, SetupOptions> = {
 
   onStop(state: GeoTrackingState) {
     if (state.shape) {
-      console.log('Called onstop', state.shape);
-
       this.map.fire('draw.create', {
         features: [state.shape]
       });

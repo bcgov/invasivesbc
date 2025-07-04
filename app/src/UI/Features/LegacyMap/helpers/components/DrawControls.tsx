@@ -18,6 +18,7 @@ import {
 } from 'UI/Features/LegacyMap/helpers/functional/geo-tracking-mode';
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
 import GeoShapes from 'constants/geoShapes';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { TargetMode } from 'constants/targetModes';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
@@ -61,7 +62,6 @@ const DrawControls = () => {
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
 
   const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
-  const [hasStartedManualDraw, setHasStartedManualDraw] = useState(false);
 
   const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
 
@@ -76,6 +76,11 @@ const DrawControls = () => {
     isEditing.current = true;
     drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
     dispatch(Alerts.create(mappingAlertMessages.saveActivityShape));
+
+    if (prevMode.current === TargetMode.ACTIVITY_GEO_TRACK) {
+      // to disable geo-tracking resume button
+      dispatch(GeoTracking.edit(true));
+    }
   };
 
   const handleSave = () => {
@@ -86,6 +91,10 @@ const DrawControls = () => {
     if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
 
     dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
+
+    if (prevMode.current === TargetMode.ACTIVITY_GEO_TRACK) {
+      dispatch(GeoTracking.edit(false));
+    }
   };
 
   const hasEditableShape = () => {
@@ -103,11 +112,8 @@ const DrawControls = () => {
     return features[0].geometry.type !== GeoShapes.Point;
   };
 
-  const updateEditControlState = (debug) => {
-    console.log('Called by: ', debug);
-
+  const updateEditControlState = () => {
     const shouldEnableEdit = hasEditableShape();
-
     editControls.current?.setDisabled(!shouldEnableEdit);
   };
 
@@ -119,8 +125,7 @@ const DrawControls = () => {
   }, [mode]);
 
   useEffect(() => {
-    // if (isDrawingShape) return;
-    updateEditControlState('isdrawingshape useeffect');
+    updateEditControlState();
   }, [isDrawingShape]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
@@ -231,7 +236,7 @@ const DrawControls = () => {
             Well_Information: undefined
           }
         });
-        updateEditControlState('trash');
+        updateEditControlState();
       }
     };
 
@@ -266,7 +271,6 @@ const DrawControls = () => {
 
   const drawCreate = useCallback((event) => {
     if (!drawInstance.current) return;
-    console.log('Draw create event:', event.features[0]);
 
     const currentMode = modeRef.current;
 
@@ -313,7 +317,7 @@ const DrawControls = () => {
       }
     }
 
-    updateEditControlState('drawcreate');
+    updateEditControlState();
   }, []);
 
   // setup mode based on what's going on in the redux store / current url
@@ -350,7 +354,7 @@ const DrawControls = () => {
   const drawShapeUpdate = useCallback((event, map: InvasivesMap | undefined) => {
     if (!drawInstance.current) return;
     const currentMode = drawInstance.current.getMode();
-    console.log('Draw update event:', event.features[0]);
+
     if (currentMode === 'direct_select') {
       map?.touchZoomRotate.disable();
     } else if (currentMode === 'simple_select') {
@@ -377,7 +381,7 @@ const DrawControls = () => {
     if (editedGeo?.id !== featureId) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
-    updateEditControlState('drawupdate');
+    updateEditControlState();
   }, []);
 
   useEffect(() => {

@@ -660,7 +660,6 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
       if (isGeoTrackingFeature) {
         if (isPaused(status)) {
           // don't do anything, just call ACTIVITY_UPDATE_GEO_REQUEST
-          // TO DO: this works, but the yellow line disappears on completing the line
         } else if (shapeType === GeoShapes.Polygon) {
           geometry.type = shapeType;
           geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
