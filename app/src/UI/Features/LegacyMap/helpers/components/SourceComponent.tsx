@@ -13,8 +13,6 @@ const SourceComponent = ({ mapReady, id, source }: SourceComponentProps) => {
 
   useEffect(() => {
     if (!map || !mapReady) return;
-
-    console.dir('adding source: ' + id);
     map.addSource(id, source);
   }, [map, mapReady]);
 

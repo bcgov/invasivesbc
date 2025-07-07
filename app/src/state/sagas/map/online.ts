@@ -1,53 +1,11 @@
 import { put, select } from 'redux-saga/effects';
-import moment from 'moment';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { getIappRowsFromCache, getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
-import { EXPORT_CONFIG_LOAD_ERROR, EXPORT_CONFIG_LOAD_REQUEST, EXPORT_CONFIG_LOAD_SUCCESS } from 'state/actions';
-import { selectRootConfiguration } from 'state/reducers/configuration';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordsetOnline } from 'state/actions/activity/Activity';
 import UserRecord from 'interfaces/UserRecord';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-
-function* refreshExportConfigIfRequired() {
-  const config = yield select(selectRootConfiguration);
-
-  if (config.exportConfig && config.exportConfigFreshUntil && moment(config.exportConfigFreshUntil).isAfter()) {
-    // config is current
-    return;
-  }
-  yield put({ type: EXPORT_CONFIG_LOAD_REQUEST });
-
-  try {
-    const r = yield InvasivesAPI_Call('GET', `/api/export-config`);
-
-    yield put({ type: EXPORT_CONFIG_LOAD_SUCCESS, payload: r.data?.result });
-  } catch (e) {
-    console.error(e);
-    yield put({ type: EXPORT_CONFIG_LOAD_ERROR });
-  }
-}
-
-function* fetchS3GeoJSON() {
-  yield refreshExportConfigIfRequired();
-  const config = yield select(selectRootConfiguration);
-
-  let activitiesExportURL;
-
-  if (config.exportConfig && config.exportConfig.length > 0) {
-    const matchingExportConfig = config.exportConfig.find((e) => e.type === 'activities');
-    activitiesExportURL = matchingExportConfig.url;
-  }
-
-  const networkReturnS3 = yield fetch(activitiesExportURL, {
-    headers: {
-      'Accept-Encoding': 'gzip'
-    }
-  });
-
-  return yield networkReturnS3.json();
-}
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<ActivityTableRowGetRequest>) {
   let mapState = yield select((state) => state.Map);

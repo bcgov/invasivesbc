@@ -378,7 +378,7 @@ export function* handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY() {
   const unfilteredRecordSetIDs: string[] = [];
   currentMapState?.layers?.forEach((layer) => {
     if (layer?.type === RecordSetType.Activity && layer?.layerState.mapToggle) {
-      unfilteredRecordSetIDs.push(...layer?.IDList);
+      unfilteredRecordSetIDs.push(...(layer?.IDList || []));
     }
   });
 

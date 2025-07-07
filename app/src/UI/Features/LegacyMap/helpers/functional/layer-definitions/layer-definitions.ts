@@ -1,10 +1,12 @@
+import { SourceSpecification } from 'maplibre-gl';
 import { InvasivesMapLayerDefinition } from './types';
 import { ESRI_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/esri';
 import { BAKED_VECTOR_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/baked-vector-full';
 import { BAKED_RASTER_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/baked-raster';
 import { PUBLIC_VECTOR_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/public-vector';
+import { DATABC_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/wms';
 
-const SOURCES = {
+const SOURCES: { [key: string]: SourceSpecification } = {
   'Esri-Sat-Label-Source': {
     type: 'raster',
     tiles: [
@@ -51,6 +53,11 @@ const SOURCES = {
   'Public-Vector': {
     type: 'vector',
     url: 'pmtiles://https://nrs.objectstore.gov.bc.ca/rzivsz/invasives-prod.pmtiles'
+  },
+  'wms-regional-districts': {
+    type: 'raster',
+    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
+    maxzoom: 18
   }
 };
 
@@ -58,7 +65,8 @@ const MAP_DEFINITIONS: InvasivesMapLayerDefinition[] = [
   ...ESRI_LAYERS,
   ...BAKED_VECTOR_LAYERS,
   ...BAKED_RASTER_LAYERS,
-  ...PUBLIC_VECTOR_LAYERS
+  ...PUBLIC_VECTOR_LAYERS,
+  ...DATABC_LAYERS
 ];
 
 export { MAP_DEFINITIONS, SOURCES };

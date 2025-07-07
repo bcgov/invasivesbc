@@ -25,11 +25,9 @@ import {
   RECORD_SET_TO_EXCEL_SUCCESS,
   SET_CURRENT_OPEN_SET,
   SET_TOO_MANY_LABELS_DIALOG,
-  TOGGLE_BASIC_PICKER_LAYER,
   TOGGLE_CUSTOMIZE_LAYERS,
   TOGGLE_DRAWN_LAYER,
   TOGGLE_KML_LAYER,
-  TOGGLE_WMS_LAYER,
   URL_CHANGE
 } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -39,7 +37,6 @@ import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { SortFilter } from 'interfaces/filterParams';
 import TileCache from 'state/actions/cache/TileCache';
-import MapActions from 'state/actions/map';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
@@ -54,136 +51,8 @@ enum LeafletWhosEditingEnum {
   NONE = 'NONE'
 }
 
-const DEFAULT_LOCAL_LAYERS = [
-  {
-    title: 'Regional Districts',
-    type: 'wms',
-    url: 'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
-    toggle: false,
-    opacity: 0.4
-  },
-  {
-    title: 'BC Parks',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
-    toggle: false
-  },
-  {
-    title: 'Conservancy Areas',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW',
-    toggle: false
-  },
-  {
-    title: 'Municipality Boundaries',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP',
-    toggle: false
-  },
-  {
-    title: 'Cut blocks',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP',
-    toggle: false,
-    opacity: 0.5
-  },
-  {
-    title: 'BC Major Watersheds',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS',
-    toggle: false
-  },
-  {
-    title: 'Freshwater Atlas Rivers',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_BASEMAPPING.FWA_RIVERS_POLY',
-    toggle: false
-  },
-  {
-    title: 'Freshwater Lakes',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP',
-    toggle: false
-  },
-  {
-    title: 'Freshwater Atlas Stream Network',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
-    toggle: false
-  },
-  {
-    title: 'Water Licenses Drinking Water',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SP',
-    toggle: false
-  },
-  {
-    title: 'Water Rights Licenses',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV',
-    toggle: false
-  },
-  {
-    title: 'Water Wells',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
-    toggle: false
-  },
-  {
-    title: 'Digital Road Atlas (DRA) - Master Partially-Attributed Roads',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
-    toggle: false
-  },
-  {
-    title: 'MOTI RFI',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=' +
-      'WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP',
-    toggle: false
-  },
-  {
-    title: 'PMBC Parcel Cadastre - Private',
-    type: 'wms',
-    url:
-      'https://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&style=5899&OWNER_TYPE=Private&raster-opacity=0.5&styles=5903&layers=' +
-      'WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
-    toggle: false,
-    opacity: 0.6
-  }
-].sort((a, b) => (a.title < b.title ? -1 : 1));
-
 interface MapState {
   [MIGRATION_VERSION_KEY]: number;
-  baseMapLayer: string | null;
-  availableBaseMapLayers: string[];
-  availableOverlayLayers: string[];
-  enabledOverlayLayers: string[];
   CanTriggerCSV: boolean;
   IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
@@ -219,8 +88,6 @@ interface MapState {
   recordSetForCSV: number | null;
   recordTables: Record<PropertyKey, IRecordTable>;
   serverBoundaries: any[];
-  simplePickerLayers2: any[];
-  simplePickerLayers: object | undefined;
   tooManyLabelsDialog: any;
   userCoords: any;
   userRecordOnHoverRecordID?: string | number;
@@ -278,12 +145,6 @@ const initialState: MapState = {
   activitiesGeoJSONDict: {},
   activityPageMapExtentToggle: false,
 
-  baseMapLayer: null,
-  availableBaseMapLayers: [],
-
-  availableOverlayLayers: [],
-  enabledOverlayLayers: [],
-
   clientBoundaries: [],
   currentOpenSet: null,
   customizeLayersToggle: false,
@@ -307,8 +168,6 @@ const initialState: MapState = {
   recordTables: {},
 
   serverBoundaries: [],
-  simplePickerLayers: undefined,
-  simplePickerLayers2: DEFAULT_LOCAL_LAYERS,
   tooManyLabelsDialog: null,
 
   tileCacheMode: false,
@@ -379,39 +238,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
       } else if (UserSettings.KML.deleteSuccess.match(action)) {
         const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload);
         draftState.serverBoundaries.splice(index, 1);
-      } else if (MapActions.toggleOverlay.match(action)) {
-        if (draftState.enabledOverlayLayers.includes(action.payload)) {
-          draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(action.payload), 1);
-        } else {
-          draftState.enabledOverlayLayers.push(action.payload);
-        }
-      } else if (MapActions.chooseBaseMap.match(action)) {
-        draftState.baseMapLayer = action.payload;
-      } else if (MapActions.updateAvailableBaseMaps.match(action)) {
-        draftState.availableBaseMapLayers = action.payload;
-
-        // if there was no previously-selected base map layer or if the currently-selected layer became unavailable,
-        // then select another
-        if (draftState.availableBaseMapLayers.length > 0) {
-          if (!draftState.baseMapLayer || !draftState.availableBaseMapLayers.includes(draftState.baseMapLayer)) {
-            draftState.baseMapLayer = draftState.availableBaseMapLayers[0];
-          }
-        }
-      } else if (MapActions.updateAvailableOverlays.match(action)) {
-        draftState.availableOverlayLayers = action.payload;
-
-        // if a currently-enabled layer was removed, disable it
-        const removalList: string[] = [];
-
-        for (const f of draftState.enabledOverlayLayers) {
-          if (!action.payload.includes(f)) {
-            removalList.push(f);
-          }
-        }
-
-        for (const r of removalList) {
-          draftState.enabledOverlayLayers.splice(draftState.enabledOverlayLayers.indexOf(r), 1);
-        }
       } else if (UserSettings.InitState.getSuccess.match(action)) {
         Object.keys(action.payload.recordSets).forEach((setID) => {
           if (setID !== RecordSetId.OfflineActivities) {
@@ -704,11 +530,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.clientBoundaries.splice(index, 1);
       } else {
         switch (action.type) {
-          case TOGGLE_WMS_LAYER: {
-            const index = draftState.simplePickerLayers2.findIndex((layer) => layer.url === action.payload.layer.url);
-            draftState.simplePickerLayers2[index].toggle = !draftState.simplePickerLayers2[index]?.toggle;
-            break;
-          }
           case TOGGLE_DRAWN_LAYER: {
             const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
             draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
@@ -848,24 +669,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.tooManyLabelsDialog = action.payload.dialog;
             break;
           }
-          case TOGGLE_BASIC_PICKER_LAYER: {
-            for (const layerNameProperty in action.payload) {
-              //if exists, toggle
-              if (state.simplePickerLayers[layerNameProperty]) {
-                if (draftState.simplePickerLayers == undefined) {
-                  draftState.simplePickerLayers = [];
-                }
-                draftState.simplePickerLayers[layerNameProperty] = !state.simplePickerLayers[layerNameProperty];
-              } else {
-                // doesn't exist, getting turned on
-                if (draftState.simplePickerLayers == undefined) {
-                  draftState.simplePickerLayers = [];
-                }
-                draftState.simplePickerLayers[layerNameProperty] = true;
-              }
-            }
-            break;
-          }
           case TOGGLE_CUSTOMIZE_LAYERS: {
             draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
             break;
@@ -891,4 +694,3 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 const selectMap: (state) => MapState = (state) => state.Map;
 export { createMapReducer, selectMap };
 export type { LeafletWhosEditingEnum, MapState };
-export { DEFAULT_LOCAL_LAYERS };

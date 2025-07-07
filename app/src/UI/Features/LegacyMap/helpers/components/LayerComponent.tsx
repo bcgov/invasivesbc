@@ -14,12 +14,10 @@ const LayerComponent = ({ mapReady, id, layer }: LayerComponentProps) => {
   useEffect(() => {
     if (!map || !mapReady) return;
 
-    console.dir('adding layer: ' + id);
-
+    console.dir(layer, layer.stackLayer);
     map.addLayer(layer, layer.stackLayer);
 
     return () => {
-      console.dir('removing layer: ' + id);
       map.removeLayer(id);
     };
   }, [map, mapReady]);

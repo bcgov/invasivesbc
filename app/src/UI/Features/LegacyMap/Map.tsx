@@ -13,13 +13,6 @@ import {
   removeRecordsetLayersOnForcedRedraw,
   toggleOfflineActivityLabels
 } from 'UI/Features/LegacyMap/helpers/functional/recordset-layers';
-import {
-  addWMSLayersIfNotExist,
-  refreshWMSOnToggle,
-  removeWMSLayers
-} from 'UI/Features/LegacyMap/helpers/functional/wms-layers';
-
-import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
@@ -46,8 +39,8 @@ import CachedMapLayer from './helpers/components/CachedMapLayer';
 import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { SourceComponent } from 'UI/Features/LegacyMap/helpers/components/SourceComponent';
 import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerComponent';
-import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
 import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
+import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
 /*
 
   MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
@@ -72,9 +65,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Offline Activities layer
   const { serializedActivities, mapToggle, labelToggle } = useSelector((state) => state.OfflineActivity);
 
-  // WMS Layers
-  const simplePickerLayers2 = useSelector((state) => state.Map.simplePickerLayers2);
-
   //KML
   const serverBoundaries = useSelector((state) => state.Map.serverBoundaries);
 
@@ -84,7 +74,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Map position jump
   const map_center = useSelector((state) => state.Map.map_center);
   const map_zoom = useSelector((state) => state.Map.map_zoom);
-  const baseMapLayer = useSelector((state) => state.Map.baseMapLayer);
 
   const [cacheStatusHash, setCacheStatusHash] = useState<string>('init');
   const [map, setMap] = useState<InvasivesMap>();
@@ -93,7 +82,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
 
-  const { sources, layers, availableLayerDefinitions, setActiveBaseMap } = useInvasivesMapLayers();
+  const { sources, layers, availableLayerDefinitions, setActiveBaseMap, setOverlayState } = useInvasivesMapLayers();
 
   useEffect(() => {
     if (!mapContainer.current) {
@@ -259,20 +248,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     })();
   }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, labelToggle]);
 
-  // Layer picker:
-  useEffect(() => {
-    if (!mapReady) return;
-    if (!map) return;
-    const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
-    if (!loggedInOrWorkingOffline) {
-      removeWMSLayers(layers, map);
-      return;
-    }
-
-    addWMSLayersIfNotExist(layers, map, configuration.runtime.API_BASE);
-    refreshWMSOnToggle(layers, map);
-  }, [simplePickerLayers2, map, mapReady, baseMapLayer, connectedToNetwork, authenticated, rolesInitialized]);
-
   useEffect(() => {
     if (!mapReady || !map) return;
     if (authenticated && loggedInOrWorkingOffline) {
@@ -316,6 +291,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }, 1000);
   }, [map]);
 
+  console.dir(layers);
+
   return (
     <div className="map-containing-block">
       <div className="MapWrapper">
@@ -328,7 +305,19 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           <DisplayComposite />
           <DrawControls />
 
-          <ButtonContainer selectLayer={setActiveBaseMap} layers={availableLayerDefinitions} />
+          <ButtonContainer
+            selectLayer={(name) => {
+              switch (availableLayerDefinitions.find((l) => l.name === name)?.mode) {
+                case 'basemap':
+                  setActiveBaseMap(name);
+                  break;
+                case 'overlay':
+                  setOverlayState(name);
+                  break;
+              }
+            }}
+            layers={availableLayerDefinitions}
+          />
 
           {POSITIONING_LAYERS.map((layer) => (
             <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />

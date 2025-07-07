@@ -125,39 +125,40 @@ export const Records = () => {
                 recordsetKey={set}
               />
 
-            <RecordSetControl
-              isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
-              recordset={recordSets[set]}
-              recordsetKey={set}
-              onClickToggleLabel={handleToggleLabel}
-              onClickToggleLayer={handleToggleLayer}
-              onClickCycleColour={handleCycleColour}
-              onClickDeleteRecordSet={handleDeleteRecordSet}
-            />
-          </li>
-        ))}
-      </ul>
-      {userIsMobileAndOffline ? (
-        <p>Any recordsets that haven't been saved for offline use will not be accessible when you're offline.</p>
-      ) : (
-        <div className="records-control">
-          <Button
-            onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.Activity))}
-            className={'new-recordset-button'}
-            data-testid="add-activity-layer"
-          >
-            Add Layer of Records
-          </Button>
-          <Button
-            onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.IAPP))}
-            className={'new-recordset-button'}
-            data-testid="add-iapp-layer"
-          >
-            Add IAPP Layer of Records
-          </Button>
-          <UploadSiteList />
-        </div>
-      )}
-    </div>
+              <RecordSetControl
+                isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
+                recordset={recordSets[set]}
+                recordsetKey={set}
+                onClickToggleLabel={handleToggleLabel}
+                onClickToggleLayer={handleToggleLayer}
+                onClickCycleColour={handleCycleColour}
+                onClickDeleteRecordSet={handleDeleteRecordSet}
+              />
+            </li>
+          ))}
+        </ul>
+        {userIsMobileAndOffline ? (
+          <p>Any recordsets that haven't been saved for offline use will not be accessible when you're offline.</p>
+        ) : (
+          <div className="records-control">
+            <Button
+              onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.Activity))}
+              className={'new-recordset-button'}
+              data-testid="add-activity-layer"
+            >
+              Add Layer of Records
+            </Button>
+            <Button
+              onClick={dispatch.bind(this, UserSettings.RecordSet.add(RecordSetType.IAPP))}
+              className={'new-recordset-button'}
+              data-testid="add-iapp-layer"
+            >
+              Add IAPP Layer of Records
+            </Button>
+            <UploadSiteList />
+          </div>
+        )}
+      </div>
+    </StrictMode>
   );
 };

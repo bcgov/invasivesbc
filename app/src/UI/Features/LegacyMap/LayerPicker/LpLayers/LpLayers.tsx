@@ -1,10 +1,12 @@
 import { useDispatch, useSelector } from 'utils/use_selector';
 import './LpLayers.css';
-import { TOGGLE_CUSTOMIZE_LAYERS, TOGGLE_DRAWN_LAYER, TOGGLE_KML_LAYER, TOGGLE_WMS_LAYER } from 'state/actions';
-import { Layers, Settings } from '@mui/icons-material';
+import { TOGGLE_CUSTOMIZE_LAYERS, TOGGLE_DRAWN_LAYER, TOGGLE_KML_LAYER } from 'state/actions';
+import { Layers, Settings, Visibility, VisibilityOff } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import LpLayersOption from './LpLayersOption';
 import { nanoid } from '@reduxjs/toolkit';
+import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 type EmptyListProps = {
   text: string;
@@ -15,9 +17,9 @@ const EmptyCollection = ({ text }: EmptyListProps) => (
   </div>
 );
 const LpLayers = () => {
-  const handleWmsClick = (layer) => {
-    dispatch({ type: TOGGLE_WMS_LAYER, payload: { layer } });
-  };
+  // const handleWmsClick = (layer) => {
+  //   dispatch({ type: TOGGLE_WMS_LAYER, payload: { layer } });
+  // };
   const handleKmlClick = (layer: Record<string, unknown>) => {
     dispatch({ type: TOGGLE_KML_LAYER, payload: { layer } });
   };
@@ -35,37 +37,45 @@ const LpLayers = () => {
     "Turn your custom shapes on and off in the application. This allows you to easily manage the visibility of the shapes you've created, helping you focus on the map elements that matter most to you.";
   const dispatch = useDispatch();
   const connectedToNetwork = useSelector((state) => state.Network.connected);
-  const WmsLayers = useSelector((state) => state.Map?.simplePickerLayers2);
+  // const WmsLayers = useSelector((state) => state.Map?.simplePickerLayers2);
   const KmlLayers = useSelector((state) => state.Map?.serverBoundaries);
   const drawnLayers = useSelector((state) => state.Map?.clientBoundaries);
+
+  const { availableLayerDefinitions, setOverlayState } = useInvasivesMapLayers();
+
   return (
     <div id="lp-layers">
-      <h3>
-        DataBC Layers <TooltipWithIcon tooltipText={WmsTooltip} />
-      </h3>
-      <div>
-        {WmsLayers?.length > 0 && connectedToNetwork ? (
-          <ul className="layerList">
-            {WmsLayers.map((layer, index) => (
-              <LpLayersOption
-                key={layer.id ?? nanoid()}
-                onClick={handleWmsClick}
-                layer={layer}
-                lastChild={index === WmsLayers.length - 1}
-              />
+      <FeatureGated requires={'MAP_DATABC_LAYERS'}>
+        <h3>
+          DataBC Layers <TooltipWithIcon tooltipText={WmsTooltip} />
+        </h3>
+        <div>
+          <ul className={'layerList'}>
+            {availableLayerDefinitions.map((layer) => (
+              <li className="lp-layers-item" key={layer.name}>
+                <button
+                  data-testid="lp-layers-option-button"
+                  onClick={() => {
+                    setOverlayState(layer.name);
+                  }}
+                >
+                  {layer.active ? <Visibility /> : <VisibilityOff />}
+                </button>
+                <p>{layer.displayName}</p>
+              </li>
             ))}
           </ul>
-        ) : (
-          <EmptyCollection
-            text={
-              connectedToNetwork ? 'There are no DataBC layers available.' : 'DataBC layers unavailable when offline'
-            }
-          />
-        )}
-      </div>
+          {/*<EmptyCollection*/}
+          {/*  text={*/}
+          {/*    connectedToNetwork ? 'There are no DataBC layers available.' : 'DataBC layers unavailable when offline'*/}
+          {/*  }*/}
+          {/*/>*/}
+        </div>
+      </FeatureGated>
       <h3>
         Uploaded KML Layers <TooltipWithIcon tooltipText={KmlTooltip} />
       </h3>
+
       <div>
         {KmlLayers?.length > 0 ? (
           <ul className="layerList">

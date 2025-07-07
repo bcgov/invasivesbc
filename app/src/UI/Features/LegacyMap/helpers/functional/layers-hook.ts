@@ -1,5 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
+import debounce from 'lodash.debounce';
+import { produce } from 'immer';
 import { MAP_DEFINITIONS, SOURCES } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/layer-definitions';
 import { useSelector } from 'utils/use_selector';
 import {
@@ -7,6 +9,7 @@ import {
   layerStacking,
   POSITIONING_LAYER
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
+import { Platform } from 'state/configuration/build-time-config';
 
 type InvasivesMapLayerDefinitionWithState = InvasivesMapLayerDefinition & {
   active: boolean;
@@ -17,6 +20,8 @@ type LayerSpecificationWithStackingOrder = LayerSpecification & { stackLayer: PO
 const useInvasivesMapLayers = () => {
   const [layers, setLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
   const [sources, setSources] = useState<{ [_: string]: SourceSpecification }>({});
+
+  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications);
 
   const [availableLayerDefinitions, setAvailableLayerDefinitions] = useState<InvasivesMapLayerDefinitionWithState[]>(
     []
@@ -32,11 +37,9 @@ const useInvasivesMapLayers = () => {
   /* evaluate which layers are currently available to select */
   useEffect(() => {
     const newFilteredLayerDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
-    // const offlineDefinitions = (yield select((state: RootState) => state.TileCache?.mapSpecifications)) ?? [];
-    const offlineDefinitions = [];
 
     // evaluate each potential map definition and remove those not eligible at this moment
-    for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions] as InvasivesMapLayerDefinition[]) {
+    for (const l of [...MAP_DEFINITIONS, ...(offlineDefinitions ?? [])] as InvasivesMapLayerDefinition[]) {
       let pass = true;
 
       if (!l.predicates.directlySelectable) {
@@ -88,7 +91,7 @@ const useInvasivesMapLayers = () => {
     }
 
     setAvailableLayerDefinitions(newFilteredLayerDefinitions);
-  }, [features, connected, MOBILE, platform, loggedInOrWorkingOffline]);
+  }, [features, connected, offlineDefinitions, MOBILE, platform, loggedInOrWorkingOffline]);
 
   /* ensure that at least one basemap layer is always designated as active */
   useEffect(() => {
@@ -96,22 +99,14 @@ const useInvasivesMapLayers = () => {
     if (availableLayerDefinitions.filter((l) => l.mode === 'basemap').length == 0) return;
     if (availableLayerDefinitions.filter((l) => l.mode === 'basemap' && l.active).length > 0) return;
 
-    const updatedLayerDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
-
-    let updatedOne = false;
-
-    for (const l of availableLayerDefinitions) {
-      const updated = l;
-
-      if (!updatedOne && updated.mode === 'basemap') {
-        updated.active = true;
-        updatedOne = true;
-      }
-
-      updatedLayerDefinitions.push(updated);
-    }
-
-    setAvailableLayerDefinitions(updatedLayerDefinitions);
+    setAvailableLayerDefinitions(
+      produce((draft) => {
+        const found = draft.find((l) => l.mode === 'basemap');
+        if (found) {
+          found.active = true;
+        }
+      })
+    );
   }, [availableLayerDefinitions]);
 
   /* set the state of the public vector layer correctly on auth state change */
@@ -168,23 +163,33 @@ const useInvasivesMapLayers = () => {
     setSources(newSources);
   }, [availableLayerDefinitions]);
 
-  const setActiveBaseMap = (layerName: string) => {
-    const updatedLayerDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
+  const setActiveBaseMap = useMemo(
+    () =>
+      debounce(
+        (layerName: string) => {
+          setAvailableLayerDefinitions(
+            produce((draft) => {
+              draft.filter((l) => l.mode === 'basemap').forEach((l) => (l.active = l.name === layerName));
+            })
+          );
+        },
+        platform == Platform.ANDROID ? 750 : 100,
+        { leading: true }
+      ),
+    [platform]
+  );
 
-    for (const l of availableLayerDefinitions) {
-      const updated = l;
-
-      if (updated.mode === 'basemap') {
-        updated.active = updated.name === layerName;
-      }
-
-      updatedLayerDefinitions.push(updated);
-    }
-
-    setAvailableLayerDefinitions(updatedLayerDefinitions);
+  const setOverlayState = (layerName: string, active?: boolean) => {
+    setAvailableLayerDefinitions(
+      produce((draft) => {
+        draft
+          .filter((l) => l.mode === 'overlay' && l.name === layerName)
+          .forEach((l) => (l.active = active !== undefined ? active : !l.active));
+      })
+    );
   };
 
-  return { layers, sources, availableLayerDefinitions, setActiveBaseMap };
+  return { layers, sources, availableLayerDefinitions, setActiveBaseMap, setOverlayState };
 };
 export { useInvasivesMapLayers };
 export type { InvasivesMapLayerDefinitionWithState, LayerSpecificationWithStackingOrder };

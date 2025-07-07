@@ -41,7 +41,7 @@ const PrimaryLayerSelect = ({ layers, selectLayer }: PrimaryLayerSelectProps) =>
   return (
     <div className={'basemap-btn-group'}>
       {layers
-        .filter((l) => l.mode === 'basemap')
+        // .filter((l) => l.mode === 'basemap')
         .map((l) => {
           return (
             <div className={l.active ? 'selected' : ''} key={l.name}>
