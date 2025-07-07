@@ -37,6 +37,18 @@ interface RecordCacheDownloadRequestSpec {
  * @property { GeoJSONSourceSpecification } cachedGeoJSON  Cached Features for low map layers
  * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
  * @property { UserRecordCacheStatus } status Cache Status.
+ *
+ * cached_ids VS ids_to_filter
+ *
+ *  cached_ids:
+ *    Cached IDs are all the IDS applied to a recordset during time of caching
+ *    Their focus is maintenance of the client database by removing duplicates / not losing cached records between recordsets
+ *    Cached ids are created based on the results of a recordset. If two recordsets have the same id, it won't get deleted.
+ *  ids_to_filter:
+ *    Binding constraint used when creating a cached recordset. Lets us set specific records to a recordset with(out) the use of filters.
+ *     - Locks in Server side shape boundaries
+ *     - Lets us create a recordset using a Sitelist
+ *     - In majority of use cases, ids_to_filter is undefined.
  */
 interface RepositoryMetadata {
   bbox?: RepositoryBoundingBoxSpec;
