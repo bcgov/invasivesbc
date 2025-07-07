@@ -134,7 +134,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
             tableFilter[key] = action.payload[key];
           }
         });
-        if (filterType && [EFilterType.Drawn, EFilterType.Uploaded].includes(filterType)) {
+        if (filterType === EFilterType.Drawn) {
           tableFilter.field = '';
           tableFilter.operator ??= 'CONTAINED IN';
           tableFilter.filter ??= '';
