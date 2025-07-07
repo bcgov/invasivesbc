@@ -162,7 +162,12 @@ abstract class RecordCacheService extends BaseCacheService<
       cachedGeoJSON: null,
       cachedCentroid: null
     };
-
+    const containsServerFilterShape = spec.filterObjects?.tableFilters.some(
+      (shape) => shape.filterType === EFilterType.Uploaded
+    );
+    if (containsServerFilterShape) {
+      spec.ids_to_filter ??= spec.idsToCache;
+    }
     await this.addOrUpdateRepository({
       set_id: spec.setId,
       cache_time: new Date(),
