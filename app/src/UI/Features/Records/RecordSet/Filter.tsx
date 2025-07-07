@@ -2,7 +2,7 @@ import { Button, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import debounce from 'lodash.debounce';
 import { EFilterType, IFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
@@ -42,11 +42,8 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
 
   const updateSpatialFilter = (id: string, filterType: string) => {
     let payload;
-    if (filterType !== EFilterType.Table) {
-      const shape =
-        filterType === EFilterType.Drawn
-          ? clientBoundariesToDisplay.find(({ value }) => value === id)
-          : serverBoundariesToDisplay.find(({ value }) => value == id);
+    if (filterType === EFilterType.Drawn) {
+      const shape = clientBoundariesToDisplay.find(({ value }) => value === id);
       payload = { filter: shape.id, geojson: shape?.geojson };
     }
     updateFilter({ filterType: filterType, ...payload });
@@ -95,7 +92,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
           <select
             className="filterSelect"
             disabled={disabled}
-            onChange={(e) => updateSpatialFilter(e.target.value, EFilterType.Uploaded)}
+            onChange={(e) => updateFilter({ filter: e.target.value })}
             value={filterSet.filter}
           >
             {serverBoundariesToDisplay.length > 0 ? (
@@ -141,19 +138,22 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
 
   const serverBoundariesToDisplay = useSelector((state) => state.Map.serverBoundaries)?.map((boundary) => ({
     label: boundary.title,
-    value: boundary.id,
-    ...boundary
+    value: boundary.id
   }));
   const clientBoundariesToDisplay = useSelector((state) => state.Map.clientBoundaries)?.map((boundary) => ({
     label: boundary.title,
     value: boundary.id,
     ...boundary
   }));
+  const serverSpatialFiltersDisabled = useSelector(
+    (state) => state.UserSettings.recordSets[setID].cacheMetadataStatus === UserRecordCacheStatus.CACHED
+  );
   const filterColumns = recordSetType === RecordSetType.Activity ? activityColumnsToDisplay : iappColumnsToDisplay;
   const filterOptions = filterColumns.map((option) => ({ label: option.name, value: option.key }));
 
   const [inputValue, setInputValue] = useState<string>(filterSet.filter);
   const input = getFilterType(filterSet.filterType);
+
   return (
     <tr>
       <td>
@@ -248,15 +248,16 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
           disabled={disabled}
           onChange={(e) => {
             if (e.target.value === EFilterType.Uploaded) {
-              updateSpatialFilter(serverBoundariesToDisplay[0].value, EFilterType.Uploaded);
+              updateFilter({
+                filterType: EFilterType.Uploaded,
+                setID: setID,
+                filterID: filterSet.id,
+                filter: serverBoundariesToDisplay[0].value
+              });
             } else if (e.target.value === EFilterType.Drawn) {
               updateSpatialFilter(clientBoundariesToDisplay[0].value, EFilterType.Drawn);
             } else {
-              updateFilter({
-                filterType: e.target.value,
-                setID: setID,
-                filterID: filterSet.id
-              });
+              updateFilter({ filterType: EFilterType.Table, setID: setID, filterID: filterSet.id });
             }
           }}
           value={filterSet.filterType}
@@ -268,7 +269,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             Spatial - Drawn
           </option>
           <option
-            disabled={serverBoundariesToDisplay.length < 1}
+            disabled={serverBoundariesToDisplay.length < 1 || serverSpatialFiltersDisabled}
             value={EFilterType.Uploaded}
             label={'Spatial - Uploaded'}
           >
