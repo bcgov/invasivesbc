@@ -20,7 +20,6 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
 import { getConcatenatedCodes, findSpeciesCodes } from 'utils/addActivity';
-import { EFilterType, IFilter } from 'state/actions/userSettings/RecordSet';
 
 const LAYER_ID_PREFIX = 'recordset-layer-';
 const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
