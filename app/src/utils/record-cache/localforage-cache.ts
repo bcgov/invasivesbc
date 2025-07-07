@@ -17,6 +17,7 @@ import IappTableRow from 'interfaces/IappTableRecord';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import { getUnnestedFieldsForActivity } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
+import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
 class LocalForageRecordCacheService extends RecordCacheService {
   private static _instance: LocalForageRecordCacheService;
@@ -59,25 +60,29 @@ class LocalForageRecordCacheService extends RecordCacheService {
       if (keyIsCacheKey || idsNotInIdsToFilter || incorrectKeyType) return;
       if (
         params.tableFilters.every((filter) => {
-          if (filter?.geojson) {
+          if (filter.filterType === EFilterType.Drawn && filter?.geojson) {
             const shape = value?.record?.geom?.geometry ?? value?.geometry ?? null;
             if (Array.isArray(shape)) {
               return shape.some((cachedFeature: Feature) => booleanIntersects(cachedFeature, filter.geojson));
             } else if (shape) {
               return booleanIntersects(shape, filter.geojson);
             }
+          } else if (filter.filterType === EFilterType.Uploaded) {
+            // Server filters are bound in the ids_to_filter due to accuracy loss of WKB -> GeoJSON. They can safely be ignored
+            return true;
+          } else {
+            const pattern = new RegExp(filter.filter, 'i');
+            const columnVal = (() => {
+              if (value?.[filter.field]) {
+                return value[filter.field];
+              } else if (value?.row?.[filter.field]) {
+                return value.row[filter.field];
+              } else {
+                return '';
+              }
+            })();
+            return filter.operator === 'CONTAINS' ? pattern.test(columnVal) : !pattern.test(columnVal);
           }
-          const pattern = new RegExp(filter.filter, 'i');
-          const columnVal = (() => {
-            if (value?.[filter.field]) {
-              return value[filter.field];
-            } else if (value?.row?.[filter.field]) {
-              return value.row[filter.field];
-            } else {
-              return '';
-            }
-          })();
-          return filter.operator === 'CONTAINS' ? pattern.test(columnVal) : !pattern.test(columnVal);
         })
       ) {
         records.push(value);
