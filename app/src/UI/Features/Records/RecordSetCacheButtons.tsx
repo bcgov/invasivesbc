@@ -71,7 +71,10 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
     dispatch(
       Prompt.confirmation({
         title: 'Download Records',
-        prompt: 'Would you like to download this cache? The record sets will be available for offline use.',
+        prompt: [
+          'Would you like to download this cache? The record sets will be available for offline use.',
+          `You will download ${recordSet.idList.length ?? 0} record(s).`
+        ],
         confirmText: 'Download Records',
         callback: (confirmation: boolean) => {
           if (confirmation) {
