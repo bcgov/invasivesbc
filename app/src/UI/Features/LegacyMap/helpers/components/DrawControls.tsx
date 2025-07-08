@@ -20,7 +20,7 @@ import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats
 import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { TargetMode } from 'constants/targetModes';
-import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import { GEO_TRACKING_FEATURE, SUBMITTED_ACTIVITY_SHAPE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
 import Alerts from 'state/actions/alerts/Alerts';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
@@ -51,6 +51,10 @@ const DrawControls = () => {
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
 
+  const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
+  const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
+  const activityGeometryArray = useSelector((state) => state.ActivityPage.activity?.geometry);
+  const { url } = useSelector((state) => state.AppMode);
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
@@ -99,7 +103,9 @@ const DrawControls = () => {
 
   const hasEditableShape = () => {
     const features = drawInstance.current?.getAll().features;
+    console.log('can edit', can_edit);
 
+    // || !can_edit
     if (!features || features.length === 0) return false;
 
     const isGeoTracking = mode === TargetMode.ACTIVITY_GEO_TRACK;
@@ -126,6 +132,28 @@ const DrawControls = () => {
   useEffect(() => {
     updateEditControlState();
   }, [isDrawingShape]);
+
+  // make a geomtery for perviously submitted shapes
+  useEffect(() => {
+    if (!activityGeo) return;
+    const feature = drawInstance?.current?.getAll()?.features?.[0];
+
+    const isActivityGeoEmpty = (activityGeo?.geometry?.coordinates?.length ?? 0) === 0;
+    const isFeaturePresent = (feature?.geometry?.coordinates?.length ?? 0) > 0;
+
+    // early return unless activitygeo is present or feature is empty
+    // or user does not have edit permissions or not in activity page
+    if (isActivityGeoEmpty || isFeaturePresent || !can_edit || !url?.includes('Activity')) return;
+
+    drawInstance?.current?.deleteAll();
+    drawInstance?.current?.add({
+      id: SUBMITTED_ACTIVITY_SHAPE,
+      type: 'Feature',
+      geometry: activityGeo.geometry,
+      properties: {}
+    });
+    updateEditControlState();
+  }, [activity_id, can_edit, url]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
   useEffect(() => {
@@ -386,7 +414,11 @@ const DrawControls = () => {
   useEffect(() => {
     if (!drawInstance.current) return;
 
-    const shouldPreserveShape = prevMode.current === TargetMode.ACTIVITY_GEO_TRACK && mode === TargetMode.ACTIVITY;
+    const submittedGeoShapeOnActivityPage =
+      drawInstance?.current?.get(SUBMITTED_ACTIVITY_SHAPE) && url?.includes('Activity'); // for editing already submitted shapes
+    const shouldPreserveShape =
+      (prevMode.current === TargetMode.ACTIVITY_GEO_TRACK && mode === TargetMode.ACTIVITY) ||
+      submittedGeoShapeOnActivityPage;
 
     if (!shouldPreserveShape) {
       drawInstance.current.deleteAll();
