@@ -711,6 +711,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.positionTracking = true;
       } else if (MapActions.trackLocationStop.match(action)) {
         draftState.positionTracking = false;
+      } else if (MapActions.trackLocationToggle.match(action)) {
+        draftState.positionTracking = !draftState.positionTracking;
       } else if (UserSettings.Boundaries.removeCustomLayer.match(action)) {
         const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload);
         draftState.clientBoundaries.splice(index, 1);
