@@ -1,31 +1,18 @@
-import React, { useRef } from 'react';
-import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
-import { useSelector } from 'utils/use_selector';
-import { MAP_TOGGLE_LEGENDS } from 'state/actions';
 import 'UI/Global.css';
 import InfoIcon from '@mui/icons-material/Info';
 import { useHistory } from 'react-router-dom';
+import { useState } from 'react';
 
 export const LegendsButton = () => {
-  const legendsPopup = useSelector((state) => state.Map.legendsPopup);
   const history = useHistory();
-  const dispatch = useDispatch();
-  const divRef = useRef<HTMLDivElement | null>(null);
 
-  const [show, setShow] = React.useState(false);
+  const [show, setShow] = useState(false);
 
-  const toggleLegend = () => {
-    if (legendsPopup) {
-      history.goBack();
-    } else {
-      history.push('/Legend');
-    }
-    dispatch({ type: MAP_TOGGLE_LEGENDS });
-  };
+  const toggleLegend = () => history.push('/Legend');
 
   return (
-    <div ref={divRef} className={legendsPopup ? 'map-btn-selected' : 'map-btn'}>
+    <div className={'map-btn'}>
       <Tooltip
         open={show}
         classes={{ tooltip: 'toolTip' }}
