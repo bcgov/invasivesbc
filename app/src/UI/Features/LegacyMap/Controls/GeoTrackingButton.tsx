@@ -2,7 +2,7 @@ import { IconButton, Tooltip } from '@mui/material';
 import PolylineIcon from '@mui/icons-material/Polyline';
 import DirectionsWalkIcon from '@mui/icons-material/DirectionsWalk';
 import GeoShapes from 'constants/geoShapes';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
@@ -21,17 +21,10 @@ export const GeoTrackingButton = () => {
   const [show, setShow] = useState(false);
   const divRef = useRef<HTMLDivElement | null>(null);
   const tracking = isTracking(status);
-  const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? {};
 
   const promptHandler = (input: string | number) => {
     dispatch(GeoTracking.start(input as GeoShapes));
   };
-
-  useEffect(() => {
-    if (activityGeo && activityGeo?.properties?.error == 'true') {
-      dispatch(GeoTracking.pause());
-    }
-  }, [activityGeo?.properties]);
 
   const clickHandler = () => {
     setShow(false);

@@ -38,6 +38,7 @@ import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
@@ -52,6 +53,7 @@ import MapActions from 'state/actions/map';
 import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
+import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -163,6 +165,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
 
     const isWIPLinestring = sanitizedGeo.geometry.type === GeoShapes.LineString;
     const isPointGeometry = sanitizedGeo.geometry.type === GeoShapes.Point;
+    const isGeoTrackingFeature = sanitizedGeo.id === GEO_TRACKING_FEATURE;
     reported_area = calculateGeometryArea([sanitizedGeo]);
 
     if (!isPointGeometry) {
@@ -171,6 +174,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
 
       if (hasSelfIntersections || hasHoles) {
         yield put(Activity.updateGeoFailure({ geometry: [{ ...sanitizedGeo, properties: { error: 'true' } }] }));
+        if (isGeoTrackingFeature) yield put(GeoTracking.pause());
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
         return;
       }

@@ -271,9 +271,26 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     console.error(err);
   }
   if (geographyWillContainIntersections) {
-    yield put(GeoTracking.exit());
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
-    yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
+    const callback = (userConfirmsExit: boolean) => {
+      if (userConfirmsExit) {
+        return [
+          Alerts.deleteAll(),
+          GeoTracking.exit(),
+          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
+          Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
+        ];
+      }
+    };
+    yield put(
+      Prompt.confirmation({
+        title: 'Errors in current geography',
+        prompt: `You've attempted to stop tracking, but self-intersection exists, do you want to abandon your progress?`,
+        confirmText: 'Stop Tracking',
+        cancelText: 'Continue',
+        callback
+      })
+    );
+
     return;
   }
   if (!geometryHasPositiveArea) {
