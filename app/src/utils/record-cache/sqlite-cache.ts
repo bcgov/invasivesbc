@@ -23,7 +23,7 @@ import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
 } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
-import { IFilter } from 'state/actions/userSettings/RecordSet';
+import { EFilterType, IFilter } from 'state/actions/userSettings/RecordSet';
 
 const CACHE_DB_NAME = 'record_cache.db';
 const CACHE_UNAVAILABLE = 'cache not available';
@@ -359,7 +359,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
     (shapesInBufferedArea.values ?? []).forEach((entry) => {
       entry = JSON.parse(entry['GEOJSON']);
       // IAPP is Shape, but InvBC records are Array<Shape>
-      const recordIsActivity = Object.hasOwn(entry, 'length');
+      const recordIsActivity = Array.isArray(entry);
       if (recordIsActivity) {
         entry?.forEach((shape: Feature) => {
           if (booleanIntersects(geom, shape)) {
@@ -479,22 +479,28 @@ class SQLiteRecordCacheService extends RecordCacheService {
     if (this.cacheDB == null) {
       throw new Error(CACHE_UNAVAILABLE);
     }
-    const spatialQueries = params.tableFilters.filter((filter) => filter.filterType === 'spatialFilterDrawn');
+    const localSpatialQueries = params.tableFilters.filter((filter) => filter?.filterType === EFilterType.Drawn);
     const values: Array<string | number> = [];
     const table = {
       [RecordSetType.Activity]: 'CACHED_RECORDS',
       [RecordSetType.IAPP]: 'CACHED_IAPP_RECORDS'
     }[params.recordSetType];
 
-    if (spatialQueries.length > 0 && params.selectColumns.length > 0 && !params.selectColumns.includes('GEOJSON')) {
+    if (
+      localSpatialQueries.length > 0 &&
+      params.selectColumns.length > 0 &&
+      !params.selectColumns.includes('GEOJSON')
+    ) {
       params.selectColumns.push('GEOJSON');
     }
     const columns = params.selectColumns.length > 0 ? params.selectColumns.join(', ') : '*';
     let where = 'WHERE 1=1 ';
 
     params.tableFilters.forEach((filter: IFilter) => {
+      // Server filters are bound in the ids_to_filter due to accuracy loss of WKB -> GeoJSON. They can safely be ignored
+      if (filter?.filterType === EFilterType.Uploaded) return;
       where += '\n AND ';
-      if (filter.filterType === 'spatialFilterDrawn') {
+      if (filter?.filterType === EFilterType.Drawn && filter?.geojson) {
         const [minX, minY, maxX, maxY] = bbox(filter.geojson);
         where += `LATITUDE BETWEEN ${minY} AND ${maxY} AND LONGITUDE BETWEEN ${minX} AND ${maxX}`;
       } else {
@@ -526,15 +532,16 @@ class SQLiteRecordCacheService extends RecordCacheService {
       `;
 
     let results = (await this.cacheDB.query(query, values))?.values ?? [];
-    if (spatialQueries.length > 0) {
+
+    if (localSpatialQueries.length > 0) {
       results = results.filter((result) => {
-        const geojson = JSON.parse(result['GEOJSON']);
-        if (Object.hasOwn(geojson, 'length')) {
-          return geojson.every((shape: Feature) =>
-            spatialQueries.every((query) => booleanIntersects(shape, query.geojson))
-          );
-        }
-        return spatialQueries.every((spatialFilter) => booleanIntersects(spatialFilter.geojson, geojson));
+        return localSpatialQueries.every((query) => {
+          const geojson = JSON.parse(result['GEOJSON']);
+          if (Array.isArray(geojson)) {
+            return geojson.some((feature) => booleanIntersects(feature, query.geojson));
+          }
+          return booleanIntersects(geojson, query.geojson);
+        });
       });
     }
     return (

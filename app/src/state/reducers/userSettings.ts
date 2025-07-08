@@ -15,6 +15,7 @@ import { CacheDownloadMode } from 'utils/record-cache';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import defaultRecordSets from 'constants/defaultRecordSets';
+import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
 interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
@@ -123,7 +124,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
           draftState.recordSets[action.payload.setName][key] = action.payload.updatedSet[key];
         });
       } else if (UserSettings.RecordSet.updateFilter.match(action)) {
-        const { setID, filterType, filterID } = action.payload;
+        const { setID, filterType, filterID, geojson } = action.payload;
         const recordSet = draftState.recordSets[setID];
         const tableFilter = recordSet?.tableFilters.find((filter) => filter.id === filterID);
         if (!tableFilter) return;
@@ -133,11 +134,11 @@ function createUserSettingsReducer(_configuration: AppConfig) {
             tableFilter[key] = action.payload[key];
           }
         });
-
-        if (action.payload?.filterType === 'spatialFilterDrawn' || filterType === 'spatialFilterUploaded') {
+        if (filterType === EFilterType.Drawn) {
           tableFilter.field = '';
           tableFilter.operator ??= 'CONTAINED IN';
           tableFilter.filter ??= '';
+          tableFilter.geojson = geojson;
         }
 
         const tableFiltersNotBlank = recordSet?.tableFilters.filter((filter) => !!filter.filter);

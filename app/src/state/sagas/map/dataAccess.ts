@@ -16,13 +16,8 @@ import { IQueryParams } from 'utils/record-cache';
 export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
   try {
     const currentState = yield select((state) => state?.UserSettings);
-    const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
     const recordset: UserRecordSet = currentState.recordSets[action.payload.recordSetID];
-    const filterObject = getRecordFilterObjectFromStateForAPI(
-      action.payload.recordSetID,
-      currentState,
-      clientBoundaries
-    );
+    const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
     if (filterObject == null) {
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     }
@@ -53,8 +48,7 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
 
 export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: PayloadAction<IGetIdsForRecordset>) {
   const currentState = yield select((state) => state.UserSettings);
-  const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
-  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState, clientBoundaries);
+  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
   const workingOffline = yield select((state) => state.Auth.workingOffline);
   const connected = yield select((state) => state.Network.connected);
   if (filterObject == null) {
@@ -100,8 +94,7 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     if (yield service.isCached(action.recordSetID)) {
       const userSettingsState = yield select(selectUserSettings);
-      const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
-      const filters = getRecordFilterObjectFromStateForAPI(action.recordSetID, userSettingsState, clientBoundaries);
+      const filters = getRecordFilterObjectFromStateForAPI(action.recordSetID, userSettingsState);
 
       if (filters == null) {
         console.warn('null filterObject returned by getRecordFilterObjectFromStateForAPI, probable data error');
@@ -131,14 +124,9 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
 export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   try {
     const currentState = yield select((state) => state.UserSettings);
-    const clientBoundaries = yield select((state) => state.Map?.clientBoundaries);
     const workingOffline = yield select((state) => state.Auth.workingOffline);
     const connected = yield select((state) => state.Network.connected);
-    const filterObject = getRecordFilterObjectFromStateForAPI(
-      action.payload.recordSetID,
-      currentState,
-      clientBoundaries
-    );
+    const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
     if (filterObject == null) {
       yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
       return;
@@ -163,28 +151,13 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
   }
 }
 
-export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsState, clientBoundaries) => {
-  const getFilterWithDrawnShape = (filterID) => {
-    return clientBoundaries.filter((filter) => {
-      return filter.id === filterID;
-    })?.[0]?.geojson;
-  };
+export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsState) => {
   try {
     const recordSet = JSON.parse(JSON.stringify(recordSetsState.recordSets?.[recordSetID]));
     const recordSetType = JSON.parse(JSON.stringify(recordSetsState?.recordSets?.[recordSetID]?.recordSetType));
     const sortColumn = recordSet?.sortColumn;
     const sortOrder = recordSet?.sortOrder;
     const tableFilters = recordSet?.tableFilters;
-    let modifiedTableFilters = tableFilters?.map((filter) =>
-      filter.filterType !== 'spatialFilterDrawn'
-        ? filter
-        : {
-            ...filter,
-            geojson: getFilterWithDrawnShape(filter.filter)
-          }
-    );
-
-    modifiedTableFilters ??= [];
     const selectColumns = recordSet?.selectColumns ?? getSelectColumnsByRecordSetType(recordSetType);
 
     return {
@@ -192,7 +165,7 @@ export const getRecordFilterObjectFromStateForAPI = (recordSetID, recordSetsStat
       ids_to_filter: recordSet?.ids_to_filter,
       sortColumn: sortColumn,
       sortOrder: sortOrder,
-      tableFilters: modifiedTableFilters,
+      tableFilters: tableFilters,
       selectColumns: selectColumns
     } as any;
   } catch (_e) {
@@ -208,7 +181,7 @@ export function* handle_ACTIVITIES_TABLE_GET_ROWS(action: PayloadAction<Activity
     const { recordSetID, page, limit, tableFiltersHash } = action.payload;
     const userMobileOffline = buildTimeConfig.MOBILE && !connected;
 
-    const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState, mapState?.clientBoundaries);
+    const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState);
     if (filterObject == null) {
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     } else {
@@ -251,8 +224,7 @@ export function* getRowsFromCachedRecordset(req: ActivityTableRowGetRequest) {
   try {
     const { recordSetID, page, limit, tableFiltersHash } = req;
     const userSettingsState = yield select(selectUserSettings);
-    const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
-    const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState, clientBoundaries);
+    const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState);
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
 
     if (filters == null) {
@@ -291,7 +263,7 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
     const { recordSetID, page, limit, tableFiltersHash } = action.payload;
     const userMobileOffline = buildTimeConfig.MOBILE && !connected;
 
-    const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState, mapState?.clientBoundaries);
+    const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState);
     if (filterObject == null) {
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     } else {
@@ -333,8 +305,7 @@ export function* getIappRowsFromCache(payload: IappTableRowRequest) {
   try {
     const { recordSetID, page, limit, tableFiltersHash } = payload;
     const userSettingsState = yield select(selectUserSettings);
-    const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
-    const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState, clientBoundaries);
+    const filters = getRecordFilterObjectFromStateForAPI(recordSetID, userSettingsState);
     if (filters == null) {
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     }

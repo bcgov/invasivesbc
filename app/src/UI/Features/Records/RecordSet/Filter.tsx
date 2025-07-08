@@ -2,10 +2,10 @@ import { Button, Tooltip } from '@mui/material';
 import { useCallback, useState } from 'react';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import debounce from 'lodash.debounce';
-import { IFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import { EFilterType, IFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 
 type PropTypes = {
   setID: string;
@@ -30,7 +30,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
     debounce((value: string) => {
       dispatch(
         UserSettings.RecordSet.updateFilter({
-          filterType: 'tableFilter',
+          filterType: EFilterType.Table,
           setID: setID,
           filterID: filterSet.id,
           filter: value
@@ -40,6 +40,14 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
     []
   );
 
+  const updateSpatialFilter = (id: string, filterType: string) => {
+    let payload;
+    if (filterType === EFilterType.Drawn) {
+      const shape = clientBoundariesToDisplay.find(({ value }) => value === id);
+      payload = { filter: shape.id, geojson: shape?.geojson };
+    }
+    updateFilter({ filterType: filterType, ...payload });
+  };
   /**
    * Update the Recordsets filters
    * @param newVal additional object keys
@@ -69,7 +77,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
 
   const getFilterType = (filterType: string) => {
     switch (filterType) {
-      case 'tableFilter':
+      case EFilterType.Table:
         return (
           <input
             className="filterSelect"
@@ -79,7 +87,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             value={inputValue}
           />
         );
-      case 'spatialFilterUploaded':
+      case EFilterType.Uploaded:
         return (
           <select
             className="filterSelect"
@@ -87,26 +95,38 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             onChange={(e) => updateFilter({ filter: e.target.value })}
             value={filterSet.filter}
           >
-            {serverBoundariesToDisplay?.map((option) => (
-              <option key={option.value + option.label} value={option.value}>
-                {option.label}
+            {serverBoundariesToDisplay.length > 0 ? (
+              serverBoundariesToDisplay?.map((option) => (
+                <option key={option.value + option.label} value={option.value}>
+                  {option.label}
+                </option>
+              ))
+            ) : (
+              <option selected disabled value="">
+                Original source removed
               </option>
-            ))}
+            )}
           </select>
         );
-      case 'spatialFilterDrawn':
+      case EFilterType.Drawn:
         return (
           <select
             className="filterSelect"
             disabled={disabled}
-            onChange={(e) => updateFilter({ filter: e.target.value })}
+            onChange={(e) => updateSpatialFilter(e.target.value, EFilterType.Drawn)}
             value={filterSet.filter}
           >
-            {clientBoundariesToDisplay?.map((option) => (
-              <option key={option.value + option.label} value={option.value}>
-                {option.label}
+            {clientBoundariesToDisplay.length > 0 ? (
+              clientBoundariesToDisplay?.map((option) => (
+                <option key={option.value + option.label} value={option.value}>
+                  {option.label}
+                </option>
+              ))
+            ) : (
+              <option selected disabled value="">
+                Original source removed
               </option>
-            ))}
+            )}
           </select>
         );
       default:
@@ -122,13 +142,18 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
   }));
   const clientBoundariesToDisplay = useSelector((state) => state.Map.clientBoundaries)?.map((boundary) => ({
     label: boundary.title,
-    value: boundary.id
+    value: boundary.id,
+    ...boundary
   }));
+  const serverSpatialFiltersDisabled = useSelector(
+    (state) => state.UserSettings.recordSets[setID].cacheMetadataStatus === UserRecordCacheStatus.CACHED
+  );
   const filterColumns = recordSetType === RecordSetType.Activity ? activityColumnsToDisplay : iappColumnsToDisplay;
   const filterOptions = filterColumns.map((option) => ({ label: option.name, value: option.key }));
 
   const [inputValue, setInputValue] = useState<string>(filterSet.filter);
   const input = getFilterType(filterSet.filterType);
+
   return (
     <tr>
       <td>
@@ -140,7 +165,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
         >
           {
             {
-              tableFilter: (
+              [EFilterType.Table]: (
                 <>
                   <option value={'AND'} label={'AND'}>
                     AND
@@ -150,7 +175,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                   </option>
                 </>
               ),
-              spatialFilterDrawn: (
+              [EFilterType.Drawn]: (
                 <>
                   <option value={'AND'} label={'AND'}>
                     AND
@@ -160,7 +185,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                   </option>
                 </>
               ),
-              spatialFilterUploaded: (
+              [EFilterType.Uploaded]: (
                 <>
                   <option value={'AND'} label={'AND'}>
                     AND
@@ -183,7 +208,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
         >
           {
             {
-              tableFilter: (
+              [EFilterType.Table]: (
                 <>
                   <option value={'CONTAINS'} label={'CONTAINS'}>
                     CONTAINS
@@ -193,7 +218,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                   </option>
                 </>
               ),
-              spatialFilterDrawn: (
+              [EFilterType.Drawn]: (
                 <>
                   <option value={'CONTAINED IN'} label={'CONTAINED IN'}>
                     CONTAINED IN
@@ -203,7 +228,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                   </option>
                 </>
               ),
-              spatialFilterUploaded: (
+              [EFilterType.Uploaded]: (
                 <>
                   <option value={'CONTAINED IN'} label={'CONTAINED IN'}>
                     CONTAINED IN
@@ -222,34 +247,30 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
           className="filterTypeSelect"
           disabled={disabled}
           onChange={(e) => {
-            const payload: Partial<IUpdateFilter> = {
-              filterType: e.target.value,
-              setID: setID,
-              filterID: filterSet.id
-            };
-
-            if (e.target.value === 'spatialFilterUploaded') {
-              payload.filter = serverBoundariesToDisplay[0].value;
-            } else if (e.target.value === 'spatialFilterDrawn') {
-              payload.filter = clientBoundariesToDisplay[0].value;
+            if (e.target.value === EFilterType.Uploaded) {
+              updateFilter({
+                filterType: EFilterType.Uploaded,
+                setID: setID,
+                filterID: filterSet.id,
+                filter: serverBoundariesToDisplay[0].value
+              });
+            } else if (e.target.value === EFilterType.Drawn) {
+              updateSpatialFilter(clientBoundariesToDisplay[0].value, EFilterType.Drawn);
+            } else {
+              updateFilter({ filterType: EFilterType.Table, setID: setID, filterID: filterSet.id });
             }
-            updateFilter(payload);
           }}
           value={filterSet.filterType}
         >
-          <option value={'tableFilter'} label={'Field/Column'}>
+          <option value={EFilterType.Table} label={'Field/Column'}>
             Field/Column
           </option>
-          <option
-            disabled={clientBoundariesToDisplay.length < 1}
-            value={'spatialFilterDrawn'}
-            label={'Spatial - Drawn'}
-          >
+          <option disabled={clientBoundariesToDisplay.length < 1} value={EFilterType.Drawn} label={'Spatial - Drawn'}>
             Spatial - Drawn
           </option>
           <option
-            disabled={serverBoundariesToDisplay.length < 1}
-            value={'spatialFilterUploaded'}
+            disabled={serverBoundariesToDisplay.length < 1 || serverSpatialFiltersDisabled}
+            value={EFilterType.Uploaded}
             label={'Spatial - Uploaded'}
           >
             Spatial - Uploaded
@@ -261,9 +282,11 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
           className="filterSelect"
           disabled={disabled}
           value={filterSet.field}
-          onChange={(e) => updateFilter({ filterID: filterSet.id, field: e.target.value, filterType: 'tableFilter' })}
+          onChange={(e) =>
+            updateFilter({ filterID: filterSet.id, field: e.target.value, filterType: EFilterType.Table })
+          }
         >
-          {filterSet.filterType === 'tableFilter' ? (
+          {filterSet.filterType === EFilterType.Table ? (
             filterOptions.map((option) => (
               <option key={option.value + option.label} value={option.value}>
                 {option.label}
@@ -283,7 +306,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             <Button
               className={'deleteButton'}
               disabled={disabled}
-              onClick={() => removeFilter('tableFilter')}
+              onClick={() => removeFilter(EFilterType.Table)}
               variant="contained"
             >
               Delete

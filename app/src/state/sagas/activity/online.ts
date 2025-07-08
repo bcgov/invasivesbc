@@ -12,6 +12,7 @@ import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
+import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
   const response = yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
@@ -220,7 +221,7 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE(acti
 
     if (action.payload.search_feature?.features?.[0]) {
       filterObject.tableFilters.push({
-        filterType: 'spatialFilterDrawn',
+        filterType: EFilterType.Drawn,
         operator: 'CONTAINED IN',
         operator2: 'AND',
         filter: '0.113619259813296791712616073543',
