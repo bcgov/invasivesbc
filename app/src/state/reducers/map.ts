@@ -712,14 +712,19 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
       } else if (MapActions.trackLocationStop.match(action)) {
         draftState.positionTracking = false;
       } else if (MapActions.trackLocationToggle.match(action)) {
+        if (!draftState.positionTracking) {
+          draftState.panned = true;
+        }
         draftState.positionTracking = !draftState.positionTracking;
       } else if (UserSettings.Boundaries.removeCustomLayer.match(action)) {
         const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload);
         draftState.clientBoundaries.splice(index, 1);
       } else if (MapActions.accuracyToggle.match(action)) {
         draftState.accuracyToggle = !state.accuracyToggle;
-      } else if (MapActions.panningToggle.match(action)) {
-        draftState.panned = !state.panned;
+      } else if (MapActions.panningOn.match(action)) {
+        draftState.panned = true;
+      } else if (MapActions.panningOff.match(action)) {
+        draftState.panned = false;
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {

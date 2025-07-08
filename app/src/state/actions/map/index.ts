@@ -15,7 +15,8 @@ class MapActions {
   static readonly trackLocationToggle = createAction(`${this.PREFIX}/trackLocationToggle`);
 
   static readonly accuracyToggle = createAction(`${this.PREFIX}/accuracyToggle`);
-  static readonly panningToggle = createAction(`${this.PREFIX}/panningToggle`);
+  static readonly panningOff = createAction(`${this.PREFIX}/panningOff`);
+  static readonly panningOn = createAction(`${this.PREFIX}/panningOn`);
 }
 
 export default MapActions;
