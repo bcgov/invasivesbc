@@ -100,7 +100,6 @@ const DrawControls = () => {
   const hasEditableShape = () => {
     const features = drawInstance.current?.getAll().features;
 
-    //|| features?.[0]?.geometry?.coordinates?.length === 1
     if (!features || features.length === 0) return false;
 
     const isGeoTracking = mode === TargetMode.ACTIVITY_GEO_TRACK;
