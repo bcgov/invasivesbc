@@ -21,7 +21,7 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
     (state) => state.UserSettings?.recordSets[setId].cacheDownloadProgress,
     shallowEqual
   );
-
+  const isLoadingRecords = useSelector((state) => state.Map.recordTables?.[setId]?.loading);
   const activeDownloads = downloadProgress.normalizedProgress != 0;
 
   const [cacheActionEnabled, setCacheActionEnabled] = useState<boolean>(false);
@@ -68,19 +68,20 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
   };
 
   const downloadCache = () => {
-    const callback = (confirmation: boolean) => {
-      if (confirmation) {
-        dispatch(RecordCache.requestCaching({ setId }));
-        setIsPaused(false);
-      }
-    };
-
     dispatch(
       Prompt.confirmation({
         title: 'Download Records',
-        prompt: 'Would you like to download this cache? The record sets will be available for offline use.',
+        prompt: [
+          'Would you like to download this cache? The record sets will be available for offline use.',
+          `You will download ${recordSet.idList.length ?? 0} record(s).`
+        ],
         confirmText: 'Download Records',
-        callback
+        callback: (confirmation: boolean) => {
+          if (confirmation) {
+            dispatch(RecordCache.requestCaching({ setId }));
+            setIsPaused(false);
+          }
+        }
       })
     );
   };
@@ -106,6 +107,8 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
   const formatStatusKey = (cacheStatus: UserRecordCacheStatus): string => {
     if (!cacheStatus) {
       return 'Unknown';
+    } else if (isLoadingRecords && connected && cacheStatus === UserRecordCacheStatus.NOT_CACHED) {
+      return 'Updating...';
     } else if (cacheStatus === UserRecordCacheStatus.NOT_CACHED) {
       return 'Save';
     }
@@ -124,6 +127,7 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
   useEffect(() => {
     setCacheActionEnabled(
       connected &&
+        !isLoadingRecords &&
         [
           UserRecordCacheStatus.CACHED,
           UserRecordCacheStatus.NOT_CACHED,
@@ -133,7 +137,7 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
           UserRecordCacheStatus.PAUSED
         ].includes(recordSet.cacheMetadataStatus)
     );
-  }, [recordSet.cacheMetadataStatus, connected]);
+  }, [recordSet.cacheMetadataStatus, connected, isLoadingRecords]);
 
   return (
     <Tooltip classes={{ tooltip: 'toolTip' }} title="Click to save this layer and it's records">
