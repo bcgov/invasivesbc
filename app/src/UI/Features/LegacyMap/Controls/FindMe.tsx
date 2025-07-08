@@ -1,11 +1,11 @@
 import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
-import { MAP_TOGGLE_TRACKING } from 'state/actions';
 import 'UI/Global.css';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 
 import { useSelector } from 'utils/use_selector';
+import MapActions from 'state/actions/map';
 
 export const FindMeToggle = () => {
   const positionTracking = useSelector((state) => state.Map?.positionTracking);
@@ -33,7 +33,7 @@ export const FindMeToggle = () => {
             className={'button'}
             onClick={() => {
               setShow(false);
-              dispatch({ type: MAP_TOGGLE_TRACKING });
+              dispatch(MapActions.trackLocationToggle());
             }}
           >
             <MyLocationIcon />

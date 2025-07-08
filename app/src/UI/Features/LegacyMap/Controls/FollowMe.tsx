@@ -2,7 +2,7 @@ import { Explore, ExploreOff } from '@mui/icons-material';
 import { IconButton, Tooltip } from '@mui/material';
 import { useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { MAP_TOGGLE_PANNED } from 'state/actions';
+import MapActions from 'state/actions/map';
 import 'UI/Global.css';
 import { useSelector } from 'utils/use_selector';
 
@@ -14,7 +14,7 @@ const FollowMe = () => {
 
   const handleClick = () => {
     setShow(false);
-    dispatch({ type: MAP_TOGGLE_PANNED });
+    dispatch(MapActions.panningToggle());
   };
 
   return (

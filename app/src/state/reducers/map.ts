@@ -12,12 +12,6 @@ import {
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
-  MAP_TOGGLE_ACCURACY,
-  MAP_TOGGLE_LEGENDS,
-  MAP_TOGGLE_PANNED,
-  MAP_TOGGLE_TRACKING,
-  MAP_TOGGLE_TRACKING_OFF,
-  MAP_TOGGLE_TRACKING_ON,
   PAGE_OR_LIMIT_UPDATE,
   PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
@@ -204,7 +198,6 @@ interface MapState {
   initialized: boolean;
   labelBoundsPolygon: any;
   layers: any[];
-  legendsPopup: any;
   linkToCSV: string | null;
   map_center: [number, number];
   map_zoom: number;
@@ -294,7 +287,6 @@ const initialState: MapState = {
   initialized: false,
   labelBoundsPolygon: undefined,
   layers: [],
-  legendsPopup: undefined,
   linkToCSV: '',
   panned: false,
   positionTracking: false,
@@ -715,9 +707,17 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           title: draftState.drawingCustomLayerName
         });
         draftState.drawingCustomLayerName = '';
+      } else if (MapActions.trackLocationStart.match(action)) {
+        draftState.positionTracking = true;
+      } else if (MapActions.trackLocationStop.match(action)) {
+        draftState.positionTracking = false;
       } else if (UserSettings.Boundaries.removeCustomLayer.match(action)) {
         const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload);
         draftState.clientBoundaries.splice(index, 1);
+      } else if (MapActions.accuracyToggle.match(action)) {
+        draftState.accuracyToggle = !state.accuracyToggle;
+      } else if (MapActions.panningToggle.match(action)) {
+        draftState.panned = !state.panned;
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {
@@ -803,36 +803,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             };
             break;
           }
-          case MAP_TOGGLE_ACCURACY: {
-            draftState.accuracyToggle = !state.accuracyToggle;
-            break;
-          }
-          case MAP_TOGGLE_LEGENDS: {
-            draftState.legendsPopup = !state.legendsPopup;
-            break;
-          }
-          case MAP_TOGGLE_PANNED: {
-            draftState.panned = !state.panned;
-            break;
-          }
           case IAPP_PAN_AND_ZOOM:
           case PAN_AND_ZOOM_TO_ACTIVITY: {
-            draftState.positionTracking = false;
-            break;
-          }
-          case MAP_TOGGLE_TRACKING: {
-            if (!state.positionTracking) {
-              draftState.panned = true;
-            }
-            draftState.positionTracking = !state.positionTracking;
-            break;
-          }
-          case MAP_TOGGLE_TRACKING_ON: {
-            draftState.panned = true;
-            draftState.positionTracking = true;
-            break;
-          }
-          case MAP_TOGGLE_TRACKING_OFF: {
             draftState.positionTracking = false;
             break;
           }
