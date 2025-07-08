@@ -107,7 +107,7 @@ const RecordSetCacheButtons = ({ recordSet, setId, onCacheStateChange }: PropTyp
   const formatStatusKey = (cacheStatus: UserRecordCacheStatus): string => {
     if (!cacheStatus) {
       return 'Unknown';
-    } else if (isLoadingRecords && connected) {
+    } else if (isLoadingRecords && connected && cacheStatus === UserRecordCacheStatus.NOT_CACHED) {
       return 'Updating...';
     } else if (cacheStatus === UserRecordCacheStatus.NOT_CACHED) {
       return 'Save';
