@@ -134,7 +134,7 @@ const AddressLookup = () => {
   const [utmResults, setUtmResults] = useState<number[]>([]);
 
   // Mode
-  const [mode, setMode] = useState<Mode>(Mode.UTM);
+  const [mode, setMode] = useState<Mode>(Mode.ADDRESS);
 
   /**
    * Calculate lat long from UTM.
