@@ -279,7 +279,12 @@ const AddressLookup = () => {
                   <MapIcon />
                 </IconButton>
               </div>
-              <button data-testid="utm-button" disabled={utmResults.length === 0} onClick={handleSubmitUtm}>
+              <button
+                data-testid="utm-button"
+                className="coordinate-button"
+                disabled={utmResults.length === 0}
+                onClick={handleSubmitUtm}
+              >
                 Go to location
               </button>
             </>
