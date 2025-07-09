@@ -35,8 +35,13 @@ const Coordinates = () => {
 
   useEffect(() => {
     if (!map) return;
-    map.on('mousemove', (e) => updateCoordinates(e.lngLat.lng, e.lngLat.lat));
-    map.on('touchstart', (e) => updateCoordinates(e.lngLat.lng, e.lngLat.lat));
+    const handleUpdate = (e) => updateCoordinates(e.lngLat.lng, e.lngLat.lat);
+    map.on('mousemove', handleUpdate);
+    map.on('touchstart', handleUpdate);
+    return () => {
+      map.on('mousemove', handleUpdate);
+      map.on('touchstart', handleUpdate);
+    };
   }, [map]);
 
   if (!coords) {
