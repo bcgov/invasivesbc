@@ -161,11 +161,12 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       });
       return;
     }
+
     const sanitizedGeo = fixMisLabledMultiPolygon(modifiedPayload[0]) || [];
 
     const isWIPLinestring = sanitizedGeo.geometry.type === GeoShapes.LineString;
     const isPointGeometry = sanitizedGeo.geometry.type === GeoShapes.Point;
-    const isGeoTrackingFeature = sanitizedGeo.id === GEO_TRACKING_FEATURE;
+
     reported_area = calculateGeometryArea([sanitizedGeo]);
 
     if (!isPointGeometry) {
@@ -174,7 +175,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
 
       if (hasSelfIntersections || hasHoles) {
         yield put(Activity.updateGeoFailure({ geometry: [{ ...sanitizedGeo, properties: { error: 'true' } }] }));
-        if (isGeoTrackingFeature) yield put(GeoTracking.pause());
         yield put(Alerts.create(mappingAlertMessages.containsIntersections));
         return;
       }

@@ -284,7 +284,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     yield put(
       Prompt.confirmation({
         title: 'Errors in current geography',
-        prompt: `You've attempted to stop tracking, but self-intersection exists, do you want to abandon your progress?`,
+        prompt: `You've attempted to stop tracking, but the shape intersects itself, do you want to abandon your progress?`,
         confirmText: 'Stop Tracking',
         cancelText: 'Continue',
         callback
