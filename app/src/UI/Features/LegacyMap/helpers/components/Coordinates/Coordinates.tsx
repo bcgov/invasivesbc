@@ -39,8 +39,8 @@ const Coordinates = () => {
     map.on('mousemove', handleUpdate);
     map.on('touchstart', handleUpdate);
     return () => {
-      map.on('mousemove', handleUpdate);
-      map.on('touchstart', handleUpdate);
+      map.off('mousemove', handleUpdate);
+      map.off('touchstart', handleUpdate);
     };
   }, [map]);
 
