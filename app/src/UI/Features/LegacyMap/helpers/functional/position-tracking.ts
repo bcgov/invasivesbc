@@ -12,7 +12,10 @@ export const handlePositionTracking = (
 ) => {
   if (userCoords && positionTracking) {
     if (panToUser) {
-      map.jumpTo({ center: [userCoords.long, userCoords.lat] });
+      map.easeTo({
+        center: [userCoords.long, userCoords.lat],
+        offset: [0, map.getContainer().clientHeight * -0.2]
+      });
     }
     positionMarker.setLngLat([userCoords.long, userCoords.lat]);
     positionMarker.addTo(map);
