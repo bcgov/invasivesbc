@@ -13,6 +13,7 @@ import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordHistory from 'UI/Features/Records/RecordHistory/RecordHistory';
 import { useSelector } from 'utils/use_selector';
+import { isTracking } from 'utils/geoTrackingHelpers';
 
 export const ActivityForm = () => {
   const ref = useRef(0);
@@ -67,7 +68,7 @@ export const ActivityForm = () => {
     );
   };
   const clickHandler = () => {
-    if (drawGeometryTracking.isTracking) {
+    if (isTracking(drawGeometryTracking.status)) {
       dispatch(GeoTracking.stop());
     } else {
       const callback = (input: string | number) => {
