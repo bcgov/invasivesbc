@@ -53,6 +53,8 @@ const DrawControls = () => {
 
   const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
   const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
+  const created_by = useSelector((state) => state.ActivityPage?.activity?.created_by);
+  const username = useSelector((state) => state.Auth.username);
   const activityGeometryArray = useSelector((state) => state.ActivityPage.activity?.geometry);
   const { url } = useSelector((state) => state.AppMode);
   const dispatch = useDispatch();
@@ -103,10 +105,8 @@ const DrawControls = () => {
 
   const hasEditableShape = () => {
     const features = drawInstance.current?.getAll().features;
-    console.log('can edit', can_edit);
 
-    // || !can_edit
-    if (!features || features.length === 0) return false;
+    if (!features || features.length === 0 || !can_edit || username !== created_by) return false;
 
     const isGeoTracking = mode === TargetMode.ACTIVITY_GEO_TRACK;
 
@@ -131,21 +131,31 @@ const DrawControls = () => {
 
   useEffect(() => {
     updateEditControlState();
-  }, [isDrawingShape]);
+  }, [isDrawingShape, can_edit, created_by, activityGeo?.geometry]);
 
   // make a geomtery for perviously submitted shapes
   useEffect(() => {
     if (!activityGeo) return;
-    const feature = drawInstance?.current?.getAll()?.features?.[0];
 
+    const feature = drawInstance?.current?.getAll()?.features?.[0];
+    const submittedShapeFeature = drawInstance?.current?.get(SUBMITTED_ACTIVITY_SHAPE);
     const isActivityGeoEmpty = (activityGeo?.geometry?.coordinates?.length ?? 0) === 0;
     const isFeaturePresent = (feature?.geometry?.coordinates?.length ?? 0) > 0;
 
-    // early return unless activitygeo is present or feature is empty
-    // or user does not have edit permissions or not in activity page
-    if (isActivityGeoEmpty || isFeaturePresent || !can_edit || !url?.includes('Activity')) return;
+    console.log('submitted shape feature', submittedShapeFeature);
 
-    drawInstance?.current?.deleteAll();
+    if (submittedShapeFeature?.id) {
+      drawInstance?.current?.delete(String(submittedShapeFeature.id));
+    }
+
+    // Early return if:
+    // - No geometry to draw
+    // - A feature is already present
+    // - User is not the creator or cannot edit
+    // - Not on the Activity page
+    if (isActivityGeoEmpty || isFeaturePresent || username !== created_by || !can_edit || !url?.includes('Activity'))
+      return;
+
     drawInstance?.current?.add({
       id: SUBMITTED_ACTIVITY_SHAPE,
       type: 'Feature',
@@ -153,7 +163,7 @@ const DrawControls = () => {
       properties: {}
     });
     updateEditControlState();
-  }, [activity_id, can_edit, url]);
+  }, [activityGeo?.geometry, created_by, can_edit, url]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
   useEffect(() => {
@@ -343,13 +353,12 @@ const DrawControls = () => {
         break;
       }
     }
-
-    updateEditControlState();
   }, []);
 
   // setup mode based on what's going on in the redux store / current url
   useEffect(() => {
     disableDrawButtons(false);
+
     if (whatsHereToggle) {
       setMode(TargetMode.WHATS_HERE);
       return;
@@ -408,7 +417,6 @@ const DrawControls = () => {
     if (editedGeo?.id !== featureId) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
-    updateEditControlState();
   }, []);
 
   useEffect(() => {
