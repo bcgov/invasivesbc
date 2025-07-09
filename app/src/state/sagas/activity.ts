@@ -70,6 +70,7 @@ import MapActions from 'state/actions/map';
 import { selectAuth } from 'state/reducers/auth';
 import { Role } from 'constants/roles';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import { isDrawing } from 'utils/geoTrackingHelpers';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -174,7 +175,7 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
  * @desc Handler for starting GPS drawn shapes. Sets geometry to empty array, alerts user feature live.
  */
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
-  const shape = (yield select(selectActivity)).track_me_draw_geo.type;
+  const shape = (yield select(selectActivity)).track_me_draw_geo.shapeType;
   const coords = (yield select(selectMap))?.userCoords;
 
   const message = (() => {
@@ -223,17 +224,12 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   });
   let minNumberCoords: number = 0;
   const activityState = yield select(selectActivity);
-  const shape = activityState.track_me_draw_geo.type;
-  const coords = (yield select(selectMap))?.userCoords;
-  const userHasTrackingEnabled = coords?.hasOwnProperty('long');
-
-  // early return
-  if (!userHasTrackingEnabled) return;
+  const shape = activityState.track_me_draw_geo.shapeType;
 
   // Early exit on non-existent/zero-length geometry arrays
   if (!activityState.activity?.geometry || activityState.activity?.geometry?.length === 0) {
     yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
-    yield put(GeoTracking.earlyExit());
+    yield put(GeoTracking.exit());
     return;
   }
 
@@ -275,9 +271,26 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
     console.error(err);
   }
   if (geographyWillContainIntersections) {
-    yield put(GeoTracking.earlyExit());
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
-    yield put(Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly));
+    const callback = (userConfirmsExit: boolean) => {
+      if (userConfirmsExit) {
+        return [
+          Alerts.deleteAll(),
+          GeoTracking.exit(),
+          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
+          Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
+        ];
+      }
+    };
+    yield put(
+      Prompt.confirmation({
+        title: 'Errors in current geography',
+        prompt: `You've attempted to stop tracking, but the shape intersects itself, do you want to abandon your progress?`,
+        confirmText: 'Stop Tracking',
+        cancelText: 'Continue',
+        callback
+      })
+    );
+
     return;
   }
   if (!geometryHasPositiveArea) {
@@ -293,7 +306,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
         const bufferedLine = buffer(newGeo, width / 10000);
         return [
           { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [bufferedLine] } },
-          GeoTracking.earlyExit(),
+          GeoTracking.end(),
           Alerts.create(mappingAlertMessages.trackingStoppedSuccess)
         ];
       };
@@ -310,12 +323,11 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
       );
     } else {
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
-      yield put(GeoTracking.earlyExit());
+      yield put(GeoTracking.end());
       yield put(Alerts.create(mappingAlertMessages.trackingStoppedSuccess));
     }
   } else {
     yield put(GeoTracking.pause());
-    // yield put(Alerts.create(mappingAlertMessages.canEditInfo)); // WIP
     for (const error of validationErrors) {
       yield put(Alerts.create(error));
     }
@@ -323,7 +335,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
       if (userConfirmsExit) {
         return [
           Alerts.deleteAll(),
-          GeoTracking.earlyExit(),
+          GeoTracking.exit(),
           { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
@@ -347,6 +359,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_RESUME() {
 
 function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE() {
   yield put(Alerts.create(mappingAlertMessages.trackingPaused));
+  yield put(Alerts.create(mappingAlertMessages.canEditInfo));
 }
 
 /**
@@ -357,10 +370,10 @@ function* handle_MAP_SET_COORDS(action) {
   const MINIMUM_DISTANCE_BETWEEN_POINTS_IN_METERS = 1;
   const activityState = yield select(selectActivity);
   const {
-    track_me_draw_geo: { isTracking, drawingShape }
+    track_me_draw_geo: { status }
   } = activityState;
   try {
-    if (isTracking && drawingShape) {
+    if (isDrawing(status)) {
       let currentGeo = activityState?.activity?.geometry?.[0];
       if (!currentGeo) {
         currentGeo = {

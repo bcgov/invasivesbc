@@ -46,6 +46,7 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import IRecordTable from 'interfaces/recordTable';
+import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -210,9 +211,9 @@ interface MapState {
   panned: boolean;
   positionTracking: boolean;
   track_me_draw_geo: {
-    isTracking: boolean;
-    type: GeoShapes | null;
-    drawingShape: boolean;
+    status: GeoTrackingStatus;
+    shapeType: GeoShapes | null;
+    isEditingShape: boolean;
   };
   quickPanToRecord: boolean;
   readableIdentifier?: string;
@@ -298,9 +299,9 @@ const initialState: MapState = {
   panned: false,
   positionTracking: false,
   track_me_draw_geo: {
-    isTracking: false,
-    type: null,
-    drawingShape: false
+    status: GeoTrackingStatus.IDLE,
+    shapeType: null,
+    isEditingShape: false
   },
   quickPanToRecord: false,
   recordSetForCSV: 0,
@@ -541,25 +542,40 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.tileCacheMode = action.payload;
       } else if (GeoTracking.start.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: true,
-          type: action.payload.type ?? null,
-          drawingShape: true
+          ...draftState.track_me_draw_geo,
+          status: GeoTrackingStatus.TRACKING_AND_DRAWING,
+          shapeType: action.payload.type ?? null
         };
-      } else if (GeoTracking.stop.match(action)) {
+      } else if (GeoTracking.edit.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: false,
-          type: null,
-          drawingShape: false
+          ...draftState.track_me_draw_geo,
+          isEditingShape: action.payload
+        };
+      } else if (GeoTracking.exit.match(action)) {
+        draftState.track_me_draw_geo = {
+          status: GeoTrackingStatus.EXITED,
+          shapeType: null,
+          isEditingShape: false
         };
       } else if (GeoTracking.pause.match(action)) {
-        draftState.track_me_draw_geo.drawingShape = false;
+        draftState.track_me_draw_geo.status = GeoTrackingStatus.ONLY_TRACKING;
       } else if (GeoTracking.resume.match(action)) {
-        draftState.track_me_draw_geo.drawingShape = true;
+        draftState.track_me_draw_geo = {
+          ...draftState.track_me_draw_geo,
+          status: GeoTrackingStatus.TRACKING_AND_DRAWING,
+          isEditingShape: false
+        };
       } else if (GeoTracking.exitDrawing.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: false,
-          type: draftState.track_me_draw_geo.type,
-          drawingShape: false
+          status: GeoTrackingStatus.EXITED,
+          shapeType: draftState.track_me_draw_geo.shapeType,
+          isEditingShape: false
+        };
+      } else if (GeoTracking.end.match(action)) {
+        draftState.track_me_draw_geo = {
+          status: GeoTrackingStatus.COMPLETED,
+          shapeType: null,
+          isEditingShape: false
         };
       } else if (IappActions.getRows.match(action) || Activity.getRows.match(action)) {
         const { recordSetID, page, limit, tableFiltersHash } = action.payload;

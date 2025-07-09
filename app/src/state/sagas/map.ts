@@ -67,6 +67,7 @@ import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { normalizeToPolygonCoordinates } from 'utils/geometryHelpers';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -598,7 +599,7 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
 function* handle_MAP_ON_SHAPE_CREATE(action) {
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
-  const { isTracking, type } = yield select((state) => state.Map.track_me_draw_geo);
+  const { status, shapeType } = yield select((state) => state.Map.track_me_draw_geo);
 
   const geometry = action.payload.geometry;
   const isLineString = geometry?.type === GeoShapes.LineString;
@@ -618,7 +619,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
   }
 
   if (isLineString && hasCoordinates && noUserError) {
-    const isGeoTrackingLineString = isTracking && type === GeoShapes.LineString;
+    const isGeoTrackingLineString = isTracking(status) && shapeType === GeoShapes.LineString;
     if (!isGeoTrackingLineString && action.payload.id === GEO_TRACKING_FEATURE) return;
 
     yield put(
@@ -643,7 +644,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   try {
     const { url } = yield select((state) => state.AppMode);
     const { drawingCustomLayer, whatsHere, tileCacheMode } = yield select((state: RootState) => state.Map);
-    const { isTracking, type } = yield select((state) => state.Map.track_me_draw_geo);
+    const { status, shapeType } = yield select((state) => state.Map.track_me_draw_geo);
     const { id, geometry } = action.payload;
 
     const isActivityPage = url && /Activity/.test(url);
@@ -655,10 +656,14 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
     }
 
     if (isActivityPage && !whatsHere.toggle) {
-      if (isGeoTrackingFeature && type === GeoShapes.Polygon) {
-        geometry.type = type;
-        geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
-      } else if (type === GeoShapes.LineString && geometry?.type === GeoShapes.LineString) {
+      if (isGeoTrackingFeature) {
+        if (isPaused(status)) {
+          // don't do anything, just call ACTIVITY_UPDATE_GEO_REQUEST
+        } else if (shapeType === GeoShapes.Polygon) {
+          geometry.type = shapeType;
+          geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
+        }
+      } else if (shapeType === GeoShapes.LineString && geometry?.type === GeoShapes.LineString) {
         yield put(
           Prompt.number({
             title: 'Buffer needed',
@@ -673,7 +678,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
           })
         );
         return;
-      } else if (isTracking) {
+      } else if (isTracking(status)) {
         yield put(GeoTracking.exitDrawing());
       }
 

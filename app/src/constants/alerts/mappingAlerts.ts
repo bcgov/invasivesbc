@@ -50,10 +50,11 @@ const mappingAlertMessages: Record<string, AlertMessage> = {
 
   // Info
   canEditInfo: {
-    content: 'You can adjust or add to your geometry manually by selecting the blue line, and moving points as needed',
+    content:
+      'You can adjust your geometry manually by selecting the edit button on the left, and dragging points as needed',
     severity: AlertSeverity.Info,
     subject: AlertSubjects.Map,
-    autoClose: 5
+    autoClose: 6
   },
   saveActivityShape: {
     content: 'Make sure to save your updated shape using the draw tools on the left.',
