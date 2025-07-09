@@ -5,7 +5,8 @@ import { registerPlugin } from '@capacitor/core';
 import { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
 import { Platform } from 'state/configuration/build-time-config';
 import { selectMap } from 'state/reducers/map';
-import { MAP_SET_COORDS, MAP_TOGGLE_TRACKING } from 'state/actions';
+import { MAP_SET_COORDS } from 'state/actions';
+import MapActions from 'state/actions/map';
 
 let BackgroundGeolocation: BackgroundGeolocationPlugin | null = null;
 
@@ -129,8 +130,7 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
 }
 
 function* handle_MAP_TOGGLE_TRACKING() {
-
-  const PLATFORM = yield select(state=>state.Configuration.current.runtime.PLATFORM)
+  const PLATFORM = yield select((state) => state.Configuration.current.runtime.PLATFORM);
 
   switch (PLATFORM) {
     case Platform.IOS:
@@ -143,4 +143,4 @@ function* handle_MAP_TOGGLE_TRACKING() {
   }
 }
 
-export const TRACKING_SAGA_HANDLERS = [takeEvery(MAP_TOGGLE_TRACKING, handle_MAP_TOGGLE_TRACKING)];
+export const TRACKING_SAGA_HANDLERS = [takeEvery(MapActions.trackLocationToggle, handle_MAP_TOGGLE_TRACKING)];
