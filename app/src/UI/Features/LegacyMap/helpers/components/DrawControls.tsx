@@ -135,7 +135,7 @@ const DrawControls = () => {
 
   // make a geomtery for perviously submitted shapes
   useEffect(() => {
-    if (!activityGeo) return;
+    if (!activityGeo || mode === TargetMode.ACTIVITY_GEO_TRACK) return;
 
     const feature = drawInstance?.current?.getAll()?.features?.[0];
     const submittedShapeFeature = drawInstance?.current?.get(SUBMITTED_ACTIVITY_SHAPE);
