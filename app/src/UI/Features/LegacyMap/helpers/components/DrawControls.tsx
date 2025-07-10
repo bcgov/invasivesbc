@@ -44,17 +44,20 @@ const DrawControls = () => {
   const appModeURL = useSelector((state) => state.AppMode.url);
 
   const geoTrackingStatus = useSelector((state) => state.Map.track_me_draw_geo.status);
-
   const currGeoTrackingMode = isTracking(geoTrackingStatus);
   const isDrawingShape = isDrawing(geoTrackingStatus);
   const isPausedDrawing = isPaused(geoTrackingStatus);
   const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
+
   const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
   const created_by = useSelector((state) => state.ActivityPage?.activity?.created_by);
   const username = useSelector((state) => state.Auth.username);
+  const userCanEdit = username === created_by || can_edit;
+
   const { url } = useSelector((state) => state.AppMode);
+
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
@@ -64,7 +67,6 @@ const DrawControls = () => {
   const uHistory = useHistory();
 
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
-
   const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
 
   const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
@@ -104,7 +106,7 @@ const DrawControls = () => {
   const hasEditableShape = () => {
     const features = drawInstance.current?.getAll().features;
 
-    if (!features || features.length === 0 || !can_edit || username !== created_by) return false;
+    if (!features || features.length === 0 || !userCanEdit) return false;
 
     const isGeoTracking = mode === TargetMode.ACTIVITY_GEO_TRACK;
 
@@ -129,7 +131,7 @@ const DrawControls = () => {
 
   useEffect(() => {
     updateEditControlState();
-  }, [isDrawingShape, can_edit, created_by, activityGeo?.geometry]);
+  }, [isDrawingShape, userCanEdit, activityGeo?.geometry]);
 
   // make a geomtery for perviously submitted shapes
   useEffect(() => {
@@ -140,7 +142,7 @@ const DrawControls = () => {
     const isActivityGeoEmpty = (activityGeo?.geometry?.coordinates?.length ?? 0) === 0;
     const isFeaturePresent = (feature?.geometry?.coordinates?.length ?? 0) > 0;
 
-    if (submittedShapeFeature?.id && username !== created_by) {
+    if (submittedShapeFeature?.id && !userCanEdit) {
       drawInstance?.current?.delete(String(submittedShapeFeature.id));
     }
 
@@ -149,8 +151,7 @@ const DrawControls = () => {
     // - A feature is already present
     // - User is not the creator or cannot edit
     // - Not on the Activity page
-    if (isActivityGeoEmpty || isFeaturePresent || username !== created_by || !can_edit || !url?.includes('Activity'))
-      return;
+    if (isActivityGeoEmpty || isFeaturePresent || !userCanEdit || !url?.includes('Activity')) return;
 
     drawInstance?.current?.deleteAll();
     drawInstance?.current?.add({
@@ -161,7 +162,7 @@ const DrawControls = () => {
     });
 
     updateEditControlState();
-  }, [activityGeo?.geometry, created_by, can_edit, url]);
+  }, [activityGeo?.geometry, userCanEdit, url]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
   useEffect(() => {
