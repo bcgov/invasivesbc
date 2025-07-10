@@ -102,6 +102,7 @@ export class EditControls implements IControl {
   _onEdit?: () => void;
   _onSave?: () => void;
   _isDisabled?: boolean;
+  _forceResetKey: number = 0;
 
   constructor(onEdit?: () => void, onSave?: () => void, isDisabled: boolean = false) {
     this._onEdit = onEdit;
@@ -109,11 +110,25 @@ export class EditControls implements IControl {
     this._isDisabled = isDisabled;
   }
 
-  setDisabled(isDisabled: boolean) {
-    this._isDisabled = isDisabled;
+  private renderUI(forceReset = false) {
     if (this._root && this._container) {
-      this._root.render(<EditControlUI onEdit={this._onEdit} onSave={this._onSave} isDisabled={this._isDisabled} />);
+      const key = forceReset ? ++this._forceResetKey : this._forceResetKey;
+      this._root.render(
+        <EditControlUI key={key} onEdit={this._onEdit} onSave={this._onSave} isDisabled={this._isDisabled ?? false} />
+      );
     }
+  }
+
+  setDisabled(isDisabled: boolean) {
+    if (this._isDisabled !== isDisabled) {
+      this._isDisabled = isDisabled;
+      this.renderUI();
+    }
+  }
+
+  reset() {
+    this._isDisabled = true;
+    this.renderUI(true); // force reset internal state
   }
 
   onAdd(map: maplibregl.Map): HTMLElement {
@@ -126,11 +141,9 @@ export class EditControls implements IControl {
     container.id = 'custom-edit-tool';
 
     this._root = createRoot(container);
-    this._root.render(
-      <EditControlUI onEdit={this._onEdit} onSave={this._onSave} isDisabled={this._isDisabled ?? false} />
-    );
-
+    this.renderUI();
     this._container = container;
+
     return container;
   }
 

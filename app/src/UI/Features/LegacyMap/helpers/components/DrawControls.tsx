@@ -41,13 +41,13 @@ const DrawControls = () => {
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere.toggle);
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
-  const appModeURL = useSelector((state) => state.AppMode.url);
 
   const geoTrackingStatus = useSelector((state) => state.Map.track_me_draw_geo.status);
   const currGeoTrackingMode = isTracking(geoTrackingStatus);
   const isDrawingShape = isDrawing(geoTrackingStatus);
   const isPausedDrawing = isPaused(geoTrackingStatus);
   const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
+
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
 
@@ -56,23 +56,23 @@ const DrawControls = () => {
   const username = useSelector((state) => state.Auth.username);
   const userCanEdit = username === created_by || can_edit;
 
-  const { url } = useSelector((state) => state.AppMode);
+  const url = useSelector((state) => state.AppMode.url);
 
   const dispatch = useDispatch();
+  const uHistory = useHistory();
+
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
   const editControls = useRef<EditControls>();
   const isEditing = useRef(false);
 
-  const uHistory = useHistory();
+  // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
+  const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
 
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
   const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
 
   const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
-
-  // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
-  const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
 
   const handleEdit = () => {
     const features = drawInstance.current?.getAll().features;
@@ -367,7 +367,7 @@ const DrawControls = () => {
     } else if (drawingCustomLayer) {
       setMode(TargetMode.CUSTOM_LAYER);
       return;
-    } else if (appModeURL?.includes('Activity')) {
+    } else if (url?.includes('Activity')) {
       if (currGeoTrackingMode || prevGeoTrackingMode) {
         setMode(TargetMode.ACTIVITY_GEO_TRACK);
         disableDrawButtons(true);
@@ -377,8 +377,9 @@ const DrawControls = () => {
     } else {
       setMode(TargetMode.DISABLED);
       disableDrawButtons(true);
+      editControls.current?.reset();
     }
-  }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, appModeURL, currGeoTrackingMode, prevGeoTrackingMode]);
+  }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, url, currGeoTrackingMode, prevGeoTrackingMode]);
 
   /**
    * @desc Update the Drawn Shape.
