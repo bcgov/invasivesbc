@@ -359,6 +359,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
       } else if (UserSettings.RecordSet.set.match(action)) {
         const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
+        if (layerIndex === -1) return;
         Object.keys(action.payload.updatedSet).forEach((key) => {
           if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
             draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
@@ -409,11 +410,11 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         Object.keys(action.payload.recordSets).forEach((setID) => {
           if (setID !== RecordSetId.OfflineActivities) {
             let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-            if (!draftState.layers[layerIndex]) {
+            if (layerIndex === -1) {
               draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
               layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
             }
-            draftState.layers[layerIndex].layerState = {};
+            draftState.layers[layerIndex].layerState ??= {};
             Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
           }
         });
