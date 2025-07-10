@@ -103,8 +103,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
 
     maplibregl.addProtocol('api', async (request) => {
-      const fetchRequest = new Request(request.url.replace("api://", API_BASE));
-      fetchRequest.headers.set("Authorization", await getCurrentJWT())
+      const fetchRequest = new Request(request.url.replace('api://', API_BASE));
+      fetchRequest.headers.set('Authorization', await getCurrentJWT());
       const result = await fetch(fetchRequest);
       if (result.ok) {
         return {
@@ -329,7 +329,11 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     try {
       if (map_center && map_zoom) {
-        map.jumpTo({ center: map_center, zoom: map_zoom });
+        map.easeTo({
+          center: map_center,
+          zoom: map_zoom,
+          offset: [0, map.getContainer().clientHeight * -0.2]
+        });
       }
     } catch (e) {
       console.error(e);
