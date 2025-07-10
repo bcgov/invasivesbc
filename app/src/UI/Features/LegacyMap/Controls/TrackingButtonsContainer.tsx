@@ -1,5 +1,4 @@
 import { useSelector } from 'utils/use_selector';
-import FollowMe from 'UI/Features/LegacyMap/Controls/FollowMe';
 import GeoTrackingButton from 'UI/Features/LegacyMap/Controls/GeoTrackingButton';
 import PauseGeoTrackingButton from 'UI/Features/LegacyMap/Controls/PauseGeoTrackingButton';
 import { isTracking } from 'utils/geoTrackingHelpers';
@@ -12,7 +11,6 @@ const TrackingButtonsContainer = () => {
 
   return (
     <>
-      <FollowMe />
       {isInActivity && (
         <>
           <GeoTrackingButton />

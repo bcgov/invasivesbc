@@ -21,6 +21,7 @@ import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { TargetMode } from 'constants/targetModes';
 import { GEO_TRACKING_FEATURE, SUBMITTED_ACTIVITY_SHAPE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+
 import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
 import Alerts from 'state/actions/alerts/Alerts';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
@@ -50,12 +51,9 @@ const DrawControls = () => {
   const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
-
-  const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
   const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
   const created_by = useSelector((state) => state.ActivityPage?.activity?.created_by);
   const username = useSelector((state) => state.Auth.username);
-  const activityGeometryArray = useSelector((state) => state.ActivityPage.activity?.geometry);
   const { url } = useSelector((state) => state.AppMode);
   const dispatch = useDispatch();
   const drawInstance = useRef<MapboxDraw>();
@@ -422,8 +420,6 @@ const DrawControls = () => {
   useEffect(() => {
     if (!drawInstance.current) return;
 
-    const submittedGeoShapeOnActivityPage =
-      drawInstance?.current?.get(SUBMITTED_ACTIVITY_SHAPE) && url?.includes('Activity'); // for editing already submitted shapes
     const shouldPreserveShape = prevMode.current === TargetMode.ACTIVITY_GEO_TRACK && mode === TargetMode.ACTIVITY;
 
     if (!shouldPreserveShape) {

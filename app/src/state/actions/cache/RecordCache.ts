@@ -57,11 +57,7 @@ class RecordCache {
       const recordSet = JSON.parse(JSON.stringify(state.UserSettings.recordSets[spec.setId]));
       const idsToCache: string[] = recordSet.idList.map((id) => id.toString());
 
-      recordSet.tableFilters = getRecordFilterObjectFromStateForAPI(
-        spec.setId,
-        state.UserSettings,
-        state.Map.clientBoundaries
-      );
+      recordSet.tableFilters = getRecordFilterObjectFromStateForAPI(spec.setId, state.UserSettings);
 
       const bbox = await getBoundingBoxFromRecordsetFilters(recordSet);
 
