@@ -2,11 +2,11 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import 'UI/Global.css';
-
 import { useSelector } from 'utils/use_selector';
 import MapActions from 'state/actions/map';
 import { GpsFixed, GpsNotFixed, GpsOff } from '@mui/icons-material';
 import { MapContext } from '../helpers/components/MapContext';
+import { MapLibreEvent } from 'maplibre-gl';
 
 export const FindMeToggle = () => {
   enum Mode {
@@ -14,6 +14,8 @@ export const FindMeToggle = () => {
     ON,
     FOLLOWING
   }
+  const MIN_DRAG_IN_PX = 50;
+
   // Toggle Redux states on click
   const handleClick = () => {
     if (mode === Mode.ON) {
@@ -26,7 +28,6 @@ export const FindMeToggle = () => {
 
   const map = useContext(MapContext);
   const dispatch = useDispatch();
-
   const divRef = useRef<HTMLDivElement | null>(null);
 
   const positionTracking = useSelector((state) => state.Map?.positionTracking);
@@ -35,12 +36,40 @@ export const FindMeToggle = () => {
   const [show, setShow] = useState<boolean>(false);
   const [mode, setMode] = useState<Mode>(Mode.OFF);
 
-  const handleDrag = useCallback(() => {
-    if (mode === Mode.FOLLOWING) {
-      dispatch(MapActions.panningOff());
-    }
-  }, [mode]);
+  const clientX = useRef<number>(0);
+  const clientY = useRef<number>(0);
 
+  const handleDragStart = useCallback(
+    (e: MapLibreEvent<DragEvent | TouchEvent>) => {
+      if (mode === Mode.FOLLOWING) {
+        if ('clientX' in e.originalEvent) {
+          clientX.current = e?.originalEvent?.clientX;
+          clientY.current = e?.originalEvent?.clientY;
+        } else {
+          clientX.current = e?.originalEvent.touches[0].clientX;
+          clientY.current = e?.originalEvent.touches[0].clientY;
+        }
+      }
+    },
+    [mode]
+  );
+  const handleDrag = (e: MapLibreEvent<DragEvent | TouchEvent>) => {
+    if (mode === Mode.FOLLOWING && clientX.current) {
+      let deltaX: number;
+      let deltaY: number;
+      if ('clientX' in e.originalEvent) {
+        deltaX = e?.originalEvent.clientX - clientX.current;
+        deltaY = e?.originalEvent.clientY - clientY.current;
+      } else {
+        deltaX = e?.originalEvent.touches[0].clientX - clientX.current;
+        deltaY = e?.originalEvent.touches[0].clientY - clientY.current;
+      }
+      const currentDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      if (currentDistance > MIN_DRAG_IN_PX) {
+        dispatch(MapActions.panningOff());
+      }
+    }
+  };
   useEffect(() => {
     setMode(
       (() => {
@@ -56,9 +85,11 @@ export const FindMeToggle = () => {
 
   useEffect(() => {
     if (!map) return;
-    map.on('dragstart', handleDrag);
+    map.on('dragstart', handleDragStart);
+    map.on('drag', handleDrag);
     return () => {
-      map.off('dragstart', handleDrag);
+      map.off('dragstart', handleDragStart);
+      map.off('drag', handleDrag);
     };
   }, [map, handleDrag]);
 
