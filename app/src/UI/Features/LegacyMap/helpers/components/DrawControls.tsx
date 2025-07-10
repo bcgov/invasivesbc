@@ -142,9 +142,7 @@ const DrawControls = () => {
     const isActivityGeoEmpty = (activityGeo?.geometry?.coordinates?.length ?? 0) === 0;
     const isFeaturePresent = (feature?.geometry?.coordinates?.length ?? 0) > 0;
 
-    console.log('submitted shape feature', submittedShapeFeature);
-
-    if (submittedShapeFeature?.id) {
+    if (submittedShapeFeature?.id && username !== created_by) {
       drawInstance?.current?.delete(String(submittedShapeFeature.id));
     }
 
@@ -156,12 +154,14 @@ const DrawControls = () => {
     if (isActivityGeoEmpty || isFeaturePresent || username !== created_by || !can_edit || !url?.includes('Activity'))
       return;
 
+    drawInstance?.current?.deleteAll();
     drawInstance?.current?.add({
       id: SUBMITTED_ACTIVITY_SHAPE,
       type: 'Feature',
       geometry: activityGeo.geometry,
       properties: {}
     });
+
     updateEditControlState();
   }, [activityGeo?.geometry, created_by, can_edit, url]);
 
@@ -424,9 +424,7 @@ const DrawControls = () => {
 
     const submittedGeoShapeOnActivityPage =
       drawInstance?.current?.get(SUBMITTED_ACTIVITY_SHAPE) && url?.includes('Activity'); // for editing already submitted shapes
-    const shouldPreserveShape =
-      (prevMode.current === TargetMode.ACTIVITY_GEO_TRACK && mode === TargetMode.ACTIVITY) ||
-      submittedGeoShapeOnActivityPage;
+    const shouldPreserveShape = prevMode.current === TargetMode.ACTIVITY_GEO_TRACK && mode === TargetMode.ACTIVITY;
 
     if (!shouldPreserveShape) {
       drawInstance.current.deleteAll();
