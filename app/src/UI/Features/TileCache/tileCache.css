@@ -30,6 +30,12 @@
   .subheader {
     margin-top: 0;
   }
+  .content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 860px;
+  }
 }
 
 /* Generic for each sub-section in Offline Maps */
