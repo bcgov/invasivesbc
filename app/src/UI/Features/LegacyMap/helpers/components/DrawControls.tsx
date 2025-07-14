@@ -20,7 +20,8 @@ import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats
 import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { TargetMode } from 'constants/targetModes';
-import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import { GEO_TRACKING_FEATURE, SUBMITTED_ACTIVITY_SHAPE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+
 import { DrawModeDisplay, EditControls } from 'UI/Features/LegacyMap/helpers/components/MapCustomControls';
 import Alerts from 'state/actions/alerts/Alerts';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
@@ -40,33 +41,38 @@ const DrawControls = () => {
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere.toggle);
   const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
-  const appModeURL = useSelector((state) => state.AppMode.url);
 
   const geoTrackingStatus = useSelector((state) => state.Map.track_me_draw_geo.status);
-
   const currGeoTrackingMode = isTracking(geoTrackingStatus);
   const isDrawingShape = isDrawing(geoTrackingStatus);
   const isPausedDrawing = isPaused(geoTrackingStatus);
   const [prevGeoTrackingMode, setPrevGeoTrackingMode] = useState<boolean>(false);
+
   const EMPTY_OBJECT = {}; //  a stable reference for the default value to avoid unnecessary re-renders
   const activityGeo = (useSelector((state) => state.ActivityPage.activity?.geometry) ?? [])[0] ?? EMPTY_OBJECT;
 
+  const can_edit = useSelector((state) => !!state.ActivityPage?.activeActivityPermissions?.can_edit);
+  const created_by = useSelector((state) => state.ActivityPage?.activity?.created_by);
+  const username = useSelector((state) => state.Auth.username);
+  const userCanEdit = username === created_by || can_edit;
+
+  const url = useSelector((state) => state.AppMode.url);
+
   const dispatch = useDispatch();
+  const uHistory = useHistory();
+
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
   const editControls = useRef<EditControls>();
   const isEditing = useRef(false);
 
-  const uHistory = useHistory();
+  // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
+  const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
 
   const [mode, setMode] = useState<TargetMode>(TargetMode.DISABLED);
-
   const prevMode = useRef<TargetMode>(TargetMode.DISABLED);
 
   const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
-
-  // keep a ref to mode so we don't need to keep re-binding the callback for maplibre. keep it in sync with a hook.
-  const modeRef = useRef<TargetMode>(TargetMode.DISABLED);
 
   const handleEdit = () => {
     const features = drawInstance.current?.getAll().features;
@@ -100,7 +106,7 @@ const DrawControls = () => {
   const hasEditableShape = () => {
     const features = drawInstance.current?.getAll().features;
 
-    if (!features || features.length === 0) return false;
+    if (!features || features.length === 0 || !userCanEdit) return false;
 
     const isGeoTracking = mode === TargetMode.ACTIVITY_GEO_TRACK;
 
@@ -125,7 +131,38 @@ const DrawControls = () => {
 
   useEffect(() => {
     updateEditControlState();
-  }, [isDrawingShape]);
+  }, [isDrawingShape, userCanEdit, activityGeo?.geometry]);
+
+  // make a geomtery for perviously submitted shapes
+  useEffect(() => {
+    if (!activityGeo || mode === TargetMode.ACTIVITY_GEO_TRACK) return;
+
+    const feature = drawInstance?.current?.getAll()?.features?.[0];
+    const submittedShapeFeature = drawInstance?.current?.get(SUBMITTED_ACTIVITY_SHAPE);
+    const isActivityGeoEmpty = (activityGeo?.geometry?.coordinates?.length ?? 0) === 0;
+    const isFeaturePresent = (feature?.geometry?.coordinates?.length ?? 0) > 0;
+
+    if (submittedShapeFeature?.id && !userCanEdit) {
+      drawInstance?.current?.delete(String(submittedShapeFeature.id));
+    }
+
+    // Early return if:
+    // - No geometry to draw
+    // - A feature is already present
+    // - User is not the creator or cannot edit
+    // - Not on the Activity page
+    if (isActivityGeoEmpty || isFeaturePresent || !userCanEdit || !url?.includes('Activity')) return;
+
+    drawInstance?.current?.deleteAll();
+    drawInstance?.current?.add({
+      id: SUBMITTED_ACTIVITY_SHAPE,
+      type: 'Feature',
+      geometry: activityGeo.geometry,
+      properties: {}
+    });
+
+    updateEditControlState();
+  }, [activityGeo?.geometry, userCanEdit, url]);
 
   // update drawn LineString or Polygon to a red dotted line if an error occurs
   useEffect(() => {
@@ -315,13 +352,12 @@ const DrawControls = () => {
         break;
       }
     }
-
-    updateEditControlState();
   }, []);
 
   // setup mode based on what's going on in the redux store / current url
   useEffect(() => {
     disableDrawButtons(false);
+
     if (whatsHereToggle) {
       setMode(TargetMode.WHATS_HERE);
       return;
@@ -331,7 +367,7 @@ const DrawControls = () => {
     } else if (drawingCustomLayer) {
       setMode(TargetMode.CUSTOM_LAYER);
       return;
-    } else if (appModeURL?.includes('Activity')) {
+    } else if (url?.includes('Activity')) {
       if (currGeoTrackingMode || prevGeoTrackingMode) {
         setMode(TargetMode.ACTIVITY_GEO_TRACK);
         disableDrawButtons(true);
@@ -341,8 +377,9 @@ const DrawControls = () => {
     } else {
       setMode(TargetMode.DISABLED);
       disableDrawButtons(true);
+      editControls.current?.reset();
     }
-  }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, appModeURL, currGeoTrackingMode, prevGeoTrackingMode]);
+  }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, url, currGeoTrackingMode, prevGeoTrackingMode]);
 
   /**
    * @desc Update the Drawn Shape.
@@ -380,7 +417,6 @@ const DrawControls = () => {
     if (editedGeo?.id !== featureId) {
       dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
     }
-    updateEditControlState();
   }, []);
 
   useEffect(() => {
