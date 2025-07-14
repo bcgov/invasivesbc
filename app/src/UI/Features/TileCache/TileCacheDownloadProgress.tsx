@@ -21,32 +21,34 @@ const TileCacheDownloadProgress = () => {
   }
   return (
     <section>
-      <table>
-        <thead>
-          <tr>
-            <th>Cache Name</th>
-            <th>Download Status</th>
-            <th>Progress</th>
-            <th>Cancel</th>
-          </tr>
-        </thead>
-        <tbody>
-          {Object.keys(downloadProgress).map((k) => (
-            <tr key={k}>
-              <td>{downloadProgress[k].description ?? downloadProgress[k].repository}</td>
-              <td>{downloadProgress[k].message}</td>
-              <td>
-                <LinearProgress variant={'determinate'} value={downloadProgress[k].normalizedProgress * 100} />
-              </td>
-              <td>
-                <IconButton color="error" onClick={() => handleStopDownload(downloadProgress[k].repository)}>
-                  <StopCircleOutlined />
-                </IconButton>
-              </td>
+      <div className="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Cache Name</th>
+              <th>Download Status</th>
+              <th>Progress</th>
+              <th>Cancel</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {Object.keys(downloadProgress).map((k) => (
+              <tr key={k}>
+                <td>{downloadProgress[k].description ?? downloadProgress[k].repository}</td>
+                <td>{downloadProgress[k].message}</td>
+                <td>
+                  <LinearProgress variant={'determinate'} value={downloadProgress[k].normalizedProgress * 100} />
+                </td>
+                <td>
+                  <IconButton color="error" onClick={() => handleStopDownload(downloadProgress[k].repository)}>
+                    <StopCircleOutlined />
+                  </IconButton>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 };

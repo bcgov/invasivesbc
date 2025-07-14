@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0;
+  padding: 0 0 1rem 0;
   width: 100%;
 
   h2 {
@@ -50,13 +50,16 @@
   width: 100%;
   max-width: 860px;
   min-height: 100pt;
-  width: 100%;
   padding: 0;
-
-  table {
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1pt solid lightgray;
+  }
+  .table-wrapper table {
+    min-width: 550px;
     width: 100%;
     border-collapse: collapse;
-    border: 1pt solid lightgray;
     border-radius: 5pt;
     word-wrap: break-word;
 
@@ -119,6 +122,7 @@
   button {
     width: 110pt;
     border: 1pt solid var(--blue-primary);
+    font-size: 14px;
     color: var(--blue-primary);
     background-color: transparent;
     transition:
@@ -140,12 +144,10 @@
     padding: 0 0 0 10pt;
     border: 1pt solid black;
   }
-
-  & > *:not(:first-child) {
-    margin: 10pt 0 0 0;
-  }
 }
-
+#offline-map-overlay section form {
+  width: 100%;
+}
 .too-large-warning {
   color: var(--error-red);
   font-weight: bold;
