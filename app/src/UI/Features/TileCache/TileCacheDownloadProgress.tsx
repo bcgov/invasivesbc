@@ -1,16 +1,31 @@
 import { IconButton, LinearProgress } from '@mui/material';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { shallowEqual } from 'react-redux';
-import { StopCircleOutlined } from '@mui/icons-material';
+import { Delete, Refresh, StopCircleOutlined } from '@mui/icons-material';
 import TileCache from 'state/actions/cache/TileCache';
+import { RepositoryStatus } from 'utils/tile-cache';
+import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 const TileCacheDownloadProgress = () => {
   const handleStopDownload = (repository: string) => {
     dispatch(TileCache.deleteRepository(repository));
   };
+
+  const handleRestartDownload = ({ description, id, bounds, maxZoom }) => {
+    dispatch(TileCache.requestCaching({ description, id, bounds, maxZoom }));
+  };
+
+  const handleDeleteDownload = (repository: string) => {
+    dispatch(PlanMyTrip.delete(repository));
+  };
+
   const dispatch = useDispatch();
   const downloadProgress = useSelector((state) => state.TileCache?.downloadProgress, shallowEqual);
-  const activeDownloads = Object.keys(downloadProgress ?? {}).length > 0;
+  const failedDownloads = useSelector((state) => state.TileCache?.repositories ?? []).filter(
+    (r) => [RepositoryStatus.FAILED].includes(r.status) && !downloadProgress?.[r.id]
+  );
+
+  const activeDownloads = Object.keys(downloadProgress ?? {}).length + failedDownloads.length > 0;
 
   if (!downloadProgress || !activeDownloads) {
     return (
@@ -28,7 +43,7 @@ const TileCacheDownloadProgress = () => {
               <th>Cache Name</th>
               <th>Download Status</th>
               <th>Progress</th>
-              <th>Cancel</th>
+              <th>Restart/Cancel</th>
             </tr>
           </thead>
           <tbody>
@@ -42,6 +57,21 @@ const TileCacheDownloadProgress = () => {
                 <td>
                   <IconButton color="error" onClick={() => handleStopDownload(downloadProgress[k].repository)}>
                     <StopCircleOutlined />
+                  </IconButton>
+                </td>
+              </tr>
+            ))}
+            {failedDownloads.map((r) => (
+              <tr key={r.id}>
+                <td>{r.description || r.id}</td>
+                <td className="deep-red">{r.status}</td>
+                <td></td>
+                <td>
+                  <IconButton onClick={() => handleRestartDownload(r)}>
+                    <Refresh />
+                  </IconButton>
+                  <IconButton onClick={() => handleDeleteDownload(r.id)}>
+                    <Delete color={'error'} />
                   </IconButton>
                 </td>
               </tr>
