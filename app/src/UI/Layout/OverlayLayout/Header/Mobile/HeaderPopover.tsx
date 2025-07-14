@@ -104,9 +104,9 @@ const HeaderPopover = () => {
           <ul>
             {loggedInOrWorkingOffline && (
               <li>
-                <button onClick={() => history.push('/OfflineTiles')}>
+                <button onClick={() => history.push('/OfflineMaps')}>
                   <OfflineBolt />
-                  Tile Cache Status
+                  Offline Maps
                 </button>
               </li>
             )}
