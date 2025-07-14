@@ -54,7 +54,7 @@ import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { LAYER_ELIGIBILITY_UPDATE } from 'state/sagas/map/layer-eligibility';
 import { RECORD_COLOURS } from 'constants/colors';
-import { IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import { EFilterType, IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
@@ -67,6 +67,7 @@ import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { normalizeToPolygonCoordinates } from 'utils/geometryHelpers';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -92,7 +93,7 @@ function* handle_WHATS_HERE_FEATURE(whatsHereFeature: PayloadAction<Feature>) {
     const tableFilters = [
       {
         id: '0.81778552637744651712083357942',
-        filterType: 'spatialFilterDrawn',
+        filterType: EFilterType.Drawn,
         operator: 'CONTAINED IN',
         filter: '0.652479498272151712093656568',
         geojson: whatsHereFeature.payload
@@ -304,13 +305,12 @@ function* handle_WHATS_HERE_PAGE_ACTIVITY() {
 function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
   const userSettings = yield select(selectUserSettings);
   const set = userSettings?.recordSets?.[action.payload.id];
-  const clientBoundaries = yield select((state) => state.Map.clientBoundaries);
   try {
     let conditionallyUnnestedURL;
     if (set.recordSetType === 'IAPP') {
       const currentState = yield select((state) => state.UserSettings);
 
-      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
+      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
       if (filterObject == null) {
         yield put({
           type: RECORD_SET_TO_EXCEL_FAILURE
@@ -335,7 +335,7 @@ function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
     } else {
       const currentState = yield select((state) => state.UserSettings);
 
-      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState, clientBoundaries);
+      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
       if (filterObject == null) {
         yield put({
           type: RECORD_SET_TO_EXCEL_FAILURE
@@ -599,7 +599,7 @@ function* handle_REMOVE_SERVER_BOUNDARY(action) {
 function* handle_MAP_ON_SHAPE_CREATE(action) {
   const appModeUrl = yield select((state: any) => state.AppMode.url);
   const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
-  const { isTracking, type } = yield select((state) => state.Map.track_me_draw_geo);
+  const { status, shapeType } = yield select((state) => state.Map.track_me_draw_geo);
 
   const geometry = action.payload.geometry;
   const isLineString = geometry?.type === GeoShapes.LineString;
@@ -619,7 +619,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action) {
   }
 
   if (isLineString && hasCoordinates && noUserError) {
-    const isGeoTrackingLineString = isTracking && type === GeoShapes.LineString;
+    const isGeoTrackingLineString = isTracking(status) && shapeType === GeoShapes.LineString;
     if (!isGeoTrackingLineString && action.payload.id === GEO_TRACKING_FEATURE) return;
 
     yield put(
@@ -644,7 +644,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
   try {
     const { url } = yield select((state) => state.AppMode);
     const { drawingCustomLayer, whatsHere, tileCacheMode } = yield select((state: RootState) => state.Map);
-    const { isTracking, type } = yield select((state) => state.Map.track_me_draw_geo);
+    const { status, shapeType } = yield select((state) => state.Map.track_me_draw_geo);
     const { id, geometry } = action.payload;
 
     const isActivityPage = url && /Activity/.test(url);
@@ -656,10 +656,14 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
     }
 
     if (isActivityPage && !whatsHere.toggle) {
-      if (isGeoTrackingFeature && type === GeoShapes.Polygon) {
-        geometry.type = type;
-        geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
-      } else if (type === GeoShapes.LineString && geometry?.type === GeoShapes.LineString) {
+      if (isGeoTrackingFeature) {
+        if (isPaused(status)) {
+          // don't do anything, just call ACTIVITY_UPDATE_GEO_REQUEST
+        } else if (shapeType === GeoShapes.Polygon) {
+          geometry.type = shapeType;
+          geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
+        }
+      } else if (shapeType === GeoShapes.LineString && geometry?.type === GeoShapes.LineString) {
         yield put(
           Prompt.number({
             title: 'Buffer needed',
@@ -674,7 +678,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
           })
         );
         return;
-      } else if (isTracking) {
+      } else if (isTracking(status)) {
         yield put(GeoTracking.exitDrawing());
       }
 

@@ -13,12 +13,11 @@ interface CoordsData {
 
 const Coordinates = () => {
   const updateCoordinates = debounce(
-    (x: number, y: number) => {
+    (lng: number, lat: number) => {
       if (!map) return;
       const proj4_setdef = (utmZone: number): string => {
         return `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`;
       };
-      const { lng, lat } = map.unproject([x, y]);
       const utmZone = Math.floor((lng + 180) / 6) + 1;
       proj4.defs([
         ['EPSG:4326', '+proj=longlat +datum=WGS84 +no_defs'],
@@ -36,13 +35,13 @@ const Coordinates = () => {
 
   useEffect(() => {
     if (!map) return;
-    const cont = map.getContainer();
-    cont.addEventListener('mousemove', (e) => {
-      updateCoordinates(e.clientX, e.clientY);
-    });
-    cont.addEventListener('touchstart', (e) => {
-      updateCoordinates(e.targetTouches[0].clientX, e.targetTouches[0].clientY);
-    });
+    const handleUpdate = (e) => updateCoordinates(e.lngLat.lng, e.lngLat.lat);
+    map.on('mousemove', handleUpdate);
+    map.on('touchstart', handleUpdate);
+    return () => {
+      map.off('mousemove', handleUpdate);
+      map.off('touchstart', handleUpdate);
+    };
   }, [map]);
 
   if (!coords) {

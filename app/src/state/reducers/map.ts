@@ -12,12 +12,6 @@ import {
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
-  MAP_TOGGLE_ACCURACY,
-  MAP_TOGGLE_LEGENDS,
-  MAP_TOGGLE_PANNED,
-  MAP_TOGGLE_TRACKING,
-  MAP_TOGGLE_TRACKING_OFF,
-  MAP_TOGGLE_TRACKING_ON,
   PAGE_OR_LIMIT_UPDATE,
   PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
@@ -46,6 +40,7 @@ import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import IRecordTable from 'interfaces/recordTable';
+import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -203,16 +198,15 @@ interface MapState {
   initialized: boolean;
   labelBoundsPolygon: any;
   layers: any[];
-  legendsPopup: any;
   linkToCSV: string | null;
   map_center: [number, number];
   map_zoom: number;
   panned: boolean;
   positionTracking: boolean;
   track_me_draw_geo: {
-    isTracking: boolean;
-    type: GeoShapes | null;
-    drawingShape: boolean;
+    status: GeoTrackingStatus;
+    shapeType: GeoShapes | null;
+    isEditingShape: boolean;
   };
   quickPanToRecord: boolean;
   readableIdentifier?: string;
@@ -293,14 +287,13 @@ const initialState: MapState = {
   initialized: false,
   labelBoundsPolygon: undefined,
   layers: [],
-  legendsPopup: undefined,
   linkToCSV: '',
   panned: false,
   positionTracking: false,
   track_me_draw_geo: {
-    isTracking: false,
-    type: null,
-    drawingShape: false
+    status: GeoTrackingStatus.IDLE,
+    shapeType: null,
+    isEditingShape: false
   },
   quickPanToRecord: false,
   recordSetForCSV: 0,
@@ -366,6 +359,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
       } else if (UserSettings.RecordSet.set.match(action)) {
         const layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.setName);
+        if (layerIndex === -1) return;
         Object.keys(action.payload.updatedSet).forEach((key) => {
           if (['color', 'mapToggle', 'drawOrder', 'labelToggle'].includes(key)) {
             draftState.layers[layerIndex].layerState[key] = action.payload.updatedSet[key];
@@ -416,11 +410,11 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         Object.keys(action.payload.recordSets).forEach((setID) => {
           if (setID !== RecordSetId.OfflineActivities) {
             let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-            if (!draftState.layers[layerIndex]) {
+            if (layerIndex === -1) {
               draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
               layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
             }
-            draftState.layers[layerIndex].layerState = {};
+            draftState.layers[layerIndex].layerState ??= {};
             Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
           }
         });
@@ -541,25 +535,40 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.tileCacheMode = action.payload;
       } else if (GeoTracking.start.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: true,
-          type: action.payload.type ?? null,
-          drawingShape: true
+          ...draftState.track_me_draw_geo,
+          status: GeoTrackingStatus.TRACKING_AND_DRAWING,
+          shapeType: action.payload.type ?? null
         };
-      } else if (GeoTracking.stop.match(action)) {
+      } else if (GeoTracking.edit.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: false,
-          type: null,
-          drawingShape: false
+          ...draftState.track_me_draw_geo,
+          isEditingShape: action.payload
+        };
+      } else if (GeoTracking.exit.match(action)) {
+        draftState.track_me_draw_geo = {
+          status: GeoTrackingStatus.EXITED,
+          shapeType: null,
+          isEditingShape: false
         };
       } else if (GeoTracking.pause.match(action)) {
-        draftState.track_me_draw_geo.drawingShape = false;
+        draftState.track_me_draw_geo.status = GeoTrackingStatus.ONLY_TRACKING;
       } else if (GeoTracking.resume.match(action)) {
-        draftState.track_me_draw_geo.drawingShape = true;
+        draftState.track_me_draw_geo = {
+          ...draftState.track_me_draw_geo,
+          status: GeoTrackingStatus.TRACKING_AND_DRAWING,
+          isEditingShape: false
+        };
       } else if (GeoTracking.exitDrawing.match(action)) {
         draftState.track_me_draw_geo = {
-          isTracking: false,
-          type: draftState.track_me_draw_geo.type,
-          drawingShape: false
+          status: GeoTrackingStatus.EXITED,
+          shapeType: draftState.track_me_draw_geo.shapeType,
+          isEditingShape: false
+        };
+      } else if (GeoTracking.end.match(action)) {
+        draftState.track_me_draw_geo = {
+          status: GeoTrackingStatus.COMPLETED,
+          shapeType: null,
+          isEditingShape: false
         };
       } else if (IappActions.getRows.match(action) || Activity.getRows.match(action)) {
         const { recordSetID, page, limit, tableFiltersHash } = action.payload;
@@ -699,9 +708,24 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           title: draftState.drawingCustomLayerName
         });
         draftState.drawingCustomLayerName = '';
+      } else if (MapActions.trackLocationStart.match(action)) {
+        draftState.positionTracking = true;
+      } else if (MapActions.trackLocationStop.match(action)) {
+        draftState.positionTracking = false;
+      } else if (MapActions.trackLocationToggle.match(action)) {
+        if (!draftState.positionTracking) {
+          draftState.panned = true;
+        }
+        draftState.positionTracking = !draftState.positionTracking;
       } else if (UserSettings.Boundaries.removeCustomLayer.match(action)) {
         const index = draftState.clientBoundaries.findIndex((cb) => cb.id === action.payload);
         draftState.clientBoundaries.splice(index, 1);
+      } else if (MapActions.accuracyToggle.match(action)) {
+        draftState.accuracyToggle = !state.accuracyToggle;
+      } else if (MapActions.panningOn.match(action)) {
+        draftState.panned = true;
+      } else if (MapActions.panningOff.match(action)) {
+        draftState.panned = false;
       } else {
         switch (action.type) {
           case TOGGLE_WMS_LAYER: {
@@ -787,36 +811,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             };
             break;
           }
-          case MAP_TOGGLE_ACCURACY: {
-            draftState.accuracyToggle = !state.accuracyToggle;
-            break;
-          }
-          case MAP_TOGGLE_LEGENDS: {
-            draftState.legendsPopup = !state.legendsPopup;
-            break;
-          }
-          case MAP_TOGGLE_PANNED: {
-            draftState.panned = !state.panned;
-            break;
-          }
           case IAPP_PAN_AND_ZOOM:
           case PAN_AND_ZOOM_TO_ACTIVITY: {
-            draftState.positionTracking = false;
-            break;
-          }
-          case MAP_TOGGLE_TRACKING: {
-            if (!state.positionTracking) {
-              draftState.panned = true;
-            }
-            draftState.positionTracking = !state.positionTracking;
-            break;
-          }
-          case MAP_TOGGLE_TRACKING_ON: {
-            draftState.panned = true;
-            draftState.positionTracking = true;
-            break;
-          }
-          case MAP_TOGGLE_TRACKING_OFF: {
             draftState.positionTracking = false;
             break;
           }

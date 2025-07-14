@@ -13,5 +13,9 @@
     width: 100%;
     text-align: justify;
     line-height: 1.5;
+    min-height: 35px;
+  }
+  button:not(last-child) {
+    margin-top: 5pt;
   }
 }

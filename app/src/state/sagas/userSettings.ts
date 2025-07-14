@@ -84,7 +84,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
 
   const defaultRecordSet = defaultRecordSets;
   // add offline activities for mobile
-  if (buildTimeConfig.MOBILE && (!recordSets || Object.keys(recordSets).length === 0)) {
+  if (buildTimeConfig.MOBILE) {
     // RecordSets are empty, try to recover whats in the local database
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     const repos = yield service.listRepositories(['filter_objects', 'status', 'record_set_type', 'set_id']);
@@ -96,7 +96,7 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
         backedUpRecordSet.id = repo?.set_id;
         backedUpRecordSet.cacheMetadataStatus = repo.status;
         backedUpRecordSet.recordSetName = repo.set_name ?? '';
-        defaultRecordSet[repo.set_id] = backedUpRecordSet;
+        defaultRecordSet[repo.set_id] ??= backedUpRecordSet;
       }
     });
   }

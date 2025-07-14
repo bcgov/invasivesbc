@@ -15,7 +15,7 @@ import {
 import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
@@ -28,7 +28,7 @@ const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
 const formatLayerID = (recordSetID: string, tableFiltersHash: string): string =>
   `${LAYER_ID_PREFIX}${recordSetID}-hash-${tableFiltersHash}`;
 
-export const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => {
+const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => {
   if (layer?.layerState?.cacheMetadataStatus !== UserRecordCacheStatus.CACHED || !layer.layerState.mapToggle) {
     return;
   }
@@ -56,7 +56,7 @@ export const createCachedIappLayer = async (map: maplibregl.Map, layer: any) => 
   map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 };
 
-export const createOnlineIappLayer = (map: any, layer: any) => {
+const createOnlineIappLayer = (map: any, layer: any) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
   const source: SourceSpecification = {
     type: 'vector',
@@ -197,7 +197,7 @@ const getLabelLayer = (layerID: string, options: LayerOptions): SymbolLayerSpeci
  * @desc Uses the device's recordset Cache data to display geoJson Layers on the map when offline
  *       Displays two layers: Points at high levels, and shapes at lower
  */
-export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any) => {
+const createCachedActivityLayer = async (map: maplibregl.Map, layer: any) => {
   if (layer?.layerState?.cacheMetadataStatus !== UserRecordCacheStatus.CACHED || !layer.layerState.mapToggle) {
     return;
   }
@@ -248,19 +248,17 @@ export const createCachedActivityLayer = async (map: maplibregl.Map, layer: any)
   map.addLayer(circleMarkerZoomedOutLayerCentroid, LAYER_Z_FOREGROUND);
 };
 
-export const createOnlineActivityLayer = (map: maplibregl.Map, layer: any) => {
+const createOnlineActivityLayer = (map: maplibregl.Map, layer: any) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
 
-  if (['1', '2'].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
+  if ([RecordSetId.Drafts, RecordSetId.Activity].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
     return;
   }
 
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
   const source: SourceSpecification = {
     type: 'vector',
-    tiles: [
-      `api:///api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`
-    ],
+    tiles: [`api:///api/vectors/activities/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(layer.filterObject))}`],
     minzoom: 0,
     maxzoom: 24
   };
@@ -342,7 +340,7 @@ const createOfflineActivitiesLayer = async (
     }
   }
 };
-export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
+const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
   const allLayersOnMap = map.getLayersOrder();
   const recordSetOfflineLayers = allLayersOnMap.filter((layer) => layer.includes(OFFLINE_ACTIVITIES_LAYER_ID));
 
@@ -358,7 +356,7 @@ export const removeOfflineActivitiesLayer = async (map: maplibregl.Map) => {
   }
 };
 
-export const refreshOfflineActivitiesLayer = async (
+const refreshOfflineActivitiesLayer = async (
   map: maplibregl.Map,
   visibility: boolean,
   labelVisibility: boolean,
@@ -372,7 +370,7 @@ export const refreshOfflineActivitiesLayer = async (
   await createOfflineActivitiesLayer(map, locallyStoredActivities, labelVisibility);
 };
 
-export const toggleOfflineActivityLabels = async (map: maplibregl.Map, labelVisibility: boolean) => {
+const toggleOfflineActivityLabels = async (map: maplibregl.Map, labelVisibility: boolean) => {
   const allLayersOnMap = map.getLayersOrder();
   const recordSetOfflineLabelLayer = allLayersOnMap.filter((layer) =>
     layer.includes('label-' + OFFLINE_ACTIVITIES_LAYER_ID)
@@ -420,7 +418,7 @@ const purgeRecordsetLayersNotInStore = (
   });
 };
 
-export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
+const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<PropertyKey, any>) => {
   if (!map) {
     return;
   }
@@ -462,7 +460,7 @@ export const deleteStaleRecordsetLayer = (map: maplibregl.Map, layer: Record<Pro
  * @desc Delete all recordset layers on the map in response to major app events (connectivity change, or cache update)
  * @param map Current map
  */
-export const removeRecordsetLayersOnForcedRedraw = (map: maplibregl.Map) => {
+const removeRecordsetLayersOnForcedRedraw = (map: maplibregl.Map) => {
   const allLayersOnMap = map.getLayersOrder();
   const allSourcesOnMap = Object.keys(map.style.sourceCaches);
 
@@ -485,8 +483,11 @@ export const removeRecordsetLayersOnForcedRedraw = (map: maplibregl.Map) => {
   });
 };
 
-export const rebuildLayersOnTableHashUpdate = async (
-  storeLayers: Record<PropertyKey, any>, map: maplibregl.Map, connectedToNetwork: boolean) => {
+const rebuildLayersOnTableHashUpdate = async (
+  storeLayers: Record<PropertyKey, any>,
+  map: maplibregl.Map,
+  connectedToNetwork: boolean
+) => {
   const MOBILE_OFFLINE = buildTimeConfig.MOBILE && !connectedToNetwork;
   /* First need to delete the layers who's record set was deleted altogether: */
   const storeLayersIds = storeLayers.map((layer) => formatLayerID(layer.recordSetID, layer.tableFiltersHash));
@@ -532,7 +533,7 @@ const createMapLayer = async (
   }
 };
 
-export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) => {
+const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) => {
   /** Get color value for a given paint property */
   const currentColor = (paint, property: string) => paint[property] ?? '';
 
@@ -562,7 +563,7 @@ export const refreshColoursOnColourUpdate = (storeLayers, map: maplibregl.Map) =
   }
 };
 
-export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map) => {
+const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map) => {
   storeLayers.map((layer) => {
     const layerSearchString = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
     const mapLayers = map.getLayersOrder();
@@ -594,4 +595,19 @@ export const refreshVisibilityOnToggleUpdate = (storeLayers, map: maplibregl.Map
       }
     });
   });
+};
+
+export {
+  createCachedIappLayer,
+  createOnlineActivityLayer,
+  refreshVisibilityOnToggleUpdate,
+  refreshColoursOnColourUpdate,
+  rebuildLayersOnTableHashUpdate,
+  removeRecordsetLayersOnForcedRedraw,
+  deleteStaleRecordsetLayer,
+  toggleOfflineActivityLabels,
+  removeOfflineActivitiesLayer,
+  refreshOfflineActivitiesLayer,
+  createCachedActivityLayer,
+  createOnlineIappLayer
 };
