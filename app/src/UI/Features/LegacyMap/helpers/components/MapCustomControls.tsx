@@ -3,7 +3,7 @@ import maplibregl, { IControl } from 'maplibre-gl';
 import { createRoot, Root } from 'react-dom/client';
 import editButton from '/assets/icon/edit.png';
 import saveButton from '/assets/icon/save.png';
-import TargetMode from 'constants/targetModes';
+import { TargetMode } from 'constants/targetModes';
 
 export class DrawModeDisplay implements IControl {
   _text: string;
@@ -113,6 +113,7 @@ export class EditControls implements IControl {
   private renderUI(forceReset = false) {
     if (this._root && this._container) {
       const key = forceReset ? ++this._forceResetKey : this._forceResetKey;
+
       this._root.render(
         <EditControlUI key={key} onEdit={this._onEdit} onSave={this._onSave} isDisabled={this._isDisabled ?? false} />
       );
@@ -141,9 +142,8 @@ export class EditControls implements IControl {
     container.id = 'custom-edit-tool';
 
     this._root = createRoot(container);
-    this.renderUI();
     this._container = container;
-
+    this.renderUI();
     return container;
   }
 
