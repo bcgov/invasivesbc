@@ -1,10 +1,14 @@
 import TileCache from 'state/actions/cache/TileCache';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import TileCacheListRow from 'UI/Features/TileCache/TileCacheListRow';
+import { RepositoryStatus } from 'utils/tile-cache';
 
 const TileCacheList = () => {
-  const repositories = useSelector((state) => state.TileCache?.repositories);
+  const repositories = useSelector((state) => state.TileCache?.repositories ?? []).filter(
+    (r) => r.status === RepositoryStatus.READY
+  );
   const visibleLayers = useSelector((state) => state.Map.enabledOverlayLayers) ?? [];
+
   const dispatch = useDispatch();
   if (!repositories || repositories.length === 0) {
     return (
