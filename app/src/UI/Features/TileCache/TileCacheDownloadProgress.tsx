@@ -64,7 +64,7 @@ const TileCacheDownloadProgress = () => {
             {failedDownloads.map((r) => (
               <tr key={r.id}>
                 <td>{r.description || r.id}</td>
-                <td className="deep-red">{r.status}</td>
+                <td className="deep-red">ERROR</td>
                 <td></td>
                 <td>
                   <IconButton onClick={() => handleRestartDownload(r)}>
