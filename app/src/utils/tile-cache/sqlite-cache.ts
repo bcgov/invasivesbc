@@ -278,6 +278,20 @@ class SQLiteTileCacheService extends TileCacheService {
       return TileCacheService.generateStripedFallbackTile();
     }
   }
+  protected async fetchSumTilesFromRepository(repository: string): Promise<number> {
+    if (this.cacheDB == null) {
+      throw new Error('Cache not available');
+    }
+    const result = await this.cacheDB.query(
+      //Language=SQLite
+      `SELECT COUNT(*) AS COUNT
+       FROM CACHED_TILES
+       WHERE TILESET = ?`,
+      [repository]
+    );
+    console.dir(result.values);
+    return result.values?.[0]['COUNT'] ?? 0;
+  }
 
   private async getCachedTile(repository: string, z: number, x: number, y: number) {
     if (this.cacheDB == null) {
@@ -367,7 +381,7 @@ class SQLiteTileCacheService extends TileCacheService {
       return;
     }
     throw new Error('store is not ready');
-  };
+  }
 }
 
 export { SQLiteTileCacheService };
