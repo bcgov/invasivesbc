@@ -323,7 +323,7 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
     yield put(Activity.get(action.payload));
 
     // If duplicating a record, wait for the success before pasting data in.
-    if (userSettingsState.newRecordDialogueState.mode === 'duplicate') {
+    if (userSettingsState.newRecordDialogueState.viewLayout === 'duplicate') {
       const result = yield take([Activity.getSuccess, Activity.getFailure]);
       if (result.type === Activity.getSuccess.type) {
         yield put(Activity.paste());
