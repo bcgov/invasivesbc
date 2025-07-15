@@ -22,7 +22,7 @@ const TileCacheDownloadProgress = () => {
   const dispatch = useDispatch();
   const downloadProgress = useSelector((state) => state.TileCache?.downloadProgress, shallowEqual);
   const failedDownloads = useSelector((state) => state.TileCache?.repositories ?? []).filter(
-    (r) => [RepositoryStatus.FAILED].includes(r.status) && !downloadProgress?.[r.id]
+    (r) => ![RepositoryStatus.READY].includes(r.status) && !downloadProgress?.[r.id]
   );
 
   const activeDownloads = Object.keys(downloadProgress ?? {}).length + failedDownloads.length > 0;
