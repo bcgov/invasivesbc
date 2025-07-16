@@ -110,7 +110,7 @@ function createTileCacheReducer() {
   return (state = initialState, action: unknown) => {
     return createNextState(state, (draft: Draft<TileCacheState>): void => {
       if (TileCache.downloadProgressEvent.match(action)) {
-        if (action.payload.normalizedProgress == 1 || action.payload.aborted) {
+        if (action.payload.normalizedProgress >= 1 || action.payload.aborted) {
           // completed or aborted
           if (Object.prototype.hasOwnProperty.call(draft.downloadProgress, action.payload.repository)) {
             delete draft.downloadProgress[action.payload.repository];

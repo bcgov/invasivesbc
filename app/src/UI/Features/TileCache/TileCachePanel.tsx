@@ -5,6 +5,8 @@ import { TileCacheCreationPanel } from 'UI/Features/TileCache/TileCacheCreationP
 import { TileCacheList } from 'UI/Features/TileCache/TileCacheList';
 import { TileCacheDownloadProgress } from 'UI/Features/TileCache/TileCacheDownloadProgress';
 import 'UI/Features/TileCache/tileCache.css';
+import Accordion from 'UI/Reusable/Accordion/Accordion';
+import { Create, Downloading, SdStorage } from '@mui/icons-material';
 
 const TileCachePanel = () => {
   const dispatch = useDispatch();
@@ -25,14 +27,22 @@ const TileCachePanel = () => {
     <div id={`offline-map-overlay`}>
       <h2>Offline Maps</h2>
       <p className="subheader">Manage your map data for offline access</p>
-      <h3>Create Cached Maps</h3>
-      <TileCacheCreationPanel />
-      <h3>Download Progress</h3>
-      <p className="subheader">Check the status of caches being downloaded for offline access.</p>
-      <TileCacheDownloadProgress />
-      <h3>Downloaded Maps</h3>
-      <p className="subheader">These caches are currently saved on your device</p>
-      <TileCacheList />
+      <div className="content">
+        <Accordion title="Create Cached Maps" icon={<Create />}>
+          <h3>Create Cached Maps</h3>
+          <TileCacheCreationPanel />
+        </Accordion>
+        <Accordion title="Download Progress" icon={<Downloading />}>
+          <h3>Download Progress</h3>
+          <p className="subheader">Check the status of caches being downloaded for offline access.</p>
+          <TileCacheDownloadProgress />
+        </Accordion>
+        <Accordion title="Downloaded Maps" icon={<SdStorage />}>
+          <h3>Downloaded Maps</h3>
+          <p className="subheader">These caches are currently saved on your device</p>
+          <TileCacheList />
+        </Accordion>
+      </div>
     </div>
   );
 };

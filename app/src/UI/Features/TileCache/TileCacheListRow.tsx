@@ -11,7 +11,13 @@ import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 const TileCacheListRow = ({ metadata, visible }) => {
+  const updateStatistics = async () => {
+    if (!serviceRef.current) return;
+    serviceRef.current.getRepositoryStatistics(metadata.id).then((value) => setStats(value));
+  };
+
   const handleToggleVisibility = (id: string) => dispatch(MapActions.toggleOverlay(id));
+
   const handleEditCacheDescription = () => {
     const callback = (newName: string) => {
       dispatch(TileCache.updateDescription({ repository: metadata.id, newDescription: newName }));
@@ -28,6 +34,7 @@ const TileCacheListRow = ({ metadata, visible }) => {
       })
     );
   };
+
   const handleDelete = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
@@ -48,23 +55,19 @@ const TileCacheListRow = ({ metadata, visible }) => {
   };
 
   const dispatch = useDispatch();
-  const serviceRef = useRef<TileCacheService | null>(null);
-  const [stats, setStats] = useState<RepositoryStatistics | null>(null);
+  const serviceRef = useRef<TileCacheService>();
+  const [stats, setStats] = useState<RepositoryStatistics>();
 
   useEffect(() => {
-    if (!serviceRef.current) {
-      return;
-    }
-    serviceRef.current.getRepositoryStatistics(metadata.id).then((value) => {
-      setStats(value);
-    });
-  }, [metadata.id, serviceRef.current]);
-
-  useEffect(() => {
-    TileCacheServiceFactory.getPlatformInstance().then((value) => {
-      serviceRef.current = value;
-    });
+    (async () => {
+      serviceRef.current = await TileCacheServiceFactory.getPlatformInstance();
+      updateStatistics();
+    })();
   }, []);
+
+  useEffect(() => {
+    updateStatistics();
+  }, [metadata]);
 
   return (
     <tr>
