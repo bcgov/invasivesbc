@@ -8,6 +8,7 @@ import { useSelector } from 'utils/use_selector';
 import { usePlatformClasses } from 'state/configuration/build-time-config';
 import WideLayout from 'UI/Layout/WideLayout/WideLayout';
 import Overlay from 'UI/Layout/OverlayLayout/Overlay';
+import SafeInsets from 'utils/android-safe-area/safeArea';
 
 export const RENDER_DEBUG = false;
 
@@ -24,6 +25,34 @@ const App = () => {
   const [LazyLoadedLayout, setLazyLoadedLayout] = useState<LazyExoticComponent<typeof WideLayout | typeof Overlay>>();
 
   const platformClasses = usePlatformClasses();
+
+  const [insets, setInsets] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
+
+  useEffect(() => {
+    SafeInsets.getAllInsets({})
+      .then((insets) => {
+        setInsets(insets);
+        console.log('----Safe Area insets----\n', JSON.stringify(insets, null, 2), platformClasses);
+      })
+      .catch(console.error);
+
+    let listener;
+
+    const setupListener = async () => {
+      listener = await SafeInsets.addListener('insetsChanged', (insets) => {
+        setInsets(insets);
+        console.log('----Safe Dynamic Area insets----\n', JSON.stringify(insets, null, 2), platformClasses);
+      });
+    };
+
+    setupListener();
+
+    return () => {
+      if (listener && typeof listener.remove === 'function') {
+        listener.remove();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     switch (selectedLayout) {

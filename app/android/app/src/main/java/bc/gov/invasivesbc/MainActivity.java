@@ -9,7 +9,7 @@ public class MainActivity extends BridgeActivity {
   public void onCreate(Bundle savedInstanceState) {
     registerPlugin(AuthBridge.class);
     registerPlugin(DeviceInformation.class);
-    registerPlugin(SafeInsetsPlugin.class); 
+    registerPlugin(SafeInsets.class);
     super.onCreate(savedInstanceState);
   }
 }
