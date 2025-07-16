@@ -6,13 +6,15 @@ import 'UI/Features/Records/Activity/Form.css';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
-import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_TOGGLE_TRACKING_ON } from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 import GeoShapes from 'constants/geoShapes';
 import { UtmInputObj } from 'interfaces/prompt-interfaces';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import Prompt from 'state/actions/prompts/Prompt';
 import RecordHistory from 'UI/Features/Records/RecordHistory/RecordHistory';
 import { useSelector } from 'utils/use_selector';
+import { isTracking } from 'utils/geoTrackingHelpers';
+import MapActions from 'state/actions/map';
 
 export const ActivityForm = () => {
   const ref = useRef(0);
@@ -67,11 +69,11 @@ export const ActivityForm = () => {
     );
   };
   const clickHandler = () => {
-    if (drawGeometryTracking.isTracking) {
+    if (isTracking(drawGeometryTracking.status)) {
       dispatch(GeoTracking.stop());
     } else {
       const callback = (input: string | number) => {
-        dispatch({ type: MAP_TOGGLE_TRACKING_ON });
+        dispatch(MapActions.trackLocationStart());
         dispatch(GeoTracking.start(input as GeoShapes));
       };
       dispatch(

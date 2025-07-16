@@ -38,6 +38,7 @@ import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
+import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
@@ -52,6 +53,7 @@ import MapActions from 'state/actions/map';
 import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
+import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -159,15 +161,17 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       });
       return;
     }
+
     const sanitizedGeo = fixMisLabledMultiPolygon(modifiedPayload[0]) || [];
 
     const isWIPLinestring = sanitizedGeo.geometry.type === GeoShapes.LineString;
     const isPointGeometry = sanitizedGeo.geometry.type === GeoShapes.Point;
+
     reported_area = calculateGeometryArea([sanitizedGeo]);
 
     if (!isPointGeometry) {
       const hasSelfIntersections = kinks(sanitizedGeo.geometry).features.length > 0;
-      const hasHoles = sanitizedGeo.geometry.coordinates.length > 1 && sanitizedGeo.geometry.type === 'Polygon'; // check for intersections after LineStrings are converted to Polygons
+      const hasHoles = sanitizedGeo.geometry.coordinates.length > 1 && sanitizedGeo.geometry.type === GeoShapes.Polygon; // check for intersections after LineStrings are converted to Polygons
 
       if (hasSelfIntersections || hasHoles) {
         yield put(Activity.updateGeoFailure({ geometry: [{ ...sanitizedGeo, properties: { error: 'true' } }] }));
@@ -319,7 +323,7 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
     yield put(Activity.get(action.payload));
 
     // If duplicating a record, wait for the success before pasting data in.
-    if (userSettingsState.newRecordDialogueState.mode === 'duplicate') {
+    if (userSettingsState.newRecordDialogueState.viewLayout === 'duplicate') {
       const result = yield take([Activity.getSuccess, Activity.getFailure]);
       if (result.type === Activity.getSuccess.type) {
         yield put(Activity.paste());

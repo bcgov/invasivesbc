@@ -10,20 +10,15 @@ export const handlePositionTracking = (
   positionTracking,
   panToUser: boolean
 ) => {
-  function animateMarker() {
-    positionMarker.setLngLat([userCoords.long, userCoords.lat]);
-    // Ensure it's added to the map. This is safe to call if it's already added.
-    positionMarker.addTo(map);
-    // Request the next frame of the animation.
-    requestAnimationFrame(animateMarker);
-  }
-
   if (userCoords && positionTracking) {
     if (panToUser) {
-      map.jumpTo({ center: [userCoords.long, userCoords.lat] });
+      map.easeTo({
+        center: [userCoords.long, userCoords.lat],
+        offset: [0, map.getContainer().clientHeight * -0.2]
+      });
     }
-    // Start the animation.
-    requestAnimationFrame(animateMarker);
+    positionMarker.setLngLat([userCoords.long, userCoords.lat]);
+    positionMarker.addTo(map);
     const currAccuracyCircle = map.getSource('accuracyCircle');
     if (!currAccuracyCircle && accuracyCircle) {
       map

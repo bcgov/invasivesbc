@@ -2,10 +2,10 @@ import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import { IconButton, Tooltip } from '@mui/material';
 import { useSelector } from 'utils/use_selector';
-import { MAP_TOGGLE_ACCURACY } from 'state/actions';
 import 'UI/Global.css';
 
 import AttributionIcon from '@mui/icons-material/Attribution';
+import MapActions from 'state/actions/map';
 
 export const AccuracyToggle = () => {
   const dispatch = useDispatch();
@@ -28,7 +28,7 @@ export const AccuracyToggle = () => {
           <IconButton
             className={'button'}
             onClick={() => {
-              dispatch({ type: MAP_TOGGLE_ACCURACY });
+              dispatch(MapActions.accuracyToggle());
             }}
           >
             <AttributionIcon />

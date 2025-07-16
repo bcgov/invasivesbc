@@ -9,6 +9,7 @@ import './DebugMenu.css';
 import { Platform } from 'state/configuration/build-time-config';
 import { AndroidMemoryReport } from 'UI/Layout/DebugMenu/AndroidMemoryReport';
 import { PlatformGated } from 'UI/Reusable/Predicates/PlatformGated';
+import ClearAppCache from './ClearAppCache';
 
 const DebugMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -25,6 +26,7 @@ const DebugMenu = () => {
           <PlatformGated requires={Platform.ANDROID}>
             <AndroidMemoryReport />
           </PlatformGated>
+          <ClearAppCache />
         </div>
       </CustomPopover>
     </Debug>

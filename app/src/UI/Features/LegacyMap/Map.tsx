@@ -276,7 +276,11 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     try {
       if (map_center && map_zoom) {
-        map.jumpTo({ center: map_center, zoom: map_zoom });
+        map.easeTo({
+          center: map_center,
+          zoom: map_zoom,
+          offset: [0, map.getContainer().clientHeight * -0.2]
+        });
       }
     } catch (e) {
       console.error(e);

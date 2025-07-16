@@ -13,9 +13,8 @@ import { handlePositionTracking } from 'UI/Features/LegacyMap/helpers/functional
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { makeMapMarker, makeMarkerElement } from 'utils/makeMapMarker';
+
 const PositionMarkers = ({ mapReady }) => {
-  const LATITUDE = 1;
-  const LAT_OFFSET = -0.00325;
   const map = useContext(MapContext);
 
   // User tracking coords jump and markers/indicators
@@ -129,10 +128,10 @@ const PositionMarkers = ({ mapReady }) => {
     if (quickPanToRecord && userRecordOnHoverRecordGeometry) {
       const c = centroid(userRecordOnHoverRecordGeometry).geometry.coordinates as LngLatLike;
       if (c) {
-        c[LATITUDE] += LAT_OFFSET;
-        map.jumpTo({
+        map.easeTo({
           center: c,
-          zoom: 15
+          zoom: 15,
+          offset: [0, map.getContainer().clientHeight * -0.2]
         });
       }
     }
@@ -157,15 +156,19 @@ const PositionMarkers = ({ mapReady }) => {
   // User position tracking marker
   useEffect(() => {
     if (!mapReady) return;
-    handlePositionTracking(
-      map,
-      positionMarker.current,
-      userCoords,
-      accuracyCircle,
-      accuracyToggle,
-      positionTracking,
-      panned
-    );
+    if (positionTracking) {
+      handlePositionTracking(
+        map,
+        positionMarker.current,
+        userCoords,
+        accuracyCircle,
+        accuracyToggle,
+        positionTracking,
+        panned
+      );
+    } else {
+      positionMarker?.current?.remove();
+    }
   }, [userCoords, positionTracking, accuracyToggle, mapReady, panned]);
 
   return null;

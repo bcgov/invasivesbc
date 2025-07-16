@@ -27,9 +27,9 @@ const ManualUtmModal = ({
   confirmText,
   cancelText
 }: ManualUtmModalInterface) => {
-  const [zone, setUserZone] = useState<string>();
-  const [easting, setUserEasting] = useState<string>();
-  const [northing, setUserNorthing] = useState<string>();
+  const [zone, setZone] = useState<string>();
+  const [easting, setEasting] = useState<string>();
+  const [northing, setNorthing] = useState<string>();
   const [results, setResults] = useState<number[]>([]);
 
   const dispatch = useDispatch();
@@ -96,20 +96,20 @@ const ManualUtmModal = ({
           <TextField
             aria-label="Zone"
             label="Zone"
-            onChange={(evt) => handleChange(evt.currentTarget.value, setUserZone)}
+            onChange={(evt) => handleChange(evt.currentTarget.value, setZone)}
             value={zone ?? ''}
           />
           <TextField
             sx={{ margin: '10pt 0' }}
             aria-label="Easting"
             label="Easting"
-            onChange={(evt) => handleChange(evt.currentTarget.value, setUserEasting)}
+            onChange={(evt) => handleChange(evt.currentTarget.value, setEasting)}
             value={easting ?? ''}
           />
           <TextField
             aria-label="Northing"
             label="Northing"
-            onChange={(evt) => handleChange(evt.currentTarget.value, setUserNorthing)}
+            onChange={(evt) => handleChange(evt.currentTarget.value, setNorthing)}
             value={northing ?? ''}
           />
         </FormControl>

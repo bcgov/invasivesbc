@@ -1,9 +1,12 @@
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { RecordSetCacheButtons } from 'UI/Features/Records/RecordSetCacheButtons';
 import { IconButton, Tooltip } from '@mui/material';
-import { UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import { ColorLens, Delete, Label, LabelOff, Layers, LayersClear } from '@mui/icons-material';
 import { MouseEvent, useState } from 'react';
+import { useDispatch, useSelector } from 'utils/use_selector';
+import Activity from 'state/actions/activity/Activity';
+import IappActions from 'state/actions/activity/Iapp';
 
 type PropTypes = {
   isDefaultRecordset: boolean;
@@ -31,6 +34,22 @@ const RecordSetControl = ({
   const DELETE_TIP =
     'Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration.';
 
+  const dispatch = useDispatch();
+  const hasLayerIndex = useSelector(
+    (state) => !!state.Map.layers.find((layer) => layer?.recordSetID === recordsetKey)?.layerState
+  );
+
+  if (!hasLayerIndex) {
+    const payload = {
+      recordSetID: recordsetKey,
+      tableFiltersHash: recordset?.tableFiltersHash ?? ''
+    };
+    if (recordset.recordSetType === RecordSetType.IAPP) {
+      dispatch(IappActions.getIdsForRecordset(payload));
+    } else if (recordset.recordSetType === RecordSetType.Activity) {
+      dispatch(Activity.getIdsForRecordset(payload));
+    }
+  }
   const [isProgressBar, setIsProgressBar] = useState(false);
 
   const handleProgressStateChange = (state: boolean) => {
@@ -55,7 +74,7 @@ const RecordSetControl = ({
         <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
           <span>
             <IconButton
-              disabled={!recordset?.mapToggle}
+              disabled={!recordset?.mapToggle || !hasLayerIndex}
               onClick={(e) => onClickToggleLabel(recordsetKey, e)}
               color="primary"
               data-testid="label-toggle"
@@ -66,7 +85,12 @@ const RecordSetControl = ({
         </Tooltip>
 
         <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
-          <IconButton data-testid="layer-toggle" onClick={(e) => onClickToggleLayer(recordsetKey, e)} color="primary">
+          <IconButton
+            data-testid="layer-toggle"
+            onClick={(e) => onClickToggleLayer(recordsetKey, e)}
+            color="primary"
+            disabled={!hasLayerIndex}
+          >
             {recordset?.mapToggle ? <Layers /> : <LayersClear />}
           </IconButton>
         </Tooltip>
@@ -78,6 +102,7 @@ const RecordSetControl = ({
                 data-testid="cycle-color"
                 onClick={(e) => onClickCycleColour(recordsetKey, e)}
                 color="primary"
+                disabled={!hasLayerIndex}
               >
                 <ColorLens />
               </IconButton>

@@ -8,6 +8,7 @@ import { getCurrentJWT } from 'state/sagas/auth/auth';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import FilterObjects from 'interfaces/FilterObjects';
+import { EFilterType } from 'state/actions/userSettings/RecordSet';
 
 enum IappRecordMode {
   Record = 'record',
@@ -36,6 +37,18 @@ interface RecordCacheDownloadRequestSpec {
  * @property { GeoJSONSourceSpecification } cachedGeoJSON  Cached Features for low map layers
  * @property { GeoJSONSourceSpecification } cachedCentroid Cached Points for high map layers
  * @property { UserRecordCacheStatus } status Cache Status.
+ *
+ * cached_ids VS ids_to_filter
+ *
+ *  cached_ids:
+ *    Cached IDs are all the IDS applied to a recordset during time of caching
+ *    Their focus is maintenance of the client database by removing duplicates / not losing cached records between recordsets
+ *    Cached ids are created based on the results of a recordset. If two recordsets have the same id, it won't get deleted.
+ *  ids_to_filter:
+ *    Binding constraint used when creating a cached recordset. Lets us set specific records to a recordset with(out) the use of filters.
+ *     - Locks in Server side shape boundaries
+ *     - Lets us create a recordset using a Sitelist
+ *     - In majority of use cases, ids_to_filter is undefined.
  */
 interface RepositoryMetadata {
   bbox?: RepositoryBoundingBoxSpec;
@@ -161,7 +174,12 @@ abstract class RecordCacheService extends BaseCacheService<
       cachedGeoJSON: null,
       cachedCentroid: null
     };
-
+    const containsServerFilterShape = spec.filterObjects?.tableFilters.some(
+      (shape) => shape.filterType === EFilterType.Uploaded
+    );
+    if (containsServerFilterShape) {
+      spec.ids_to_filter ??= spec.idsToCache;
+    }
     await this.addOrUpdateRepository({
       set_id: spec.setId,
       cache_time: new Date(),
@@ -386,8 +404,14 @@ abstract class RecordCacheService extends BaseCacheService<
    * @returns { string[] } new Records or IDs updated since provided date.
    */
   private async getListOfNewIds(filterObjects: FilterObjects, cacheTime: Date): Promise<string[]> {
+    const filterObjs = structuredClone(filterObjects);
+    filterObjs.tableFilters.forEach((filter, i) => {
+      if (filter.filterType === EFilterType.Uploaded) {
+        delete filterObjs?.tableFilters?.[i]?.geojson;
+      }
+    });
     const rez = await fetch(
-      `${CONFIGURATION_API_BASE}/api/v2/activities/cache-update-ids?filterObjects=${JSON.stringify([filterObjects])}&lastUpdated=${cacheTime.toISOString()}`,
+      `${CONFIGURATION_API_BASE}/api/v2/activities/cache-update-ids?filterObjects=${JSON.stringify([filterObjs])}&lastUpdated=${cacheTime.toISOString()}`,
       { headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' } }
     );
     return (await rez.json()) ?? [];

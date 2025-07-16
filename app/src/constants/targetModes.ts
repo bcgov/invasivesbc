@@ -1,4 +1,4 @@
-enum TargetMode {
+export enum TargetMode {
   DISABLED = 'DISABLED',
   GENERIC = 'GENERIC',
   WHATS_HERE = 'WHATS_HERE',
@@ -7,5 +7,3 @@ enum TargetMode {
   ACTIVITY_GEO_TRACK = 'ACTIVITY_GEO_TRACK',
   TILE_CACHE = 'TILE_CACHE'
 }
-
-export default TargetMode;
