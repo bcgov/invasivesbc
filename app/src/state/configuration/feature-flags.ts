@@ -19,6 +19,7 @@ const BASELINE_FEATURES = {
   EMBEDDED_REPORTS: new FeatureFlag('EMBEDDED_REPORTS', true),
   TRAINING_PAGE: new FeatureFlag('TRAINING_PAGE', true),
   USER_GUIDE: new FeatureFlag('USER_GUIDE', false) /* set to true when there are entries to display */,
+  PLAN_MY_TRIP: new FeatureFlag('PLAN_MY_TRIP', true),
   USER_SITE_LIST: new FeatureFlag('USER_SITE_LIST', true),
   MAP: new FeatureFlag('MAP', true),
 
