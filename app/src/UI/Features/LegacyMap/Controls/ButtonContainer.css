@@ -5,9 +5,11 @@
   overflow-x: auto;
   background: none;
   scrollbar-width: none;
+
   gap: 16px;
   left: 50%;
   transform: translateX(-50%);
+
   box-sizing: border-box;
   position: absolute;
   height: var(--map-button-bar-height);
@@ -104,4 +106,19 @@
       opacity: 0.6;
     }
   }
+}
+
+.scrollable-button-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  padding: 0 8px;
+  pointer-events: auto;
+}
+
+.scrollable-button-wrapper > * {
+  flex-shrink: 0;
+  min-width: 60px;
 }

@@ -17,30 +17,32 @@ export const ButtonContainer = () => {
 
   return (
     <div id="map-btn-container">
-      <PrimaryLayerSelect />
-      {loggedInOrWorkingOffline && (
-        <>
-          <FindMeToggle />
-          {positionTracking && (
-            <>
-              <TrackingButtonsContainer />
-              <AccuracyToggle />
-            </>
-          )}
+      <div className="scrollable-button-wrapper">
+        <PrimaryLayerSelect />
+        {loggedInOrWorkingOffline && (
+          <>
+            <FindMeToggle />
+            {positionTracking && (
+              <>
+                <TrackingButtonsContainer />
+                <AccuracyToggle />
+              </>
+            )}
 
-          <WebOnly>
-            <LegendsButton />
-          </WebOnly>
+            <WebOnly>
+              <LegendsButton />
+            </WebOnly>
 
-          <WhatsHereButton />
-          {writePrivilege.length > 0 && <NewRecord />}
+            <WhatsHereButton />
+            {writePrivilege.length > 0 && <NewRecord />}
 
-          <WebOnly>
-            <CenterCurrentRecord type={RecordSetType.Activity} />
-            <CenterCurrentRecord type={RecordSetType.IAPP} />
-          </WebOnly>
-        </>
-      )}
+            <WebOnly>
+              <CenterCurrentRecord type={RecordSetType.Activity} />
+              <CenterCurrentRecord type={RecordSetType.IAPP} />
+            </WebOnly>
+          </>
+        )}
+      </div>
     </div>
   );
 };
