@@ -38,6 +38,7 @@ import RecordCache from 'state/actions/cache/RecordCache';
 import { RECORD_COLOURS } from 'constants/colors';
 import IRecordTable from 'interfaces/recordTable';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
+import MapActions from 'state/actions/map';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',

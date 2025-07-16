@@ -55,7 +55,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Auth + Network
   const authenticated = useSelector((state) => state.Auth.authenticated);
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
-  const rolesInitialized = useSelector((state) => state.Auth.rolesInitialized);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
   const configuration = useSelector((state) => state.Configuration.current);
 
@@ -102,6 +101,44 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       return {
         data: undefined
       };
+    });
+
+    maplibregl.addProtocol('databc', async (request) => {
+      let rewrittenURL: string;
+
+      if (configuration.features.MAP_PROXY_DATABC_LAYERS.enabled) {
+        //proxy via API server
+        rewrittenURL = request.url.replace(
+          'databc://',
+          `${API_BASE}/api/proxy/openmaps?bbox={bbox-epsg-3857}&url=${encodeURIComponent(request.url.replace('databc://', 'https://'))}`
+        );
+        const fetchRequest = new Request(rewrittenURL);
+        fetchRequest.headers.set('Authorization', await getCurrentJWT());
+
+        const result = await fetch(fetchRequest);
+        if (result.ok) {
+          return {
+            data: await result.bytes()
+          };
+        }
+        return {
+          data: undefined
+        };
+      } else {
+        //rewrite as direct request
+        rewrittenURL = request.url.replace('databc://', 'https://');
+        const fetchRequest = new Request(rewrittenURL);
+
+        const result = await fetch(fetchRequest);
+        if (result.ok) {
+          return {
+            data: await result.bytes()
+          };
+        }
+        return {
+          data: undefined
+        };
+      }
     });
 
     const pmtilesProtocol = new Protocol();
@@ -295,8 +332,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }, 1000);
   }, [map]);
 
-  console.dir(layers);
-
   return (
     <div className="map-containing-block">
       <div className="MapWrapper">
@@ -341,7 +376,9 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
           <PositionMarkers mapReady={mapReady} />
           <CurrentActivityLayer mapReady={mapReady} />
-          {loggedInOrWorkingOffline && <LayerPicker />}
+          {loggedInOrWorkingOffline && (
+            <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
+          )}
           <MobileOnly>
             <CachedMapLayer mapReady={mapReady} />
           </MobileOnly>

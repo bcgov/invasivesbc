@@ -107,6 +107,7 @@ type InvasivesMapLayerDefinition = {
   name: string;
   displayName: string;
   mode: 'basemap' | 'overlay';
+  selectionMode: 'layer-picker' | 'primary-selector' | null;
 
   // this is an optimization to prevent having to bundle all icons. you can add others here and corresponding lookup in BaseMapSelect.tsx
   icon: 'N/A' | 'Hd' | 'Sd' | 'Landscape' | 'Map' | 'Offline' | 'OfflineSatellite' | 'OfflineVector' | 'Cached';

@@ -6,7 +6,7 @@ import {
 const ESRI_LAYERS: InvasivesMapLayerDefinition[] = [
   {
     name: 'Esri-Sat-LayerHD',
-
+    selectionMode: 'primary-selector',
     displayName: 'HD',
     icon: 'Hd',
     tooltip: 'High-resolution Aerial Imagery',
@@ -31,7 +31,7 @@ const ESRI_LAYERS: InvasivesMapLayerDefinition[] = [
   },
   {
     name: 'Esri-Sat-LayerSD',
-
+    selectionMode: 'primary-selector',
     displayName: 'SD',
     icon: 'Sd',
     tooltip: 'Standard-resolution Aerial Imagery',
@@ -56,6 +56,7 @@ const ESRI_LAYERS: InvasivesMapLayerDefinition[] = [
   },
   {
     name: 'Esri-Topo',
+    selectionMode: 'primary-selector',
     displayName: 'Topo',
     icon: 'Landscape',
     tooltip: 'Topographic Raster Map',

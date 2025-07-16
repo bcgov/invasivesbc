@@ -1,12 +1,19 @@
 import { useContext, useEffect } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { LayerSpecificationWithStackingOrder } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
+import { LayerSpecification } from 'maplibre-gl';
 
 type LayerComponentProps = {
   mapReady: boolean;
   id: string;
-  layer: LayerSpecificationWithStackingOrder;
+  layer: LayerSpecification | LayerSpecificationWithStackingOrder;
 };
+
+function hasStackingOrder(
+  layer: LayerSpecificationWithStackingOrder | LayerSpecification
+): layer is LayerSpecificationWithStackingOrder {
+  return (layer as LayerSpecificationWithStackingOrder).stackLayer !== undefined;
+}
 
 const LayerComponent = ({ mapReady, id, layer }: LayerComponentProps) => {
   const map = useContext(MapContext);
@@ -14,8 +21,11 @@ const LayerComponent = ({ mapReady, id, layer }: LayerComponentProps) => {
   useEffect(() => {
     if (!map || !mapReady) return;
 
-    console.dir(layer, layer.stackLayer);
-    map.addLayer(layer, layer.stackLayer);
+    if (hasStackingOrder(layer)) {
+      map.addLayer(layer, layer.stackLayer);
+    } else {
+      map.addLayer(layer);
+    }
 
     return () => {
       map.removeLayer(id);

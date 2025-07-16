@@ -7,6 +7,7 @@ import {
 const BAKED_RASTER_LAYERS: InvasivesMapLayerDefinition[] = [
   {
     displayName: 'Offline',
+    selectionMode: 'primary-selector',
     name: 'offline_base_map',
     icon: 'OfflineSatellite',
     tooltip: 'Locally-stored low-resolution base map',

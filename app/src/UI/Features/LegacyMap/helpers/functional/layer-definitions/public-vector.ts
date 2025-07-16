@@ -7,7 +7,7 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 const PUBLIC_VECTOR_LAYERS: InvasivesMapLayerDefinition[] = [
   {
     name: 'Public-Vector',
-
+    selectionMode: null,
     displayName: 'Public Map',
     icon: 'Map',
     tooltip: 'Publicly Available Invasives Species Sites',

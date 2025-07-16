@@ -7,6 +7,7 @@ import {
 const BAKED_VECTOR_LAYERS: InvasivesMapLayerDefinition[] = [
   {
     displayName: 'Offline Vector',
+    selectionMode: 'primary-selector',
     name: 'Offline-Vector',
     icon: 'OfflineVector',
     tooltip: 'Locally-stored high-resolution vector base map',

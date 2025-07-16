@@ -16,8 +16,15 @@ import MapIcon from '@mui/icons-material/Map';
 
 import './LayerPicker.css';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
-export const LayerPicker = () => {
+type PropTypes = {
+  layers: InvasivesMapLayerDefinitionWithState[];
+  setOverlayState: (layer: string) => void;
+};
+
+export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
   const closeLayerPicker = () => {
     setShowLayerPicker(false);
     setPickerPath(LpModules.Init);
@@ -71,7 +78,7 @@ export const LayerPicker = () => {
                 {accordionMode ? (
                   <>
                     <Accordion icon={<MapIcon />} title={LpModules.DataBcLayers}>
-                      <LpLayers />
+                      <LpLayers layers={layers} setOverlayState={setOverlayState} />
                     </Accordion>
                     <Accordion icon={<ManageSearchIcon />} title={LpModules.Recordsets}>
                       <LpRecordSet closePicker={closeLayerPicker} />
@@ -88,20 +95,20 @@ export const LayerPicker = () => {
                     <li>
                       <hr />
                     </li>
-                    {MOBILE && (
+                    <FeatureGated requires={'CACHE_TILES'}>
                       <>
                         <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.MapTiles} />
                         <li>
                           <hr />
                         </li>
                       </>
-                    )}
+                    </FeatureGated>
                     <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.Recordsets} />
                   </ul>
                 )}
               </>
             ),
-            [LpModules.DataBcLayers]: <LpLayers />,
+            [LpModules.DataBcLayers]: <LpLayers layers={layers} setOverlayState={setOverlayState} />,
             [LpModules.Recordsets]: <LpRecordSet closePicker={closeLayerPicker} />,
             [LpModules.MapTiles]: <LpOfflineMaps closePicker={closeLayerPicker} />
           }[pickerPath]

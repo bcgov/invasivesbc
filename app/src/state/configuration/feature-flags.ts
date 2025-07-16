@@ -31,6 +31,7 @@ const BASELINE_FEATURES = {
   MAP_BASE_IMAGERY_LAYER: new FeatureFlag('MAP_BASE_IMAGERY_LAYER', true),
   MAP_TOPO_LAYER: new FeatureFlag('MAP_TOPO_LAYER', true),
   MAP_DATABC_LAYERS: new FeatureFlag('MAP_DATABC_LAYERS', true),
+  MAP_PROXY_DATABC_LAYERS: new FeatureFlag('MAP_PROXY_DATABC_LAYERS', false),
   MAP_DRAW_TOOLS: new FeatureFlag('MAP_DRAW_TOOLS', true),
   MAP_RESTRICT_TILE_CACHE_SIZE: new FeatureFlag('MAP_RESTRICT_TILE_CACHE_SIZE', false),
   MAP_PUBLIC_VECTOR_LAYER: new FeatureFlag('MAP_PUBLIC_VECTOR_LAYER', true),
@@ -61,6 +62,7 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
   if ([Platform.ANDROID].includes(buildtimeConfig.PLATFORM)) {
     COMPUTED_FEATURES.MAP_PUBLIC_VECTOR_LAYER.enabled = false;
     COMPUTED_FEATURES.MAP_RESTRICT_TILE_CACHE_SIZE.enabled = true;
+    COMPUTED_FEATURES.MAP_PROXY_DATABC_LAYERS.enabled = true;
 
     const { totalBytes, largeMemoryClass } = await DeviceInformation.deviceCharacteristics({});
     const totalMemoryGB = Math.floor(totalBytes / (1024 * 1024 * 1024));
@@ -96,6 +98,10 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
       COMPUTED_FEATURES.DEGRADED_EXPERIENCE_WARNING.enabled = true;
       COMPUTED_FEATURES.SIMPLIFIED_LAYOUT.enabled = true;
     }
+  }
+
+  if ([Platform.IOS].includes(buildtimeConfig.PLATFORM)) {
+    COMPUTED_FEATURES.MAP_PROXY_DATABC_LAYERS.enabled = true;
   }
 
   /* apply run-time overrides */
