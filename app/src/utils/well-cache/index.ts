@@ -6,7 +6,7 @@ import bboxToPolygon from 'utils/bboxToPolygon';
 import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 import { buildURLForDataBC } from 'utils/WFSConsumer';
 
-export interface IWellRepositoryMetadata {
+interface IWellRepositoryMetadata {
   id: string;
   status: WellRepositoryStatus;
   bounds: RepositoryBoundingBoxSpec;
@@ -14,13 +14,13 @@ export interface IWellRepositoryMetadata {
   cachedGeoJson?: FeatureCollection;
 }
 
-export interface IWellRepositoryDownloadRequestSpec {
+interface IWellRepositoryDownloadRequestSpec {
   API_BASE: string;
   bounds: RepositoryBoundingBoxSpec;
   id: string;
 }
 
-export interface IWellCacheProgressCallbackParameters {
+interface IWellCacheProgressCallbackParameters {
   repository: string;
   message: string;
   aborted: boolean;
@@ -29,17 +29,12 @@ export interface IWellCacheProgressCallbackParameters {
   processedTiles: number;
 }
 
-export enum WellRepositoryStatus {
+enum WellRepositoryStatus {
   CACHED,
   DELETING,
   DOWNLOADING,
   ERROR,
   NOT_CACHED
-}
-
-export interface ICachedWellData {
-  id: string;
-  geometry: Feature;
 }
 
 abstract class WellCacheService extends BaseCacheService<
@@ -168,4 +163,5 @@ abstract class WellCacheService extends BaseCacheService<
   }
 }
 
-export { WellCacheService };
+export { WellCacheService, WellRepositoryStatus };
+export type { IWellCacheProgressCallbackParameters, IWellRepositoryDownloadRequestSpec, IWellRepositoryMetadata };
