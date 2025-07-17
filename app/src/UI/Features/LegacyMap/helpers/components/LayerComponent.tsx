@@ -28,7 +28,9 @@ const LayerComponent = ({ mapReady, id, layer }: LayerComponentProps) => {
     }
 
     return () => {
-      map.removeLayer(id);
+      if (map.getLayersOrder().includes(id)) {
+        map.removeLayer(id);
+      }
     };
   }, [map, mapReady]);
 

@@ -84,7 +84,11 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
                     </Accordion>
                     <FeatureGated requires={'CACHE_TILES'}>
                       <Accordion icon={<Save />} title={LpModules.MapTiles}>
-                        <LpOfflineMaps closePicker={closeLayerPicker} />
+                        <LpOfflineMaps
+                          layers={layers}
+                          setOverlayState={setOverlayState}
+                          closePicker={closeLayerPicker}
+                        />
                       </Accordion>
                     </FeatureGated>
                   </>
@@ -109,7 +113,9 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
             ),
             [LpModules.DataBcLayers]: <LpLayers layers={layers} setOverlayState={setOverlayState} />,
             [LpModules.Recordsets]: <LpRecordSet closePicker={closeLayerPicker} />,
-            [LpModules.MapTiles]: <LpOfflineMaps closePicker={closeLayerPicker} />
+            [LpModules.MapTiles]: (
+              <LpOfflineMaps layers={layers} setOverlayState={setOverlayState} closePicker={closeLayerPicker} />
+            )
           }[pickerPath]
         }
       </div>

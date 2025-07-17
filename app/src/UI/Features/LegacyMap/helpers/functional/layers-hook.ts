@@ -21,12 +21,15 @@ type LayerSpecificationWithStackingOrder = LayerSpecification & { stackLayer: PO
 const useInvasivesMapLayers = () => {
   const dispatch = useDispatch();
   const preferredBaseMap = useSelector((state) => state.UserSettings.preferredBasemap);
-  const preferredDataBCLayers = useSelector((state) => state.UserSettings.preferredDataBCLayers);
+  const preferredOverlayLayers = useSelector((state) => state.UserSettings.preferredOverlayLayers);
 
   const [layers, setLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
   const [sources, setSources] = useState<{ [_: string]: SourceSpecification }>({});
 
-  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications);
+  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications || []);
+  const offlineSources: {
+    [_: string]: SourceSpecification;
+  } = useSelector((state) => state.TileCache?.sources || {});
 
   const [availableLayerDefinitions, setAvailableLayerDefinitions] = useState<InvasivesMapLayerDefinitionWithState[]>(
     []
@@ -44,7 +47,7 @@ const useInvasivesMapLayers = () => {
     const newFilteredLayerDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
 
     // evaluate each potential map definition and remove those not eligible at this moment
-    for (const l of [...MAP_DEFINITIONS, ...(offlineDefinitions ?? [])] as InvasivesMapLayerDefinition[]) {
+    for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions] as InvasivesMapLayerDefinition[]) {
       let pass = true;
 
       if (!l.predicates.directlySelectable) {
@@ -83,7 +86,7 @@ const useInvasivesMapLayers = () => {
         pass = false;
       }
 
-      if (!l.predicates.requiresNetwork && l.predicates.mobileOnly && connected) {
+      if (l.predicates.requiresOffline && connected) {
         pass = false;
       }
 
@@ -94,7 +97,7 @@ const useInvasivesMapLayers = () => {
               case 'basemap':
                 return l.name === preferredBaseMap;
               case 'overlay':
-                return preferredDataBCLayers.includes(l.name);
+                return preferredOverlayLayers.includes(l.name);
               default:
                 return false;
             }
@@ -105,7 +108,16 @@ const useInvasivesMapLayers = () => {
     }
 
     setAvailableLayerDefinitions(newFilteredLayerDefinitions);
-  }, [features, connected, offlineDefinitions, MOBILE, platform, loggedInOrWorkingOffline]);
+  }, [
+    features,
+    connected,
+    offlineDefinitions,
+    MOBILE,
+    platform,
+    loggedInOrWorkingOffline,
+    preferredBaseMap,
+    preferredOverlayLayers
+  ]);
 
   /* ensure that at least one basemap layer is always designated as active */
   useEffect(() => {
@@ -149,7 +161,9 @@ const useInvasivesMapLayers = () => {
     const newLayers: LayerSpecificationWithStackingOrder[] = [];
     const newSources: { [_: string]: SourceSpecification } = {};
 
-    const requiredSources: (keyof typeof SOURCES)[] = [];
+    const requiredSources: (keyof typeof SOURCES | string)[] = [];
+
+    const COMBINED_SOURCES = { ...SOURCES, ...offlineSources };
 
     for (const l of availableLayerDefinitions) {
       if (l.active) {
@@ -166,12 +180,12 @@ const useInvasivesMapLayers = () => {
     }
 
     for (const s of requiredSources) {
-      newSources[s] = SOURCES[s] as SourceSpecification;
+      newSources[s] = COMBINED_SOURCES[s] as SourceSpecification;
     }
 
     setLayers(newLayers);
     setSources(newSources);
-  }, [availableLayerDefinitions]);
+  }, [availableLayerDefinitions, offlineSources]);
 
   const setActiveBaseMap = useMemo(
     () =>
@@ -202,7 +216,8 @@ const useInvasivesMapLayers = () => {
       })
     );
 
-    dispatch(UserSettings.Map.togglePreferredDataBCLayer({ layerName, active }));
+    if (availableLayerDefinitions.find((l) => l.name === layerName))
+      dispatch(UserSettings.Map.togglePreferredOverlayLayer({ layerName, active }));
   };
 
   return { layers, sources, availableLayerDefinitions, setActiveBaseMap, setOverlayState };

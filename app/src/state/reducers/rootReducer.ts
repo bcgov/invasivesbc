@@ -142,7 +142,7 @@ function createRootReducer(config: UnifiedConfig) {
           'offlineDocs',
           'tableColumns',
           'preferredBasemap',
-          'preferredDataBCLayers'
+          'preferredOverlayLayers'
         ],
         transforms: [handleActiveDownloadsOnRehydration]
       },

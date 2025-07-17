@@ -13,7 +13,9 @@ const SourceCleanupComponent = ({ mapReady, id }: SourceCleanupComponentProps) =
     if (!map || !mapReady) return;
 
     return () => {
-      map.removeSource(id);
+      if (map.getSource(id) !== undefined) {
+        map.removeSource(id);
+      }
     };
   }, [map, mapReady]);
 

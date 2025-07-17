@@ -32,7 +32,7 @@ interface UserSettingsState {
   mapCenter: [number, number];
 
   preferredBasemap: string | undefined;
-  preferredDataBCLayers: string[];
+  preferredOverlayLayers: string[];
 
   newRecordDialogueState: {
     viewLayout: 'new' | 'duplicate';
@@ -59,7 +59,7 @@ const initialState: UserSettingsState = {
   activeIAPP: null,
 
   preferredBasemap: undefined,
-  preferredDataBCLayers: [],
+  preferredOverlayLayers: [],
 
   apiDocsWithSelectOptions: null,
   apiDocsWithViewOptions: null,
@@ -110,17 +110,17 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.mapCenter = action.payload as [number, number];
       } else if (UserSettings.Map.setPreferredBasemap.match(action)) {
         draftState.preferredBasemap = action.payload;
-      } else if (UserSettings.Map.setPreferredDataBCLayers.match(action)) {
-        draftState.preferredDataBCLayers = action.payload;
-      } else if (UserSettings.Map.addPreferredDataBCLayer.match(action)) {
-        if (!draftState.preferredDataBCLayers.includes(action.payload)) {
-          draftState.preferredDataBCLayers.push(action.payload);
+      } else if (UserSettings.Map.setPreferredOverlayLayers.match(action)) {
+        draftState.preferredOverlayLayers = action.payload;
+      } else if (UserSettings.Map.addPreferredOverlayLayer.match(action)) {
+        if (!draftState.preferredOverlayLayers.includes(action.payload)) {
+          draftState.preferredOverlayLayers.push(action.payload);
         }
-      } else if (UserSettings.Map.removePreferredDataBCLayer.match(action)) {
-        if (draftState.preferredDataBCLayers.includes(action.payload)) {
-          draftState.preferredDataBCLayers.splice(draftState.preferredDataBCLayers.indexOf(action.payload), 1);
+      } else if (UserSettings.Map.removePreferredOverlayLayer.match(action)) {
+        if (draftState.preferredOverlayLayers.includes(action.payload)) {
+          draftState.preferredOverlayLayers.splice(draftState.preferredOverlayLayers.indexOf(action.payload), 1);
         }
-      } else if (UserSettings.Map.togglePreferredDataBCLayer.match(action)) {
+      } else if (UserSettings.Map.togglePreferredOverlayLayer.match(action)) {
         let mode: 'add' | 'remove' = 'add';
 
         if (action.payload.active !== undefined) {
@@ -131,21 +131,23 @@ function createUserSettingsReducer(_configuration: AppConfig) {
             mode = 'remove';
           }
         } else {
-          if (draftState.preferredDataBCLayers.includes(action.payload.layerName)) {
+          if (draftState.preferredOverlayLayers.includes(action.payload.layerName)) {
+            // it was present, remove it
             mode = 'remove';
           } else {
+            // not present, add it
             mode = 'add';
           }
         }
 
         if (mode === 'add') {
-          if (!draftState.preferredDataBCLayers.includes(action.payload.layerName)) {
-            draftState.preferredDataBCLayers.push(action.payload.layerName);
+          if (!draftState.preferredOverlayLayers.includes(action.payload.layerName)) {
+            draftState.preferredOverlayLayers.push(action.payload.layerName);
           }
         } else if (mode === 'remove') {
-          if (draftState.preferredDataBCLayers.includes(action.payload.layerName)) {
-            draftState.preferredDataBCLayers.splice(
-              draftState.preferredDataBCLayers.indexOf(action.payload.layerName),
+          if (draftState.preferredOverlayLayers.includes(action.payload.layerName)) {
+            draftState.preferredOverlayLayers.splice(
+              draftState.preferredOverlayLayers.indexOf(action.payload.layerName),
               1
             );
           }

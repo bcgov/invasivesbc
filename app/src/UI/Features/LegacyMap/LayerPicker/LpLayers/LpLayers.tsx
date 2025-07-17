@@ -75,13 +75,8 @@ const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
       <div>
         {KmlLayers?.length > 0 ? (
           <ul className="layerList">
-            {KmlLayers?.map((layer, index) => (
-              <LpLayersOption
-                key={layer.id ?? nanoid()}
-                onClick={handleKmlClick}
-                layer={layer}
-                lastChild={index === KmlLayers.length - 1}
-              />
+            {KmlLayers?.map((layer) => (
+              <LpLayersOption key={layer.id ?? nanoid()} onClick={handleKmlClick} layer={layer} />
             ))}
           </ul>
         ) : (
@@ -101,13 +96,8 @@ const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
         </h3>
         {drawnLayers?.length > 0 ? (
           <ul className="layersList">
-            {drawnLayers.map((layer, index) => (
-              <LpLayersOption
-                key={layer.id ?? nanoid()}
-                onClick={handleCustomClick}
-                layer={layer}
-                lastChild={index === drawnLayers.length - 1}
-              />
+            {drawnLayers.map((layer) => (
+              <LpLayersOption key={layer.id ?? nanoid()} onClick={handleCustomClick} layer={layer} />
             ))}
           </ul>
         ) : (

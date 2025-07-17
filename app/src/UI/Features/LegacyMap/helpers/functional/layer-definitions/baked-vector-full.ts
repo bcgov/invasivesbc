@@ -12,7 +12,7 @@ const BAKED_VECTOR_LAYERS: InvasivesMapLayerDefinition[] = [
     icon: 'OfflineVector',
     tooltip: 'Locally-stored high-resolution vector base map',
     predicates: new MapDefinitionEligibilityPredicatesBuilder()
-      .requiresNetwork(false)
+      .requiresOffline(true)
       .mobileOnly(true)
       .requiresFeature('MAP_BAKED_VECTOR_TILES')
       .build(),

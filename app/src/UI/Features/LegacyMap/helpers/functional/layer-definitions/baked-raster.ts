@@ -13,7 +13,7 @@ const BAKED_RASTER_LAYERS: InvasivesMapLayerDefinition[] = [
     tooltip: 'Locally-stored low-resolution base map',
     mode: 'basemap',
     predicates: new MapDefinitionEligibilityPredicatesBuilder()
-      .requiresNetwork(false)
+      .requiresOffline(true)
       .mobileOnly(true)
       .requiresFeature('MAP_BAKED_RASTER_TILES')
       .build(),

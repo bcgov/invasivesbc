@@ -536,7 +536,7 @@ const DrawControls = () => {
           slot: LAYER_Z_FOREGROUND
         },
         {
-          id: 'whats-here-box-start-point-marker.hot',
+          id: 'whats-here-box-start-point-marker',
           filter: ['all', ['==', 'mode', 'whats_here_box_mode'], ['==', 'meta:type', 'Point']],
           type: 'circle',
           paint: {
@@ -558,7 +558,7 @@ const DrawControls = () => {
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(editControls.current, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
-    
+
     // cleanup
     return () => {
       if (!map) {

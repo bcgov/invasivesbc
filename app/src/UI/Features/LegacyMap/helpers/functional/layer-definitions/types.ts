@@ -17,6 +17,7 @@ type MapDefinitionEligibilityPredicates = {
   mobileOnly: boolean;
   webOnly: boolean;
   requiresNetwork: boolean;
+  requiresOffline: boolean;
   requiresAuthentication: boolean;
   requiresAnonymous: boolean;
   requiresFeature?: keyof FeatureFlags;
@@ -30,6 +31,7 @@ class MapDefinitionEligibilityPredicatesBuilder {
     mobileOnly: false,
     webOnly: false,
     requiresNetwork: true,
+    requiresOffline: false,
     requiresAuthentication: false,
     requiresAnonymous: false
   };
@@ -75,6 +77,15 @@ class MapDefinitionEligibilityPredicatesBuilder {
     return this;
   }
 
+  requiresOffline(p?: boolean) {
+    if (p !== undefined) {
+      this.state.requiresOffline = p;
+    } else {
+      this.state.requiresOffline = true;
+    }
+    return this;
+  }
+
   requiresAuthentication(p?: boolean) {
     if (p !== undefined) {
       this.state.requiresAuthentication = p;
@@ -107,7 +118,7 @@ type InvasivesMapLayerDefinition = {
   name: string;
   displayName: string;
   mode: 'basemap' | 'overlay';
-  selectionMode: 'layer-picker' | 'primary-selector' | null;
+  selectionMode: 'layer-picker' | 'offline-layers' | 'primary-selector' | null;
 
   // this is an optimization to prevent having to bundle all icons. you can add others here and corresponding lookup in BaseMapSelect.tsx
   icon: 'N/A' | 'Hd' | 'Sd' | 'Landscape' | 'Map' | 'Offline' | 'OfflineSatellite' | 'OfflineVector' | 'Cached';

@@ -87,13 +87,13 @@ class Map {
   private static readonly PREFIX = `UserSettings/Map`;
 
   static readonly setPreferredBasemap = createAction<string>(`${this.PREFIX}/setPreferredBasemap`);
-  static readonly setPreferredDataBCLayers = createAction<string[]>(`${this.PREFIX}/setPreferredDataBCLayers`);
-  static readonly addPreferredDataBCLayer = createAction<string>(`${this.PREFIX}/addPreferredDataBCLayer`);
-  static readonly removePreferredDataBCLayer = createAction<string>(`${this.PREFIX}/removePreferredDataBCLayer`);
-  static readonly togglePreferredDataBCLayer = createAction<{
+  static readonly setPreferredOverlayLayers = createAction<string[]>(`${this.PREFIX}/setPreferredOverlayLayers`);
+  static readonly addPreferredOverlayLayer = createAction<string>(`${this.PREFIX}/addPreferredOverlayLayer`);
+  static readonly removePreferredOverlayLayer = createAction<string>(`${this.PREFIX}/removePreferredOverlayLayer`);
+  static readonly togglePreferredOverlayLayer = createAction<{
     layerName: string;
     active?: boolean;
-  }>(`${this.PREFIX}/togglePreferredDataBCLayer`);
+  }>(`${this.PREFIX}/togglePreferredOverlayLayer`);
   static readonly setCenter = createAction<number[]>(`${this.PREFIX}/setCenter`);
   static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
   static readonly setCenterFailure = createAction(`${this.PREFIX}/setCenterFailure`);

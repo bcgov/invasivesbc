@@ -205,7 +205,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
             : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
           version: 8,
           sources: {},
-          layers: []
+          layers: POSITIONING_LAYERS
         }
       })
     );
@@ -357,10 +357,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
             }}
             layers={availableLayerDefinitions}
           />
-
-          {POSITIONING_LAYERS.map((layer) => (
-            <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
-          ))}
 
           {Object.entries(sources).map(([key, source]) => (
             <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
