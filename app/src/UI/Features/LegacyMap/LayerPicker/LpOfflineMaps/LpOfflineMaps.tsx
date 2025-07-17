@@ -14,8 +14,6 @@ const LpOfflineMaps = ({ closePicker, setOverlayState, layers }: PropTypes) => {
   const cachedToolTipText =
     'Use this option to show or hide the map tiles you’ve previously downloaded to your device.';
 
-  console.dir(layers);
-
   return (
     <div id="lp-offline-maps">
       <h3>
