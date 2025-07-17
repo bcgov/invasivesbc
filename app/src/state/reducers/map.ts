@@ -125,7 +125,7 @@ const initialState: MapState = {
   activity_center: [53, -127],
   activity_zoom: 7,
 
-  map_center: [55, -128],
+  map_center: [-128, 55],
   map_zoom: 5,
 
   CanTriggerCSV: true,

@@ -30,6 +30,10 @@ interface UserSettingsState {
   apiDocsWithSelectOptions: object | null;
 
   mapCenter: [number, number];
+
+  preferredBasemap: string | undefined;
+  preferredDataBCLayers: string[];
+
   newRecordDialogueState: {
     viewLayout: 'new' | 'duplicate';
     open: boolean;
@@ -53,6 +57,9 @@ const initialState: UserSettingsState = {
   activeActivity: null,
   activeActivityDescription: null,
   activeIAPP: null,
+
+  preferredBasemap: undefined,
+  preferredDataBCLayers: [],
 
   apiDocsWithSelectOptions: null,
   apiDocsWithViewOptions: null,
@@ -101,6 +108,48 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.recordSets = { ...action.payload.recordSets };
       } else if (UserSettings.Map.setCenterSuccess.match(action)) {
         draftState.mapCenter = action.payload as [number, number];
+      } else if (UserSettings.Map.setPreferredBasemap.match(action)) {
+        draftState.preferredBasemap = action.payload;
+      } else if (UserSettings.Map.setPreferredDataBCLayers.match(action)) {
+        draftState.preferredDataBCLayers = action.payload;
+      } else if (UserSettings.Map.addPreferredDataBCLayer.match(action)) {
+        if (!draftState.preferredDataBCLayers.includes(action.payload)) {
+          draftState.preferredDataBCLayers.push(action.payload);
+        }
+      } else if (UserSettings.Map.removePreferredDataBCLayer.match(action)) {
+        if (draftState.preferredDataBCLayers.includes(action.payload)) {
+          draftState.preferredDataBCLayers.splice(draftState.preferredDataBCLayers.indexOf(action.payload), 1);
+        }
+      } else if (UserSettings.Map.togglePreferredDataBCLayer.match(action)) {
+        let mode: 'add' | 'remove' = 'add';
+
+        if (action.payload.active !== undefined) {
+          // explicitly set
+          if (action.payload.active) {
+            mode = 'add';
+          } else if (!action.payload.active) {
+            mode = 'remove';
+          }
+        } else {
+          if (draftState.preferredDataBCLayers.includes(action.payload.layerName)) {
+            mode = 'remove';
+          } else {
+            mode = 'add';
+          }
+        }
+
+        if (mode === 'add') {
+          if (!draftState.preferredDataBCLayers.includes(action.payload.layerName)) {
+            draftState.preferredDataBCLayers.push(action.payload.layerName);
+          }
+        } else if (mode === 'remove') {
+          if (draftState.preferredDataBCLayers.includes(action.payload.layerName)) {
+            draftState.preferredDataBCLayers.splice(
+              draftState.preferredDataBCLayers.indexOf(action.payload.layerName),
+              1
+            );
+          }
+        }
       } else if (UserSettings.RecordSet.add.match(action)) {
         draftState.recordSets[action.payload.id] ??= action.payload;
       } else if (UserSettings.SiteLists.createRecordsetsFromSiteList.match(action)) {

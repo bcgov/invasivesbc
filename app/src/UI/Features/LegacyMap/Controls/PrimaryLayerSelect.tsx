@@ -10,8 +10,6 @@ type PrimaryLayerSelectProps = {
 };
 
 const PrimaryLayerSelect = ({ layers, selectLayer }: PrimaryLayerSelectProps) => {
-  // const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications) ?? [];
-
   const [toolTip, setToolTip] = useState('');
 
   function renderIcon(def: InvasivesMapLayerDefinitionWithState) {
@@ -41,7 +39,7 @@ const PrimaryLayerSelect = ({ layers, selectLayer }: PrimaryLayerSelectProps) =>
   return (
     <div className={'basemap-btn-group'}>
       {layers
-        .filter((l) => (l.mode === 'basemap' && l.selectionMode === 'primary-selector'))
+        .filter((l) => l.mode === 'basemap' && l.selectionMode === 'primary-selector')
         .map((l) => {
           return (
             <div className={l.active ? 'selected' : ''} key={l.name}>

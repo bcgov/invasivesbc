@@ -27,6 +27,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
+import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -133,7 +134,7 @@ const DrawControls = () => {
     updateEditControlState();
   }, [isDrawingShape, userCanEdit, activityGeo?.geometry]);
 
-  // make a geomtery for perviously submitted shapes
+  // make a geometry for previously submitted shapes
   useEffect(() => {
     if (!activityGeo || mode === TargetMode.ACTIVITY_GEO_TRACK) return;
 
@@ -470,7 +471,7 @@ const DrawControls = () => {
       },
       styles: [
         {
-          id: 'gl-edited-line',
+          id: 'gl-edited-line.hot',
           type: 'line',
           layout: {
             'line-cap': 'round',
@@ -481,10 +482,11 @@ const DrawControls = () => {
             'line-color': '#FCBA19',
             'line-dasharray': [0.2, 2],
             'line-width': 3
-          }
+          },
+          slot: LAYER_Z_FOREGROUND
         },
         {
-          id: 'gl-drawn-line',
+          id: 'gl-drawn-line.hot',
           type: 'line',
           layout: {
             'line-cap': 'round',
@@ -494,20 +496,22 @@ const DrawControls = () => {
           paint: {
             'line-color': '#FCBA19',
             'line-width': 3
-          }
+          },
+          slot: LAYER_Z_FOREGROUND
         },
         {
-          id: 'gl-drawn-fill',
+          id: 'gl-drawn-fill.hot',
           type: 'fill',
           layout: {},
           filter: ['all', ['==', 'active', 'false'], ['!=', 'user_error', 'true']],
           paint: {
             'fill-color': 'white',
             'fill-opacity': 0.5
-          }
+          },
+          slot: LAYER_Z_FOREGROUND
         },
         {
-          id: 'gl-error-line',
+          id: 'gl-error-line.hot',
           type: 'line',
           layout: {
             'line-cap': 'round',
@@ -517,20 +521,22 @@ const DrawControls = () => {
             'line-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
             'line-dasharray': [1, 2],
             'line-width': 3
-          }
+          },
+          slot: LAYER_Z_FOREGROUND
         },
         {
-          id: 'gl-draw-polygon-point',
+          id: 'gl-draw-polygon-point.hot',
           type: 'circle',
           paint: {
             'circle-radius': 3,
             'circle-color': ['match', ['get', 'user_error'], 'true', '#B00020', 'false', '#FCBA19', '#FCBA19'],
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
-          }
+          },
+          slot: LAYER_Z_FOREGROUND
         },
         {
-          id: 'whats-here-box-start-point-marker',
+          id: 'whats-here-box-start-point-marker.hot',
           filter: ['all', ['==', 'mode', 'whats_here_box_mode'], ['==', 'meta:type', 'Point']],
           type: 'circle',
           paint: {
@@ -538,7 +544,8 @@ const DrawControls = () => {
             'circle-color': '#FCBA19',
             'circle-stroke-width': 1,
             'circle-stroke-color': '#fff'
-          }
+          },
+          slot: LAYER_Z_FOREGROUND
         }
       ]
     });
@@ -551,7 +558,7 @@ const DrawControls = () => {
     map.addControl(drawInstance.current as unknown as IControl, 'top-left');
     map.addControl(editControls.current, 'top-left');
     map.addControl(drawModeDisplay.current, 'top-left');
-
+    
     // cleanup
     return () => {
       if (!map) {

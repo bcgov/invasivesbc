@@ -1,87 +1,115 @@
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
-import { buildTimeConfig } from 'state/configuration/build-time-config';
 import {
   InvasivesMapLayerDefinition,
-  LAYER_Z_FOREGROUND,
   MapDefinitionEligibilityPredicatesBuilder
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 const DATABC_SOURCES: { [key: string]: SourceSpecification } = {
   'wms-regional-districts': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_REGIONAL_DISTRICTS_SP'
+    ],
     maxzoom: 18
   },
   'wms-moti-rfi': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_IMAGERY_AND_BASE_MAPS.MOT_ROAD_FEATURES_INVNTRY_SP'
+    ],
     maxzoom: 18
   },
   'wms-conservancy-areas': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_TANTALIS.TA_CONSERVANCY_AREAS_SVW'
+    ],
     maxzoom: 18
   },
   'wms-municipality-boundaries': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LEGAL_ADMIN_BOUNDARIES.ABMS_MUNICIPALITIES_SP'
+    ],
     maxzoom: 18
   },
   'wms-cut-blocks': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_FOREST_VEGETATION.VEG_CONSOLIDATED_CUT_BLOCKS_SP'
+    ],
     maxzoom: 18
   },
   'wms-bc-parks': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW'
+    ],
     maxzoom: 18
   },
   'wms-major-watersheds': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_BASEMAPPING.BC_MAJOR_WATERSHEDS'
+    ],
     maxzoom: 18
   },
   'wms-freshwater-atlas-rivers': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_BASEMAPPING.FWA_RIVERS_POLY',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_BASEMAPPING.FWA_RIVERS_POLY'
+    ],
     maxzoom: 18
   },
   'wms-freshwater-lakes': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_LAND_AND_NATURAL_RESOURCE.EAUBC_LAKES_SP'
+    ],
     maxzoom: 18
   },
   'wms-freshwater-atlas-stream-network': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_BASEMAPPING.FWA_STREAM_NETWORKS_SP'
+    ],
     maxzoom: 18
   },
   'wms-water-licenses-drinking-water': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SP',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_WATER_MANAGEMENT.WLS_BC_POD_DRINKNG_SOURCES_SP'
+    ],
     maxzoom: 18
   },
   'wms-water-rights-licenses': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_WATER_MANAGEMENT.WLS_WATER_RIGHTS_LICENCES_SV'
+    ],
     maxzoom: 18
   },
 
   'wms-water-wells': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_WATER_MANAGEMENT.GW_WATER_WELLS_WRBC_SVW'
+    ],
     maxzoom: 18
   },
 
   'wms-roads': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&raster-opacity=0.5&layers=WHSE_BASEMAPPING.DRA_DGTL_ROAD_ATLAS_MPAR_SP'
+    ],
     maxzoom: 18
   },
   'wms-parcel-cadastre-private': {
     type: 'raster',
-    url: 'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&style=5899&OWNER_TYPE=Private&raster-opacity=0.5&styles=5903&layers=WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW',
+    tiles: [
+      'databc://openmaps.gov.bc.ca/geo/ows?bbox={bbox-epsg-3857}&format=image/png&service=WMS&version=1.3.0&request=GetMap&srs=EPSG:3857&transparent=true&width=256&height=256&style=5899&OWNER_TYPE=Private&raster-opacity=0.5&styles=5903&layers=WHSE_CADASTRE.PMBC_PARCEL_FABRIC_POLY_SVW'
+    ],
     maxzoom: 18
   }
 };

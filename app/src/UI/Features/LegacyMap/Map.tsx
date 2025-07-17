@@ -198,7 +198,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         ...tileCacheSettings,
         zoom: 3,
         minZoom: 0,
-        center: [map_center[1], map_center[0]],
+        center: [map_center[0], map_center[1]],
         style: {
           glyphs: configuration.build.MOBILE
             ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'

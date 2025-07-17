@@ -3,13 +3,14 @@ import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 import debounce from 'lodash.debounce';
 import { produce } from 'immer';
 import { MAP_DEFINITIONS, SOURCES } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/layer-definitions';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import {
   InvasivesMapLayerDefinition,
   layerStacking,
   POSITIONING_LAYER
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { Platform } from 'state/configuration/build-time-config';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 type InvasivesMapLayerDefinitionWithState = InvasivesMapLayerDefinition & {
   active: boolean;
@@ -18,6 +19,10 @@ type InvasivesMapLayerDefinitionWithState = InvasivesMapLayerDefinition & {
 type LayerSpecificationWithStackingOrder = LayerSpecification & { stackLayer: POSITIONING_LAYER };
 
 const useInvasivesMapLayers = () => {
+  const dispatch = useDispatch();
+  const preferredBaseMap = useSelector((state) => state.UserSettings.preferredBasemap);
+  const preferredDataBCLayers = useSelector((state) => state.UserSettings.preferredDataBCLayers);
+
   const [layers, setLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
   const [sources, setSources] = useState<{ [_: string]: SourceSpecification }>({});
 
@@ -84,7 +89,16 @@ const useInvasivesMapLayers = () => {
 
       if (pass) {
         newFilteredLayerDefinitions.push({
-          active: false,
+          active: (() => {
+            switch (l.mode) {
+              case 'basemap':
+                return l.name === preferredBaseMap;
+              case 'overlay':
+                return preferredDataBCLayers.includes(l.name);
+              default:
+                return false;
+            }
+          })(),
           ...l
         });
       }
@@ -119,19 +133,15 @@ const useInvasivesMapLayers = () => {
     )
       return;
 
-    const updatedLayerDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
-
-    for (const l of availableLayerDefinitions) {
-      const updated = l;
-
-      if (updated.name === 'Public-Vector') {
-        updated.active = !loggedInOrWorkingOffline;
-      }
-
-      updatedLayerDefinitions.push(updated);
-    }
-
-    setAvailableLayerDefinitions(updatedLayerDefinitions);
+    setAvailableLayerDefinitions(
+      produce((draft) => {
+        for (const l of draft) {
+          if (l.name === 'Public-Vector') {
+            l.active = !loggedInOrWorkingOffline;
+          }
+        }
+      })
+    );
   }, [availableLayerDefinitions, loggedInOrWorkingOffline]);
 
   /* evaluate which layers are active and should be added to the map */
@@ -172,13 +182,17 @@ const useInvasivesMapLayers = () => {
               draft.filter((l) => l.mode === 'basemap').forEach((l) => (l.active = l.name === layerName));
             })
           );
+          dispatch(UserSettings.Map.setPreferredBasemap(layerName));
         },
-        platform == Platform.ANDROID ? 750 : 100,
+        platform == Platform.ANDROID
+          ? 750
+          : 100 /*use a longer debounce delay on Android to avoid excessive memory consumption*/,
         { leading: true }
       ),
-    [platform]
+    [platform, dispatch]
   );
 
+  /* toggle or explicitly set the state of an overlay layer */
   const setOverlayState = (layerName: string, active?: boolean) => {
     setAvailableLayerDefinitions(
       produce((draft) => {
@@ -187,6 +201,8 @@ const useInvasivesMapLayers = () => {
           .forEach((l) => (l.active = active !== undefined ? active : !l.active));
       })
     );
+
+    dispatch(UserSettings.Map.togglePreferredDataBCLayer({ layerName, active }));
   };
 
   return { layers, sources, availableLayerDefinitions, setActiveBaseMap, setOverlayState };

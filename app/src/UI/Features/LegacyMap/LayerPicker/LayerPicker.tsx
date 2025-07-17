@@ -34,7 +34,6 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
   const accordionMode = useSelector((state) => state.UserSettings.layerPickerIsAccordion);
   const dispatch = useDispatch();
-  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
 
   if (!showLayerPicker) {
     return (
@@ -83,11 +82,11 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
                     <Accordion icon={<ManageSearchIcon />} title={LpModules.Recordsets}>
                       <LpRecordSet closePicker={closeLayerPicker} />
                     </Accordion>
-                    {MOBILE && (
+                    <FeatureGated requires={'CACHE_TILES'}>
                       <Accordion icon={<Save />} title={LpModules.MapTiles}>
                         <LpOfflineMaps closePicker={closeLayerPicker} />
                       </Accordion>
-                    )}
+                    </FeatureGated>
                   </>
                 ) : (
                   <ul className="path-ul">

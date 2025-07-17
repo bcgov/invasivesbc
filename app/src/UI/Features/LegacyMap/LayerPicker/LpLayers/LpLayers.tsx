@@ -23,9 +23,6 @@ type PropTypes = {
 };
 
 const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
-  // const handleWmsClick = (layer) => {
-  //   dispatch({ type: TOGGLE_WMS_LAYER, payload: { layer } });
-  // };
   const handleKmlClick = (layer: Record<string, unknown>) => {
     dispatch({ type: TOGGLE_KML_LAYER, payload: { layer } });
   };
@@ -53,19 +50,21 @@ const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
         </h3>
         <div>
           <ul className={'layerList'}>
-            {layers.filter(l => l.selectionMode === 'layer-picker').map((layer) => (
-              <li className="lp-layers-item" key={layer.name}>
-                <button
-                  data-testid="lp-layers-option-button"
-                  onClick={() => {
-                    setOverlayState(layer.name);
-                  }}
-                >
-                  {layer.active ? <Visibility /> : <VisibilityOff />}
-                </button>
-                <p>{layer.displayName}</p>
-              </li>
-            ))}
+            {layers
+              .filter((l) => l.selectionMode === 'layer-picker')
+              .map((layer) => (
+                <li className="lp-layers-item" key={layer.name}>
+                  <button
+                    data-testid="lp-layers-option-button"
+                    onClick={() => {
+                      setOverlayState(layer.name);
+                    }}
+                  >
+                    {layer.active ? <Visibility /> : <VisibilityOff />}
+                  </button>
+                  <p>{layer.displayName}</p>
+                </li>
+              ))}
           </ul>
         </div>
       </FeatureGated>
