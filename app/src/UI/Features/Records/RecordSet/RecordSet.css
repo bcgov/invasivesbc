@@ -146,7 +146,7 @@
 
 #app.overlay-layout {
   .recordSet_footer {
-    bottom: calc(var(--footer-bar-height) + env(safe-area-inset-bottom, 0));
+    bottom: max(var(--extra-bottom-padding), calc(var(--footer-bar-height) + env(safe-area-inset-bottom, 0)));
     width: 100%;
     position: fixed;
   }

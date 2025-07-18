@@ -1,12 +1,12 @@
-
 package bc.gov.invasivesbc;
 
+import android.app.Activity;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.view.WindowInsets;
 import android.graphics.Insets;
-
-import androidx.core.view.ViewCompat;
 
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -17,64 +17,81 @@ import com.getcapacitor.JSObject;
 @CapacitorPlugin(name = "SafeInsets")
 public class SafeInsets extends Plugin {
 
+    private final Handler debounceHandler = new Handler(Looper.getMainLooper());
+    private Runnable debounceRunnable;
+    private static final int DEBOUNCE_DELAY_MS = 100;
+
     @Override
     public void load() {
-        View decorView = getActivity().getWindow().getDecorView();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Activity activity = getActivity();
+            if (activity == null) return;
 
-        ViewCompat.setOnApplyWindowInsetsListener(decorView, (v, in) -> {
-            
-            int top = 0, bottom = 0, left = 0, right = 0;
-            WindowInsets insets = decorView.getRootWindowInsets();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                int insetTypes = WindowInsets.Type.systemBars()
-                                  | WindowInsets.Type.displayCutout()
-                                  | WindowInsets.Type.systemGestures()
-                                  | WindowInsets.Type.ime();
+            View decorView = activity.getWindow().getDecorView();
 
-                Insets combinedInsets = insets.getInsets(insetTypes);
-                top = combinedInsets.top;
-                bottom = combinedInsets.bottom;
-                left = combinedInsets.left;
-                right = combinedInsets.right;
-            } else {
-                top = insets.getSystemWindowInsetTop();
-                bottom = insets.getSystemWindowInsetBottom();
-                left = insets.getSystemWindowInsetLeft();
-                right = insets.getSystemWindowInsetRight();
-            }
+            decorView.setOnApplyWindowInsetsListener((v, insets) -> {
+                Insets gestureInsets = insets.getInsets(WindowInsets.Type.systemGestures());
+                Insets statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars());
+                Insets imeInsets = insets.getInsets(WindowInsets.Type.ime());
 
-            JSObject result = new JSObject();
-            result.put("top", top);
-            result.put("bottom", bottom);
-            result.put("left", left);
-            result.put("right", right);
-            System.out.println("DYNAMIC---->>"+result + "and"+Build.VERSION.SDK_INT+"and"+Build.VERSION_CODES.R);
+                int top = statusBarInsets.top;
+                int bottom = gestureInsets.bottom;
+                int left = gestureInsets.left;
+                int right = gestureInsets.right;
 
-            notifyListeners("insetsChanged", result);
-            return in;
-        });
+                boolean imeVisible = insets.isVisible(WindowInsets.Type.ime());
+                if (imeVisible) {
+                    bottom = Math.max(bottom, imeInsets.bottom);
+                }
+
+                JSObject result = new JSObject();
+                result.put("top", top);
+                result.put("bottom", bottom);
+                result.put("left", left);
+                result.put("right", right);
+
+                if (debounceRunnable != null) {
+                    debounceHandler.removeCallbacks(debounceRunnable);
+                }
+
+                debounceRunnable = () -> notifyListeners("insetsChanged", result);
+                debounceHandler.postDelayed(debounceRunnable, DEBOUNCE_DELAY_MS);
+                return v.onApplyWindowInsets(insets);
+            });
+        }
     }
 
     @PluginMethod
-    public void getAllInsets(PluginCall call) {
-        getActivity().runOnUiThread(() -> {
-            View decorView = getActivity().getWindow().getDecorView();
+    public void getSafeAreaInsets(PluginCall call) {
+        Activity activity = getActivity();
+        if (activity == null) {
+            call.reject("Activity is null");
+            return;
+        }
+
+        activity.runOnUiThread(() -> {
+            View decorView = activity.getWindow().getDecorView();
             WindowInsets insets = decorView.getRootWindowInsets();
 
             int top = 0, bottom = 0, left = 0, right = 0;
+            boolean imeVisible = false;
 
             if (insets != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    int insetTypes = WindowInsets.Type.systemBars()
-                                      | WindowInsets.Type.displayCutout()
-                                      | WindowInsets.Type.systemGestures()
-                                      | WindowInsets.Type.ime();
+                    Insets gestureInsets = insets.getInsets(WindowInsets.Type.systemGestures());
+                    Insets statusBarInsets = insets.getInsets(WindowInsets.Type.statusBars());
+                    Insets imeInsets = insets.getInsets(WindowInsets.Type.ime());
 
-                    Insets combinedInsets = insets.getInsets(insetTypes);
-                    top = combinedInsets.top;
-                    bottom = combinedInsets.bottom;
-                    left = combinedInsets.left;
-                    right = combinedInsets.right;
+                    top = statusBarInsets.top;
+                    bottom = gestureInsets.bottom;
+                    left = gestureInsets.left;
+                    right = gestureInsets.right;
+                
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    bottom = insets.getSystemGestureInsets().bottom;
+                    left = insets.getSystemGestureInsets().left;
+                    right = insets.getSystemGestureInsets().right;
+                    top = insets.getSystemWindowInsetTop();
                 } else {
                     top = insets.getSystemWindowInsetTop();
                     bottom = insets.getSystemWindowInsetBottom();
@@ -88,7 +105,7 @@ public class SafeInsets extends Plugin {
             result.put("bottom", bottom);
             result.put("left", left);
             result.put("right", right);
-            System.out.println("INITIAL---->>"+result + "and"+Build.VERSION.SDK_INT+"and"+Build.VERSION_CODES.R);
+
             call.resolve(result);
         });
     }

@@ -9,7 +9,8 @@ import { usePlatformClasses } from 'state/configuration/build-time-config';
 import WideLayout from 'UI/Layout/WideLayout/WideLayout';
 import Overlay from 'UI/Layout/OverlayLayout/Overlay';
 import SafeInsets from 'utils/android-safe-area/safeArea';
-
+import { PluginListenerHandle } from '@capacitor/core';
+import { Platform, buildTimeConfig } from 'state/configuration/build-time-config';
 export const RENDER_DEBUG = false;
 
 export type LayoutComponent = 'overlay-layout' | 'wide-layout';
@@ -26,31 +27,34 @@ const App = () => {
 
   const platformClasses = usePlatformClasses();
 
-  const [insets, setInsets] = useState({ top: 0, bottom: 0, left: 0, right: 0 });
-
   useEffect(() => {
-    SafeInsets.getAllInsets({})
+    if (buildTimeConfig.PLATFORM !== Platform.ANDROID) return;
+
+    // set initial insets
+    SafeInsets.getSafeAreaInsets({})
       .then((insets) => {
-        setInsets(insets);
-        console.log('----Safe Area insets----\n', JSON.stringify(insets, null, 2), platformClasses);
+        const appElement = document.getElementById('app');
+
+        if (appElement?.classList.contains('android')) {
+          appElement.style.setProperty('--extra-top-padding', `${insets.top}px`);
+          appElement.style.setProperty('--extra-bottom-padding', `${insets.bottom}px`);
+        }
       })
       .catch(console.error);
 
-    let listener;
-
-    const setupListener = async () => {
-      listener = await SafeInsets.addListener('insetsChanged', (insets) => {
-        setInsets(insets);
-        console.log('----Safe Dynamic Area insets----\n', JSON.stringify(insets, null, 2), platformClasses);
-      });
-    };
-
-    setupListener();
-
-    return () => {
-      if (listener && typeof listener.remove === 'function') {
-        listener.remove();
+    // listen for insets changes
+    let listener: PluginListenerHandle;
+    SafeInsets.addListener('insetsChanged', (insets) => {
+      const appElement = document.getElementById('app');
+      if (appElement?.classList.contains('android')) {
+        appElement.style.setProperty('--extra-top-padding', `${insets.top}px`);
+        appElement.style.setProperty('--extra-bottom-padding', `${insets.bottom}px`);
       }
+    }).then((handle) => {
+      listener = handle;
+    });
+    return () => {
+      if (listener) listener.remove();
     };
   }, []);
 
