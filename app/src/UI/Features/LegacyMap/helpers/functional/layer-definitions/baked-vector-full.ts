@@ -14,6 +14,7 @@ const BAKED_VECTOR_LAYERS: InvasivesMapLayerDefinition[] = [
     predicates: new MapDefinitionEligibilityPredicatesBuilder()
       .requiresOffline(true)
       .mobileOnly(true)
+      .requiresNetwork(false)
       .requiresFeature('MAP_BAKED_VECTOR_TILES')
       .build(),
 

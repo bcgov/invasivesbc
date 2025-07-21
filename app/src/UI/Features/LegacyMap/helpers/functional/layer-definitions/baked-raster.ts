@@ -14,6 +14,7 @@ const BAKED_RASTER_LAYERS: InvasivesMapLayerDefinition[] = [
     mode: 'basemap',
     predicates: new MapDefinitionEligibilityPredicatesBuilder()
       .requiresOffline(true)
+      .requiresNetwork(false)
       .mobileOnly(true)
       .requiresFeature('MAP_BAKED_RASTER_TILES')
       .build(),

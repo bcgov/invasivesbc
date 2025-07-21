@@ -13,6 +13,7 @@ const BAKED_VECTOR_LAYERS: InvasivesMapLayerDefinition[] = [
     tooltip: 'Locally-stored high-resolution vector base map, simplified view',
     predicates: new MapDefinitionEligibilityPredicatesBuilder()
       .requiresOffline(true)
+      .requiresNetwork(false)
       .mobileOnly(true)
       .requiresFeature('MAP_SIMPLIFIED_BAKED_VECTOR_TILES')
       .build(),
