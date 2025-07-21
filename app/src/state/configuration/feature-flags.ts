@@ -54,6 +54,20 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
 
   const COMPUTED_FEATURES: FeatureFlags = BASELINE_FEATURES;
 
+  if (!buildtimeConfig.MOBILE) {
+    /* disable these features on web */
+    COMPUTED_FEATURES.CACHE_RECORDSETS.enabled = false;
+    COMPUTED_FEATURES.CACHE_TILES.enabled = false;
+
+    COMPUTED_FEATURES.MAP_BAKED_RASTER_TILES.enabled = false;
+    COMPUTED_FEATURES.MAP_BAKED_VECTOR_TILES.enabled = false;
+    COMPUTED_FEATURES.MAP_SIMPLIFIED_BAKED_VECTOR_TILES.enabled = false;
+
+    COMPUTED_FEATURES.OFFLINE_SYNC.enabled = false;
+  } else {
+    /* specific enables for mobile - most are enabled by default */
+  }
+
   /* pick up run-time overrides */
   const { injectedFeatures } = await import('./injected-features');
 
@@ -61,9 +75,12 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
 
   if ([Platform.ANDROID].includes(buildtimeConfig.PLATFORM)) {
     COMPUTED_FEATURES.MAP_PUBLIC_VECTOR_LAYER.enabled = false;
+    COMPUTED_FEATURES.MAP_BAKED_RASTER_TILES.enabled = false; // until we get pmtiles raster tiles working
+
     COMPUTED_FEATURES.MAP_RESTRICT_TILE_CACHE_SIZE.enabled = true;
     COMPUTED_FEATURES.MAP_PROXY_DATABC_LAYERS.enabled = true;
 
+    /* try to detect how powerful the device we're running on seems to be */
     const { totalBytes, largeMemoryClass } = await DeviceInformation.deviceCharacteristics({});
     const totalMemoryGB = Math.floor(totalBytes / (1024 * 1024 * 1024));
     const lowVMMemory = largeMemoryClass < 256; // MB
@@ -73,7 +90,6 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
         'Device is too small to support the full experience, operating with some features disabled (>=6GB features off)'
       );
       // disable intensive features on all but the most capable hardware
-      COMPUTED_FEATURES.MAP_DATABC_LAYERS.enabled = false;
       COMPUTED_FEATURES.MAP_BAKED_RASTER_TILES.enabled = false;
       COMPUTED_FEATURES.DEGRADED_EXPERIENCE_WARNING.enabled = true;
     }
@@ -85,7 +101,8 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
       COMPUTED_FEATURES.CACHE_RECORDSETS.enabled = false;
       COMPUTED_FEATURES.CACHE_TILES.enabled = false;
       COMPUTED_FEATURES.OFFLINE_SYNC.enabled = false;
-      COMPUTED_FEATURES.MAP_SIMPLIFIED_BAKED_VECTOR_TILES.enabled = true; /*not yet implemented*/
+      COMPUTED_FEATURES.MAP_DATABC_LAYERS.enabled = false;
+      COMPUTED_FEATURES.MAP_SIMPLIFIED_BAKED_VECTOR_TILES.enabled = true;
       COMPUTED_FEATURES.DEGRADED_EXPERIENCE_WARNING.enabled = true;
       COMPUTED_FEATURES.SIMPLIFIED_LAYOUT.enabled = true;
     }

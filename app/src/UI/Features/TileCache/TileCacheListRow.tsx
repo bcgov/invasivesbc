@@ -4,19 +4,16 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'utils/use_selector';
 import { RepositoryStatistics, TileCacheService } from 'utils/tile-cache';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
-import { Delete, Edit, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Delete, Edit } from '@mui/icons-material';
 import Prompt from 'state/actions/prompts/Prompt';
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
-import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
-const TileCacheListRow = ({ metadata, visible }) => {
+const TileCacheListRow = ({ metadata }) => {
   const updateStatistics = async () => {
     if (!serviceRef.current) return;
     serviceRef.current.getRepositoryStatistics(metadata.id).then((value) => setStats(value));
   };
-
-  const handleToggleVisibility = (id: string) => dispatch(MapActions.toggleOverlay(id));
 
   const handleEditCacheDescription = () => {
     const callback = (newName: string) => {
@@ -71,13 +68,6 @@ const TileCacheListRow = ({ metadata, visible }) => {
 
   return (
     <tr>
-      <td>
-        {metadata.status === 'READY' && (
-          <button className="visibility-button" onClick={handleToggleVisibility.bind(this, metadata.id)}>
-            {visible ? <Visibility /> : <VisibilityOff />}
-          </button>
-        )}
-      </td>
       <td>{metadata.description || metadata.id}</td>
       <td>{metadata.status}</td>
       <td>{stats?.tileCount?.toLocaleString()}</td>

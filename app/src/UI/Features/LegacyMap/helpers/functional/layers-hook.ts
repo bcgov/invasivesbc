@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { LayerSpecification, SourceSpecification } from 'maplibre-gl';
 import debounce from 'lodash.debounce';
 import { produce } from 'immer';
+import { shallowEqual } from 'react-redux';
 import { MAP_DEFINITIONS, SOURCES } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/layer-definitions';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import {
@@ -26,10 +27,9 @@ const useInvasivesMapLayers = () => {
   const [layers, setLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
   const [sources, setSources] = useState<{ [_: string]: SourceSpecification }>({});
 
-  const offlineDefinitions = useSelector((state) => state.TileCache?.mapSpecifications || []);
-  const offlineSources: {
-    [_: string]: SourceSpecification;
-  } = useSelector((state) => state.TileCache?.sources || {});
+  const tileCacheState = useSelector((state) => state.TileCache, {
+    equalityFn: shallowEqual
+  });
 
   const [availableLayerDefinitions, setAvailableLayerDefinitions] = useState<InvasivesMapLayerDefinitionWithState[]>(
     []
@@ -44,7 +44,10 @@ const useInvasivesMapLayers = () => {
 
   /* evaluate which layers are currently available to select */
   useEffect(() => {
+    const offlineDefinitions = tileCacheState?.mapSpecifications || [];
     const newFilteredLayerDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
+
+    let selectedBaseMap = preferredBaseMap;
 
     // evaluate each potential map definition and remove those not eligible at this moment
     for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions] as InvasivesMapLayerDefinition[]) {
@@ -90,12 +93,17 @@ const useInvasivesMapLayers = () => {
         pass = false;
       }
 
+      /* ensure there is always a basemap selected, in case no preference is defined */
+      if (selectedBaseMap === undefined && pass && l.mode === 'basemap') {
+        selectedBaseMap = l.name;
+      }
+
       if (pass) {
         newFilteredLayerDefinitions.push({
           active: (() => {
             switch (l.mode) {
               case 'basemap':
-                return l.name === preferredBaseMap;
+                return l.name === selectedBaseMap;
               case 'overlay':
                 return preferredOverlayLayers.includes(l.name);
               default:
@@ -106,34 +114,17 @@ const useInvasivesMapLayers = () => {
         });
       }
     }
-
     setAvailableLayerDefinitions(newFilteredLayerDefinitions);
   }, [
     features,
     connected,
-    offlineDefinitions,
+    tileCacheState,
     MOBILE,
     platform,
     loggedInOrWorkingOffline,
     preferredBaseMap,
     preferredOverlayLayers
   ]);
-
-  /* ensure that at least one basemap layer is always designated as active */
-  useEffect(() => {
-    if (availableLayerDefinitions.length == 0) return;
-    if (availableLayerDefinitions.filter((l) => l.mode === 'basemap').length == 0) return;
-    if (availableLayerDefinitions.filter((l) => l.mode === 'basemap' && l.active).length > 0) return;
-
-    setAvailableLayerDefinitions(
-      produce((draft) => {
-        const found = draft.find((l) => l.mode === 'basemap');
-        if (found) {
-          found.active = true;
-        }
-      })
-    );
-  }, [availableLayerDefinitions]);
 
   /* set the state of the public vector layer correctly on auth state change */
   useEffect(() => {
@@ -158,6 +149,8 @@ const useInvasivesMapLayers = () => {
 
   /* evaluate which layers are active and should be added to the map */
   useEffect(() => {
+    const offlineSources = tileCacheState?.sources || {};
+
     const newLayers: LayerSpecificationWithStackingOrder[] = [];
     const newSources: { [_: string]: SourceSpecification } = {};
 
@@ -185,7 +178,7 @@ const useInvasivesMapLayers = () => {
 
     setLayers(newLayers);
     setSources(newSources);
-  }, [availableLayerDefinitions, offlineSources]);
+  }, [availableLayerDefinitions, tileCacheState]);
 
   const setActiveBaseMap = useMemo(
     () =>

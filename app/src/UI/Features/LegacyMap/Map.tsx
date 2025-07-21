@@ -1,5 +1,5 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import './map.css';
 
 import { useSelector } from 'utils/use_selector';
@@ -36,17 +36,12 @@ import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer'
 import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import CachedMapLayer from './helpers/components/CachedMapLayer';
-import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { SourceComponent } from 'UI/Features/LegacyMap/helpers/components/SourceComponent';
 import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerComponent';
 import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
 import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
-/*
+import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 
-  MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
-  I've tried to make it so the handlers can safely run more than once, and no destructing and recreating when not necessary.
-
- */
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { tileService: tileCache } = useContext(StartupContext);
 
@@ -59,7 +54,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const configuration = useSelector((state) => state.Configuration.current);
 
   // RecordSet Layers
-  const storeLayers = useSelector((state) => state.Map.layers);
+  const storeLayers = []; //useSelector((state) => state.Map.layers);
 
   // Offline Activities layer
   const { serializedActivities, mapToggle, labelToggle } = useSelector((state) => state.OfflineActivity);
@@ -108,10 +103,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
       if (configuration.features.MAP_PROXY_DATABC_LAYERS.enabled) {
         //proxy via API server
-        rewrittenURL = request.url.replace(
-          'databc://',
-          `${API_BASE}/api/proxy/openmaps?bbox={bbox-epsg-3857}&url=${encodeURIComponent(request.url.replace('databc://', 'https://'))}`
-        );
+        rewrittenURL = `${API_BASE}/api/proxy/openmaps?url=${encodeURIComponent(request.url.replace('databc://', 'https://'))}`;
+
         const fetchRequest = new Request(rewrittenURL);
         fetchRequest.headers.set('Authorization', await getCurrentJWT());
 
@@ -162,7 +155,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     // this is so we share one instance across the JS code and the map renderer
     pmtilesProtocol.add(p);
 
-    if (configuration.build.MOBILE) {
+    if (configuration.features.CACHE_TILES.enabled) {
       if (!tileCache) {
         console.error('tile cache unexpectedly not available');
         maplibregl.addProtocol('baked', async () => {
@@ -332,6 +325,20 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }, 1000);
   }, [map]);
 
+  const buttonContainerLayerSelect = useCallback(
+    (name: string) => {
+      switch (availableLayerDefinitions.find((l) => l.name === name)?.mode) {
+        case 'basemap':
+          setActiveBaseMap(name);
+          break;
+        case 'overlay':
+          setOverlayState(name);
+          break;
+      }
+    },
+    [availableLayerDefinitions]
+  );
+
   return (
     <div className="map-containing-block">
       <div className="MapWrapper">
@@ -344,19 +351,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           <DisplayComposite />
           <DrawControls />
 
-          <ButtonContainer
-            selectLayer={(name) => {
-              switch (availableLayerDefinitions.find((l) => l.name === name)?.mode) {
-                case 'basemap':
-                  setActiveBaseMap(name);
-                  break;
-                case 'overlay':
-                  setOverlayState(name);
-                  break;
-              }
-            }}
-            layers={availableLayerDefinitions}
-          />
+          <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
 
           {Object.entries(sources).map(([key, source]) => (
             <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
