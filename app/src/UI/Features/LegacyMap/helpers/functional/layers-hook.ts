@@ -47,7 +47,7 @@ const useInvasivesMapLayers = () => {
     const offlineDefinitions = tileCacheState?.mapSpecifications || [];
     const newFilteredLayerDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
 
-    let selectedBaseMap = preferredBaseMap;
+    const selectedBaseMap = preferredBaseMap;
 
     // evaluate each potential map definition and remove those not eligible at this moment
     for (const l of [...MAP_DEFINITIONS, ...offlineDefinitions] as InvasivesMapLayerDefinition[]) {
@@ -93,11 +93,6 @@ const useInvasivesMapLayers = () => {
         pass = false;
       }
 
-      /* ensure there is always a basemap selected, in case no preference is defined */
-      if (selectedBaseMap === undefined && pass && l.mode === 'basemap') {
-        selectedBaseMap = l.name;
-      }
-
       if (pass) {
         newFilteredLayerDefinitions.push({
           active: (() => {
@@ -114,6 +109,15 @@ const useInvasivesMapLayers = () => {
         });
       }
     }
+
+    // ensure there is always at least one active basemap (if there is at least one basemap)
+    if (!newFilteredLayerDefinitions.some((l) => l.mode === 'basemap' && l.active)) {
+      const firstBasemap = newFilteredLayerDefinitions.find((l) => l.mode === 'basemap');
+      if (firstBasemap) {
+        firstBasemap.active = true;
+      }
+    }
+
     setAvailableLayerDefinitions(newFilteredLayerDefinitions);
   }, [
     features,
