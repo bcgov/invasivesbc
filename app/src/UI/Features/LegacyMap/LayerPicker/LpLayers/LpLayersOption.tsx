@@ -8,9 +8,8 @@ type Layer = {
 type PropTypes = {
   onClick: (val: Layer) => void;
   layer: Layer;
-  lastChild: boolean;
 };
-const LpLayersOption = ({ onClick, layer, lastChild }: PropTypes) => {
+const LpLayersOption = ({ onClick, layer }: PropTypes) => {
   return (
     <>
       <li className="lp-layers-item">
@@ -19,11 +18,6 @@ const LpLayersOption = ({ onClick, layer, lastChild }: PropTypes) => {
         </button>
         <p>{layer.title ?? 'Layer name is null'}</p>
       </li>
-      {!lastChild && (
-        <li>
-          <hr />
-        </li>
-      )}
     </>
   );
 };

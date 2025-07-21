@@ -1,4 +1,4 @@
-import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
+import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { toggleLayerOnBool } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 
 export const handlePositionTracking = (

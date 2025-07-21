@@ -8,17 +8,19 @@ import { NewRecord } from 'UI/Features/LegacyMap/Controls/NewRecord';
 import { WhatsHereButton } from 'UI/Features/LegacyMap/Controls/WhatsHereButton';
 import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
 import TrackingButtonsContainer from 'UI/Features/LegacyMap/Controls/TrackingButtonsContainer';
-import { PrimaryLayerSelect } from 'UI/Features/LegacyMap/Controls/PrimaryLayerSelect';
+import PrimaryLayerSelect, { PrimaryLayerSelectProps } from 'UI/Features/LegacyMap/Controls/PrimaryLayerSelect';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
-export const ButtonContainer = () => {
+type ButtonContainerProps = PrimaryLayerSelectProps & {};
+
+export const ButtonContainer = ({ layers, selectLayer }: ButtonContainerProps) => {
   const { loggedInOrWorkingOffline, writePrivilege } = useSelector((state) => state.Auth);
   const { positionTracking } = useSelector((state) => state.Map);
 
   return (
     <div id="map-btn-container">
       <div className="scrollable-button-wrapper">
-        <PrimaryLayerSelect />
+        <PrimaryLayerSelect layers={layers} selectLayer={selectLayer} />
         {loggedInOrWorkingOffline && (
           <>
             <FindMeToggle />

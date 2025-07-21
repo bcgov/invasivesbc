@@ -1,15 +1,9 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import './map.css';
 
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
-import {
-  LAYER_Z_BACKGROUND,
-  LAYER_Z_FOREGROUND,
-  LAYER_Z_MID,
-  MAP_DEFINITIONS
-} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
 import {
   rebuildLayersOnTableHashUpdate,
   refreshColoursOnColourUpdate,
@@ -19,23 +13,14 @@ import {
   removeRecordsetLayersOnForcedRedraw,
   toggleOfflineActivityLabels
 } from 'UI/Features/LegacyMap/helpers/functional/recordset-layers';
-import {
-  addWMSLayersIfNotExist,
-  refreshWMSOnToggle,
-  removeWMSLayers
-} from 'UI/Features/LegacyMap/helpers/functional/wms-layers';
-
-import { DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
 import maplibregl from 'maplibre-gl';
 import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
-import { ReactiveLayers } from 'UI/Features/LegacyMap/helpers/components/ReactiveLayers';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
-import { toggleLayerOnBool } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
 import { sha1 } from 'utils/sha1';
@@ -51,12 +36,12 @@ import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer'
 import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import CachedMapLayer from './helpers/components/CachedMapLayer';
-/*
+import { SourceComponent } from 'UI/Features/LegacyMap/helpers/components/SourceComponent';
+import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerComponent';
+import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
+import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
+import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 
-  MW: For every state obj, property, or array that the map cares about, there is a hook that listens for changes and handler functions to deal with them.
-  I've tried to make it so the handlers can safely run more than once, and no destructing and recreating when not necessary.
-
- */
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { tileService: tileCache } = useContext(StartupContext);
 
@@ -65,18 +50,14 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Auth + Network
   const authenticated = useSelector((state) => state.Auth.authenticated);
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
-  const rolesInitialized = useSelector((state) => state.Auth.rolesInitialized);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
   const configuration = useSelector((state) => state.Configuration.current);
 
   // RecordSet Layers
-  const storeLayers = useSelector((state) => state.Map.layers);
+  const storeLayers = []; //useSelector((state) => state.Map.layers);
 
   // Offline Activities layer
   const { serializedActivities, mapToggle, labelToggle } = useSelector((state) => state.OfflineActivity);
-
-  // WMS Layers
-  const simplePickerLayers2 = useSelector((state) => state.Map.simplePickerLayers2);
 
   //KML
   const serverBoundaries = useSelector((state) => state.Map.serverBoundaries);
@@ -87,7 +68,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Map position jump
   const map_center = useSelector((state) => state.Map.map_center);
   const map_zoom = useSelector((state) => state.Map.map_zoom);
-  const baseMapLayer = useSelector((state) => state.Map.baseMapLayer);
 
   const [cacheStatusHash, setCacheStatusHash] = useState<string>('init');
   const [map, setMap] = useState<InvasivesMap>();
@@ -95,6 +75,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const [mapReady, setMapReady] = useState<boolean>(false);
 
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
+
+  const { sources, layers, availableLayerDefinitions, setActiveBaseMap, setOverlayState } = useInvasivesMapLayers();
 
   useEffect(() => {
     if (!mapContainer.current) {
@@ -114,6 +96,42 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       return {
         data: undefined
       };
+    });
+
+    maplibregl.addProtocol('databc', async (request) => {
+      let rewrittenURL: string;
+
+      if (configuration.features.MAP_PROXY_DATABC_LAYERS.enabled) {
+        //proxy via API server
+        rewrittenURL = `${API_BASE}/api/proxy/openmaps?url=${encodeURIComponent(request.url.replace('databc://', 'https://'))}`;
+
+        const fetchRequest = new Request(rewrittenURL);
+        fetchRequest.headers.set('Authorization', await getCurrentJWT());
+
+        const result = await fetch(fetchRequest);
+        if (result.ok) {
+          return {
+            data: await result.bytes()
+          };
+        }
+        return {
+          data: undefined
+        };
+      } else {
+        //rewrite as direct request
+        rewrittenURL = request.url.replace('databc://', 'https://');
+        const fetchRequest = new Request(rewrittenURL);
+
+        const result = await fetch(fetchRequest);
+        if (result.ok) {
+          return {
+            data: await result.bytes()
+          };
+        }
+        return {
+          data: undefined
+        };
+      }
     });
 
     const pmtilesProtocol = new Protocol();
@@ -137,7 +155,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     // this is so we share one instance across the JS code and the map renderer
     pmtilesProtocol.add(p);
 
-    if (configuration.build.MOBILE) {
+    if (configuration.features.CACHE_TILES.enabled) {
       if (!tileCache) {
         console.error('tile cache unexpectedly not available');
         maplibregl.addProtocol('baked', async () => {
@@ -173,41 +191,14 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         ...tileCacheSettings,
         zoom: 3,
         minZoom: 0,
-        center: [map_center[1], map_center[0]],
+        center: [map_center[0], map_center[1]],
         style: {
           glyphs: configuration.build.MOBILE
             ? '/assets/basemaps/fonts/{fontstack}/{range}.pbf'
             : 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
           version: 8,
-          sources: {
-            ...MAP_DEFINITIONS.reduce((result, item) => {
-              result[item.name] = item.source;
-              return result;
-            }, {})
-          },
-          layers: [
-            {
-              id: LAYER_Z_BACKGROUND,
-              type: 'background',
-              layout: {
-                visibility: 'none'
-              }
-            },
-            {
-              id: LAYER_Z_MID,
-              type: 'background',
-              layout: {
-                visibility: 'none'
-              }
-            },
-            {
-              id: LAYER_Z_FOREGROUND,
-              type: 'background',
-              layout: {
-                visibility: 'none'
-              }
-            }
-          ]
+          sources: {},
+          layers: POSITIONING_LAYERS
         }
       })
     );
@@ -287,20 +278,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     })();
   }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, labelToggle]);
 
-  // Layer picker:
-  useEffect(() => {
-    if (!mapReady) return;
-    if (!map) return;
-    const layers = connectedToNetwork ? simplePickerLayers2 : DEFAULT_LOCAL_LAYERS;
-    if (!loggedInOrWorkingOffline) {
-      removeWMSLayers(layers, map);
-      return;
-    }
-
-    addWMSLayersIfNotExist(layers, map, configuration.runtime.API_BASE);
-    refreshWMSOnToggle(layers, map);
-  }, [simplePickerLayers2, map, mapReady, baseMapLayer, connectedToNetwork, authenticated, rolesInitialized]);
-
   useEffect(() => {
     if (!mapReady || !map) return;
     if (authenticated && loggedInOrWorkingOffline) {
@@ -338,7 +315,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     } catch (e) {
       console.error(e);
     }
-  }, [map_center, map_zoom]);
+  }, [map, mapReady, map_center, map_zoom]);
 
   useEffect(() => {
     setInterval(() => {
@@ -348,17 +325,19 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }, 1000);
   }, [map]);
 
-  // toggle public map pmtile layer
-  useEffect(() => {
-    if (!mapReady) return;
-    if (!map) return;
-    if (loggedInOrWorkingOffline) {
-      toggleLayerOnBool(map, 'invasivesbc-pmtile-vector', false);
-      toggleLayerOnBool(map, 'iapp-pmtile-vector', false);
-      toggleLayerOnBool(map, 'invasivesbc-pmtile-vector-label', false);
-      toggleLayerOnBool(map, 'iapp-pmtile-vector-label', false);
-    }
-  }, [loggedInOrWorkingOffline, map, mapReady]);
+  const buttonContainerLayerSelect = useCallback(
+    (name: string) => {
+      switch (availableLayerDefinitions.find((l) => l.name === name)?.mode) {
+        case 'basemap':
+          setActiveBaseMap(name);
+          break;
+        case 'overlay':
+          setOverlayState(name);
+          break;
+      }
+    },
+    [availableLayerDefinitions]
+  );
 
   return (
     <div className="map-containing-block">
@@ -371,11 +350,26 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         <MapContext.Provider value={map}>
           <DisplayComposite />
           <DrawControls />
-          <ButtonContainer />
-          <ReactiveLayers mapReady={mapReady} />
+
+          <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
+
+          {Object.entries(sources).map(([key, source]) => (
+            <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
+          ))}
+
+          {layers.map((layer) => (
+            <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
+          ))}
+
+          {Object.keys(sources).map((key) => (
+            <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
+          ))}
+
           <PositionMarkers mapReady={mapReady} />
           <CurrentActivityLayer mapReady={mapReady} />
-          {loggedInOrWorkingOffline && <LayerPicker />}
+          {loggedInOrWorkingOffline && (
+            <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
+          )}
           <MobileOnly>
             <CachedMapLayer mapReady={mapReady} />
           </MobileOnly>

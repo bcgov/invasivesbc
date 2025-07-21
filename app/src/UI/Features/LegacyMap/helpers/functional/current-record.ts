@@ -1,6 +1,6 @@
 import centroid from '@turf/centroid';
 import { RecordSetType } from 'interfaces/UserRecordSet';
-import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
+import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 export const refreshCurrentRecMakers = (map, options: any) => {
   if (options.IAPPMarker && options.currentIAPPGeo?.geometry && options.currentIAPPID) {

@@ -7,7 +7,6 @@ const TileCacheList = () => {
   const repositories = useSelector((state) => state.TileCache?.repositories ?? []).filter(
     (r) => r.status === RepositoryStatus.READY
   );
-  const visibleLayers = useSelector((state) => state.Map.enabledOverlayLayers) ?? [];
 
   const dispatch = useDispatch();
   if (!repositories || repositories.length === 0) {
@@ -23,7 +22,6 @@ const TileCacheList = () => {
         <table>
           <thead>
             <tr>
-              <th>Show</th>
               <th>Name</th>
               <th>Status</th>
               <th>Tile Count</th>
@@ -33,13 +31,13 @@ const TileCacheList = () => {
           </thead>
           <tbody>
             {repositories.map((r) => (
-              <TileCacheListRow key={r.id} metadata={r} visible={visibleLayers.includes(r?.id)} />
+              <TileCacheListRow key={r.id} metadata={r} />
             ))}
           </tbody>
         </table>
       </div>
       <p>
-        You can toggle the visibility of cached map tiles here, or from the <b>Layer Picker</b>
+        You can toggle the visibility of cached map tiles from the <b>Layer Picker</b>
       </p>
       <div className="control">
         <button onClick={() => dispatch(TileCache.repositoryList())}>Refresh Table</button>

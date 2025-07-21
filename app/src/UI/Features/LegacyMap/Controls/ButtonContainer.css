@@ -5,11 +5,9 @@
   overflow-x: auto;
   background: none;
   scrollbar-width: none;
-
   gap: 16px;
   left: 50%;
   transform: translateX(-50%);
-
   box-sizing: border-box;
   position: absolute;
   height: var(--map-button-bar-height);

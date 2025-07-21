@@ -140,7 +140,9 @@ function createRootReducer(config: UnifiedConfig) {
           'layerPickerIsAccordion',
           'mapCenter',
           'offlineDocs',
-          'tableColumns'
+          'tableColumns',
+          'preferredBasemap',
+          'preferredOverlayLayers'
         ],
         transforms: [handleActiveDownloadsOnRehydration]
       },

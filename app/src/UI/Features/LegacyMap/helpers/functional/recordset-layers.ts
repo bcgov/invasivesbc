@@ -11,7 +11,7 @@ import {
   LAYER_Z_BACKGROUND,
   LAYER_Z_FOREGROUND,
   LAYER_Z_MID
-} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions';
+} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 import { buildTimeConfig } from 'state/configuration/build-time-config';

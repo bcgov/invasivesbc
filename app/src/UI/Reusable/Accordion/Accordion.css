@@ -20,6 +20,7 @@
   &:hover {
     cursor: pointer;
   }
+
   svg:last-child {
     margin-left: auto;
   }

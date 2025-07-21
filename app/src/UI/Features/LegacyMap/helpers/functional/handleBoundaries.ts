@@ -1,4 +1,4 @@
-import { LAYER_Z_FOREGROUND } from './layer-definitions';
+import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 /**
  * @desc Add Layer to the Map

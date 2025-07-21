@@ -11,15 +11,18 @@ interface IHoverRecordset {
   quickPan?: boolean; // Map should pan to this site when update occurs
   readableIdentifier?: string; // Readable ID Format. e.g. Short ID or Site ID
 }
+
 interface IMarkLocation {
   feature: Feature;
   readableIdentifier?: string;
 }
+
 interface ICreateRecordsetsFromSiteList {
   activityIds: Array<string>;
   iappIds: Array<string>;
   name: string;
 }
+
 class Boundaries {
   private static readonly PREFIX = `UserSettings/Boundaries`;
 
@@ -83,6 +86,14 @@ class Activity {
 class Map {
   private static readonly PREFIX = `UserSettings/Map`;
 
+  static readonly setPreferredBasemap = createAction<string>(`${this.PREFIX}/setPreferredBasemap`);
+  static readonly setPreferredOverlayLayers = createAction<string[]>(`${this.PREFIX}/setPreferredOverlayLayers`);
+  static readonly addPreferredOverlayLayer = createAction<string>(`${this.PREFIX}/addPreferredOverlayLayer`);
+  static readonly removePreferredOverlayLayer = createAction<string>(`${this.PREFIX}/removePreferredOverlayLayer`);
+  static readonly togglePreferredOverlayLayer = createAction<{
+    layerName: string;
+    active?: boolean;
+  }>(`${this.PREFIX}/togglePreferredOverlayLayer`);
   static readonly setCenter = createAction<number[]>(`${this.PREFIX}/setCenter`);
   static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
   static readonly setCenterFailure = createAction(`${this.PREFIX}/setCenterFailure`);
@@ -97,6 +108,7 @@ class SiteLists {
     `${this.PREFIX}/createRecordsetsFromSiteList`
   );
 }
+
 class UserSettings {
   private static readonly PREFIX = `UserSettings`;
   static readonly Activity = Activity;
