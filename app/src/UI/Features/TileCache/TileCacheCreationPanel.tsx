@@ -68,7 +68,7 @@ const TileCacheCreationPanel = () => {
 
   return (
     <section>
-      <form>
+      <form className="tile-cache-creation-panel">
         <p>
           Choose the zoom level you want to use for saving map tiles. A higher zoom level allows you to see more detail
           when you zoom in, but it will also take up more space on your device.
@@ -83,7 +83,13 @@ const TileCacheCreationPanel = () => {
           value={zoom}
           step={null}
           aria-label={'Zoom Level'}
-          marks={AVAILABLE_ZOOMS}
+          marks={AVAILABLE_ZOOMS.map((item) => {
+            // don't display label for odd entries.
+            if (item.value % 2 === 1) {
+              item.label = '';
+            }
+            return item;
+          })}
           sx={{ width: '80%' }}
           min={AVAILABLE_ZOOMS[0].value}
           max={AVAILABLE_ZOOMS[AVAILABLE_ZOOMS.length - 1].value}

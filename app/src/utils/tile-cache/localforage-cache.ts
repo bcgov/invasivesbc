@@ -37,6 +37,19 @@ class LocalForageCacheService extends TileCacheService {
     return LocalForageCacheService._instance;
   }
 
+  protected async fetchSumTilesFromRepository(repository: string): Promise<number> {
+    if (this.store == null) throw new Error('Cache not available');
+    let count = 0;
+
+    await this.store.iterate((_: TileKey, val: string) => {
+      if (val === LocalForageCacheService.REPOSITORY_METADATA_KEY) return;
+      const value = JSON.parse(val);
+      if (value?.repository === repository) {
+        count++;
+      }
+    });
+    return count;
+  }
   private static serializeTileKey(key: TileKey) {
     // serialize the object so we can deserialize later for (inefficient) index-like operations
     // in utility method in case we want to change the mechanism
@@ -251,7 +264,7 @@ class LocalForageCacheService extends TileCacheService {
       return this.store.ready();
     }
     throw new Error('store is not ready');
-  };
+  }
 }
 
 export { LocalForageCacheService };

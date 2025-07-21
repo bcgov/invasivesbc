@@ -108,7 +108,7 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
   }, [mapReady]);
 
   useEffect(() => {
-    setUserOnOfflineTilePage(!!url?.includes('/OfflineTiles'));
+    setUserOnOfflineTilePage(!!url?.includes('/OfflineMaps'));
   }, [url]);
 
   // Toggle Layer Visibility

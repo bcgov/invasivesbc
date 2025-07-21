@@ -105,3 +105,18 @@
     }
   }
 }
+
+.scrollable-button-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  padding: 0 8px;
+  pointer-events: auto;
+}
+
+.scrollable-button-wrapper > * {
+  flex-shrink: 0;
+  min-width: 60px;
+}

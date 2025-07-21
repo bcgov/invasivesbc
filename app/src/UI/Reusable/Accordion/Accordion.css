@@ -1,4 +1,5 @@
 .accordion-control {
+  color: black;
   min-height: 48px;
   width: 100%;
   font-size: 16pt;
@@ -12,12 +13,14 @@
   padding: 10pt;
 
   span {
+    color: black;
     margin-right: 1rem;
   }
 
   &:hover {
     cursor: pointer;
   }
+
   svg:last-child {
     margin-left: auto;
   }

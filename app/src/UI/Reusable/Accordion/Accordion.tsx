@@ -22,7 +22,7 @@ const Accordion = ({ title, children, icon }: PropTypes) => {
   return (
     <>
       <button className={`accordion-control ${open && 'active'}`} onClick={() => setOpen((prev) => !prev)}>
-        {icon !== undefined && icon}
+        {icon !== undefined && <span>{icon}</span>}
         {title}
         {open ? <ExpandLess color="disabled" /> : <ExpandMore color="disabled" />}
       </button>

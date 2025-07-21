@@ -141,6 +141,18 @@ abstract class TileCacheService extends BaseCacheService<
     const executing = new Set<Promise<void>>();
 
     try {
+      const repositoryDoesExist = !!(await this.getRepository(spec.id));
+      let currentTilesForRepo = 0;
+      if (repositoryDoesExist) {
+        // Pull information about the last tile, and total sum of all tiles if the cache previously had a download attempt
+        const tilesAlreadyCached = await this.fetchSumTilesFromRepository(spec.id);
+        if (tilesAlreadyCached > 0) {
+          // due to concurrency, a tile might get downloaded out of sequence during termination, so duplicate the last few tiles, in order to fill any gaps
+          currentTilesForRepo += Math.max(tilesAlreadyCached - this.CONCURRENCY_LIMIT, 0);
+          processedTiles += currentTilesForRepo;
+        }
+      }
+
       await this.addOrUpdateRepository({
         id: spec.id,
         status: RepositoryStatus.DOWNLOADING,
@@ -163,7 +175,7 @@ abstract class TileCacheService extends BaseCacheService<
       }
       const promises = tileUrls.map((config) => () => this.downloadTile(config));
 
-      for (let i = 0; i < promises.length && !abort; i++) {
+      for (let i = currentTilesForRepo; i < promises.length && !abort; i++) {
         if (executing.size >= this.CONCURRENCY_LIMIT) {
           await Promise.race(executing);
         }
@@ -233,6 +245,12 @@ abstract class TileCacheService extends BaseCacheService<
     const responseData = await fetch(url).then(async (r) => await r.arrayBuffer());
     await this.setTile(id, z, x, y, new Uint8Array(responseData));
   }
+
+  /**
+   * @desc Helper method to fetch current sum of tiles from repository. Used for restarting a download
+   * @param {string} repository  ID of Repository
+   */
+  protected abstract fetchSumTilesFromRepository(repository: string): Promise<number>;
 
   public abstract waitForStore(): Promise<void>;
 }

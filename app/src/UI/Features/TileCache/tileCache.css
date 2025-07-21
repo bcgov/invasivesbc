@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 0;
+  padding: 0 0 1rem;
   width: 100%;
 
   h2 {
@@ -30,6 +30,13 @@
   .subheader {
     margin-top: 0;
   }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 860px;
+  }
 }
 
 /* Generic for each sub-section in Offline Maps */
@@ -41,15 +48,21 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 768px;
-  min-height: 100pt;
   width: 100%;
+  max-width: 860px;
+  min-height: 100pt;
   padding: 0;
 
-  table {
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1pt solid lightgray;
+  }
+
+  .table-wrapper table {
+    min-width: 550px;
     width: 100%;
     border-collapse: collapse;
-    border: 1pt solid lightgray;
     border-radius: 5pt;
     word-wrap: break-word;
 
@@ -78,6 +91,7 @@
     }
   }
 }
+
 .shapeDetails {
   margin: 10px 0;
   padding: 1rem;
@@ -103,40 +117,46 @@
   width: 100%;
   box-sizing: border-box;
   padding: 1.25rem;
+
   button,
   input {
     height: 30pt;
     font-size: 12pt;
     border-radius: 8pt;
   }
+
   button {
     width: 110pt;
     border: 1pt solid var(--blue-primary);
+    font-size: 14px;
     color: var(--blue-primary);
     background-color: transparent;
     transition:
       0.7s color,
       0.7s background-color,
       0.7s border;
+
     &:disabled {
       border: 1pt solid lightgray;
       color: lightgray;
       cursor: not-allowed;
     }
+
     &:hover:not(:disabled) {
       background-color: var(--blue-primary);
       color: white;
       cursor: pointer;
     }
   }
+
   input {
     padding: 0 0 0 10pt;
     border: 1pt solid black;
   }
+}
 
-  & > *:not(:first-child) {
-    margin: 10pt 0 0 0;
-  }
+#offline-map-overlay section form {
+  width: 100%;
 }
 
 .too-large-warning {
@@ -152,6 +172,7 @@
 #offline-map-overlay .visibility-button {
   border: none;
   background-color: transparent;
+
   &:hover {
     cursor: pointer;
   }
@@ -160,6 +181,7 @@
 @media screen and (width >= 425px) {
   #offline-map-overlay section .control {
     flex-direction: row;
+
     & > *:not(:first-child) {
       margin: 0 0 0 10pt;
     }
