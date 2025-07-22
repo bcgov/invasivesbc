@@ -101,41 +101,45 @@ export const Records = () => {
     <StrictMode>
       <div id="records-container">
         <ul>
-          {filteredRecordSets.map((set) => (
-            <li
-              key={set}
-              onClick={() => history.push('/Records/List/Local:' + set)}
-              onMouseOver={() => {
-                highlightSet(set);
-              }}
-              onFocus={() => {
-                highlightSet(set);
-              }}
-              onMouseOut={unHighlightSet}
-              onBlur={unHighlightSet}
-              className="record-set-option"
-              data-testid="record-set"
-              style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
-            >
-              <RecordSetDetails
-                name={recordSets[set]?.recordSetName}
-                isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
-                handleNameChange={handleNameChange}
-                recordSetType={recordSets[set].recordSetType}
-                recordsetKey={set}
-              />
+          {filteredRecordSets.map((set) => {
+            return (
+              recordSets?.[set] && (
+                <li
+                  key={set}
+                  onClick={() => history.push('/Records/List/Local:' + set)}
+                  onMouseOver={() => {
+                    highlightSet(set);
+                  }}
+                  onFocus={() => {
+                    highlightSet(set);
+                  }}
+                  onMouseOut={unHighlightSet}
+                  onBlur={unHighlightSet}
+                  className="record-set-option"
+                  data-testid="record-set"
+                  style={{ backgroundColor: `${recordSets[set]?.color}${highlightedSet === set ? 65 : 20}` }}
+                >
+                  <RecordSetDetails
+                    name={recordSets[set]?.recordSetName}
+                    isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
+                    handleNameChange={handleNameChange}
+                    recordSetType={recordSets[set].recordSetType}
+                    recordsetKey={set}
+                  />
 
-              <RecordSetControl
-                isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
-                recordset={recordSets[set]}
-                recordsetKey={set}
-                onClickToggleLabel={handleToggleLabel}
-                onClickToggleLayer={handleToggleLayer}
-                onClickCycleColour={handleCycleColour}
-                onClickDeleteRecordSet={handleDeleteRecordSet}
-              />
-            </li>
-          ))}
+                  <RecordSetControl
+                    isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
+                    recordset={recordSets[set]}
+                    recordsetKey={set}
+                    onClickToggleLabel={handleToggleLabel}
+                    onClickToggleLayer={handleToggleLayer}
+                    onClickCycleColour={handleCycleColour}
+                    onClickDeleteRecordSet={handleDeleteRecordSet}
+                  />
+                </li>
+              )
+            );
+          })}
         </ul>
         {userIsMobileAndOffline ? (
           <p>Any recordsets that haven't been saved for offline use will not be accessible when you're offline.</p>
