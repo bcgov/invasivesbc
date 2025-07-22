@@ -28,6 +28,7 @@ import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
+import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -290,6 +291,7 @@ const DrawControls = () => {
     } else {
       if (mode === TargetMode.TILE_CACHE) {
         dispatch(TileCache.clearTileCacheShape());
+        dispatch(PlanMyTrip.clearShape());
       } else if (mode === TargetMode.WHATS_HERE) {
         dispatch(WhatsHere.clear_whats_here());
       }
@@ -342,6 +344,7 @@ const DrawControls = () => {
         break;
       case TargetMode.TILE_CACHE: {
         dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
+        dispatch(PlanMyTrip.setShape({ geometry: feature.geometry }));
         break;
       }
       case TargetMode.DISABLED: {
