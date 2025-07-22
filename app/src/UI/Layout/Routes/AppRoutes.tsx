@@ -9,6 +9,7 @@ import { RecordSet } from 'UI/Features/Records/RecordSet/RecordSet';
 import React, { Suspense } from 'react';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
+import ManageTripsPage from 'UI/Features/ManageTripsPage/ManageTripsPage';
 
 const UserAccessPage = React.lazy(() => import('UI/Features/Admin/userAccess/UserAccessPage'));
 const EmbeddedReportsPage = React.lazy(() => import('UI/Features/Reports/EmbeddedReportsPage'));
@@ -152,6 +153,14 @@ const AppRoutes = () => {
         render={() => (
           <Suspense fallback={<Spinner />}>
             <TileCachePanel />
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/ManageTrips"
+        render={() => (
+          <Suspense fallback={<Spinner />}>
+            <ManageTripsPage />
           </Suspense>
         )}
       />

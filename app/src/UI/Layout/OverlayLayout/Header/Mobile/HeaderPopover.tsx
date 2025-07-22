@@ -1,4 +1,4 @@
-import { HelpCenter, Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
+import { HelpCenter, Luggage, Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -132,6 +132,14 @@ const HeaderPopover = () => {
                       <button onClick={() => history.push('/Guide')}>
                         <HelpCenter />
                         User Guide
+                      </button>
+                    </li>
+                  </FeatureGated>
+                  <FeatureGated requires={'PLAN_MY_TRIP'}>
+                    <li>
+                      <button onClick={() => history.push('/ManageTrips')}>
+                        <Luggage />
+                        Manage My Trips
                       </button>
                     </li>
                   </FeatureGated>
