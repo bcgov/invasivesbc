@@ -54,7 +54,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const configuration = useSelector((state) => state.Configuration.current);
 
   // RecordSet Layers
-  const storeLayers = []; //useSelector((state) => state.Map.layers);
+  const storeLayers = useSelector((state) => state.Map.layers);
 
   // Offline Activities layer
   const { serializedActivities, mapToggle, labelToggle } = useSelector((state) => state.OfflineActivity);

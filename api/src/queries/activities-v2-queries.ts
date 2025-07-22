@@ -262,23 +262,9 @@ function initialWithStatement(sqlStatement: SQLStatement) {
 
 function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) {
   const cte = sqlStatement.append(`
-    WITH CurrentPositiveObservations AS (
-      SELECT
-        cpo.activity_incoming_data_id,
-        string_agg(cpo.invasive_plant, ', ') AS current_positive_species
-      FROM current_positive_observations_materialized cpo
-      GROUP BY cpo.activity_incoming_data_id
-    ),
-    CurrentNegativeObservations AS (
-      SELECT
-        cno.activity_incoming_data_id,
-        string_agg(cno.invasive_plant, ', ') AS current_negative_species
-      FROM current_negative_observations_materialized cno
-      GROUP BY cno.activity_incoming_data_id
-    ),
-    activity_read_permissions AS (
+    WITH activity_read_permissions AS (
       SELECT id, can_read, can_read_sensitive_biocontrol
-      FROM get_user_permissions(${filterObject.user_id})
+      FROM invasivesbc.get_user_permissions(${filterObject.user_id})
     ),
   `);
   if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -286,25 +272,28 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
       serverFilterGeometryIDs as (
         select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
         ),
+        serverFilterGeometriesCount as (
+        select count(*) as cnt from serverFilterGeometryIDs
+        ),
       serverFilterGeometries AS (
         select a.id, title, st_subdivide(geog::geometry)::geography as geo
-        from admin_defined_shapes a
+        from invasivesbc.admin_defined_shapes a
         inner join serverFilterGeometryIDs b on a.id = b.id
       ),
       serverFilterGeometriesIntersecting as (
         select a.activity_incoming_data_id, b.id
-        from activity_incoming_data a
+        from invasivesbc.activity_incoming_data a
         inner join serverFilterGeometries b on st_intersects(a.geog, b.geo)
-        where iscurrent=true
+        where a.iscurrent=true
         group by a.activity_incoming_data_id, b.id
       ),
       serverFilterGeometriesIntersectingAll as (
-        select a.activity_incoming_data_id, count(*)
-        from activity_incoming_data a
+        select a.activity_incoming_data_id
+        from invasivesbc.activity_incoming_data a
         inner join serverFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
-        where iscurrent=true
+        where a.iscurrent=true
         group by a.activity_incoming_data_id
-        having count(*) = (select count(*) from serverFilterGeometryIDs)
+        having count(*) = (select cnt from serverFilterGeometriesCount)
       ),
       `);
   }
@@ -313,22 +302,28 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
         clientFilterGeometries AS (
           SELECT
             unnest(array[${filterObject.clientFilterGeometries
-              .map((geometry) => `st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326)`)
-              .join(',')}]) AS geojson
+              .map(
+                (geometry) =>
+                  `st_subdivide(st_collect(st_setsrid(st_geomfromgeojson('${JSON.stringify(geometry)}'), 4326))`
+              )
+              .join(',')}, 255)]) AS geojson
+        ),
+        clientFilterGeometriesCount as (
+        select count(*) as cnt from clientFilterGeometries
         ),
         clientFilterGeometriesIntersecting as (
           select a.activity_incoming_data_id
-          from activity_incoming_data a
+          from invasivesbc.activity_incoming_data a
           inner join clientFilterGeometries on st_intersects(a.geog, geojson)
-          where iscurrent=true
+          where a.iscurrent=true
         ),
         clientFilterGeometriesIntersectingAll as (  
-          select a.activity_incoming_data_id, count(*)
-          from activity_incoming_data a
+          select a.activity_incoming_data_id
+          from invasivesbc.activity_incoming_data a
           inner join clientFilterGeometriesIntersecting b on a.activity_incoming_data_id  = b.activity_incoming_data_id
-          where iscurrent=true
+          where a.iscurrent=true
           group by a.activity_incoming_data_id
-          having count(*) = (select count(*) from clientFilterGeometries)
+          having count(*) = (select cnt from clientFilterGeometriesCount)
         ),
          `);
   }
@@ -336,44 +331,75 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
   activities AS (
     SELECT
       DISTINCT
-      a.*,
-      CurrentPositiveObservations.current_positive_species,
-      CurrentNegativeObservations.current_negative_species,
-      COALESCE(CurrentPositiveObservations.current_positive_species IS NOT NULL, FALSE) as has_current_positive,
-      COALESCE(CurrentNegativeObservations.current_negative_species IS NOT NULL, FALSE) as has_current_negative,
+      a.activity_incoming_data_id,
+      a.activity_id,
+	    a.short_id,
+	    a.activity_type,
+	    a.activity_subtype,
+	    a.activity_payload,
+	    a.jurisdiction_display,
+	    a.invasive_plant,
+	    a.species_positive_full,
+	    a.species_negative_full,
+	    a.species_treated_full,
+	    a.species_biocontrol_full,
+	    a.created_by,
+	    a.updated_by,
+	    a.agency,
+	    a.regional_invasive_species_organization_areas,
+	    a.regional_districts,
+	    a.invasive_plant_management_areas,
+	    a.biogeoclimatic_zones,
+	    a.elevation,
+	    a.batch_id,
+	    a.geom,
+      a.geog,
+      a.form_status,
+      a.iscurrent,
+      a.map_symbol,
+      a.centroid,
+      a.created_timestamp,
+      cp.current_positive_species,
+      cn.current_negative_species,
+      COALESCE(cp.current_positive_species IS NOT NULL, FALSE) as has_current_positive,
+      COALESCE(cn.current_negative_species IS NOT NULL, FALSE) as has_current_negative,
       activity_date_for_filters.activity_date_for_filter as activity_date,
       project_code_for_filters.project_code_for_filter as project_code  
     FROM activity_incoming_data a
-    LEFT JOIN CurrentPositiveObservations
-      ON CurrentPositiveObservations.activity_incoming_data_id = a.activity_incoming_data_id
-    LEFT JOIN CurrentNegativeObservations
-      ON CurrentNegativeObservations.activity_incoming_data_id = a.activity_incoming_data_id
-    LEFT JOIN activity_date_for_filters
+`);
+
+  if (filterObject?.serverFilterGeometries?.length > 0) {
+    sqlStatement.append(`
+    INNER JOIN serverFilterGeometriesIntersectingAll c ON a.activity_incoming_data_id = c.activity_incoming_data_id
+    `);
+  }
+
+  if (filterObject?.clientFilterGeometries?.length > 0) {
+    sqlStatement.append(`
+    INNER JOIN clientFilterGeometriesIntersectingAll d ON a.activity_incoming_data_id = d.activity_incoming_data_id
+  `);
+  }
+
+  sqlStatement.append(`
+    LEFT JOIN invasivesbc.current_positive_observations_aggregated_invasive_plant cp
+      ON cp.activity_incoming_data_id = a.activity_incoming_data_id
+    LEFT JOIN invasivesbc.current_negative_observations_aggregated_invasive_plant cn 
+      ON cn.activity_incoming_data_id = a.activity_incoming_data_id
+    LEFT JOIN invasivesbc.activity_date_for_filters
       ON activity_date_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
-    LEFT JOIN project_code_for_filters
+    LEFT JOIN invasivesbc.project_code_for_filters
       ON project_code_for_filters.activity_incoming_data_id = a.activity_incoming_data_id
-    LEFT JOIN activity_subtype_mapping asm
+    LEFT JOIN invasivesbc.activity_subtype_mapping asm
       ON asm.form_subtype = a.activity_subtype
-    JOIN activity_subtype_permission_category aspc
+    JOIN invasivesbc.activity_subtype_permission_category aspc
       ON aspc.activity_subtype = asm.mapping_id
     JOIN activity_read_permissions arp
       ON arp.id = aspc.permission_category
 `);
 
-  if (filterObject?.serverFilterGeometries?.length > 0) {
-    sqlStatement.append(`
-      INNER JOIN serverFilterGeometriesIntersectingAll c ON a.activity_incoming_data_id = c.activity_incoming_data_id
-      `);
-  }
-
-  if (filterObject?.clientFilterGeometries?.length > 0) {
-    sqlStatement.append(`
-      INNER JOIN clientFilterGeometriesIntersectingAll d ON a.activity_incoming_data_id = d.activity_incoming_data_id
-    `);
-  }
-
   sqlStatement.append(`
-      WHERE arp.can_read = TRUE
+      WHERE a.iscurrent = true
+      AND arp.can_read = TRUE
       AND (
         a.species_biocontrol_full IS NULL
         OR  arp.can_read_sensitive_biocontrol = TRUE
@@ -382,7 +408,7 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
           FROM unnest(string_to_array(a.species_biocontrol_full, ',')) as val
           WHERE trim(val) in (
             SELECT agent_code_description
-            FROM private_biocontrol_agents
+            FROM invasivesbc.private_biocontrol_agents
           )
         )
       )
@@ -397,21 +423,38 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 function selectStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject.vt_request) {
     sqlStatement.append(`
-    , mvtgeom AS
-    (  select case when ${filterObject.z} < 12 then ST_AsMVTGeom(ST_Transform(centroid, 3857),
-                                            ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}), extent => 4096,
-                                            buffer => 64)
-              else ST_AsMVTGeom(ST_Transform(geog::geometry, 3857),
-                                            ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}), extent => 4096,
-                                            buffer => 64)
-                                            end AS geom,
-                               activity_incoming_data_id                    as feature_id,
-                               activity_id                    ,
-                               short_id,
-                               map_symbol,
-                               activity_type as type,
-                               activity_subtype from activities  where ST_Transform(geog::geometry, 3857) && ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y})
-     `);
+    , tile_envelope AS (
+      SELECT ST_TileEnvelope(${filterObject.z}, ${filterObject.x}, ${filterObject.y}) AS bbox
+    ),
+    mvtgeom AS (
+      SELECT
+        CASE
+          WHEN ${filterObject.z} < 12 THEN
+            ST_AsMVTGeom(
+              ST_Transform(centroid, 3857),
+              bbox,
+              extent => 4096,
+              buffer => 64
+            )
+          ELSE
+            ST_AsMVTGeom(
+              ST_Transform(geog::geometry, 3857),
+              bbox,
+              extent => 4096,
+              buffer => 64
+            )
+        END AS geom,
+        activity_incoming_data_id AS feature_id,
+        activity_id,
+        short_id,
+        map_symbol,
+        activity_type AS type,
+        activity_subtype
+      FROM activities, tile_envelope
+      WHERE ST_Transform(geog::geometry, 3857) && bbox
+        AND activities.iscurrent = true
+        AND activities.form_status = 'Submitted'
+    `);
   } else {
     if (filterObject.selectColumns) {
       if (filterObject.isCSV) {
