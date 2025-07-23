@@ -70,9 +70,9 @@ export const getCodesSQL = (): SQLStatement =>
   SQL`SELECT code_id, code_header_id, code_name, code_description, code_sort_order FROM code WHERE valid_to IS NULL;`;
 
 /**
- * SQL query to fetch the list of code tables in invasives (for batch code tables view)
+ * SQL query to fetch the list of code tables in invasives (for batch code tables view).
  *
- * @returns {SQLStatement} sql query object
+ * @returns {SQLStatement} sql query object.
  */
 export const listCodeTablesSQL = (): SQLStatement => {
   return SQL`
