@@ -5,6 +5,8 @@ import { IPlanMyTripCacheStatuses, PlanMyTripCacheService } from 'utils/plan-my-
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import PmtCacheStatus from './subcomponents/PmtCacheStatus';
+import { Button } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 
 const ManageTripsPage = () => {
   const service = useRef<PlanMyTripCacheService>();
@@ -114,9 +116,10 @@ const ManageTripsPage = () => {
                     key={key}
                   />
                 ))}
-                <button style={{ backgroundColor: 'darkred', color: 'white' }} onClick={() => deleteTrip(trip.id)}>
-                  Delete This Cache
-                </button>
+                <Button sx={{ mt: 3, mb: 1 }} color="error" onClick={() => deleteTrip(trip.id)}>
+                  Delete
+                  <Delete />
+                </Button>
               </div>
             </div>
           ))}
