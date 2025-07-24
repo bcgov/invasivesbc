@@ -100,9 +100,8 @@ abstract class WellCacheService extends BaseCacheService<
     const wellTagNumbers: number[] =
       response?.result?.features?.map((well: WellData) => well.properties.WELL_TAG_NUMBER) ?? [];
     const uncachedWellTags = await this.removeDuplicateWellsFromIdList(wellTagNumbers, spec.bounds);
-    const wellsToCache = response.result.features.filter((well) =>
-      uncachedWellTags.includes(well.properties.WELL_TAG_NUMBER)
-    );
+    const wellsToCache =
+      response?.result?.features?.filter((well) => uncachedWellTags.includes(well.properties.WELL_TAG_NUMBER)) ?? [];
 
     await this.addOrUpdateRepository({
       bounds: spec.bounds,
