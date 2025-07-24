@@ -9,6 +9,7 @@ type PropTypes = {
 };
 const PmtWellData = ({ trip }: PropTypes) => {
   const dispatch = useDispatch();
+
   const handleDownload = () => {
     const [minX, minY, maxX, maxY] = bbox(trip.geojson);
     const bounds = {
@@ -17,8 +18,9 @@ const PmtWellData = ({ trip }: PropTypes) => {
       minLongitude: minX,
       maxLongitude: maxX
     };
-    dispatch(PlanMyTrip.downloadWellData({ tripId: trip.id, bounds }));
+    dispatch(PlanMyTrip.Wells.download({ tripId: trip.id, bounds }));
   };
+
   return (
     <Button variant="contained" color="primary" onClick={handleDownload}>
       Download Well Data
