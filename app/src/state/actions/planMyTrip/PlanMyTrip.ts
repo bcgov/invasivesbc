@@ -1,9 +1,33 @@
-import { createAsyncThunk, nanoid } from '@reduxjs/toolkit';
-import { RootState } from 'state/reducers/rootReducer';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import { createAction, createAsyncThunk, nanoid } from '@reduxjs/toolkit';
+import { Feature, GeoJSON } from 'geojson';
+import { EFilterType } from 'state/actions/userSettings/RecordSet';
+import UserSettings from 'state/actions/userSettings/UserSettings';
+import RecordCache from 'state/actions/cache/RecordCache';
 import TileCache from 'state/actions/cache/TileCache';
 import WellCache from 'state/actions/cache/WellCache';
+import { RootState } from 'state/reducers/rootReducer';
+import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
+import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
+import { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses } from 'utils/plan-my-trip-cache';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
+/**
+ * @desc Converts Redux state for thunk into action based on if addition or subtraction
+ * @param { string } status
+ * @param { string } diff
+ * @returns
+ */
+const convertActionToCacheStatus = (
+  status: 'fulfilled' | 'rejected' | null,
+  diff: 'add' | 'remove'
+): IPlanMyTripCacheStatus => {
+  if (status === 'fulfilled' && diff === 'add') {
+    return IPlanMyTripCacheStatus.CACHED;
+  } else if (status === 'fulfilled' && diff === 'remove') {
+    return IPlanMyTripCacheStatus.NOT_CACHED;
+  }
+  return IPlanMyTripCacheStatus.FAILED;
+};
 /**
  * @desc Parameters for a user planning their trip
  * @property { boolean } [ activities ] include download for Activity records
@@ -13,7 +37,7 @@ import WellCache from 'state/actions/cache/WellCache';
  * @property { boolean } [ wmsLayers ] include currently toggled WMS layers in dataset.
  * @property { number } [ zoom ] Zoom level for caching Map tile data
  */
-export interface ICreateMyTrip {
+interface ICreateMyTrip {
   activities?: boolean;
   iapp?: boolean;
   name: string;
@@ -22,8 +46,198 @@ export interface ICreateMyTrip {
   wmsLayers?: boolean;
 }
 
+/**
+ * @property { keyof IPlanMyTripCacheStatuses } cache subcache being modified.
+ * @property { string } id Trip's Identifier
+ */
+interface IModifySubCache {
+  cache: keyof IPlanMyTripCacheStatuses;
+  id: string;
+}
+
+class PmtRecordset {
+  private static readonly PREFIX = 'PlanMyTrip/PmtRecordset';
+  public static readonly IAPP_PRE = 'iapp-'; // Prefix for IAPP Recordsets
+  public static readonly ACTIVITY_PRE = 'act-'; // Prefix for Activity Recordsets
+
+  /**
+   * @desc Creates a new recordset with ID matching the created Trip, applies spatial Filter matching Trip
+   *
+   *  ###IMPORTANT###
+   *     - Since IAPP and activity records share a parent object, Ids are prepended with their record type.
+   *     - The end of the 'create' Lifecycle starts the 'download' lifecycle
+   *       The workflow was required due to the order of operations
+   *            - Create the new recordset with shape filter applied
+   *            - Request list of IDs matching parameters from API
+   *            - Begin download of recordset now that Ids are populated
+   */
+  public static readonly create = createAction(
+    `${this.PREFIX}/create`,
+    (spec: { tripId: string; recordSetType: RecordSetType; recordName: string; geojson: GeoJSON }) => {
+      const newRecordId = (() => {
+        if (spec.recordSetType === RecordSetType.Activity) {
+          return this.ACTIVITY_PRE + spec.tripId;
+        } else if (spec.recordSetType === RecordSetType.IAPP) {
+          return this.IAPP_PRE + spec.tripId;
+        }
+        return '';
+      })();
+      const recordset = UserSettings.RecordSet.createDefaultRecordset(spec.recordSetType, newRecordId);
+
+      recordset.recordSetName = `${spec.recordName} - ${spec.recordSetType}`;
+      recordset.tableFilters = [
+        {
+          id: spec.tripId,
+          field: '',
+          filterType: EFilterType.Drawn,
+          geojson: {
+            id: spec.tripId,
+            type: spec.geojson.type,
+            geometry: spec.geojson
+          } as Feature,
+          operator: 'CONTAINS',
+          operator2: 'AND',
+          filter: spec.tripId
+        }
+      ];
+      return { payload: recordset };
+    }
+  );
+
+  /**
+   * @desc Starts Download for Recordset, updates Trips cache status at completion of thunk
+   */
+  public static readonly download = createAsyncThunk(`${this.PREFIX}/download`, async (setId: string, { dispatch }) => {
+    const tripId = setId.replace(this.ACTIVITY_PRE, '').replace(this.IAPP_PRE, '');
+    const cache: keyof IPlanMyTripCacheStatuses = (() => {
+      if (setId.startsWith(this.IAPP_PRE)) {
+        return 'iappRecordset';
+      }
+      return 'activityRecordset';
+    })();
+
+    await PlanMyTrip.setSubcacheStatus(tripId, cache, IPlanMyTripCacheStatus.IN_PROGRESS);
+    const response = await dispatch(RecordCache.requestCaching({ setId }));
+    const newStatus = convertActionToCacheStatus(response?.meta?.requestStatus, 'add');
+    await PlanMyTrip.setSubcacheStatus(tripId, cache, newStatus);
+  });
+
+  /**
+   * @desc Clears Cache for Recordset from storage, updates Trip data,
+   */
+  public static readonly delete = createAsyncThunk(
+    `${this.PREFIX}/delete`,
+    async (spec: { setId: string; tripId: string; destroy: boolean }, { dispatch }) => {
+      const setType: keyof IPlanMyTripCacheStatuses = (() => {
+        if (spec.setId.startsWith(this.ACTIVITY_PRE)) {
+          return 'activityRecordset';
+        }
+        return 'iappRecordset';
+      })();
+      await PlanMyTrip.setSubcacheStatus(spec.tripId, setType, IPlanMyTripCacheStatus.DELETING);
+      const response = await dispatch(RecordCache.deleteCache({ setId: spec.setId }));
+      const newStatus = convertActionToCacheStatus(response?.meta?.requestStatus, 'remove');
+      await PlanMyTrip.setSubcacheStatus(spec.tripId, setType, newStatus);
+      if (newStatus === IPlanMyTripCacheStatus.NOT_CACHED) {
+        dispatch(UserSettings.RecordSet.remove(spec.setId));
+      }
+    }
+  );
+}
+
+class PmtWells {
+  private static readonly PREFIX = 'PlanMyTrip/PmtWellData';
+  /**
+   * @desc Starts Download Request for SubCache
+   */
+  public static readonly download = createAsyncThunk(
+    `${this.PREFIX}/download`,
+    async (spec: { tripId: string; bounds: RepositoryBoundingBoxSpec }, { dispatch }) => {
+      await PlanMyTrip.setSubcacheStatus(spec.tripId, 'wellData', IPlanMyTripCacheStatus.IN_PROGRESS);
+      const response = await dispatch(WellCache.requestCaching({ id: spec.tripId, bounds: spec.bounds }));
+      const newStatus = convertActionToCacheStatus(response?.meta?.requestStatus, 'add');
+      await PlanMyTrip.setSubcacheStatus(spec.tripId, 'wellData', newStatus);
+    }
+  );
+
+  public static readonly delete = createAsyncThunk(`${this.PREFIX}/delete`, async (tripId: string, { dispatch }) => {
+    await PlanMyTrip.setSubcacheStatus(tripId, 'wellData', IPlanMyTripCacheStatus.DELETING);
+    const response = await dispatch(WellCache.deleteRepository(tripId));
+    const newStatus = convertActionToCacheStatus(response?.meta?.requestStatus, 'remove');
+    await PlanMyTrip.setSubcacheStatus(tripId, 'wellData', newStatus);
+  });
+}
+class PmtMaps {
+  private static readonly PREFIX = 'PlanMyTrip/PmtMaps';
+  /**
+   * @desc DRY Handler for Starting a Map Tile Download
+   */
+  public static readonly download = createAsyncThunk(
+    `${this.PREFIX}/download`,
+    async (
+      spec: {
+        description: string;
+        id: string;
+        bounds: RepositoryBoundingBoxSpec;
+        maxZoom: number;
+      },
+      { dispatch }
+    ) => {
+      await PlanMyTrip.setSubcacheStatus(spec.id, 'wellData', IPlanMyTripCacheStatus.IN_PROGRESS);
+      const response = await dispatch(
+        TileCache.requestCaching({
+          description: spec.description,
+          id: spec.id,
+          bounds: spec.bounds,
+          maxZoom: spec.maxZoom
+        })
+      );
+      const newStatus = convertActionToCacheStatus(response?.meta?.requestStatus, 'add');
+      await PlanMyTrip.setSubcacheStatus(spec.id, 'mapTiles', newStatus);
+    }
+  );
+  public static readonly delete = createAsyncThunk(`${this.PREFIX}/delete`, async (setId: string, { dispatch }) => {
+    await PlanMyTrip.setSubcacheStatus(setId, 'wellData', IPlanMyTripCacheStatus.IN_PROGRESS);
+    const response = await dispatch(TileCache.deleteRepository(setId));
+    const newStatus = convertActionToCacheStatus(response?.meta?.requestStatus, 'remove');
+    await PlanMyTrip.setSubcacheStatus(setId, 'mapTiles', newStatus);
+  });
+}
+class PmtWms {
+  private static readonly PREFIX = 'PlanMyTrip/PmtWms';
+}
 class PlanMyTrip {
   static readonly PREFIX = 'PlanMyTrip';
+  static readonly ON_SUCCESS = 'fulfilled';
+
+  public static readonly Recordset = PmtRecordset;
+  public static readonly Wells = PmtWells;
+  public static readonly Maps = PmtMaps;
+  public static readonly WmsLayers = PmtWms;
+
+  /**
+   * @desc Remove drawn shape from Redux state.
+   */
+  static readonly clearShape = createAction(`${this.PREFIX}/clearShape`);
+  /**
+   * @desc Set Currently Drawn shape to Redux state.
+   */
+  static readonly setShape = createAction<{ geometry: GeoJSON }>(`${this.PREFIX}/setShape`);
+
+  /**
+   * @desc Update Trips Cache status for a given subset of data
+   * @param {string} trip ID of Trip.
+   * @param {keyof IPlanMyTripCacheStatus } cache subcache being modified.
+   * @param {IPlanMyTripCacheStatus} status New Status.
+   */
+  public static readonly setSubcacheStatus = async (
+    trip: string,
+    cache: keyof IPlanMyTripCacheStatuses,
+    status: IPlanMyTripCacheStatus
+  ) => {
+    const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
+    await service.updateSubCacheStatus(trip, cache, status);
+  };
 
   /**
    * @desc Calls the caching mechanisms synchronously to avoid overloading our concurrent calls.
@@ -33,39 +247,116 @@ class PlanMyTrip {
   static readonly create = createAsyncThunk(
     `${this.PREFIX}/create`,
     async (spec: ICreateMyTrip, { dispatch, getState }) => {
-      const tripId = `pmt-${nanoid()}`;
-      const state: RootState = getState() as RootState;
-      if (!state.TileCache?.drawnShapeBounds) throw Error('No shape for Trip');
+      // Convert Trip checkbox to init statuses
+      const getInitStatus = (condition: boolean) =>
+        condition ? IPlanMyTripCacheStatus.IN_PROGRESS : IPlanMyTripCacheStatus.NOT_CACHED;
 
-      const shape = state.TileCache.drawnShapeBounds as RepositoryBoundingBoxSpec;
-      if (spec?.zoom) {
+      const state: RootState = getState() as RootState;
+
+      if (!state.TileCache?.drawnShapeBounds || !state.PlanMyTrip?.drawnShape) {
+        throw Error('Cannot create this trip, no shape data available.');
+      }
+      const tripId = `pmt-${nanoid()}`;
+      const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
+      const shapeBounds = state.TileCache.drawnShapeBounds as RepositoryBoundingBoxSpec;
+
+      // Init Repository
+      await service.download({
+        id: tripId,
+        name: spec.name,
+        zoomLevel: spec?.zoom,
+        geojson: state.PlanMyTrip.drawnShape,
+        cacheStatuses: {
+          mapTiles: getInitStatus(spec.zoom != undefined),
+          wellData: getInitStatus(!!spec?.wellData),
+          wmsLayer: getInitStatus(!!spec?.wmsLayers),
+          iappRecordset: getInitStatus(!!spec?.iapp),
+          activityRecordset: getInitStatus(!!spec?.activities)
+        }
+      });
+
+      if (spec?.iapp) {
+        dispatch(
+          PlanMyTrip.Recordset.create({
+            tripId: tripId,
+            recordSetType: RecordSetType.IAPP,
+            recordName: spec.name,
+            geojson: state.PlanMyTrip.drawnShape
+          })
+        );
+      }
+      if (spec?.activities) {
+        dispatch(
+          PlanMyTrip.Recordset.create({
+            tripId: tripId,
+            recordSetType: RecordSetType.Activity,
+            recordName: spec.name,
+            geojson: state.PlanMyTrip.drawnShape
+          })
+        );
+      }
+      if (spec?.zoom != undefined) {
         await dispatch(
-          TileCache.requestCaching({
+          PlanMyTrip.Maps.download({
             description: spec.name,
             id: tripId,
-            bounds: shape,
+            bounds: shapeBounds,
             maxZoom: spec.zoom
           })
         );
       }
       if (spec?.wellData) {
-        await dispatch(
-          WellCache.requestCaching({
-            bounds: shape,
-            id: tripId
-          })
-        );
+        await dispatch(PlanMyTrip.Wells.download({ bounds: shapeBounds, tripId }));
+      }
+      if (spec?.wmsLayers) {
+        // TODO: Setup WMS Flow when implemented.
+      }
+    }
+  );
+
+  public static readonly removeSubCache = createAsyncThunk(
+    `${this.PREFIX}/removeSubCache`,
+    async (spec: IModifySubCache, { dispatch }) => {
+      const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
+      const repo = await service.getRepository(spec.id);
+      if (!repo || repo?.cacheStatuses[spec.cache] === IPlanMyTripCacheStatus.NOT_CACHED) return;
+      switch (spec.cache) {
+        case 'mapTiles':
+          dispatch(this.Maps.delete(spec.id));
+          break;
+        case 'wmsLayer':
+          // TODO:
+          break;
+        case 'wellData':
+          dispatch(this.Wells.delete(spec.id));
+          break;
+        case 'activityRecordset':
+          dispatch(this.Recordset.delete({ setId: PmtRecordset.ACTIVITY_PRE + spec.id, tripId: spec.id }));
+          break;
+        case 'iappRecordset':
+          dispatch(this.Recordset.delete({ setId: PmtRecordset.IAPP_PRE + spec.id, tripId: spec.id }));
       }
     }
   );
 
   /**
-   * @desc Delete a Planned Trip and all of its subcaches synchronously.
+   * @desc Delete all subcaches for a trip. If operation is successful, delete the trip.
    */
   static readonly delete = createAsyncThunk(`${this.PREFIX}/delete`, async (id: string, { dispatch }) => {
-    dispatch(WellCache.deleteRepository(id));
-    dispatch(TileCache.deleteRepository(id));
+    const promises = await Promise.all([
+      await dispatch(this.removeSubCache({ id, cache: 'mapTiles' })),
+      await dispatch(this.removeSubCache({ id, cache: 'activityRecordset' })),
+      await dispatch(this.removeSubCache({ id, cache: 'wellData' })),
+      await dispatch(this.removeSubCache({ id, cache: 'iappRecordset' }))
+      //TODO: Remove WMS Layers
+    ]);
+    const deleteSucceeded = promises.every((promise) => promise?.meta?.requestStatus !== 'rejected');
+    if (deleteSucceeded) {
+      const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
+      await service.deleteRepository(id);
+    }
   });
 }
 
 export default PlanMyTrip;
+export type { ICreateMyTrip };
