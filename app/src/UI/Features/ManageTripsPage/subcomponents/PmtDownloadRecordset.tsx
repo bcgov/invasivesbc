@@ -1,9 +1,8 @@
 import { Button } from '@mui/material';
 import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import { useEffect, useState } from 'react';
-import RecordCache from 'state/actions/cache/RecordCache';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
-import { IPlanMyTripRepositoryMetadata } from 'utils/plan-my-trip-cache';
+import { IPlanMyTripCacheStatuses, IPlanMyTripRepositoryMetadata } from 'utils/plan-my-trip-cache';
 import { useDispatch, useSelector } from 'utils/use_selector';
 
 type PropTypes = {
@@ -17,15 +16,28 @@ const PmtDownloadRecordset = ({ trip, recordSetType }: PropTypes) => {
     NON_EXISTENT
   }
   const dispatch = useDispatch();
-  const PREFIX = recordSetType === RecordSetType.Activity ? PlanMyTrip.ACTIVITY_PRE : PlanMyTrip.IAPP_PRE;
+  const PREFIX =
+    recordSetType === RecordSetType.Activity ? PlanMyTrip.Recordset.ACTIVITY_PRE : PlanMyTrip.Recordset.IAPP_PRE;
+
   const handleDownload = () => {
-    dispatch(RecordCache.requestCaching({ setId: PREFIX + trip.id }));
+    dispatch(PlanMyTrip.Recordset.download(PREFIX + trip.id));
   };
+
   const handleDelete = () => {
-    dispatch(RecordCache.deleteCache({ setId: PREFIX + trip.id }));
+    const cacheKey: keyof IPlanMyTripCacheStatuses =
+      recordSetType === RecordSetType.Activity ? 'activityRecordset' : 'iappRecordset';
+    dispatch(PlanMyTrip.removeSubCache({ id: trip.id, cache: cacheKey }));
   };
+
   const handleCreate = () => {
-    dispatch(PlanMyTrip.downloadNewTripRecordset(trip.id, recordSetType, `${trip.name} - ${recordSetType}`));
+    dispatch(
+      PlanMyTrip.Recordset.create({
+        tripId: trip.id,
+        recordSetType,
+        recordName: `${trip.name}`,
+        geojson: trip.geojson
+      })
+    );
   };
 
   const recordSets = useSelector((state) => state.UserSettings.recordSets ?? {});
