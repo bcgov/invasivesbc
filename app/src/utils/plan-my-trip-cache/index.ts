@@ -1,6 +1,5 @@
-import { Feature } from 'geojson';
+import { GeoJSON } from 'geojson';
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
-import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
 
 /**
  *
@@ -12,8 +11,7 @@ import { RepositoryBoundingBoxSpec } from 'utils/tile-cache';
  * @property { string } name Name of trip e.g. "Kamloops"
  */
 interface IPlanMyTripRepositoryMetadata {
-  bbox: RepositoryBoundingBoxSpec;
-  geojson: Feature;
+  geojson: GeoJSON;
   id: string;
   name: string;
   cacheStatuses: IPlanMyTripCacheStatuses;
@@ -22,13 +20,14 @@ interface IPlanMyTripRepositoryMetadata {
 interface IPlanMyTripCacheStatuses {
   mapTiles: IPlanMyTripCacheStatus;
   wmsLayer: IPlanMyTripCacheStatus;
+  wellData: IPlanMyTripCacheStatus;
   activityRecordset: IPlanMyTripCacheStatus;
   iappRecordset: IPlanMyTripCacheStatus;
 }
 
 interface IPlanMyTripCacheDownloadSpec {
   id: string;
-  geojson: Feature;
+  geojson: GeoJSON;
   cacheStatuses: Partial<IPlanMyTripCacheStatuses>;
   name: string;
   zoomLevel?: number;
@@ -40,12 +39,23 @@ interface IPlanMyTripCacheProgressCallbackParameters {
 }
 
 enum IPlanMyTripCacheStatus {
-  CACHED,
-  IN_PROGRESS,
-  NOT_CACHED,
-  UNAVAILABLE
+  CACHED = 'CACHED',
+  IN_PROGRESS = 'IN PROGRESS',
+  DELETING = 'DELETING',
+  NOT_CACHED = 'NOT CACHED',
+  UNAVAILABLE = 'UNAVAILABLE',
+  FAILED = 'FAILED'
 }
-
+/**
+ * @desc Plan My Trip is the umbrella category representing a set of different caches.
+ *       Keeping track of all data for a specific drawn region. It keeps track of the sub caches for a consistent look and feel under one moniker/shape
+ *              [ Plan My Trip ]
+ *                      |
+ *     ---------------------------------------
+ *     |            |             |          |
+ * [ Records ]  [ Map Tiles ]  [ Wells ]  [Misc.]
+ *
+ */
 abstract class PlanMyTripCacheService extends BaseCacheService<
   IPlanMyTripRepositoryMetadata,
   IPlanMyTripCacheDownloadSpec,
@@ -54,22 +64,52 @@ abstract class PlanMyTripCacheService extends BaseCacheService<
 > {
   public static TRIP_PREFIX = 'pmt-';
   protected CACHE_UNAVAILABLE = 'Plan My Trip Cache Unavailable';
-
   protected constructor() {
     super();
   }
 
+  public async download(spec: IPlanMyTripCacheDownloadSpec, _?: undefined): Promise<void> {
+    const newRepo: IPlanMyTripRepositoryMetadata = {
+      id: spec.id,
+      geojson: spec.geojson,
+      name: spec.name,
+      cacheStatuses: {
+        mapTiles: spec.cacheStatuses?.mapTiles ?? IPlanMyTripCacheStatus.NOT_CACHED,
+        wmsLayer: spec.cacheStatuses?.wmsLayer ?? IPlanMyTripCacheStatus.NOT_CACHED,
+        activityRecordset: spec.cacheStatuses?.activityRecordset ?? IPlanMyTripCacheStatus.NOT_CACHED,
+        iappRecordset: spec.cacheStatuses?.iappRecordset ?? IPlanMyTripCacheStatus.NOT_CACHED,
+        wellData: spec.cacheStatuses?.wellData ?? IPlanMyTripCacheStatus.NOT_CACHED
+      }
+    };
+    await this.addOrUpdateRepository(newRepo);
+  }
+
+  /**
+   * @desc Update the status of a trip dataset
+   * @param repositoryId ID of Trip
+   * @param {keyof IPlanMyTripCacheStatuses } type Type of cache e.g.: Map, Recordset
+   * @param { IPlanMyTripCacheStatus } newStatus New State for Cache
+   */
+  abstract updateSubCacheStatus(
+    repositoryId: string,
+    type: keyof IPlanMyTripCacheStatuses,
+    newStatus: IPlanMyTripCacheStatus
+  ): Promise<void>;
   static async getInstance(): Promise<PlanMyTripCacheService> {
     throw new Error('unimplemented in abstract base class');
   }
 
   protected abstract addOrUpdateRepository(spec: IPlanMyTripRepositoryMetadata): Promise<void>;
+  /**
+   *
+   */
+  public abstract syncStatus(): Promise<boolean>;
 }
 
-export { PlanMyTripCacheService };
+export { IPlanMyTripCacheStatus, PlanMyTripCacheService };
 export type {
   IPlanMyTripRepositoryMetadata,
   IPlanMyTripCacheDownloadSpec,
   IPlanMyTripCacheProgressCallbackParameters,
-  IPlanMyTripCacheStatus
+  IPlanMyTripCacheStatuses
 };
