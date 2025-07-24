@@ -10,7 +10,7 @@ type PropTypes = {
 const PmtDownloadMaps = ({ trip }: PropTypes) => {
   const handleDownload = (zoom: number, shape: RepositoryBoundingBoxSpec) => {
     dispatch(
-      PlanMyTrip.downloadMapTiles({
+      PlanMyTrip.Maps.download({
         description: trip.name,
         id: trip.id,
         bounds: shape,
