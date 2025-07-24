@@ -9,6 +9,8 @@ import PmtWmsLayers from './PmtWmsLayers';
 import PmtWellData from './PmtWellData';
 import PmtDownloadRecordset from './PmtDownloadRecordset';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import { Button } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 
 type PropTypes = {
   trip: IPlanMyTripRepositoryMetadata;
@@ -30,7 +32,10 @@ const PmtCacheStatus = ({ trip, onRemove, cacheKey }: PropTypes) => {
         {
           {
             [IPlanMyTripCacheStatus.CACHED]: (
-              <button onClick={onRemove.bind(this, trip.id, cacheKey)}>Delete {TITLE} Data</button>
+              <Button variant="contained" color="error" onClick={onRemove.bind(this, trip.id, cacheKey)}>
+                <Delete />
+                Delete {TITLE} Data
+              </Button>
             ),
             [IPlanMyTripCacheStatus.IN_PROGRESS]: <p>In Progress...</p>,
             [IPlanMyTripCacheStatus.UNAVAILABLE]: <p>Unavailable for offline storage</p>,

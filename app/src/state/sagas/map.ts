@@ -535,7 +535,7 @@ function* handle_DOWNLOAD_NEW_TRIP_RECORDSET(action: PayloadAction<UserRecordSet
   yield take(
     (incomingAction) => incomingAction.type === desiredAction && incomingAction.payload.recordSetID === recordId
   );
-  yield put(PlanMyTrip.downloadNewTripRecordset(recordId));
+  yield put(PlanMyTrip.Recordset.download(recordId));
 }
 function* handle_MAP_INIT_FOR_RECORDSETS() {
   interface ActionType {
@@ -777,7 +777,7 @@ function* activitiesPageSaga() {
     //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
     takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
-    takeEvery(PlanMyTrip.createNewTripRecordset, handle_DOWNLOAD_NEW_TRIP_RECORDSET),
+    takeEvery(PlanMyTrip.Recordset.create, handle_DOWNLOAD_NEW_TRIP_RECORDSET),
     takeEvery(UserSettings.SiteLists.createRecordsetsFromSiteList, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(MapActions.initForRecordset, handle_MAP_INIT_FOR_RECORDSETS),
 

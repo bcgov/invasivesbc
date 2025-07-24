@@ -1,7 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import TileCache from 'state/actions/cache/TileCache';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
-import { IPlanMyTripCacheStatuses, PlanMyTripCacheService } from 'utils/plan-my-trip-cache';
+import {
+  IPlanMyTripCacheStatuses,
+  IPlanMyTripRepositoryMetadata,
+  PlanMyTripCacheService
+} from 'utils/plan-my-trip-cache';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import PmtCacheStatus from './subcomponents/PmtCacheStatus';
@@ -14,7 +18,7 @@ const ManageTripsPage = () => {
 
   const bounds = useSelector((state) => state.TileCache?.drawnShapeBounds);
   const drawnShape = useSelector((state) => state.PlanMyTrip?.drawnShape);
-  const [trips, setTrips] = useState<any[]>([]);
+  const [trips, setTrips] = useState<IPlanMyTripRepositoryMetadata[]>([]);
   const [tripName, setTripName] = useState<string>('');
 
   const addTrip = () => {
@@ -25,7 +29,9 @@ const ManageTripsPage = () => {
         PlanMyTrip.create({
           name: name,
           wellData: true,
-          zoom: 5
+          zoom: 5,
+          iapp: true,
+          activities: true
         })
       );
       getAllTrips();
@@ -42,7 +48,7 @@ const ManageTripsPage = () => {
     (async () => {
       if (!service.current) return;
       await service.current.listRepositories().then((trips) => {
-        setTrips(structuredClone(trips));
+        setTrips([...trips]);
       });
     })();
   };

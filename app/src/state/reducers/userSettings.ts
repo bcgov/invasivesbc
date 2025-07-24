@@ -153,7 +153,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
             );
           }
         }
-      } else if (UserSettings.RecordSet.add.match(action) || PlanMyTrip.createNewTripRecordset.match(action)) {
+      } else if (UserSettings.RecordSet.add.match(action) || PlanMyTrip.Recordset.create.match(action)) {
         draftState.recordSets[action.payload.id] ??= action.payload;
       } else if (UserSettings.SiteLists.createRecordsetsFromSiteList.match(action)) {
         const { activityIds, iappIds, name } = action.payload;
