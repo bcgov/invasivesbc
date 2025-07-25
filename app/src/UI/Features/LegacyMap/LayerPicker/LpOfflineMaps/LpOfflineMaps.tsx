@@ -21,9 +21,7 @@ const LpOfflineMaps = ({ closePicker, setOverlayState, layers }: PropTypes) => {
 
   // Ensure TileCache repositoryList is up to date, if available.
   useEffect(() => {
-    if (layers.filter((l) => l.mode === 'overlay' && l.selectionMode === 'offline-layers').length === 0) {
-      dispatch(TileCache.repositoryList());
-    }
+    dispatch(TileCache.repositoryList());
   }, []);
 
   return (
