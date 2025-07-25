@@ -219,5 +219,8 @@ const useInvasivesMapLayers = () => {
 
   return { layers, sources, availableLayerDefinitions, setActiveBaseMap, setOverlayState };
 };
+
+type LayerEffectType = ReturnType<typeof useInvasivesMapLayers>;
+
 export { useInvasivesMapLayers };
-export type { InvasivesMapLayerDefinitionWithState, LayerSpecificationWithStackingOrder };
+export type { InvasivesMapLayerDefinitionWithState, LayerSpecificationWithStackingOrder, LayerEffectType };
