@@ -56,13 +56,13 @@ class LocalForagePlanMyTripCacheService extends PlanMyTripCacheService {
   ): Promise<IPlanMyTripRepositoryMetadata | Partial<IPlanMyTripRepositoryMetadata> | null> {
     if (this.store == null) throw new Error(this.CACHE_UNAVAILABLE);
     try {
-      const repository = (await this.store.getItem(repositoryId)) as IPlanMyTripRepositoryMetadata | null;
+      const repository = await this.store.getItem(repositoryId);
       if (fields && repository) {
         const response = { id: repositoryId };
         fields.forEach((field) => (response[field] = repository[field]));
-        return response;
+        return response as Partial<IPlanMyTripRepositoryMetadata>;
       }
-      return repository;
+      return repository as IPlanMyTripRepositoryMetadata;
     } catch (e) {
       console.error(e);
       return null;
