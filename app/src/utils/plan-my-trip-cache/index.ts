@@ -61,6 +61,8 @@ abstract class PlanMyTripCacheService {
 
   public abstract getRepository(repositoryId: string): Promise<IPlanMyTripRepositoryMetadata | null>;
   public abstract listRepositories(): Promise<IPlanMyTripRepositoryMetadata[]>;
+  public abstract deleteRepository(repositoryId: string): Promise<void>;
+
   public async download(spec: IPlanMyTripCacheDownloadSpec, _?: undefined): Promise<void> {
     const newRepo: IPlanMyTripRepositoryMetadata = {
       id: spec.id,
