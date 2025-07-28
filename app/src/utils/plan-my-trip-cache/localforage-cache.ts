@@ -45,23 +45,11 @@ class LocalForagePlanMyTripCacheService extends PlanMyTripCacheService {
     repo.cacheStatuses[type] = newStatus;
     await this.store.setItem(repositoryId, repo);
   }
-  public async getRepository(repositoryId: string): Promise<IPlanMyTripRepositoryMetadata | null>;
-  public async getRepository(
-    repositoryId: string,
-    fields: (keyof IPlanMyTripRepositoryMetadata)[]
-  ): Promise<IPlanMyTripRepositoryMetadata | Partial<IPlanMyTripRepositoryMetadata> | null>;
-  public async getRepository(
-    repositoryId: string,
-    fields?: (keyof IPlanMyTripRepositoryMetadata)[]
-  ): Promise<IPlanMyTripRepositoryMetadata | Partial<IPlanMyTripRepositoryMetadata> | null> {
+
+  public async getRepository(repositoryId: string): Promise<IPlanMyTripRepositoryMetadata | null> {
     if (this.store == null) throw new Error(this.CACHE_UNAVAILABLE);
     try {
       const repository = await this.store.getItem(repositoryId);
-      if (fields && repository) {
-        const response = { id: repositoryId };
-        fields.forEach((field) => (response[field] = repository[field]));
-        return response as Partial<IPlanMyTripRepositoryMetadata>;
-      }
       return repository as IPlanMyTripRepositoryMetadata;
     } catch (e) {
       console.error(e);
@@ -69,24 +57,11 @@ class LocalForagePlanMyTripCacheService extends PlanMyTripCacheService {
     }
   }
 
-  public async listRepositories(): Promise<IPlanMyTripRepositoryMetadata[]>;
-  public async listRepositories(
-    fields: (keyof IPlanMyTripRepositoryMetadata)[]
-  ): Promise<Partial<IPlanMyTripRepositoryMetadata>[]>;
-  public async listRepositories(
-    fields?: (keyof IPlanMyTripRepositoryMetadata)[]
-  ): Promise<IPlanMyTripRepositoryMetadata[] | Partial<IPlanMyTripRepositoryMetadata>[] | null> {
+  public async listRepositories(): Promise<IPlanMyTripRepositoryMetadata[]> {
     if (this.store == null) throw new Error(this.CACHE_UNAVAILABLE);
-
-    const response: Partial<IPlanMyTripRepositoryMetadata>[] = [];
+    const response: IPlanMyTripRepositoryMetadata[] = [];
     await this.store.iterate((cachedRepo: IPlanMyTripRepositoryMetadata, _: PropertyKey) => {
-      if (fields) {
-        const repository: Partial<Record<keyof IPlanMyTripRepositoryMetadata, any>> = { id: cachedRepo.id };
-        fields.forEach((field: keyof IPlanMyTripRepositoryMetadata) => (repository[field] = cachedRepo?.[field]));
-        response.push(repository);
-      } else {
-        response.push(cachedRepo);
-      }
+      response.push(cachedRepo);
     });
     return response;
   }
