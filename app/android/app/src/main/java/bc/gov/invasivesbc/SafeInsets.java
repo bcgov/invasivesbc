@@ -39,11 +39,12 @@ public class SafeInsets extends Plugin {
                 int left = gestureInsets.left;
                 int right = gestureInsets.right;
 
-                boolean imeVisible = insets.isVisible(WindowInsets.Type.ime());
-                if (imeVisible) {
-                    bottom = Math.max(bottom, imeInsets.bottom);
-                }
-
+                // TO DO: add ime logic here
+                // boolean imeVisible = insets.isVisible(WindowInsets.Type.ime()); // Not consistent with all tablets
+                // if (imeVisible) {
+                //     bottom = Math.max(bottom, imeInsets.bottom); 
+                // }
+                
                 JSObject result = new JSObject();
                 result.put("top", top);
                 result.put("bottom", bottom);
