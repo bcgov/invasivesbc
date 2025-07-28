@@ -92,7 +92,10 @@ class PmtRecordset {
           filterType: EFilterType.Drawn,
           geojson: {
             id: spec.tripId,
-            type: spec.geojson.type,
+            type: 'Feature',
+            properties: {
+              description: spec.recordName
+            },
             geometry: spec.geojson
           } as Feature,
           operator: 'CONTAINS',
