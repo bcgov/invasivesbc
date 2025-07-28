@@ -153,7 +153,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
 
   const [inputValue, setInputValue] = useState<string>(filterSet.filter);
   const input = getFilterType(filterSet.filterType);
-  console.log(filterSet);
+
   return (
     <tr>
       <td>
