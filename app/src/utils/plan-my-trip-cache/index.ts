@@ -1,5 +1,4 @@
 import { GeoJSON } from 'geojson';
-import BaseCacheService from 'utils/base-classes/BaseCacheService';
 
 /**
  *
@@ -56,18 +55,12 @@ enum IPlanMyTripCacheStatus {
  * [ Records ]  [ Map Tiles ]  [ Wells ]  [Misc.]
  *
  */
-abstract class PlanMyTripCacheService extends BaseCacheService<
-  IPlanMyTripRepositoryMetadata,
-  IPlanMyTripCacheDownloadSpec,
-  IPlanMyTripCacheProgressCallbackParameters,
-  IPlanMyTripCacheStatus
-> {
+abstract class PlanMyTripCacheService {
   public static readonly TRIP_PREFIX = 'pmt-';
   protected CACHE_UNAVAILABLE = 'Plan My Trip Cache Unavailable';
-  protected constructor() {
-    super();
-  }
 
+  public abstract getRepository(repositoryId: string): Promise<IPlanMyTripRepositoryMetadata | null>;
+  public abstract listRepositories(): Promise<IPlanMyTripRepositoryMetadata[]>;
   public async download(spec: IPlanMyTripCacheDownloadSpec, _?: undefined): Promise<void> {
     const newRepo: IPlanMyTripRepositoryMetadata = {
       id: spec.id,
