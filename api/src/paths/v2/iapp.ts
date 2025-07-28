@@ -360,6 +360,9 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
           select unnest(array[${filterObject?.serverFilterGeometries.join(',')}]) as id
 
           ),
+        serverFilterGeometriesCount as (
+        select count(*) as cnt from serverFilterGeometryIDs
+        ),
          serverFilterGeometries AS (
           select a.id, title, st_subdivide(a.geog::geometry, 255)::geography as geo
           from invasivesbc.admin_defined_shapes a
@@ -370,19 +373,19 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
 
             select a.site_id, b.id
             from invasivesbc.iapp_spatial a
-            inner join serverFilterGeometries b on  st_intersects(a.geog, b.geo)
+            inner join serverFilterGeometries b on st_intersects(a.geog, b.geo)
             group by a.site_id, b.id
 
 
          ),
           serverFilterGeometriesIntersectingAll as (
 
-            select a.site_id, count(*)
+            select a.site_id
             from invasivesbc.iapp_spatial a
             inner join serverFilterGeometriesIntersecting b on a.site_id  = b.site_id
             group by a.site_id
 
-            having count(*) = (select count(*) from serverFilterGeometryIDs)
+            having count(*) = (select cnt from serverFilterGeometriesCount)
          ),
          `);
   }
@@ -397,22 +400,24 @@ function additionalCTEStatements(sqlStatement: SQLStatement, filterObject: any) 
                    )
                    .join(',')}]) AS geojson
          ),
-
+        clientFilterGeometriesCount as (
+        select count(*) as cnt from clientFilterGeometries
+        ),
           clientFilterGeometriesIntersecting as (
 
          select a.site_id
-         from iapp_spatial a
+         from invasivesbc.iapp_spatial a
          inner join clientFilterGeometries on st_intersects(a.geog, geojson)
 
          ),
           clientFilterGeometriesIntersectingAll as (
 
-         select a.site_id, count(*)
-         from iapp_spatial a
+         select a.site_id
+         from invasivesbc.iapp_spatial a
          inner join clientFilterGeometriesIntersecting b on a.site_id  = b.site_id
          group by a.site_id
 
-         having count(*) = (select count(*) from clientFilterGeometries)
+         having count(*) = (select cnt from clientFilterGeometriesCount)
          ),
          `);
   }
@@ -444,7 +449,7 @@ sites as (
   `);
 
   sqlStatement.append(`
-    from iapp_site_summary_and_geojson b
+    from invasivesbc.iapp_site_summary_and_geojson b
     join iapp_sites a on a.site_id = b.site_id`);
 
   if (filterObject?.serverFilterGeometries?.length > 0) {
@@ -543,106 +548,108 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
     switch (filter.field) {
       case 'site_id':
         where.append(
-          `${filter.operator2} LOWER((sites.site_id::text)) ${filter.operator === 'CONTAINS' ? '=' : '!='} LOWER('${escapeLiteralUnquoted(
-            filter.filter
-          )}') `
+          `${filter.operator2} LOWER((sites.site_id::text)) ${
+            filter.operator === 'CONTAINS' ? '=' : '!='
+          } LOWER('${escapeLiteralUnquoted(filter.filter)}') `
         );
         break;
       case 'site_paper_file_id':
         where.append(
-          `${filter.operator2} LOWER(sites.site_paper_file_id) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(
-            filter.filter
-          )}%') `
+          `${filter.operator2} LOWER(sites.site_paper_file_id) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'jurisdictions_flattened':
         where.append(
-          `${filter.operator2} LOWER(sites.jurisdictions_flattened) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(
-            filter.filter
-          )}%') `
+          `${filter.operator2} LOWER(sites.jurisdictions_flattened) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'min_survey':
         where.append(
-          `${filter.operator2} LOWER(sites.min_survey::TEXT) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(
-            filter.filter
-          )}%') `
+          `${filter.operator2} LOWER(sites.min_survey::TEXT) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'all_species_on_site':
         where.append(
-          `${filter.operator2} LOWER(sites.all_species_on_site) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
+          `${filter.operator2} LOWER(sites.all_species_on_site) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'max_survey':
         where.append(
-          `${filter.operator2} LOWER(sites.max_survey::TEXT) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(
-            filter.filter
-          )}%') `
+          `${filter.operator2} LOWER(sites.max_survey::TEXT) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'agencies':
         where.append(
-          `${filter.operator2} LOWER(sites.agencies) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(
-            filter.filter
-          )}%') `
+          `${filter.operator2} LOWER(sites.agencies) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'biological_agent':
         where.append(
-          `${filter.operator2} LOWER(sites.biological_agent) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(
-            filter.filter
-          )}%') `
+          `${filter.operator2} LOWER(sites.biological_agent) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'has_biological_treatments':
         if (filter.operator === 'CONTAINS') {
           if (/[yes]/i.test(filter.filter)) {
-            where.append(` ${filter.operator2} sites.has_biological_treatments = true`);
+            where.append(` ${filter.operator2} sites.has_biological_treatments = true `);
           } else if (/[no]/i.test(filter.filter)) {
-            where.append(` ${filter.operator2} NOT sites.has_biological_treatments`);
+            where.append(` ${filter.operator2} NOT sites.has_biological_treatments `);
           }
         }
         break;
       case 'has_chemical_treatments':
         if (filter.operator === 'CONTAINS') {
           if (/[yes]/i.test(filter.filter)) {
-            where.append(` ${filter.operator2} sites.has_chemical_treatments = true`);
+            where.append(` ${filter.operator2} sites.has_chemical_treatments = true `);
           } else if (/[no]/i.test(filter.filter)) {
-            where.append(` ${filter.operator2} NOT sites.has_chemical_treatments`);
+            where.append(` ${filter.operator2} NOT sites.has_chemical_treatments `);
           }
         }
         break;
       case 'has_mechanical_treatments':
         if (filter.operator === 'CONTAINS') {
           if (/[yes]/i.test(filter.filter)) {
-            where.append(` ${filter.operator2} sites.has_mechanical_treatments = true`);
+            where.append(` ${filter.operator2} sites.has_mechanical_treatments = true `);
           } else if (/[no]/i.test(filter.filter)) {
-            where.append(` ${filter.operator2} NOT sites.has_mechanical_treatments`);
+            where.append(` ${filter.operator2} NOT sites.has_mechanical_treatments `);
           }
         }
         break;
       case 'has_biological_dispersals':
         if (filter.operator === 'CONTAINS') {
           if (/[yes]/i.test(filter.filter)) {
-            where.append(` ${filter.operator2} sites.has_biological_dispersals = true`);
+            where.append(` ${filter.operator2} sites.has_biological_dispersals = true `);
           } else if (/[no]/i.test(filter.filter)) {
-            where.append(` ${filter.operator2} NOT sites.has_biological_dispersals`);
+            where.append(` ${filter.operator2} NOT sites.has_biological_dispersals `);
           }
         }
         break;
       case 'monitored':
         where.append(
-          `${filter.operator2} LOWER(sites.monitored) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(
-            filter.filter
-          )}%') `
+          `${filter.operator2} LOWER(sites.monitored) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'regional_district':
         where.append(
-          `${filter.operator2} LOWER(sites.regional_district) ${filter.operator === 'CONTAINS' ? 'like' : 'not like'}  LOWER('%${escapeLiteralUnquoted(
-            filter.filter
-          )}%') `
+          `${filter.operator2} LOWER(sites.regional_district) ${
+            filter.operator === 'CONTAINS' ? 'like' : 'not like'
+          }  LOWER('%${escapeLiteralUnquoted(filter.filter)}%') `
         );
         break;
       case 'regional_invasive_species_organization':
@@ -691,7 +698,9 @@ function groupByStatement(sqlStatement: SQLStatement, _: any) {
 function orderByStatement(sqlStatement: SQLStatement, filterObject: any) {
   const orderBy = filterObject.orderBy
     ? sqlStatement.append(
-        ` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${filterObject.ordeByType === 'DESC' ? 'FIRST ' : 'LAST'} `
+        ` order by ${filterObject.orderBy} ${filterObject.orderByType}  NULLS ${
+          filterObject.ordeByType === 'DESC' ? 'FIRST ' : 'LAST'
+        } `
       )
     : sqlStatement.append(` `);
   return orderBy;

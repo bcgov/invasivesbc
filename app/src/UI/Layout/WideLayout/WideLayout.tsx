@@ -20,6 +20,7 @@ import { OfflineDataSyncDialog } from 'UI/Features/OfflineDataSync/OfflineDataSy
 import { OfflineUserMenu } from 'UI/Features/OfflineUserMenu/OfflineUserMenu';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const WideLayout = () => {
   const { filteredLinks } = usePrimaryNavigationLinks();
@@ -50,7 +51,6 @@ const WideLayout = () => {
     <div id="wide-layout">
       <AlertsContainer />
       <UserInputModalController />
-
       <div id="nav" className={collapsed ? 'collapsed' : ''}>
         <IconButton
           className={'menu-button'}
@@ -77,7 +77,9 @@ const WideLayout = () => {
             <div className={'spacer'} />
             <DebugMenu />
 
-            <MobileOnly><NetworkStateControl/></MobileOnly>
+            <MobileOnly>
+              <NetworkStateControl />
+            </MobileOnly>
 
             <ul className={'user-actions'}>
               {loggedInOrWorkingOffline && <OfflineSyncHeaderButton />}
@@ -118,7 +120,6 @@ const WideLayout = () => {
           </>
         )}
       </div>
-
       <div id="content">
         {mapShown && (
           <div id="map">
@@ -130,14 +131,14 @@ const WideLayout = () => {
 
         <AppRoutes />
       </div>
-
-      <MobileOnly>
+      <FeatureGated requires={'OFFLINE_SYNC'}>
         <OfflineDataSyncDialog />
+      </FeatureGated>
+      <MobileOnly>
         <OfflineUserMenu />
       </MobileOnly>
-
-      <NewRecordDialog />
-      <CustomizeLayerMenu />
+      <NewRecordDialog />;
+      <CustomizeLayerMenu />;
     </div>
   );
 };

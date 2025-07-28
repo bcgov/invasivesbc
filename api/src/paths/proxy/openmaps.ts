@@ -1,9 +1,9 @@
+import * as https from 'node:https';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
-const https = require('https');
 
 const defaultLog = getLogger('proxy');
 
@@ -20,12 +20,6 @@ GET.apiDoc = {
       ]
     : [],
   parameters: [
-    {
-      name: 'bbox',
-      in: 'query',
-      required: true,
-      description: 'Bounding box'
-    },
     {
       name: 'url',
       in: 'query',
@@ -70,22 +64,10 @@ function getOpenMapsWMSTiles(): RequestHandler {
     }
 
     try {
-      const targetUrl = req.query.url as string;
-      const bbox = req.query.bbox as string;
-
-      const finalEncodedUrl = encodeURI(decodeURI(targetUrl).replace('{bbox-epsg-3857}', bbox));
-
-      if (!finalEncodedUrl) {
-        return res.status(400).json({
-          message: 'Missing URL parameter',
-          request: req.body,
-          namespace: 'openmaps/bbox={bbox}&url={url}',
-          code: 400
-        });
-      }
+      const targetUrl = decodeURI(req.query.url as string);
 
       https
-        .get(finalEncodedUrl, (apiRes) => {
+        .get(targetUrl, (apiRes) => {
           if (apiRes.statusCode !== 200) {
             defaultLog.error({ label: 'openmaps', message: 'getOpenMapsWMSTiles', body: apiRes.statusMessage });
             return res.status(apiRes.statusCode).send(`Error fetching data: ${apiRes.statusMessage}`);
@@ -98,7 +80,7 @@ function getOpenMapsWMSTiles(): RequestHandler {
           // Pipe the API response directly to the client
           apiRes.pipe(res);
         })
-        .on('error', (err) => {
+        .on('error', (_err) => {
           return res.status(500).send('Internal Server Error');
         });
     } catch (error) {
@@ -107,7 +89,7 @@ function getOpenMapsWMSTiles(): RequestHandler {
         message: 'Unable to fetch wms tiles',
         request: req.body,
         error: error,
-        namespace: 'openmaps/bbox={bbox}&url={url}',
+        namespace: 'proxy/openmaps',
         code: 500
       });
     }

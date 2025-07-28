@@ -5,7 +5,7 @@ import { LocalForageCacheService } from 'utils/tile-cache/localforage-cache';
 
 class TileCacheServiceFactory {
   static async getPlatformInstance(): Promise<TileCacheService> {
-    if ([Platform.IOS, Platform.ANDROID].includes(buildTimeConfig.PLATFORM)) {
+    if ([Platform.IOS].includes(buildTimeConfig.PLATFORM)) {
       return SQLiteTileCacheService.getInstance();
     }
     return LocalForageCacheService.getInstance();

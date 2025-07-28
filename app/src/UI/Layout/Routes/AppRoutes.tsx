@@ -148,7 +148,7 @@ const AppRoutes = () => {
       />
 
       <Route
-        path="/OfflineTiles"
+        path="/OfflineMaps"
         render={() => (
           <Suspense fallback={<Spinner />}>
             <TileCachePanel />

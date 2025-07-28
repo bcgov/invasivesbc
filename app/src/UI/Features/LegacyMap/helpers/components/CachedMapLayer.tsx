@@ -5,7 +5,7 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { useSelector } from 'utils/use_selector';
 import bboxToPolygon from 'utils/bboxToPolygon';
 import { Feature, Polygon } from 'geojson';
-import { LAYER_Z_FOREGROUND, LAYER_Z_MID } from '../functional/layer-definitions';
+import { LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 type PropTypes = {
   mapReady: boolean;
@@ -108,7 +108,7 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
   }, [mapReady]);
 
   useEffect(() => {
-    setUserOnOfflineTilePage(!!url?.includes('/OfflineTiles'));
+    setUserOnOfflineTilePage(!!url?.includes('/OfflineMaps'));
   }, [url]);
 
   // Toggle Layer Visibility

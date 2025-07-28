@@ -4,14 +4,17 @@ import { useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'utils/use_selector';
 import { RepositoryStatistics, TileCacheService } from 'utils/tile-cache';
 import { TileCacheServiceFactory } from 'utils/tile-cache/context';
-import { Delete, Edit, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Delete, Edit } from '@mui/icons-material';
 import Prompt from 'state/actions/prompts/Prompt';
 import { convertBytesToReadableString } from 'utils/tile-cache/helpers';
-import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
-const TileCacheListRow = ({ metadata, visible }) => {
-  const handleToggleVisibility = (id: string) => dispatch(MapActions.toggleOverlay(id));
+const TileCacheListRow = ({ metadata }) => {
+  const updateStatistics = async () => {
+    if (!serviceRef.current) return;
+    serviceRef.current.getRepositoryStatistics(metadata.id).then((value) => setStats(value));
+  };
+
   const handleEditCacheDescription = () => {
     const callback = (newName: string) => {
       dispatch(TileCache.updateDescription({ repository: metadata.id, newDescription: newName }));
@@ -28,6 +31,7 @@ const TileCacheListRow = ({ metadata, visible }) => {
       })
     );
   };
+
   const handleDelete = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
@@ -48,33 +52,22 @@ const TileCacheListRow = ({ metadata, visible }) => {
   };
 
   const dispatch = useDispatch();
-  const serviceRef = useRef<TileCacheService | null>(null);
-  const [stats, setStats] = useState<RepositoryStatistics | null>(null);
+  const serviceRef = useRef<TileCacheService>();
+  const [stats, setStats] = useState<RepositoryStatistics>();
 
   useEffect(() => {
-    if (!serviceRef.current) {
-      return;
-    }
-    serviceRef.current.getRepositoryStatistics(metadata.id).then((value) => {
-      setStats(value);
-    });
-  }, [metadata.id, serviceRef.current]);
-
-  useEffect(() => {
-    TileCacheServiceFactory.getPlatformInstance().then((value) => {
-      serviceRef.current = value;
-    });
+    (async () => {
+      serviceRef.current = await TileCacheServiceFactory.getPlatformInstance();
+      updateStatistics();
+    })();
   }, []);
+
+  useEffect(() => {
+    updateStatistics();
+  }, [metadata]);
 
   return (
     <tr>
-      <td>
-        {metadata.status === 'READY' && (
-          <button className="visibility-button" onClick={handleToggleVisibility.bind(this, metadata.id)}>
-            {visible ? <Visibility /> : <VisibilityOff />}
-          </button>
-        )}
-      </td>
       <td>{metadata.description || metadata.id}</td>
       <td>{metadata.status}</td>
       <td>{stats?.tileCount?.toLocaleString()}</td>

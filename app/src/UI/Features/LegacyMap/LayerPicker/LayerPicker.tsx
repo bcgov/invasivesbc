@@ -16,8 +16,15 @@ import MapIcon from '@mui/icons-material/Map';
 
 import './LayerPicker.css';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
-export const LayerPicker = () => {
+type PropTypes = {
+  layers: InvasivesMapLayerDefinitionWithState[];
+  setOverlayState: (layer: string) => void;
+};
+
+export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
   const closeLayerPicker = () => {
     setShowLayerPicker(false);
     setPickerPath(LpModules.Init);
@@ -27,7 +34,6 @@ export const LayerPicker = () => {
   const [showLayerPicker, setShowLayerPicker] = useState<boolean>(false);
   const accordionMode = useSelector((state) => state.UserSettings.layerPickerIsAccordion);
   const dispatch = useDispatch();
-  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
 
   if (!showLayerPicker) {
     return (
@@ -71,16 +77,20 @@ export const LayerPicker = () => {
                 {accordionMode ? (
                   <>
                     <Accordion icon={<MapIcon />} title={LpModules.DataBcLayers}>
-                      <LpLayers />
+                      <LpLayers layers={layers} setOverlayState={setOverlayState} />
                     </Accordion>
                     <Accordion icon={<ManageSearchIcon />} title={LpModules.Recordsets}>
                       <LpRecordSet closePicker={closeLayerPicker} />
                     </Accordion>
-                    {MOBILE && (
+                    <FeatureGated requires={'CACHE_TILES'}>
                       <Accordion icon={<Save />} title={LpModules.MapTiles}>
-                        <LpOfflineMaps closePicker={closeLayerPicker} />
+                        <LpOfflineMaps
+                          layers={layers}
+                          setOverlayState={setOverlayState}
+                          closePicker={closeLayerPicker}
+                        />
                       </Accordion>
-                    )}
+                    </FeatureGated>
                   </>
                 ) : (
                   <ul className="path-ul">
@@ -88,22 +98,24 @@ export const LayerPicker = () => {
                     <li>
                       <hr />
                     </li>
-                    {MOBILE && (
+                    <FeatureGated requires={'CACHE_TILES'}>
                       <>
                         <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.MapTiles} />
                         <li>
                           <hr />
                         </li>
                       </>
-                    )}
+                    </FeatureGated>
                     <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.Recordsets} />
                   </ul>
                 )}
               </>
             ),
-            [LpModules.DataBcLayers]: <LpLayers />,
+            [LpModules.DataBcLayers]: <LpLayers layers={layers} setOverlayState={setOverlayState} />,
             [LpModules.Recordsets]: <LpRecordSet closePicker={closeLayerPicker} />,
-            [LpModules.MapTiles]: <LpOfflineMaps closePicker={closeLayerPicker} />
+            [LpModules.MapTiles]: (
+              <LpOfflineMaps layers={layers} setOverlayState={setOverlayState} closePicker={closeLayerPicker} />
+            )
           }[pickerPath]
         }
       </div>

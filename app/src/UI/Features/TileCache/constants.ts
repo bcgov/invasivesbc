@@ -10,9 +10,19 @@ export const AVAILABLE_ZOOMS = [
     scale: '1:150,000'
   },
   {
+    value: 13,
+    label: 'Zoom 13',
+    scale: '1:75,000'
+  },
+  {
     value: 14,
     label: 'Zoom 14',
     scale: '1:35,000'
+  },
+  {
+    value: 15,
+    label: 'Zoom 15',
+    scale: '1:16,000'
   },
   {
     value: 16,
@@ -20,9 +30,19 @@ export const AVAILABLE_ZOOMS = [
     scale: '1:8,000'
   },
   {
+    value: 17,
+    label: 'Zoom 17',
+    scale: '1:4,000'
+  },
+  {
     value: 18,
     label: 'Zoom 18',
     scale: '1:2,000'
+  },
+  {
+    value: 19,
+    label: 'Zoom 19',
+    scale: '1:1,000'
   },
   {
     value: 20,

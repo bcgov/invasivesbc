@@ -1,55 +1,60 @@
-import { useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { useSelector } from 'utils/use_selector';
 import 'UI/Features/LegacyMap/LayerPicker/LpOfflineMaps/LpOfflineMaps.css';
 import LpOfflineMapsOptions from 'UI/Features/LegacyMap/LayerPicker/LpOfflineMaps/LpOfflineMapsOption';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
-import MapActions from 'state/actions/map';
+import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
+import { useDispatch } from 'utils/use_selector';
+import TileCache from 'state/actions/cache/TileCache';
+import { useEffect } from 'react';
 
 type PropTypes = {
   closePicker: () => void;
+  layers: InvasivesMapLayerDefinitionWithState[];
+  setOverlayState: (layer: string) => void;
 };
-const LpOfflineMaps = ({ closePicker }: PropTypes) => {
+
+const LpOfflineMaps = ({ closePicker, setOverlayState, layers }: PropTypes) => {
   const cachedToolTipText =
     'Use this option to show or hide the map tiles you’ve previously downloaded to your device.';
-  const onCacheClick = (id: string) => {
-    dispatch(MapActions.toggleOverlay(id));
-  };
-  const visibleLayers = useSelector((state) => state.Map.enabledOverlayLayers) ?? [];
-  const repositories = useSelector((state) => state.TileCache?.repositories) ?? [];
+
   const dispatch = useDispatch();
+
+  // Ensure TileCache repositoryList is up to date, if available.
+  useEffect(() => {
+    dispatch(TileCache.repositoryList());
+  }, []);
+
   return (
     <div id="lp-offline-maps">
       <h3>
         Cached Map Tiles <TooltipWithIcon tooltipText={cachedToolTipText} />
       </h3>
       <p className="lp-subheader"></p>
-      {repositories.length === 0 ? (
+      {layers.filter((l) => l.mode === 'overlay' && l.selectionMode === 'offline-layers').length === 0 ? (
         <div className="lp-offline-maps-empty-collection">
           <p>You don't have any map areas cached</p>
         </div>
       ) : (
         <ul>
-          {repositories
-            .filter((item) => item.status === 'READY')
-            .map((item, index) => (
+          {layers
+            .filter((l) => l.mode === 'overlay' && l.selectionMode === 'offline-layers')
+            .map((item) => (
               <LpOfflineMapsOptions
-                id={item?.id ?? 'No Id provided'}
-                description={item.description}
-                key={item.id}
-                lastChild={index === repositories.length - 1}
-                layerVisible={visibleLayers.includes(item?.id)}
-                onClick={onCacheClick}
+                id={item?.name ?? 'No Id provided'}
+                description={item.displayName}
+                key={item.name}
+                layerVisible={layers.some((layer) => layer.name === item.name && layer.active)}
+                onClick={() => setOverlayState(item.name)}
               />
             ))}
         </ul>
       )}
       <div className="guide">
         <p>
-          You can modify or create new Map Caches from the <b>Tile Cache Status</b> page.
+          You can modify or create new Map Caches from the <b>Offline Maps</b> page.
         </p>
-        <Link to="/OfflineTiles" onClick={closePicker}>
-          Go to Tile Cache Status page
+        <Link to="/OfflineMaps" onClick={closePicker}>
+          Go to offline maps page
         </Link>
       </div>
     </div>

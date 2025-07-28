@@ -7,10 +7,10 @@ import Activity from 'state/actions/activity/Activity';
 import { AuthActions } from 'state/actions/auth/Auth';
 import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { selectAuth } from 'state/reducers/auth';
-import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RepositoryMetadata } from 'utils/record-cache';
 import defaultRecordSets from 'constants/defaultRecordSets';
+import { RootState } from 'state/reducers/rootReducer';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -77,14 +77,19 @@ function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
 }
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
-  const { recordSets } = yield select(selectUserSettings);
   if (!UserSettings.InitState.get.match(action)) {
     return;
   }
+  
+  const { recordSets } = yield select(selectUserSettings);
+
+  const recordsetCacheEnabled: boolean = yield select(
+    (state: RootState) => state.Configuration.current.features.CACHE_RECORDSETS.enabled
+  );
 
   const defaultRecordSet = defaultRecordSets;
   // add offline activities for mobile
-  if (buildTimeConfig.MOBILE) {
+  if (recordsetCacheEnabled) {
     // RecordSets are empty, try to recover whats in the local database
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
     const repos = yield service.listRepositories(['filter_objects', 'status', 'record_set_type', 'set_id']);
