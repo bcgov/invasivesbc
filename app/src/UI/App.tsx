@@ -27,30 +27,30 @@ const App = () => {
 
   const platformClasses = usePlatformClasses();
 
+  const clamp = (value: number, max: number) => Math.min(value, max);
+
   useEffect(() => {
     if (buildTimeConfig.PLATFORM !== Platform.ANDROID) return;
+    const isSmallScreen = window.innerWidth <= 800 && window.innerHeight <= 960; // small to medium sized phones
+
+    const applyInsets = (insets: { top: number; bottom: number }) => {
+      const appElement = document.getElementById('app');
+      if (!appElement?.classList.contains('android')) return;
+
+      const top = isSmallScreen ? clamp(insets.top, 24) : insets.top;
+      const bottom = isSmallScreen ? clamp(insets.bottom, 16) : insets.bottom;
+      if (appElement?.classList.contains('android')) {
+        appElement.style.setProperty('--extra-top-padding', `${top}px`);
+        appElement.style.setProperty('--extra-bottom-padding', `${bottom}px`);
+      }
+    };
 
     // set initial insets
-    SafeInsets.getSafeAreaInsets({})
-      .then((insets) => {
-        const appElement = document.getElementById('app');
-
-        if (appElement?.classList.contains('android')) {
-          appElement.style.setProperty('--extra-top-padding', `${insets.top}px`);
-          appElement.style.setProperty('--extra-bottom-padding', `${insets.bottom}px`);
-        }
-      })
-      .catch(console.error);
+    SafeInsets.getSafeAreaInsets({}).then(applyInsets).catch(console.error);
 
     // listen for insets changes
     let listener: PluginListenerHandle;
-    SafeInsets.addListener('insetsChanged', (insets) => {
-      const appElement = document.getElementById('app');
-      if (appElement?.classList.contains('android')) {
-        appElement.style.setProperty('--extra-top-padding', `${insets.top}px`);
-        appElement.style.setProperty('--extra-bottom-padding', `${insets.bottom}px`);
-      }
-    }).then((handle) => {
+    SafeInsets.addListener('insetsChanged', applyInsets).then((handle) => {
       listener = handle;
     });
     return () => {
