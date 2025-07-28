@@ -146,7 +146,7 @@ class PmtRecordset {
       const newStatus = convertActionToCacheStatus(response?.meta?.requestStatus, 'remove');
       await PlanMyTrip.setSubcacheStatus(spec.tripId, setType, newStatus);
       if (newStatus === IPlanMyTripCacheStatus.NOT_CACHED) {
-        dispatch(UserSettings.RecordSet.remove(spec.setId));
+        dispatch(UserSettings.RecordSet.requestRemoval({ setId: spec.setId }));
       }
     }
   );
