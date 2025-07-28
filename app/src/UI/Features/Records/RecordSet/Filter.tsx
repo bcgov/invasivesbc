@@ -123,8 +123,8 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
                 </option>
               ))
             ) : (
-              <option selected disabled value="">
-                Original source removed
+              <option selected disabled value={filterSet?.id ?? ''}>
+                {filterSet?.geojson?.properties?.description ?? 'Original source removed'}
               </option>
             )}
           </select>
@@ -153,7 +153,7 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
 
   const [inputValue, setInputValue] = useState<string>(filterSet.filter);
   const input = getFilterType(filterSet.filterType);
-
+  console.log(filterSet);
   return (
     <tr>
       <td>
