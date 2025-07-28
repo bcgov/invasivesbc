@@ -62,7 +62,7 @@ abstract class PlanMyTripCacheService extends BaseCacheService<
   IPlanMyTripCacheProgressCallbackParameters,
   IPlanMyTripCacheStatus
 > {
-  public static TRIP_PREFIX = 'pmt-';
+  public static readonly TRIP_PREFIX = 'pmt-';
   protected CACHE_UNAVAILABLE = 'Plan My Trip Cache Unavailable';
   protected constructor() {
     super();
