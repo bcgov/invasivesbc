@@ -21,6 +21,7 @@ const ManageTripsPage = () => {
   const drawnShape = useSelector((state) => state.PlanMyTrip?.drawnShape);
   const [trips, setTrips] = useState<IPlanMyTripRepositoryMetadata[]>([]);
   const [tripName, setTripName] = useState<string>('');
+  const lastUpdate = useSelector((state) => state.PlanMyTrip?.lastUpdate);
 
   const addTrip = () => {
     (async () => {
@@ -35,38 +36,29 @@ const ManageTripsPage = () => {
           activities: true
         })
       );
-      getAllTrips();
     })();
   };
 
   const removeSubCache = (id: string, cache: keyof IPlanMyTripCacheStatuses) => {
-    (async () => {
-      const response = await dispatch(PlanMyTrip.removeSubCache({ id, cache }));
-      if (response.meta.requestStatus === 'fulfilled') getAllTrips();
-    })();
+    dispatch(PlanMyTrip.removeSubCache({ id, cache }));
   };
-  const getAllTrips = () => {
+
+  useEffect(() => {
     (async () => {
       if (!service.current) return;
       await service.current.listRepositories().then((trips) => {
         setTrips([...trips]);
       });
     })();
-  };
+  }, [lastUpdate, service.current]);
 
   const deleteTrip = (id: string) => {
-    (async () => {
-      if (service.current) {
-        await dispatch(PlanMyTrip.delete(id));
-        getAllTrips();
-      }
-    })();
+    dispatch(PlanMyTrip.delete(id));
   };
   useEffect(() => {
     if (service.current) return;
     (async () => {
       service.current = await PlanMyTripCacheServiceFactory.getPlatformInstance();
-      getAllTrips();
     })();
   }, []);
 
@@ -109,9 +101,6 @@ const ManageTripsPage = () => {
           </div>
         </div>
         <h2>Repos</h2>
-        <button style={{ width: 150, alignSelf: 'center' }} onClick={getAllTrips}>
-          Sync
-        </button>
         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
           {trips.length === 0 && <p>No Trips available</p>}
           {trips.map((trip) => (
