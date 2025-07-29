@@ -116,13 +116,13 @@ const Filter = ({ setID, disabled, filterSet, recordSetType }: PropTypes) => {
             onChange={(e) => updateSpatialFilter(e.target.value, EFilterType.Drawn)}
             value={filterSet.filter}
           >
-            {clientBoundariesToDisplay.length > 0 ? (
+            {clientBoundariesToDisplay.length > 0 &&
               clientBoundariesToDisplay?.map((option) => (
                 <option key={option.value + option.label} value={option.value}>
                   {option.label}
                 </option>
-              ))
-            ) : (
+              ))}
+            {filterSet?.id.startsWith('pmt-') && (
               <option selected disabled value={filterSet?.id ?? ''}>
                 {filterSet?.geojson?.properties?.description ?? 'Original source removed'}
               </option>
