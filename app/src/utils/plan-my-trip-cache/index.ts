@@ -96,10 +96,6 @@ abstract class PlanMyTripCacheService {
   }
 
   protected abstract addOrUpdateRepository(spec: IPlanMyTripRepositoryMetadata): Promise<void>;
-  /**
-   *
-   */
-  public abstract syncStatus(): Promise<boolean>;
 }
 
 export { IPlanMyTripCacheStatus, PlanMyTripCacheService };

@@ -3,9 +3,6 @@ import { PlanMyTripCacheService } from '.';
 import type { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses, IPlanMyTripRepositoryMetadata } from '.';
 
 class LocalForagePlanMyTripCacheService extends PlanMyTripCacheService {
-  public syncStatus(): Promise<boolean> {
-    throw new Error('Method not implemented.');
-  }
   public setRepositoryStatus(_id: string, _status: IPlanMyTripCacheStatus): Promise<void> {
     throw new Error('setRepositoryStatus not implemented for PlanMyTripCacheService.');
   }

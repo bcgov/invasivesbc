@@ -67,9 +67,6 @@ class SQLitePlanMyTripCacheService extends PlanMyTripCacheService {
       [newStatus, repositoryId]
     );
   }
-  public syncStatus(): Promise<boolean> {
-    throw new Error('Method not implemented.');
-  }
 
   protected async addOrUpdateRepository(spec: IPlanMyTripRepositoryMetadata): Promise<void> {
     if (this.cacheDB == null) throw new Error(this.CACHE_UNAVAILABLE);
