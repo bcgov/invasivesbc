@@ -13,6 +13,8 @@ import MapSlider from 'UI/Features/TileCache/MapSlider';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import bbox from '@turf/bbox';
 import { useEffect, useState } from 'react';
+import WellCache from 'state/actions/cache/WellCache';
+import TileCache from 'state/actions/cache/TileCache';
 
 type MapPropTypes = {
   trip: IPlanMyTripRepositoryMetadata;
@@ -98,7 +100,7 @@ const PmtDownloadRecordset = ({ trip, recordSetType }: RecordPropTypes) => {
 const PmtDownloadMaps = ({ trip }: MapPropTypes) => {
   const handleDownload = (zoom: number, shape: RepositoryBoundingBoxSpec) => {
     dispatch(
-      PlanMyTrip.Maps.download({
+      TileCache.requestCaching({
         description: trip.name,
         id: trip.id,
         bounds: shape,
@@ -123,7 +125,7 @@ const PmtWellData = ({ trip }: WellPropTypes) => {
       minLongitude: minX,
       maxLongitude: maxX
     };
-    dispatch(PlanMyTrip.Wells.download({ tripId: trip.id, bounds }));
+    dispatch(WellCache.requestCaching({ id: trip.id, bounds: bounds }));
   };
 
   return (
@@ -162,7 +164,7 @@ const PmtCacheStatus = ({ trip, onRemove, cacheKey }: PropTypes) => {
             [IPlanMyTripCacheStatus.CACHED]: (
               <Button variant="contained" color="error" onClick={onRemove.bind(this, trip.id, cacheKey)}>
                 <Delete />
-                Delete {TITLE} Data
+                Delete {TITLE} Cache
               </Button>
             ),
             [IPlanMyTripCacheStatus.IN_PROGRESS]: <p>In Progress...</p>,
