@@ -200,6 +200,7 @@ class PmtMaps {
 class PlanMyTrip {
   static readonly PREFIX = 'PlanMyTrip';
   static readonly ON_SUCCESS = 'fulfilled';
+  static readonly TRIP_ID_PREFIX = 'pmt-';
 
   public static readonly Recordset = PmtRecordset;
   public static readonly Wells = PmtWells;
@@ -243,7 +244,7 @@ class PlanMyTrip {
       if (!bounds || !geojson) {
         throw Error('Cannot create this trip - no shape data available.');
       }
-      const tripId = `pmt-${nanoid()}`;
+      const tripId = `${this.TRIP_ID_PREFIX}${nanoid()}`;
       const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
 
       // Define initial cache statuses
