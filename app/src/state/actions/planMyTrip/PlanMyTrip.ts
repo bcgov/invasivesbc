@@ -334,8 +334,14 @@ class PlanMyTrip {
       'wellData',
       'wmsLayer'
     ];
-    const promises = await Promise.all(subcaches.map((cache) => dispatch(this.removeSubCache({ id, cache }))));
-    const deleteSucceeded = promises.every((promise) => promise?.meta?.requestStatus === 'fulfilled');
+    let deleteSucceeded = true;
+    for (const cache of subcaches) {
+      // run deletes synchronously to avoid transaction within transaction error (vs Promise.all)
+      const res = await dispatch(this.removeSubCache({ id, cache }));
+      if (res?.meta?.requestStatus !== 'fulfilled') {
+        deleteSucceeded = false;
+      }
+    }
     if (deleteSucceeded) {
       const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
       await service.deleteRepository(id);
