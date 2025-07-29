@@ -108,8 +108,7 @@ class PmtRecordset {
       if (!currState.UserSettings.recordSets?.[spec.setId]) return;
 
       const response = await dispatch(RecordCache.deleteCache({ setId: spec.setId }));
-      const newStatus = PlanMyTrip.convertActionToCacheStatus(response?.meta?.requestStatus, 'remove');
-      if (newStatus === IPlanMyTripCacheStatus.NOT_CACHED) {
+      if (response?.meta?.requestStatus === 'fulfilled') {
         dispatch(UserSettings.RecordSet.requestRemoval({ setId: spec.setId }));
       }
     }
@@ -251,24 +250,6 @@ class PlanMyTrip {
     }
     dispatch(PlanMyTrip.refresh());
   });
-
-  /**
-   * @desc Converts Redux state for thunk into action based on if addition or subtraction
-   * @param { string } status New status
-   * @param { string } diff addition or removal
-   * @returns
-   */
-  public static readonly convertActionToCacheStatus = (
-    status: 'fulfilled' | 'rejected' | null,
-    diff: 'add' | 'remove'
-  ): IPlanMyTripCacheStatus => {
-    if (status === 'fulfilled' && diff === 'add') {
-      return IPlanMyTripCacheStatus.CACHED;
-    } else if (status === 'fulfilled' && diff === 'remove') {
-      return IPlanMyTripCacheStatus.NOT_CACHED;
-    }
-    return IPlanMyTripCacheStatus.FAILED;
-  };
 }
 
 export default PlanMyTrip;
