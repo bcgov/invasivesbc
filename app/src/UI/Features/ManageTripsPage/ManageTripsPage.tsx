@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import PmtCacheStatus from './subcomponents/PmtCacheStatus';
 import { Button } from '@mui/material';
 import { Delete } from '@mui/icons-material';
+import Accordion from 'UI/Reusable/Accordion/Accordion';
 
 const ManageTripsPage = () => {
   const service = useRef<PlanMyTripCacheService>();
@@ -79,7 +80,6 @@ const ManageTripsPage = () => {
   return (
     <div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        <p>Cache Service Status: {service.current != null ? 'Ready' : 'Not Ready'}</p>
         <div>
           <p>Add a Repo</p>
           <input type="text" placeholder="Name" value={tripName} onChange={(e) => setTripName(e.target.value)} />
@@ -98,15 +98,20 @@ const ManageTripsPage = () => {
           }}
         >
           <div style={{ width: '400px', textWrap: 'wrap', wordBreak: 'break-word' }}>
-            <p>
-              <b>Bounds:</b> {JSON.stringify(bounds)}
-            </p>
-            <p>
-              <b>Original Shape:</b> {JSON.stringify(drawnShape) ?? 'null'}
-            </p>
+            <Accordion title="shapes">
+              <p>
+                <b>Bounds:</b> {JSON.stringify(bounds)}
+              </p>
+              <p>
+                <b>Original Shape:</b> {JSON.stringify(drawnShape) ?? 'null'}
+              </p>
+            </Accordion>
           </div>
         </div>
         <h2>Repos</h2>
+        <button style={{ width: 150, alignSelf: 'center' }} onClick={getAllTrips}>
+          Sync
+        </button>
         <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
           {trips.length === 0 && <p>No Trips available</p>}
           {trips.map((trip) => (
