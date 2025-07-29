@@ -90,6 +90,7 @@ abstract class PlanMyTripCacheService {
     type: keyof IPlanMyTripCacheStatuses,
     newStatus: IPlanMyTripCacheStatus
   ): Promise<void>;
+
   static async getInstance(): Promise<PlanMyTripCacheService> {
     throw new Error('unimplemented in abstract base class');
   }
