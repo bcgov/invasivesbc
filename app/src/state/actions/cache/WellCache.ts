@@ -9,7 +9,7 @@ import DownloadActions from 'state/actions/downloads/DownloadActions';
  *       Used for Caching Well Metadata for use in offline Chemical treatment forms.
  */
 class WellCache {
-  private static readonly PREFIX = 'WellCache';
+  public static readonly PREFIX = 'WellCache';
 
   static readonly requestCaching = createAsyncThunk(
     `${this.PREFIX}/requestCaching`,
@@ -27,7 +27,7 @@ class WellCache {
     }
   );
 
-  static readonly deleteRepository = createAsyncThunk(`${this.PREFIX}/requestCaching`, async (repository: string) => {
+  static readonly deleteRepository = createAsyncThunk(`${this.PREFIX}/deleteRepository`, async (repository: string) => {
     const wellService = await WellCacheServiceFactory.getPlatformInstance();
     await wellService.deleteRepository(repository);
   });

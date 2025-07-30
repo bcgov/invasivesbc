@@ -11,8 +11,10 @@ import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 const TileCacheListRow = ({ metadata }) => {
   const updateStatistics = async () => {
-    if (!serviceRef.current) return;
-    serviceRef.current.getRepositoryStatistics(metadata.id).then((value) => setStats(value));
+    (async () => {
+      if (!serviceRef.current) return;
+      await serviceRef.current.getRepositoryStatistics(metadata.id).then((value) => setStats(structuredClone(value)));
+    })();
   };
 
   const handleEditCacheDescription = () => {
@@ -42,7 +44,7 @@ const TileCacheListRow = ({ metadata }) => {
       Prompt.confirmation({
         title: 'Delete Cached Map Area?',
         prompt: [
-          'Do you want to delete this set of map area?',
+          'Do you want to delete this set of offline maps?',
           'They will no longer be available for offline use.',
           `Cache "${metadata.description || metadata.id}"`
         ],
@@ -63,7 +65,9 @@ const TileCacheListRow = ({ metadata }) => {
   }, []);
 
   useEffect(() => {
-    updateStatistics();
+    (async () => {
+      await updateStatistics();
+    })();
   }, [metadata]);
 
   return (

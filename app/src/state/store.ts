@@ -8,6 +8,7 @@ import debounce from 'lodash.debounce';
 import { createRootReducer } from './reducers/rootReducer';
 import { URL_CHANGE } from './actions';
 import activityPageSaga from './sagas/activity';
+import planMyTripSaga from './sagas/planMyTrip';
 import authenticationSaga from './sagas/auth/auth';
 import batchSaga from './sagas/batch';
 import emailSettingsSaga from './sagas/email-setup/emailSettings';
@@ -81,6 +82,7 @@ export function setupStore(configuration: UnifiedConfig) {
   sagaMiddleware.run(emailSettingsSaga);
   sagaMiddleware.run(emailTemplatesSaga);
   sagaMiddleware.run(networkSaga);
+  sagaMiddleware.run(planMyTripSaga);
 
   store.dispatch(NetworkActions.checkInitConnection());
   store.dispatch(AuthActions.initializeRequest());

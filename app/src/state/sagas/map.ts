@@ -66,7 +66,8 @@ import GeoShapes from 'constants/geoShapes';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import { normalizeToPolygonCoordinates } from 'utils/geometryHelpers';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
-import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
+import { isPaused, isTracking } from 'utils/geoTrackingHelpers';
+import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -511,6 +512,31 @@ function* handle_PAGE_OR_LIMIT_UPDATE(action) {
   }
 }
 
+/**
+ * @desc Waits for the new recordset to get its IDList then begins downloading records for it.
+ */
+function* handle_DOWNLOAD_NEW_TRIP_RECORDSET(action: PayloadAction<UserRecordSet>) {
+  yield call(handle_MAP_INIT_FOR_RECORDSETS);
+  const connected = yield select(selectNetworkConnected);
+
+  if (!connected) return;
+  const recordType = action.payload.recordSetType;
+  const recordId = action.payload.id!;
+
+  const desiredAction = (() => {
+    if (recordType === RecordSetType.Activity) {
+      return Activity.getIdsForRecordsetSuccess.type;
+    } else if (recordType === RecordSetType.IAPP) {
+      return IappActions.getIdsForRecordsetSuccess.type;
+    }
+  })();
+
+  // Wait for Recordsets to have valid IDList
+  yield take(
+    (incomingAction) => incomingAction.type === desiredAction && incomingAction.payload.recordSetID === recordId
+  );
+  yield put(PlanMyTrip.Recordset.download(recordId));
+}
 function* handle_MAP_INIT_FOR_RECORDSETS() {
   interface ActionType {
     type: string;
@@ -751,6 +777,7 @@ function* activitiesPageSaga() {
     //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
     takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(UserSettings.RecordSet.add, handle_MAP_INIT_FOR_RECORDSETS),
+    takeEvery(PlanMyTrip.Recordset.create, handle_DOWNLOAD_NEW_TRIP_RECORDSET),
     takeEvery(UserSettings.SiteLists.createRecordsetsFromSiteList, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(MapActions.initForRecordset, handle_MAP_INIT_FOR_RECORDSETS),
 

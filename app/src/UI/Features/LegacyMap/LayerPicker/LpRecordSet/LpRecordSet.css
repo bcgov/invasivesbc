@@ -35,9 +35,6 @@
   align-items: center;
   height: 48px;
   box-sizing: border-box;
-  div {
-    margin-right: 10px;
-  }
   button {
     background-color: transparent;
     border: none;
@@ -46,6 +43,14 @@
   }
   button:hover {
     cursor: pointer;
+  }
+  div {
+    display: flex;
+    flex-direction: row;
+  }
+  p {
+    margin: 0;
+    word-wrap: wrap;
   }
 }
 

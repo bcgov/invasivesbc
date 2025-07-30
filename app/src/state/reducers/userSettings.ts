@@ -16,6 +16,7 @@ import { APIDocs } from 'state/actions/userSettings/APIDocs';
 import { activityColumnsToDisplay, iappColumnsToDisplay } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
 import defaultRecordSets from 'constants/defaultRecordSets';
 import { EFilterType } from 'state/actions/userSettings/RecordSet';
+import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 interface UserSettingsState {
   [MIGRATION_VERSION_KEY]: number;
@@ -152,7 +153,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
             );
           }
         }
-      } else if (UserSettings.RecordSet.add.match(action)) {
+      } else if (UserSettings.RecordSet.add.match(action) || PlanMyTrip.Recordset.create.match(action)) {
         draftState.recordSets[action.payload.id] ??= action.payload;
       } else if (UserSettings.SiteLists.createRecordsetsFromSiteList.match(action)) {
         const { activityIds, iappIds, name } = action.payload;
