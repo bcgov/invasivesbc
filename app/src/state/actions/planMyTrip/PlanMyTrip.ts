@@ -38,7 +38,7 @@ interface IModifySubCache {
 }
 
 class PmtRecordset {
-  private static readonly PREFIX = 'PlanMyTrip/PmtRecordset';
+  public static readonly PREFIX = 'PlanMyTrip/PmtRecordset';
   public static readonly IAPP_PRE = 'iapp-'; // Prefix for IAPP Recordsets
   public static readonly ACTIVITY_PRE = 'act-'; // Prefix for Activity Recordsets
 
@@ -93,9 +93,19 @@ class PmtRecordset {
   /**
    * @desc Starts Download for Recordset, updates Trips cache status at completion of thunk
    */
-  public static readonly download = createAsyncThunk(`${this.PREFIX}/download`, async (setId: string, { dispatch }) => {
-    await dispatch(RecordCache.requestCaching({ setId }));
-  });
+  public static readonly download = createAsyncThunk(
+    `${this.PREFIX}/download`,
+    async (setId: string, { dispatch, getState, rejectWithValue }) => {
+      const state = getState() as RootState;
+      const recordsetIds = state.UserSettings.recordSets?.[setId]?.idList?.length;
+      if (recordsetIds > 0) {
+        await dispatch(RecordCache.requestCaching({ setId }));
+      } else {
+        dispatch(UserSettings.RecordSet.requestRemoval({ setId }));
+        return rejectWithValue({ reason: IPlanMyTripCacheStatus.NO_DATA });
+      }
+    }
+  );
 
   /**
    * @desc Clears Cache for Recordset from storage, updates Trip data,
