@@ -218,7 +218,7 @@ class PlanMyTrip {
     async (spec: IModifySubCache, { dispatch }) => {
       const service = await PlanMyTripCacheServiceFactory.getPlatformInstance();
       const repo = await service.getRepository(spec.id);
-      if (!repo || repo?.cacheStatuses[spec.cache] === IPlanMyTripCacheStatus.NOT_CACHED) return;
+      if (!repo) return;
       switch (spec.cache) {
         case 'mapTiles':
           await dispatch(TileCache.deleteRepository(spec.id));
