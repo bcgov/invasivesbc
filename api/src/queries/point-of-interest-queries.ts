@@ -22,10 +22,10 @@ export const getPointsOfInterestSQL = (searchCriteria: PointOfInterestSearchCrit
 
   if (searchCriteria.iappType) {
     sqlStatement.append(SQL` FROM point_of_interest_incoming_data LEFT JOIN iapp_site_summary_and_geojson issg ON
-    point_of_interest_incoming_data.point_of_interest_incoming_data_id = issg.id WHERE 1 = 1
+    point_of_interest_incoming_data.point_of_interest_incoming_data_id = issg.id WHERE 1 = 1 
     `);
   } else {
-    sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1`);
+    sqlStatement.append(SQL` FROM point_of_interest_incoming_data WHERE 1 = 1 `);
   }
 
   if (searchCriteria.pointOfInterest_type) {

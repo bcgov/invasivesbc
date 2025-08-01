@@ -82,7 +82,7 @@ const getSurveyObj = (row: any, map_code: any) => {
   };
 };
 
-export const getSpeciesRef = async (connection: PoolClient) => {
+const getSpeciesRef = async (connection: PoolClient) => {
   try {
     const sqlStatement: SQLStatement = speciesRefSql();
     const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -99,8 +99,8 @@ export const getSpeciesRef = async (connection: PoolClient) => {
   }
 };
 
-export const species_and_genus_regex = /[(]([A-Z]{4})[ ]([A-Z]{3})[)]/g;
-export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_ref: any[]) => {
+const species_and_genus_regex = /[(]([A-Z]{4})[ ]([A-Z]{3})[)]/g;
+const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_ref: any[]) => {
   const species_and_genus_match_array = [...input?.matchAll(species_and_genus_regex)];
   const map_codes_only = species_and_genus_match_array.map((x) => {
     return species_ref?.filter((r: any) => {
@@ -112,7 +112,7 @@ export const getSpeciesCodesFromIAPPDescriptionList = (input: string, species_re
   });
 }; //todo: filter based on species (group 1) and genus (group 0)
 
-export const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
+const mapSitesRowsToJSON = async (site_extract_table_response: any, searchCriteria: any) => {
   let connection: PoolClient;
   try {
     connection = await getDBConnection();
@@ -140,12 +140,13 @@ export const mapSitesRowsToJSON = async (site_extract_table_response: any, searc
 
     return site_extract_table_response.rows.map((row) => {
       // Fetching Extracts
+      const objMap: Partial<typeof sitesMap> = {};
       Object.keys(sitesMap).forEach((key) => {
-        sitesMap[key].filter((r: any) => r.site_id === row.site_id);
+        objMap[key] = structuredClone(sitesMap[key].filter((r: any) => r.site_id === row.site_id));
       });
 
       // Setting iapp site object
-      const iapp_site = getIAPPjson(row, sitesMap.site_selection_extract[0], searchCriteria);
+      const iapp_site = getIAPPjson(row, objMap.site_selection_extract?.[0], searchCriteria);
       if (searchCriteria.site_id_only) {
         return iapp_site;
       }
@@ -159,21 +160,23 @@ export const mapSitesRowsToJSON = async (site_extract_table_response: any, searc
       );
 
       // Assigning extracts into form_data
-      (iapp_site as any).point_of_interest_payload.form_data.surveys = sitesMap.survey_extract?.map(
+      (iapp_site as any).point_of_interest_payload.form_data.surveys = objMap.survey_extract?.map(
         (x) => getSurveyObj(x, row['map_symbol']) ?? []
       );
-      (iapp_site as any).point_of_interest_payload.form_data.biological_treatments = sitesMap.biological_treatment_extract.map(
-        (x) => biologicalTreatmentsJSON(x, sitesMap.biological_monitoring_extract) ?? []
-      );
-      (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals = sitesMap.biological_dispersal_extract.map(
-        (x) => biologicalDispersalJSON(x) ?? []
-      );
-      (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments = sitesMap.chemical_treatment_extract.map(
-        (x) => chemicalTreatmentJSON(x, sitesMap.chemical_monitoring_extract) ?? []
-      );
-      (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments = sitesMap.mechanical_treatment_extract.map(
-        (x) => mechanicalTreatmenntsJSON(x, sitesMap.mechanical_monitoring_extract) ?? []
-      );
+      (iapp_site as any).point_of_interest_payload.form_data.biological_treatments =
+        objMap.biological_treatment_extract.map(
+          (x) => biologicalTreatmentsJSON(x, objMap.biological_monitoring_extract) ?? []
+        );
+      (iapp_site as any).point_of_interest_payload.form_data.biological_dispersals =
+        objMap.biological_dispersal_extract.map((x) => biologicalDispersalJSON(x) ?? []);
+      (iapp_site as any).point_of_interest_payload.form_data.chemical_treatments =
+        objMap.chemical_treatment_extract.map(
+          (x) => chemicalTreatmentJSON(x, objMap.chemical_monitoring_extract) ?? []
+        );
+      (iapp_site as any).point_of_interest_payload.form_data.mechanical_treatments =
+        objMap.mechanical_treatment_extract.map(
+          (x) => mechanicalTreatmenntsJSON(x, objMap.mechanical_monitoring_extract) ?? []
+        );
 
       // monitored flag
       const monitored =
@@ -443,3 +446,5 @@ export const streamIAPPResult = async (searchCriteria: any, res: any, sqlStateme
     }
   }
 };
+
+export { mapSitesRowsToJSON, getSpeciesRef, species_and_genus_regex, getSpeciesCodesFromIAPPDescriptionList };
