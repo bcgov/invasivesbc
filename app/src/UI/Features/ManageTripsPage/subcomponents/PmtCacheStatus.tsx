@@ -168,6 +168,7 @@ const PmtCacheStatus = ({ trip, onRemove, cacheKey }: PropTypes) => {
               </Button>
             ),
             [IPlanMyTripCacheStatus.IN_PROGRESS]: <p>In Progress...</p>,
+            [IPlanMyTripCacheStatus.NO_DATA]: <p>No data matches the area for this type.</p>,
             [IPlanMyTripCacheStatus.UNAVAILABLE]: <p>Unavailable for offline storage</p>,
             [IPlanMyTripCacheStatus.NOT_CACHED]: {
               mapTiles: <PmtDownloadMaps trip={trip} />,

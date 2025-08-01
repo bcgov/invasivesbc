@@ -411,7 +411,7 @@ function* handle_MAP_SET_COORDS(action) {
       yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
     }
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 }
 
