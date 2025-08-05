@@ -565,7 +565,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             if (!draftState.layers[index]) {
               draftState.layers.push({
                 recordSetID: action.payload.recordSetID,
-                type: action.payload.recordSetType
+                type: action.payload.recordSetType,
+                loading: false
               });
             }
             index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
