@@ -37,9 +37,9 @@ const ManageTripsPage = () => {
           {
             [Mode.MAIN]: (
               <div className="main">
-                <p>I'm Looking to...</p>
+                <p>I'm Looking To...</p>
                 <Button variant="contained" size="large" onClick={setMode.bind(this, Mode.CREATE)}>
-                  Plan A New Trip
+                  Plan a New Trip
                 </Button>
                 <Button variant="contained" size="large" onClick={setMode.bind(this, Mode.MANAGE)}>
                   Manage My Trips
