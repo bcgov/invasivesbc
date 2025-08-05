@@ -1,6 +1,6 @@
 import { Button } from '@mui/material';
 import './planMyTripForm.css';
-import { Check, Draw } from '@mui/icons-material';
+import { Draw } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import { IPlanMyTripCacheStatuses } from 'utils/plan-my-trip-cache';
 import MapSlider from 'UI/Features/TileCache/MapSlider';
@@ -124,8 +124,9 @@ const PlanMyTripForm = () => {
                 color="success"
                 id="trip-draw-button"
               >
-                {planMyTripRegion ? <Check /> : <Draw />}
-                Draw Region<span className="required">*</span>
+                <Draw />
+                {planMyTripRegion ? 'Redraw Region' : 'Draw Region'}
+                <span className="required">*</span>
               </Button>
             )}
           </div>
