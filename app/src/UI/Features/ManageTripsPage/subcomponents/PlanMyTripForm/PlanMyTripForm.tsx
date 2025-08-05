@@ -133,7 +133,7 @@ const PlanMyTripForm = () => {
         <section className="contents-section">
           <fieldset>
             <legend>
-              What are you bringing with you?<span className="required">*</span>
+              What info should come with you?<span className="required">*</span>
             </legend>
             {CACHE_OPTIONS.map(({ tooltip, name, labelText }) => (
               <div className="input-label" key={name}>
