@@ -1,0 +1,101 @@
+#trip-planning-form {
+  --blanket-margin: 1rem;
+
+  border-radius: 4pt;
+  box-sizing: border-box;
+  max-width: 700px;
+  padding: 1rem;
+
+  .overview {
+    text-align: left;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+    margin-top: var(--blanket-margin);
+    text-align: left;
+  }
+
+  #trip-planning-form-name {
+    font-size: 14px;
+    height: 32px;
+    padding-left: 0.5rem;
+    width: 200px;
+  }
+
+  .trip-planning-button {
+    background-color: var(--bc-blue);
+  }
+
+  .control {
+    box-sizing: border-box;
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--blanket-margin);
+    padding: 0 1rem;
+    width: 100%;
+  }
+
+  legend {
+    font-size: 14pt;
+    margin-top: var(--blanket-margin);
+  }
+
+  fieldset {
+    border-color: #ccc;
+    border-width: 1px;
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .details-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    & > * {
+      margin-right: auto;
+      margin-top: var(--blanket-margin);
+    }
+  }
+
+  .input-label {
+    align-items: center;
+    display: flex;
+    justify-content: flex-start;
+
+    & > :first-child {
+      margin-right: 8pt;
+    }
+  }
+
+  form fieldset {
+    align-items: flex;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    input[type='checkbox'] {
+      width: 25px;
+      height: 25px;
+    }
+  }
+}
+
+@media only screen and (width >700px) {
+  #trip-planning-form {
+    border: 1pt solid black;
+    fieldset {
+      margin: var(--blanket-margin);
+    }
+    legend {
+      font-size: 16pt;
+    }
+  }
+  .details-section {
+    justify-content: space-between;
+    & > * {
+      margin-right: auto;
+    }
+  }
+}
