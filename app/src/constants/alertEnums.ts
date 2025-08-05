@@ -4,7 +4,8 @@ export enum AlertSubjects {
   Photo = 'photo',
   Network = 'network',
   Authentication = 'authentication',
-  Cache = 'cache'
+  Cache = 'cache',
+  PlanMyTrip = 'plan my trip'
 }
 
 export enum AlertSeverity {
