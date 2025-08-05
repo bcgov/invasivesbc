@@ -43,7 +43,8 @@ enum IPlanMyTripCacheStatus {
   DELETING = 'DELETING',
   NOT_CACHED = 'NOT CACHED',
   UNAVAILABLE = 'UNAVAILABLE',
-  FAILED = 'FAILED'
+  FAILED = 'FAILED',
+  NO_DATA = 'NO DATA'
 }
 /**
  * @desc Plan My Trip is the umbrella category representing a set of different caches.

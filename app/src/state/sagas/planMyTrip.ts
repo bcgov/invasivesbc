@@ -7,10 +7,10 @@ import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses, PlanMyTripCacheService } from 'utils/plan-my-trip-cache';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
 
-function* createQueueWorker(channel, workerFn) {
+function* createQueueWorker(channel) {
   while (true) {
     const action = yield take(channel);
-    yield call(workerFn, action);
+    yield call(processCombinedCacheAction, action);
   }
 }
 
@@ -19,7 +19,10 @@ const actionToCacheKey = (action: string, setId?: string): keyof IPlanMyTripCach
     return 'wellData';
   } else if (action.startsWith(TileCache.PREFIX)) {
     return 'mapTiles';
-  } else if (action.startsWith(RecordCache.PREFIX) && setId?.startsWith(PlanMyTrip.Recordset.ACTIVITY_PRE)) {
+  } else if (
+    (action.startsWith(RecordCache.PREFIX) || action.startsWith(PlanMyTrip.Recordset.PREFIX)) &&
+    setId?.startsWith(PlanMyTrip.Recordset.ACTIVITY_PRE)
+  ) {
     return 'activityRecordset';
   }
   return 'iappRecordset';
@@ -52,7 +55,11 @@ function* handleTripSubcacheDownloadSuccess(action) {
   yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.CACHED);
 }
 function* handleTripSubcacheFailure(action) {
-  yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.FAILED);
+  if (action.payload?.reason === IPlanMyTripCacheStatus.NO_DATA) {
+    yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.NO_DATA);
+  } else {
+    yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.FAILED);
+  }
 }
 function* handleTripSubcacheDeleteSuccess(action) {
   yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.NOT_CACHED);
@@ -61,41 +68,84 @@ function* handleTripSubcacheDownloadPending(action) {
   yield handleUpdateSubcacheStatus(action, IPlanMyTripCacheStatus.IN_PROGRESS);
 }
 
+function* processCombinedCacheAction(action) {
+  try {
+    switch (action.type) {
+      // Download starts.
+      case TileCache.requestCaching.pending.type:
+      case WellCache.requestCaching.pending.type:
+      case RecordCache.requestCaching.pending.type:
+        yield call(handleTripSubcacheDownloadPending, action);
+        break;
+
+      // Success Actions
+      case TileCache.requestCaching.fulfilled.type:
+      case WellCache.requestCaching.fulfilled.type:
+      case RecordCache.requestCaching.fulfilled.type:
+        yield call(handleTripSubcacheDownloadSuccess, action);
+        break;
+
+      // All Rejected actions
+      case TileCache.requestCaching.rejected.type:
+      case TileCache.deleteRepository.rejected.type:
+      case WellCache.requestCaching.rejected.type:
+      case WellCache.deleteRepository.rejected.type:
+      case RecordCache.requestCaching.rejected.type:
+      case RecordCache.deleteCache.rejected.type:
+      case PlanMyTrip.Recordset.download.rejected.type:
+        yield call(handleTripSubcacheFailure, action);
+        break;
+
+      // Successful Deletion
+      case TileCache.deleteRepository.fulfilled.type:
+      case WellCache.deleteRepository.fulfilled.type:
+      case RecordCache.deleteCache.fulfilled.type:
+        yield call(handleTripSubcacheDeleteSuccess, action);
+        break;
+
+      default:
+        console.warn(`unhandled action type in queue: ${action.type}`);
+        break;
+    }
+  } catch (error) {
+    console.error(`Error in queue for action ${action.type}:`, error);
+  }
+}
+
 /**
- * @desc Saga for PlanMyTrip. Runs channels to avoid race conditions when updating (affects LocalForage)
+ * @desc Saga for PlanMyTrip. Runs single channel to avoid race conditions in updating (affects LocalForage)
  */
 function* planMyTripSaga() {
-  const pendingChannel = yield actionChannel(
-    [TileCache.requestCaching.pending, WellCache.requestCaching.pending, RecordCache.requestCaching.pending],
-    buffers.expanding()
-  );
-  const fulfilledChannel = yield actionChannel(
-    [TileCache.requestCaching.fulfilled, WellCache.requestCaching.fulfilled, RecordCache.requestCaching.fulfilled],
-    buffers.expanding()
-  );
-  const rejectedChannel = yield actionChannel(
+  const combinedCacheChannel = yield actionChannel(
     [
+      // Pending Actions
+      TileCache.requestCaching.pending,
+      WellCache.requestCaching.pending,
+      RecordCache.requestCaching.pending,
+
+      // Fulfilled Actions
+      TileCache.requestCaching.fulfilled,
+      WellCache.requestCaching.fulfilled,
+      RecordCache.requestCaching.fulfilled,
+
+      // Rejected Actions (various)
       TileCache.requestCaching.rejected,
       TileCache.deleteRepository.rejected,
       WellCache.requestCaching.rejected,
       WellCache.deleteRepository.rejected,
       RecordCache.requestCaching.rejected,
-      RecordCache.deleteCache.rejected
+      RecordCache.deleteCache.rejected,
+      PlanMyTrip.Recordset.download.rejected,
+
+      // Delete Fulfilled Actions
+      TileCache.deleteRepository.fulfilled,
+      WellCache.deleteRepository.fulfilled,
+      RecordCache.deleteCache.fulfilled
     ],
     buffers.expanding()
   );
 
-  const deleteFulfilledChannel = yield actionChannel(
-    [TileCache.deleteRepository.fulfilled, WellCache.deleteRepository.fulfilled, RecordCache.deleteCache.fulfilled],
-    buffers.expanding()
-  );
-
-  yield all([
-    fork(createQueueWorker, pendingChannel, handleTripSubcacheDownloadPending),
-    fork(createQueueWorker, fulfilledChannel, handleTripSubcacheDownloadSuccess),
-    fork(createQueueWorker, rejectedChannel, handleTripSubcacheFailure),
-    fork(createQueueWorker, deleteFulfilledChannel, handleTripSubcacheDeleteSuccess)
-  ]);
+  yield all([fork(createQueueWorker, combinedCacheChannel)]);
 }
 
 export default planMyTripSaga;
