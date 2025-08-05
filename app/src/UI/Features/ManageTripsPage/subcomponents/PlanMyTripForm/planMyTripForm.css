@@ -5,7 +5,9 @@
   box-sizing: border-box;
   max-width: 700px;
   padding: 1rem;
-
+  .required {
+    color: var(--error-red);
+  }
   .overview {
     text-align: left;
   }

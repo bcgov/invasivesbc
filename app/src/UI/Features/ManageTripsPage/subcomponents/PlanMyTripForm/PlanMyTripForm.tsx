@@ -110,7 +110,9 @@ const PlanMyTripForm = () => {
         </p>
         <section className="details-section">
           <div className="input-label">
-            <label htmlFor="trip-planning-form-name">Name of Trip:</label>
+            <label htmlFor="trip-planning-form-name">
+              Name of Trip:<span className="required">*</span>
+            </label>
             <input type="text" id="trip-planning-form-name" value={tripName} onChange={handleNameChange} />
           </div>
           <div className="drawn-field">
@@ -123,14 +125,16 @@ const PlanMyTripForm = () => {
                 id="trip-draw-button"
               >
                 {planMyTripRegion ? <Check /> : <Draw />}
-                Draw Region
+                Draw Region<span className="required">*</span>
               </Button>
             )}
           </div>
         </section>
         <section className="contents-section">
           <fieldset>
-            <legend>What are you bringing with you?</legend>
+            <legend>
+              What are you bringing with you?<span className="required">*</span>
+            </legend>
             {CACHE_OPTIONS.map(({ tooltip, name, labelText }) => (
               <div className="input-label" key={name}>
                 <input
@@ -148,7 +152,9 @@ const PlanMyTripForm = () => {
         </section>
         {userSelectedCaches.mapTiles && (
           <fieldset>
-            <legend>Offline Map Detail</legend>
+            <legend>
+              Offline Map Detail<span className="required">*</span>
+            </legend>
             {planMyTripRegion ? (
               <MapSlider
                 drawnShape={planMyTripRegion}
