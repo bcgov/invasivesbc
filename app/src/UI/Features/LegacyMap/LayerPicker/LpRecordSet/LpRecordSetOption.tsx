@@ -54,11 +54,7 @@ const LpRecordSetOption = ({
         </div>
         <p>{recordSet?.recordSetName || `New Recordset - ${recordSet.recordSetType}`}</p>
       </li>
-      {!lastChild && (
-        <li>
-          <hr />
-        </li>
-      )}
+      {!lastChild && <hr />}
     </>
   );
 };
