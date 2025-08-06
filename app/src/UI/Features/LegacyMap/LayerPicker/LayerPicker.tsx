@@ -4,7 +4,7 @@ import { IconButton, Switch } from '@mui/material';
 import { useState } from 'react';
 import LpModules from 'constants/LpModules';
 import LayerPickerPathOption from './LayerPickerPathRow';
-import { ArrowBackIos, Save } from '@mui/icons-material';
+import { ArrowBackIos, Luggage, Save } from '@mui/icons-material';
 import LpLayers from './LpLayers/LpLayers';
 import LpRecordSet from './LpRecordSet/LpRecordSet';
 import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
@@ -18,6 +18,7 @@ import './LayerPicker.css';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import LpPlanMyTrip from './LpPlanMyTrip/LpPlanMyTrip';
 
 type PropTypes = {
   layers: InvasivesMapLayerDefinitionWithState[];
@@ -91,22 +92,25 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
                         />
                       </Accordion>
                     </FeatureGated>
+                    <FeatureGated requires={'PLAN_MY_TRIP'}>
+                      <Accordion icon={<Luggage />} title={LpModules.PlanMyTrip}>
+                        <div>Plan My Trip</div>
+                      </Accordion>
+                    </FeatureGated>
                   </>
                 ) : (
                   <ul className="path-ul">
                     <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.DataBcLayers} />
-                    <li>
-                      <hr />
-                    </li>
                     <FeatureGated requires={'CACHE_TILES'}>
-                      <>
-                        <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.MapTiles} />
-                        <li>
-                          <hr />
-                        </li>
-                      </>
+                      <hr />
+                      <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.MapTiles} />
                     </FeatureGated>
+                    <hr />
                     <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.Recordsets} />
+                    <FeatureGated requires={'PLAN_MY_TRIP'}>
+                      <hr />
+                      <LayerPickerPathOption clickHandler={setPickerPath} pathVal={LpModules.PlanMyTrip} />
+                    </FeatureGated>
                   </ul>
                 )}
               </>
@@ -115,7 +119,8 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
             [LpModules.Recordsets]: <LpRecordSet closePicker={closeLayerPicker} />,
             [LpModules.MapTiles]: (
               <LpOfflineMaps layers={layers} setOverlayState={setOverlayState} closePicker={closeLayerPicker} />
-            )
+            ),
+            [LpModules.PlanMyTrip]: <LpPlanMyTrip />
           }[pickerPath]
         }
       </div>

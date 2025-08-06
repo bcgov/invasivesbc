@@ -1,4 +1,4 @@
-import { ArrowForwardIos, ManageSearch, Map, Save } from '@mui/icons-material';
+import { ArrowForwardIos, Luggage, ManageSearch, Map, Save } from '@mui/icons-material';
 import LpModules from 'constants/LpModules';
 
 type PropTypes = {
@@ -14,6 +14,8 @@ const LayerPickerPathOption = ({ clickHandler, pathVal }: PropTypes) => {
         return <ManageSearch />;
       case LpModules.MapTiles:
         return <Save />;
+      case LpModules.PlanMyTrip:
+        return <Luggage />;
     }
   })();
   return (
