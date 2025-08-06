@@ -7,25 +7,14 @@ import { MouseEvent, useState } from 'react';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
 import IappActions from 'state/actions/activity/Iapp';
+import { useRecordSetControls } from 'utils/useRecordSetControls';
 
 type PropTypes = {
   isDefaultRecordset: boolean;
   recordset: UserRecordSet;
   recordsetKey: string;
-  onClickToggleLabel: (set: string, e: MouseEvent<HTMLButtonElement>) => void;
-  onClickToggleLayer: (set: string, e: MouseEvent<HTMLButtonElement>) => void;
-  onClickCycleColour: (set: string, e: MouseEvent<HTMLButtonElement>) => void;
-  onClickDeleteRecordSet: (set: string, e: MouseEvent<HTMLButtonElement>) => void;
 };
-const RecordSetControl = ({
-  isDefaultRecordset,
-  recordset,
-  recordsetKey,
-  onClickToggleLabel,
-  onClickToggleLayer,
-  onClickCycleColour,
-  onClickDeleteRecordSet
-}: PropTypes) => {
+const RecordSetControl = ({ isDefaultRecordset, recordset, recordsetKey }: PropTypes) => {
   const LABEL_TOGGLE_TIP =
     'Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time.';
   const LAYER_TOGGLE_TIP =
@@ -35,6 +24,8 @@ const RecordSetControl = ({
     'Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration.';
 
   const dispatch = useDispatch();
+  const { cycleRecordsetColour, toggleRecordsetLabel, toggleRecordsetLayer, deleteRecordSet } =
+    useRecordSetControls(recordsetKey);
   const hasLayerIndex = useSelector(
     (state) => !!state.Map.layers.find((layer) => layer?.recordSetID === recordsetKey)?.layerState
   );
@@ -75,7 +66,7 @@ const RecordSetControl = ({
           <span>
             <IconButton
               disabled={!recordset?.mapToggle || !hasLayerIndex}
-              onClick={(e) => onClickToggleLabel(recordsetKey, e)}
+              onClick={toggleRecordsetLabel}
               color="primary"
               data-testid="label-toggle"
             >
@@ -87,7 +78,7 @@ const RecordSetControl = ({
         <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
           <IconButton
             data-testid="layer-toggle"
-            onClick={(e) => onClickToggleLayer(recordsetKey, e)}
+            onClick={toggleRecordsetLayer}
             color="primary"
             disabled={!hasLayerIndex}
           >
@@ -100,7 +91,7 @@ const RecordSetControl = ({
             <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
               <IconButton
                 data-testid="cycle-color"
-                onClick={(e) => onClickCycleColour(recordsetKey, e)}
+                onClick={cycleRecordsetColour}
                 color="primary"
                 disabled={!hasLayerIndex}
               >
@@ -108,11 +99,7 @@ const RecordSetControl = ({
               </IconButton>
             </Tooltip>
             <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
-              <IconButton
-                data-testid="delete-recordset"
-                onClick={(e) => onClickDeleteRecordSet(recordsetKey, e)}
-                color="primary"
-              >
+              <IconButton data-testid="delete-recordset" onClick={deleteRecordSet} color="primary">
                 <Delete />
               </IconButton>
             </Tooltip>

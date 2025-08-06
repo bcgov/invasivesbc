@@ -1,11 +1,9 @@
 import { Link } from 'react-router-dom';
-import { useDispatch, useSelector } from 'utils/use_selector';
+import { useSelector } from 'utils/use_selector';
 import './LpRecordSet.css';
 import LpRecordSetOption from './LpRecordSetOption';
-import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, UserRecordSet } from 'interfaces/UserRecordSet';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
-import Activity from 'state/actions/activity/Activity';
 import { useEffect, useState } from 'react';
 
 type PropTypes = {
@@ -18,28 +16,14 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
   const handleGoToRecords = () => {
     closePicker();
   };
-  const handleToggleVisibility = (id: string) => {
-    if (id === RecordSetId.OfflineActivities) {
-      dispatch(Activity.Offline.setAllShapeVisibility());
-    }
 
-    dispatch(UserSettings.RecordSet.toggleVisibility(id));
-  };
-  const handleCycleColour = (id: string) => dispatch(UserSettings.RecordSet.cycleColourById(id));
-  const handleToggleLabels = (id: string) => {
-    if (id === RecordSetId.OfflineActivities) {
-      dispatch(Activity.Offline.setLabelVisibility());
-    }
-    dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
-  };
   const connected = useSelector((state) => state.Network.connected);
-  const { MOBILE } = useSelector(state=>state.Configuration.current.build);
+  const { MOBILE } = useSelector((state) => state.Configuration.current.build);
   const recordSets = useSelector((state) => state.UserSettings.recordSets);
 
   const [defaultRecordSets, setDefaultRecordSets] = useState<UserRecordSet[]>([]);
   const [customRecordSets, setCustomRecordSets] = useState<UserRecordSet[]>([]);
 
-  const dispatch = useDispatch();
   const [userIsMobileAndOffline, setUserIsMobileAndOffline] = useState(false);
 
   useEffect(() => {
@@ -73,12 +57,9 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
         {defaultRecordSets.map((recordSet, index) => (
           <LpRecordSetOption
             canColour={false}
-            cycleColour={handleCycleColour}
             key={recordSet.id}
             lastChild={index === defaultRecordSets.length - 1}
             recordSet={recordSet}
-            toggleLabelVisibility={handleToggleLabels}
-            toggleVisibility={handleToggleVisibility}
           />
         ))}
       </ul>
@@ -87,12 +68,9 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
         {customRecordSets.map((recordSet, index) => (
           <LpRecordSetOption
             canColour={true}
-            cycleColour={handleCycleColour}
             key={recordSet.id}
             lastChild={index === customRecordSets.length - 1}
             recordSet={recordSet}
-            toggleLabelVisibility={handleToggleLabels}
-            toggleVisibility={handleToggleVisibility}
           />
         ))}
       </ul>
