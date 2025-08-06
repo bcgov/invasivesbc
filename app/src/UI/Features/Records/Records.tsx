@@ -86,7 +86,6 @@ export const Records = () => {
                   <RecordSetControl
                     isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
                     recordset={recordSets[set]}
-                    recordsetKey={set}
                   />
                 </li>
               )

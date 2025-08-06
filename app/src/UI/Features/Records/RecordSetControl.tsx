@@ -12,7 +12,6 @@ import { useRecordSetControls } from 'utils/useRecordSetControls';
 type PropTypes = {
   isDefaultRecordset: boolean;
   recordset: UserRecordSet;
-  recordsetKey: string;
   omit?: {
     cache?: boolean;
     colour?: boolean;
@@ -21,7 +20,7 @@ type PropTypes = {
     layer?: boolean;
   };
 };
-const RecordSetControl = ({ isDefaultRecordset, recordset, recordsetKey, omit }: PropTypes) => {
+const RecordSetControl = ({ isDefaultRecordset, recordset, omit }: PropTypes) => {
   const LABEL_TOGGLE_TIP =
     'Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time.';
   const LAYER_TOGGLE_TIP =
@@ -30,16 +29,17 @@ const RecordSetControl = ({ isDefaultRecordset, recordset, recordsetKey, omit }:
   const DELETE_TIP =
     'Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration.';
 
+  const RECORD_ID = recordset.id;
   const dispatch = useDispatch();
   const { cycleRecordsetColour, toggleRecordsetLabel, toggleRecordsetLayer, deleteRecordSet } =
-    useRecordSetControls(recordsetKey);
+    useRecordSetControls(RECORD_ID);
   const hasLayerIndex = useSelector(
-    (state) => !!state.Map.layers.find((layer) => layer?.recordSetID === recordsetKey)?.layerState
+    (state) => !!state.Map.layers.find((layer) => layer?.recordSetID === RECORD_ID)?.layerState
   );
 
   if (!hasLayerIndex) {
     const payload = {
-      recordSetID: recordsetKey,
+      recordSetID: RECORD_ID,
       tableFiltersHash: recordset?.tableFiltersHash ?? ''
     };
     if (recordset.recordSetType === RecordSetType.IAPP) {
@@ -61,7 +61,7 @@ const RecordSetControl = ({ isDefaultRecordset, recordset, recordsetKey, omit }:
           <MobileOnly>
             <RecordSetCacheButtons
               recordSet={recordset}
-              setId={recordsetKey}
+              setId={RECORD_ID}
               onCacheStateChange={handleProgressStateChange}
             />
           </MobileOnly>
