@@ -14,19 +14,6 @@
   }
 }
 
-#lp-layers .lp-layers-empty-collection {
-  border: 1pt solid lightgray;
-  border-radius: 10pt;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 1rem;
-  p {
-    font-size: 12pt;
-    font-weight: normal;
-  }
-}
-
 #lp-layers ul {
   max-height: 265pt;
   list-style-type: none;
