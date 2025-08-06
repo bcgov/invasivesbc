@@ -1,0 +1,46 @@
+#manage-trips {
+  box-sizing: border-box;
+  margin-bottom: 2rem;
+
+  .trip-header {
+    background-color: white;
+    display: flex;
+    justify-content: flex-start;
+    left: 0;
+    margin-bottom: 2rem;
+    position: sticky;
+    top: 0;
+    width: 100%;
+  }
+
+  .content {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+  .redirect {
+    display: flex;
+    margin-top: 1rem;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    button {
+      text-decoration: underline;
+    }
+  }
+  .main {
+    display: flex;
+    flex-direction: column;
+    p {
+      font-size: 24px;
+    }
+    & > * {
+      margin-bottom: 1.5rem;
+    }
+    button:not(.redirect) {
+      background-color: var(--bc-blue);
+      height: 60pt;
+      width: 165pt;
+    }
+  }
+}

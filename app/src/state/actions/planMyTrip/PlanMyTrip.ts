@@ -9,6 +9,8 @@ import { RootState } from 'state/reducers/rootReducer';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
 import { IPlanMyTripCacheStatus, IPlanMyTripCacheStatuses } from 'utils/plan-my-trip-cache';
 import { RecordSetType } from 'interfaces/UserRecordSet';
+import Alerts from 'state/actions/alerts/Alerts';
+import tripAlertMessages from 'constants/alerts/tripAlerts';
 
 /**
  * @desc Parameters for a user planning their trip
@@ -176,7 +178,7 @@ class PlanMyTrip {
           activityRecordset: getInitStatus(!!spec?.activities)
         }
       });
-
+      dispatch(Alerts.create(tripAlertMessages.submitted));
       if (spec?.iapp) {
         dispatch(
           PlanMyTrip.Recordset.create({

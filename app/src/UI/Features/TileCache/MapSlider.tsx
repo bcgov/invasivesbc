@@ -8,11 +8,12 @@ import { RepositoryBoundingBoxSpec, TileCacheService } from 'utils/tile-cache';
 import bbox from '@turf/bbox';
 
 type PropTypes = {
-  handleDownload: (zoom: number, shape: RepositoryBoundingBoxSpec) => void;
   drawnShape: GeoJSON;
+  zoom: number;
+  setZoom: (newVal: number) => void;
+  setOversizedTileDownload?: (bool: boolean) => void;
 };
-const MapSlider = ({ handleDownload, drawnShape }: PropTypes) => {
-  const [zoom, setZoom] = useState<number>(AVAILABLE_ZOOMS[0].value);
+const MapSlider = ({ drawnShape, setZoom, zoom, setOversizedTileDownload }: PropTypes) => {
   const [scale, setScale] = useState<string>(AVAILABLE_ZOOMS[0].scale);
   const boundary = useRef<RepositoryBoundingBoxSpec>(
     (() => {
@@ -27,17 +28,11 @@ const MapSlider = ({ handleDownload, drawnShape }: PropTypes) => {
   );
   const [tileCount, setTileCount] = useState<number | null>(null);
   const [approximateDownloadSize, setApproximateDownloadSize] = useState<number | null>(null);
-  const [downloadDisabled, setDownloadDisabled] = useState<boolean>(false);
   const { overDownloadLimit } = useTileSizeThresholds(approximateDownloadSize);
 
   useEffect(() => {
-    if (!boundary.current || approximateDownloadSize == null) {
-      setDownloadDisabled(true);
-      return;
-    }
-
-    setDownloadDisabled(overDownloadLimit);
-  }, [boundary, approximateDownloadSize, overDownloadLimit]);
+    setOversizedTileDownload?.(overDownloadLimit);
+  }, [overDownloadLimit]);
 
   useEffect(() => {
     if (!boundary.current) {
@@ -67,7 +62,7 @@ const MapSlider = ({ handleDownload, drawnShape }: PropTypes) => {
         sx={{ width: '80%' }}
         min={AVAILABLE_ZOOMS[0].value}
         max={AVAILABLE_ZOOMS[AVAILABLE_ZOOMS.length - 1].value}
-        onChange={(e, value) => {
+        onChange={(_e, value) => {
           if (typeof value === 'number') {
             setZoom(value);
             setScale(AVAILABLE_ZOOMS.find((item) => item.value === value)?.scale ?? '');
@@ -85,9 +80,6 @@ const MapSlider = ({ handleDownload, drawnShape }: PropTypes) => {
           )}
         </p>
       </div>
-      <button onClick={() => handleDownload(zoom, boundary.current)} disabled={downloadDisabled}>
-        Download Offline Maps
-      </button>
     </div>
   );
 };
