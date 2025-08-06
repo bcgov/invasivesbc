@@ -11,9 +11,7 @@ import LpOfflineMaps from './LpOfflineMaps/LpOfflineMaps';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-
 import MapIcon from '@mui/icons-material/Map';
-
 import './LayerPicker.css';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
@@ -94,7 +92,7 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
                     </FeatureGated>
                     <FeatureGated requires={'PLAN_MY_TRIP'}>
                       <Accordion icon={<Luggage />} title={LpModules.PlanMyTrip}>
-                        <div>Plan My Trip</div>
+                        <LpPlanMyTrip closePicker={closeLayerPicker} />
                       </Accordion>
                     </FeatureGated>
                   </>
@@ -120,7 +118,7 @@ export const LayerPicker = ({ layers, setOverlayState }: PropTypes) => {
             [LpModules.MapTiles]: (
               <LpOfflineMaps layers={layers} setOverlayState={setOverlayState} closePicker={closeLayerPicker} />
             ),
-            [LpModules.PlanMyTrip]: <LpPlanMyTrip />
+            [LpModules.PlanMyTrip]: <LpPlanMyTrip closePicker={closeLayerPicker} />
           }[pickerPath]
         }
       </div>
