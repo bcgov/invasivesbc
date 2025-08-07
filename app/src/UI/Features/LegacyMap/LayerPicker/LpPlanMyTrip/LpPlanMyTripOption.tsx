@@ -29,7 +29,7 @@ const LpPlanMyTripOption = ({ trip }: PropTypes) => {
         {canIbcRender && (
           <li className="row">
             <RecordSetControl isDefaultRecordset={false} recordset={ibcRecordset} hideCache hideDelete hideColour />
-            <p>InvasiveBC Recordset</p>
+            <p>Activity Recordset</p>
           </li>
         )}
         {canIappRender && (
