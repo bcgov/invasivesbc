@@ -7,13 +7,11 @@ import { useDispatch } from 'utils/use_selector';
 
 type PropTypes = {
   id: string;
-  omit?: {
-    show?: boolean;
-    delete?: boolean;
-  };
+  hideLayerToggle?: boolean;
+  hideDelete?: boolean;
 };
 
-const OfflineMapControls = ({ id, omit }: PropTypes) => {
+const OfflineMapControls = ({ id, hideLayerToggle = false, hideDelete = false }: PropTypes) => {
   const dispatch = useDispatch();
   const { setOverlayState, layers } = useInvasivesMapLayers();
   const removeSubCache = () => {
@@ -22,10 +20,10 @@ const OfflineMapControls = ({ id, omit }: PropTypes) => {
   const isEnabled = layers.some((layer) => id === layer.source && layer?.layout?.visibility === 'visible');
   return (
     <div className="offline-map-controls">
-      {!omit?.show && (
+      {!hideLayerToggle && (
         <IconButton onClick={() => setOverlayState(id)}>{isEnabled ? <Visibility /> : <VisibilityOff />}</IconButton>
       )}
-      {!omit?.delete && (
+      {!hideDelete && (
         <IconButton onClick={removeSubCache}>
           <Delete />
         </IconButton>
