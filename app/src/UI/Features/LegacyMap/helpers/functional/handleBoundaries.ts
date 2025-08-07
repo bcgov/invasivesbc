@@ -1,4 +1,5 @@
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
+import { InvasivesMap } from '../../InvasivesMap';
 
 /**
  * @desc Add Layer to the Map
@@ -56,15 +57,15 @@ const addBoundary = (id: string, layer, map: maplibregl.Map, layerColour = '#65D
 /**
  * @desc Refresh a Boundary based on its toggle parameters
  */
-const refreshBoundary = (id: string, layer, map: maplibregl.Map) => {
+const refreshBoundary = (id: string, layer, map: InvasivesMap) => {
   ['-fill', '-line', '-circle'].forEach((suffix) => {
     const styledLayerId = id + suffix;
     if (map.getSource(id) && map.getLayer(styledLayerId)) {
       const visibility = map.getLayoutProperty(styledLayerId, 'visibility');
-      if (visibility !== 'none' && !layer.toggle) {
+      if (visibility !== 'none' && !layer?.toggle) {
         map.setLayoutProperty(styledLayerId, 'visibility', 'none');
       }
-      if (visibility !== 'visible' && layer.toggle) {
+      if (visibility !== 'visible' && layer?.toggle) {
         map.setLayoutProperty(styledLayerId, 'visibility', 'visible');
       }
     }
@@ -107,16 +108,29 @@ const addClientBoundariesIfNotExists = (clientBoundaries, map: maplibregl.Map) =
   }
 };
 
-const refreshClientBoundariesOnToggle = (clientBoundaries, map) => {
-  if (map && clientBoundaries?.length > 0) {
-    clientBoundaries.map((layer) => {
-      const layerID = getClientLayerID(layer.id);
-      refreshBoundary(layerID, layer, map);
+const refreshClientBoundariesOnToggle = (clientBoundaries, map: InvasivesMap) => {
+  if (!map) return;
+  clientBoundaries.forEach((layer) => {
+    const layerID = getClientLayerID(layer.id);
+    refreshBoundary(layerID, layer, map);
+  });
+  // Check for Stray IDs
+  const ID_PREFIX = getClientLayerID('');
+  const currentLayerIds = clientBoundaries.map(({ id }) => getClientLayerID(id));
+  map
+    .getLayersOrder()
+    .filter(
+      (liveLayerId) =>
+        liveLayerId.startsWith(ID_PREFIX) &&
+        !currentLayerIds.some((clientBoundaryId) => liveLayerId.includes(clientBoundaryId))
+    )
+    .forEach((orphanedClientBoundaries) => {
+      if (map.getLayer(orphanedClientBoundaries)) map.removeLayer(orphanedClientBoundaries);
+      if (map.getSource(orphanedClientBoundaries)) map.removeSource(orphanedClientBoundaries);
     });
-  }
 };
 
-const removeClientBoundaries = (clientBoundaries, map) => {
+const removeClientBoundaries = (clientBoundaries, map: InvasivesMap) => {
   clientBoundaries.map((layer) => {
     const layerID = getClientLayerID(layer.id);
     if (map.getSource(layerID) && map.getLayer(layerID)) {
