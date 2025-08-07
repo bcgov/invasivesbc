@@ -530,7 +530,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           id: nanoid(),
           geojson: action.payload,
           toggle: true,
-          title: draftState.drawingCustomLayerName
+          title: draftState.drawingCustomLayerName || nanoid()
         });
         draftState.drawingCustomLayerName = '';
       } else if (MapActions.trackLocationStart.match(action)) {
