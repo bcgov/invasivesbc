@@ -1,5 +1,5 @@
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
-import { InvasivesMap } from '../../InvasivesMap';
+import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 
 /**
  * @desc Add Layer to the Map
