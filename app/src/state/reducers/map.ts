@@ -553,10 +553,18 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.panned = false;
       } else if (UserSettings.KML.toggle.match(action)) {
         const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.id);
-        draftState.serverBoundaries[index].toggle = action.payload?.on ?? !draftState.serverBoundaries[index].toggle;
+        if (action.payload?.on != undefined) {
+          draftState.serverBoundaries[index].toggle = action.payload.on;
+        } else {
+          draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
+        }
       } else if (UserSettings.Boundaries.toggleCustomLayer.match(action)) {
         const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.id);
-        draftState.clientBoundaries[index].toggle = action.payload?.on ?? !draftState.clientBoundaries[index]?.toggle;
+        if (action.payload.on != undefined) {
+          draftState.clientBoundaries[index].toggle = action.payload.on;
+        } else {
+          draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
+        }
       } else {
         switch (action.type) {
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
