@@ -49,10 +49,6 @@
   }
 }
 
-.record-set-progressbar {
-  flex-direction: column;
-}
-
 @media screen and (width >= 500px) {
   .record-set-option {
     flex-direction: row;
@@ -60,16 +56,5 @@
 
   .record-set-details {
     margin-bottom: 0;
-  }
-}
-
-@media screen and (width <= 375px) {
-  .record-set-details {
-    justify-content: flex-start;
-  }
-}
-@media screen and (width >= 500px) and (width <= 1000px) {
-  .record-set-progressbar {
-    flex-direction: column !important;
   }
 }

@@ -65,65 +65,74 @@ const RecordSetControl = ({
     <div className={isProgressBar ? 'record-set-control record-set-progressbar' : 'record-set-control '}>
       {!isDefaultRecordset && !hideCache && (
         <MobileOnly>
-          <RecordSetCacheButtons
-            recordSet={recordset}
-            setId={RECORD_ID}
-            onCacheStateChange={handleProgressStateChange}
-          />
+          <div>
+            <RecordSetCacheButtons
+              recordSet={recordset}
+              setId={RECORD_ID}
+              onCacheStateChange={handleProgressStateChange}
+            />
+          </div>
         </MobileOnly>
       )}
-
-      {!hideLabel && (
-        <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
-          <span>
-            <IconButton
-              disabled={!recordset?.mapToggle || !hasLayerIndex}
-              onClick={toggleRecordsetLabel}
-              color="primary"
-              data-testid="label-toggle"
-            >
-              {recordset?.labelToggle && recordset?.mapToggle ? <Label /> : <LabelOff />}
-            </IconButton>
-          </span>
-        </Tooltip>
-      )}
-
-      {!hideLayer && (
-        <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
-          <IconButton
-            data-testid="layer-toggle"
-            onClick={toggleRecordsetLayer}
-            color="primary"
-            disabled={!hasLayerIndex}
-          >
-            {recordset?.mapToggle ? <Layers /> : <LayersClear />}
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {!isDefaultRecordset && (
-        <>
-          {!hideColour && (
-            <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
+      <div className="record-set-buttons">
+        {!hideLabel && (
+          <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
+            <span>
               <IconButton
-                data-testid="cycle-color"
-                onClick={cycleRecordsetColour}
+                disabled={!recordset?.mapToggle || !hasLayerIndex}
+                onClick={toggleRecordsetLabel}
+                color="primary"
+                data-testid="label-toggle"
+              >
+                {recordset?.labelToggle && recordset?.mapToggle ? <Label /> : <LabelOff />}
+              </IconButton>
+            </span>
+          </Tooltip>
+        )}
+
+        {!hideLayer && (
+          <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
+            <span>
+              <IconButton
+                data-testid="layer-toggle"
+                onClick={toggleRecordsetLayer}
                 color="primary"
                 disabled={!hasLayerIndex}
               >
-                <ColorLens />
+                {recordset?.mapToggle ? <Layers /> : <LayersClear />}
               </IconButton>
-            </Tooltip>
-          )}
-          {!hideDelete && (
-            <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
-              <IconButton data-testid="delete-recordset" onClick={deleteRecordSet} color="primary">
-                <Delete />
-              </IconButton>
-            </Tooltip>
-          )}
-        </>
-      )}
+            </span>
+          </Tooltip>
+        )}
+
+        {!isDefaultRecordset && (
+          <>
+            {!hideColour && !isDefaultRecordset && (
+              <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
+                <span>
+                  <IconButton
+                    data-testid="cycle-color"
+                    onClick={cycleRecordsetColour}
+                    color="primary"
+                    disabled={!hasLayerIndex}
+                  >
+                    <ColorLens />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
+            {!hideDelete && (
+              <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
+                <span>
+                  <IconButton data-testid="delete-recordset" onClick={deleteRecordSet} color="primary">
+                    <Delete />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
+          </>
+        )}
+      </div>
     </div>
   );
 };
