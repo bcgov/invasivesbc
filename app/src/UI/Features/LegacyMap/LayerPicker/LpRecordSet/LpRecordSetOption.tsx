@@ -13,12 +13,7 @@ const LpRecordSetOption = ({ recordSet, lastChild, isDefaultRecordset }: PropTyp
     <>
       <li data-testid="record-set" className="lp-record-set-option" style={{ backgroundColor: getBgColor() }}>
         <div>
-          <RecordSetControl
-            hideCache={true}
-            hideDelete={true}
-            recordset={recordSet}
-            isDefaultRecordset={isDefaultRecordset}
-          />
+          <RecordSetControl hideCache hideDelete recordset={recordSet} isDefaultRecordset={isDefaultRecordset} />
         </div>
         <p>{recordSet?.recordSetName || `New Recordset - ${recordSet.recordSetType}`}</p>
       </li>

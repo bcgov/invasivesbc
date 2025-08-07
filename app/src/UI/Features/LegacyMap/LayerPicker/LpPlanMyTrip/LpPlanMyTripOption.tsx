@@ -1,6 +1,7 @@
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import RecordSetControl from 'UI/Features/Records/RecordSetControl';
 import OfflineMapControls from 'UI/Reusable/OfflineMapControls/OfflineMapControls';
+import Spacer from 'UI/Reusable/Spacer/Spacer';
 import { IPlanMyTripCacheStatus, IPlanMyTripRepositoryMetadata } from 'utils/plan-my-trip-cache';
 import { useSelector } from 'utils/use_selector';
 
@@ -20,28 +21,16 @@ const LpPlanMyTripOption = ({ trip }: PropTypes) => {
       <ul className="option-list">
         {ibcRecordset && (
           <li className="row">
+            <RecordSetControl isDefaultRecordset={false} recordset={ibcRecordset} hideCache hideDelete hideColour />
             <p>InvasiveBC Recordset</p>
-            <RecordSetControl
-              isDefaultRecordset={false}
-              recordset={ibcRecordset}
-              hideCache={true}
-              hideDelete={true}
-              hideColour={true}
-            />
           </li>
         )}
         {iappRecordset && (
           <>
             <hr />
             <li>
+              <RecordSetControl isDefaultRecordset={false} recordset={iappRecordset} hideCache hideDelete hideColour />
               <p>IAPP Recordset</p>
-              <RecordSetControl
-                isDefaultRecordset={false}
-                recordset={iappRecordset}
-                hideCache={true}
-                hideDelete={true}
-                hideColour={true}
-              />
             </li>
           </>
         )}
@@ -49,8 +38,9 @@ const LpPlanMyTripOption = ({ trip }: PropTypes) => {
           <>
             <hr />
             <li>
+              <OfflineMapControls id={trip.id} hideDelete />
+              <Spacer x={40} y={40} />
               <p>Offline Maps</p>
-              <OfflineMapControls id={trip.id} omit={{ delete: true }} />
             </li>
           </>
         )}
