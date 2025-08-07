@@ -35,6 +35,7 @@
       justify-content: space-between;
       box-sizing: border-box;
       padding: 5pt 5pt 5pt 1rem;
+
       button:not(:disabled) {
         color: var(--bc-blue);
       }
@@ -42,9 +43,6 @@
       p {
         margin: 0;
         text-wrap: wrap;
-      }
-      .record-set-control {
-        justify-content: flex-end; /*Override normal behaviour*/
       }
     }
     .option-list > hr:first-child {

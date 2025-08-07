@@ -19,16 +19,16 @@ const LpPlanMyTripOption = ({ trip }: PropTypes) => {
       <h4>{trip.name}</h4>
       <ul className="option-list">
         {ibcRecordset && (
-          <>
-            <li className="row">
-              <p>InvasiveBC Recordset</p>
-              <RecordSetControl
-                isDefaultRecordset={false}
-                recordset={ibcRecordset}
-                omit={{ cache: true, delete: true }}
-              />
-            </li>
-          </>
+          <li className="row">
+            <p>InvasiveBC Recordset</p>
+            <RecordSetControl
+              isDefaultRecordset={false}
+              recordset={ibcRecordset}
+              hideCache={true}
+              hideDelete={true}
+              hideColour={true}
+            />
+          </li>
         )}
         {iappRecordset && (
           <>
@@ -38,7 +38,9 @@ const LpPlanMyTripOption = ({ trip }: PropTypes) => {
               <RecordSetControl
                 isDefaultRecordset={false}
                 recordset={iappRecordset}
-                omit={{ cache: true, delete: true }}
+                hideCache={true}
+                hideDelete={true}
+                hideColour={true}
               />
             </li>
           </>
