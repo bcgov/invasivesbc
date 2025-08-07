@@ -7,15 +7,7 @@ import { nanoid } from '@reduxjs/toolkit';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import './LpLayers.css';
-
-type EmptyListProps = {
-  text: string;
-};
-const EmptyCollection = ({ text }: EmptyListProps) => (
-  <div className="lp-layers-empty-collection">
-    <p>{text}</p>
-  </div>
-);
+import EmptyCollection from '../EmptyCollection/EmptyCollection';
 
 type PropTypes = {
   layers: InvasivesMapLayerDefinitionWithState[];

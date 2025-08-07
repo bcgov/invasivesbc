@@ -66,6 +66,7 @@ const PlanMyTripForm = () => {
       request.zoom = mapZoomLevel;
     }
     dispatch(PlanMyTrip.create(request));
+    setTripName('');
   };
 
   const dispatch = useDispatch();

@@ -1,0 +1,5 @@
+.offline-map-controls {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}

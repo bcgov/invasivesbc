@@ -1,0 +1,51 @@
+#lp-plan-my-trip {
+  padding: 0pt 5pt 10pt 5pt;
+  h3 {
+    text-align: left;
+    margin-left: 8pt;
+  }
+  .control {
+    margin-top: 1rem;
+  }
+  .lp-plan-my-trip-option {
+    h4 {
+      text-align: left;
+      padding-left: 8pt;
+      font-size: 18px;
+      margin: 1rem 0;
+    }
+    .option-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      background-color: var(--list-option);
+      border-radius: 8pt;
+      overflow-y: auto;
+      scrollbar-width: none;
+
+      &:hover,
+      *:hover {
+        scrollbar-width: thin;
+      }
+    }
+    .option-list li {
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 5pt 5pt 5pt 1rem;
+
+      button:not(:disabled) {
+        color: var(--bc-blue);
+      }
+
+      p {
+        margin: 0 0 0 5pt;
+        text-wrap: wrap;
+      }
+    }
+    .option-list > hr:first-child {
+      display: none; /*Don't display <hr> elements if leading list */
+    }
+  }
+}

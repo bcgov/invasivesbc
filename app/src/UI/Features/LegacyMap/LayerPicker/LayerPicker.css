@@ -29,7 +29,7 @@
   }
 }
 
-li > hr {
+ul > hr {
   width: 89%;
   color: var(--bg);
   background-color: var(--bg);

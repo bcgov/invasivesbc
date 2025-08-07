@@ -17,7 +17,10 @@ type InvasivesMapLayerDefinitionWithState = InvasivesMapLayerDefinition & {
   active: boolean;
 };
 
-type LayerSpecificationWithStackingOrder = LayerSpecification & { stackLayer: POSITIONING_LAYER };
+type LayerSpecificationWithStackingOrder = LayerSpecification & {
+  stackLayer: POSITIONING_LAYER;
+  source?: string | number | undefined;
+};
 
 const useInvasivesMapLayers = () => {
   const dispatch = useDispatch();

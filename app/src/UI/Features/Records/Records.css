@@ -21,6 +21,7 @@
 .record-set-option {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   width: 100%;
   min-height: 40pt;
   padding: 5pt 1rem;
@@ -35,16 +36,10 @@
   }
 }
 
-.record-set-details,
-.record-set-control {
-  width: 100%;
-  display: flex;
-  align-items: center;
-}
-
 .record-set-details {
   margin-bottom: 5pt;
-
+  display: flex;
+  align-items: center;
   input {
     height: 30pt;
     border: 1pt solid lightgray;
@@ -54,46 +49,12 @@
   }
 }
 
-.record-set-control {
-  justify-content: flex-start;
-  flex-direction: row;
-  align-items: flex-start;
-}
-
-.record-set-progressbar {
-  flex-direction: column;
-}
-
 @media screen and (width >= 500px) {
   .record-set-option {
     flex-direction: row;
   }
 
-  .record-set-details,
-  .record-set-control {
-    flex-direction: row;
-    width: 50%;
-  }
-
   .record-set-details {
     margin-bottom: 0;
-  }
-}
-
-@media screen and (width >= 500px) and (width <= 1000px) {
-  .record-set-progressbar {
-    flex-direction: column !important;
-  }
-
-  .record-set-control {
-    justify-content: flex-end;
-    align-items: flex-end;
-  }
-}
-
-@media screen and (width >= 1000px) {
-  .record-set-control {
-    justify-content: flex-end;
-    align-items: center;
   }
 }

@@ -1,0 +1,13 @@
+.record-set-control,
+.record-set-buttons {
+  display: flex;
+  align-items: center;
+}
+
+@media screen and (width <= 500px) {
+  .record-set-progressbar {
+    flex-direction: column;
+    display: flex;
+    align-items: flex-start;
+  }
+}

@@ -29,7 +29,6 @@ const LpOfflineMaps = ({ closePicker, setOverlayState, layers }: PropTypes) => {
       <h3>
         Cached Map Tiles <TooltipWithIcon tooltipText={cachedToolTipText} />
       </h3>
-      <p className="lp-subheader"></p>
       {layers.filter((l) => l.mode === 'overlay' && l.selectionMode === 'offline-layers').length === 0 ? (
         <div className="lp-offline-maps-empty-collection">
           <p>You don't have any map areas cached</p>

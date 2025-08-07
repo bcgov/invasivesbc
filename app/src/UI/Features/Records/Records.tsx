@@ -1,63 +1,19 @@
-import { MouseEvent, StrictMode, useEffect, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import './Records.css';
 import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
-import Prompt from 'state/actions/prompts/Prompt';
 import RecordSetDetails from './RecordSetDetails';
 import RecordSetControl from './RecordSetControl';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
-import Activity from 'state/actions/activity/Activity';
 import UploadSiteList from '../SiteLists/UploadSiteList/UploadSiteList';
 import debounce from 'lodash.debounce';
 
 export const Records = () => {
   const { MOBILE } = useSelector((state) => state.Configuration.current.build);
   const dispatch = useDispatch();
-
-  //Record set handlers:
-  const handleToggleLabel = (set: string, e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    if (set === RecordSetId.OfflineActivities) {
-      dispatch(Activity.Offline.setLabelVisibility());
-    }
-    dispatch(UserSettings.RecordSet.toggleLabelVisibility(set));
-  };
-
-  const handleToggleLayer = (set: string, e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    // offline activities
-    if (set === RecordSetId.OfflineActivities) {
-      dispatch(Activity.Offline.setAllShapeVisibility());
-    }
-    dispatch(UserSettings.RecordSet.toggleVisibility(set));
-  };
-
-  const handleCycleColour = (set: string, e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    dispatch(UserSettings.RecordSet.cycleColourById(set));
-  };
-
-  const handleDeleteRecordSet = (set: string, e: MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    const callback = (userConfirmation: boolean) => {
-      if (userConfirmation) {
-        dispatch(UserSettings.RecordSet.requestRemoval({ setId: set }));
-      }
-    };
-    dispatch(
-      Prompt.confirmation({
-        title: 'Deleting Record Set',
-        prompt: [
-          'Are you sure you want to remove this record set?',
-          'The data will persist but you will no longer have this set of filters or the map layer.'
-        ],
-        callback
-      })
-    );
-  };
 
   const handleNameChange = (val: string, setKey: string) =>
     dispatch(UserSettings.RecordSet.set({ recordSetName: val }, setKey));
@@ -130,11 +86,6 @@ export const Records = () => {
                   <RecordSetControl
                     isDefaultRecordset={defaultRecordSetTypes.includes(recordSets[set]?.recordSetName)}
                     recordset={recordSets[set]}
-                    recordsetKey={set}
-                    onClickToggleLabel={handleToggleLabel}
-                    onClickToggleLayer={handleToggleLayer}
-                    onClickCycleColour={handleCycleColour}
-                    onClickDeleteRecordSet={handleDeleteRecordSet}
                   />
                 </li>
               )
