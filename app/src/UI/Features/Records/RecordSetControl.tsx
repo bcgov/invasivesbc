@@ -8,19 +8,26 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
 import IappActions from 'state/actions/activity/Iapp';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
+import './recordsetControl.css';
 
 type PropTypes = {
   isDefaultRecordset: boolean;
   recordset: UserRecordSet;
-  omit?: {
-    cache?: boolean;
-    colour?: boolean;
-    delete?: boolean;
-    label?: boolean;
-    layer?: boolean;
-  };
+  hideCache?: boolean;
+  hideColour?: boolean;
+  hideDelete?: boolean;
+  hideLabel?: boolean;
+  hideLayer?: boolean;
 };
-const RecordSetControl = ({ isDefaultRecordset, recordset, omit }: PropTypes) => {
+const RecordSetControl = ({
+  isDefaultRecordset,
+  recordset,
+  hideCache = false,
+  hideColour = false,
+  hideDelete = false,
+  hideLabel = false,
+  hideLayer = false
+}: PropTypes) => {
   const LABEL_TOGGLE_TIP =
     'Toggle viewing the labels on the map for this layer.  If more than 200 are in the extent, you may need to zoom in to see what you are looking for.  For people on slow computers - it recalculates on drag and zoom so fewer small drags will decrease loading time.';
   const LAYER_TOGGLE_TIP =
@@ -56,71 +63,67 @@ const RecordSetControl = ({ isDefaultRecordset, recordset, omit }: PropTypes) =>
 
   return (
     <div className={isProgressBar ? 'record-set-control record-set-progressbar' : 'record-set-control '}>
-      <div>
-        {!isDefaultRecordset && !omit?.cache && (
-          <MobileOnly>
-            <RecordSetCacheButtons
-              recordSet={recordset}
-              setId={RECORD_ID}
-              onCacheStateChange={handleProgressStateChange}
-            />
-          </MobileOnly>
-        )}
-      </div>
+      {!isDefaultRecordset && !hideCache && (
+        <MobileOnly>
+          <RecordSetCacheButtons
+            recordSet={recordset}
+            setId={RECORD_ID}
+            onCacheStateChange={handleProgressStateChange}
+          />
+        </MobileOnly>
+      )}
 
-      <div>
-        {!omit?.label && (
-          <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
-            <span>
-              <IconButton
-                disabled={!recordset?.mapToggle || !hasLayerIndex}
-                onClick={toggleRecordsetLabel}
-                color="primary"
-                data-testid="label-toggle"
-              >
-                {recordset?.labelToggle && recordset?.mapToggle ? <Label /> : <LabelOff />}
-              </IconButton>
-            </span>
-          </Tooltip>
-        )}
-
-        {!omit?.layer && (
-          <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
+      {!hideLabel && (
+        <Tooltip classes={{ tooltip: 'toolTip' }} title={LABEL_TOGGLE_TIP}>
+          <span>
             <IconButton
-              data-testid="layer-toggle"
-              onClick={toggleRecordsetLayer}
+              disabled={!recordset?.mapToggle || !hasLayerIndex}
+              onClick={toggleRecordsetLabel}
               color="primary"
-              disabled={!hasLayerIndex}
+              data-testid="label-toggle"
             >
-              {recordset?.mapToggle ? <Layers /> : <LayersClear />}
+              {recordset?.labelToggle && recordset?.mapToggle ? <Label /> : <LabelOff />}
             </IconButton>
-          </Tooltip>
-        )}
+          </span>
+        </Tooltip>
+      )}
 
-        {!isDefaultRecordset && (
-          <>
-            {!omit?.colour && (
-              <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
-                <IconButton
-                  data-testid="cycle-color"
-                  onClick={cycleRecordsetColour}
-                  color="primary"
-                  disabled={!hasLayerIndex}
-                >
-                  <ColorLens />
-                </IconButton>
-              </Tooltip>
-            )}
-            {!omit?.delete && (
-              <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
-                <IconButton data-testid="delete-recordset" onClick={deleteRecordSet} color="primary">
-                  <Delete />
-                </IconButton>
-              </Tooltip>
-            )}
-          </>
-        )}
-      </div>
+      {!hideLayer && (
+        <Tooltip classes={{ tooltip: 'toolTip' }} title={LAYER_TOGGLE_TIP}>
+          <IconButton
+            data-testid="layer-toggle"
+            onClick={toggleRecordsetLayer}
+            color="primary"
+            disabled={!hasLayerIndex}
+          >
+            {recordset?.mapToggle ? <Layers /> : <LayersClear />}
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {!isDefaultRecordset && (
+        <>
+          {!hideColour && (
+            <Tooltip placement="bottom-start" classes={{ tooltip: 'toolTip' }} title={COLOUR_CYCLE_TIP}>
+              <IconButton
+                data-testid="cycle-color"
+                onClick={cycleRecordsetColour}
+                color="primary"
+                disabled={!hasLayerIndex}
+              >
+                <ColorLens />
+              </IconButton>
+            </Tooltip>
+          )}
+          {!hideDelete && (
+            <Tooltip classes={{ tooltip: 'toolTip' }} title={DELETE_TIP}>
+              <IconButton data-testid="delete-recordset" onClick={deleteRecordSet} color="primary">
+                <Delete />
+              </IconButton>
+            </Tooltip>
+          )}
+        </>
+      )}
     </div>
   );
 };
