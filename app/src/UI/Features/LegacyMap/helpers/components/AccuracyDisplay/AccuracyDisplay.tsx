@@ -4,12 +4,12 @@ import { selectMap } from 'state/reducers/map';
 import 'UI/Features/LegacyMap/helpers/components/AccuracyDisplay/AccuracyDisplay.css';
 
 const AccuracyDisplay = () => {
-  const { accuracyToggle, positionTracking, userCoords } = useSelector(selectMap);
-  const [showAccuracy, setShowAccuracy] = useState<boolean>(accuracyToggle && positionTracking);
+  const { positionTracking, userCoords } = useSelector(selectMap);
+  const [showAccuracy, setShowAccuracy] = useState<boolean>(positionTracking);
 
   useEffect(() => {
-    setShowAccuracy(accuracyToggle && positionTracking);
-  }, [accuracyToggle, positionTracking]);
+    setShowAccuracy(positionTracking);
+  }, [positionTracking]);
 
   if (!showAccuracy || !userCoords?.accuracy) {
     return;
