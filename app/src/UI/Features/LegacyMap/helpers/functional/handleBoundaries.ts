@@ -108,13 +108,8 @@ const addClientBoundariesIfNotExists = (clientBoundaries, map: maplibregl.Map) =
   }
 };
 
-const refreshClientBoundariesOnToggle = (clientBoundaries, map: InvasivesMap) => {
-  if (!map) return;
-  clientBoundaries.forEach((layer) => {
-    const layerID = getClientLayerID(layer.id);
-    refreshBoundary(layerID, layer, map);
-  });
-  // Check for Stray IDs
+const removeOrphanClientBoundaries = (clientBoundaries, map: InvasivesMap) => {
+  // Check for Stray IDs and remove any orphan sources
   const ID_PREFIX = getClientLayerID('');
   const currentLayerIds = clientBoundaries.map(({ id }) => getClientLayerID(id));
   map
@@ -128,6 +123,14 @@ const refreshClientBoundariesOnToggle = (clientBoundaries, map: InvasivesMap) =>
       if (map.getLayer(orphanedClientBoundaries)) map.removeLayer(orphanedClientBoundaries);
       if (map.getSource(orphanedClientBoundaries)) map.removeSource(orphanedClientBoundaries);
     });
+};
+
+const refreshClientBoundariesOnToggle = (clientBoundaries, map: InvasivesMap) => {
+  if (!map) return;
+  clientBoundaries.forEach((layer) => {
+    const layerID = getClientLayerID(layer.id);
+    refreshBoundary(layerID, layer, map);
+  });
 };
 
 const removeClientBoundaries = (clientBoundaries, map: InvasivesMap) => {
@@ -144,6 +147,7 @@ export {
   removeClientBoundaries,
   refreshClientBoundariesOnToggle,
   refreshServerBoundariesOnToggle,
+  removeOrphanClientBoundaries,
   addClientBoundariesIfNotExists,
   addServerBoundariesIfNotExists
 };
