@@ -43,7 +43,7 @@ const LpPlanMyTrip = ({ closePicker }: PropTypes) => {
       {trips.length > 0 ? (
         <div>
           {trips.map((t) => (
-            <LpPlanMyTripOption trip={t} />
+            <LpPlanMyTripOption key={t.id} trip={t} />
           ))}
         </div>
       ) : (
