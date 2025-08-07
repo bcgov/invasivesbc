@@ -156,7 +156,9 @@ describe('LpLayers.tsx', () => {
     await waitFor(() => {
       expect(dispatchSpy).toHaveBeenCalledTimes(2);
       const calledExpectedEvents = dispatchSpy.mock.calls.every(([action]) =>
-        [UserSettings.KML.toggle.type, UserSettings.Boundaries.toggleCustomLayer.type].includes(action.type)
+        [UserSettings.KML.toggle.type as string, UserSettings.Boundaries.toggleCustomLayer.type as string].includes(
+          action.type
+        )
       );
       expect(calledExpectedEvents).toBe(true);
     });
