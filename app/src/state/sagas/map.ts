@@ -547,12 +547,12 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   const recordSets = Object.keys(userSettingsState.recordSets);
 
   // current layers
-  const layers = yield select((state) => state.Map.layers);
+  const mapState = yield select(selectMap);
+  const layers = mapState.layers;
   const layerIDs = layers.map((layer) => layer.recordSetID);
 
-  // current but unintialized:
   const currentUninitializedLayers = layers
-    .filter((layer) => !layer.loading)
+    .filter((layer) => !Object.prototype.hasOwnProperty.call(layer, 'loading'))
     .map((layer) => {
       return { recordSetID: layer.recordSetID, recordSetType: layer.type };
     });

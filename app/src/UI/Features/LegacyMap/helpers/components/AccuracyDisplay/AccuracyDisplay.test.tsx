@@ -6,7 +6,6 @@ import { createMockStore, mockSliceReducer } from 'test/testUtils';
 describe('AccuracyDisplay.tsx', () => {
   const accuracyOnStore = createMockStore({
     ...mockSliceReducer('Map', {
-      accuracyToggle: true,
       positionTracking: true,
       userCoords: {
         lat: 54.1,
@@ -18,7 +17,6 @@ describe('AccuracyDisplay.tsx', () => {
   });
   const accuracyOffStore = createMockStore({
     ...mockSliceReducer('Map', {
-      accuracyToggle: true,
       positionTracking: true,
       userCoords: {
         lat: 54.1,
