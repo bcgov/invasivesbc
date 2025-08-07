@@ -2,19 +2,26 @@ import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { IPlanMyTripRepositoryMetadata, PlanMyTripCacheService } from 'utils/plan-my-trip-cache';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import LpPlanMyTripOption from './LpPlanMyTripOption';
 import './lpPlanMyTrip.css';
 import EmptyCollection from '../EmptyCollection/EmptyCollection';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
+import TileCache from 'state/actions/cache/TileCache';
 
 type PropTypes = {
   closePicker: () => void;
 };
+
 const LpPlanMyTrip = ({ closePicker }: PropTypes) => {
   const TRIP_TOOLTIP = 'Easily access and manage layers relevant to your trip in one place.';
+
+  const dispatch = useDispatch();
+
   const tripRef = useRef<PlanMyTripCacheService>();
+
   const lastUpdate = useSelector((state) => state.PlanMyTrip?.lastUpdate);
+
   const [trips, setTrips] = useState<IPlanMyTripRepositoryMetadata[]>([]);
   const [ready, setReady] = useState<boolean>();
 
@@ -32,6 +39,7 @@ const LpPlanMyTrip = ({ closePicker }: PropTypes) => {
     (async () => {
       tripRef.current = await PlanMyTripCacheServiceFactory.getPlatformInstance();
       setReady(tripRef.current != undefined);
+      dispatch(TileCache.repositoryList()); // Ensure TileCache repository is running when this option is used.
     })();
   }, []);
 
