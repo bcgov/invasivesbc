@@ -1,3 +1,4 @@
+import { UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import RecordSetControl from 'UI/Features/Records/RecordSetControl';
 import OfflineMapControls from 'UI/Reusable/OfflineMapControls/OfflineMapControls';
@@ -15,17 +16,23 @@ const LpPlanMyTripOption = ({ trip }: PropTypes) => {
   const iappRecordset = useSelector(
     (state) => state.UserSettings.recordSets?.[PlanMyTrip.Recordset.IAPP_PRE + trip.id]
   );
+  const online = useSelector((state) => state.Network.connected);
+
+  const canIbcRender = (online && !!ibcRecordset) || ibcRecordset?.cacheMetadataStatus === UserRecordCacheStatus.CACHED;
+  const canIappRender =
+    (online && !!iappRecordset) || iappRecordset?.cacheMetadataStatus === UserRecordCacheStatus.CACHED;
+  const canOfflineMapsRender = trip.cacheStatuses.mapTiles === IPlanMyTripCacheStatus.CACHED;
   return (
     <div className="lp-plan-my-trip-option">
       <h4>{trip.name}</h4>
       <ul className="option-list">
-        {ibcRecordset && (
+        {canIbcRender && (
           <li className="row">
             <RecordSetControl isDefaultRecordset={false} recordset={ibcRecordset} hideCache hideDelete hideColour />
             <p>InvasiveBC Recordset</p>
           </li>
         )}
-        {iappRecordset && (
+        {canIappRender && (
           <>
             <hr />
             <li>
@@ -34,7 +41,7 @@ const LpPlanMyTripOption = ({ trip }: PropTypes) => {
             </li>
           </>
         )}
-        {trip.cacheStatuses.mapTiles === IPlanMyTripCacheStatus.CACHED && (
+        {canOfflineMapsRender && (
           <>
             <hr />
             <li>
