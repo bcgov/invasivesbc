@@ -56,7 +56,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
       <ul>
         {defaultRecordSets.map((recordSet, index) => (
           <LpRecordSetOption
-            isDefaultRecordset={false}
+            isDefaultRecordset={true}
             key={recordSet.id}
             lastChild={index === defaultRecordSets.length - 1}
             recordSet={recordSet}
@@ -67,7 +67,7 @@ const LpRecordSet = ({ closePicker }: PropTypes) => {
       <ul>
         {customRecordSets.map((recordSet, index) => (
           <LpRecordSetOption
-            isDefaultRecordset={true}
+            isDefaultRecordset={false}
             key={recordSet.id}
             lastChild={index === customRecordSets.length - 1}
             recordSet={recordSet}
