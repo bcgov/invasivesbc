@@ -32,7 +32,6 @@
     .option-list li {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       box-sizing: border-box;
       padding: 5pt 5pt 5pt 1rem;
 
@@ -41,7 +40,7 @@
       }
 
       p {
-        margin: 0;
+        margin: 0 0 0 5pt;
         text-wrap: wrap;
       }
     }
