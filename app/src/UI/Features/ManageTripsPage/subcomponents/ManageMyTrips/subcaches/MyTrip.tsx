@@ -1,60 +1,89 @@
-import { ManageSearch, Luggage, WaterDrop, Map } from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import { IPlanMyTripRepositoryMetadata } from 'utils/plan-my-trip-cache';
 import TripRecordsetModule from './TripRecordsetModule';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import TripMapTileModule from './TripMapTileModule';
 import TripWellModule from './TripWellModule';
+import { Button } from '@mui/material';
+import { useDispatch } from 'utils/use_selector';
+import MyTripAtAGlance from './MyTripAtAGlance';
+import {
+  IappRecordsetIcon,
+  InvasivesRecordsetIcon,
+  OfflineMapIcon,
+  WellIcon
+} from 'UI/Features/ManageTripsPage/iconography';
 
 type PropTypes = {
   trip: IPlanMyTripRepositoryMetadata;
 };
 
 const MyTrip = ({ trip }: PropTypes) => {
+  const dispatch = useDispatch();
+  const handleDeleteTrip = () => {
+    dispatch(PlanMyTrip.delete(trip.id));
+  };
   return (
-    <section className="trip-main">
-      <Accordion title={trip.name} icon={<Luggage />}>
-        <p>{trip.id}</p>
+    <div className="trip-main">
+      <Accordion title={trip.name} icon={<MyTripAtAGlance statuses={trip.cacheStatuses} />}>
+        <ul>
+          <li className="trip-invasives trip-option">
+            <div className="cache-status">
+              <InvasivesRecordsetIcon />
+              <p>
+                InvasivesBC Recordset:&nbsp;
+                <span className="emphasis">{trip.cacheStatuses.activityRecordset}</span>
+              </p>
+            </div>
+            <TripRecordsetModule
+              trip={trip}
+              cacheKey={'activityRecordset'}
+              id={PlanMyTrip.Recordset.ACTIVITY_PRE + trip.id}
+              status={trip.cacheStatuses.activityRecordset}
+            />
+          </li>
+          <li className="trip-iapp trip-option">
+            <div className="cache-status">
+              <IappRecordsetIcon />
+              <p>
+                IAPP Recordset: <span className="emphasis">{trip.cacheStatuses.iappRecordset}</span>
+              </p>
+            </div>
+            <TripRecordsetModule
+              trip={trip}
+              cacheKey={'iappRecordset'}
+              id={PlanMyTrip.Recordset.IAPP_PRE + trip.id}
+              status={trip.cacheStatuses.iappRecordset}
+            />
+          </li>
+          <li>
+            <div className="cache-status">
+              <WellIcon />
+              <p>
+                Well Data:&nbsp;
+                <span className="emphasis">{trip.cacheStatuses.wellData}</span>
+              </p>
+            </div>
+            <TripWellModule trip={trip} />
+          </li>
+          <li className="trip-maps trip-option">
+            <div className="cache-status">
+              <OfflineMapIcon />{' '}
+              <p>
+                Offline Maps:&nbsp; <span className="emphasis">{trip.cacheStatuses.mapTiles}</span>
+              </p>
+            </div>
+            <TripMapTileModule trip={trip} />
+          </li>
+          <li className="delete-trip trip-option">
+            <Button color={'error'} onClick={handleDeleteTrip}>
+              Delete This Trip <Delete />
+            </Button>
+          </li>
+        </ul>
       </Accordion>
-      <ul>
-        <li>
-          <div>
-            <Map /> Offline Maps
-          </div>
-          <TripMapTileModule trip={trip} />
-        </li>
-        <li>
-          <div>
-            <WaterDrop />
-            Well Data
-          </div>
-          <TripWellModule trip={trip} />
-        </li>
-        <li>
-          <div>
-            <ManageSearch /> InvasivesBC Recordset
-          </div>
-          <TripRecordsetModule
-            trip={trip}
-            cacheKey={'activityRecordset'}
-            id={PlanMyTrip.Recordset.ACTIVITY_PRE + trip.id}
-            status={trip.cacheStatuses.activityRecordset}
-          />
-        </li>
-        <li>
-          <div>
-            <ManageSearch />
-            IAPP Recordset
-          </div>
-          <TripRecordsetModule
-            trip={trip}
-            cacheKey={'iappRecordset'}
-            id={PlanMyTrip.Recordset.IAPP_PRE + trip.id}
-            status={trip.cacheStatuses.iappRecordset}
-          />
-        </li>
-      </ul>
-    </section>
+    </div>
   );
 };
 

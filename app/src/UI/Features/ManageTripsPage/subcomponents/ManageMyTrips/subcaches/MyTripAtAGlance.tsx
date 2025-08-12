@@ -38,11 +38,11 @@ const MyTripAtAGlance = ({ statuses }: PropTypes) => {
       <Tooltip classes={{ tooltip: 'toolTip' }} title={`IAPP Recordset: ${iappRecordset}`}>
         <IappRecordsetIcon color={getColor(iappRecordset)} />
       </Tooltip>
-      <Tooltip classes={{ tooltip: 'toolTip' }} title={`Offline Map: ${mapTiles}`}>
-        <OfflineMapIcon color={getColor(mapTiles)} />
-      </Tooltip>
       <Tooltip classes={{ tooltip: 'toolTip' }} title={`Well Data: ${wellData}`}>
         <WellIcon color={getColor(wellData)} />
+      </Tooltip>
+      <Tooltip classes={{ tooltip: 'toolTip' }} title={`Offline Map: ${mapTiles}`}>
+        <OfflineMapIcon color={getColor(mapTiles)} />
       </Tooltip>
     </>
   );
