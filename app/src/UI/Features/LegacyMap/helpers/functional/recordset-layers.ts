@@ -7,10 +7,7 @@ import maplibregl, {
   SymbolLayerSpecification
 } from 'maplibre-gl';
 import { FeatureCollection } from 'geojson';
-import {
-  LAYER_Z_BACKGROUND,
-  LAYER_Z_FOREGROUND
-} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
+import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
@@ -77,7 +74,7 @@ const createOnlineIappLayer = (map: any, layer: any) => {
 
   map.addSource(layerID, source);
   map.addLayer(circleLayer, LAYER_Z_FOREGROUND);
-  map.addLayer(labelLayer, LAYER_Z_BACKGROUND);
+  map.addLayer(labelLayer, LAYER_Z_FOREGROUND);
 };
 
 const getPaintBySchemeOrColor = (layer: any) => {
