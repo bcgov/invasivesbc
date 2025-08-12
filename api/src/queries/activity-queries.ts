@@ -1,3 +1,4 @@
+/* eslint-disable import/exports-last */
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from 'utils/logger';
 import { ActivityPostRequestBody, ActivitySearchCriteria } from 'models/activity';
@@ -30,6 +31,7 @@ export const postActivitySQL = (
                                         updated_by_with_guid,
                                         sync_status,
                                         form_status,
+                                        platform_src,
                                         review_status,
                                         reviewed_by,
                                         reviewed_at,
@@ -51,6 +53,7 @@ export const postActivitySQL = (
             ${activity.updated_by_with_guid.replace('bceidbusiness', 'bceid-business')},
             ${activity.sync_status},
             ${activity.form_status},
+            ${activity.platform_src},
             ${activity.review_status},
             ${activity.reviewed_by},
             ${activity.reviewed_at},

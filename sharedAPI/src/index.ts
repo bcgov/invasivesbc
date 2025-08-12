@@ -174,7 +174,8 @@ export function generateDBActivityPayload(
     form_status: ActivityStatus.DRAFT,
     review_status: 'Not Reviewed',
     reviewed_by: undefined,
-    reviewed_at: undefined
+    reviewed_at: undefined,
+    platform_src: import.meta.env.VITE_TARGET_PLATFORM
   };
   if (returnVal.activity_subtype === ActivitySubtype.Treatment_ChemicalPlant) {
     returnVal.form_data.activity_subtype_data.chemical_treatment_details = {
