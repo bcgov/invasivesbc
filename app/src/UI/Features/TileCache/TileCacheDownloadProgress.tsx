@@ -6,6 +6,7 @@ import TileCache from 'state/actions/cache/TileCache';
 import { RepositoryStatus } from 'utils/tile-cache';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import './tileCache.css';
+import { useEffect } from 'react';
 
 const TileCacheDownloadProgress = () => {
   const handleStopDownload = (repository: string) => {
@@ -25,6 +26,11 @@ const TileCacheDownloadProgress = () => {
   const failedDownloads = useSelector((state) => state.TileCache?.repositories ?? []).filter(
     (r) => ![RepositoryStatus.READY].includes(r.status) && !downloadProgress?.[r.id]
   );
+
+  // Ensure TileCache repositoryList is up to date, if available.
+  useEffect(() => {
+    dispatch(TileCache.repositoryList());
+  }, []);
 
   const activeDownloads = Object.keys(downloadProgress ?? {}).length + failedDownloads.length > 0;
 
