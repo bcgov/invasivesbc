@@ -222,6 +222,7 @@ abstract class TileCacheService extends BaseCacheService<
       try {
         console.error(e);
         await this.setRepositoryStatus(spec.id, RepositoryStatus.FAILED);
+        throw e; //re-throw error so redux can properly handle rejection
       } catch (e) {
         console.error('could not set repository status when handling error', e);
         throw e;
