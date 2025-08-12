@@ -18,7 +18,7 @@
       list-style-type: none;
       padding: 0;
       margin: 0;
-      /* Cache Entry */
+      /* Cache Entries */
       li {
         display: flex;
         align-items: center;
@@ -36,6 +36,12 @@
         }
         &:nth-child(even) {
           background-color: #fff;
+        }
+        &.delete-trip {
+          justify-content: center;
+        }
+        &:hover {
+          background-color: #f1f1f1;
         }
       }
     }
