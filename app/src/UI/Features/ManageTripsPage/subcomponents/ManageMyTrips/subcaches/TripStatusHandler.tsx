@@ -1,7 +1,9 @@
 import { Delete, Refresh, Save, Stop, StopCircle, StopCircleOutlined } from '@mui/icons-material';
 import { Button, IconButton } from '@mui/material';
 import { ReactNode } from 'react';
+import Prompt from 'state/actions/prompts/Prompt';
 import { IPlanMyTripCacheStatus as Status } from 'utils/plan-my-trip-cache';
+import { useDispatch } from 'utils/use_selector';
 
 interface PropTypes {
   handleDelete: () => void;
@@ -22,12 +24,25 @@ const TripStatusHandler = ({
   status,
   downloadSpecsOverride
 }: TripStatusHandlerProps) => {
+  const dispatch = useDispatch();
+
+  const confirmDelete = () => {
+    dispatch(
+      Prompt.confirmation({
+        title: 'Delete Cached Data',
+        prompt: 'Are you sure you want to delete this data? It will no longer be available for offline use',
+        callback: (confirm: boolean) => {
+          if (confirm) handleDelete();
+        }
+      })
+    );
+  };
   return (
     <div className="trip-module">
       {
         {
           [Status.CACHED]: (
-            <IconButton color={'error'} onClick={handleDelete}>
+            <IconButton color={'error'} onClick={confirmDelete}>
               <Delete />
             </IconButton>
           ),
