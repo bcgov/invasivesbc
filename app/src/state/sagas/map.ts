@@ -618,6 +618,7 @@ function* handle_REMOVE_CUSTOM_LAYER(action) {
 }
 
 function* handle_REMOVE_SERVER_BOUNDARY(action) {
+  yield put(UserSettings.KML.toggle(action.payload.id, false));
   yield put(UserSettings.KML.delete(action.payload.id));
 }
 

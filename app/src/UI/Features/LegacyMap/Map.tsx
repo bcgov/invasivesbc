@@ -30,7 +30,8 @@ import {
   addServerBoundariesIfNotExists,
   refreshClientBoundariesOnToggle,
   refreshServerBoundariesOnToggle,
-  removeClientBoundaries
+  removeClientBoundaries,
+  removeOrphanClientBoundaries
 } from './helpers/functional/handleBoundaries';
 import { ButtonContainer } from 'UI/Features/LegacyMap/Controls/ButtonContainer';
 import { LayerPicker } from 'UI/Features/LegacyMap/LayerPicker/LayerPicker';
@@ -297,6 +298,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     addClientBoundariesIfNotExists(clientBoundaries, map);
     refreshClientBoundariesOnToggle(clientBoundaries, map);
+    removeOrphanClientBoundaries(clientBoundaries, map);
   }, [clientBoundaries, map, mapReady, loggedInOrWorkingOffline]);
 
   // Jump Nav

@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { TOGGLE_CUSTOMIZE_LAYERS, TOGGLE_DRAWN_LAYER, TOGGLE_KML_LAYER } from 'state/actions';
+import { TOGGLE_CUSTOMIZE_LAYERS } from 'state/actions';
 import { Layers, Settings, Visibility, VisibilityOff } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import LpLayersOption from './LpLayersOption';
@@ -7,6 +7,7 @@ import { nanoid } from '@reduxjs/toolkit';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import './LpLayers.css';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 import EmptyCollection from '../EmptyCollection/EmptyCollection';
 
 type PropTypes = {
@@ -16,10 +17,10 @@ type PropTypes = {
 
 const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
   const handleKmlClick = (layer: Record<string, unknown>) => {
-    dispatch({ type: TOGGLE_KML_LAYER, payload: { layer } });
+    dispatch(UserSettings.KML.toggle(layer?.id as string));
   };
   const handleCustomClick = (layer: Record<string, unknown>) => {
-    dispatch({ type: TOGGLE_DRAWN_LAYER, payload: { layer } });
+    dispatch(UserSettings.Boundaries.toggleCustomLayer(layer?.id as string));
   };
   const handleCreateCustom = () => {
     dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });

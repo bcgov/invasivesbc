@@ -10,6 +10,7 @@ import { Platform } from 'state/configuration/build-time-config';
 import { AndroidMemoryReport } from 'UI/Layout/DebugMenu/AndroidMemoryReport';
 import { PlatformGated } from 'UI/Reusable/Predicates/PlatformGated';
 import ClearAppCache from './ClearAppCache';
+import PlotClientBoundary from './PlotClientBoundary';
 
 const DebugMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -27,6 +28,7 @@ const DebugMenu = () => {
             <AndroidMemoryReport />
           </PlatformGated>
           <ClearAppCache />
+          <PlotClientBoundary />
         </div>
       </CustomPopover>
     </Debug>
