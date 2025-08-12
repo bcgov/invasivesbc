@@ -40,7 +40,8 @@
 }
 
 /* Generic for each sub-section in Offline Maps */
-#offline-map-overlay section {
+#offline-map-overlay section,
+.map-download-progress {
   align-items: center;
   border-bottom: 1pt solid lightgray;
   border-radius: 0;
