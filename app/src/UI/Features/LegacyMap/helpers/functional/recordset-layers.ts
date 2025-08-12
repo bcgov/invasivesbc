@@ -9,8 +9,7 @@ import maplibregl, {
 import { FeatureCollection } from 'geojson';
 import {
   LAYER_Z_BACKGROUND,
-  LAYER_Z_FOREGROUND,
-  LAYER_Z_MID
+  LAYER_Z_FOREGROUND
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { safelySetPaintProperty } from 'UI/Features/LegacyMap/helpers/functional/utility-functions';
@@ -77,7 +76,7 @@ const createOnlineIappLayer = (map: any, layer: any) => {
   labelLayer['source-layer'] = 'data';
 
   map.addSource(layerID, source);
-  map.addLayer(circleLayer, LAYER_Z_MID);
+  map.addLayer(circleLayer, LAYER_Z_FOREGROUND);
   map.addLayer(labelLayer, LAYER_Z_BACKGROUND);
 };
 
