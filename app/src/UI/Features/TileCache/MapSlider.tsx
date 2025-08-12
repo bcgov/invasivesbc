@@ -6,6 +6,7 @@ import { useTileSizeThresholds } from './tileSizeHook';
 import { GeoJSON } from 'geojson';
 import { RepositoryBoundingBoxSpec, TileCacheService } from 'utils/tile-cache';
 import bbox from '@turf/bbox';
+import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 
 type PropTypes = {
   drawnShape: GeoJSON;
@@ -14,6 +15,7 @@ type PropTypes = {
   setOversizedTileDownload?: (bool: boolean) => void;
 };
 const MapSlider = ({ drawnShape, setZoom, zoom, setOversizedTileDownload }: PropTypes) => {
+  const TOOLTIP_TEXT = 'Zoom level controls how close or far the map appears. Higher zoom shows more detail.';
   const [scale, setScale] = useState<string>(AVAILABLE_ZOOMS[0].scale);
   const boundary = useRef<RepositoryBoundingBoxSpec>(
     (() => {
@@ -47,7 +49,10 @@ const MapSlider = ({ drawnShape, setZoom, zoom, setOversizedTileDownload }: Prop
 
   return (
     <div>
-      Select Zoom Level:
+      <p>
+        Select Zoom Level:
+        <TooltipWithIcon tooltipText={TOOLTIP_TEXT} />
+      </p>
       <Slider
         value={zoom}
         step={null}
