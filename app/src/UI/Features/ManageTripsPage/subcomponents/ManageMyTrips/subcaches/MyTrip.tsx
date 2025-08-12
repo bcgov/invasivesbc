@@ -14,6 +14,7 @@ import {
   OfflineMapIcon,
   WellIcon
 } from 'UI/Features/ManageTripsPage/iconography';
+import Prompt from 'state/actions/prompts/Prompt';
 
 type PropTypes = {
   trip: IPlanMyTripRepositoryMetadata;
@@ -22,7 +23,15 @@ type PropTypes = {
 const MyTrip = ({ trip }: PropTypes) => {
   const dispatch = useDispatch();
   const handleDeleteTrip = () => {
-    dispatch(PlanMyTrip.delete(trip.id));
+    dispatch(
+      Prompt.confirmation({
+        title: `Delete Trip ${trip.name}`,
+        prompt: `Are you sure you want to delete your trip "${trip.name}". You'll no longer be able to access this data while offline.`,
+        callback: (confirm: boolean) => {
+          if (confirm) dispatch(PlanMyTrip.delete(trip.id));
+        }
+      })
+    );
   };
   return (
     <div className="trip-main">
