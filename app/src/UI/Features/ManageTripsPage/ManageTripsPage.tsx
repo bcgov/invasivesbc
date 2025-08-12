@@ -5,7 +5,7 @@ import { useDispatch } from 'utils/use_selector';
 import { Button } from '@mui/material';
 import { ArrowBackIos } from '@mui/icons-material';
 import PlanMyTripForm from './subcomponents/PlanMyTripForm/PlanMyTripForm';
-import ManageTrips from './subcomponents/ManageTrips/ManageTrips';
+import ManageMyTrips from './subcomponents/ManageMyTrips/ManageMyTrips';
 
 const ManageTripsPage = () => {
   enum Mode {
@@ -57,7 +57,7 @@ const ManageTripsPage = () => {
             ),
             [Mode.MANAGE]: (
               <div>
-                <ManageTrips />
+                <ManageMyTrips />
                 <div className="redirect">
                   <p>Not seeing what you're looking for?</p>
                   <Button size="small" onClick={setMode.bind(this, Mode.CREATE)}>
