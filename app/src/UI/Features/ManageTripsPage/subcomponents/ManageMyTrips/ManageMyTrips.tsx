@@ -10,9 +10,10 @@ import { Downloading } from '@mui/icons-material';
 import EmptyCollection from 'UI/Features/LegacyMap/LayerPicker/EmptyCollection/EmptyCollection';
 
 const ManageMyTrips = () => {
+  const lastUpdate = useSelector((state) => state.PlanMyTrip?.lastUpdate);
+
   const [tripService, setTripService] = useState<PlanMyTripCacheService>();
   const [repositories, setRepositories] = useState<IPlanMyTripRepositoryMetadata[]>([]);
-  const lastUpdate = useSelector((state) => state.PlanMyTrip?.lastUpdate);
 
   // Update Repositories when changes noted or service ready
   useEffect(() => {
@@ -42,8 +43,8 @@ const ManageMyTrips = () => {
         {repositories.length === 0 && <EmptyCollection text="You have no trips planned" />}
       </div>
       <div className="downloads">
-        <h2>Downloads</h2>
-        <p>Active Downloads and Progress can be found here</p>
+        <h2>Map Downloads</h2>
+        <p>Monitor active downloads and progress in this section.</p>
         <Accordion title="Map Download Progress" icon={<Downloading />}>
           <TileCacheDownloadProgress />
         </Accordion>
