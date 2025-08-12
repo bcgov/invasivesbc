@@ -1,9 +1,9 @@
-import { IPlanMyTripCacheStatus, IPlanMyTripRepositoryMetadata } from 'utils/plan-my-trip-cache';
+import { IPlanMyTripRepositoryMetadata } from 'utils/plan-my-trip-cache';
 import { useDispatch } from 'utils/use_selector';
 import TripStatusHandler from './TripStatusHandler';
 import MapSlider from 'UI/Features/TileCache/MapSlider';
 import { Save } from '@mui/icons-material';
-import { IconButton } from '@mui/material';
+import { Button } from '@mui/material';
 import { useState } from 'react';
 import { AVAILABLE_ZOOMS } from 'UI/Features/TileCache/constants';
 import bbox from '@turf/bbox';
@@ -45,9 +45,10 @@ const TripMapTileModule = ({ trip }: PropTypes) => {
       downloadSpecsOverride={
         <div className="trip-map-module-download">
           <MapSlider drawnShape={trip.geojson} zoom={zoom} setZoom={setZoom} />
-          <IconButton onClick={handleStartDownload}>
+          <Button color="primary" variant="outlined" onClick={handleStartDownload}>
             <Save />
-          </IconButton>
+            &nbsp;Download
+          </Button>
         </div>
       }
     />
