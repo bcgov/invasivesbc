@@ -21,7 +21,7 @@ const TripRecordsetModule = ({ status, id, cacheKey, trip }: PropTypes) => {
   const handleRestartDownload = () => dispatch(RecordCache.pauseDownload({ setId: id }));
   const handleStop = () => RecordCache.stopDownload({ setId: id });
   const handleStartDownload = () => {
-    if (recordset != undefined) {
+    if (doesRecordsetExist) {
       dispatch(RecordCache.requestCaching({ setId: id }));
     } else {
       const recordSetType = cacheKey === 'activityRecordset' ? RecordSetType.Activity : RecordSetType.IAPP;
@@ -36,8 +36,10 @@ const TripRecordsetModule = ({ status, id, cacheKey, trip }: PropTypes) => {
     }
   };
 
-  const recordset = useSelector((state) => state.UserSettings.recordSets?.[id]);
+  const doesRecordsetExist = useSelector((state) => !!state.UserSettings.recordSets?.[id]);
+
   const dispatch = useDispatch();
+
   return (
     <TripStatusHandler
       status={status}
