@@ -1,0 +1,87 @@
+/* Top Level Trips Container */
+#manage-my-trips {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-width: 675px;
+  width: 100vw;
+
+  /* Single trip main container */
+  .trip-main {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: left;
+    margin-bottom: 1.5rem;
+    /* List of Cache Items */
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+      /* Cache Entry */
+      li {
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        min-height: 50px;
+        padding: 0 0.5rem;
+        margin: 0;
+        p {
+          margin: 0.25rem;
+        }
+        &:nth-child(odd) {
+          background-color: #f8f8f8;
+        }
+        &:nth-child(even) {
+          background-color: #fff;
+        }
+      }
+    }
+
+    /* Left container in Cache entry (label/status) */
+    ul li .cache-status {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      p {
+        font-size: 1.2rem;
+        word-wrap: unset;
+        line-break: strict;
+        .emphasis {
+          font-size: 1rem;
+        }
+      }
+      & > :first-child {
+        color: var(--bc-blue);
+        margin-right: 0.5rem;
+      }
+    }
+    /* Right container in Trip Entry (controls) */
+    ul li .trip-module {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      align-items: center;
+      margin-left: auto;
+
+      p {
+        text-wrap: wrap;
+        .emphasis {
+          font-size: 1rem;
+          font-weight: bold;
+        }
+      }
+
+      /* When displaying the Map information */
+      &:has(.trip-map-module-download) {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}
