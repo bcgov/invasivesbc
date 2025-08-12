@@ -20,8 +20,6 @@ import {
   SET_CURRENT_OPEN_SET,
   SET_TOO_MANY_LABELS_DIALOG,
   TOGGLE_CUSTOMIZE_LAYERS,
-  TOGGLE_DRAWN_LAYER,
-  TOGGLE_KML_LAYER,
   URL_CHANGE
 } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -532,7 +530,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           id: nanoid(),
           geojson: action.payload,
           toggle: true,
-          title: draftState.drawingCustomLayerName
+          title: draftState.drawingCustomLayerName || nanoid()
         });
         draftState.drawingCustomLayerName = '';
       } else if (MapActions.trackLocationStart.match(action)) {
@@ -553,13 +551,22 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.panned = true;
       } else if (MapActions.panningOff.match(action)) {
         draftState.panned = false;
+      } else if (UserSettings.KML.toggle.match(action)) {
+        const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.id);
+        if (action.payload?.on != undefined) {
+          draftState.serverBoundaries[index].toggle = action.payload.on;
+        } else {
+          draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
+        }
+      } else if (UserSettings.Boundaries.toggleCustomLayer.match(action)) {
+        const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.id);
+        if (action.payload.on != undefined) {
+          draftState.clientBoundaries[index].toggle = action.payload.on;
+        } else {
+          draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
+        }
       } else {
         switch (action.type) {
-          case TOGGLE_DRAWN_LAYER: {
-            const index = draftState.clientBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
-            draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
-            break;
-          }
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
             let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
             if (!draftState.layers[index]) {
@@ -599,11 +606,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
                   existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
                 return returnVal;
               }) ?? [];
-            break;
-          }
-          case TOGGLE_KML_LAYER: {
-            const index = draftState.serverBoundaries.findIndex((layer) => layer.id === action.payload.layer.id);
-            draftState.serverBoundaries[index].toggle = !draftState.serverBoundaries[index].toggle;
             break;
           }
 

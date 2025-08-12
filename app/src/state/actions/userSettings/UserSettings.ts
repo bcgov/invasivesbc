@@ -45,6 +45,9 @@ class Boundaries {
   static readonly drawCustomLayer = createAction<Feature>(`${this.PREFIX}/drawCustomLayer`);
   static readonly drawCustomLayerRequest = createAction<string>(`${this.PREFIX}/drawCustomLayerRequest`);
   static readonly removeCustomLayer = createAction<string>(`${this.PREFIX}/removeCustomLayer`);
+  static readonly toggleCustomLayer = createAction(`${this.PREFIX}/toggleCustomLayer`, (id: string, on?: boolean) => ({
+    payload: { id, on }
+  }));
 }
 
 class KML {
@@ -53,6 +56,9 @@ class KML {
   static readonly delete = createAction<string>(`${this.PREFIX}/delete`);
   static readonly deleteSuccess = createAction<string>(`${this.PREFIX}/deleteSuccess`);
   static readonly deleteFailure = createAction<string>(`${this.PREFIX}/deleteFailure`);
+  static readonly toggle = createAction(`${this.PREFIX}/toggle`, (id: string, on?: boolean) => ({
+    payload: { id, on }
+  }));
 }
 
 class InitState {

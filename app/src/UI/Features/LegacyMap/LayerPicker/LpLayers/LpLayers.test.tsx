@@ -4,6 +4,7 @@ import LpLayers from './LpLayers';
 import { createMockStore, mockSliceReducer } from 'test/testUtils';
 import { createMapReducer, DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
 import userEvent from '@testing-library/user-event';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 describe('LpLayers.tsx', () => {
   const store = (online: boolean) =>
@@ -155,7 +156,9 @@ describe('LpLayers.tsx', () => {
     await waitFor(() => {
       expect(dispatchSpy).toHaveBeenCalledTimes(2);
       const calledExpectedEvents = dispatchSpy.mock.calls.every(([action]) =>
-        ['TOGGLE_KML_LAYER', 'TOGGLE_DRAWN_LAYER'].includes(action.type)
+        [UserSettings.KML.toggle.type as string, UserSettings.Boundaries.toggleCustomLayer.type as string].includes(
+          action.type
+        )
       );
       expect(calledExpectedEvents).toBe(true);
     });
