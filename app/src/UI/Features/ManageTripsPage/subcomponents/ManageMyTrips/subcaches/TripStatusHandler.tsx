@@ -1,9 +1,9 @@
-import { Delete, Refresh, Save, Stop, StopCircle, StopCircleOutlined } from '@mui/icons-material';
+import { Delete, Refresh, Save, StopCircleOutlined } from '@mui/icons-material';
 import { Button, IconButton } from '@mui/material';
 import { ReactNode } from 'react';
 import Prompt from 'state/actions/prompts/Prompt';
 import { IPlanMyTripCacheStatus as Status } from 'utils/plan-my-trip-cache';
-import { useDispatch } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 
 interface PropTypes {
   handleDelete: () => void;
@@ -16,6 +16,9 @@ type TripStatusHandlerProps =
   | (PropTypes & { handleStartDownload: () => void; downloadSpecsOverride?: never })
   | (PropTypes & { handleStartDownload?: never; downloadSpecsOverride?: ReactNode });
 
+/**
+ * @desc Uniform Component for PlanMyTrip cache statuses. Prompts on Delete Actions
+ */
 const TripStatusHandler = ({
   handleDelete,
   handleStartDownload,
@@ -25,6 +28,7 @@ const TripStatusHandler = ({
   downloadSpecsOverride
 }: TripStatusHandlerProps) => {
   const dispatch = useDispatch();
+  const connected = useSelector((state) => state.Network.connected);
 
   const confirmDelete = () => {
     dispatch(
@@ -53,7 +57,7 @@ const TripStatusHandler = ({
           ),
           [Status.FAILED]: (
             <>
-              <IconButton color="primary" onClick={handleRestartDownload}>
+              <IconButton color="primary" onClick={handleRestartDownload} disabled={!connected}>
                 <Refresh />
               </IconButton>
               <IconButton color="error" onClick={handleDelete}>
@@ -76,7 +80,7 @@ const TripStatusHandler = ({
               ) : (
                 <>
                   <p>Download Data </p>
-                  <IconButton color="primary" onClick={handleStartDownload}>
+                  <IconButton color="primary" onClick={handleStartDownload} disabled={!connected}>
                     <Save />
                   </IconButton>
                 </>
@@ -86,7 +90,7 @@ const TripStatusHandler = ({
           [Status.NO_DATA]: (
             <>
               <p>No data in selected area </p>
-              <IconButton color="primary" onClick={handleStartDownload}>
+              <IconButton color="primary" onClick={handleStartDownload} disabled={!connected}>
                 <Refresh />
               </IconButton>
             </>
