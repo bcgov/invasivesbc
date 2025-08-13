@@ -3,11 +3,12 @@
   margin-bottom: 2rem;
 
   .trip-header {
+    z-index: 1;
     background-color: white;
     display: flex;
     justify-content: flex-start;
     left: 0;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
     position: sticky;
     top: 0;
     width: 100%;

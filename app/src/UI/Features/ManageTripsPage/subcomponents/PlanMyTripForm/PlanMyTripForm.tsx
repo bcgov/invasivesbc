@@ -79,6 +79,7 @@ const PlanMyTripForm = () => {
   );
 
   const planMyTripRegion = useSelector((state) => state.PlanMyTrip?.drawnShape);
+  const connected = useSelector((state) => state.Network.connected);
 
   const [tripName, setTripName] = useState<string>('');
   const [formValid, setFormValid] = useState<boolean>(false);
@@ -175,7 +176,7 @@ const PlanMyTripForm = () => {
             className={formValid ? 'trip-planning-button' : ''}
             color="primary"
             onClick={handleSubmit}
-            disabled={!formValid}
+            disabled={!formValid || !connected}
             size="large"
           >
             Plan my Trip!
