@@ -19,7 +19,6 @@ const BASELINE_FEATURES = {
   EMBEDDED_REPORTS: new FeatureFlag('EMBEDDED_REPORTS', true),
   TRAINING_PAGE: new FeatureFlag('TRAINING_PAGE', true),
   USER_GUIDE: new FeatureFlag('USER_GUIDE', false) /* set to true when there are entries to display */,
-  PLAN_MY_TRIP: new FeatureFlag('PLAN_MY_TRIP', false),
   USER_SITE_LIST: new FeatureFlag('USER_SITE_LIST', true),
   MAP: new FeatureFlag('MAP', true),
 
@@ -42,6 +41,7 @@ const BASELINE_FEATURES = {
   PHOTO_ATTACHMENTS: new FeatureFlag('PHOTO_ATTACHMENTS', true),
   CUSTOM_RECORDSETS: new FeatureFlag('CUSTOM_RECORDSETS', true),
   OFFLINE_SYNC: new FeatureFlag('OFFLINE_SYNC', true),
+  PLAN_MY_TRIP: new FeatureFlag('PLAN_MY_TRIP', true),
 
   DEGRADED_EXPERIENCE_WARNING: new FeatureFlag('DEGRADED_EXPERIENCE_WARNING', false),
 
@@ -59,12 +59,12 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
     /* disable these features on web */
     COMPUTED_FEATURES.CACHE_RECORDSETS.enabled = false;
     COMPUTED_FEATURES.CACHE_TILES.enabled = false;
-
     COMPUTED_FEATURES.MAP_BAKED_RASTER_TILES.enabled = false;
     COMPUTED_FEATURES.MAP_BAKED_VECTOR_TILES.enabled = false;
     COMPUTED_FEATURES.MAP_SIMPLIFIED_BAKED_VECTOR_TILES.enabled = false;
 
     COMPUTED_FEATURES.OFFLINE_SYNC.enabled = false;
+    COMPUTED_FEATURES.PLAN_MY_TRIP.enabled = false;
   } else {
     /* specific enables for mobile - most are enabled by default */
   }
@@ -101,6 +101,7 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
       // many of our users will be using a device of approximately this size
       COMPUTED_FEATURES.CACHE_RECORDSETS.enabled = false;
       COMPUTED_FEATURES.CACHE_TILES.enabled = false;
+      COMPUTED_FEATURES.PLAN_MY_TRIP.enabled = false;
       COMPUTED_FEATURES.OFFLINE_SYNC.enabled = false;
       COMPUTED_FEATURES.MAP_DATABC_LAYERS.enabled = false;
       COMPUTED_FEATURES.MAP_SIMPLIFIED_BAKED_VECTOR_TILES.enabled = true;
