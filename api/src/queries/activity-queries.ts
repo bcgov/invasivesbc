@@ -1,4 +1,3 @@
-/* eslint-disable import/exports-last */
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from 'utils/logger';
 import { ActivityPostRequestBody, ActivitySearchCriteria } from 'models/activity';
