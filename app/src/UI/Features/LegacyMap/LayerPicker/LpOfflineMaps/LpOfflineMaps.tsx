@@ -3,9 +3,6 @@ import 'UI/Features/LegacyMap/LayerPicker/LpOfflineMaps/LpOfflineMaps.css';
 import LpOfflineMapsOptions from 'UI/Features/LegacyMap/LayerPicker/LpOfflineMaps/LpOfflineMapsOption';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import { InvasivesMapLayerDefinitionWithState } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
-import { useDispatch } from 'utils/use_selector';
-import TileCache from 'state/actions/cache/TileCache';
-import { useEffect } from 'react';
 
 type PropTypes = {
   closePicker: () => void;
@@ -16,13 +13,6 @@ type PropTypes = {
 const LpOfflineMaps = ({ closePicker, setOverlayState, layers }: PropTypes) => {
   const cachedToolTipText =
     'Use this option to show or hide the map tiles you’ve previously downloaded to your device.';
-
-  const dispatch = useDispatch();
-
-  // Ensure TileCache repositoryList is up to date, if available.
-  useEffect(() => {
-    dispatch(TileCache.repositoryList());
-  }, []);
 
   return (
     <div id="lp-offline-maps">

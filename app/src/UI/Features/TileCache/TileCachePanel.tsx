@@ -12,14 +12,6 @@ const TileCachePanel = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(TileCache.setMapTileCacheMode(true));
-    return () => {
-      dispatch(TileCache.setMapTileCacheMode(false));
-    };
-  }, []);
-
-  useEffect(() => {
-    dispatch(TileCache.repositoryList());
     dispatch(TileCache.clearTileCacheShape());
   }, []);
 

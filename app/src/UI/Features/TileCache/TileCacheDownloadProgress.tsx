@@ -27,11 +27,6 @@ const TileCacheDownloadProgress = () => {
     (r) => ![RepositoryStatus.READY].includes(r.status) && !downloadProgress?.[r.id]
   );
 
-  // Ensure TileCache repositoryList is up to date, if available.
-  useEffect(() => {
-    dispatch(TileCache.repositoryList());
-  }, []);
-
   const activeDownloads = Object.keys(downloadProgress ?? {}).length + failedDownloads.length > 0;
 
   if (!downloadProgress || !activeDownloads) {
