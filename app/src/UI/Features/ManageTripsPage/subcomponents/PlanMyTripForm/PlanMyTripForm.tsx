@@ -102,6 +102,16 @@ const PlanMyTripForm = () => {
     setFormValid(isNameSet && isRegionDefined && isAnyCacheTypeSelected && !isTileRequestOversized);
   }, [tripName, planMyTripRegion, userSelectedCaches, isOversizedTileDownload]);
 
+  /**
+   * @desc Set Draw tools mode while component is active.
+   */
+  useEffect(() => {
+    dispatch(PlanMyTrip.setPlanMyTripDrawMode(true));
+    return () => {
+      dispatch(PlanMyTrip.setPlanMyTripDrawMode(false));
+    };
+  }, []);
+
   return (
     <div id="trip-planning-form">
       <form>
