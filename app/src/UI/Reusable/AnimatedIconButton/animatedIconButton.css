@@ -1,0 +1,28 @@
+/* Animation classes tied to buttons */
+.animated-icon-button {
+  &.rotate-on-click {
+    animation: rotate-on-click 1s linear infinite;
+  }
+  &.grow {
+    animation: grow 0.5s ease-in-out;
+  }
+}
+
+/* Keyframe animations to apply to button */
+@keyframes rotate-on-click {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes grow {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
