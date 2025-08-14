@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import TileCacheListRow from 'UI/Features/TileCache/TileCacheListRow';
 import { RepositoryStatus } from 'utils/tile-cache';
 import '../commonOfflineMap.css';
+import EmptyCollection from 'UI/Features/LegacyMap/LayerPicker/EmptyCollection/EmptyCollection';
 
 const TileCacheList = () => {
   const repositories = useSelector((state) => state.TileCache?.repositories ?? []).filter(
@@ -11,11 +12,7 @@ const TileCacheList = () => {
 
   const dispatch = useDispatch();
   if (!repositories || repositories.length === 0) {
-    return (
-      <div>
-        <p>You don't have any map areas saved on your device right now.</p>
-      </div>
-    );
+    return <EmptyCollection text="You don't have any map areas saved on your device right now." />;
   }
   return (
     <div className="cached-map-status-details">
