@@ -44,6 +44,7 @@ export class ActivityPostRequestBody {
   species_treated: string[];
 
   jurisdiction: string[];
+  platform_src: string;
 
   /**
    * Creates an instance of ActivityPostRequestBody.
@@ -99,6 +100,7 @@ export class ActivityPostRequestBody {
     this.species_treated = obj?.species_treated || [];
 
     this.jurisdiction = obj?.jurisdiction || [];
+    this.platform_src = obj?.platform_src || '';
   }
 }
 
