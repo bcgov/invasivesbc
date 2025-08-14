@@ -58,9 +58,14 @@ const TripStatusHandler = ({
           ),
           [Status.FAILED]: (
             <>
-              <IconButton color="primary" onClick={handleRestartDownload} disabled={!connected}>
+              <AnimatedIconButton
+                animation="rotate-on-click"
+                color="primary"
+                onClick={handleRestartDownload}
+                disabled={!connected}
+              >
                 <Refresh />
-              </IconButton>
+              </AnimatedIconButton>
               <IconButton color="error" onClick={handleDelete}>
                 <Delete />
               </IconButton>
@@ -94,7 +99,6 @@ const TripStatusHandler = ({
               <AnimatedIconButton
                 animation="rotate-on-click"
                 color="primary"
-                className="spin-click"
                 onClick={handleStartDownload}
                 disabled={!connected}
               >
