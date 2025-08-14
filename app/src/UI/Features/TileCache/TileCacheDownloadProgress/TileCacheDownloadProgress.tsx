@@ -6,6 +6,7 @@ import TileCache from 'state/actions/cache/TileCache';
 import { RepositoryStatus } from 'utils/tile-cache';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import '../commonOfflineMap.css';
+import EmptyCollection from 'UI/Features/LegacyMap/LayerPicker/EmptyCollection/EmptyCollection';
 
 const TileCacheDownloadProgress = () => {
   const handleStopDownload = (repository: string) => {
@@ -29,11 +30,7 @@ const TileCacheDownloadProgress = () => {
   const activeDownloads = Object.keys(downloadProgress ?? {}).length + failedDownloads.length > 0;
 
   if (!downloadProgress || !activeDownloads) {
-    return (
-      <section>
-        <p className="Emphasis">There are currently no downloads in progress</p>
-      </section>
-    );
+    return <EmptyCollection text="No downloads are in progress" />;
   }
   return (
     <div className="cached-map-status-details">
