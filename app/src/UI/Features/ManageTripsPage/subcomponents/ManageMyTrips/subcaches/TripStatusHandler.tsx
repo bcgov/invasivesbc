@@ -2,6 +2,7 @@ import { Delete, Refresh, Save, StopCircleOutlined } from '@mui/icons-material';
 import { Button, IconButton } from '@mui/material';
 import { ReactNode } from 'react';
 import Prompt from 'state/actions/prompts/Prompt';
+import AnimatedIconButton from 'UI/Reusable/AnimatedIconButton/AnimatedIconButton';
 import { IPlanMyTripCacheStatus as Status } from 'utils/plan-my-trip-cache';
 import { useDispatch, useSelector } from 'utils/use_selector';
 
@@ -90,9 +91,15 @@ const TripStatusHandler = ({
           [Status.NO_DATA]: (
             <>
               <p>No data in selected area </p>
-              <IconButton color="primary" onClick={handleStartDownload} disabled={!connected}>
+              <AnimatedIconButton
+                animation="rotate-on-click"
+                color="primary"
+                className="spin-click"
+                onClick={handleStartDownload}
+                disabled={!connected}
+              >
                 <Refresh />
-              </IconButton>
+              </AnimatedIconButton>
             </>
           ),
           [Status.UNAVAILABLE]: <p>Caching unavailable</p>
