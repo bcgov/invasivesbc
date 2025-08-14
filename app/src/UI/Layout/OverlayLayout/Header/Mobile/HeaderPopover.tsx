@@ -102,14 +102,6 @@ const HeaderPopover = () => {
             <NetworkStateControl />
           </section>
           <ul>
-            {loggedInOrWorkingOffline && (
-              <li>
-                <button onClick={() => history.push('/OfflineMaps')}>
-                  <OfflineBolt />
-                  Offline Maps
-                </button>
-              </li>
-            )}
             {activated && (
               <li>
                 <button onClick={activated ? navToUpdateRequest : requestAccess}>
