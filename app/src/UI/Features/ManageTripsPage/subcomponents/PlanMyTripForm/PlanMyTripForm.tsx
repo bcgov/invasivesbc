@@ -9,6 +9,8 @@ import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import PlanMyTrip, { ICreateMyTrip } from 'state/actions/planMyTrip/PlanMyTrip';
 import { AVAILABLE_ZOOMS } from 'UI/Features/TileCache/constants';
 import TileCache from 'state/actions/cache/TileCache';
+import Alerts from 'state/actions/alerts/Alerts';
+import tripAlertMessages from 'constants/alerts/tripAlerts';
 
 interface CacheOption {
   tooltip: string;
@@ -44,6 +46,7 @@ const PlanMyTripForm = () => {
   const handleDrawRegion = () => {
     deleteRef.current?.click();
     drawPolygonRef?.current?.click();
+    dispatch(Alerts.create(tripAlertMessages.drawToolClicked));
   };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => setTripName(e.target.value);
