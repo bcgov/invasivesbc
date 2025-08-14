@@ -338,8 +338,12 @@ class LocalForageRecordCacheService extends RecordCacheService {
       const label = data.short_id;
       const features = (data.geometry as Feature[]) ?? [];
       features.forEach((feature: Feature) => {
-        feature.properties = { name: label + '\n' + data.map_symbol, description: id };
-        centroidArr.push(centroid(feature));
+        feature.properties = {
+          name: label + '\n' + data.map_symbol,
+          description: id,
+          activity_subtype: data?.activity_subtype ?? null
+        };
+        centroidArr.push(centroid(feature, { properties: feature.properties }));
         geoJsonArr.push(feature);
       });
     }
