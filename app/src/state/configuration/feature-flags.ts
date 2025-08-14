@@ -38,6 +38,7 @@ const BASELINE_FEATURES = {
 
   CACHE_TILES: new FeatureFlag('CACHE_TILES', true),
   CACHE_RECORDSETS: new FeatureFlag('CACHE_RECORDSETS', true),
+  CACHE_WELLS: new FeatureFlag('CACHE_WELLS', true),
   PHOTO_ATTACHMENTS: new FeatureFlag('PHOTO_ATTACHMENTS', true),
   CUSTOM_RECORDSETS: new FeatureFlag('CUSTOM_RECORDSETS', true),
   OFFLINE_SYNC: new FeatureFlag('OFFLINE_SYNC', true),
@@ -59,6 +60,7 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
     /* disable these features on web */
     COMPUTED_FEATURES.CACHE_RECORDSETS.enabled = false;
     COMPUTED_FEATURES.CACHE_TILES.enabled = false;
+    COMPUTED_FEATURES.CACHE_WELLS.enabled = false;
     COMPUTED_FEATURES.MAP_BAKED_RASTER_TILES.enabled = false;
     COMPUTED_FEATURES.MAP_BAKED_VECTOR_TILES.enabled = false;
     COMPUTED_FEATURES.MAP_SIMPLIFIED_BAKED_VECTOR_TILES.enabled = false;
@@ -101,6 +103,7 @@ async function computeFeatures(buildtimeConfig: BuildTimeConfig, _runtimeConfig:
       // many of our users will be using a device of approximately this size
       COMPUTED_FEATURES.CACHE_RECORDSETS.enabled = false;
       COMPUTED_FEATURES.CACHE_TILES.enabled = false;
+      COMPUTED_FEATURES.CACHE_WELLS.enabled = false;
       COMPUTED_FEATURES.PLAN_MY_TRIP.enabled = false;
       COMPUTED_FEATURES.OFFLINE_SYNC.enabled = false;
       COMPUTED_FEATURES.MAP_DATABC_LAYERS.enabled = false;
