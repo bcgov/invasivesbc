@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from 'utils/use_selector';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import PlanMyTrip, { ICreateMyTrip } from 'state/actions/planMyTrip/PlanMyTrip';
 import { AVAILABLE_ZOOMS } from 'UI/Features/TileCache/constants';
+import TileCache from 'state/actions/cache/TileCache';
 
 interface CacheOption {
   tooltip: string;
@@ -108,7 +109,10 @@ const PlanMyTripForm = () => {
   useEffect(() => {
     dispatch(PlanMyTrip.setPlanMyTripDrawMode(true));
     return () => {
+      // Clear Tile Cache states from state,
       dispatch(PlanMyTrip.setPlanMyTripDrawMode(false));
+      dispatch(TileCache.clearTileCacheShape());
+      dispatch(PlanMyTrip.clearShape());
     };
   }, []);
 
