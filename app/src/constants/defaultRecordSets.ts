@@ -1,5 +1,4 @@
 import { ActivityStatus } from 'sharedAPI';
-import recordsetColourScheme from './recordsetColourScheme';
 import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { EFilterType } from 'state/actions/userSettings/RecordSet';
@@ -21,7 +20,6 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
         operator2: 'AND'
       }
     ],
-    colorScheme: recordsetColourScheme,
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
     drawOrder: 1
   },
@@ -30,7 +28,6 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
     idList: [],
     recordSetType: RecordSetType.Activity,
     recordSetName: 'All InvasivesBC Activities',
-    colorScheme: recordsetColourScheme,
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
     drawOrder: 2
   },
