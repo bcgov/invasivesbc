@@ -5,8 +5,7 @@ import { Delete, Refresh, StopCircleOutlined } from '@mui/icons-material';
 import TileCache from 'state/actions/cache/TileCache';
 import { RepositoryStatus } from 'utils/tile-cache';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
-import './tileCache.css';
-import { useEffect } from 'react';
+import '../commonOfflineMap.css';
 
 const TileCacheDownloadProgress = () => {
   const handleStopDownload = (repository: string) => {
@@ -37,7 +36,7 @@ const TileCacheDownloadProgress = () => {
     );
   }
   return (
-    <section className="map-download-progress">
+    <div className="cached-map-status-details">
       <div className="table-wrapper">
         <table>
           <thead>
@@ -81,7 +80,7 @@ const TileCacheDownloadProgress = () => {
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   );
 };
 

@@ -2,6 +2,7 @@ import TileCache from 'state/actions/cache/TileCache';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import TileCacheListRow from 'UI/Features/TileCache/TileCacheListRow';
 import { RepositoryStatus } from 'utils/tile-cache';
+import '../commonOfflineMap.css';
 
 const TileCacheList = () => {
   const repositories = useSelector((state) => state.TileCache?.repositories ?? []).filter(
@@ -11,13 +12,13 @@ const TileCacheList = () => {
   const dispatch = useDispatch();
   if (!repositories || repositories.length === 0) {
     return (
-      <section>
+      <div>
         <p>You don't have any map areas saved on your device right now.</p>
-      </section>
+      </div>
     );
   }
   return (
-    <section>
+    <div className="cached-map-status-details">
       <div className="table-wrapper">
         <table>
           <thead>
@@ -42,7 +43,7 @@ const TileCacheList = () => {
       <div className="control">
         <button onClick={() => dispatch(TileCache.repositoryList())}>Refresh Table</button>
       </div>
-    </section>
+    </div>
   );
 };
 
