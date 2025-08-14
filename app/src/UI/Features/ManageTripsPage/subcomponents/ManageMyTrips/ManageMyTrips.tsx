@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './ManageMyTrips.css';
+import './manageMyTrips.css';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';
 import { IPlanMyTripRepositoryMetadata, PlanMyTripCacheService } from 'utils/plan-my-trip-cache';
 import { useSelector } from 'utils/use_selector';
