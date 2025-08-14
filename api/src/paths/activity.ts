@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { RequestHandler, Response } from 'express';
 import { Operation } from 'express-openapi';
 import { PoolClient, QueryResult } from 'pg';
 import { SQLStatement } from 'sql-template-strings';
@@ -14,9 +14,9 @@ import { uploadMedia } from 'paths/media';
 
 const defaultLog = getLogger('activity');
 
-export const POST: Operation = [uploadMedia(), createActivity()];
+const POST: Operation = [uploadMedia(), createActivity()];
 
-export const PUT: Operation = [uploadMedia(), updateActivity()];
+const PUT: Operation = [uploadMedia(), updateActivity()];
 
 // Api doc common to both the POST and PUT endpoints
 const post_put_apiDoc = {
@@ -268,7 +268,7 @@ PUT.apiDoc = {
  * @returns {RequestHandler}
  */
 function createActivity(): RequestHandler {
-  return async (req: InvasivesRequest, res) => {
+  return async (req: InvasivesRequest, res: Response) => {
     defaultLog.debug({ label: 'activity', message: 'createActivity', body: req.params });
 
     // Prefilter anybody with no roles.
@@ -321,13 +321,17 @@ function createActivity(): RequestHandler {
         if (getResponse?.rowCount) {
           // Found 1 or more rows with matching activity_id (which are not marked as deleted), expecting 0
           await connection.query('COMMIT');
-
-          return res.status(409).json({
-            message: 'Resource with matching activity_id already exists.',
-            request: req.body,
-            namespace: 'activity',
-            code: 409
-          });
+          if (getResponse.rows[0].created_by === req.authContext.friendlyUsername) {
+            //If the record already exists, and the user matches the created_by, submit an update request instead
+            return await updateActivityHandler(req, res);
+          } else {
+            return res.status(409).json({
+              message: 'Resource with matching activity_id already exists.',
+              request: req.body,
+              namespace: 'activity',
+              code: 409
+            });
+          }
         }
         createResponse = await connection.query(createActivitySQLStatement.text, createActivitySQLStatement.values);
 
@@ -391,124 +395,100 @@ function createActivity(): RequestHandler {
  * @returns {RequestHandler}
  */
 function updateActivity(): RequestHandler {
-  return async (req: InvasivesRequest, res) => {
-    defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
-    // Prefilter anybody with no roles.
-    if (!req.authContext.roles || req.authContext.roles.length === 0) {
-      return res.status(401).json({
-        message: 'Unauthorized',
-        namespace: 'activity',
-        code: 401
+  return async (req: InvasivesRequest, res) => await updateActivityHandler(req, res);
+}
+
+async function updateActivityHandler(req: InvasivesRequest, res: Response): Promise<Response> {
+  defaultLog.debug({ label: 'activity', message: 'updateActivity', body: req.params });
+  // Prefilter anybody with no roles.
+  if (!req.authContext.roles || req.authContext.roles.length === 0) {
+    return res.status(401).json({
+      message: 'Unauthorized',
+      namespace: 'activity',
+      code: 401
+    });
+  }
+  const data = { ...req.body, media_keys: req['media_keys'], user_role: req.authContext?.roles[0] };
+  const sanitizedActivityData = new ActivityPostRequestBody(data);
+
+  if (!req?.authContext?.preferredUsername || !req?.authContext?.friendlyUsername) {
+    return res.status(400).json({
+      message: 'Invalid request, authContext provides insufficient data to complete record metadata',
+      request: req.body,
+      namespace: 'activity',
+      code: 400
+    });
+  }
+
+  sanitizedActivityData.created_by_with_guid = req.authContext.preferredUsername;
+  sanitizedActivityData.updated_by_with_guid = req.authContext.preferredUsername;
+  sanitizedActivityData.updated_by = req.authContext.friendlyUsername;
+
+  let connection: PoolClient | undefined;
+  try {
+    connection = await getDBConnection();
+
+    const isChemicalTreatment =
+      sanitizedActivityData.activity_type === 'Treatment' &&
+      sanitizedActivityData.activity_subtype.includes('Chemical');
+    /**
+     * UUIDs were appended to the Chemical Treatment Herbicides to ensure a proper render, and states updated correctly.
+     * Due to a Metabase report, its instrumental that the `index` key matches to what was in the array at the time.
+     * Keeping the key in line but pushing/popping causes awkward rerendering so UUIDs were introduced. To avoid plugging the DB, the UUIDs are removed before entering
+     */
+    if (isChemicalTreatment) {
+      const chemicalDetails = (sanitizedActivityData.activity_subtype_data as Record<PropertyKey, any>)
+        ?.chemical_treatment_details;
+      const herbicides = chemicalDetails.tank_mix
+        ? chemicalDetails?.tank_mix_object?.herbicides ?? []
+        : chemicalDetails?.herbicides ?? [];
+      herbicides.forEach((_, i) => {
+        herbicides[i].index = i;
+        delete herbicides[i]?.uuid;
       });
     }
-    const data = { ...req.body, media_keys: req['media_keys'], user_role: req.authContext?.roles[0] };
-    const sanitizedActivityData = new ActivityPostRequestBody(data);
 
-    if (!req?.authContext?.preferredUsername || !req?.authContext?.friendlyUsername) {
-      return res.status(400).json({
-        message: 'Invalid request, authContext provides insufficient data to complete record metadata',
-        request: req.body,
-        namespace: 'activity',
-        code: 400
-      });
+    const sanitizedSearchCriteria: string = data.activity_id;
+    const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
+
+    const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
+
+    if (response.rows.length > 0) {
+      if (response.rows[0].activity_type === 'Monitoring' && req?.body?.form_data?.activity_type_data?.linked_id) {
+        const sqlStatementForCheck = getActivitySQL(req.body.form_data.activity_type_data.linked_id);
+        const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
+        const linked_species_treated = response.rows[0].species_treated;
+
+        // make sure monitoring a subset
+        sanitizedActivityData.species_treated.forEach((species) => {
+          defaultLog.info({ message: 'species check', species });
+
+          if (linked_species_treated.includes(species) === false) {
+            defaultLog.debug({ message: 'linked_species_treated', linked_species_treated });
+            // otherwise throw 400
+            return res.status(400).json({
+              message: 'Invalid request, species in monitoring not included in linked treatment',
+              request: req.body,
+              namespace: 'activity',
+              code: 400
+            });
+          }
+        });
+      }
     }
+    const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData, req?.authContext?.user?.user_id);
 
-    sanitizedActivityData.created_by_with_guid = req.authContext.preferredUsername;
-    sanitizedActivityData.updated_by_with_guid = req.authContext.preferredUsername;
-    sanitizedActivityData.updated_by = req.authContext.friendlyUsername;
+    let createResponse = null;
 
-    let connection: PoolClient | undefined;
     try {
-      connection = await getDBConnection();
+      // Perform both update and create operations as a single transaction
+      await connection.query('BEGIN');
 
-      const isChemicalTreatment =
-        sanitizedActivityData.activity_type === 'Treatment' &&
-        sanitizedActivityData.activity_subtype.includes('Chemical');
-      /**
-       * UUIDs were appended to the Chemical Treatment Herbicides to ensure a proper render, and states updated correctly.
-       * Due to a Metabase report, its instrumental that the `index` key matches to what was in the array at the time.
-       * Keeping the key in line but pushing/popping causes awkward rerendering so UUIDs were introduced. To avoid plugging the DB, the UUIDs are removed before entering
-       */
-      if (isChemicalTreatment) {
-        const chemicalDetails = (sanitizedActivityData.activity_subtype_data as Record<PropertyKey, any>)
-          ?.chemical_treatment_details;
-        const herbicides = chemicalDetails.tank_mix
-          ? chemicalDetails?.tank_mix_object?.herbicides ?? []
-          : chemicalDetails?.herbicides ?? [];
-        herbicides.forEach((_, i) => {
-          herbicides[i].index = i;
-          delete herbicides[i]?.uuid;
-        });
-      }
+      createResponse = await connection.query(sqlStatements.createSQL.text, sqlStatements.createSQL.values);
 
-      const sanitizedSearchCriteria: string = data.activity_id;
-      const sqlStatementForCheck = getActivitySQL(sanitizedSearchCriteria);
-      const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
-
-      if (response.rows.length > 0) {
-        if (response.rows[0].activity_type === 'Monitoring' && req?.body?.form_data?.activity_type_data?.linked_id) {
-          const sqlStatementForCheck = getActivitySQL(req.body.form_data.activity_type_data.linked_id);
-          const response = await connection.query(sqlStatementForCheck.text, sqlStatementForCheck.values);
-          const linked_species_treated = response.rows[0].species_treated;
-
-          // make sure monitoring a subset
-          sanitizedActivityData.species_treated.forEach((species) => {
-            defaultLog.info({ message: 'species check', species });
-
-            if (linked_species_treated.includes(species) === false) {
-              defaultLog.debug({ message: 'linked_species_treated', linked_species_treated });
-              // otherwise throw 400
-              return res.status(400).json({
-                message: 'Invalid request, species in monitoring not included in linked treatment',
-                request: req.body,
-                namespace: 'activity',
-                code: 400
-              });
-            }
-          });
-        }
-      }
-      const sqlStatements: IPutActivitySQL = putActivitySQL(sanitizedActivityData, req?.authContext?.user?.user_id);
-
-      let createResponse = null;
-
-      try {
-        // Perform both update and create operations as a single transaction
-        await connection.query('BEGIN');
-
-        createResponse = await connection.query(sqlStatements.createSQL.text, sqlStatements.createSQL.values);
-
-        await connection.query('COMMIT');
-      } catch (error) {
-        await connection.query('ROLLBACK');
-        return res.status(500).json({
-          message: 'Error updating activity.',
-          request: req.body,
-          error: error,
-          namespace: 'activity',
-          code: 500
-        });
-      }
-
-      const result = createResponse?.rows?.[0];
-      if (!result) {
-        return res.status(401).json({
-          message: 'You do not have edit permission for this activity',
-          request: req.body,
-          namespace: 'activity',
-          code: 401
-        });
-      }
-
-      // kick off asynchronous context collection activities
-      if (req.body.form_data?.activity_data?.latitude) {
-        commitContext(result, req);
-      }
-
-      return res.status(200).json(result);
+      await connection.query('COMMIT');
     } catch (error) {
-      defaultLog.debug({ label: 'updateActivity', message: 'error', error });
-
+      await connection.query('ROLLBACK');
       return res.status(500).json({
         message: 'Error updating activity.',
         request: req.body,
@@ -516,8 +496,37 @@ function updateActivity(): RequestHandler {
         namespace: 'activity',
         code: 500
       });
-    } finally {
-      connection?.release();
     }
-  };
+
+    const result = createResponse?.rows?.[0];
+    if (!result) {
+      return res.status(401).json({
+        message: 'You do not have edit permission for this activity',
+        request: req.body,
+        namespace: 'activity',
+        code: 401
+      });
+    }
+
+    // kick off asynchronous context collection activities
+    if (req.body.form_data?.activity_data?.latitude) {
+      commitContext(result, req);
+    }
+
+    return res.status(200).json(result);
+  } catch (error) {
+    defaultLog.debug({ label: 'updateActivity', message: 'error', error });
+
+    return res.status(500).json({
+      message: 'Error updating activity.',
+      request: req.body,
+      error: error,
+      namespace: 'activity',
+      code: 500
+    });
+  } finally {
+    connection?.release();
+  }
 }
+
+export { POST, PUT };
