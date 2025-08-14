@@ -40,10 +40,10 @@ const LpOfflineMaps = ({ closePicker, setOverlayState, layers }: PropTypes) => {
       )}
       <div className="guide">
         <p>
-          You can modify or create new Map Caches from the <b>Offline Maps</b> page.
+          You can modify or create new Map Caches from the <b>Manage Trips</b> page.
         </p>
-        <Link to="/OfflineMaps" onClick={closePicker}>
-          Go to offline maps page
+        <Link to="/ManageTrips" onClick={closePicker}>
+          Go to manage trips page
         </Link>
       </div>
     </div>
