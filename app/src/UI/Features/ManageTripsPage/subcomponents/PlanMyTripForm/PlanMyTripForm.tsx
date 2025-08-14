@@ -11,11 +11,14 @@ import { AVAILABLE_ZOOMS } from 'UI/Features/TileCache/constants';
 import TileCache from 'state/actions/cache/TileCache';
 import Alerts from 'state/actions/alerts/Alerts';
 import tripAlertMessages from 'constants/alerts/tripAlerts';
+import { FeatureFlags } from 'state/configuration/feature-flags';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 interface CacheOption {
   tooltip: string;
   name: keyof IPlanMyTripCacheStatuses | 'all';
   labelText: string;
+  featureFlag: keyof FeatureFlags;
 }
 
 const PlanMyTripForm = () => {
@@ -23,22 +26,26 @@ const PlanMyTripForm = () => {
     {
       tooltip: 'Creates an IAPP Recordset with your drawn region as the primary filter',
       name: 'iappRecordset',
-      labelText: 'IAPP Records'
+      labelText: 'IAPP Records',
+      featureFlag: 'CACHE_RECORDSETS'
     },
     {
       tooltip: 'Creates an InvasivesBC Recordset with your drawn region as the primary filter',
       name: 'activityRecordset',
-      labelText: 'InvasivesBC Records'
+      labelText: 'InvasivesBC Records',
+      featureFlag: 'CACHE_RECORDSETS'
     },
     {
       tooltip: 'Get locations of recorded groundwater wells in your region for use with Chemical Treatment forms',
       name: 'wellData',
-      labelText: 'Well Data'
+      labelText: 'Well Data',
+      featureFlag: 'CACHE_WELLS'
     },
     {
       tooltip: 'Download Maps available offline for your drawn region',
       name: 'mapTiles',
-      labelText: 'Offline Maps'
+      labelText: 'Offline Maps',
+      featureFlag: 'CACHE_TILES'
     }
   ];
 
@@ -155,18 +162,20 @@ const PlanMyTripForm = () => {
             <legend>
               What info should come with you?<span className="required">*</span>
             </legend>
-            {CACHE_OPTIONS.map(({ tooltip, name, labelText }) => (
-              <div className="input-label" key={name}>
-                <input
-                  type="checkbox"
-                  name={name}
-                  checked={userSelectedCaches[name]}
-                  onChange={handleSelectionChange}
-                />
-                <label htmlFor="IAPP Records">
-                  {labelText} <TooltipWithIcon tooltipText={tooltip} />
-                </label>
-              </div>
+            {CACHE_OPTIONS.map(({ tooltip, name, labelText, featureFlag }) => (
+              <FeatureGated requires={featureFlag}>
+                <div className="input-label" key={name}>
+                  <input
+                    type="checkbox"
+                    name={name}
+                    checked={userSelectedCaches[name]}
+                    onChange={handleSelectionChange}
+                  />
+                  <label htmlFor="IAPP Records">
+                    {labelText} <TooltipWithIcon tooltipText={tooltip} />
+                  </label>
+                </div>
+              </FeatureGated>
             ))}
           </fieldset>
         </section>
