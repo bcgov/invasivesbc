@@ -163,8 +163,8 @@ const PlanMyTripForm = () => {
               What info should come with you?<span className="required">*</span>
             </legend>
             {CACHE_OPTIONS.map(({ tooltip, name, labelText, featureFlag }) => (
-              <FeatureGated requires={featureFlag}>
-                <div className="input-label" key={name}>
+              <FeatureGated requires={featureFlag} key={name}>
+                <div className="input-label">
                   <input
                     type="checkbox"
                     name={name}
