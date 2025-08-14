@@ -250,9 +250,6 @@ const createCachedActivityLayer = async (map: maplibregl.Map, layer: any) => {
 const createOnlineActivityLayer = (map: maplibregl.Map, layer: any) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
 
-  if ([RecordSetId.Drafts, RecordSetId.Activity].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
-    return;
-  }
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
   const source: SourceSpecification = {
     type: 'vector',
