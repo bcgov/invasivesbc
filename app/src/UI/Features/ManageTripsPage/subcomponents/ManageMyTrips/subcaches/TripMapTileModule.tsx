@@ -45,7 +45,7 @@ const TripMapTileModule = ({ trip }: PropTypes) => {
       downloadSpecsOverride={
         <div className="trip-map-module-download">
           <MapSlider drawnShape={trip.geojson} zoom={zoom} setZoom={setZoom} />
-          <Button color="primary" variant="outlined" onClick={handleStartDownload}>
+          <Button color="primary" variant="outlined" className="tmmd-button" onClick={handleStartDownload}>
             <Save />
             &nbsp;Download
           </Button>

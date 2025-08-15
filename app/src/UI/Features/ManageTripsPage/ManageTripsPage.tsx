@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
-import TileCache from 'state/actions/cache/TileCache';
+import { useState } from 'react';
 import './manageTripsPage.css';
-import { useDispatch } from 'utils/use_selector';
 import { Button } from '@mui/material';
 import { ArrowBackIos } from '@mui/icons-material';
 import PlanMyTripForm from './subcomponents/PlanMyTripForm/PlanMyTripForm';
@@ -14,14 +12,6 @@ const ManageTripsPage = () => {
     MANAGE
   }
   const [mode, setMode] = useState<Mode>(Mode.MAIN);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(TileCache.setMapTileCacheMode(true));
-    return () => {
-      dispatch(TileCache.setMapTileCacheMode(false));
-    };
-  }, []);
 
   return (
     <div id="manage-trips">

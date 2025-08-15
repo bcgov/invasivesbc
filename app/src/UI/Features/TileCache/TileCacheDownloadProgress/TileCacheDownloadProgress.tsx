@@ -5,8 +5,8 @@ import { Delete, Refresh, StopCircleOutlined } from '@mui/icons-material';
 import TileCache from 'state/actions/cache/TileCache';
 import { RepositoryStatus } from 'utils/tile-cache';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
-import './tileCache.css';
-import { useEffect } from 'react';
+import '../commonOfflineMap.css';
+import EmptyCollection from 'UI/Features/LegacyMap/LayerPicker/EmptyCollection/EmptyCollection';
 
 const TileCacheDownloadProgress = () => {
   const handleStopDownload = (repository: string) => {
@@ -27,22 +27,13 @@ const TileCacheDownloadProgress = () => {
     (r) => ![RepositoryStatus.READY].includes(r.status) && !downloadProgress?.[r.id]
   );
 
-  // Ensure TileCache repositoryList is up to date, if available.
-  useEffect(() => {
-    dispatch(TileCache.repositoryList());
-  }, []);
-
   const activeDownloads = Object.keys(downloadProgress ?? {}).length + failedDownloads.length > 0;
 
   if (!downloadProgress || !activeDownloads) {
-    return (
-      <section>
-        <p className="Emphasis">There are currently no downloads in progress</p>
-      </section>
-    );
+    return <EmptyCollection text="No downloads are in progress" />;
   }
   return (
-    <section className="map-download-progress">
+    <div className="cached-map-status-details">
       <div className="table-wrapper">
         <table>
           <thead>
@@ -86,7 +77,7 @@ const TileCacheDownloadProgress = () => {
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
   );
 };
 

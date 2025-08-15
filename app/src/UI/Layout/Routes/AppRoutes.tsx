@@ -9,7 +9,6 @@ import { RecordSet } from 'UI/Features/Records/RecordSet/RecordSet';
 import React, { Suspense } from 'react';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
-import ManageTripsPage from 'UI/Features/ManageTripsPage/ManageTripsPage';
 
 const UserAccessPage = React.lazy(() => import('UI/Features/Admin/userAccess/UserAccessPage'));
 const EmbeddedReportsPage = React.lazy(() => import('UI/Features/Reports/EmbeddedReportsPage'));
@@ -23,9 +22,7 @@ const BatchCreateNew = React.lazy(() => import('UI/Features/Batch/BatchCreateNew
 const BatchTemplates = React.lazy(() => import('UI/Features/Batch/BatchTemplates'));
 
 const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'));
-
-const TileCachePanel = React.lazy(() => import('UI/Features/TileCache/TileCachePanel'));
-
+const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
 
 const BatchRoutes: React.FC = () => {
@@ -148,14 +145,6 @@ const AppRoutes = () => {
         )}
       />
 
-      <Route
-        path="/OfflineMaps"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <TileCachePanel />
-          </Suspense>
-        )}
-      />
       <Route
         path="/ManageTrips"
         render={() => (

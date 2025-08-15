@@ -11,6 +11,7 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RepositoryMetadata } from 'utils/record-cache';
 import defaultRecordSets from 'constants/defaultRecordSets';
 import { RootState } from 'state/reducers/rootReducer';
+import TileCache from 'state/actions/cache/TileCache';
 
 function* handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST() {
   yield put(UserSettings.toggleRecordExpandSuccess());
@@ -80,12 +81,13 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
   if (!UserSettings.InitState.get.match(action)) {
     return;
   }
-  
+
   const { recordSets } = yield select(selectUserSettings);
 
-  const recordsetCacheEnabled: boolean = yield select(
-    (state: RootState) => state.Configuration.current.features.CACHE_RECORDSETS.enabled
-  );
+  const [recordsetCacheEnabled, tileCacheEnabled] = yield all([
+    yield select((state: RootState) => state.Configuration.current.features.CACHE_RECORDSETS.enabled),
+    yield select((state: RootState) => state.Configuration.current.features.CACHE_TILES.enabled)
+  ]);
 
   const defaultRecordSet = defaultRecordSets;
   // add offline activities for mobile
@@ -105,7 +107,9 @@ function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
       }
     });
   }
-
+  if (tileCacheEnabled) {
+    yield put(TileCache.repositoryList());
+  }
   if (action?.payload?.offlineAPIDocsDisplayName) {
     yield put(APIDocs.load({ displayName: action.payload.offlineAPIDocsDisplayName }));
   } else {

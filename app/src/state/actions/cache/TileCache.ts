@@ -8,9 +8,6 @@ import { RootState } from 'state/reducers/rootReducer';
 class TileCache {
   static readonly PREFIX = 'TileCache';
 
-  // used to tell the map we are on a page where we might want to draw a rectangle
-  static readonly setMapTileCacheMode = createAction<boolean>(`${this.PREFIX}/setMapTileCacheMode`);
-
   static readonly setTileCacheShape = createAction<{ geometry: GeoJSON }>(`${this.PREFIX}/setTileCacheShape`);
   static readonly clearTileCacheShape = createAction(`${this.PREFIX}/clearTileCacheShape`);
 

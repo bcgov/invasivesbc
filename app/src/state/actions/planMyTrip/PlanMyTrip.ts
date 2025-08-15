@@ -134,7 +134,10 @@ class PlanMyTrip {
 
   public static readonly Recordset = PmtRecordset;
 
-  /** @desc update lastUpdate state forcing reload */
+  /** @desc Used to tell the map we are on a page where we might want to draw a rectangle*/
+  public static readonly setPlanMyTripDrawMode = createAction<boolean>(`${this.PREFIX}/setPlanMyTripDrawMode`);
+
+  /** @desc Update lastUpdate state forcing reload */
   public static readonly refresh = createAction(`${this.PREFIX}/refresh`);
 
   /** @desc Remove drawn shape from Redux state. */
