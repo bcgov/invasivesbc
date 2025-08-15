@@ -27,9 +27,9 @@ jobs:
         run: |
           sudo ls -la /Applications | grep "Xcode"
 
-      - name: XCode select 16.2
+      - name: XCode select 16.4
         run: |
-          sudo xcode-select -s /Applications/Xcode_16.2.app/Contents/Developer
+          sudo xcode-select -s /Applications/Xcode_16.4.app/Contents/Developer
 
       - name: Install sharedAPI dependencies
         working-directory: ./sharedAPI
