@@ -18,6 +18,7 @@ import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RecordSetId } from 'interfaces/UserRecordSet';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 import { selectActivity } from 'state/reducers/activity';
+import { PLATFORM_SRC } from 'constants/misc';
 
 function* handle_ACTIVITY_SAVE_OFFLINE(action) {
   yield put(
@@ -64,7 +65,8 @@ function* handle_ACTIVITY_GET_LOCAL_REQUEST(action: PayloadAction<string>) {
         species_negative: networkReturn.data.species_negative || [],
         species_treated: networkReturn.data.species_treated || [],
         media: networkReturn.data.media || [],
-        media_delete_keys: networkReturn.data.media_delete_keys || []
+        media_delete_keys: networkReturn.data.media_delete_keys || [],
+        platform_src: PLATFORM_SRC
       };
       yield put(Activity.getSuccess({ activity: datav2, permissions: parseActivityForPermissions(datav2) }));
       return;

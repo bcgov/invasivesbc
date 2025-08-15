@@ -13,6 +13,7 @@ import { AuthActions } from 'state/actions/auth/Auth';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 import { EFilterType } from 'state/actions/userSettings/RecordSet';
+import { PLATFORM_SRC } from 'constants/misc';
 
 export function* handle_ACTIVITY_CREATE_NETWORK(action: PayloadAction<Record<string, any>>) {
   const response = yield InvasivesAPI_Call('POST', `/api/activity/`, action.payload);
@@ -64,7 +65,8 @@ export function* handle_ACTIVITY_GET_NETWORK_REQUEST(action) {
     species_negative: networkReturn.data.species_negative || [],
     species_treated: networkReturn.data.species_treated || [],
     media: networkReturn.data.media || [],
-    media_delete_keys: networkReturn.data.media_delete_keys || []
+    media_delete_keys: networkReturn.data.media_delete_keys || [],
+    platform_src: PLATFORM_SRC
   };
 
   yield put(Activity.getSuccess({ activity: datav2, permissions: parseActivityForPermissions(datav2) }));

@@ -241,3 +241,5 @@ export const ReviewActionDescriptions: { [key: string]: string } = {
   [ReviewStatus.DISAPPROVED]:
     'Re-Submit this for Review by InvasivesBC staff. Currently dispproved and requires changes for approval.'
 };
+
+export const PLATFORM_SRC = import.meta.env?.VITE_TARGET_PLATFORM ?? null;
