@@ -28,7 +28,6 @@ import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { SortFilter } from 'interfaces/filterParams';
-import TileCache from 'state/actions/cache/TileCache';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
@@ -37,6 +36,7 @@ import { RECORD_COLOURS } from 'constants/colors';
 import IRecordTable from 'interfaces/recordTable';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import MapActions from 'state/actions/map';
+import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -114,7 +114,7 @@ interface MapState {
     IAPPSortField: string;
     IAPPSortDirection: string;
   };
-  tileCacheMode: boolean;
+  planMyTripDrawMode: boolean;
 }
 
 const initialState: MapState = {
@@ -162,7 +162,7 @@ const initialState: MapState = {
   serverBoundaries: [],
   tooManyLabelsDialog: null,
 
-  tileCacheMode: false,
+  planMyTripDrawMode: false,
 
   userCoords: null,
   userRecordOnHoverRecordID: undefined,
@@ -356,8 +356,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
       } else if (WhatsHere.page_poi.match(action)) {
         draftState.whatsHere.IAPPPage = action.payload.page;
         draftState.whatsHere.IAPPLimit = action.payload.limit;
-      } else if (TileCache.setMapTileCacheMode.match(action)) {
-        draftState.tileCacheMode = action.payload;
+      } else if (PlanMyTrip.setPlanMyTripDrawMode.match(action)) {
+        draftState.planMyTripDrawMode = action.payload;
       } else if (GeoTracking.start.match(action)) {
         draftState.track_me_draw_geo = {
           ...draftState.track_me_draw_geo,

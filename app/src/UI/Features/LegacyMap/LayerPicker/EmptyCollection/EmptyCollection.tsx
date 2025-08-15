@@ -5,7 +5,7 @@ type PropTypes = {
 };
 
 const EmptyCollection = ({ text }: PropTypes) => (
-  <div className="lp-empty-collection">
+  <div className="empty-collection">
     <p>{text}</p>
   </div>
 );

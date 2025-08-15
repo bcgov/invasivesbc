@@ -7,6 +7,12 @@ const tripAlertMessages: Record<string, AlertMessage> = {
     severity: AlertSeverity.Success,
     subject: AlertSubjects.PlanMyTrip,
     autoClose: 3
+  },
+  drawToolClicked: {
+    content: 'Begin drawing your region on the map',
+    severity: AlertSeverity.Info,
+    subject: AlertSubjects.PlanMyTrip,
+    autoClose: 2
   }
 };
 

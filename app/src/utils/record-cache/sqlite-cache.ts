@@ -159,7 +159,7 @@ class SQLiteRecordCacheService extends RecordCacheService {
       results?.values?.forEach((item) => {
         try {
           JSON.parse(item['GEOJSON'])?.forEach((feature: Feature) => {
-            centroidArr.push(centroid(feature));
+            centroidArr.push(centroid(feature, { properties: feature.properties }));
             geoJsonArr.push(feature);
           });
         } catch (e) {
@@ -800,11 +800,11 @@ class SQLiteRecordCacheService extends RecordCacheService {
     geometry.forEach((_, i) => {
       geometry[i].properties = {
         name: normalizedRows.short_id + `${data?.map_symbol ? '\n' + data.map_symbol : ''}`,
-        description: id
+        description: id,
+        activity_subtype: data.activity_subtype
       };
     });
-    const centroidObj = centroid(geometry[0]);
-    centroidObj.properties = { ...geometry[0].properties };
+    const centroidObj = centroid(geometry[0], { properties: geometry[0].properties });
     const geojson = JSON.stringify(geometry) ?? null;
     return [
       id, // ID

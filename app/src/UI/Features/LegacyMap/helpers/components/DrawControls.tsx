@@ -41,7 +41,7 @@ const DrawControls = () => {
   const map = useContext(MapContext);
 
   const whatsHereToggle = useSelector((state) => state.Map.whatsHere.toggle);
-  const tileCacheMode = useSelector((state) => state.Map.tileCacheMode);
+  const planMyTripDrawMode = useSelector((state) => state.Map.planMyTripDrawMode);
   const drawingCustomLayer = useSelector((state) => state.Map.drawingCustomLayer);
 
   const geoTrackingStatus = useSelector((state) => state.Map.track_me_draw_geo.status);
@@ -289,7 +289,7 @@ const DrawControls = () => {
         })
       );
     } else {
-      if (mode === TargetMode.TILE_CACHE) {
+      if (mode === TargetMode.TRIP_PLANNING) {
         dispatch(TileCache.clearTileCacheShape());
         dispatch(PlanMyTrip.clearShape());
       } else if (mode === TargetMode.WHATS_HERE) {
@@ -342,7 +342,7 @@ const DrawControls = () => {
       case TargetMode.CUSTOM_LAYER:
         dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature });
         break;
-      case TargetMode.TILE_CACHE: {
+      case TargetMode.TRIP_PLANNING: {
         dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
         dispatch(PlanMyTrip.setShape({ geometry: feature.geometry }));
         break;
@@ -365,8 +365,8 @@ const DrawControls = () => {
     if (whatsHereToggle) {
       setMode(TargetMode.WHATS_HERE);
       return;
-    } else if (tileCacheMode) {
-      setMode(TargetMode.TILE_CACHE);
+    } else if (planMyTripDrawMode) {
+      setMode(TargetMode.TRIP_PLANNING);
       return;
     } else if (drawingCustomLayer) {
       setMode(TargetMode.CUSTOM_LAYER);
@@ -383,7 +383,7 @@ const DrawControls = () => {
       disableDrawButtons(true);
       editControls.current?.reset();
     }
-  }, [whatsHereToggle, tileCacheMode, drawingCustomLayer, url, currGeoTrackingMode, prevGeoTrackingMode]);
+  }, [whatsHereToggle, planMyTripDrawMode, drawingCustomLayer, url, currGeoTrackingMode, prevGeoTrackingMode]);
 
   /**
    * @desc Update the Drawn Shape.

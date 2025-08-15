@@ -9,11 +9,7 @@ import { InvasivesRequest } from 'utils/auth-utils';
  * @param {ActivityPostRequestBody} activity
  * @returns {SQLStatement} sql query object
  */
-export const postActivitySQL = (
-  activity: ActivityPostRequestBody,
-  user_id: number,
-  updating?: boolean
-): SQLStatement => {
+const postActivitySQL = (activity: ActivityPostRequestBody, user_id: number, updating?: boolean): SQLStatement => {
   if (!activity) {
     return null;
   }
@@ -148,7 +144,7 @@ export const postActivitySQL = (
   return sqlStatement;
 };
 
-export interface IPutActivitySQL {
+interface IPutActivitySQL {
   createSQL: SQLStatement;
 }
 
@@ -158,7 +154,7 @@ export interface IPutActivitySQL {
  * @param {ActivityPostRequestBody} activity
  * @return {*}  {IPutActivitySQL} array of sql query objects
  */
-export const putActivitySQL = (activity: ActivityPostRequestBody, user_id: number): IPutActivitySQL => {
+const putActivitySQL = (activity: ActivityPostRequestBody, user_id: number): IPutActivitySQL => {
   if (!activity) {
     return null;
   }
@@ -191,7 +187,7 @@ const getColumnNamesSQL = (columnNames: string[]): string => {
  * @returns {SQLStatement} sql query object
  */
 //NOSONA
-export const getActivitiesSQL = (
+const getActivitiesSQL = (
   searchCriteria: ActivitySearchCriteria,
   lean: boolean,
   isAuth: boolean = false
@@ -779,7 +775,7 @@ LEFT JOIN
  * @param {string} activityId
  * @returns {SQLStatement} sql query object
  */
-export const getActivitySQL = (activityId: string): SQLStatement => {
+const getActivitySQL = (activityId: string): SQLStatement => {
   return SQL`
     SELECT a.*
     FROM activity_incoming_data a
@@ -794,7 +790,7 @@ export const getActivitySQL = (activityId: string): SQLStatement => {
  * @param userId User identifier
  * @returns SQL query
  */
-export const getActivitySqlWithPermissions = (activityIds: string | string[], userId: number): SQLStatement => {
+const getActivitySqlWithPermissions = (activityIds: string | string[], userId: number): SQLStatement => {
   if (!userId || !activityIds) return;
   if (typeof activityIds === 'string') {
     return SQL`select * from fetch_activity_with_user_permissions(${userId}, array[${activityIds}]::uuid[])`;
@@ -814,7 +810,7 @@ export const getActivitySqlWithPermissions = (activityIds: string | string[], us
  * @desc Fetch Records matching list of ID's
  * @param { string } recordIds Records Ids (UUID format) to fetch
  */
-export const getActivitiesByIdsSQL = (recordIds: string[]): SQLStatement => SQL`
+const getActivitiesByIdsSQL = (recordIds: string[]): SQLStatement => SQL`
   SELECT a.*
   FROM activity_incoming_data a
   WHERE a.iscurrent = true
@@ -822,7 +818,7 @@ export const getActivitiesByIdsSQL = (recordIds: string[]): SQLStatement => SQL`
     AND a.activity_id = ANY(${recordIds});
 `;
 
-export const getActivityHistorySQL = (activityId: string): SQLStatement => {
+const getActivityHistorySQL = (activityId: string): SQLStatement => {
   return SQL`
   ; WITH activity_version_history AS (
       SELECT updated_by, created_timestamp, form_status, iscurrent, ROW_NUMBER() OVER (ORDER BY activity_incoming_data_id asc) AS Version
@@ -840,7 +836,7 @@ export const getActivityHistorySQL = (activityId: string): SQLStatement => {
  * @param {string} activityIds
  * @return {SQLStatement} sql query object
  */
-export const deleteActivitiesSQL = (activityIds: Array<string>, req?: InvasivesRequest): SQLStatement => {
+const deleteActivitiesSQL = (activityIds: Array<string>, req?: InvasivesRequest): SQLStatement => {
   const interpolateIds = () => {
     activityIds.forEach((id, index) => {
       sqlStatement.append(`'${id}'`);
@@ -877,7 +873,7 @@ export const deleteActivitiesSQL = (activityIds: Array<string>, req?: InvasivesR
  * @param treatmentRecordID
  * @returns { SQLStatement }
  */
-export const getLinkedMonitoringRecordsFromTreatmentSQL = (treatmentRecordID: string): SQLStatement =>
+const getLinkedMonitoringRecordsFromTreatmentSQL = (treatmentRecordID: string): SQLStatement =>
   SQL`
     SELECT activity_id
     FROM activity_incoming_data
@@ -892,7 +888,7 @@ export const getLinkedMonitoringRecordsFromTreatmentSQL = (treatmentRecordID: st
  * @param {string} activityIds
  * @return {SQLStatement} sql query object
  */
-export const undeleteActivitiesSQL = (activityIds: Array<string>): SQLStatement => {
+const undeleteActivitiesSQL = (activityIds: Array<string>): SQLStatement => {
   if (!activityIds.length) {
     return null;
   }
@@ -923,3 +919,17 @@ export const undeleteActivitiesSQL = (activityIds: Array<string>): SQLStatement 
 
   return sqlStatement;
 };
+
+export {
+  deleteActivitiesSQL,
+  getActivitiesByIdsSQL,
+  getActivitiesSQL,
+  getActivityHistorySQL,
+  getActivitySQL,
+  getActivitySqlWithPermissions,
+  getLinkedMonitoringRecordsFromTreatmentSQL,
+  postActivitySQL,
+  putActivitySQL,
+  undeleteActivitiesSQL
+};
+export type { IPutActivitySQL };
