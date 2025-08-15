@@ -1,11 +1,10 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useMemo } from 'react';
 import { MapContext } from './MapContext';
 import { FillLayerSpecification, GeoJSONSource, SymbolLayerSpecification } from 'maplibre-gl';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { useSelector } from 'utils/use_selector';
 import bboxToPolygon from 'utils/bboxToPolygon';
-import { Feature, Polygon } from 'geojson';
-import { LAYER_Z_FOREGROUND, LAYER_Z_MID } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
+import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 
 type PropTypes = {
   mapReady: boolean;
@@ -52,7 +51,7 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
       }
     });
     map?.addLayer(LABEL_DEFINITION, LAYER_Z_FOREGROUND);
-    map?.addLayer(LAYER_DEFINITION, LAYER_Z_MID);
+    map?.addLayer(LAYER_DEFINITION, LAYER_Z_FOREGROUND);
   };
 
   const teardown = () => {
@@ -76,19 +75,18 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
   const repositories = useSelector((state) => state.TileCache?.repositories);
   const url = useSelector((state) => state.AppMode.url);
 
-  const [data, setData] = useState<Array<Feature<Polygon>>>([]);
-  const [userOnOfflineTilePage, setUserOnOfflineTilePage] = useState<boolean>(false);
-
   // Rebuild Dataset when repository state updates
-  useEffect(() => {
-    const features =
+  const data = useMemo(() => {
+    return (
       repositories?.map(({ bounds, description }) => {
         const shape = bboxToPolygon(bounds);
         shape.properties = { description };
         return shape;
-      }) ?? [];
-    setData(features);
+      }) ?? []
+    );
   }, [repositories]);
+
+  const userOnPlanMyTripPage = useMemo(() => !!url?.includes('/ManageTrips'), [url]);
 
   // Update layer data on change instead of destroying/recreating each time there's an update
   useEffect(() => {
@@ -107,17 +105,13 @@ const CachedMapLayer = ({ mapReady }: PropTypes) => {
     return () => teardown();
   }, [mapReady]);
 
-  useEffect(() => {
-    setUserOnOfflineTilePage(!!url?.includes('/OfflineMaps'));
-  }, [url]);
-
   // Toggle Layer Visibility
   useEffect(() => {
     if (!map || !mapReady) return;
-    const visibility = userOnOfflineTilePage ? 'visible' : 'none';
+    const visibility = userOnPlanMyTripPage ? 'visible' : 'none';
     map.setLayoutProperty(`label-${MAP_ID}`, 'visibility', visibility);
     map.setLayoutProperty(`fill-${MAP_ID}`, 'visibility', visibility);
-  }, [userOnOfflineTilePage]);
+  }, [userOnPlanMyTripPage]);
 
   return null;
 };

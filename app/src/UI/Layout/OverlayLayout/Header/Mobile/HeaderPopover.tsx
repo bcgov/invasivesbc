@@ -1,4 +1,4 @@
-import { HelpCenter, Luggage, Menu, Newspaper, OfflineBolt } from '@mui/icons-material';
+import { HelpCenter, Luggage, Menu, Newspaper } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -102,14 +102,6 @@ const HeaderPopover = () => {
             <NetworkStateControl />
           </section>
           <ul>
-            {loggedInOrWorkingOffline && (
-              <li>
-                <button onClick={() => history.push('/OfflineMaps')}>
-                  <OfflineBolt />
-                  Offline Maps
-                </button>
-              </li>
-            )}
             {activated && (
               <li>
                 <button onClick={activated ? navToUpdateRequest : requestAccess}>

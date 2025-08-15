@@ -1,13 +1,14 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { buffer } from '@turf/turf';
 import { GeoJSON } from 'geojson';
+import { RootState } from 'state/reducers/rootReducer';
 import GeoShapes from 'constants/geoShapes';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 
 /**
  * @property {GeoJSON} [drawnShape] Current Drawing created for a Trips creation
- * @property {number} number Timestamp of the last time a trip's data was refreshed.
- *                           Used to keep trip pages updated (while viewing) without storing all trip data in memory.
+ * @property {number}   number      Timestamp of the last time a trip's data was refreshed.
+ *                                  Used to keep trip pages updated (while viewing) without storing all trip data in memory.
  */
 interface PlanMyTripState {
   drawnShape?: GeoJSON;
@@ -39,7 +40,7 @@ function createPlanMyTripReducer(): (AlertsAndPromptsState, AnyAction) => PlanMy
   };
 }
 
-const selectPlanMyTrip = (state) => state.planMyTrip;
+const selectPlanMyTrip = (state: RootState) => state.PlanMyTrip;
 
 export { createPlanMyTripReducer, selectPlanMyTrip };
 export type { PlanMyTripState };

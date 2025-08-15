@@ -1,0 +1,149 @@
+/* Generic for each sub-section in Offline Maps */
+.cached-map-status-details {
+  align-items: center;
+  border-bottom: 1pt solid lightgray;
+  border-radius: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 860px;
+  min-height: 100pt;
+  padding: 0;
+
+  .table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1pt solid lightgray;
+  }
+
+  .table-wrapper table {
+    min-width: 550px;
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 5pt;
+    word-wrap: break-word;
+
+    tbody tr:nth-child(odd) {
+      background-color: #f5f5f5;
+    }
+
+    tbody tr:hover {
+      background-color: #c9f2ef95;
+    }
+
+    th {
+      height: 3rem;
+    }
+
+    td:first-child,
+    th:first-child {
+      padding-left: 1rem;
+      width: 40pt;
+    }
+
+    td:last-child,
+    th:last-child {
+      text-align: right;
+      padding-right: 1rem;
+    }
+  }
+  .control {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    margin-top: 10pt;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1.25rem;
+
+    button,
+    input {
+      height: 30pt;
+      font-size: 12pt;
+      border-radius: 8pt;
+    }
+
+    button {
+      width: 110pt;
+      border: 1pt solid var(--blue-primary);
+      font-size: 14px;
+      color: var(--blue-primary);
+      background-color: transparent;
+      transition:
+        0.7s color,
+        0.7s background-color,
+        0.7s border;
+
+      &:disabled {
+        border: 1pt solid lightgray;
+        color: lightgray;
+        cursor: not-allowed;
+      }
+
+      &:hover:not(:disabled) {
+        background-color: var(--blue-primary);
+        color: white;
+        cursor: pointer;
+      }
+    }
+
+    input {
+      padding: 0 0 0 10pt;
+      border: 1pt solid black;
+    }
+  }
+}
+
+/* Bottom Button containers */
+.cached-map-status-details #offline-map-overlay section form {
+  width: 100%;
+}
+
+.too-large-warning {
+  color: var(--error-red);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.cached-map-status-details:last-of-type {
+  padding: 0;
+}
+
+.cached-map-status-details.visibility-button {
+  border: none;
+  background-color: transparent;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+@media screen and (width >= 425px) {
+  .cached-map-status-details .control {
+    flex-direction: row;
+
+    & > *:not(:first-child) {
+      margin: 0 0 0 10pt;
+    }
+  }
+}
+
+@media screen and (width >= 768px) {
+  .cached-map-status-details,
+  .cached-map-status-details section,
+  .cached-map-status-details section:last-of-type {
+    padding: 1.25rem;
+  }
+
+  .cached-map-status-details section {
+    border: 1pt solid lightgray;
+    border-radius: 4pt;
+  }
+
+  .control {
+    padding: 0;
+  }
+}

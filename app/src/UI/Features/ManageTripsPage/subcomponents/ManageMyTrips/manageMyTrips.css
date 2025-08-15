@@ -86,7 +86,10 @@
         width: 100%;
         justify-content: center;
         box-sizing: border-box;
-        margin-bottom: 1rem;
+        margin: 1rem 0;
+      }
+      .tmmd-button {
+        margin-top: 1rem;
       }
     }
   }
