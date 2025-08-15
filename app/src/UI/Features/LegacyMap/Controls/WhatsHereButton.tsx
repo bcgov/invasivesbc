@@ -1,12 +1,12 @@
 import { IconButton, Tooltip } from '@mui/material';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { useHistory } from 'react-router-dom';
 import 'UI/Global.css';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { HourglassTop, TravelExplore } from '@mui/icons-material';
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router';
 
 export const WhatsHereButton = () => {
   const handleWhatsHere = () => {
@@ -19,14 +19,15 @@ export const WhatsHereButton = () => {
           subject: AlertSubjects.Map
         })
       );
-    } else if (history.location.pathname === '/WhatsHere') {
-      history.goBack();
+    } else if (location.pathname === '/WhatsHere') {
+      navigate(-1);
     }
     dispatch(WhatsHere.toggle());
   };
 
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
   const whatsHere = useSelector((state) => state.Map.whatsHere);
   const [show, setShow] = useState(false);
   return (

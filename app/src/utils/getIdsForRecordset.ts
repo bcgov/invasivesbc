@@ -37,7 +37,6 @@ const getIdsForRecordset = async (options: Options): Promise<Array<string | numb
   if (res?.ok) {
     const data = await res.json();
     const ids = data.result.map((id) => id[config.col]);
-    console.log(ids);
     return ids;
   }
   return [];

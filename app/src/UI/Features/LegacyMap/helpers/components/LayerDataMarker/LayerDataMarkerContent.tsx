@@ -3,7 +3,7 @@ import { IconButton } from '@mui/material';
 import './layerDataMarkerContent.css';
 import { ArrowCircleLeftOutlined, ArrowCircleRightOutlined } from '@mui/icons-material';
 import { useState } from 'react';
-import { History } from 'history';
+import { NavigateFunction } from 'react-router';
 
 type PropTypes = {
   features: Array<{
@@ -12,12 +12,12 @@ type PropTypes = {
     value: string;
     map_symbol: string;
   }>;
-  history: History;
+  navigate: NavigateFunction;
 };
 
-const LayerDataMarkerContent = ({ features, history }: PropTypes) => {
+const LayerDataMarkerContent = ({ features, navigate }: PropTypes) => {
   const STEP = 3;
-  const handleGoTo = (url: string) => history.push(url);
+  const handleGoTo = (url: string) => navigate(url);
   const inc = () => setFirstPos((oldPos) => Math.min(oldPos + STEP, features.length));
   const dec = () => setFirstPos((oldPos) => Math.max(oldPos - STEP, 0));
   const [firstPos, setFirstPos] = useState<number>(0);

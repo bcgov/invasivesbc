@@ -1,6 +1,7 @@
 import { all, call, put, select, take, takeEvery } from 'redux-saga/effects';
 import { buffer, distance, kinks, lineToPolygon } from '@turf/turf';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { Feature } from 'geojson';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
   handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -60,7 +61,6 @@ import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/c
 import { isDrawing } from 'utils/geoTrackingHelpers';
 import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
-import { Feature } from 'geojson';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -74,17 +74,11 @@ function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(MapActions.initRequest());
 }
 
-function* handle_URL_CHANGE(action: PayloadAction<string>) {
+function* handle_LOAD_ACTIVITY_IF_REQUIRED(action: PayloadAction<string>) {
+  // this replaces an urlChange handler with more specific handling
+  const id = action.payload;
   const activityPageState = yield select(selectActivity);
-  const isActivityURL = action.payload.includes('/Records/Activity:');
-  if (isActivityURL) {
-    const afterColon = action.payload.split(':')?.[1];
-    let id;
-    if (afterColon) {
-      id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
-    }
-    if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(Activity.get(id));
-  }
+  if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(Activity.get(id));
 }
 
 function* handle_ACTIVITY_DELETE_FAILURE() {
@@ -400,7 +394,7 @@ function* handle_UPDATE_CACHED_RECORDS() {
 function* activityPageSaga() {
   yield all([
     takeEvery(UserSettings.InitState.get, handle_UPDATE_CACHED_RECORDS),
-    takeEvery(AppActions.urlChange, handle_URL_CHANGE),
+    takeEvery(Activity.loadActivityIfRequired, handle_LOAD_ACTIVITY_IF_REQUIRED),
     takeEvery(Activity.buildFormSchema, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),

@@ -284,7 +284,8 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivi
       action.payload.subType,
       username,
       displayName,
-      authState.extendedInfo.pac_number
+      authState.extendedInfo.pac_number,
+      buildTimeConfig.PLATFORM
     );
 
     if (buildTimeConfig.MOBILE) {

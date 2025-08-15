@@ -1,7 +1,10 @@
+import { randomUUID } from 'crypto';
+import process from 'node:process';
+import { Readable } from 'stream';
 import { SQLStatement } from 'sql-template-strings';
 import Cursor from 'pg-cursor';
-import { v4 as uuidv4 } from 'uuid';
 import { PoolClient } from 'pg';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { densityMap, distributionMap, mapSlope } from './iapp-payload/iapp-function-utils';
 import {
   biologicalDispersalJSON,
@@ -287,41 +290,23 @@ const getIAPPjson = (row: any, extract: any, searchCriteria: any) => {
         species_negative: [] // Could not find
       }
     };
-  } catch (e) {
+  } catch (_e) {
     throw new Error('error mapping iapp site to point of interest (at site level)');
   }
 };
 
-const { Readable, PassThrough } = require('stream');
-const AWS = require('aws-sdk');
-
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
 
-const S3 = new AWS.S3({
-  endpoint: AWS_ENDPOINT.href,
-  accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
-  secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
-  signatureVersion: 'v4',
-  s3ForcePathStyle: true
+const S3 = new S3Client({
+  endpoint: `https://${OBJECT_STORE_URL}`,
+  credentials: async () => {
+    return {
+      accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
+      secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID
+    };
+  },
+  forcePathStyle: true
 });
-
-function upload(S3, key) {
-  const pass = new PassThrough();
-
-  const params = {
-    Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
-    Key: key,
-    Body: pass
-  };
-
-  S3.upload(params, function (error, data) {
-    console.error(error);
-    console.info(data);
-  });
-
-  return pass;
-}
 
 export async function streamActivitiesResult(searchCriteria: any, res: any, sqlStatementOverride?: SQLStatement) {
   const connection = await getDBConnection();
@@ -343,20 +328,24 @@ export async function streamActivitiesResult(searchCriteria: any, res: any, sqlS
 
     const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
     const readable = Readable.from(generatedRows);
-    const key = `CSV-${searchCriteria.CSVType}-${uuidv4()}.csv`;
+    const key = `CSV-${searchCriteria.CSVType}-${randomUUID()}.csv`;
 
-    readable.pipe(upload(S3, key)).on('end', async () => {
-      // get signed url
+    await S3.send(
+      new PutObjectCommand({
+        Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
+        Key: key,
+        Body: readable
+      })
+    );
 
-      await new Promise((r) => setTimeout(r, 2000));
-      const url = await getS3SignedURL(key);
-      res.status(200).send(url);
-      res.end();
-      connection.release();
-    });
+    const url = await getS3SignedURL(key);
+    res.status(200).send(url);
+    res.end();
   } catch (e) {
     console.error(e);
     res.status(500);
+  } finally {
+    connection.release();
   }
 }
 
@@ -364,7 +353,7 @@ export const streamIAPPResult = async (searchCriteria: any, res: any, sqlStateme
   let connection;
   try {
     connection = await getDBConnection();
-  } catch (e) {
+  } catch (_e) {
     throw {
       message: 'Error connecting to database',
       code: 500,
@@ -398,21 +387,24 @@ export const streamIAPPResult = async (searchCriteria: any, res: any, sqlStateme
 
       const generatedRows = generateSitesCSV(cursor, searchCriteria.CSVType);
       const readable = Readable.from(generatedRows);
-      const key = `CSV-${searchCriteria.CSVType}-${uuidv4()}.csv`;
-      readable.pipe(upload(S3, key)).on('end', async () => {
-        // get signed url
-        const url = await getS3SignedURL(key);
+      const key = `CSV-${searchCriteria.CSVType}-${randomUUID()}.csv`;
+      await S3.send(
+        new PutObjectCommand({
+          Bucket: process.env.OBJECT_STORE_BUCKET_NAME,
+          Key: key,
+          Body: readable
+        })
+      );
 
-        await new Promise((r) => setTimeout(r, 2000));
-
-        res.status(200).send(url);
-        res.end();
-        connection.release();
-        return;
-      });
+      const url = await getS3SignedURL(key);
+      res.status(200).send(url);
+      res.end();
+      return;
     } catch (e) {
       console.error(e);
       res.status(500);
+    } finally {
+      connection.release();
     }
   } else {
     try {

@@ -3,7 +3,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import React, { useEffect } from 'react';
 import 'UI/Layout/OverlayLayout/Header/Web/WebHeader.css';
 import { Avatar, IconButton, ListItemIcon, Menu, MenuItem } from '@mui/material';
-import { useHistory } from 'react-router-dom';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
@@ -16,6 +15,7 @@ import Alerts from 'state/actions/alerts/Alerts';
 import NavTab from 'UI/Layout/OverlayLayout/Header/NavTab';
 import { usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
+import { useNavigate } from 'react-router';
 
 const ButtonWrapper = ({ children }) => {
   return (
@@ -82,7 +82,7 @@ const InvIcon = () => {
 
 const LoginOrOutMemo = React.memo(() => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const { authenticated } = useSelector(selectAuth);
   const { alerts, prompts } = useSelector((state) => state.AlertsAndPrompts);
   const activated = useSelector((state) => state.UserInfo.activated);
@@ -98,14 +98,14 @@ const LoginOrOutMemo = React.memo(() => {
   };
 
   const navToUpdateRequest = () => {
-    history.push({ pathname: '/AccessRequest' });
+    navigate('/AccessRequest');
   };
 
   const requestAccess = async () => {
     if (!authenticated) {
       dispatch(AuthActions.signinRequest({}));
     } else {
-      history.push('/AccessRequest');
+      navigate('/AccessRequest');
     }
   };
 

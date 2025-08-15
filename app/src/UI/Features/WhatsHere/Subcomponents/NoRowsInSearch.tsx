@@ -1,5 +1,5 @@
 import { LayersClear } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useSelector } from 'utils/use_selector';
 
 const NoRowsInSearch = () => {

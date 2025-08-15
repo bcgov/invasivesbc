@@ -1,8 +1,7 @@
 import proj4 from 'proj4';
 import reproject from 'reproject';
-import encode from 'urlencode';
-import { getSimplifiedGeoJSON } from 'hooks/useInvasivesApi';
 import { stringify } from 'wkt';
+import { getSimplifiedGeoJSON } from 'hooks/useInvasivesApi';
 
 const getHTTP = async (url) => {
   try {
@@ -60,7 +59,7 @@ export const getDataFromDataBC: any = async (
 
   let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
 
-  let resp = await getSimplifiedJSON(encode(URL), '0.02');
+  let resp = await getSimplifiedJSON(encodeURI(URL), '0.02');
 
   const returnVal = resp;
   if (!pageSize && !startIndex) {
@@ -99,7 +98,7 @@ export function* getDataFromDataBCv2(
 
   let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
 
-  let resp = yield getSimplifiedGeoJSON(encode(URL), '0.02');
+  let resp = yield getSimplifiedGeoJSON(encodeURIComponent(URL), '0.02');
   if (!resp) return;
   const returnVal = resp;
   if (!pageSize && !startIndex) {

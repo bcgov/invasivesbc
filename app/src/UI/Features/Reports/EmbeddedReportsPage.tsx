@@ -3,29 +3,27 @@ import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { Autocomplete, Box, Container, TextField, Typography } from '@mui/material';
 import { Report } from 'UI/Features/Reports/Report';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
-import { useSelector } from 'react-redux';
 import { selectAuth } from 'state/reducers/auth';
 import 'UI/Features/Reports/Report.css';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router';
+import { useSelector } from 'utils/use_selector';
 
 const EmbeddedReportsPage: React.FC = () => {
-  const authenticated = useSelector((state: any) => state?.Auth.authenticated && state?.Auth.roles.length > 0);
-  const history = useHistory();
+  const authenticated = useSelector((state) => state.Auth.authenticated && state.Auth.roles.length > 0);
+  const navigate = useNavigate();
 
   if (!authenticated) {
-    history.push('/');
+    navigate('/');
   }
   const api = useInvasivesApi();
   const metabaseIconUrl = '/assets/icon/metabase-icon.svg';
-  const [reports, setReports] = useState([]);
-  const [activeReport, setActiveReport] = useState<number>(null);
+  const [reports, setReports] = useState<{ category: string; id: number; name: string }[]>([]);
+  const [activeReport, setActiveReport] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const authState = useSelector(selectAuth);
 
   const options = reports.map((report) => {
-    const category = report.category;
     return {
-      category,
       ...report
     };
   });
@@ -87,7 +85,7 @@ const EmbeddedReportsPage: React.FC = () => {
           getOptionLabel={(option) => option.name}
           sx={{ width: 500 }}
           onChange={(event, report) => {
-            setActiveReport(report.id);
+            setActiveReport(report?.id || null);
           }}
           renderInput={(params) => <TextField {...params} label="Select a Metabase Report" />}
         />

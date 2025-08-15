@@ -28,7 +28,7 @@ import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import Activity from 'state/actions/activity/Activity';
+import Activity, { SwitchRecordSetPayload } from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { RECORD_COLOURS } from 'constants/colors';
@@ -298,27 +298,25 @@ function* handle_WHATS_HERE_SORT_FILTER_UPDATE(record: PayloadAction<Record<Prop
   }
 }
 
-function* handle_URL_CHANGE(action: PayloadAction<string>) {
-  const url = action.payload;
-  const isRecordSet = url.split(':')?.[0]?.includes('/Records/List/Local');
-  if (isRecordSet) {
-    const id = url.split(':')[1].split('/')[0];
-    yield put(MapActions.setCurrentOpenSet(id));
+function* handle_SWITCH_RECORDSET(action: PayloadAction<SwitchRecordSetPayload>) {
+  const { setId, type } = action.payload;
+  if (type === 'Activity') {
+    yield put(MapActions.setCurrentOpenSet(setId));
 
     let recordSetsState = yield select(selectUserSettings);
-    let recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
+    let recordSetType = recordSetsState.recordSets?.[setId]?.recordSetType;
     if (recordSetType === undefined) {
       yield take(UserSettings.InitState.getSuccess);
       recordSetsState = yield select(selectUserSettings);
-      recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
+      recordSetType = recordSetsState.recordSets?.[setId]?.recordSetType;
     }
     const mapState = yield select(selectMap);
-    const page = mapState.recordTables?.[id]?.page || 0;
-    const limit = mapState.recordTables?.[id]?.limit || 20;
+    const page = mapState.recordTables?.[setId]?.page || 0;
+    const limit = mapState.recordTables?.[setId]?.limit || 20;
 
     const actionArg = {
-      recordSetID: id,
-      tableFiltersHash: recordSetsState.recordSets?.[id]?.tableFiltersHash,
+      recordSetID: setId,
+      tableFiltersHash: recordSetsState.recordSets?.[setId]?.tableFiltersHash,
       page: page,
       limit: limit
     };
@@ -416,6 +414,7 @@ function* handle_DOWNLOAD_NEW_TRIP_RECORDSET(action: PayloadAction<UserRecordSet
   );
   yield put(PlanMyTrip.Recordset.download(recordId));
 }
+
 function* handle_MAP_INIT_FOR_RECORDSETS() {
   interface ActionType {
     type: string;
@@ -687,6 +686,7 @@ function* activitiesPageSaga() {
     takeEvery(Activity.getRowsOnline, handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE),
     takeEvery(Activity.getRowsOffline, handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE),
     takeEvery(Activity.Offline.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE),
+    takeEvery(Activity.switchRecordSet, handle_SWITCH_RECORDSET),
 
     takeEvery(IappActions.getRows, handle_IAPP_TABLE_ROWS_GET_REQUEST),
     takeEvery(IappActions.getRowsRequest, handle_IAPP_TABLE_ROWS_GET_ONLINE),
@@ -695,7 +695,6 @@ function* activitiesPageSaga() {
     takeEvery(WhatsHere.sort_filter_update, handle_WHATS_HERE_SORT_FILTER_UPDATE),
     takeEvery(WhatsHere.page_activity, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
-    takeEvery(AppActions.urlChange, handle_URL_CHANGE),
     takeEvery(DrawToolActions.createShape, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(DrawToolActions.updateShape, handle_MAP_ON_SHAPE_UPDATE),
     ...TRACKING_SAGA_HANDLERS

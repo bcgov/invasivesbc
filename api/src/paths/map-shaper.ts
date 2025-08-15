@@ -1,8 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import get from 'simple-get';
 import { applyCommands } from 'mapshaper';
-import decode from 'urldecode';
 import proj4 from 'proj4';
 import reproject from 'reproject';
 import { getLogger } from 'utils/logger';
@@ -34,7 +32,7 @@ const albersToGeog = (featureCollection) => {
 
 function getSimplifiedGeoJSON(): RequestHandler {
   return async (req, res) => {
-    const url = req.query.url;
+    const url = req.query.url as string;
     const percentage = req.query.percentage;
 
     if (!url) {
@@ -47,10 +45,10 @@ function getSimplifiedGeoJSON(): RequestHandler {
         .json({ message: 'Bad request - no percentage provided', namespace: 'map-shaper', code: 400 });
     }
 
-    const decodedUrl = decode(url);
+    const decodedUrl = decodeURI(url);
 
-    get.concat(decodedUrl, function (err, res1, data) {
-      if (err) {
+    fetch(decodedUrl)
+      .catch((err) => {
         return res.status(500).json({
           message: 'Failed to get simplified GeoJSON',
           request: req.query,
@@ -58,43 +56,52 @@ function getSimplifiedGeoJSON(): RequestHandler {
           namespace: 'map-shaper',
           code: 500
         });
-      }
-
-      try {
-        applyCommands(
-          `-i in.json -simplify dp interval=${percentage} -proj wgs84 -o out.json`,
-          { 'in.json': albersToGeog(JSON.parse(data.toString())) },
-          function (err, output) {
-            if (output) {
-              const json = JSON.parse(output['out.json']);
-              return res.status(200).json({
-                message: 'Got simplified GeoJSON',
-                request: req.query,
-                result: json,
-                namespace: 'map-shaper',
-                code: 200
-              });
-            } else {
-              return res.status(500).json({
-                message: 'Failed to get simplified GeoJSON',
-                request: req.query,
-                error: err,
-                namespace: 'map-shaper',
-                code: 500
-              });
+      })
+      .then(async (response) => {
+        if (response.type !== 'basic' || response.status !== 200) {
+          return res.status(500).json({
+            message: 'Failed to get simplified GeoJSON',
+            request: req.query,
+            error: 'Response from map-shaper invalids',
+            namespace: 'map-shaper',
+            code: 500
+          });
+        }
+        try {
+          applyCommands(
+            `-i in.json -simplify dp interval=${percentage} -proj wgs84 -o out.json`,
+            { 'in.json': albersToGeog(await response.json()) },
+            function (err, output) {
+              if (output) {
+                const json = JSON.parse(output['out.json']);
+                return res.status(200).json({
+                  message: 'Got simplified GeoJSON',
+                  request: req.query,
+                  result: json,
+                  namespace: 'map-shaper',
+                  code: 200
+                });
+              } else {
+                return res.status(500).json({
+                  message: 'Failed to get simplified GeoJSON',
+                  request: req.query,
+                  error: err,
+                  namespace: 'map-shaper',
+                  code: 500
+                });
+              }
             }
-          }
-        );
-      } catch (e) {
-        defaultLog.error({ message: 'Failed to get simplified GeoJSON', error: e });
-        return res.status(500).json({
-          message: 'Failed to get simplified GeoJSON',
-          request: req.query,
-          error: e,
-          namespace: 'map-shaper',
-          code: 500
-        });
-      }
-    });
+          );
+        } catch (e) {
+          defaultLog.error({ message: 'Failed to get simplified GeoJSON', error: e });
+          return res.status(500).json({
+            message: 'Failed to get simplified GeoJSON',
+            request: req.query,
+            error: e,
+            namespace: 'map-shaper',
+            code: 500
+          });
+        }
+      });
   };
 }

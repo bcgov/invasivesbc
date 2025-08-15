@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import BatchFileComponent from 'UI/Features/Batch/batch-upload/BatchFileComponent';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { selectAuth } from 'state/reducers/auth';
 import BatchActions from 'state/actions/batch/BatchActions';
+import { useNavigate } from 'react-router';
 
 const BatchCreate = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [data, setData] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string>();
@@ -36,7 +36,7 @@ const BatchCreate = () => {
   };
 
   const doUpload = () => {
-    new Promise((resolve, reject) => {
+    new Promise<void>((resolve, reject) => {
       dispatch(
         BatchActions.createWithCallback({
           csvData: data,
@@ -46,7 +46,7 @@ const BatchCreate = () => {
         })
       );
     }).then((batchId) => {
-      history.push(`/Batch/list/${batchId}`);
+      navigate(`/Batch/list/${batchId}`);
     });
   };
 

@@ -1,6 +1,15 @@
-import AWS from 'aws-sdk';
-import { GetObjectOutput, ManagedUpload, Metadata, DeleteObjectOutput } from 'aws-sdk/clients/s3';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
+import process from 'node:process';
+import {
+  DeleteObjectCommand,
+  DeleteObjectOutput,
+  GetObjectCommand,
+  GetObjectCommandOutput,
+  PutObjectCommand,
+  PutObjectCommandOutput,
+  S3Client
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { getLogger } from './logger';
 import { S3ACLRole } from 'constants/misc';
 import { MediaBase64 } from 'models/media';
@@ -9,14 +18,16 @@ const defaultLog = getLogger('file-utils');
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
 
-const S3 = new AWS.S3({
-  endpoint: AWS_ENDPOINT.href,
-  accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
-  secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
-  signatureVersion: 'v4',
-  s3ForcePathStyle: true
+const S3 = new S3Client({
+  endpoint: `https://${OBJECT_STORE_URL}`,
+  credentials: async () => {
+    return {
+      accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
+      secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID
+    };
+  },
+  forcePathStyle: true
 });
 
 /**
@@ -24,15 +35,20 @@ const S3 = new AWS.S3({
  *
  * @export
  * @param {string} key the unique key assigned to the file in S3 when it was originally uploaded
- * @returns {Promise<GetObjectOutput>} the response from S3 or null if required parameters are null
+ * @returns {Promise<GetObjectCommandOutput>} the response from S3 or null if required parameters are null
  */
-export async function getFileFromS3(key: string): Promise<GetObjectOutput> {
+export async function getFileFromS3(key: string): Promise<GetObjectCommandOutput> {
   if (!key) {
     return null;
   }
 
-  return S3.getObject({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }).promise();
+  return S3.send(new GetObjectCommand({ Bucket: OBJECT_STORE_BUCKET_NAME, Key: key }));
 }
+
+export type UploadFileResult = {
+  key: string;
+  result: PutObjectCommandOutput;
+};
 
 /**
  * Upload a file to S3.
@@ -42,23 +58,31 @@ export async function getFileFromS3(key: string): Promise<GetObjectOutput> {
  * @export
  * @param {MediaBase64} media an object containing information about a single piece of media
  * @param {Metadata} [metadata={}] A metadata object to store additional information with the file
- * @returns {Promise<ManagedUpload.SendData>} the response from S3 or null if required parameters are null
+ * @returns {Promise<PutObjectCommandOutput>} the response from S3 or null if required parameters are null
  */
-export async function uploadFileToS3(media: MediaBase64, metadata: Metadata = {}): Promise<ManagedUpload.SendData> {
+export async function uploadFileToS3(
+  media: MediaBase64,
+  metadata: Record<string, string> = {}
+): Promise<UploadFileResult> {
   if (!media) {
     return null;
   }
 
-  const key = `${uuidv4()}-${media.mediaName}`;
+  const key = `${randomUUID()}-${media.mediaName}`;
 
-  return S3.upload({
-    Bucket: OBJECT_STORE_BUCKET_NAME,
-    Body: media.mediaBuffer,
-    ContentType: media.contentType,
-    Key: key,
-    ACL: S3ACLRole.AUTH_READ,
-    Metadata: metadata
-  }).promise();
+  return {
+    key,
+    result: await S3.send(
+      new PutObjectCommand({
+        Bucket: OBJECT_STORE_BUCKET_NAME,
+        Body: media.mediaBuffer,
+        ContentType: media.contentType,
+        Key: key,
+        ACL: S3ACLRole.AUTH_READ,
+        Metadata: metadata
+      })
+    )
+  };
 }
 
 /**
@@ -81,10 +105,12 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectOutput>
     }
   });
 
-  return S3.deleteObject({
-    Bucket: OBJECT_STORE_BUCKET_NAME,
-    Key: key
-  }).promise();
+  return S3.send(
+    new DeleteObjectCommand({
+      Bucket: OBJECT_STORE_BUCKET_NAME,
+      Key: key
+    })
+  );
 }
 
 /**
@@ -98,11 +124,14 @@ export async function getS3SignedURL(key: string): Promise<string> {
     return null;
   }
 
-  return S3.getSignedUrl('getObject', {
-    Bucket: OBJECT_STORE_BUCKET_NAME,
-    Key: key,
-    Expires: 300000 // 5 minutes
-  });
+  return getSignedUrl(
+    S3,
+    new GetObjectCommand({
+      Bucket: OBJECT_STORE_BUCKET_NAME,
+      Key: key
+    }),
+    { expiresIn: 300 }
+  );
 }
 
 // Regex matches a Data URL base64 encoded string, and has matching groups for the content type and raw encoded string

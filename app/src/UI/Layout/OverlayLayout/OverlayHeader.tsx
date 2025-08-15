@@ -5,7 +5,8 @@ import ArrowDropUpIcon from '@mui/icons-material/ArrowDropUp';
 import DragHandleIcon from '@mui/icons-material/DragHandle';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import React, { useEffect } from 'react';
-import ContextRoutes from 'UI/Layout/Routes/ContextRoutes';
+import { Outlet } from 'react-router';
+import ContextualPopover from '../ContextualPopover/ContextualPopover';
 
 const maximize = () => {
   setOverlayStyle({ top: '0px' });
@@ -99,7 +100,7 @@ export const OverlayHeader = () => {
         </IconButton>
       </div>
       <div className={'right'}>
-        <ContextRoutes />
+        <ContextualPopover />
       </div>
     </div>
   );

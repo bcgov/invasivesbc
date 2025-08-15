@@ -2,7 +2,7 @@ import { DynamicMapComponent } from 'UI/Layout/DynamicMapComponent/DynamicMapCom
 import 'UI/Layout/WideLayout/WideLayout.css';
 import { AppRoutes } from 'UI/Layout/Routes/AppRoutes';
 import { LayoutMode, usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import React, { useEffect, useState } from 'react';
 import NewRecordDialog from 'UI/Features/Records/NewRecordDialog';
@@ -10,7 +10,6 @@ import CustomizeLayerMenu from 'UI/Features/LegacyMap/Controls/CustomizeLayerDia
 import AlertsContainer from 'UI/Layout/AlertsContainer/AlertsContainer';
 import UserInputModalController from 'UI/Reusable/UserInputModals/UserInputModalController';
 import { AuthActions } from 'state/actions/auth/Auth';
-import ContextRoutes from 'UI/Layout/Routes/ContextRoutes';
 import { selectAuth } from 'state/reducers/auth';
 import { Menu } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
@@ -127,7 +126,7 @@ const WideLayout = () => {
           </div>
         )}
 
-        <ContextRoutes />
+        <Outlet />
 
         <AppRoutes />
       </div>

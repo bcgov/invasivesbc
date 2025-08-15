@@ -1,14 +1,14 @@
+import { randomUUID } from 'node:crypto';
 import { Operation } from 'express-openapi';
 import { RequestHandler } from 'express';
-import { nanoid } from 'nanoid';
+import { PoolClient } from 'pg';
+import { SQLStatement } from 'sql-template-strings';
 import { getLogger } from 'utils/logger';
 import { streamActivitiesResult } from 'utils/iapp-json-utils';
 import { getDBConnection } from 'database/db';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { InvasivesRequest } from 'utils/auth-utils';
 import { getActivitiesSQLv2, sanitizeActivityFilterObject } from 'queries/activities-v2-queries';
-import { SQLStatement } from 'sql-template-strings';
-import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity');
 
@@ -84,7 +84,7 @@ POST.apiDoc = {
  * @return {RequestHandler}
  */
 function getActivitiesBySearchFilterCriteria(): RequestHandler {
-  const reqID = nanoid();
+  const reqID = randomUUID();
   return async (req: InvasivesRequest, res) => {
     if (req.authContext.roles.length === 0) {
       return res.status(401).json({ message: 'No Role for user' });

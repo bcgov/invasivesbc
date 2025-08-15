@@ -300,7 +300,7 @@ function createUserSettingsReducer(_configuration: AppConfig) {
             {
               id: '1',
               field: 'form_status',
-              filterType: 'tableFilter',
+              filterType: EFilterType.Table,
               filter: 'Draft',
               operator: 'CONTAINS',
               operator2: 'AND'

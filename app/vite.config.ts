@@ -2,8 +2,6 @@ import { execSync } from 'child_process';
 import { defineConfig, PluginOption } from 'vite';
 import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
-import { NodeModulesPolyfillPlugin } from '@esbuild-plugins/node-modules-polyfill';
-import rollupNodePolyFill from 'rollup-plugin-node-polyfills';
 import { visualizer } from 'rollup-plugin-visualizer';
 
 // sets up constants in the code, based on the build environment
@@ -87,7 +85,7 @@ export default defineConfig({
         }
         handler(level, log);
       },
-      plugins: [rollupNodePolyFill() as PluginOption, ...statsPlugin()],
+      plugins: [...statsPlugin()],
       output: {
         manualChunks(id) {
           if (id.includes('node_modules')) {
@@ -117,18 +115,9 @@ export default defineConfig({
     })
   ],
   optimizeDeps: {
-    esbuildOptions: {
-      plugins: [NodeModulesPolyfillPlugin()]
-    }
+    esbuildOptions: {}
   },
   resolve: {
-    alias: {
-      util: 'rollup-plugin-node-polyfills/polyfills/util',
-      buffer: 'rollup-plugin-node-polyfills/polyfills/buffer-es6',
-      events: 'rollup-plugin-node-polyfills/polyfills/events',
-      process: 'rollup-plugin-node-polyfills/polyfills/process-es6',
-      stream: 'rollup-plugin-node-polyfills/polyfills/stream',
-      string_decoder: 'rollup-plugin-node-polyfills/polyfills/string-decoder'
-    }
+    alias: {}
   }
 });

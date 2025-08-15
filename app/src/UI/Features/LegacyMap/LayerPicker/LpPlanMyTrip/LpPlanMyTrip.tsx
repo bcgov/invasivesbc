@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
 import { IPlanMyTripRepositoryMetadata, PlanMyTripCacheService } from 'utils/plan-my-trip-cache';
 import { PlanMyTripCacheServiceFactory } from 'utils/plan-my-trip-cache/context';

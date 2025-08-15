@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { PersistGate } from 'redux-persist/integration/react';
-import { Router } from 'react-router-dom';
-import setupStore, { historySingleton } from 'state/store';
+import { BrowserRouter } from 'react-router';
+import setupStore from 'state/store';
 import { Provider } from 'react-redux';
 import App from 'UI/App';
 import { TileCacheService } from 'utils/tile-cache';
@@ -59,13 +59,13 @@ async function StartupCoordinator() {
       root.render(
         <PersistGate loading={null} persistor={persistor}>
           <PersistorContext.Provider value={persistor}>
-            <Router history={historySingleton}>
+            <BrowserRouter>
               <Provider store={store}>
                 <StartupContext.Provider value={providedContext}>
                   <App />
                 </StartupContext.Provider>
               </Provider>
-            </Router>
+            </BrowserRouter>
           </PersistorContext.Provider>
         </PersistGate>
       );

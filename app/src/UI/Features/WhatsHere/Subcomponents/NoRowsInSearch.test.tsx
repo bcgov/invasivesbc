@@ -2,8 +2,7 @@ import { createMockStore, mockSliceReducer } from 'test/testUtils';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import NoRowsInSearch from './NoRowsInSearch';
-import { Router } from 'react-router';
-import { historySingleton } from 'state/store';
+import { MemoryRouter } from 'react-router';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
@@ -26,9 +25,9 @@ describe('NoRowsInSearch.tsx', () => {
   it('should render with no recordsets warning', () => {
     const { getByRole, getByText } = render(
       <Provider store={storeWithoutRecordSetToggled}>
-        <Router history={historySingleton}>
+        <MemoryRouter>
           <NoRowsInSearch />
-        </Router>
+        </MemoryRouter>
       </Provider>
     );
     expect(getByRole('link')).toBeDefined();
@@ -38,9 +37,9 @@ describe('NoRowsInSearch.tsx', () => {
   it('should render with no pointsOfInterest warning', () => {
     const { getByRole, getByText } = render(
       <Provider store={storeWithRecordSetToggled}>
-        <Router history={historySingleton}>
+        <MemoryRouter>
           <NoRowsInSearch />
-        </Router>
+        </MemoryRouter>
       </Provider>
     );
     expect(getByRole('link')).toBeDefined();

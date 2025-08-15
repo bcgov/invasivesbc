@@ -5,7 +5,6 @@ import { FeatureFlags } from 'state/configuration/feature-flags';
 import { useSelector } from 'utils/use_selector';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { selectAuth } from 'state/reducers/auth';
-import { useHistory } from 'react-router';
 
 enum LayoutMode {
   MAP_FOCUSED = 'map_focused',
@@ -58,7 +57,6 @@ function usePrimaryNavigationLinks() {
   const { workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
   const { MOBILE } = useSelector((state) => state.Configuration.current.build);
   const { features } = useSelector((state) => state.Configuration.current);
-  const { location } = useHistory();
   const roles = useSelector((state) => state.Auth.roles);
 
   const [filteredLinks, setFilteredLinks] = React.useState<PrimaryNavigationLink[]>([]);
@@ -106,7 +104,7 @@ function usePrimaryNavigationLinks() {
         };
       })
     );
-  }, [location, loggedInOrWorkingOffline, authenticated]);
+  }, [loggedInOrWorkingOffline, authenticated]);
 
   const PRIMARY_NAVIGATION_LINKS: PrimaryNavigationDescriptor[] = [
     {
@@ -129,7 +127,7 @@ function usePrimaryNavigationLinks() {
     },
     {
       id: 'activity',
-      path: `/Records/Activity:${activeActivity}/form`,
+      path: `/Records/Activity/${activeActivity}/form`,
       label: isCellPhoneWidth ? 'Activity' : 'Current Activity',
       predicate: TabPredicate.AUTHENTICATED_ANY,
       platform: PlatformPredicate.BOTH,

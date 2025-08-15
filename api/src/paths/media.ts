@@ -1,8 +1,8 @@
-import { GetObjectOutput, ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { IMediaItem, MediaBase64 } from 'models/media';
-import { getFileFromS3, uploadFileToS3 } from 'utils/file-utils';
+import { getFileFromS3, UploadFileResult, uploadFileToS3 } from 'utils/file-utils';
 import { getLogger } from 'utils/logger';
 import { retrieveGetDoc } from 'docs/getDoc';
 
@@ -33,7 +33,7 @@ function getMedia(): RequestHandler {
       keys.push(param as string);
     }
 
-    const s3GetPromises: Promise<GetObjectOutput>[] = [];
+    const s3GetPromises: Promise<GetObjectCommandOutput>[] = [];
 
     keys.forEach((key: string) => {
       s3GetPromises.push(getFileFromS3(key));
@@ -71,7 +71,7 @@ export function uploadMedia(): RequestHandler {
 
     const rawMediaArray: IMediaItem[] = req.body.media;
 
-    const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
+    const s3UploadPromises: Promise<UploadFileResult>[] = [];
 
     rawMediaArray.forEach((rawMedia: IMediaItem) => {
       if (!rawMedia) {
@@ -105,7 +105,7 @@ export function uploadMedia(): RequestHandler {
 
     const results = await Promise.all(s3UploadPromises);
 
-    req['media_keys'] = results.map((result) => result.Key);
+    req['media_keys'] = results.map((result) => result.key);
 
     next();
   };
@@ -114,10 +114,10 @@ export function uploadMedia(): RequestHandler {
 /*
   Function to get list of media items from s3 object list
 */
-export function getMediaItemsList(s3ObjectList: GetObjectOutput[], keys: string[]) {
-  const mediaItems: IMediaItem[] = s3ObjectList.map((s3Object: GetObjectOutput, index) => {
+export function getMediaItemsList(s3ObjectList: GetObjectCommandOutput[], keys: string[]) {
+  const mediaItems: IMediaItem[] = s3ObjectList.map((s3Object: GetObjectCommandOutput, index) => {
     // Encode image buffer as base64
-    const contentString = Buffer.from(s3Object.Body as Buffer).toString('base64');
+    const contentString = s3Object.Body.transformToString('base64');
 
     // Append DATA Url string
     const encodedFile = `data:${s3Object.ContentType};base64,${contentString}`;

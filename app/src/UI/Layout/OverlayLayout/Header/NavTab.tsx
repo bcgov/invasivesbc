@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
-import { useHistory } from 'react-router';
 import { PrimaryNavigationLink } from 'UI/Layout/Routes/PrimaryNavigation';
+import { useNavigate } from 'react-router';
 
 const NavTab = ({ icon, path, label, active }: PrimaryNavigationLink) => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const scrollContainer = document.getElementById('ButtonWrapper');
@@ -40,7 +40,7 @@ const NavTab = ({ icon, path, label, active }: PrimaryNavigationLink) => {
     <button
       className={'Tab' + (active ? ' Tab__Indicator' : '')}
       onClick={() => {
-        history.push(path);
+        navigate(path);
       }}
     >
       <div className="Tab__Content">{icon}</div>

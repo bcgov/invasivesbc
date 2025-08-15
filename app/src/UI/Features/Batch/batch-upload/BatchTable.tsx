@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { CopyToClipboardButton } from 'UI/Features/Batch/batch-upload/ClipboardHelper';
 import { Button } from '@mui/material';
 import { UnfoldLess, UnfoldMore } from '@mui/icons-material';
-import { useHistory } from 'react-router-dom';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
+import { useNavigate } from 'react-router';
 
 export const AbbreviatedDisplayWithCopy = (props: { displayVal: string; content?: string; length?: number }) => {
   const [truncate, setTruncate] = useState(true);
@@ -155,7 +155,7 @@ const BatchTableCell = ({ field, row }) => {
 
 const BatchTable = ({ jsonRepresentation, created_activities }) => {
   const { darkTheme } = useSelector(selectUserSettings);
-  const history = useHistory();
+  const navigate = useNavigate();
   return (
     <>
       <table className={`batchAlternateLayout ${darkTheme ? 'batchDarkLayout' : ''}`}>
@@ -171,8 +171,8 @@ const BatchTable = ({ jsonRepresentation, created_activities }) => {
                       <Button
                         key={created_activities[row.rowIndex - 1]?.id}
                         onClick={() => {
-                          const url = '/Records/Activity:' + created_activities[row.rowIndex - 1].id + '/form';
-                          history.push(url);
+                          const url = '/Records/Activity/' + created_activities[row.rowIndex - 1].id + '/form';
+                          navigate(url);
                         }}
                       >
                         {created_activities[row.rowIndex - 1]?.short_id}
@@ -190,7 +190,11 @@ const BatchTable = ({ jsonRepresentation, created_activities }) => {
             return (
               <tr key={h}>
                 <td className={'fieldName'}>{h}</td>
-                <>{jsonRepresentation?.rows?.map((row) => <BatchTableCell key={row.rowIndex} field={h} row={row} />)}</>
+                <>
+                  {jsonRepresentation?.rows?.map((row) => (
+                    <BatchTableCell key={row.rowIndex} field={h} row={row} />
+                  ))}
+                </>
               </tr>
             );
           })}

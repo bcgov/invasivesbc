@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import { RequestHandler } from 'express';
 import IParsedAddress from 'sharedAPI/src/interfaces/IParsedAddress';
 import { Operation } from 'express-openapi';
