@@ -16,6 +16,8 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { OfflineActivityRecord } from 'state/reducers/offlineActivity';
 import { getConcatenatedCodes, findSpeciesCodes } from 'utils/addActivity';
+import { white } from 'constants/colors';
+import recordsetColourScheme from 'constants/recordsetColourScheme';
 
 const LAYER_ID_PREFIX = 'recordset-layer-';
 const OFFLINE_ACTIVITIES_LAYER_ID = 'offline-activity';
@@ -78,39 +80,40 @@ const createOnlineIappLayer = (map: any, layer: any) => {
 };
 
 const getPaintBySchemeOrColor = (layer: any) => {
-  if (layer?.layerState?.colorScheme) {
+  const defaultRecordsetOrSetToWhite =
+    Object.values(RecordSetId)?.includes(layer?.recordSetID) || layer?.layerState?.color === white;
+  if (defaultRecordsetOrSetToWhite) {
     return [
       'match',
       ['get', 'activity_subtype'],
       'Activity_Biocontrol_Collection',
-      layer.layerState.colorScheme['Activity_Biocontrol_Collection'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Biocontrol_Collection ?? FALLBACK_COLOR,
       'Activity_Biocontrol_Release',
-      layer.layerState.colorScheme['Activity_Biocontrol_Release'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Biocontrol_Release ?? FALLBACK_COLOR,
       'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
-      layer.layerState.colorScheme['Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant ?? FALLBACK_COLOR,
       'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
-      layer.layerState.colorScheme['Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Monitoring_BiocontrolRelease_TerrestrialPlant ?? FALLBACK_COLOR,
       'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
-      layer.layerState.colorScheme['Activity_Monitoring_ChemicalTerrestrialAquaticPlant'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Monitoring_ChemicalTerrestrialAquaticPlant ?? FALLBACK_COLOR,
       'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-      layer.layerState.colorScheme['Activity_Monitoring_MechanicalTerrestrialAquaticPlant'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Monitoring_MechanicalTerrestrialAquaticPlant ?? FALLBACK_COLOR,
       'Activity_Observation_PlantAquatic',
-      layer.layerState.colorScheme['Activity_Observation_PlantAquatic'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Observation_PlantAquatic ?? FALLBACK_COLOR,
       'Activity_Observation_PlantTerrestrial',
-      layer.layerState.colorScheme['Activity_Observation_PlantTerrestrial'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Observation_PlantTerrestrial ?? FALLBACK_COLOR,
       'Activity_Treatment_ChemicalPlantAquatic',
-      layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantAquatic'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Treatment_ChemicalPlantAquatic ?? FALLBACK_COLOR,
       'Activity_Treatment_ChemicalPlantTerrestrial',
-      layer.layerState.colorScheme['Activity_Treatment_ChemicalPlantTerrestrial'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Treatment_ChemicalPlantTerrestrial ?? FALLBACK_COLOR,
       'Activity_Treatment_MechanicalPlantAquatic',
-      layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantAquatic'] ?? FALLBACK_COLOR,
+      recordsetColourScheme.Activity_Treatment_MechanicalPlantAquatic ?? FALLBACK_COLOR,
       'Activity_Treatment_MechanicalPlantTerrestrial',
-      layer.layerState.colorScheme['Activity_Treatment_MechanicalPlantTerrestrial'] ?? FALLBACK_COLOR,
-      layer.layerState.color ?? FALLBACK_COLOR
+      recordsetColourScheme.Activity_Treatment_MechanicalPlantTerrestrial ?? FALLBACK_COLOR,
+      layer?.layerState?.color ?? FALLBACK_COLOR
     ];
-  } else {
-    return layer?.layerState?.color ?? FALLBACK_COLOR;
   }
+  return layer?.layerState?.color ?? FALLBACK_COLOR;
 };
 
 interface LayerOptions {
@@ -246,10 +249,6 @@ const createCachedActivityLayer = async (map: maplibregl.Map, layer: any) => {
 
 const createOnlineActivityLayer = (map: maplibregl.Map, layer: any) => {
   const layerID = formatLayerID(layer.recordSetID, layer.tableFiltersHash);
-
-  if ([RecordSetId.Drafts, RecordSetId.Activity].includes(layer.recordSetID) && !layer.layerState.colorScheme) {
-    return;
-  }
 
   // color the feature depending on the property 'Activity Type' matching the keys in the layer colorScheme:
   const source: SourceSpecification = {

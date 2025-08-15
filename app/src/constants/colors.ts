@@ -1,9 +1,9 @@
-export const bcBlue = '#003366';
-export const bcYellow = '#FCBA19';
-export const black = '#16161D';
-
-export const RECORD_COLOURS = [
-  '#FFFFFF',
+const bcBlue = '#003366';
+const bcYellow = '#FCBA19';
+const black = '#16161D';
+const white = '#FFFFFF';
+const RECORD_COLOURS = [
+  white,
   '#2A81CB',
   '#FFD326',
   '#CB2B3E',
@@ -14,3 +14,5 @@ export const RECORD_COLOURS = [
   '#7B7B7B',
   '#3D3D3D'
 ];
+
+export { bcBlue, bcYellow, black, white, RECORD_COLOURS };
