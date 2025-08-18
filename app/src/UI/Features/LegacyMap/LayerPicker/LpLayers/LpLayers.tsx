@@ -44,8 +44,8 @@ const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
         <div>
           <ul className={'layerList'}>
             {layers
-              .filter((l) => l.selectionMode === 'layer-picker')
-              .map((layer) => (
+              ?.filter((l) => l.selectionMode === 'layer-picker')
+              ?.map((layer) => (
                 <li className="lp-layers-item" key={layer.name}>
                   <button
                     data-testid="lp-layers-option-button"
