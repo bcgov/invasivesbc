@@ -100,7 +100,7 @@ export class ActivityPostRequestBody {
     this.species_treated = obj?.species_treated || [];
 
     this.jurisdiction = obj?.jurisdiction || [];
-    this.platform_src = obj?.platform_src || '';
+    this.platform_src = obj?.platform_src || null;
   }
 }
 

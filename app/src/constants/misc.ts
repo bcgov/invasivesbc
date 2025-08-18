@@ -13,3 +13,5 @@ export const LongDateFormat = 'dddd, MMMM D, YYYY, H:mm a'; //Monday, January 5,
 export const LongDateTimeFormat = 'dddd, MMMM D, YYYY, H:mm a'; //Monday, January 5, 2020, 3:30 pm
 
 export const HEALTH_ENDPOINT = '/api/misc/version';
+
+export const PLATFORM_SRC = import.meta.env?.VITE_TARGET_PLATFORM ?? null;

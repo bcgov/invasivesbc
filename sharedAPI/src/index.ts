@@ -1,7 +1,14 @@
 import { Feature } from 'geojson';
 import moment from 'moment';
 import { v4 as uuidv4 } from 'uuid';
-import { ActivityLetter, ActivityStatus, ActivitySubtype, ActivitySyncStatus, ActivityType } from './constants';
+import {
+  ActivityLetter,
+  ActivityStatus,
+  ActivitySubtype,
+  ActivitySyncStatus,
+  ActivityType,
+  PLATFORM_SRC
+} from './constants';
 import { performCalculation } from './validation/herbicideCalculator';
 import { mapFormDataToLegacy } from './validation/chemTreatmentValidation';
 
@@ -175,7 +182,7 @@ export function generateDBActivityPayload(
     review_status: 'Not Reviewed',
     reviewed_by: undefined,
     reviewed_at: undefined,
-    platform_src: import.meta.env.VITE_TARGET_PLATFORM
+    platform_src: PLATFORM_SRC
   };
   if (returnVal.activity_subtype === ActivitySubtype.Treatment_ChemicalPlant) {
     returnVal.form_data.activity_subtype_data.chemical_treatment_details = {

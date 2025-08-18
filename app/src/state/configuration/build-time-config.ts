@@ -1,6 +1,7 @@
 /* These definitions are known at build-time, and may result in smaller builds by allowing tree shaking to discard code */
 
 import { useEffect, useState } from 'react';
+import { PLATFORM_SRC } from 'constants/misc';
 
 const MOBILE: boolean = import.meta.env.VITE_MOBILE && import.meta.env.VITE_MOBILE.toLowerCase() === 'true';
 
@@ -14,7 +15,7 @@ enum Platform {
 }
 
 const PLATFORM: Platform = (() => {
-  switch (import.meta.env.VITE_TARGET_PLATFORM) {
+  switch (PLATFORM_SRC) {
     case 'android':
       return Platform.ANDROID;
     case 'ios':
