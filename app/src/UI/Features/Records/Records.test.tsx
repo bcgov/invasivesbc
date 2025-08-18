@@ -25,6 +25,7 @@ let store;
 let config: UnifiedConfig;
 
 import defaultRecordSets from 'constants/defaultRecordSets';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 
 // Setup default Redux store for tests
 beforeAll(async () => {
@@ -86,6 +87,31 @@ describe('Records.tsx', () => {
       expect(recordsets.length).toEqual(NUMBER_OF_DEFAULT_RECORDSETS + 1);
     });
   });
+  it('fires the correct Redux action when toggling map layer', async () => {
+    const { store: configuredStore } = setupStore(config);
+    const dispatchSpy = vi.spyOn(configuredStore, 'dispatch');
+    const { getAllByTestId } = render(
+      <Provider store={configuredStore}>
+        <Records />
+      </Provider>
+    );
+    await waitFor(() => {
+      const state = store.getState().Map.layers;
+      expect(!!state.find((layer) => layer?.recordSetID === '1').layerState).toBe(true);
+    });
+    const getMapLayerButton = () => getAllByTestId('layer-toggle')[0] as HTMLButtonElement;
+
+    await userEvent.click(getMapLayerButton());
+
+    await waitFor(() => {
+      expect(dispatchSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: UserSettings.RecordSet.toggleVisibility.type,
+          payload: expect.anything()
+        })
+      );
+    });
+  });
 
   it('Can cycle background color', async () => {
     const { getAllByTestId } = render(
@@ -104,26 +130,29 @@ describe('Records.tsx', () => {
   });
 
   it('Toggling Map layers enables label layer button', async () => {
+    const { store: configuredStore } = setupStore(await constructUnifiedConfig());
+
     const { getAllByTestId } = render(
-      <Provider store={store}>
+      <Provider store={configuredStore}>
         <Records />
       </Provider>
     );
+    const getRecordSet = () => getAllByTestId('record-set')[0] as HTMLUListElement;
+    const getMapLayerButton = () => within(getRecordSet()).getAllByTestId('layer-toggle')[0] as HTMLButtonElement;
+    const getLabelLayerButton = () => within(getRecordSet()).getAllByTestId('label-toggle')[0] as HTMLButtonElement;
 
-    const getMapLayerButton = () => getAllByTestId('layer-toggle')[0] as HTMLButtonElement;
-    const getLabelLayerButton = () => getAllByTestId('label-toggle')[0] as HTMLButtonElement;
-
+    // Initially disabled since Map layer is off
     expect(getLabelLayerButton().disabled).toBe(true);
 
+    // Toggle map layer on
     await userEvent.click(getMapLayerButton());
 
     await waitFor(() => {
-      const updatedLabelButton = getLabelLayerButton();
-      expect(updatedLabelButton.disabled).toBe(false);
+      expect(getLabelLayerButton().disabled).toBe(false);
     });
 
+    // Click enabled label button
     await userEvent.click(getLabelLayerButton());
-
     await waitFor(() => {
       expect(getAllByTestId('LabelIcon')[0]).toBeDefined();
     });
