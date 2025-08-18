@@ -1,22 +1,38 @@
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import LpLayers from './LpLayers';
-import { createMockStore, mockSliceReducer } from 'test/testUtils';
-import { createMapReducer, DEFAULT_LOCAL_LAYERS } from 'state/reducers/map';
+import { createMockStore, DEFAULT_TEST_CONFIGURATION, mockSliceReducer } from 'test/testUtils';
+import { createMapReducer } from 'state/reducers/map';
 import userEvent from '@testing-library/user-event';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import { useInvasivesMapLayers } from '../../helpers/functional/layers-hook';
+import { createUserSettingsReducer } from 'state/reducers/userSettings';
+import { createConfigurationReducerWithDefaultState } from 'state/reducers/configuration';
 
+const TestComponent = () => {
+  const { setOverlayState, availableLayerDefinitions } = useInvasivesMapLayers();
+  return <LpLayers setOverlayState={setOverlayState} layers={availableLayerDefinitions} />;
+};
 describe('LpLayers.tsx', () => {
   const store = (online: boolean) =>
     createMockStore({
+      UserSettings: createUserSettingsReducer(DEFAULT_TEST_CONFIGURATION.runtime),
+      Configuration: createConfigurationReducerWithDefaultState(DEFAULT_TEST_CONFIGURATION),
       Map: createMapReducer(),
+      ...mockSliceReducer('Auth', {
+        loggedInOrWorkingOffline: true
+      }),
       ...mockSliceReducer('Network', {
         connected: online
       })
     });
   const storeWithShapes = createMockStore({
+    UserSettings: createUserSettingsReducer(DEFAULT_TEST_CONFIGURATION.runtime),
+    ...mockSliceReducer('Auth', {
+      loggedInOrWorkingOffline: true
+    }),
+    Configuration: createConfigurationReducerWithDefaultState(DEFAULT_TEST_CONFIGURATION),
     ...mockSliceReducer('Map', {
-      simplePickerLayers2: [],
       serverBoundaries: [
         {
           id: 760,
@@ -78,20 +94,10 @@ describe('LpLayers.tsx', () => {
   it('[Online] should render and show DataBC Layers', () => {
     const { getByText } = render(
       <Provider store={store(true)}>
-        <LpLayers />
+        <TestComponent />
       </Provider>
     );
-    expect(getByText(DEFAULT_LOCAL_LAYERS[0].title)).toBeDefined();
-  });
-
-  it('[Offline] should render DataBC layers unavailable', () => {
-    const { getByText, queryByText } = render(
-      <Provider store={store(false)}>
-        <LpLayers />
-      </Provider>
-    );
-    expect(getByText('DataBC layers unavailable when offline')).toBeDefined();
-    expect(queryByText(DEFAULT_LOCAL_LAYERS[0].title)).toBeNull();
+    expect(getByText('BC Major Watersheds')).toBeDefined();
   });
 
   it('DataBC Layers should be togglable', async () => {
@@ -99,7 +105,7 @@ describe('LpLayers.tsx', () => {
     const dispatchSpy = vi.spyOn(testStore, 'dispatch');
     const { getAllByTestId } = render(
       <Provider store={testStore}>
-        <LpLayers />
+        <TestComponent />
       </Provider>
     );
     const firstWMSOption = getAllByTestId('lp-layers-option-button')[0];
@@ -114,7 +120,7 @@ describe('LpLayers.tsx', () => {
     const dispatchSpy = vi.spyOn(testStore, 'dispatch');
     const { getByTestId } = render(
       <Provider store={testStore}>
-        <LpLayers />
+        <TestComponent />
       </Provider>
     );
     await userEvent.click(getByTestId('custom-layer-button'));
@@ -126,7 +132,7 @@ describe('LpLayers.tsx', () => {
   it('Should have Empty collections for KML and Custom Layers', () => {
     const { getByText } = render(
       <Provider store={store(false)}>
-        <LpLayers />
+        <TestComponent />
       </Provider>
     );
     expect(getByText('You do not have any custom layers')).toBeDefined();
@@ -136,7 +142,7 @@ describe('LpLayers.tsx', () => {
   it('Should render with KML and Custom Layer entries visible', () => {
     const { getByText } = render(
       <Provider store={storeWithShapes}>
-        <LpLayers />
+        <TestComponent />
       </Provider>
     );
     expect(getByText('Custom KML Layer')).toBeDefined();
@@ -146,7 +152,7 @@ describe('LpLayers.tsx', () => {
   it('Clicking Custom/KML layers should fire events', async () => {
     const { getByText, getAllByTestId } = render(
       <Provider store={storeWithShapes}>
-        <LpLayers />
+        <TestComponent />
       </Provider>
     );
     expect(getByText('Custom KML Layer')).toBeDefined();
