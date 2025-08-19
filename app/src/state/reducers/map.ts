@@ -5,7 +5,6 @@ import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  MAIN_MAP_MOVE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
   RECORD_SET_TO_EXCEL_FAILURE,
@@ -583,6 +582,11 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.positionTracking = false;
       } else if (AppActions.toggleCustomLayersModal.match(action)) {
         draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
+      } else if (MapActions.centerMap.match(action)) {
+        const { lat, lng, zoom } = action.payload;
+        draftState.map_zoom = zoom;
+        draftState.map_center = [lng, lat];
+        draftState.panned = false;
       } else {
         switch (action.type) {
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
@@ -609,12 +613,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             break;
           }
 
-          case MAIN_MAP_MOVE: {
-            draftState.map_zoom = action.payload.zoom;
-            draftState.map_center = action.payload.center;
-            draftState.panned = false;
-            break;
-          }
           case MAP_LABEL_EXTENT_FILTER_SUCCESS: {
             draftState.labelBoundsPolygon = action.payload.bounds;
             break;

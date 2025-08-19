@@ -22,8 +22,7 @@ import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAIN_MAP_MOVE
+  ACTIVITY_UPDATE_GEO_SUCCESS
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -558,11 +557,13 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 
       target = acentroid.geometry;
     }
-
-    yield put({
-      type: MAIN_MAP_MOVE,
-      payload: { center: { lat: target.coordinates[1], lng: target.coordinates[0] }, zoom: 16 }
-    });
+    yield put(
+      MapActions.centerMap({
+        lat: target.coordinates[1],
+        lng: target.coordinates[0],
+        zoom: 16
+      })
+    );
   }
 }
 

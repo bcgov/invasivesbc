@@ -1,6 +1,11 @@
 import { createAction } from '@reduxjs/toolkit';
 import { IServerLayer } from 'state/reducers/map';
 
+interface IMapCenter {
+  lat: number;
+  lng: number;
+  zoom: number;
+}
 class MapActions {
   private static readonly PREFIX = `MapActions`;
 
@@ -24,7 +29,10 @@ class MapActions {
 
   static readonly panToActivity = createAction(`${this.PREFIX}/panToActivity`);
   static readonly panToIAPP = createAction(`${this.PREFIX}/panToIAPP`);
-  public static readonly setCurrentOpenSet = createAction<string>(`${this.PREFIX}/setCurrentOpenSet`);
+  static readonly setCurrentOpenSet = createAction<string>(`${this.PREFIX}/setCurrentOpenSet`);
+
+  static readonly centerMap = createAction<IMapCenter>(`${this.PREFIX}/centerMap`);
 }
 
 export default MapActions;
+export type { IMapCenter };
