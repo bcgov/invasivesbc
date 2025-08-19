@@ -26,7 +26,6 @@ import {
   FILTER_PREP_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_REQUEST,
   IAPP_EXTENT_FILTER_SUCCESS,
-  INIT_SERVER_BOUNDARIES_GET,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
@@ -36,7 +35,6 @@ import {
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
   RECORDSET_SET_SORT,
-  REFETCH_SERVER_BOUNDARIES,
   REMOVE_SERVER_BOUNDARY
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -81,7 +79,7 @@ function* refetchServerBoundaries() {
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
   if (serverShapesServerResponse?.ok) {
     const shapes = serverShapesServerResponse.data.result;
-    yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
+    yield put(MapActions.initServerBoundaries(shapes));
   }
 }
 
@@ -776,7 +774,7 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.SiteLists.createRecordsetsFromSiteList, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(MapActions.initForRecordset, handle_MAP_INIT_FOR_RECORDSETS),
 
-    takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
+    takeEvery(MapActions.refetchServerBoundaries, refetchServerBoundaries),
     takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
     takeEvery(UserSettings.RecordSet.cycleColourById, handle_RECORDSET_ROTATE_COLOUR),
     takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),

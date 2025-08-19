@@ -3,7 +3,7 @@ import { Box } from '@mui/material';
 import { DropzoneDialog } from 'mui-file-dropzone';
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { useDispatch } from 'react-redux';
-import { REFETCH_SERVER_BOUNDARIES } from 'state/actions';
+import MapActions from 'state/actions/map';
 
 export interface IShapeUploadRequest {
   data: string;
@@ -22,7 +22,7 @@ export const KMLShapesUpload: React.FC<any> = (props) => {
     if (uploadRequests.length > 0)
       doUpload().then(() => {
         props.whenDone();
-        dispatch({ type: REFETCH_SERVER_BOUNDARIES });
+        dispatch(MapActions.refetchServerBoundaries());
       });
   }, [uploadRequests]);
 

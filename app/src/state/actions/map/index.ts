@@ -1,7 +1,11 @@
 import { createAction } from '@reduxjs/toolkit';
+import { IServerLayer } from 'state/reducers/map';
 
 class MapActions {
   private static readonly PREFIX = `MapActions`;
+
+  static readonly initServerBoundaries = createAction<IServerLayer[]>(`${this.PREFIX}/initServerBoundaries`);
+  static readonly refetchServerBoundaries = createAction(`${this.PREFIX}/refetchServerBoundaries`);
 
   static readonly chooseBaseMap = createAction<string>(`${this.PREFIX}/chooseBaseMap`);
   static readonly initForRecordset = createAction(`${this.PREFIX}/initForRecordset`);

@@ -1,13 +1,12 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { Feature, Point, Polygon } from 'geojson';
+import { GeoJSON, Feature, Point, Polygon } from 'geojson';
 import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_PAN_AND_ZOOM,
-  INIT_SERVER_BOUNDARIES_GET,
   MAIN_MAP_MOVE,
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
@@ -44,6 +43,12 @@ enum LeafletWhosEditingEnum {
   NONE = 'NONE'
 }
 
+interface IServerLayer {
+  id: number | string;
+  geojson: GeoJSON;
+  title: string;
+  toggle?: boolean;
+}
 interface MapState {
   [MIGRATION_VERSION_KEY]: number;
   CanTriggerCSV: boolean;
@@ -79,7 +84,7 @@ interface MapState {
   readableIdentifier?: string;
   recordSetForCSV: number | null;
   recordTables: Record<PropertyKey, IRecordTable>;
-  serverBoundaries: any[];
+  serverBoundaries: IServerLayer[];
   tooManyLabelsDialog: any;
   userCoords: any;
   userRecordOnHoverRecordID?: string | number;
@@ -570,7 +575,17 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           draftState.whatsHere.feature = null;
         }
       } else if (MapActions.setCurrentOpenSet.match(action)) {
-        draftState.currentOpenSet = action.payload.set;
+        draftState.currentOpenSet = action.payload;
+      } else if (MapActions.initServerBoundaries.match(action)) {
+        draftState.serverBoundaries =
+          action.payload?.map((incomingItem) => {
+            const returnVal = { ...incomingItem };
+            const existingToggleVal = draftState.serverBoundaries.find(
+              (oldItem) => oldItem.id === incomingItem.id
+            )?.toggle;
+            returnVal.toggle = !!existingToggleVal;
+            return returnVal;
+          }) ?? [];
       } else {
         switch (action.type) {
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
@@ -599,19 +614,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
           case IAPP_EXTENT_FILTER_SUCCESS: {
             draftState.IAPPBoundsPolygon = action.payload.bounds;
-            break;
-          }
-          case INIT_SERVER_BOUNDARIES_GET: {
-            draftState.serverBoundaries =
-              action.payload.data?.map((incomingItem) => {
-                const returnVal = { ...incomingItem };
-                const existingToggleVal = draftState.serverBoundaries.find(
-                  (oldItem) => oldItem.id === incomingItem
-                )?.toggle;
-                returnVal.toggle =
-                  existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
-                return returnVal;
-              }) ?? [];
             break;
           }
 
@@ -684,4 +686,4 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
 const selectMap: (state) => MapState = (state) => state.Map;
 export { createMapReducer, selectMap };
-export type { LeafletWhosEditingEnum, MapState };
+export type { LeafletWhosEditingEnum, MapState, IServerLayer };
