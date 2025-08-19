@@ -1,6 +1,5 @@
 import { all, put, select, takeLatest } from 'redux-saga/effects';
 import { nanoid } from '@reduxjs/toolkit';
-import { USERINFO_CLEAR_REQUEST } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
 import { AuthActions } from 'state/actions/auth/Auth';
 import NetworkActions from 'state/actions/network/NetworkActions';
@@ -48,7 +47,7 @@ function* handleSignoutRequest() {
   }
 
   yield put(AuthActions.signoutComplete());
-  yield put({ type: USERINFO_CLEAR_REQUEST });
+  yield put(AuthActions.clearUserInfo());
 }
 
 function* initializeAuthentication() {

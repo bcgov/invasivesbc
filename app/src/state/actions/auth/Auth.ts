@@ -1,6 +1,7 @@
 import { createAction } from '@reduxjs/toolkit';
 import { ActivitySubtype } from 'sharedAPI';
 import { EPermission_Category, IPermission } from 'sharedAPI/src/interfaces/IPermission';
+import { IUserExtendedInfo } from 'state/reducers/auth';
 
 class AuthActions {
   private static readonly PREFIX = 'Auth';
@@ -56,6 +57,9 @@ class AuthActions {
   static readonly openOfflineUserSelectionDialog = createAction<boolean>(
     `${this.PREFIX}/openOfflineUserSelectionDialog`
   );
+
+  public static readonly loadUserInfo = createAction<IUserExtendedInfo>(`${this.PREFIX}/load`);
+  public static readonly clearUserInfo = createAction(`${this.PREFIX}/clear`);
 }
 
 export { AuthActions };

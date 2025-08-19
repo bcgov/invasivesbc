@@ -1,5 +1,6 @@
 import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { buffer, distance, kinks, lineToPolygon } from '@turf/turf';
+import { PayloadAction } from '@reduxjs/toolkit';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
   handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -71,7 +72,6 @@ import { Role } from 'constants/roles';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isDrawing } from 'utils/geoTrackingHelpers';
 import AppActions from 'state/actions/appActions/appActions';
-import { PayloadAction } from '@reduxjs/toolkit';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
