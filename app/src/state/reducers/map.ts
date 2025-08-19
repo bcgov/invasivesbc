@@ -5,10 +5,8 @@ import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  IAPP_EXTENT_FILTER_SUCCESS,
   IAPP_PAN_AND_ZOOM,
   MAIN_MAP_MOVE,
-  MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
   PAN_AND_ZOOM_TO_ACTIVITY,
@@ -50,7 +48,6 @@ interface IServerLayer {
 interface MapState {
   [MIGRATION_VERSION_KEY]: number;
   CanTriggerCSV: boolean;
-  IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
   IAPPGeoJSONDict: object;
   accuracyToggle: boolean;
@@ -132,7 +129,6 @@ const initialState: MapState = {
 
   accuracyToggle: false,
 
-  IAPPBoundsPolygon: undefined,
   IAPPGeoJSON: undefined,
   IAPPGeoJSONDict: {},
 
@@ -612,21 +608,10 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             break;
           }
 
-          case IAPP_EXTENT_FILTER_SUCCESS: {
-            draftState.IAPPBoundsPolygon = action.payload.bounds;
-            break;
-          }
-
           case MAIN_MAP_MOVE: {
             draftState.map_zoom = action.payload.zoom;
             draftState.map_center = action.payload.center;
             draftState.panned = false;
-            break;
-          }
-          case MAP_DELETE_LAYER_AND_TABLE: {
-            const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            delete draftState.layers[index];
-            delete draftState.recordTables[action.payload.recordSetID];
             break;
           }
           case MAP_LABEL_EXTENT_FILTER_SUCCESS: {

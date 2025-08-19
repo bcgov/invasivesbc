@@ -24,8 +24,6 @@ import {
 import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   FILTER_PREP_FOR_VECTOR_ENDPOINT,
-  IAPP_EXTENT_FILTER_REQUEST,
-  IAPP_EXTENT_FILTER_SUCCESS,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
@@ -389,18 +387,6 @@ function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
 
   yield put({
     type: MAP_LABEL_EXTENT_FILTER_SUCCESS,
-    payload: {
-      bounds: bounds
-    }
-  });
-}
-
-function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
-  const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
-  const bounds = bboxPolygon(bbox as any);
-
-  yield put({
-    type: IAPP_EXTENT_FILTER_SUCCESS,
     payload: {
       bounds: bounds
     }
@@ -801,7 +787,6 @@ function* activitiesPageSaga() {
     takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
-    takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
     takeEvery(AppActions.urlChange, handle_URL_CHANGE),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
