@@ -34,8 +34,6 @@ import {
 } from './activity/online';
 import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_RESTORE_OFFLINE,
@@ -144,8 +142,8 @@ function* handle_ACTIVITY_DELETE_FAILURE() {
   );
 }
 
-function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
-  const isViewing = action.payload.isViewing;
+function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action: PayloadAction<{ isViewing: boolean }>) {
+  const { isViewing } = action.payload;
   const activityState = yield select(selectActivity);
   const activity_subtype = activityState?.activity?.activity_subtype;
   const uiSchema = RootUISchemas[activity_subtype];
@@ -168,8 +166,7 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
 
   const components = apiSpec.components;
   const subtypeSchema = components?.schemas?.[activity_subtype];
-
-  yield put({ type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS, payload: { schema: subtypeSchema, uiSchema: uiSchema } });
+  yield put(Activity.buildFormSchemaSuccess({ schema: subtypeSchema, uiSchema: uiSchema }));
 }
 
 /**
@@ -449,7 +446,7 @@ function* activityPageSaga() {
   yield all([
     takeEvery(UserSettings.InitState.get, handle_UPDATE_CACHED_RECORDS),
     takeEvery(AppActions.urlChange, handle_URL_CHANGE),
-    takeEvery(ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
+    takeEvery(Activity.buildFormSchema, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),

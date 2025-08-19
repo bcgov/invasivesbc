@@ -1,5 +1,4 @@
 import { createAction } from '@reduxjs/toolkit';
-import { IUserExtendedInfo } from 'state/reducers/auth';
 
 class AppActions {
   private static readonly PREFIX = 'AppActions';

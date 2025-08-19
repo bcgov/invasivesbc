@@ -107,6 +107,15 @@ class Activity {
     `${this.PREFIX}/getIdsForRecordsetSuccess`
   );
   static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);
+  static readonly buildFormSchema = createAction(`${this.PREFIX}/buildFormSchema`, (isViewing: boolean) => ({
+    payload: { isViewing }
+  }));
+  static readonly buildFormSchemaSuccess = createAction(
+    `${this.PREFIX}/buildFormSchemaSuccess`,
+    ({ schema, uiSchema }) => ({
+      payload: { schema, uiSchema }
+    })
+  );
 }
 
 export default Activity;

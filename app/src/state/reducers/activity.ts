@@ -2,7 +2,6 @@ import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_SUCCESS
@@ -223,13 +222,11 @@ function createActivityReducer() {
         draftState.activity.form_data.activity_data.utm_easting = undefined;
         draftState.activity.form_data.activity_data.utm_northing = undefined;
         draftState.activity.form_data.activity_data.reported_area = undefined;
+      } else if (Activity.buildFormSchemaSuccess.match(action)) {
+        draftState.uiSchema = action.payload.uiSchema;
+        draftState.schema = action.payload.schema;
       } else {
         switch (action.type) {
-          case ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS: {
-            draftState.uiSchema = action.payload.uiSchema;
-            draftState.schema = action.payload.schema;
-            break;
-          }
           case ACTIVITY_UPDATE_GEO_SUCCESS: {
             draftState.activity.geometry = action.payload.geometry;
             draftState.activity.form_data.activity_data.latitude = action.payload.lat ? action.payload.lat : null;

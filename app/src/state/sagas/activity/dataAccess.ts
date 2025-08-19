@@ -19,7 +19,6 @@ import {
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
 import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
   ACTIVITY_SAVE_OFFLINE,
@@ -600,10 +599,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
       }
     }
 
-    yield put({
-      type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-      payload: { isViewing }
-    });
+    yield put(Activity.buildFormSchema(isViewing));
   } catch (e) {
     console.error(e);
   }
