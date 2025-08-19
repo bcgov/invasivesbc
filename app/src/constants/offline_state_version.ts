@@ -1,5 +1,5 @@
 /*
   handle purging the offline storage on app version upgrade
 */
-export const CURRENT_MIGRATION_VERSION = 20250817;
+export const CURRENT_MIGRATION_VERSION = 20250819;
 export const MIGRATION_VERSION_KEY = '_persistedMigrationVersion';
