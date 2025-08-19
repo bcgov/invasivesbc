@@ -12,7 +12,7 @@ interface IUpdateSync {
   data: UserRecord;
   sync_state: OfflineActivitySyncState;
   error_detail?: string;
-  error_object?: Error | unknown;
+  error_object?: unknown;
 }
 class Offline {
   private static readonly PREFIX = 'Activity/Offline';

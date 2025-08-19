@@ -14,7 +14,7 @@ const TrainingPage = () => {
   const [videos, setVideos] = useState<Array<ITrainingVideoMetadata>>();
   useEffect(() => {
     (async () => {
-      const res = await fetch(`${api_base}/api/training_videos`)
+      await fetch(`${api_base}/api/training_videos`)
         .then(async (res) => {
           console.log(res);
           const data = await res.json();

@@ -48,7 +48,7 @@ function createOfflineActivityReducer(
 ): (OfflineActivityState, AnyAction) => OfflineActivityState {
   return (state: OfflineActivityState = initialState, action) => {
     return createNextState(state, (draftState) => {
-      const { type, payload } = action;
+      const { payload } = action;
       if (Activity.createLocal.match(action)) {
         draftState.serializedActivities[payload.id] = {
           data: JSON.stringify(payload.data, null, 2),

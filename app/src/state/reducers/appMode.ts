@@ -94,6 +94,7 @@ function createAppModeReducer(config: UnifiedConfig) {
         }
       });
     }
+    return state;
   };
 }
 
