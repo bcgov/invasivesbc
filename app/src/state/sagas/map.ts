@@ -30,7 +30,6 @@ import {
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
-  PAGE_OR_LIMIT_UPDATE,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
@@ -48,7 +47,13 @@ import Activity from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { RECORD_COLOURS } from 'constants/colors';
-import { EFilterType, IRemoveFilter, ISetSort, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import {
+  EFilterType,
+  IRemoveFilter,
+  ISetPageLimit,
+  ISetSort,
+  IUpdateFilter
+} from 'state/actions/userSettings/RecordSet';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
@@ -477,21 +482,14 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
   }
 }
 
-function* handle_PAGE_OR_LIMIT_UPDATE(action) {
+function* handle_PAGE_OR_LIMIT_UPDATE(action: PayloadAction<ISetPageLimit>) {
+  const { setID, page, limit } = action.payload;
   const recordSetsState = yield select(selectUserSettings);
-  const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
-  const mapState = yield select(selectMap);
-
-  const page = !Number.isNaN(action.payload.page)
-    ? action.payload.page
-    : mapState.recordTables?.[action.payload.recordSetID]?.page;
-  const limit = !Number.isNaN(action.payload.limit)
-    ? action.payload.limit
-    : mapState.recordTables?.[action.payload.recordSetID]?.limit;
+  const recordSetType = recordSetsState.recordSets?.[setID]?.recordSetType;
 
   const actionArg = {
     recordSetID: action.payload.setID,
-    tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+    tableFiltersHash: recordSetsState.recordSets?.[setID]?.tableFiltersHash,
     page: page,
     limit: limit
   };
@@ -779,7 +777,7 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),
     takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
-    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
+    takeEvery(UserSettings.RecordSet.setPageLimit, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
     takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),

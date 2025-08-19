@@ -11,7 +11,6 @@ import {
   MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
-  PAGE_OR_LIMIT_UPDATE,
   PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
@@ -584,6 +583,9 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             returnVal.toggle = !!existingToggleVal;
             return returnVal;
           }) ?? [];
+      } else if (UserSettings.RecordSet.setPageLimit.match(action)) {
+        draftState.recordTables[action.payload.setID].page = action.payload.page;
+        draftState.recordTables[action.payload.setID].limit = action.payload.limit;
       } else {
         switch (action.type) {
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
@@ -644,11 +646,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           case IAPP_PAN_AND_ZOOM:
           case PAN_AND_ZOOM_TO_ACTIVITY: {
             draftState.positionTracking = false;
-            break;
-          }
-          case PAGE_OR_LIMIT_UPDATE: {
-            draftState.recordTables[action.payload.setID].page = action.payload.page;
-            draftState.recordTables[action.payload.setID].limit = action.payload.limit;
             break;
           }
           case RECORD_SET_TO_EXCEL_FAILURE: {

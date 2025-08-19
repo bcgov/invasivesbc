@@ -42,6 +42,11 @@ interface ISetSort {
   setID: string;
   sortColumn: string;
 }
+interface ISetPageLimit {
+  setID: string;
+  page: number;
+  limit: number;
+}
 class RecordSet {
   private static readonly PREFIX = `UserSettings/RecordSet`;
 
@@ -60,6 +65,7 @@ class RecordSet {
   );
 
   static readonly setSort = createAction<ISetSort>(`${this.PREFIX}/setSort`);
+  static readonly setPageLimit = createAction<ISetPageLimit>(`${this.PREFIX}/setPageLimit`);
   static readonly setSelected = createAction<string | null>(`${this.PREFIX}/setSelected`);
   static readonly cycleColourById = createAction<string>(`${this.PREFIX}/rotateColour`);
   static readonly toggleVisibility = createAction<string>(`${this.PREFIX}/toggleVisibility`);
@@ -149,4 +155,4 @@ class RecordSet {
 
 export default RecordSet;
 export { EFilterType };
-export type { IUpdateFilter, IRemoveFilter, IFilter, IAddFilter, ISetSort };
+export type { IUpdateFilter, IRemoveFilter, IFilter, IAddFilter, ISetPageLimit, ISetSort };
