@@ -3,7 +3,8 @@ import React, { useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import 'UI/Global.css';
-import { IAPP_PAN_AND_ZOOM, PAN_AND_ZOOM_TO_ACTIVITY } from 'state/actions';
+import MapActions from 'state/actions/map';
+import { RecordSetType } from 'interfaces/UserRecordSet';
 
 export const CenterCurrentRecord = (props) => {
   const dispatch = useDispatch();
@@ -32,11 +33,9 @@ export const CenterCurrentRecord = (props) => {
             className={'button'}
             onClick={() => {
               setShow(false);
-              {
-                props.type === 'Activity'
-                  ? dispatch({ type: PAN_AND_ZOOM_TO_ACTIVITY })
-                  : dispatch({ type: IAPP_PAN_AND_ZOOM });
-              }
+              const panAction =
+                props.type === RecordSetType.Activity ? MapActions.panToActivity() : MapActions.panToIAPP();
+              dispatch(panAction);
             }}
           >
             {props.type === 'Activity' ? (

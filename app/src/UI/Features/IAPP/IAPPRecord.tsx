@@ -6,9 +6,9 @@ import { useDispatch } from 'react-redux';
 import { Button } from '@mui/material';
 import { Summary } from 'UI/Features/IAPP/Summary';
 import { Photos } from 'UI/Features/IAPP/Photos';
-import { IAPP_PAN_AND_ZOOM } from 'state/actions';
 import IappActions from 'state/actions/activity/Iapp';
 import { useSelector } from 'utils/use_selector';
+import MapActions from 'state/actions/map';
 
 export const IAPPRecord = () => {
   const history = useHistory();
@@ -48,7 +48,7 @@ export const IAPPRecord = () => {
             variant="contained"
             className="records__activity__map_button"
             onClick={() => {
-              dispatch({ type: IAPP_PAN_AND_ZOOM });
+              dispatch(MapActions.panToIAPP());
               history.push(`/Records/IAPP/${id}/summary`);
             }}
           >

@@ -5,11 +5,9 @@ import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
   FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  IAPP_PAN_AND_ZOOM,
   MAIN_MAP_MOVE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
-  PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
@@ -582,6 +580,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
       } else if (UserSettings.RecordSet.setPageLimit.match(action)) {
         draftState.recordTables[action.payload.setID].page = action.payload.page;
         draftState.recordTables[action.payload.setID].limit = action.payload.limit;
+      } else if (MapActions.panToActivity.match(action) || MapActions.panToIAPP.match(action)) {
+        draftState.positionTracking = false;
       } else {
         switch (action.type) {
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
@@ -626,11 +626,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
               accuracy: userCoords.accuracy,
               heading: userCoords.heading
             };
-            break;
-          }
-          case IAPP_PAN_AND_ZOOM:
-          case PAN_AND_ZOOM_TO_ACTIVITY: {
-            draftState.positionTracking = false;
             break;
           }
           case RECORD_SET_TO_EXCEL_FAILURE: {

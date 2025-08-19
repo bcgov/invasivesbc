@@ -37,8 +37,7 @@ import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_SET_COORDS,
-  PAN_AND_ZOOM_TO_ACTIVITY
+  MAP_SET_COORDS
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -443,7 +442,7 @@ function* activityPageSaga() {
     ),
     takeEvery(Activity.deleteReq, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(Activity.deleteNetwork, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
-    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
+    takeEvery(MapActions.panToActivity, handle_PAN_AND_ZOOM_TO_ACTIVITY),
     takeEvery(GeoTracking.start, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START),
     takeEvery(GeoTracking.stop, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP),
     takeEvery(GeoTracking.pause, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE),

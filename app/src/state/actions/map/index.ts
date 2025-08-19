@@ -22,6 +22,8 @@ class MapActions {
   static readonly panningOff = createAction(`${this.PREFIX}/panningOff`);
   static readonly panningOn = createAction(`${this.PREFIX}/panningOn`);
 
+  static readonly panToActivity = createAction(`${this.PREFIX}/panToActivity`);
+  static readonly panToIAPP = createAction(`${this.PREFIX}/panToIAPP`);
   public static readonly setCurrentOpenSet = createAction<string>(`${this.PREFIX}/setCurrentOpenSet`);
 }
 
