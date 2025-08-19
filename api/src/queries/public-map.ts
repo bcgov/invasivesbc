@@ -1,7 +1,9 @@
 import { SQL } from 'sql-template-strings';
 
 export const PUBLIC_IAPP_SQL = SQL`SELECT i.geojson as feature
-                                   from iapp_site_summary_and_geojson i where i.protected=false`;
+                                   from iapp_site_summary_and_geojson i
+                                   where i.protected = false
+                                     and i.geog is not null`;
 
 export const PUBLIC_ACTIVITY_SQL = SQL`select jsonb_build_object(
                                                 'type', 'Feature',
@@ -23,4 +25,5 @@ export const PUBLIC_ACTIVITY_SQL = SQL`select jsonb_build_object(
                                                   'FLNRODistricts', a.flnro_districts)) as feature
                                        from activity_incoming_data as a
                                        where a.form_status = 'Submitted'
-                                         and a.activity_type = 'Observation'`;
+                                         and a.activity_type = 'Observation'
+                                         and a.geog is not null`;
