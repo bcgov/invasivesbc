@@ -4,7 +4,6 @@ import {
   getUnnestedFieldsForActivity,
   getUnnestedFieldsForIAPP
 } from 'UI/Features/Records/RecordSet/RecordTableHelpers';
-import { RECORDSET_SET_SORT } from 'state/actions';
 import { validActivitySortColumns, validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useSelector } from 'utils/use_selector';
@@ -121,7 +120,7 @@ export const RecordTable = ({ setID }: PropTypes) => {
                   key={col.key}
                   onClick={() => {
                     if (sortColumns.includes(col.key)) {
-                      dispatch({ type: RECORDSET_SET_SORT, payload: { setID: setID, sortColumn: col.key } });
+                      dispatch(UserSettings.RecordSet.setSort({ setID: setID, sortColumn: col.key }));
                     }
                   }}
                 >

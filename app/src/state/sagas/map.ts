@@ -34,7 +34,6 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  RECORDSET_SET_SORT,
   REMOVE_SERVER_BOUNDARY
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -49,7 +48,7 @@ import Activity from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { RECORD_COLOURS } from 'constants/colors';
-import { EFilterType, IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import { EFilterType, IRemoveFilter, ISetSort, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
@@ -739,7 +738,7 @@ function* handle_RECORDSET_TOGGLE_VISIBILITY(action: PayloadAction<string>) {
   yield put(UserSettings.RecordSet.set({ mapToggle: !recordSet?.mapToggle }, action.payload));
 }
 
-function* handle_RECORDSET_SET_SORT(action) {
+function* handle_RECORDSET_SET_SORT(action: PayloadAction<ISetSort>) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSetType = userSettingsState.recordSets?.[action.payload.setID]?.recordSetType;
   const tableFiltersHash = userSettingsState.recordSets?.[action.payload.setID]?.tableFiltersHash;
@@ -765,7 +764,7 @@ function* activitiesPageSaga() {
 
     takeEvery(UserSettings.Boundaries.removeCustomLayer, handle_REMOVE_CUSTOM_LAYER),
 
-    takeEvery(RECORDSET_SET_SORT, handle_RECORDSET_SET_SORT),
+    takeEvery(UserSettings.RecordSet.setSort, handle_RECORDSET_SET_SORT),
 
     //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
     takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),

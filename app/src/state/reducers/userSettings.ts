@@ -2,7 +2,6 @@ import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
 import { AppConfig } from 'state/configuration/runtime-config';
-import { RECORDSET_SET_SORT } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -350,39 +349,22 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.newRecordDialogueState = { open: true, viewLayout: 'new' };
       } else if (UserSettings.closeNewRecordDialogue.match(action)) {
         draftState.newRecordDialogueState.open = false;
-      } else {
-        switch (action.type) {
-          case RECORDSET_SET_SORT: {
-            //if the sort column is the same as the current sort column, toggle the sort order
-            // if its already desc, remove the sort column and order
+      } else if (UserSettings.RecordSet.setSort.match(action)) {
+        // if the sort column is the same as the current sort column, toggle the sort order
+        // if its already desc, remove the sort column and order
+        const currRecordset = draftState.recordSets?.[action.payload.setID];
 
-            // handle no sort order:
-            if (
-              !draftState.recordSets[action.payload.setID].sortOrder ||
-              draftState.recordSets[action.payload.setID].sortColumn !== action.payload.sortColumn
-            ) {
-              draftState.recordSets[action.payload.setID].sortOrder = 'ASC';
-              draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
-            }
-
-            // handle toggle to desc:
-            else if (
-              draftState.recordSets[action.payload.setID].sortOrder === 'ASC' &&
-              draftState.recordSets[action.payload.setID].sortColumn === action.payload.sortColumn
-            ) {
-              draftState.recordSets[action.payload.setID].sortOrder = 'DESC';
-            }
-
-            // handle toggle off:
-            else {
-              delete draftState.recordSets[action.payload.setID].sortOrder;
-              delete draftState.recordSets[action.payload.setID].sortColumn;
-            }
-
-            break;
-          }
-          default:
-            break;
+        if (!currRecordset?.sortOrder || currRecordset?.sortColumn !== action.payload.sortColumn) {
+          // handle no sort order:
+          draftState.recordSets[action.payload.setID].sortOrder = 'ASC';
+          draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
+        } else if (currRecordset?.sortOrder === 'ASC' && currRecordset?.sortColumn === action.payload.sortColumn) {
+          // handle toggle to desc:
+          draftState.recordSets[action.payload.setID].sortOrder = 'DESC';
+        } else {
+          // handle toggle off:
+          delete draftState.recordSets[action.payload.setID].sortOrder;
+          delete draftState.recordSets[action.payload.setID].sortColumn;
         }
       }
     }) as unknown as UserSettingsState;
