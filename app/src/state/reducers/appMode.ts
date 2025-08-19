@@ -93,11 +93,6 @@ function createAppModeReducer(config: UnifiedConfig) {
           draftState.layout.viewLayout = LayoutMode.MAP_FOCUSED;
         }
       });
-    } else {
-      switch (action.type) {
-        default:
-          return state;
-      }
     }
   };
 }
