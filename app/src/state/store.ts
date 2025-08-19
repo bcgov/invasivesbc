@@ -16,7 +16,6 @@ import emailTemplatesSaga from './sagas/email-setup/emailTemplates';
 import iappPageSaga from './sagas/iappsite';
 import activitiesPageSaga from './sagas/map';
 import networkSaga from './sagas/network';
-import trainingVideosSaga from './sagas/training_videos';
 import userSettingsSaga from './sagas/userSettings';
 import { createSagaCrashHandler } from './sagas/error_handler';
 import NetworkActions from './actions/network/NetworkActions';
@@ -78,7 +77,6 @@ export function setupStore(configuration: UnifiedConfig) {
   sagaMiddleware.run(activitiesPageSaga);
   sagaMiddleware.run(userSettingsSaga);
   sagaMiddleware.run(batchSaga);
-  sagaMiddleware.run(trainingVideosSaga);
   sagaMiddleware.run(emailSettingsSaga);
   sagaMiddleware.run(emailTemplatesSaga);
   sagaMiddleware.run(networkSaga);
