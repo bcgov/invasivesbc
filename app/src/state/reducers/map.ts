@@ -4,7 +4,6 @@ import { GeoJSON, Feature, Point, Polygon } from 'geojson';
 import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
   RECORD_SET_TO_EXCEL_FAILURE,
@@ -587,22 +586,21 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.map_zoom = zoom;
         draftState.map_center = [lng, lat];
         draftState.panned = false;
+      } else if (AppActions.vectorFiltersPrepped.match(action)) {
+        const { recordSetID, recordSetType, filterObject, tableFiltersHash } = action.payload;
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({
+            recordSetID: recordSetID,
+            type: recordSetType
+          });
+        }
+        index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
+
+        draftState.layers[index].filterObject = filterObject;
+        draftState.layers[index].tableFiltersHash = tableFiltersHash;
       } else {
         switch (action.type) {
-          case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
-            let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            if (!draftState.layers[index]) {
-              draftState.layers.push({
-                recordSetID: action.payload.recordSetID,
-                type: action.payload.recordSetType
-              });
-            }
-            index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-
-            draftState.layers[index].filterObject = action.payload.filterObject;
-            draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-            break;
-          }
           case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
             draftState.activityPageMapExtentToggle = !state.activityPageMapExtentToggle;
             break;

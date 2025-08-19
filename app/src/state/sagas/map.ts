@@ -23,7 +23,6 @@ import {
 } from './map/offline';
 import {
   ACTIVITY_UPDATE_GEO_REQUEST,
-  FILTER_PREP_FOR_VECTOR_ENDPOINT,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
@@ -436,13 +435,12 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
     recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !==
     recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash
   )
-    yield put({
-      type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
-      payload: {
+    yield put(
+      AppActions.prepVectorFilters({
         recordSetID: action.payload.setID,
         tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-      }
-    });
+      })
+    );
   const actionArg = {
     recordSetID: action.payload.setID,
     tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
@@ -543,10 +541,12 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   const actionsToPut: ActionType[] = [];
   allUninitializedLayers.forEach((layer) => {
     if (layer.recordSetID !== RecordSetId.OfflineActivities) {
-      actionsToPut.push({
-        type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
-        payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
-      });
+      actionsToPut.push(
+        AppActions.prepVectorFilters({
+          recordSetID: layer.recordSetID,
+          tableFiltersHash: 'init'
+        })
+      );
     }
     if (layer.recordSetType === RecordSetType.Activity) {
       actionsToPut.push(Activity.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
@@ -766,7 +766,7 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.RecordSet.setPageLimit, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
-    takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
+    takeEvery(AppActions.prepVectorFilters, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
     takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IappActions.getIdsForRecordset, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
