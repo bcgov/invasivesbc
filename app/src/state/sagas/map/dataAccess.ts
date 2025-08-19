@@ -1,7 +1,7 @@
 import { put, select } from 'redux-saga/effects';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { ACTIVITY_GET_INITIAL_STATE_FAILURE, FILTERS_PREPPED_FOR_VECTOR_ENDPOINT } from 'state/actions';
+import { FILTERS_PREPPED_FOR_VECTOR_ENDPOINT } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
@@ -52,7 +52,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: Payload
   const workingOffline = yield select((state) => state.Auth.workingOffline);
   const connected = yield select((state) => state.Network.connected);
   if (filterObject == null) {
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
     return;
   }
   filterObject.limit = 200000;
@@ -85,7 +84,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: Payload
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -128,7 +126,6 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     const connected = yield select((state) => state.Network.connected);
     const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
     if (filterObject == null) {
-      yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
       return;
     }
     filterObject.limit = 200000;
@@ -147,7 +144,6 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -297,7 +293,6 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
