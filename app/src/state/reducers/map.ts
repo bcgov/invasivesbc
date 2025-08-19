@@ -17,10 +17,8 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  SET_CURRENT_OPEN_SET,
   SET_TOO_MANY_LABELS_DIALOG,
-  TOGGLE_CUSTOMIZE_LAYERS,
-  URL_CHANGE
+  TOGGLE_CUSTOMIZE_LAYERS
 } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
@@ -37,6 +35,7 @@ import IRecordTable from 'interfaces/recordTable';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
+import AppActions from 'state/actions/appActions/appActions';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -565,6 +564,13 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         } else {
           draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
         }
+      } else if (AppActions.urlChange.match(action)) {
+        if (!action?.payload?.includes('/WhatsHere')) {
+          draftState.whatsHere.toggle = false;
+          draftState.whatsHere.feature = null;
+        }
+      } else if (MapActions.setCurrentOpenSet.match(action)) {
+        draftState.currentOpenSet = action.payload.set;
       } else {
         switch (action.type) {
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
@@ -660,26 +666,12 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             break;
           }
 
-          case SET_CURRENT_OPEN_SET: {
-            draftState.currentOpenSet = action.payload.set;
-            break;
-          }
           case SET_TOO_MANY_LABELS_DIALOG: {
             draftState.tooManyLabelsDialog = action.payload.dialog;
             break;
           }
           case TOGGLE_CUSTOMIZE_LAYERS: {
             draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
-            break;
-          }
-          case URL_CHANGE: {
-            if (action.payload?.pathname === '/') {
-              // draftState.panelOpen = false;
-            }
-            if (!action?.payload?.url?.includes('WhatsHere')) {
-              draftState.whatsHere.toggle = false;
-              draftState.whatsHere.feature = null;
-            }
             break;
           }
           default:

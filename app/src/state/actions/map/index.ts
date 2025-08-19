@@ -17,6 +17,8 @@ class MapActions {
   static readonly accuracyToggle = createAction(`${this.PREFIX}/accuracyToggle`);
   static readonly panningOff = createAction(`${this.PREFIX}/panningOff`);
   static readonly panningOn = createAction(`${this.PREFIX}/panningOn`);
+
+  public static readonly setCurrentOpenSet = createAction<string>(`${this.PREFIX}/setCurrentOpenSet`);
 }
 
 export default MapActions;

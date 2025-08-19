@@ -37,9 +37,7 @@ import {
   RECORD_SET_TO_EXCEL_SUCCESS,
   RECORDSET_SET_SORT,
   REFETCH_SERVER_BOUNDARIES,
-  REMOVE_SERVER_BOUNDARY,
-  SET_CURRENT_OPEN_SET,
-  URL_CHANGE
+  REMOVE_SERVER_BOUNDARY
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
@@ -68,6 +66,7 @@ import { normalizeToPolygonCoordinates } from 'utils/geometryHelpers';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
+import AppActions from 'state/actions/appActions/appActions';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -406,17 +405,12 @@ function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
   });
 }
 
-function* handle_URL_CHANGE(action) {
-  const url = action.payload.url;
+function* handle_URL_CHANGE(action: PayloadAction<string>) {
+  const url = action.payload;
   const isRecordSet = url.split(':')?.[0]?.includes('/Records/List/Local');
   if (isRecordSet) {
     const id = url.split(':')[1].split('/')[0];
-    yield put({
-      type: SET_CURRENT_OPEN_SET,
-      payload: {
-        set: id
-      }
-    });
+    yield put(MapActions.setCurrentOpenSet(id));
 
     let recordSetsState = yield select(selectUserSettings);
     let recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
@@ -813,7 +807,7 @@ function* activitiesPageSaga() {
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
-    takeEvery(URL_CHANGE, handle_URL_CHANGE),
+    takeEvery(AppActions.urlChange, handle_URL_CHANGE),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
     ...TRACKING_SAGA_HANDLERS

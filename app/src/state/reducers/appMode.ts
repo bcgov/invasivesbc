@@ -1,10 +1,10 @@
 import { createNextState } from '@reduxjs/toolkit';
-import { URL_CHANGE } from 'state/actions';
 import EventActions from 'state/actions/events/EventActions';
 import { DeviceMemoryInformation } from 'utils/memory-report/memoryReport';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 import { LayoutComponent } from 'UI/App';
 import { UnifiedConfig } from 'state/configuration/unified-config';
+import AppActions from 'state/actions/appActions/appActions';
 
 enum appModeEnum {
   'Records',
@@ -78,24 +78,23 @@ function createAppModeReducer(config: UnifiedConfig) {
           layout: action.payload
         }
       };
+    } else if (AppActions.urlChange.match(action)) {
+      return createNextState(state, (draftState) => {
+        draftState.url = action?.payload;
+        if (
+          ['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News', 'Admin', 'Guide'].includes(
+            action.payload.split('/')[1]
+          )
+        ) {
+          draftState.layout.viewLayout = LayoutMode.MAP_HIDDEN;
+        } else if (['Map'].includes(action.payload.split('/')[1])) {
+          draftState.layout.viewLayout = LayoutMode.MAP_EXCLUSIVE;
+        } else {
+          draftState.layout.viewLayout = LayoutMode.MAP_FOCUSED;
+        }
+      });
     } else {
       switch (action.type) {
-        case URL_CHANGE: {
-          return createNextState(state, (draftState) => {
-            draftState.url = action?.payload?.url;
-            if (
-              ['Batch', 'Reports', 'Training', 'Legend', 'Landing', 'News', 'Admin', 'Guide'].includes(
-                action.payload.url.split('/')[1]
-              )
-            ) {
-              draftState.layout.viewLayout = LayoutMode.MAP_HIDDEN;
-            } else if (['Map'].includes(action.payload.url.split('/')[1])) {
-              draftState.layout.viewLayout = LayoutMode.MAP_EXCLUSIVE;
-            } else {
-              draftState.layout.viewLayout = LayoutMode.MAP_FOCUSED;
-            }
-          });
-        }
         default:
           return state;
       }

@@ -6,7 +6,7 @@ import { persistStore } from 'redux-persist';
 import { Store } from 'redux';
 import debounce from 'lodash.debounce';
 import { createRootReducer } from './reducers/rootReducer';
-import { URL_CHANGE } from './actions';
+import AppActions from './actions/appActions/appActions';
 import activityPageSaga from './sagas/activity';
 import planMyTripSaga from './sagas/planMyTrip';
 import authenticationSaga from './sagas/auth/auth';
@@ -88,12 +88,7 @@ export function setupStore(configuration: UnifiedConfig) {
   store.dispatch(AuthActions.initializeRequest());
 
   historySingleton.listen((location) => {
-    store.dispatch({
-      type: URL_CHANGE,
-      payload: {
-        url: location.pathname
-      }
-    });
+    store.dispatch(AppActions.urlChange(location.pathname));
   });
 
   storeRef.store = store;

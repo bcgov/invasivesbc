@@ -43,8 +43,7 @@ import {
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAP_SET_COORDS,
-  PAN_AND_ZOOM_TO_ACTIVITY,
-  URL_CHANGE
+  PAN_AND_ZOOM_TO_ACTIVITY
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -71,6 +70,8 @@ import { selectAuth } from 'state/reducers/auth';
 import { Role } from 'constants/roles';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isDrawing } from 'utils/geoTrackingHelpers';
+import AppActions from 'state/actions/appActions/appActions';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -120,11 +121,11 @@ function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
   }
 }
 
-function* handle_URL_CHANGE(action) {
+function* handle_URL_CHANGE(action: PayloadAction<string>) {
   const activityPageState = yield select(selectActivity);
-  const isActivityURL = action.payload.url.includes('/Records/Activity:');
+  const isActivityURL = action.payload.includes('/Records/Activity:');
   if (isActivityURL) {
-    const afterColon = action.payload.url.split(':')?.[1];
+    const afterColon = action.payload.split(':')?.[1];
     let id;
     if (afterColon) {
       id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
@@ -447,7 +448,7 @@ function* handle_UPDATE_CACHED_RECORDS() {
 function* activityPageSaga() {
   yield all([
     takeEvery(UserSettings.InitState.get, handle_UPDATE_CACHED_RECORDS),
-    takeEvery(URL_CHANGE, handle_URL_CHANGE),
+    takeEvery(AppActions.urlChange, handle_URL_CHANGE),
     takeEvery(ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
