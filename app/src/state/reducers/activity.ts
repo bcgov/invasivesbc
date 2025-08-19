@@ -1,11 +1,7 @@
 import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import {
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_UPDATE_GEO_SUCCESS
-} from 'state/actions';
+import { ACTIVITY_ON_FORM_CHANGE_SUCCESS, ACTIVITY_UPDATE_GEO_SUCCESS } from 'state/actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -21,13 +17,11 @@ interface ActivityState {
   activeActivity: string | null;
   activeActivityPermissions?: IActivityPermissions;
   activityErrors: any[];
-  current_activity_hash: string | null;
   error: boolean;
   pasteCount: number;
   failCode: number | null;
   initialized: boolean;
   loading: boolean;
-  saved_activity_hash: string | null;
   suggestedJurisdictions: Record<string, any>[];
   biocontrol: {
     plantToAgentMap: Record<string, any>[];
@@ -49,7 +43,6 @@ const initialState: ActivityState = {
   activity: null,
   activeActivity: null,
   activityErrors: [],
-  current_activity_hash: null,
   error: false,
   pasteCount: 0,
   failCode: null,
@@ -60,7 +53,6 @@ const initialState: ActivityState = {
     shapeType: null,
     isEditingShape: false
   },
-  saved_activity_hash: null,
   biocontrol: {
     plantToAgentMap: []
   },
@@ -134,13 +126,11 @@ function createActivityReducer() {
         const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
         Object.assign(draftState, {
           activity: null,
-          current_activity_hash: null,
           error: false,
           pasteCount: 0,
           failCode: null,
           initialized: false,
           loading: false,
-          saved_activity_hash: null,
           biocontrol: {
             plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
           },
@@ -151,22 +141,16 @@ function createActivityReducer() {
         });
       } else if (Activity.saveSuccess.match(action)) {
         draftState.activity = { ...action.payload };
-      } else if (Activity.setSavedHashSuccess.match(action)) {
-        draftState.saved_activity_hash = action.payload;
       } else if (Activity.createSuccess.match(action)) {
         draftState.activeActivity = action.payload;
-        draftState.current_activity_hash = null;
-        draftState.saved_activity_hash = null;
       } else if (Activity.deleteSuccess.match(action)) {
         Object.assign(draftState, {
           activity: null,
-          current_activity_hash: null,
           error: false,
           pasteCount: 0,
           failCode: null,
           initialized: false,
           loading: false,
-          saved_activity_hash: null,
           biocontrol: {
             plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
           },
@@ -249,10 +233,6 @@ function createActivityReducer() {
             draftState.activity.species_treated = action.payload.activity.species_treated;
             draftState.activity.map_symbol = action.payload.activity.map_symbol;
             draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
-            break;
-          }
-          case ACTIVITY_SET_CURRENT_HASH_SUCCESS: {
-            draftState.current_activity_hash = action.payload.current;
             break;
           }
           default:

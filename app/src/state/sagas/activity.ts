@@ -35,9 +35,6 @@ import {
 import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_SET_CURRENT_HASH_FAILURE,
-  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAP_SET_COORDS,
@@ -80,42 +77,6 @@ function* handle_ACTIVITY_DELETE_SUCCESS() {
     })
   );
   yield put(MapActions.initRequest());
-}
-
-function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST() {
-  try {
-    const activityState = yield select(selectActivity);
-    yield put(Activity.setSavedHashSuccess(activityState?.current_activity_hash));
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
-  yield delay(2000);
-  try {
-    if (action.type === ACTIVITY_ON_FORM_CHANGE_SUCCESS && !action.payload.unsavedDelay) return;
-
-    const activityState = yield select(selectActivity);
-    const activitySerialized = JSON.stringify(activityState?.activity);
-    let currentHash = 5381;
-
-    for (let i = 0; i < activitySerialized.length; i++) {
-      currentHash = (currentHash * 33) ^ activitySerialized.charCodeAt(i);
-    }
-
-    yield put({
-      type: ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-      payload: {
-        current: currentHash
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({
-      type: ACTIVITY_SET_CURRENT_HASH_FAILURE
-    });
-  }
 }
 
 function* handle_URL_CHANGE(action: PayloadAction<string>) {
@@ -454,9 +415,6 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_UPDATE_GEO_SUCCESS, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
     takeEvery(Activity.Suggestions.jurisdictions, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),
     takeEvery(Activity.Suggestions.jurisdictionsOnline, handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE),
-    takeLatest(Activity.Suggestions.jurisdictionsSuccess, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
-    takeLatest(ACTIVITY_ON_FORM_CHANGE_SUCCESS, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
-    takeEvery(Activity.saveSuccess, handle_ACTIVITY_SET_SAVED_HASH_REQUEST),
     takeEvery(Activity.Suggestions.persons, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
     takeEvery(Activity.Suggestions.personsOnline, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(Activity.Suggestions.treatmentIdsRequest, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
