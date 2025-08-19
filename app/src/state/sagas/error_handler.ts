@@ -1,5 +1,5 @@
 import { Store } from 'redux';
-import { CRASH_HANDLE_GLOBAL_ERROR } from 'state/actions';
+import AppActions from 'state/actions/appActions/appActions';
 import { RootState } from 'state/reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
@@ -18,9 +18,8 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) 
 
     const state: RootState = storeRefHolder.store.getState();
 
-    storeRefHolder.store.dispatch({
-      type: CRASH_HANDLE_GLOBAL_ERROR,
-      payload: {
+    storeRefHolder.store.dispatch(
+      AppActions.crashHandleGlobalError({
         detail: {
           error: JSON.parse(
             JSON.stringify({
@@ -32,8 +31,8 @@ export function createSagaCrashHandler(storeRefHolder: { store: Store | null }) 
           ),
           errorInfo: errorInfo
         }
-      }
-    });
+      })
+    );
 
     if (state.Auth.authenticated) {
       const loggingState = JSON.parse(
