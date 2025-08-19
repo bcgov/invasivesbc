@@ -144,6 +144,11 @@
     "build-prod": "cross-env NODE_OPTIONS='--max-old-space-size=8000' CONFIGURATION_SOURCE=Caddy VITE_DEBUG=FALSE VITE_MOBILE=FALSE VITE_TARGET_PLATFORM=web vite build -l error",
     "assets": "npx @capacitor/assets generate --iconBackgroundColor '#fefefe' --iconBackgroundColorDark '#333333' --splashBackgroundColor '#fefefe' --splashBackgroundColorDark '#333333' --ios"
   },
+  "overrides": {
+    "sqlite3": {
+      "node-gyp": "^10"
+    }
+  },
   "jest": {
     "roots": [
       "<rootDir>/src"
