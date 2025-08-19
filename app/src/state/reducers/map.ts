@@ -10,8 +10,7 @@ import {
   MAP_SET_COORDS,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
-  RECORD_SET_TO_EXCEL_SUCCESS,
-  TOGGLE_CUSTOMIZE_LAYERS
+  RECORD_SET_TO_EXCEL_SUCCESS
 } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
@@ -582,6 +581,8 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.recordTables[action.payload.setID].limit = action.payload.limit;
       } else if (MapActions.panToActivity.match(action) || MapActions.panToIAPP.match(action)) {
         draftState.positionTracking = false;
+      } else if (AppActions.toggleCustomLayersModal.match(action)) {
+        draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
       } else {
         switch (action.type) {
           case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
@@ -640,10 +641,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.CanTriggerCSV = true;
             draftState.linkToCSV = action.payload.link;
             draftState.recordSetForCSV = action.payload.id;
-            break;
-          }
-          case TOGGLE_CUSTOMIZE_LAYERS: {
-            draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
             break;
           }
           default:
