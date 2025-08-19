@@ -1,5 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
-import { SET_APP_MODE, URL_CHANGE } from 'state/actions';
+import { URL_CHANGE } from 'state/actions';
 import EventActions from 'state/actions/events/EventActions';
 import { DeviceMemoryInformation } from 'utils/memory-report/memoryReport';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
@@ -80,11 +80,6 @@ function createAppModeReducer(config: UnifiedConfig) {
       };
     } else {
       switch (action.type) {
-        case SET_APP_MODE:
-          return {
-            ...state,
-            mode: action.payload.mode
-          };
         case URL_CHANGE: {
           return createNextState(state, (draftState) => {
             draftState.url = action?.payload?.url;

@@ -1,4 +1,3 @@
-export const SET_APP_MODE = 'SET_APP_MODE';
 export const URL_CHANGE = 'URL_CHANGE';
 export const SET_CURRENT_OPEN_SET = 'SET_CURRENT_OPEN_SET';
 
