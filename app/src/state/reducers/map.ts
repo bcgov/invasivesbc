@@ -16,7 +16,6 @@ import {
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  SET_TOO_MANY_LABELS_DIALOG,
   TOGGLE_CUSTOMIZE_LAYERS
 } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -85,7 +84,7 @@ interface MapState {
   recordSetForCSV: number | null;
   recordTables: Record<PropertyKey, IRecordTable>;
   serverBoundaries: IServerLayer[];
-  tooManyLabelsDialog: any;
+
   userCoords: any;
   userRecordOnHoverRecordID?: string | number;
   userRecordOnHoverRecordGeometry?: Feature | Polygon | Point;
@@ -164,7 +163,6 @@ const initialState: MapState = {
   recordTables: {},
 
   serverBoundaries: [],
-  tooManyLabelsDialog: null,
 
   planMyTripDrawMode: false,
 
@@ -665,11 +663,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.CanTriggerCSV = true;
             draftState.linkToCSV = action.payload.link;
             draftState.recordSetForCSV = action.payload.id;
-            break;
-          }
-
-          case SET_TOO_MANY_LABELS_DIALOG: {
-            draftState.tooManyLabelsDialog = action.payload.dialog;
             break;
           }
           case TOGGLE_CUSTOMIZE_LAYERS: {
