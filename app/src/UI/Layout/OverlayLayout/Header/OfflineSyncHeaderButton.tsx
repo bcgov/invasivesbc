@@ -3,9 +3,9 @@ import { useDispatch } from 'react-redux';
 import { useSelector } from 'utils/use_selector';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { Badge, CircularProgress, IconButton } from '@mui/material';
-import { ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE } from 'state/actions';
 import Sync from '@mui/icons-material/Sync';
 import SyncProblem from '@mui/icons-material/SyncProblem';
+import Activity from 'state/actions/activity/Activity';
 
 export const OfflineSyncHeaderButton = () => {
   const dispatch = useDispatch();
@@ -61,7 +61,7 @@ export const OfflineSyncHeaderButton = () => {
       className={'offlineSyncButton'}
       color="primary"
       onClick={() => {
-        dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: true } });
+        dispatch(Activity.Offline.setSyncDialogueWindow({ open: true }));
       }}
     >
       {iconComponent}

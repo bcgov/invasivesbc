@@ -1,13 +1,5 @@
 import { createNextState } from '@reduxjs/toolkit';
 import moment from 'moment';
-import {
-  ACTIVITY_OFFLINE_DELETE_ITEM,
-  ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
-  ACTIVITY_RUN_OFFLINE_SYNC,
-  ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
-  ACTIVITY_SAVE_OFFLINE,
-  ACTIVITY_UPDATE_SYNC_STATE
-} from 'state/actions';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import Activity from 'state/actions/activity/Activity';
@@ -70,63 +62,39 @@ function createOfflineActivityReducer(
         draftState.mapToggle = !draftState.mapToggle;
       } else if (Activity.Offline.setLabelVisibility.match(action)) {
         draftState.labelToggle = !draftState.labelToggle;
-      } else {
-        switch (type) {
-          case ACTIVITY_SAVE_OFFLINE:
-            draftState.serializedActivities[payload.id] = {
-              data: JSON.stringify(payload.data, null, 2),
-              saved_at: moment.now(),
-              short_id: payload.data.short_id || payload.id,
-              record_type: payload.data.activity_subtype,
-              sync_state: OfflineActivitySyncState.LOCALLY_MODIFIED
-            };
-            draftState.serial = moment.now();
-            break;
-          case ACTIVITY_RUN_OFFLINE_SYNC: {
-            draftState.working = true;
-            break;
-          }
-          case ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE: {
-            draftState.working = false;
-            break;
-          }
-          case ACTIVITY_UPDATE_SYNC_STATE: {
-            const found = draftState.serializedActivities[payload.id];
-
-            if (found) {
-              draftState.serializedActivities[payload.id] = {
-                ...found,
-                data: JSON.stringify(payload.data, null, 2),
-                sync_state: payload.sync_state
-              };
-              if (payload.error_detail) {
-                draftState.serializedActivities[payload.id].error_detail = payload.error_detail;
-              } else {
-                delete draftState.serializedActivities[payload.id].error_detail;
-              }
-              if (payload.error_object) {
-                draftState.serializedActivities[payload.id].error_object = payload.error_object;
-              } else {
-                delete draftState.serializedActivities[payload.id].error_object;
-              }
-            }
-
-            draftState.serial = moment.now();
-            break;
-          }
-          case ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE: {
-            draftState.statusDialogOpen = action.payload.open;
-            break;
-          }
-          case ACTIVITY_OFFLINE_DELETE_ITEM: {
-            const found = draftState.serializedActivities[payload.id];
-            if (found) {
-              delete draftState.serializedActivities[payload.id];
-            }
-            draftState.serial = moment.now();
-            break;
-          }
+      } else if (Activity.Offline.save.match(action)) {
+        draftState.serializedActivities[payload.id] = {
+          data: JSON.stringify(payload.data, null, 2),
+          saved_at: moment.now(),
+          short_id: payload.data.short_id || payload.id,
+          record_type: payload.data.activity_subtype,
+          sync_state: OfflineActivitySyncState.LOCALLY_MODIFIED
+        };
+        draftState.serial = moment.now();
+      } else if (Activity.Offline.syncRun.match(action)) {
+        draftState.working = true;
+      } else if (Activity.Offline.syncRunComplete.match(action)) {
+        draftState.working = false;
+      } else if (Activity.Offline.delete.match(action)) {
+        const found = draftState.serializedActivities[action.payload];
+        if (found) {
+          delete draftState.serializedActivities[action.payload];
         }
+        draftState.serial = moment.now();
+      } else if (Activity.Offline.updateSyncState.match(action)) {
+        const found = draftState.serializedActivities[payload.id];
+        if (found) {
+          draftState.serializedActivities[payload.id] = {
+            ...found,
+            data: JSON.stringify(payload.data, null, 2),
+            sync_state: payload.sync_state
+          };
+          draftState.serializedActivities[payload.id].error_detail = payload?.error_detail ?? null;
+          draftState.serializedActivities[payload.id].error_object = payload?.error_object ?? null;
+        }
+        draftState.serial = moment.now();
+      } else if (Activity.Offline.setSyncDialogueWindow.match(action)) {
+        draftState.statusDialogOpen = action.payload.open;
       }
     });
   };

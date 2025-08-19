@@ -1,23 +1,28 @@
 import { createAction } from '@reduxjs/toolkit';
-import {
-  ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
-  ACTIVITY_RUN_OFFLINE_SYNC,
-  ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
-  ACTIVITY_SAVE_OFFLINE,
-  ACTIVITY_RESTORE_OFFLINE,
-  ACTIVITY_OFFLINE_DELETE_ITEM
-} from 'state/actions';
 import { IGetIdsForRecordsetSuccess } from './Activity';
+import UserRecord from 'interfaces/UserRecord';
+import { OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 
+interface ISaveOffline {
+  id: string;
+  data: UserRecord;
+}
+interface IUpdateSync {
+  id: string;
+  data: UserRecord;
+  sync_state: OfflineActivitySyncState;
+  error_detail?: string;
+  error_object?: Error | unknown;
+}
 class Offline {
-  private static readonly PREFIX = 'Offline';
-  static readonly setSyncDialogue = createAction(ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE);
-  static readonly syncRun = createAction(ACTIVITY_RUN_OFFLINE_SYNC);
-  static readonly syncRunComplete = createAction(ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE);
+  private static readonly PREFIX = 'Activity/Offline';
+  static readonly setSyncDialogueWindow = createAction<{ open: boolean }>(`${this.PREFIX}/setSyncDialogueWindow`);
+  static readonly syncRun = createAction(`${this.PREFIX}/syncRun`);
+  static readonly syncRunComplete = createAction(`${this.PREFIX}/syncRunComplete`);
 
-  static readonly save = createAction(ACTIVITY_SAVE_OFFLINE);
-  static readonly restore = createAction(ACTIVITY_RESTORE_OFFLINE);
-  static readonly delete = createAction(ACTIVITY_OFFLINE_DELETE_ITEM);
+  static readonly updateSyncState = createAction<IUpdateSync>(`${this.PREFIX}/updateSyncState`);
+  static readonly save = createAction<ISaveOffline>(`${this.PREFIX}/save`);
+  static readonly delete = createAction<string>(`${this.PREFIX}/delete`);
 
   static readonly setAllShapeVisibility = createAction(`${this.PREFIX}/setAllShapeVisibility`);
   static readonly setLabelVisibility = createAction(`${this.PREFIX}/setLabelVisibility`);
@@ -29,3 +34,4 @@ class Offline {
 }
 
 export default Offline;
+export type { ISaveOffline, IUpdateSync };

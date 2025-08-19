@@ -21,7 +21,6 @@ import {
 import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
   MAIN_MAP_MOVE
@@ -264,10 +263,12 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   const activityState = yield select(selectActivity);
 
   if (buildTimeConfig.MOBILE) {
-    yield put({
-      type: ACTIVITY_SAVE_OFFLINE,
-      payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }
-    });
+    yield put(
+      Activity.Offline.save({
+        id: activityState?.activity?.activity_id,
+        data: activityState?.activity
+      })
+    );
   } else {
     try {
       yield put(
@@ -407,13 +408,12 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   if (activityState?.activity?.geometry?.properties?.error == 'true') return;
 
   if (buildTimeConfig.MOBILE) {
-    yield put({
-      type: ACTIVITY_SAVE_OFFLINE,
-      payload: {
+    yield put(
+      Activity.Offline.save({
         id: activityState?.activity?.activity_id,
         data: { ...activityState.activity, form_status: ActivityStatus.SUBMITTED }
-      }
-    });
+      })
+    );
   } else {
     try {
       yield put(

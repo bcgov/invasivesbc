@@ -32,11 +32,10 @@ import {
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
-import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
+import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_RESTORE_OFFLINE,
   ACTIVITY_SET_CURRENT_HASH_FAILURE,
   ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
@@ -469,7 +468,6 @@ function* activityPageSaga() {
     takeEvery(Activity.save, handle_ACTIVITY_SAVE_REQUEST),
     takeEvery(Activity.saveSuccess, handle_ACTIVITY_SAVE_SUCCESS),
     takeEvery(Activity.saveNetworkRequest, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
-    takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
     takeEvery(Activity.createReq, handle_ACTIVITY_CREATE_REQUEST),
     takeEvery(Activity.createNetwork, handle_ACTIVITY_CREATE_NETWORK),
     takeEvery(Activity.createSuccess, handle_ACTIVITY_CREATE_SUCCESS),
