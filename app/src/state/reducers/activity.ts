@@ -1,7 +1,7 @@
 import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { ACTIVITY_ON_FORM_CHANGE_SUCCESS, ACTIVITY_UPDATE_GEO_SUCCESS } from 'state/actions';
+import { ACTIVITY_ON_FORM_CHANGE_SUCCESS } from 'state/actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -10,6 +10,7 @@ import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -209,23 +210,18 @@ function createActivityReducer() {
       } else if (Activity.buildFormSchemaSuccess.match(action)) {
         draftState.uiSchema = action.payload.uiSchema;
         draftState.schema = action.payload.schema;
+      } else if (DrawToolActions.updateGeoSuccess.match(action)) {
+        const { geometry, lat, long, utm, reported_area, Well_Information } = action.payload;
+        draftState.activity.geometry = geometry;
+        draftState.activity.form_data.activity_data.latitude = lat;
+        draftState.activity.form_data.activity_data.longitude = long;
+        draftState.activity.form_data.activity_data.utm_zone = utm?.[0].toString(); // RJSF expects this value to be a string
+        draftState.activity.form_data.activity_data.utm_easting = utm?.[1];
+        draftState.activity.form_data.activity_data.utm_northing = utm?.[2];
+        draftState.activity.form_data.activity_data.reported_area = reported_area;
+        draftState.activity.form_data.activity_subtype_data.Well_Information = Well_Information;
       } else {
         switch (action.type) {
-          case ACTIVITY_UPDATE_GEO_SUCCESS: {
-            draftState.activity.geometry = action.payload.geometry;
-            draftState.activity.form_data.activity_data.latitude = action.payload.lat ? action.payload.lat : null;
-            draftState.activity.form_data.activity_data.longitude = action.payload.long ? action.payload.long : null;
-            draftState.activity.form_data.activity_data.utm_zone = action.payload.utm ? action.payload.utm[0] : null;
-            draftState.activity.form_data.activity_data.utm_easting = action.payload.utm ? action.payload.utm[1] : null;
-            draftState.activity.form_data.activity_data.utm_northing = action.payload.utm
-              ? action.payload.utm[2]
-              : null;
-            draftState.activity.form_data.activity_data.reported_area = action.payload.reported_area
-              ? action.payload.reported_area
-              : null;
-            draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
-            break;
-          }
           case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {
             draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.activity.form_data));
             draftState.activity.species_positive = action.payload.activity.species_positive;
