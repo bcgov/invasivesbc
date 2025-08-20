@@ -10,7 +10,7 @@ import {
   populateSpeciesArrays
 } from 'sharedAPI';
 import { kinks } from '@turf/turf';
-import { FeatureCollection } from 'geojson';
+import { Feature, FeatureCollection } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
@@ -21,7 +21,6 @@ import {
 import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
@@ -48,6 +47,7 @@ import MapActions from 'state/actions/map';
 import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -102,10 +102,10 @@ const fixMisLabledMultiPolygon = (input) => {
   }
 };
 
-export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>) {
+export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Feature[]>) {
   const activityState = yield select(selectActivity);
   try {
-    const modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry));
+    const modifiedPayload = JSON.parse(JSON.stringify(action.payload));
     const { latitude, longitude } = calculateLatLng(modifiedPayload) || {};
 
     let utm;
@@ -125,12 +125,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
             callback: (userEnteredArea: number) => {
               const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
               modifiedPayload[0].properties.radius = radiusBasedOnArea;
-              return [
-                {
-                  type: ACTIVITY_UPDATE_GEO_REQUEST,
-                  payload: { geometry: modifiedPayload }
-                }
-              ];
+              return [DrawToolActions.updateGeo(modifiedPayload)];
             }
           })
         );
@@ -386,13 +381,13 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
         const record = yield service.loadActivity(linked_id);
         linked_geo = record.geometry;
       }
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: linked_geo } });
+      yield put(DrawToolActions.updateGeo(linked_geo));
       yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
     } else if (
       beforeActivity.form_data.activity_type_data?.copy_geometry === 'Yes' &&
       updatedFormData.activity_type_data.copy_geometry === 'No'
     ) {
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
+      yield put(DrawToolActions.updateGeo([]));
       yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
     }
 
