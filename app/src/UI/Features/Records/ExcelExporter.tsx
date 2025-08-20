@@ -47,7 +47,7 @@ const ExcelExporter = (props) => {
       <MenuItem value={'biocontrol_release_monitoring'}>Biocontrol Release Monitoring Summary</MenuItem>
     ];
   }
-  console.log('SETNAME', props.setName);
+
   return (
     <div className="excelExporter">
       <Accordion>

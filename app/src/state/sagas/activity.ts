@@ -33,11 +33,7 @@ import {
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
 import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
-import {
-  ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS
-} from 'state/actions';
+import { ACTIVITY_ON_FORM_CHANGE_REQUEST, ACTIVITY_UPDATE_GEO_SUCCESS } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
@@ -64,6 +60,8 @@ import { Role } from 'constants/roles';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isDrawing } from 'utils/geoTrackingHelpers';
 import AppActions from 'state/actions/appActions/appActions';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import { Feature } from 'geojson';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -144,10 +142,10 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
         return mappingAlertMessages.trackingStarted;
     }
   })();
-  const userHasTrackingEnabled = coords?.hasOwnProperty('long');
+  const userHasTrackingEnabled = 'long' in coords;
 
   if (userHasTrackingEnabled) {
-    const initGeo = {
+    const initGeo: Feature = {
       id: GEO_TRACKING_FEATURE,
       type: 'Feature',
       properties: {},
@@ -156,7 +154,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
         coordinates: [[coords.long, coords.lat]]
       }
     };
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [initGeo] } });
+    yield put(DrawToolActions.updateGeo([initGeo]));
     yield put(Alerts.create(message));
     yield put(Alerts.create(mappingAlertMessages.geoTrackingModeLocked));
   } else {
@@ -232,7 +230,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
         return [
           Alerts.deleteAll(),
           GeoTracking.exit(),
-          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
+          DrawToolActions.updateGeo([]),
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
       }
@@ -259,9 +257,9 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   if (validationErrors.length === 0) {
     if (shape === GeoShapes.LineString) {
       const lineStringCallback = (width: number) => {
-        const bufferedLine = buffer(newGeo, width / 10000);
+        const bufferedLine = buffer(newGeo, width / 10000) as Feature;
         return [
-          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [bufferedLine] } },
+          DrawToolActions.updateGeo([bufferedLine]),
           GeoTracking.end(),
           Alerts.create(mappingAlertMessages.trackingStoppedSuccess)
         ];
@@ -278,7 +276,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
         })
       );
     } else {
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+      yield put(DrawToolActions.updateGeo([newGeo]));
       yield put(GeoTracking.end());
       yield put(Alerts.create(mappingAlertMessages.trackingStoppedSuccess));
     }
@@ -292,7 +290,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
         return [
           Alerts.deleteAll(),
           GeoTracking.exit(),
-          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
+          DrawToolActions.updateGeo([]),
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
       }
@@ -355,7 +353,7 @@ function* handle_MAP_SET_COORDS(action) {
           return;
         }
       }
-      const newGeo = {
+      const newGeo: Feature = {
         type: 'Feature',
         properties: {},
         geometry: {
@@ -364,7 +362,7 @@ function* handle_MAP_SET_COORDS(action) {
         }
       };
       //append to linestring
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+      yield put(DrawToolActions.updateGeo([newGeo]));
     }
   } catch (err) {
     console.error(err);
@@ -409,7 +407,7 @@ function* activityPageSaga() {
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
     takeEvery(AppActions.setUserCoords, handle_MAP_SET_COORDS),
-    takeEvery(ACTIVITY_UPDATE_GEO_REQUEST, handle_ACTIVITY_UPDATE_GEO_REQUEST),
+    takeEvery(DrawToolActions.updateGeo, handle_ACTIVITY_UPDATE_GEO_REQUEST),
     takeEvery(ACTIVITY_UPDATE_GEO_SUCCESS, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
     takeEvery(Activity.Suggestions.jurisdictions, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),
     takeEvery(Activity.Suggestions.jurisdictionsOnline, handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE),

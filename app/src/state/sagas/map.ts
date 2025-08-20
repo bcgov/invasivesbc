@@ -20,7 +20,6 @@ import {
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
 } from './map/offline';
-import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -529,10 +528,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action: PayloadAction<Feature>) {
   if (isPolygonOrPoint && hasCoordinates && noUserError) {
     const isActivityPage = appModeUrl && /Activity/.test(appModeUrl);
     if (isActivityPage && !whatsHereToggle) {
-      yield put({
-        type: ACTIVITY_UPDATE_GEO_REQUEST,
-        payload: { geometry: [action.payload] }
-      });
+      yield put(DrawToolActions.updateGeo([action.payload]));
       return;
     }
   }
@@ -548,9 +544,9 @@ function* handle_MAP_ON_SHAPE_CREATE(action: PayloadAction<Feature>) {
         min: 0.001,
         acceptFloats: true,
         callback: (width: number) => {
-          const newGeo = buffer(geometry, width / 10000) ?? geometry;
+          const newGeo = (buffer(geometry, width / 10000) ?? geometry) as Feature;
           if (appModeUrl && /Activity/.test(appModeUrl) && !whatsHereToggle) {
-            return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
+            return [DrawToolActions.updateGeo([newGeo])];
           }
         },
         label: 'Meters'
@@ -577,7 +573,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action: PayloadAction<Feature>) {
     if (isActivityPage && !whatsHere.toggle) {
       if (isGeoTrackingFeature) {
         if (isPaused(status)) {
-          // don't do anything, just call ACTIVITY_UPDATE_GEO_REQUEST
+          // don't do anything, just call DrawToolActions.updateGeo()
         } else if (shapeType === GeoShapes.Polygon && 'coordinates' in geometry) {
           geometry.type = shapeType;
           geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
@@ -590,8 +586,8 @@ function* handle_MAP_ON_SHAPE_UPDATE(action: PayloadAction<Feature>) {
             min: 0.001,
             acceptFloats: true,
             callback: (width: number) => {
-              const newGeo = buffer(geometry, width / 10000) ?? geometry;
-              return [{ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } }];
+              const newGeo = (buffer(geometry, width / 10000) ?? geometry) as Feature;
+              return [DrawToolActions.updateGeo([newGeo])];
             },
             label: 'Meters'
           })
@@ -600,11 +596,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action: PayloadAction<Feature>) {
       } else if (isTracking(status)) {
         yield put(GeoTracking.exitDrawing());
       }
-
-      yield put({
-        type: ACTIVITY_UPDATE_GEO_REQUEST,
-        payload: { geometry: [action.payload] }
-      });
+      yield put(DrawToolActions.updateGeo([action.payload]));
       return;
     }
 
