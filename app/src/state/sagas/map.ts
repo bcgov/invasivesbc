@@ -3,7 +3,6 @@ import { Feature } from 'geojson';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
-  getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_ACTIVITIES_TABLE_GET_ROWS,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -21,14 +20,7 @@ import {
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
 } from './map/offline';
-import {
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  MAP_ON_SHAPE_CREATE,
-  MAP_ON_SHAPE_UPDATE,
-  RECORD_SET_TO_EXCEL_FAILURE,
-  RECORD_SET_TO_EXCEL_REQUEST,
-  RECORD_SET_TO_EXCEL_SUCCESS
-} from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -295,77 +287,6 @@ function* handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST() {
 
 function* handle_WHATS_HERE_PAGE_ACTIVITY() {
   yield put(WhatsHere.activity_rows_request());
-}
-
-function* handle_RECORD_SET_TO_EXCEL_REQUEST(action) {
-  const userSettings = yield select(selectUserSettings);
-  const set = userSettings?.recordSets?.[action.payload.id];
-  try {
-    let conditionallyUnnestedURL;
-    if (set.recordSetType === 'IAPP') {
-      const currentState = yield select((state) => state.UserSettings);
-
-      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
-      if (filterObject == null) {
-        yield put({
-          type: RECORD_SET_TO_EXCEL_FAILURE
-        });
-        return;
-      }
-      filterObject.limit = 200000;
-      filterObject.isCSV = true;
-      filterObject.CSVType = action.payload.CSVType;
-
-      const networkReturn = yield InvasivesAPI_Call(
-        'POST',
-        `/api/v2/iapp/`,
-        {
-          filterObjects: [filterObject]
-        },
-        null,
-        'text'
-      );
-
-      conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
-    } else {
-      const currentState = yield select((state) => state.UserSettings);
-
-      const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.id, currentState);
-      if (filterObject == null) {
-        yield put({
-          type: RECORD_SET_TO_EXCEL_FAILURE
-        });
-        return;
-      }
-      filterObject.limit = 200000;
-      filterObject.isCSV = true;
-      filterObject.CSVType = action.payload.CSVType;
-
-      const networkReturn = yield InvasivesAPI_Call(
-        'POST',
-        `/api/v2/activities/`,
-        {
-          filterObjects: [filterObject]
-        },
-        null,
-        'text'
-      );
-
-      conditionallyUnnestedURL = networkReturn?.data?.result ? networkReturn.data.result : networkReturn?.data;
-    }
-    yield put({
-      type: RECORD_SET_TO_EXCEL_SUCCESS,
-      payload: {
-        link: conditionallyUnnestedURL,
-        id: action.payload.id
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({
-      type: RECORD_SET_TO_EXCEL_FAILURE
-    });
-  }
 }
 
 function* handle_WHATS_HERE_SORT_FILTER_UPDATE(record: PayloadAction<Record<PropertyKey, any>>) {
@@ -781,7 +702,6 @@ function* activitiesPageSaga() {
     takeEvery(WhatsHere.sort_filter_update, handle_WHATS_HERE_SORT_FILTER_UPDATE),
     takeEvery(WhatsHere.page_activity, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
-    takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(AppActions.urlChange, handle_URL_CHANGE),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),

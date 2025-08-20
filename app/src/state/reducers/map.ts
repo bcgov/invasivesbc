@@ -1,13 +1,7 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { GeoJSON, Feature, Point, Polygon } from 'geojson';
-import {
-  CSV_LINK_CLICKED,
-  MAP_SET_COORDS,
-  RECORD_SET_TO_EXCEL_FAILURE,
-  RECORD_SET_TO_EXCEL_REQUEST,
-  RECORD_SET_TO_EXCEL_SUCCESS
-} from 'state/actions';
+import { CSV_LINK_CLICKED, MAP_SET_COORDS } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -24,6 +18,7 @@ import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
+import ExportActions from 'state/actions/exports/exportActions';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -68,7 +63,7 @@ interface MapState {
   };
   quickPanToRecord: boolean;
   readableIdentifier?: string;
-  recordSetForCSV: number | null;
+  recordSetForCSV: string | null;
   recordTables: Record<PropertyKey, IRecordTable>;
   serverBoundaries: IServerLayer[];
 
@@ -143,7 +138,7 @@ const initialState: MapState = {
     isEditingShape: false
   },
   quickPanToRecord: false,
-  recordSetForCSV: 0,
+  recordSetForCSV: null,
   recordTables: {},
 
   serverBoundaries: [],
@@ -593,6 +588,14 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
         draftState.layers[index].filterObject = filterObject;
         draftState.layers[index].tableFiltersHash = tableFiltersHash;
+      } else if (ExportActions.requestExcel.pending.match(action)) {
+        draftState.CanTriggerCSV = false;
+      } else if (ExportActions.requestExcel.fulfilled.match(action)) {
+        draftState.CanTriggerCSV = true;
+        draftState.linkToCSV = action.payload.link;
+        draftState.recordSetForCSV = action.payload.setId;
+      } else if (ExportActions.requestExcel.rejected.match(action)) {
+        draftState.CanTriggerCSV = true;
       } else {
         switch (action.type) {
           case CSV_LINK_CLICKED: {
@@ -608,20 +611,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
               accuracy: userCoords.accuracy,
               heading: userCoords.heading
             };
-            break;
-          }
-          case RECORD_SET_TO_EXCEL_FAILURE: {
-            draftState.CanTriggerCSV = true;
-            break;
-          }
-          case RECORD_SET_TO_EXCEL_REQUEST: {
-            draftState.CanTriggerCSV = false;
-            break;
-          }
-          case RECORD_SET_TO_EXCEL_SUCCESS: {
-            draftState.CanTriggerCSV = true;
-            draftState.linkToCSV = action.payload.link;
-            draftState.recordSetForCSV = action.payload.id;
             break;
           }
           default:
