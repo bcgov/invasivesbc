@@ -1,7 +1,7 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { GeoJSON, Feature, Point, Polygon } from 'geojson';
-import { CSV_LINK_CLICKED, MAP_SET_COORDS } from 'state/actions';
+import { CSV_LINK_CLICKED } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -596,6 +596,14 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.recordSetForCSV = action.payload.setId;
       } else if (ExportActions.requestExcel.rejected.match(action)) {
         draftState.CanTriggerCSV = true;
+      } else if (AppActions.setUserCoords.match(action)) {
+        const userCoords = action.payload.position.coords;
+        draftState.userCoords = {
+          lat: userCoords.latitude,
+          long: userCoords.longitude,
+          accuracy: userCoords.accuracy,
+          heading: userCoords.heading
+        };
       } else {
         switch (action.type) {
           case CSV_LINK_CLICKED: {
@@ -603,16 +611,7 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.recordSetForCSV = null;
             break;
           }
-          case MAP_SET_COORDS: {
-            const userCoords = { ...action?.payload?.position?.coords };
-            draftState.userCoords = {
-              lat: userCoords.latitude,
-              long: userCoords.longitude,
-              accuracy: userCoords.accuracy,
-              heading: userCoords.heading
-            };
-            break;
-          }
+
           default:
             break;
         }
