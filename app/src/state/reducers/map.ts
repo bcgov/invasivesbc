@@ -1,7 +1,6 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { GeoJSON, Feature, Point, Polygon } from 'geojson';
-import { CSV_LINK_CLICKED } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -604,17 +603,9 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           accuracy: userCoords.accuracy,
           heading: userCoords.heading
         };
-      } else {
-        switch (action.type) {
-          case CSV_LINK_CLICKED: {
-            draftState.linkToCSV = null;
-            draftState.recordSetForCSV = null;
-            break;
-          }
-
-          default:
-            break;
-        }
+      } else if (ExportActions.resetCsvUrl.match(action)) {
+        draftState.linkToCSV = null;
+        draftState.recordSetForCSV = null;
       }
     }) as unknown as MapState;
   };

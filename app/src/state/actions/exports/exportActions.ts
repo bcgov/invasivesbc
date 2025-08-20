@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { RootState } from 'state/reducers/rootReducer';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
@@ -34,6 +34,7 @@ class ExportActions {
       return { link: url, setId: spec.setId };
     }
   );
+  public static readonly resetCsvUrl = createAction(`${this.PREFIX}/resetCsvUrl`);
 }
 
 export default ExportActions;
