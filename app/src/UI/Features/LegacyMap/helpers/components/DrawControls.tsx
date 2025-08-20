@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_UPDATE } from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_SUCCESS } from 'state/actions';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
@@ -98,8 +98,7 @@ const DrawControls = () => {
 
     const updatedFeature = drawInstance.current?.getAll().features[0];
     if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
-
-    dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
+    dispatch(DrawToolActions.updateShape(updatedFeature));
 
     if (prevMode.current === TargetMode.ACTIVITY_GEO_TRACK) {
       dispatch(GeoTracking.edit(false));
@@ -341,7 +340,7 @@ const DrawControls = () => {
         break;
       }
       case TargetMode.CUSTOM_LAYER:
-        dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature });
+        dispatch(DrawToolActions.updateShape(feature));
         break;
       case TargetMode.TRIP_PLANNING: {
         dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
@@ -420,7 +419,7 @@ const DrawControls = () => {
 
     const editedGeo = drawInstance.current.getAll().features[0];
     if (editedGeo?.id !== featureId) {
-      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
+      dispatch(DrawToolActions.updateShape(editedGeo));
     }
   }, []);
 
