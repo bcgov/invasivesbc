@@ -29,8 +29,7 @@ import {
   MAP_ON_SHAPE_UPDATE,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
-  RECORD_SET_TO_EXCEL_SUCCESS,
-  REMOVE_SERVER_BOUNDARY
+  RECORD_SET_TO_EXCEL_SUCCESS
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
@@ -592,9 +591,20 @@ function* handle_REMOVE_CUSTOM_LAYER(action) {
   );
 }
 
-function* handle_REMOVE_SERVER_BOUNDARY(action) {
-  yield put(UserSettings.KML.toggle(action.payload.id, false));
-  yield put(UserSettings.KML.delete(action.payload.id));
+function* handle_REMOVE_SERVER_BOUNDARY(action: PayloadAction<string>) {
+  yield put(UserSettings.KML.toggle(action.payload, false));
+  try {
+    const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/admin-defined-shapes/`, {
+      server_id: action.payload
+    });
+
+    if (networkReturn?.ok) {
+      yield put(UserSettings.KML.deleteSuccess(action.payload));
+    }
+  } catch (e) {
+    console.error(e);
+    yield put(UserSettings.KML.deleteFailure(action.payload));
+  }
 }
 
 function* handle_MAP_ON_SHAPE_CREATE(action) {
@@ -762,7 +772,7 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.RecordSet.cycleColourById, handle_RECORDSET_ROTATE_COLOUR),
     takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),
     takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
-    takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
+    takeEvery(UserSettings.KML.delete, handle_REMOVE_SERVER_BOUNDARY),
     takeEvery(UserSettings.RecordSet.setPageLimit, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),

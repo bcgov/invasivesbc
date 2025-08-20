@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { REMOVE_SERVER_BOUNDARY } from 'state/actions';
 import 'UI/Features/LegacyMap/Controls/CustomizeLayerDialog.css';
 
 import KMLShapesUpload from 'UI/Features/LegacyMap/Controls/KMLShapesUpload';
@@ -87,7 +86,7 @@ const CustomizeLayerMenu = () => {
         dispatch(UserSettings.Boundaries.removeCustomLayer(layerToDelete!));
         break;
       case 'Server':
-        dispatch({ type: REMOVE_SERVER_BOUNDARY, payload: { id: layerToDelete } });
+        dispatch(UserSettings.KML.delete(layerToDelete!));
         break;
     }
     toggleModal();
