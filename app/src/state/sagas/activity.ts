@@ -36,8 +36,7 @@ import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import {
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_SET_COORDS
+  ACTIVITY_UPDATE_GEO_SUCCESS
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -409,7 +408,7 @@ function* activityPageSaga() {
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
-    takeEvery(MAP_SET_COORDS, handle_MAP_SET_COORDS),
+    takeEvery(AppActions.setUserCoords, handle_MAP_SET_COORDS),
     takeEvery(ACTIVITY_UPDATE_GEO_REQUEST, handle_ACTIVITY_UPDATE_GEO_REQUEST),
     takeEvery(ACTIVITY_UPDATE_GEO_SUCCESS, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
     takeEvery(Activity.Suggestions.jurisdictions, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),

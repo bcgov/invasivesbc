@@ -18,6 +18,16 @@ interface IPreppedFilters {
   tableFiltersHash: string;
   recordSetType: RecordSetType;
 }
+interface IUserCoord {
+  position: {
+    coords: {
+      latitude: number | null;
+      longitude: number | null;
+      accuracy: number | null;
+      heading: number | null;
+    };
+  };
+}
 class AppActions {
   private static readonly PREFIX = 'AppActions';
 
@@ -26,6 +36,7 @@ class AppActions {
   public static readonly toggleCustomLayersModal = createAction(`${this.PREFIX}/toggleCustomLayersModal`);
   static readonly prepVectorFilters = createAction<IPrepFilter>(`${this.PREFIX}/prepVectorFilters`);
   static readonly vectorFiltersPrepped = createAction<IPreppedFilters>(`${this.PREFIX}/vectorFiltersPrepped`);
+  static readonly setUserCoords = createAction<IUserCoord>(`${this.PREFIX}/setUserCoords`);
 }
 
 export default AppActions;

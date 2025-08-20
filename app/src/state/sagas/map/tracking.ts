@@ -5,8 +5,8 @@ import { registerPlugin } from '@capacitor/core';
 import { BackgroundGeolocationPlugin } from '@capacitor-community/background-geolocation';
 import { Platform } from 'state/configuration/build-time-config';
 import { selectMap } from 'state/reducers/map';
-import { MAP_SET_COORDS } from 'state/actions';
 import MapActions from 'state/actions/map';
+import AppActions from 'state/actions/appActions/appActions';
 
 let BackgroundGeolocation: BackgroundGeolocationPlugin | null = null;
 
@@ -26,9 +26,8 @@ function* handle_MAP_TOGGLE_TRACKING_FALLBACK() {
       if (!position) {
         return;
       } else {
-        coordChannel.put({
-          type: MAP_SET_COORDS,
-          payload: {
+        coordChannel.put(
+          AppActions.setUserCoords({
             position: {
               coords: {
                 latitude: position.coords.latitude,
@@ -37,8 +36,8 @@ function* handle_MAP_TOGGLE_TRACKING_FALLBACK() {
                 heading: position.coords.heading
               }
             }
-          }
-        });
+          })
+        );
       }
     } catch (e) {
       console.error(e);
@@ -99,9 +98,8 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
         return console.error(error);
       }
       if (location) {
-        coordChannel.put({
-          type: MAP_SET_COORDS,
-          payload: {
+        coordChannel.put(
+          AppActions.setUserCoords({
             position: {
               coords: {
                 latitude: location?.latitude,
@@ -110,8 +108,8 @@ function* handle_MAP_TOGGLE_TRACKING_BACKGROUND() {
                 heading: location?.bearing
               }
             }
-          }
-        });
+          })
+        );
       }
       return console.log(location);
     }
