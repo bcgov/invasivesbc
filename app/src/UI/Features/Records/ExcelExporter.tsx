@@ -1,6 +1,5 @@
 import { Accordion, Button, MenuItem, Select, Tooltip } from '@mui/material';
 import { useState } from 'react';
-import { CSV_LINK_CLICKED } from 'state/actions';
 import DownloadIcon from '@mui/icons-material/Download';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import 'UI/Features/Records/ExcelExporter.css';
@@ -60,11 +59,7 @@ const ExcelExporter = (props) => {
             {linkToCSV && props.setName === recordSetForCSV ? (
               <a href={linkToCSV} download>
                 <Button
-                  onClick={() =>
-                    dispatch({
-                      type: CSV_LINK_CLICKED
-                    })
-                  }
+                  onClick={() => dispatch(ExportActions.resetCsvUrl())}
                   disabled={linkToCSV.length < 1}
                   sx={{ mr: 1, ml: 'auto' }}
                   size={'small'}
