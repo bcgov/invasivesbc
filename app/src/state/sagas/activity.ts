@@ -33,7 +33,6 @@ import {
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
 import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
-import { ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
@@ -432,7 +431,7 @@ function* activityPageSaga() {
     takeEvery(Activity.Photo.edit, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
     takeEvery(Activity.deleteSuccess, handle_ACTIVITY_DELETE_SUCCESS),
     takeEvery(Activity.deleteFailure, handle_ACTIVITY_DELETE_FAILURE),
-    takeEvery(ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
+    takeEvery(Activity.onFormChangeRequest, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
     takeEvery(
       Activity.ChemicalTreatments.onChemicalTreatmentsUpdate,
       handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST

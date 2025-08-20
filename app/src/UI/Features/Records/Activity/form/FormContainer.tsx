@@ -12,7 +12,6 @@ import rjsfTheme from 'UI/Features/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { useSelector } from 'utils/use_selector';
 import { shallowEqual, useDispatch } from 'react-redux';
-import { ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
 import validator from '@rjsf/validator-ajv8';
 import 'UI/Features/Records/Activity/form/aditionalFormStyles.css';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
@@ -67,10 +66,7 @@ const FormContainer = () => {
 
   const debouncedFormChange = useCallback(
     debounce((event, _, lastField) => {
-      dispatch({
-        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null }
-      });
+      dispatch(Activity.onFormChangeRequest({ eventFormData: event.formData, lastField: lastField }));
     }, 1000),
     []
   );
