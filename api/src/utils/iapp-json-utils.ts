@@ -1,6 +1,7 @@
 import { SQLStatement } from 'sql-template-strings';
 import Cursor from 'pg-cursor';
 import { v4 as uuidv4 } from 'uuid';
+import { PoolClient } from 'pg';
 import { densityMap, distributionMap, mapSlope } from './iapp-payload/iapp-function-utils';
 import {
   biologicalDispersalJSON,
@@ -16,7 +17,6 @@ import { getActivitiesSQL } from 'queries/activity-queries';
 import { getIappExtractsFromDB, getSitesBasedOnSearchCriteriaSQL } from 'queries/iapp-queries';
 import { getDBConnection } from 'database/db';
 import { speciesRefSql } from 'queries/species_ref';
-import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('point-of-interest');
 
@@ -328,7 +328,7 @@ export async function streamActivitiesResult(searchCriteria: any, res: any, sqlS
 
   const sqlStatement: SQLStatement = sqlStatementOverride
     ? sqlStatementOverride
-    : getActivitiesSQL(searchCriteria, false, true);
+    : getActivitiesSQL(searchCriteria, true);
 
   if (!sqlStatement) {
     throw {

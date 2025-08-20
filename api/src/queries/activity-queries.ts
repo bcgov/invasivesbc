@@ -38,21 +38,21 @@ const postActivitySQL = (activity: ActivityPostRequestBody, user_id: number, upd
                                         species_treated,
                                         jurisdiction)
     SELECT ${activity.activity_id},
-            ${activity.activity_type},
-            ${activity.activity_subtype},
-            ${activity.created_timestamp},
-            ${activity.received_timestamp},
-            ${activity.created_by},
-            ${activity.updated_by},
-            ${activity.created_by_with_guid.replace('bceidbusiness', 'bceid-business')},
-            ${activity.updated_by_with_guid.replace('bceidbusiness', 'bceid-business')},
-            ${activity.sync_status},
-            ${activity.form_status},
-            ${activity.platform_src},
-            ${activity.review_status},
-            ${activity.reviewed_by},
-            ${activity.reviewed_at},
-            ${activity.activityPostBody}
+           ${activity.activity_type},
+           ${activity.activity_subtype},
+           ${activity.created_timestamp},
+           ${activity.received_timestamp},
+           ${activity.created_by},
+           ${activity.updated_by},
+           ${activity.created_by_with_guid.replace('bceidbusiness', 'bceid-business')},
+           ${activity.updated_by_with_guid.replace('bceidbusiness', 'bceid-business')},
+           ${activity.sync_status},
+           ${activity.form_status},
+           ${activity.platform_src},
+           ${activity.review_status},
+           ${activity.reviewed_by},
+           ${activity.reviewed_at},
+           ${activity.activityPostBody}
   `;
 
   if (activity.geoJSONFeature && activity.geoJSONFeature.length) {
@@ -183,15 +183,10 @@ const getColumnNamesSQL = (columnNames: string[]): string => {
  * SQL query to fetch activity records based on search criteria.
  *
  * @param {ActivitySearchCriteria} searchCriteria
- * @param {lean} lean - if true, return a lean object
  * @returns {SQLStatement} sql query object
  */
 //NOSONA
-const getActivitiesSQL = (
-  searchCriteria: ActivitySearchCriteria,
-  lean: boolean,
-  isAuth: boolean = false
-): SQLStatement => {
+const getActivitiesSQL = (searchCriteria: ActivitySearchCriteria, isAuth: boolean = false): SQLStatement => {
   const sqlStatement: SQLStatement = SQL``;
 
   if (searchCriteria.search_feature_server_id) {
@@ -239,7 +234,7 @@ CurrentNegativeObservations AS (
       searchCriteria.column_names && searchCriteria.column_names?.length > 0 ? searchCriteria.column_names : [];
 
     if (!isAuth && columnNames.length > 0) {
-      //columns_names were requested for either activities full or lean
+      //columns_names were requested for either activities full
       // remove restricted column_names if NOT auth
       const blockedColumns = ['created_by', 'updated_by', 'reviewed_by'];
       let indexOf;
@@ -250,113 +245,75 @@ CurrentNegativeObservations AS (
         }
       }
     }
-    // Build lean object
-    if (lean) {
-      if (columnNames.length > 0) {
-        // do we even allow columnNames request to lean???
-        // do we remove payload or is it not included as lean???
-        sqlStatement.append(getColumnNamesSQL(columnNames));
-        // we need to remove data if lean is allowed to return activity payload
-      } else {
-        // column names are empty, use default output
-        sqlStatement.append(SQL`
-        jsonb_build_object (
-          'type', 'Feature',
-          'properties', json_build_object(
-            'id', a.activity_id,
-            'type', activity_type,
-            'subtype', activity_subtype,
-            'created', created_timestamp,
-            'bec', biogeoclimatic_zones,
-            'riso', regional_invasive_species_organization_areas,
-            'ipma', invasive_plant_management_areas,
-            'own', ownership,
-            'regionalDist', regional_districts,
-            'flnroDist', flnro_districts,
-            'motiDist', moti_districts,
-            'elev', elevation,
-            'wellProx', well_proximity,
-            'species_positive', species_positive,
-            'species_negative', species_negative,
-            'species_treated', species_treated,
-            'jurisdiction', a.activity_payload::json->'form_data'->'activity_data'->'jurisdictions',
-            'reported_area', a.activity_payload::json->'form_data'->'activity_data'->'reported_area',
-            'short_id', a.activity_payload::json->'short_id'
-            ),
-            'geometry', public.st_asGeoJSON(geog)::jsonb
-            ) as "geojson"
-            `);
-      }
-    } else {
-      if (searchCriteria.activity_id_only) {
-        // empty column_names just in case they are loaded and will stop append later
-        columnNames = [];
-        sqlStatement.append(SQL` a.activity_id`);
-      } else {
-        if (columnNames?.length == 0) {
-          if (isAuth) {
-            // if no column_names specified, select all
-            sqlStatement.append(SQL` *`);
-          } else {
-            // NO columnames and we are also NOT authenticated
-            // set default sanitized column names, public list, allow list
-            columnNames = [
-              'activity_incoming_data_id',
-              'activity_id',
-              '"version"',
-              'activity_type',
-              'activity_subtype',
-              'created_timestamp',
-              'received_timestamp',
-              'deleted_timestamp',
-              'geom',
-              'geog',
-              'media_keys',
-              'activity_payload',
-              'biogeoclimatic_zones',
-              'regional_invasive_species_organization_areas',
-              'invasive_plant_management_areas',
-              'ownership',
-              'regional_districts',
-              'flnro_districts',
-              'moti_districts',
-              'elevation',
-              'well_proximity',
-              'utm_zone',
-              'utm_northing',
-              'utm_easting',
-              'albers_northing',
-              'albers_easting',
-              'form_status',
-              'sync_status',
-              'review_status',
-              'reviewed_at',
-              'species_positive',
-              'species_negative',
-              'jurisdiction',
-              'species_treated',
-              'species_positive_full',
-              'species_negative_full',
-              'species_treated_full',
-              'agency',
-              'jurisdiction_display',
-              'short_id'
-            ];
-          }
-          // sqlStatement.append(SQL` a.activity_incoming_data_id, a.activity_id, a."version", a.activity_type, a.activity_subtype, a.created_timestamp, a.received_timestamp, a.deleted_timestamp, a.geom, a.geog, a.media_keys, a.activity_payload, a.biogeoclimatic_zones, a.regional_invasive_species_organization_areas, a.invasive_plant_management_areas, a.ownership, a.regional_districts, a.flnro_districts, a.moti_districts, a.elevation, a.well_proximity, a.utm_zone, a.utm_northing, a.utm_easting, a.albers_northing, a.albers_easting, a.form_status, a.sync_status, a.review_status, a.reviewed_at, a.species_positive, a.species_negative, a.jurisdiction, a.species_treated, a.species_positive_full, a.species_negative_full, a.species_treated_full, a.agency, a.jurisdiction_display, a.short_id`);
-        }
-        if (columnNames.length > 0) {
-          sqlStatement.append(getColumnNamesSQL(columnNames));
-        }
-      }
 
-      sqlStatement.append(`,     CASE WHEN cpo.activity_incoming_data_id IS NOT NULL THEN TRUE ELSE FALSE END AS has_current_positive,
+    if (searchCriteria.activity_id_only) {
+      // empty column_names just in case they are loaded and will stop append later
+      columnNames = [];
+      sqlStatement.append(SQL` a.activity_id`);
+    } else {
+      if (columnNames?.length == 0) {
+        if (isAuth) {
+          // if no column_names specified, select all
+          sqlStatement.append(SQL` *`);
+        } else {
+          // NO columnames and we are also NOT authenticated
+          // set default sanitized column names, public list, allow list
+          columnNames = [
+            'activity_incoming_data_id',
+            'activity_id',
+            '"version"',
+            'activity_type',
+            'activity_subtype',
+            'created_timestamp',
+            'received_timestamp',
+            'deleted_timestamp',
+            'geom',
+            'geog',
+            'media_keys',
+            'activity_payload',
+            'biogeoclimatic_zones',
+            'regional_invasive_species_organization_areas',
+            'invasive_plant_management_areas',
+            'ownership',
+            'regional_districts',
+            'flnro_districts',
+            'moti_districts',
+            'elevation',
+            'well_proximity',
+            'utm_zone',
+            'utm_northing',
+            'utm_easting',
+            'albers_northing',
+            'albers_easting',
+            'form_status',
+            'sync_status',
+            'review_status',
+            'reviewed_at',
+            'species_positive',
+            'species_negative',
+            'jurisdiction',
+            'species_treated',
+            'species_positive_full',
+            'species_negative_full',
+            'species_treated_full',
+            'agency',
+            'jurisdiction_display',
+            'short_id'
+          ];
+        }
+        // sqlStatement.append(SQL` a.activity_incoming_data_id, a.activity_id, a."version", a.activity_type, a.activity_subtype, a.created_timestamp, a.received_timestamp, a.deleted_timestamp, a.geom, a.geog, a.media_keys, a.activity_payload, a.biogeoclimatic_zones, a.regional_invasive_species_organization_areas, a.invasive_plant_management_areas, a.ownership, a.regional_districts, a.flnro_districts, a.moti_districts, a.elevation, a.well_proximity, a.utm_zone, a.utm_northing, a.utm_easting, a.albers_northing, a.albers_easting, a.form_status, a.sync_status, a.review_status, a.reviewed_at, a.species_positive, a.species_negative, a.jurisdiction, a.species_treated, a.species_positive_full, a.species_negative_full, a.species_treated_full, a.agency, a.jurisdiction_display, a.short_id`);
+      }
+      if (columnNames.length > 0) {
+        sqlStatement.append(getColumnNamesSQL(columnNames));
+      }
+    }
+
+    sqlStatement.append(`,     CASE WHEN cpo.activity_incoming_data_id IS NOT NULL THEN TRUE ELSE FALSE END AS has_current_positive,
       cpo.current_positive_species,
       CASE WHEN cno.activity_incoming_data_id IS NOT NULL THEN TRUE ELSE FALSE END AS has_current_negative,
       cno.current_negative_species `);
-      // include the total count of results that would be returned if the limit and offset constraints weren't applied
-      //   sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
-    }
+    // include the total count of results that would be returned if the limit and offset constraints weren't applied
+    //   sqlStatement.append(SQL`, COUNT(*) OVER() AS total_rows_count`);
   } else {
     sqlStatement.append('SELECT extract.* ');
   }
@@ -445,17 +402,6 @@ LEFT JOIN
   }
 
   sqlStatement.append(SQL` where 1 = 1 and a.iscurrent = true `);
-
-  const drafts =
-    searchCriteria.form_status &&
-    searchCriteria.form_status.length == 1 &&
-    searchCriteria.form_status.includes('Draft');
-
-  if (lean && !drafts) {
-    sqlStatement.append(
-      SQL` and a.activity_incoming_data_id > (select last_record from export_records where export_type = 'activities' order by export_time limit 1)`
-    );
-  }
 
   if (searchCriteria.activity_type && searchCriteria.activity_type.length) {
     sqlStatement.append(SQL` AND activity_type IN (`);
@@ -793,9 +739,11 @@ const getActivitySQL = (activityId: string): SQLStatement => {
 const getActivitySqlWithPermissions = (activityIds: string | string[], userId: number): SQLStatement => {
   if (!userId || !activityIds) return;
   if (typeof activityIds === 'string') {
-    return SQL`select * from fetch_activity_with_user_permissions(${userId}, array[${activityIds}]::uuid[])`;
+    return SQL`select *
+               from fetch_activity_with_user_permissions(${userId}, array [${activityIds}]::uuid[])`;
   } else {
-    const sql = SQL`select * from fetch_activity_with_user_permissions(${userId}, array[`;
+    const sql = SQL`select *
+                    from fetch_activity_with_user_permissions(${userId}, array [`;
     activityIds.forEach((id, index) => {
       sql.append(`'${id}'`);
       if (index !== activityIds.length - 1) {
@@ -815,7 +763,7 @@ const getActivitiesByIdsSQL = (recordIds: string[]): SQLStatement => SQL`
   FROM activity_incoming_data a
   WHERE a.iscurrent = true
     AND a.form_status = 'Submitted'
-    AND a.activity_id = ANY(${recordIds});
+    AND a.activity_id = ANY (${recordIds});
 `;
 
 const getActivityHistorySQL = (activityId: string): SQLStatement => {
@@ -826,7 +774,7 @@ const getActivityHistorySQL = (activityId: string): SQLStatement => {
 	    WHERE activity_id = ${activityId}
     )
     SELECT a.*
-    FROM activity_version_history a; 
+    FROM activity_version_history a;
   `;
 };
 

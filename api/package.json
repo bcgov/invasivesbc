@@ -13,7 +13,6 @@
     "dev": "nodemon --exec 'tsx' src/server --watch ../sharedAPI --watch .",
     "start": "tsx src/server",
     "export-map": "tsx src/map-exporter",
-    "export-geojson": "tsx src/geojson-exporter",
     "test": "NODE_OPTIONS='--import tsx' mocha \"./src/tests/**/*.test.ts\" --timeout 10000",
     "worker": "tsx src/celery/worker",
     "worker-check": "tsx src/celery/check",
