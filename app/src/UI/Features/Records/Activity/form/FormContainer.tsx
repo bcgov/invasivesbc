@@ -65,8 +65,8 @@ const FormContainer = () => {
   const theme = useRef<Theme>(createTheme(rjsfTheme as ThemeOptions));
 
   const debouncedFormChange = useCallback(
-    debounce((event, _, lastField) => {
-      dispatch(Activity.onFormChangeRequest({ eventFormData: event.formData, lastField: lastField }));
+    debounce((event) => {
+      dispatch(Activity.onFormChangeRequest(event.formData));
     }, 1000),
     []
   );
@@ -130,7 +130,7 @@ const FormContainer = () => {
             transformErrors={getCustomErrorTransformer()}
             autoComplete="off"
             ref={formRef}
-            onChange={(event) => debouncedFormChange(event, formRef, null)}
+            onChange={(event) => debouncedFormChange(event)}
           >
             {/* This seemingly useless Fragment prevents a generic submit button from rendering through RJSF */}
             <Fragment />

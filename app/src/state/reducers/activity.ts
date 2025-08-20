@@ -1,7 +1,6 @@
 import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import { ACTIVITY_ON_FORM_CHANGE_SUCCESS } from 'state/actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -220,20 +219,13 @@ function createActivityReducer() {
         draftState.activity.form_data.activity_data.utm_northing = utm?.[2];
         draftState.activity.form_data.activity_data.reported_area = reported_area;
         draftState.activity.form_data.activity_subtype_data.Well_Information = Well_Information;
-      } else {
-        switch (action.type) {
-          case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {
-            draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.activity.form_data));
-            draftState.activity.species_positive = action.payload.activity.species_positive;
-            draftState.activity.species_negative = action.payload.activity.species_negative;
-            draftState.activity.species_treated = action.payload.activity.species_treated;
-            draftState.activity.map_symbol = action.payload.activity.map_symbol;
-            draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
-            break;
-          }
-          default:
-            break;
-        }
+      } else if (Activity.OnFormChangeRequestSuccess.match(action)) {
+        draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.form_data));
+        draftState.activity.species_positive = action.payload?.species_positive;
+        draftState.activity.species_negative = action.payload?.species_negative;
+        draftState.activity.species_treated = action.payload?.species_treated;
+        draftState.activity.map_symbol = action.payload?.map_symbol;
+        draftState.activity.jurisdiction = action.payload?.jurisdiction;
       }
     });
   };
