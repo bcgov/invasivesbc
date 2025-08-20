@@ -94,7 +94,9 @@ export function calculateLatLng(geom: Feature[]) {
   };
 }
 
-export function normalizeToPolygonCoordinates(coords: Position[] | Position[][]): Position[][] {
+export function normalizeToPolygonCoordinates(
+  coords: Position | Position[] | Position[][] | Position[][][]
+): Position[][] {
   let normalized: Position[][];
 
   if (!Array.isArray(coords[0][0])) {
