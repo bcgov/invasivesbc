@@ -63,6 +63,11 @@ interface IGetSuccess {
   activity: UserRecord;
   permissions: IActivityPermissions;
 }
+
+interface IActivityFormChangeRequest {
+  eventFormData: UserRecord;
+  lastField?: string;
+}
 class Activity {
   private static readonly PREFIX = 'Activity';
   static readonly Offline = Offline;
@@ -115,10 +120,12 @@ class Activity {
       payload: { schema, uiSchema }
     })
   );
+  static readonly onFormChangeRequest = createAction<IActivityFormChangeRequest>(`${this.PREFIX}/onFormChangeRequest`);
 }
 
 export default Activity;
 export type {
+  IActivityFormChangeRequest,
   INewActivity,
   ICreateLocal,
   IGetIdsForRecordsetSuccess,

@@ -18,7 +18,7 @@ import {
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
-import { ACTIVITY_ON_FORM_CHANGE_REQUEST, ACTIVITY_ON_FORM_CHANGE_SUCCESS } from 'state/actions';
+import { ACTIVITY_ON_FORM_CHANGE_SUCCESS } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
@@ -35,7 +35,7 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Prompt from 'state/actions/prompts/Prompt';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import Activity, { INewActivity } from 'state/actions/activity/Activity';
+import Activity, { IActivityFormChangeRequest, INewActivity } from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import UserRecord from 'interfaces/UserRecord';
@@ -318,7 +318,7 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
   }
 }
 
-export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
+export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<IActivityFormChangeRequest>) {
   try {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
@@ -347,8 +347,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
       payload: {
         activity: updatedActivity,
-        lastField: action.payload.lastField,
-        unsavedDelay: action.payload.unsavedDelay
+        lastField: action.payload.lastField
       }
     });
 
@@ -380,7 +379,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
       yield take(DrawToolActions.updateGeoSuccess.type);
     } else if (
       beforeActivity.form_data.activity_type_data?.copy_geometry === 'Yes' &&
-      updatedFormData.activity_type_data.copy_geometry === 'No'
+      updatedFormData?.activity_type_data?.copy_geometry === 'No'
     ) {
       yield put(DrawToolActions.updateGeo([]));
       yield take(DrawToolActions.updateGeoSuccess.type);
@@ -600,10 +599,7 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(
   eventFormData: PayloadAction<Record<PropertyKey, any>>
 ) {
   try {
-    yield put({
-      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-      payload: { eventFormData: eventFormData.payload }
-    });
+    yield put(Activity.onFormChangeRequest({ eventFormData: eventFormData.payload }));
   } catch (e) {
     console.error(e);
   }
