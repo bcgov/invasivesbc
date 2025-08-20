@@ -1,4 +1,4 @@
-import { bboxPolygon, buffer } from '@turf/turf';
+import { buffer } from '@turf/turf';
 import { Feature } from 'geojson';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
@@ -23,8 +23,6 @@ import {
 } from './map/offline';
 import {
   ACTIVITY_UPDATE_GEO_REQUEST,
-  MAP_LABEL_EXTENT_FILTER_REQUEST,
-  MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
   RECORD_SET_TO_EXCEL_FAILURE,
@@ -377,18 +375,6 @@ function* handle_WHATS_HERE_SORT_FILTER_UPDATE(record: PayloadAction<Record<Prop
   } else if (recordType === RecordSetType.Activity) {
     yield put(WhatsHere.activity_rows_request());
   }
-}
-
-function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
-  const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
-  const bounds = bboxPolygon(bbox as any);
-
-  yield put({
-    type: MAP_LABEL_EXTENT_FILTER_SUCCESS,
-    payload: {
-      bounds: bounds
-    }
-  });
 }
 
 function* handle_URL_CHANGE(action: PayloadAction<string>) {
@@ -796,7 +782,6 @@ function* activitiesPageSaga() {
     takeEvery(WhatsHere.page_activity, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
-    takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
     takeEvery(AppActions.urlChange, handle_URL_CHANGE),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
