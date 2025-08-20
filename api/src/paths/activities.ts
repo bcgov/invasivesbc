@@ -4,6 +4,7 @@ import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { ActivityType } from 'sharedAPI';
 
+import { PoolClient } from 'pg';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { streamActivitiesResult } from 'utils/iapp-json-utils';
 import { getDBConnection } from 'database/db';
@@ -18,7 +19,6 @@ import { getLogger } from 'utils/logger';
 import { InvasivesRequest } from 'utils/auth-utils';
 import cacheService from 'utils/cache/cache-service';
 import { versionedKey } from 'utils/cache/cache-utils';
-import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity');
 const CACHENAME = 'Activities - Fat';
@@ -251,7 +251,7 @@ function getActivitiesBySearchFilterCriteria(): RequestHandler {
         res.status(200);
         await streamActivitiesResult(sanitizedSearchCriteria, res);
       } else {
-        const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, false, isAuth);
+        const sqlStatement: SQLStatement = getActivitiesSQL(sanitizedSearchCriteria, isAuth);
 
         if (!sqlStatement) {
           return res.status(500).json({
