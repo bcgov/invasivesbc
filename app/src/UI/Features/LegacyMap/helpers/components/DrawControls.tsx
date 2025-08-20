@@ -2,7 +2,6 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { ACTIVITY_UPDATE_GEO_SUCCESS } from 'state/actions';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
@@ -263,17 +262,7 @@ const DrawControls = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
         drawInstance.current?.deleteAll();
-        dispatch({
-          type: ACTIVITY_UPDATE_GEO_SUCCESS,
-          payload: {
-            geometry: undefined,
-            utm: undefined,
-            lat: undefined,
-            long: undefined,
-            reported_area: undefined,
-            Well_Information: undefined
-          }
-        });
+        dispatch(DrawToolActions.deleteGeo());
         updateEditControlState();
       }
     };

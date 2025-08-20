@@ -18,11 +18,7 @@ import {
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
-import {
-  ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_UPDATE_GEO_SUCCESS
-} from 'state/actions';
+import { ACTIVITY_ON_FORM_CHANGE_REQUEST, ACTIVITY_ON_FORM_CHANGE_SUCCESS } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
@@ -47,7 +43,7 @@ import MapActions from 'state/actions/map';
 import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import DrawToolActions, { IUpdateShapeSuccess } from 'state/actions/drawtool/drawToolActions';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -108,7 +104,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
     const modifiedPayload = JSON.parse(JSON.stringify(action.payload));
     const { latitude, longitude } = calculateLatLng(modifiedPayload) || {};
 
-    let utm;
+    let utm: [number, number, number] | null = null;
     if (latitude && longitude) {
       utm = calc_utm(longitude, latitude);
     }
@@ -136,17 +132,16 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
     let reported_area = calculateGeometryArea(modifiedPayload.geometry);
 
     if (modifiedPayload.length === 0) {
-      yield put({
-        type: ACTIVITY_UPDATE_GEO_SUCCESS,
-        payload: {
-          geometry: modifiedPayload.geometry,
-          utm: utm,
-          lat: latitude,
-          long: longitude,
-          reported_area: reported_area,
-          Well_Information: []
-        }
-      });
+      const payload: IUpdateShapeSuccess = {
+        geometry: modifiedPayload.geometry,
+        lat: latitude,
+        long: longitude,
+        reported_area: reported_area,
+        Well_Information: []
+      };
+      if (utm) payload.utm = utm;
+
+      yield put(DrawToolActions.updateGeoSuccess(payload));
       return;
     }
 
@@ -169,7 +164,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
       sanitizedGeo.properties = { error: 'false' };
     }
 
-    const wellInformationArr: Record<PropertyKey, any>[] = [];
+    const wellInformationArr: Array<{
+      well_id: string;
+      well_proximity: string;
+    }> = [];
 
     let wellsAreWithinRecordArea = false;
 
@@ -177,12 +175,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
       const nearestWells = yield getClosestWells(sanitizedGeo);
       wellsAreWithinRecordArea = nearestWells.areWellsInside;
       if (nearestWells?.well_objects.length === 0) {
-        wellInformationArr.push([
-          {
-            well_id: 'No wells found',
-            well_proximity: 'No wells found'
-          }
-        ]);
+        wellInformationArr.push({
+          well_id: 'No wells found',
+          well_proximity: 'No wells found'
+        });
       } else {
         nearestWells.well_objects.forEach((well) => {
           if (well.proximity || well.inside) {
@@ -217,18 +213,17 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Featur
       yield put(Alerts.create(mappingAlertMessages.notWithinBC));
       return;
     }
-    const payload = {
-      geometry: [JSON.parse(JSON.stringify(sanitizedGeo))],
-      utm,
+    const payload: IUpdateShapeSuccess = {
+      geometry: [JSON.parse(JSON.stringify(sanitizedGeo))] as Feature[],
       lat: latitude,
       long: longitude,
       reported_area,
       Well_Information: wellInformationArr
     };
-    yield put({
-      type: ACTIVITY_UPDATE_GEO_SUCCESS,
-      payload
-    });
+    if (utm) {
+      payload.utm = utm;
+    }
+    yield put(DrawToolActions.updateGeoSuccess(payload));
   } catch (e) {
     console.error('ERROR', e);
   }
@@ -382,13 +377,13 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
         linked_geo = record.geometry;
       }
       yield put(DrawToolActions.updateGeo(linked_geo));
-      yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
+      yield take(DrawToolActions.updateGeoSuccess.type);
     } else if (
       beforeActivity.form_data.activity_type_data?.copy_geometry === 'Yes' &&
       updatedFormData.activity_type_data.copy_geometry === 'No'
     ) {
       yield put(DrawToolActions.updateGeo([]));
-      yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
+      yield take(DrawToolActions.updateGeoSuccess.type);
     }
 
     //call autofill events
