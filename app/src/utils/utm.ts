@@ -9,8 +9,8 @@ export const calc_lat_long_from_utm = (zone: number, easting: number, northing: 
   return proj4('EPSG:AUTO', 'EPSG:4326', [easting, northing, zone]); // conversion from (long/lat) to UTM (E/N)
 };
 
-export const calc_utm = (longitude: number, latitude: number) => {
-  const utmZone = ((Math.floor((longitude + 180) / 6) % 60) + 1).toString(); //getting utm zone
+export const calc_utm = (longitude: number, latitude: number): [number, number, number] => {
+  const utmZone = (Math.floor((longitude + 180) / 6) % 60) + 1; //getting utm zone
   proj4.defs([
     ['EPSG:4326', '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
     ['EPSG:AUTO', `+proj=utm +zone=${utmZone} +datum=WGS84 +units=m +no_defs`]
