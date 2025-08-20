@@ -20,7 +20,7 @@ import {
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
 } from './map/offline';
-import { ACTIVITY_UPDATE_GEO_REQUEST, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -559,7 +559,7 @@ function* handle_MAP_ON_SHAPE_CREATE(action: PayloadAction<Feature>) {
   }
 }
 
-function* handle_MAP_ON_SHAPE_UPDATE(action) {
+function* handle_MAP_ON_SHAPE_UPDATE(action: PayloadAction<Feature>) {
   try {
     const { url } = yield select((state) => state.AppMode);
     const { drawingCustomLayer, whatsHere, tileCacheMode } = yield select((state: RootState) => state.Map);
@@ -578,7 +578,7 @@ function* handle_MAP_ON_SHAPE_UPDATE(action) {
       if (isGeoTrackingFeature) {
         if (isPaused(status)) {
           // don't do anything, just call ACTIVITY_UPDATE_GEO_REQUEST
-        } else if (shapeType === GeoShapes.Polygon) {
+        } else if (shapeType === GeoShapes.Polygon && 'coordinates' in geometry) {
           geometry.type = shapeType;
           geometry.coordinates = normalizeToPolygonCoordinates(geometry.coordinates);
         }
@@ -705,7 +705,7 @@ function* activitiesPageSaga() {
     takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(AppActions.urlChange, handle_URL_CHANGE),
     takeEvery(DrawToolActions.createShape, handle_MAP_ON_SHAPE_CREATE),
-    takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
+    takeEvery(DrawToolActions.updateShape, handle_MAP_ON_SHAPE_UPDATE),
     ...TRACKING_SAGA_HANDLERS
   ]);
 }
