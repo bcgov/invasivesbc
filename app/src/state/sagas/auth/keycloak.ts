@@ -3,7 +3,6 @@ import Keycloak, { KeycloakLogoutOptions } from 'keycloak-js';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { historySingleton } from 'state/store';
-import { USERINFO_CLEAR_REQUEST } from 'state/actions';
 import { selectAuth } from 'state/reducers/auth';
 import { AuthActions } from 'state/actions/auth/Auth';
 
@@ -52,7 +51,7 @@ function* handleSignoutRequest() {
     };
     yield call(keycloakInstance.logout, logoutOptions);
     yield put(AuthActions.signoutComplete());
-    yield put({ type: USERINFO_CLEAR_REQUEST });
+    yield put(AuthActions.clearUserInfo());
   } catch (e) {
     console.error(e);
     yield put(AuthActions.requestError());

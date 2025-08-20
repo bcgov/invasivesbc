@@ -1,11 +1,11 @@
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Form } from '@rjsf/mui';
 import { Card, CardContent, Grid } from '@mui/material';
 import { useDispatch, useSelector } from 'react-redux';
-import { EMAIL_SETTINGS_RETRIEVE_REQUEST, EMAIL_SETTINGS_UPDATE } from 'state/actions';
 import { selectEmailSettings } from 'state/reducers/emailSettings';
+import { EmailActions } from 'state/actions/email/emailActions';
 
 const jsonSchemaEmailSettings: RJSFSchema = {
   title: 'Email Settings',
@@ -57,16 +57,11 @@ const EmailSettings = () => {
   const emailSettingsState = useSelector(selectEmailSettings);
   const dispatch = useDispatch();
   useEffect(() => {
-    dispatch({
-      type: EMAIL_SETTINGS_RETRIEVE_REQUEST
-    });
+    dispatch(EmailActions.retrieveReq());
   }, []);
 
   const onSubmitEmailSettings = ({ formData }) => {
-    dispatch({
-      type: EMAIL_SETTINGS_UPDATE,
-      payload: formData
-    });
+    dispatch(EmailActions.updateSettingsReq(formData));
   };
 
   return (

@@ -9,7 +9,6 @@ import { createBatchReducer } from './batch';
 import { createEmailSettingsReducer } from './emailSettings';
 import { createEmailTemplatesReducer } from './emailTemplates';
 import { createMapReducer, MapState } from './map';
-import { createTrainingVideosReducer } from './training_videos';
 import { createUserSettingsReducer, UserSettingsState } from './userSettings';
 import { createIAPPSiteReducer } from './iappsite';
 import { createConfigurationReducerWithDefaultState } from './configuration';
@@ -167,7 +166,6 @@ function createRootReducer(config: UnifiedConfig) {
       createMapReducer()
     ),
     Batch: createBatchReducer(),
-    TrainingVideos: createTrainingVideosReducer(),
     EmailSettings: createEmailSettingsReducer(),
     EmailTemplates: createEmailTemplatesReducer(),
     ErrorHandler: errorHandlerReducer,

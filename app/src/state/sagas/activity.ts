@@ -1,5 +1,6 @@
-import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, put, select, take, takeEvery } from 'redux-saga/effects';
 import { buffer, distance, kinks, lineToPolygon } from '@turf/turf';
+import { PayloadAction } from '@reduxjs/toolkit';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
   handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -31,20 +32,12 @@ import {
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
-import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
+import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_RESTORE_OFFLINE,
-  ACTIVITY_SET_CURRENT_HASH_FAILURE,
-  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
   ACTIVITY_UPDATE_GEO_REQUEST,
   ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_SET_COORDS,
-  PAN_AND_ZOOM_TO_ACTIVITY,
-  URL_CHANGE
+  MAP_SET_COORDS
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
@@ -71,6 +64,7 @@ import { selectAuth } from 'state/reducers/auth';
 import { Role } from 'constants/roles';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isDrawing } from 'utils/geoTrackingHelpers';
+import AppActions from 'state/actions/appActions/appActions';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -84,47 +78,11 @@ function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(MapActions.initRequest());
 }
 
-function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST() {
-  try {
-    const activityState = yield select(selectActivity);
-    yield put(Activity.setSavedHashSuccess(activityState?.current_activity_hash));
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
-  yield delay(2000);
-  try {
-    if (action.type === ACTIVITY_ON_FORM_CHANGE_SUCCESS && !action.payload.unsavedDelay) return;
-
-    const activityState = yield select(selectActivity);
-    const activitySerialized = JSON.stringify(activityState?.activity);
-    let currentHash = 5381;
-
-    for (let i = 0; i < activitySerialized.length; i++) {
-      currentHash = (currentHash * 33) ^ activitySerialized.charCodeAt(i);
-    }
-
-    yield put({
-      type: ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-      payload: {
-        current: currentHash
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({
-      type: ACTIVITY_SET_CURRENT_HASH_FAILURE
-    });
-  }
-}
-
-function* handle_URL_CHANGE(action) {
+function* handle_URL_CHANGE(action: PayloadAction<string>) {
   const activityPageState = yield select(selectActivity);
-  const isActivityURL = action.payload.url.includes('/Records/Activity:');
+  const isActivityURL = action.payload.includes('/Records/Activity:');
   if (isActivityURL) {
-    const afterColon = action.payload.url.split(':')?.[1];
+    const afterColon = action.payload.split(':')?.[1];
     let id;
     if (afterColon) {
       id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
@@ -143,8 +101,8 @@ function* handle_ACTIVITY_DELETE_FAILURE() {
   );
 }
 
-function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
-  const isViewing = action.payload.isViewing;
+function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action: PayloadAction<{ isViewing: boolean }>) {
+  const { isViewing } = action.payload;
   const activityState = yield select(selectActivity);
   const activity_subtype = activityState?.activity?.activity_subtype;
   const uiSchema = RootUISchemas[activity_subtype];
@@ -167,8 +125,7 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
 
   const components = apiSpec.components;
   const subtypeSchema = components?.schemas?.[activity_subtype];
-
-  yield put({ type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS, payload: { schema: subtypeSchema, uiSchema: uiSchema } });
+  yield put(Activity.buildFormSchemaSuccess({ schema: subtypeSchema, uiSchema: uiSchema }));
 }
 
 /**
@@ -447,8 +404,8 @@ function* handle_UPDATE_CACHED_RECORDS() {
 function* activityPageSaga() {
   yield all([
     takeEvery(UserSettings.InitState.get, handle_UPDATE_CACHED_RECORDS),
-    takeEvery(URL_CHANGE, handle_URL_CHANGE),
-    takeEvery(ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
+    takeEvery(AppActions.urlChange, handle_URL_CHANGE),
+    takeEvery(Activity.buildFormSchema, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
@@ -457,9 +414,6 @@ function* activityPageSaga() {
     takeEvery(ACTIVITY_UPDATE_GEO_SUCCESS, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
     takeEvery(Activity.Suggestions.jurisdictions, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),
     takeEvery(Activity.Suggestions.jurisdictionsOnline, handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE),
-    takeLatest(Activity.Suggestions.jurisdictionsSuccess, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
-    takeLatest(ACTIVITY_ON_FORM_CHANGE_SUCCESS, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
-    takeEvery(Activity.saveSuccess, handle_ACTIVITY_SET_SAVED_HASH_REQUEST),
     takeEvery(Activity.Suggestions.persons, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
     takeEvery(Activity.Suggestions.personsOnline, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(Activity.Suggestions.treatmentIdsRequest, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
@@ -471,7 +425,6 @@ function* activityPageSaga() {
     takeEvery(Activity.save, handle_ACTIVITY_SAVE_REQUEST),
     takeEvery(Activity.saveSuccess, handle_ACTIVITY_SAVE_SUCCESS),
     takeEvery(Activity.saveNetworkRequest, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
-    takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
     takeEvery(Activity.createReq, handle_ACTIVITY_CREATE_REQUEST),
     takeEvery(Activity.createNetwork, handle_ACTIVITY_CREATE_NETWORK),
     takeEvery(Activity.createSuccess, handle_ACTIVITY_CREATE_SUCCESS),
@@ -489,7 +442,7 @@ function* activityPageSaga() {
     ),
     takeEvery(Activity.deleteReq, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(Activity.deleteNetwork, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
-    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
+    takeEvery(MapActions.panToActivity, handle_PAN_AND_ZOOM_TO_ACTIVITY),
     takeEvery(GeoTracking.start, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START),
     takeEvery(GeoTracking.stop, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP),
     takeEvery(GeoTracking.pause, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE),

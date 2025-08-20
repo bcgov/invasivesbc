@@ -77,7 +77,6 @@ class Activity {
   static readonly getNetworkRequest = createAction<string>(`${this.PREFIX}/getNetworkRequest`);
   static readonly save = createAction(`${this.PREFIX}/save`);
   static readonly saveSuccess = createAction<Record<string, any>>(`${this.PREFIX}/saveSuccess`);
-  static readonly setSavedHashSuccess = createAction<string>(`${this.PREFIX}/setSavedHashSuccess`);
   static readonly createLocal = createAction<ICreateLocal>(`${this.PREFIX}/createLocal`);
   static readonly createSuccess = createAction<string>(`${this.PREFIX}/createSuccess`);
   static readonly deleteReq = createAction(`${this.PREFIX}/deleteReq`);
@@ -107,6 +106,15 @@ class Activity {
     `${this.PREFIX}/getIdsForRecordsetSuccess`
   );
   static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);
+  static readonly buildFormSchema = createAction(`${this.PREFIX}/buildFormSchema`, (isViewing: boolean) => ({
+    payload: { isViewing }
+  }));
+  static readonly buildFormSchemaSuccess = createAction(
+    `${this.PREFIX}/buildFormSchemaSuccess`,
+    ({ schema, uiSchema }) => ({
+      payload: { schema, uiSchema }
+    })
+  );
 }
 
 export default Activity;

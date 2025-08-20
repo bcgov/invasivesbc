@@ -19,14 +19,10 @@ import {
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
 import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-  ACTIVITY_GET_INITIAL_STATE_FAILURE,
   ACTIVITY_ON_FORM_CHANGE_REQUEST,
   ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_SAVE_OFFLINE,
   ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAIN_MAP_MOVE
+  ACTIVITY_UPDATE_GEO_SUCCESS
 } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
@@ -38,7 +34,6 @@ import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
-import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
@@ -53,7 +48,6 @@ import MapActions from 'state/actions/map';
 import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -64,7 +58,6 @@ function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -243,7 +236,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     });
   } catch (e) {
     console.error('ERROR', e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -270,10 +262,12 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   const activityState = yield select(selectActivity);
 
   if (buildTimeConfig.MOBILE) {
-    yield put({
-      type: ACTIVITY_SAVE_OFFLINE,
-      payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }
-    });
+    yield put(
+      Activity.Offline.save({
+        id: activityState?.activity?.activity_id,
+        data: activityState?.activity
+      })
+    );
   } else {
     try {
       yield put(
@@ -413,13 +407,12 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   if (activityState?.activity?.geometry?.properties?.error == 'true') return;
 
   if (buildTimeConfig.MOBILE) {
-    yield put({
-      type: ACTIVITY_SAVE_OFFLINE,
-      payload: {
+    yield put(
+      Activity.Offline.save({
         id: activityState?.activity?.activity_id,
         data: { ...activityState.activity, form_status: ActivityStatus.SUBMITTED }
-      }
-    });
+      })
+    );
   } else {
     try {
       yield put(
@@ -427,7 +420,6 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST() {
       );
     } catch (e) {
       console.error(e);
-      yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
     }
   }
 }
@@ -463,7 +455,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -476,7 +467,6 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -489,7 +479,6 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST() {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -532,7 +521,6 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -569,11 +557,13 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 
       target = acentroid.geometry;
     }
-
-    yield put({
-      type: MAIN_MAP_MOVE,
-      payload: { center: { lat: target.coordinates[1], lng: target.coordinates[0] }, zoom: 16 }
-    });
+    yield put(
+      MapActions.centerMap({
+        lat: target.coordinates[1],
+        lng: target.coordinates[0],
+        zoom: 16
+      })
+    );
   }
 }
 
@@ -610,13 +600,9 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
       }
     }
 
-    yield put({
-      type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-      payload: { isViewing }
-    });
+    yield put(Activity.buildFormSchema(isViewing));
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -630,7 +616,6 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(
     });
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 

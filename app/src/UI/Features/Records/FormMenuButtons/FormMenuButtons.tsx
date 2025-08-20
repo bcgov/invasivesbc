@@ -5,7 +5,6 @@ import { useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
 import 'UI/Features/Records/FormMenuButtons/FormMenuButtons.css';
 import { selectOfflineActivity } from 'state/reducers/offlineActivity';
-import { ACTIVITY_OFFLINE_DELETE_ITEM } from 'state/actions';
 import { useHistory } from 'react-router';
 
 const FormMenuButtons = () => {
@@ -46,7 +45,7 @@ const FormMenuButtons = () => {
 
   const handleDelete = () => {
     if (recordIsSerializedActivity) {
-      dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: activity_id } });
+      dispatch(Activity.Offline.delete(activity_id));
     } else {
       dispatch(Activity.deleteReq());
     }

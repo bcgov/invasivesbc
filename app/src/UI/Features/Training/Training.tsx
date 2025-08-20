@@ -1,21 +1,31 @@
 import { Box, Container, Grid, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'utils/use_selector';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
-import { TRAINING_VIDEOS_LIST_REQUEST } from 'state/actions';
 import 'UI/Features/Training/training.scss';
 
+interface ITrainingVideoMetadata {
+  id: number;
+  src: string;
+  title: string;
+}
 const TrainingPage = () => {
-  const working = useSelector((state) => state.TrainingVideos.working);
-  const videos = useSelector((state) => state.TrainingVideos.list);
-  const dispatch = useDispatch();
-
+  const api_base = useSelector((state) => state.Configuration.current.runtime.API_BASE);
+  const [videos, setVideos] = useState<Array<ITrainingVideoMetadata>>();
   useEffect(() => {
-    dispatch({ type: TRAINING_VIDEOS_LIST_REQUEST });
+    (async () => {
+      await fetch(`${api_base}/api/training_videos`)
+        .then(async (res) => {
+          console.log(res);
+          const data = await res.json();
+          setVideos(data.result);
+        })
+        .catch((e) => {
+          console.error('[Training] Error occured in fetch: ', e);
+        });
+    })();
   }, []);
-
-  if (working) {
+  if (!videos) {
     return <Spinner />;
   }
 

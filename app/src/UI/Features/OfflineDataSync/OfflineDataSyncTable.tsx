@@ -3,17 +3,13 @@ import { Button, IconButton, LinearProgress } from '@mui/material';
 import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
-import {
-  ACTIVITY_OFFLINE_DELETE_ITEM,
-  ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE,
-  ACTIVITY_RUN_OFFLINE_SYNC
-} from 'state/actions';
 import Delete from '@mui/icons-material/Delete';
 import 'UI/Features/OfflineDataSync/OfflineDataSync.css';
 import moment from 'moment';
 import { FileOpen } from '@mui/icons-material';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { useHistory } from 'react-router-dom';
+import Activity from 'state/actions/activity/Activity';
 
 export const OfflineDataSyncTable = () => {
   const { working, serializedActivities } = useSelector(selectOfflineActivity);
@@ -66,7 +62,7 @@ export const OfflineDataSyncTable = () => {
                         color="primary"
                         onClick={() => {
                           history.push(`/Records/Activity:${key}/form`);
-                          dispatch({ type: ACTIVITY_OFFLINE_SYNC_DIALOG_SET_STATE, payload: { open: false } });
+                          dispatch(Activity.Offline.setSyncDialogueWindow({ open: false }));
                         }}
                       >
                         <FileOpen />
@@ -79,7 +75,7 @@ export const OfflineDataSyncTable = () => {
                     <td>
                       <IconButton
                         onClick={() => {
-                          dispatch({ type: ACTIVITY_OFFLINE_DELETE_ITEM, payload: { id: key } });
+                          dispatch(Activity.Offline.delete(key));
                         }}
                         color="primary"
                       >
@@ -119,7 +115,7 @@ export const OfflineDataSyncTable = () => {
           disabled={syncDisabled}
           variant={'contained'}
           onClick={() => {
-            dispatch({ type: ACTIVITY_RUN_OFFLINE_SYNC });
+            dispatch(Activity.Offline.syncRun());
           }}
         >
           Run Sync

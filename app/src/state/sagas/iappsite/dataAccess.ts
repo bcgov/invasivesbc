@@ -2,7 +2,6 @@ import { put, select } from 'redux-saga/effects';
 import centroid from '@turf/centroid';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { selectIAPPSite } from 'state/reducers/iappsite';
-import { MAIN_MAP_MOVE } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { selectNetworkConnected } from 'state/reducers/network';
@@ -10,6 +9,7 @@ import { IappRecordMode } from 'utils/record-cache';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import IappActions from 'state/actions/activity/Iapp';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
+import MapActions from 'state/actions/map';
 
 export function* handle_IAPP_GET_REQUEST(iappId: PayloadAction<string>) {
   try {
@@ -56,10 +56,12 @@ export function* handle_IAPP_PAN_AND_ZOOM() {
 
       target = acentroid.geometry;
     }
-
-    yield put({
-      type: MAIN_MAP_MOVE,
-      payload: { center: { lat: target.coordinates[1], lng: target.coordinates[0] }, zoom: 16 }
-    });
+    yield put(
+      MapActions.centerMap({
+        lat: target.coordinates[1],
+        lng: target.coordinates[0],
+        zoom: 16
+      })
+    );
   }
 }

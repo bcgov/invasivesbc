@@ -1,26 +1,14 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { Feature, Point, Polygon } from 'geojson';
+import { GeoJSON, Feature, Point, Polygon } from 'geojson';
 import {
   ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  IAPP_EXTENT_FILTER_SUCCESS,
-  IAPP_PAN_AND_ZOOM,
-  INIT_SERVER_BOUNDARIES_GET,
-  MAIN_MAP_MOVE,
-  MAP_DELETE_LAYER_AND_TABLE,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
-  PAGE_OR_LIMIT_UPDATE,
-  PAN_AND_ZOOM_TO_ACTIVITY,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
-  RECORD_SET_TO_EXCEL_SUCCESS,
-  SET_CURRENT_OPEN_SET,
-  SET_TOO_MANY_LABELS_DIALOG,
-  TOGGLE_CUSTOMIZE_LAYERS,
-  URL_CHANGE
+  RECORD_SET_TO_EXCEL_SUCCESS
 } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
@@ -37,6 +25,7 @@ import IRecordTable from 'interfaces/recordTable';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
+import AppActions from 'state/actions/appActions/appActions';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -45,10 +34,15 @@ enum LeafletWhosEditingEnum {
   NONE = 'NONE'
 }
 
+interface IServerLayer {
+  id: number | string;
+  geojson: GeoJSON;
+  title: string;
+  toggle?: boolean;
+}
 interface MapState {
   [MIGRATION_VERSION_KEY]: number;
   CanTriggerCSV: boolean;
-  IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
   IAPPGeoJSONDict: object;
   accuracyToggle: boolean;
@@ -80,8 +74,8 @@ interface MapState {
   readableIdentifier?: string;
   recordSetForCSV: number | null;
   recordTables: Record<PropertyKey, IRecordTable>;
-  serverBoundaries: any[];
-  tooManyLabelsDialog: any;
+  serverBoundaries: IServerLayer[];
+
   userCoords: any;
   userRecordOnHoverRecordID?: string | number;
   userRecordOnHoverRecordGeometry?: Feature | Polygon | Point;
@@ -130,7 +124,6 @@ const initialState: MapState = {
 
   accuracyToggle: false,
 
-  IAPPBoundsPolygon: undefined,
   IAPPGeoJSON: undefined,
   IAPPGeoJSONDict: {},
 
@@ -160,7 +153,6 @@ const initialState: MapState = {
   recordTables: {},
 
   serverBoundaries: [],
-  tooManyLabelsDialog: null,
 
   planMyTripDrawMode: false,
 
@@ -565,22 +557,50 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         } else {
           draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
         }
+      } else if (AppActions.urlChange.match(action)) {
+        if (!action?.payload?.includes('/WhatsHere')) {
+          draftState.whatsHere.toggle = false;
+          draftState.whatsHere.feature = null;
+        }
+      } else if (MapActions.setCurrentOpenSet.match(action)) {
+        draftState.currentOpenSet = action.payload;
+      } else if (MapActions.initServerBoundaries.match(action)) {
+        draftState.serverBoundaries =
+          action.payload?.map((incomingItem) => {
+            const returnVal = { ...incomingItem };
+            const existingToggleVal = draftState.serverBoundaries.find(
+              (oldItem) => oldItem.id === incomingItem.id
+            )?.toggle;
+            returnVal.toggle = !!existingToggleVal;
+            return returnVal;
+          }) ?? [];
+      } else if (UserSettings.RecordSet.setPageLimit.match(action)) {
+        draftState.recordTables[action.payload.setID].page = action.payload.page;
+        draftState.recordTables[action.payload.setID].limit = action.payload.limit;
+      } else if (MapActions.panToActivity.match(action) || MapActions.panToIAPP.match(action)) {
+        draftState.positionTracking = false;
+      } else if (AppActions.toggleCustomLayersModal.match(action)) {
+        draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
+      } else if (MapActions.centerMap.match(action)) {
+        const { lat, lng, zoom } = action.payload;
+        draftState.map_zoom = zoom;
+        draftState.map_center = [lng, lat];
+        draftState.panned = false;
+      } else if (AppActions.vectorFiltersPrepped.match(action)) {
+        const { recordSetID, recordSetType, filterObject, tableFiltersHash } = action.payload;
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({
+            recordSetID: recordSetID,
+            type: recordSetType
+          });
+        }
+        index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
+
+        draftState.layers[index].filterObject = filterObject;
+        draftState.layers[index].tableFiltersHash = tableFiltersHash;
       } else {
         switch (action.type) {
-          case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
-            let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            if (!draftState.layers[index]) {
-              draftState.layers.push({
-                recordSetID: action.payload.recordSetID,
-                type: action.payload.recordSetType
-              });
-            }
-            index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-
-            draftState.layers[index].filterObject = action.payload.filterObject;
-            draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-            break;
-          }
           case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
             draftState.activityPageMapExtentToggle = !state.activityPageMapExtentToggle;
             break;
@@ -591,36 +611,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             break;
           }
 
-          case IAPP_EXTENT_FILTER_SUCCESS: {
-            draftState.IAPPBoundsPolygon = action.payload.bounds;
-            break;
-          }
-          case INIT_SERVER_BOUNDARIES_GET: {
-            draftState.serverBoundaries =
-              action.payload.data?.map((incomingItem) => {
-                const returnVal = { ...incomingItem };
-                const existingToggleVal = draftState.serverBoundaries.find(
-                  (oldItem) => oldItem.id === incomingItem
-                )?.toggle;
-                returnVal.toggle =
-                  existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
-                return returnVal;
-              }) ?? [];
-            break;
-          }
-
-          case MAIN_MAP_MOVE: {
-            draftState.map_zoom = action.payload.zoom;
-            draftState.map_center = action.payload.center;
-            draftState.panned = false;
-            break;
-          }
-          case MAP_DELETE_LAYER_AND_TABLE: {
-            const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            delete draftState.layers[index];
-            delete draftState.recordTables[action.payload.recordSetID];
-            break;
-          }
           case MAP_LABEL_EXTENT_FILTER_SUCCESS: {
             draftState.labelBoundsPolygon = action.payload.bounds;
             break;
@@ -633,16 +623,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
               accuracy: userCoords.accuracy,
               heading: userCoords.heading
             };
-            break;
-          }
-          case IAPP_PAN_AND_ZOOM:
-          case PAN_AND_ZOOM_TO_ACTIVITY: {
-            draftState.positionTracking = false;
-            break;
-          }
-          case PAGE_OR_LIMIT_UPDATE: {
-            draftState.recordTables[action.payload.setID].page = action.payload.page;
-            draftState.recordTables[action.payload.setID].limit = action.payload.limit;
             break;
           }
           case RECORD_SET_TO_EXCEL_FAILURE: {
@@ -659,29 +639,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
             draftState.recordSetForCSV = action.payload.id;
             break;
           }
-
-          case SET_CURRENT_OPEN_SET: {
-            draftState.currentOpenSet = action.payload.set;
-            break;
-          }
-          case SET_TOO_MANY_LABELS_DIALOG: {
-            draftState.tooManyLabelsDialog = action.payload.dialog;
-            break;
-          }
-          case TOGGLE_CUSTOMIZE_LAYERS: {
-            draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
-            break;
-          }
-          case URL_CHANGE: {
-            if (action.payload?.pathname === '/') {
-              // draftState.panelOpen = false;
-            }
-            if (!action?.payload?.url?.includes('WhatsHere')) {
-              draftState.whatsHere.toggle = false;
-              draftState.whatsHere.feature = null;
-            }
-            break;
-          }
           default:
             break;
         }
@@ -692,4 +649,4 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
 const selectMap: (state) => MapState = (state) => state.Map;
 export { createMapReducer, selectMap };
-export type { LeafletWhosEditingEnum, MapState };
+export type { LeafletWhosEditingEnum, MapState, IServerLayer };

@@ -1,7 +1,6 @@
 import { put, select } from 'redux-saga/effects';
 import getSelectColumnsByRecordSetType from 'sharedAPI/src/getSelectColumnsByRecordSetType';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { ACTIVITY_GET_INITIAL_STATE_FAILURE, FILTERS_PREPPED_FOR_VECTOR_ENDPOINT } from 'state/actions';
 import { selectMap } from 'state/reducers/map';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
@@ -12,34 +11,36 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import IappActions, { IappTableRowRequest } from 'state/actions/activity/Iapp';
 import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordset } from 'state/actions/activity/Activity';
 import { IQueryParams } from 'utils/record-cache';
+import AppActions, { IPrepFilter } from 'state/actions/appActions/appActions';
 
-export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action) {
+export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action: PayloadAction<IPrepFilter>) {
+  const { recordSetID, tableFiltersHash } = action.payload;
   try {
     const currentState = yield select((state) => state?.UserSettings);
-    const recordset: UserRecordSet = currentState.recordSets[action.payload.recordSetID];
-    const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+    const recordset: UserRecordSet = currentState.recordSets[recordSetID];
+    const filterObject = getRecordFilterObjectFromStateForAPI(recordSetID, currentState);
     if (filterObject == null) {
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     }
 
     // abort if already a stale hash
     const mapState = yield select((state) => state.Map);
-    const tableFiltersHash = mapState?.layers?.filter((layer) => {
-      return layer?.recordSetID === action.payload.recordSetID;
+    const tableHash = mapState?.layers?.filter((layer) => {
+      return layer?.recordSetID === recordSetID;
     })?.[0]?.tableFiltersHash;
 
-    if (!tableFiltersHash === action.payload.tableFiltersHash) {
+    if (tableHash && tableHash !== tableFiltersHash) {
       return;
     }
 
-    const payload = {
-      filterObject: filterObject,
-      recordSetID: action.payload.recordSetID,
-      tableFiltersHash: action.payload.tableFiltersHash,
-      recordSetType: recordset.recordSetType
-    };
-
-    yield put({ type: FILTERS_PREPPED_FOR_VECTOR_ENDPOINT, payload });
+    yield put(
+      AppActions.vectorFiltersPrepped({
+        filterObject: filterObject,
+        recordSetID: recordSetID,
+        tableFiltersHash: tableFiltersHash,
+        recordSetType: recordset.recordSetType
+      })
+    );
   } catch (e) {
     console.error(e);
     throw e;
@@ -52,7 +53,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: Payload
   const workingOffline = yield select((state) => state.Auth.workingOffline);
   const connected = yield select((state) => state.Network.connected);
   if (filterObject == null) {
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
     return;
   }
   filterObject.limit = 200000;
@@ -85,7 +85,6 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: Payload
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -128,7 +127,6 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     const connected = yield select((state) => state.Network.connected);
     const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
     if (filterObject == null) {
-      yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
       return;
     }
     filterObject.limit = 200000;
@@ -147,7 +145,6 @@ export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -297,7 +294,6 @@ export function* handle_IAPP_TABLE_ROWS_GET_REQUEST(action: PayloadAction<IappTa
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 

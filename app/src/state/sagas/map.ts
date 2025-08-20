@@ -23,23 +23,14 @@ import {
 } from './map/offline';
 import {
   ACTIVITY_UPDATE_GEO_REQUEST,
-  FILTER_PREP_FOR_VECTOR_ENDPOINT,
-  IAPP_EXTENT_FILTER_REQUEST,
-  IAPP_EXTENT_FILTER_SUCCESS,
-  INIT_SERVER_BOUNDARIES_GET,
   MAP_LABEL_EXTENT_FILTER_REQUEST,
   MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_ON_SHAPE_CREATE,
   MAP_ON_SHAPE_UPDATE,
-  PAGE_OR_LIMIT_UPDATE,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
   RECORD_SET_TO_EXCEL_SUCCESS,
-  RECORDSET_SET_SORT,
-  REFETCH_SERVER_BOUNDARIES,
-  REMOVE_SERVER_BOUNDARY,
-  SET_CURRENT_OPEN_SET,
-  URL_CHANGE
+  REMOVE_SERVER_BOUNDARY
 } from 'state/actions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
@@ -53,7 +44,13 @@ import Activity from 'state/actions/activity/Activity';
 import { RootState } from 'state/reducers/rootReducer';
 import TileCache from 'state/actions/cache/TileCache';
 import { RECORD_COLOURS } from 'constants/colors';
-import { EFilterType, IRemoveFilter, IUpdateFilter } from 'state/actions/userSettings/RecordSet';
+import {
+  EFilterType,
+  IRemoveFilter,
+  ISetPageLimit,
+  ISetSort,
+  IUpdateFilter
+} from 'state/actions/userSettings/RecordSet';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import UserRecord from 'interfaces/UserRecord';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
@@ -68,6 +65,7 @@ import { normalizeToPolygonCoordinates } from 'utils/geometryHelpers';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
+import AppActions from 'state/actions/appActions/appActions';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -82,7 +80,7 @@ function* refetchServerBoundaries() {
   const serverShapesServerResponse = yield InvasivesAPI_Call('GET', '/admin-defined-shapes/');
   if (serverShapesServerResponse?.ok) {
     const shapes = serverShapesServerResponse.data.result;
-    yield put({ type: INIT_SERVER_BOUNDARIES_GET, payload: { data: shapes } });
+    yield put(MapActions.initServerBoundaries(shapes));
   }
 }
 
@@ -394,29 +392,12 @@ function* handle_MAP_LABEL_EXTENT_FILTER_REQUEST(action) {
   });
 }
 
-function* handle_IAPP_EXTENT_FILTER_REQUEST(action) {
-  const bbox = [action.payload.minX, action.payload.minY, action.payload.maxX, action.payload.maxY];
-  const bounds = bboxPolygon(bbox as any);
-
-  yield put({
-    type: IAPP_EXTENT_FILTER_SUCCESS,
-    payload: {
-      bounds: bounds
-    }
-  });
-}
-
-function* handle_URL_CHANGE(action) {
-  const url = action.payload.url;
+function* handle_URL_CHANGE(action: PayloadAction<string>) {
+  const url = action.payload;
   const isRecordSet = url.split(':')?.[0]?.includes('/Records/List/Local');
   if (isRecordSet) {
     const id = url.split(':')[1].split('/')[0];
-    yield put({
-      type: SET_CURRENT_OPEN_SET,
-      payload: {
-        set: id
-      }
-    });
+    yield put(MapActions.setCurrentOpenSet(id));
 
     let recordSetsState = yield select(selectUserSettings);
     let recordSetType = recordSetsState.recordSets?.[id]?.recordSetType;
@@ -454,13 +435,12 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
     recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !==
     recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash
   )
-    yield put({
-      type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
-      payload: {
+    yield put(
+      AppActions.prepVectorFilters({
         recordSetID: action.payload.setID,
         tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-      }
-    });
+      })
+    );
   const actionArg = {
     recordSetID: action.payload.setID,
     tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
@@ -486,21 +466,14 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
   }
 }
 
-function* handle_PAGE_OR_LIMIT_UPDATE(action) {
+function* handle_PAGE_OR_LIMIT_UPDATE(action: PayloadAction<ISetPageLimit>) {
+  const { setID, page, limit } = action.payload;
   const recordSetsState = yield select(selectUserSettings);
-  const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
-  const mapState = yield select(selectMap);
-
-  const page = !Number.isNaN(action.payload.page)
-    ? action.payload.page
-    : mapState.recordTables?.[action.payload.recordSetID]?.page;
-  const limit = !Number.isNaN(action.payload.limit)
-    ? action.payload.limit
-    : mapState.recordTables?.[action.payload.recordSetID]?.limit;
+  const recordSetType = recordSetsState.recordSets?.[setID]?.recordSetType;
 
   const actionArg = {
     recordSetID: action.payload.setID,
-    tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+    tableFiltersHash: recordSetsState.recordSets?.[setID]?.tableFiltersHash,
     page: page,
     limit: limit
   };
@@ -568,10 +541,12 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   const actionsToPut: ActionType[] = [];
   allUninitializedLayers.forEach((layer) => {
     if (layer.recordSetID !== RecordSetId.OfflineActivities) {
-      actionsToPut.push({
-        type: FILTER_PREP_FOR_VECTOR_ENDPOINT,
-        payload: { recordSetID: layer.recordSetID, tableFiltersHash: 'init' }
-      });
+      actionsToPut.push(
+        AppActions.prepVectorFilters({
+          recordSetID: layer.recordSetID,
+          tableFiltersHash: 'init'
+        })
+      );
     }
     if (layer.recordSetType === RecordSetType.Activity) {
       actionsToPut.push(Activity.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
@@ -747,7 +722,7 @@ function* handle_RECORDSET_TOGGLE_VISIBILITY(action: PayloadAction<string>) {
   yield put(UserSettings.RecordSet.set({ mapToggle: !recordSet?.mapToggle }, action.payload));
 }
 
-function* handle_RECORDSET_SET_SORT(action) {
+function* handle_RECORDSET_SET_SORT(action: PayloadAction<ISetSort>) {
   const userSettingsState = yield select(selectUserSettings);
   const recordSetType = userSettingsState.recordSets?.[action.payload.setID]?.recordSetType;
   const tableFiltersHash = userSettingsState.recordSets?.[action.payload.setID]?.tableFiltersHash;
@@ -773,7 +748,7 @@ function* activitiesPageSaga() {
 
     takeEvery(UserSettings.Boundaries.removeCustomLayer, handle_REMOVE_CUSTOM_LAYER),
 
-    takeEvery(RECORDSET_SET_SORT, handle_RECORDSET_SET_SORT),
+    takeEvery(UserSettings.RecordSet.setSort, handle_RECORDSET_SET_SORT),
 
     //Conditions where we may want to redraw the Map layers, fetch IDLists, so on
     takeEvery(NetworkActions.online, handle_MAP_INIT_FOR_RECORDSETS),
@@ -782,16 +757,16 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.SiteLists.createRecordsetsFromSiteList, handle_MAP_INIT_FOR_RECORDSETS),
     takeEvery(MapActions.initForRecordset, handle_MAP_INIT_FOR_RECORDSETS),
 
-    takeEvery(REFETCH_SERVER_BOUNDARIES, refetchServerBoundaries),
+    takeEvery(MapActions.refetchServerBoundaries, refetchServerBoundaries),
     takeEvery(WhatsHere.server_filtered_ids_fetched, handle_WHATS_HERE_SERVER_FILTERED_IDS_FETCHED),
     takeEvery(UserSettings.RecordSet.cycleColourById, handle_RECORDSET_ROTATE_COLOUR),
     takeEvery(UserSettings.RecordSet.toggleVisibility, handle_RECORDSET_TOGGLE_VISIBILITY),
     takeEvery(UserSettings.RecordSet.toggleLabelVisibility, handle_RECORDSET_TOGGLE_LABEL_VISIBILITY),
     takeEvery(REMOVE_SERVER_BOUNDARY, handle_REMOVE_SERVER_BOUNDARY),
-    takeEvery(PAGE_OR_LIMIT_UPDATE, handle_PAGE_OR_LIMIT_UPDATE),
+    takeEvery(UserSettings.RecordSet.setPageLimit, handle_PAGE_OR_LIMIT_UPDATE),
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
-    takeEvery(FILTER_PREP_FOR_VECTOR_ENDPOINT, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
+    takeEvery(AppActions.prepVectorFilters, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
     takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IappActions.getIdsForRecordset, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
@@ -812,8 +787,7 @@ function* activitiesPageSaga() {
     takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(RECORD_SET_TO_EXCEL_REQUEST, handle_RECORD_SET_TO_EXCEL_REQUEST),
     takeEvery(MAP_LABEL_EXTENT_FILTER_REQUEST, handle_MAP_LABEL_EXTENT_FILTER_REQUEST),
-    takeEvery(IAPP_EXTENT_FILTER_REQUEST, handle_IAPP_EXTENT_FILTER_REQUEST),
-    takeEvery(URL_CHANGE, handle_URL_CHANGE),
+    takeEvery(AppActions.urlChange, handle_URL_CHANGE),
     takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
     ...TRACKING_SAGA_HANDLERS

@@ -2,10 +2,10 @@ import { Card, CardContent, Grid } from '@mui/material';
 import { Form } from '@rjsf/mui';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
 import validator from '@rjsf/validator-ajv8';
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { EMAIL_TEMPLATES_RETRIEVE_REQUEST, EMAIL_TEMPLATES_SET_ACTIVE, EMAIL_TEMPLATES_UPDATE } from 'state/actions';
+import { useEffect } from 'react';
+import { EmailActions } from 'state/actions/email/emailActions';
 import { selectEmailTemplates } from 'state/reducers/emailTemplates';
+import { useDispatch, useSelector } from 'utils/use_selector';
 
 export const templateNames = ['Approved', 'Declined'];
 
@@ -54,27 +54,17 @@ const EmailTemplates = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch({
-      type: EMAIL_TEMPLATES_RETRIEVE_REQUEST
-    });
+    dispatch(EmailActions.retrieveTemplate());
   }, []);
 
   const onSubmitEmailTemplates = ({ formData }) => {
-    dispatch({
-      type: EMAIL_TEMPLATES_UPDATE,
-      payload: formData
-    });
+    dispatch(EmailActions.updateTemplate(formData));
   };
 
   const onFormChange = (event) => {
-    if (emailTemplatesState.activetemplate != event.formData.templatename)
-      dispatch({
-        type: EMAIL_TEMPLATES_SET_ACTIVE,
-        payload: {
-          ...emailTemplatesState,
-          activetemplate: event.formData.templatename
-        }
-      });
+    if (emailTemplatesState.activetemplate != event.formData.templatename) {
+      dispatch(EmailActions.setTemplate(event.formData.templatename));
+    }
   };
   const getActiveTemplate = () => {
     if (emailTemplatesState.emailTemplates)

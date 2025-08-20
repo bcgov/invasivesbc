@@ -1,5 +1,4 @@
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { TOGGLE_CUSTOMIZE_LAYERS } from 'state/actions';
 import { Layers, Settings, Visibility, VisibilityOff } from '@mui/icons-material';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import LpLayersOption from './LpLayersOption';
@@ -9,6 +8,7 @@ import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import './LpLayers.css';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import EmptyCollection from '../EmptyCollection/EmptyCollection';
+import AppActions from 'state/actions/appActions/appActions';
 
 type PropTypes = {
   layers: InvasivesMapLayerDefinitionWithState[];
@@ -23,7 +23,7 @@ const LpLayers = ({ layers, setOverlayState }: PropTypes) => {
     dispatch(UserSettings.Boundaries.toggleCustomLayer(layer?.id as string));
   };
   const handleCreateCustom = () => {
-    dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+    dispatch(AppActions.toggleCustomLayersModal());
   };
   const KmlTooltip =
     "You can toggle the KML shapes you've uploaded on and off on the map. This feature allows you to customize your view by displaying or hiding your personal geographic data as needed.";

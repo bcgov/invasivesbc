@@ -1,11 +1,5 @@
 import { all, put, select, takeEvery } from 'redux-saga/effects';
-import {
-  EMAIL_SETTINGS_RETRIEVE_REQUEST,
-  EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
-  EMAIL_SETTINGS_UPDATE,
-  EMAIL_SETTINGS_UPDATE_FAILURE,
-  EMAIL_SETTINGS_UPDATE_SUCCESS
-} from 'state/actions';
+import { EmailActions } from 'state/actions/email/emailActions';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
@@ -22,9 +16,8 @@ function* fetchEmailSettings() {
   if (data.result.length === 0) {
     return;
   }
-  yield put({
-    type: EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
-    payload: {
+  yield put(
+    EmailActions.retrieveReqSuccess({
       emailSettings: {
         enabled: data.result[0].enabled,
         authenticationURL: data.result[0].authenticationurl,
@@ -33,8 +26,8 @@ function* fetchEmailSettings() {
         clientSecret: data.result[0].clientsecret,
         id: data.result[0].id
       }
-    }
-  });
+    })
+  );
 }
 
 function* updateEmailSettings(action) {
@@ -50,28 +43,26 @@ function* updateEmailSettings(action) {
   const data = yield res.json();
 
   if (res.ok) {
-    yield put({
-      type: EMAIL_SETTINGS_UPDATE_SUCCESS,
-      payload: {
+    yield put(
+      EmailActions.updateSettingsSuccess({
         message: 'Email settings updated successfully',
         emailSettings: data.request
-      }
-    });
+      })
+    );
   } else {
-    yield put({
-      type: EMAIL_SETTINGS_UPDATE_FAILURE,
-      payload: {
+    yield put(
+      EmailActions.updateSettingsFailure({
         message: data.message,
         emailSettings: data.request
-      }
-    });
+      })
+    );
   }
 }
 
 function* emailSettingsSaga() {
   yield all([
-    takeEvery(EMAIL_SETTINGS_UPDATE, updateEmailSettings),
-    takeEvery(EMAIL_SETTINGS_RETRIEVE_REQUEST, fetchEmailSettings)
+    takeEvery(EmailActions.updateSettingsReq, updateEmailSettings),
+    takeEvery(EmailActions.retrieveReq, fetchEmailSettings)
   ]);
 }
 
