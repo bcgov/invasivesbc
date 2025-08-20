@@ -55,6 +55,7 @@ import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/c
 import { isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -514,15 +515,15 @@ function* handle_REMOVE_SERVER_BOUNDARY(action: PayloadAction<string>) {
   }
 }
 
-function* handle_MAP_ON_SHAPE_CREATE(action) {
-  const appModeUrl = yield select((state: any) => state.AppMode.url);
-  const whatsHereToggle = yield select((state: any) => state.Map.whatsHere.toggle);
+function* handle_MAP_ON_SHAPE_CREATE(action: PayloadAction<Feature>) {
+  const appModeUrl = yield select((state: RootState) => state.AppMode.url);
+  const whatsHereToggle = yield select((state: RootState) => state.Map.whatsHere.toggle);
   const { status, shapeType } = yield select((state) => state.Map.track_me_draw_geo);
 
   const geometry = action.payload.geometry;
   const isLineString = geometry?.type === GeoShapes.LineString;
   const isPolygonOrPoint = geometry?.type === GeoShapes.Polygon || geometry?.type === GeoShapes.Point;
-  const hasCoordinates = geometry?.coordinates?.length > 0;
+  const hasCoordinates = 'coordinates' in geometry && geometry?.coordinates?.length > 0;
   const noUserError = action?.payload?.properties?.user_error !== 'true';
 
   if (isPolygonOrPoint && hasCoordinates && noUserError) {
@@ -703,7 +704,7 @@ function* activitiesPageSaga() {
     takeEvery(WhatsHere.page_activity, handle_WHATS_HERE_PAGE_ACTIVITY),
     takeEvery(WhatsHere.activity_rows_request, handle_WHATS_HERE_ACTIVITY_ROWS_REQUEST),
     takeEvery(AppActions.urlChange, handle_URL_CHANGE),
-    takeEvery(MAP_ON_SHAPE_CREATE, handle_MAP_ON_SHAPE_CREATE),
+    takeEvery(DrawToolActions.createShape, handle_MAP_ON_SHAPE_CREATE),
     takeEvery(MAP_ON_SHAPE_UPDATE, handle_MAP_ON_SHAPE_UPDATE),
     ...TRACKING_SAGA_HANDLERS
   ]);
