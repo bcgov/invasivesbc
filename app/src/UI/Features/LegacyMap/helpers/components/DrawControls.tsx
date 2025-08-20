@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
+import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 import { useHistory } from 'react-router-dom';
@@ -29,6 +29,7 @@ import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -331,7 +332,7 @@ const DrawControls = () => {
         break;
       }
       case TargetMode.ACTIVITY: {
-        dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
+        dispatch(DrawToolActions.createShape(feature));
         break;
       }
 
@@ -352,7 +353,7 @@ const DrawControls = () => {
         break;
       }
       default: {
-        dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
+        dispatch(DrawToolActions.createShape(feature));
         break;
       }
     }
