@@ -2,9 +2,7 @@ import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { GeoJSON, Feature, Point, Polygon } from 'geojson';
 import {
-  ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
   CSV_LINK_CLICKED,
-  MAP_LABEL_EXTENT_FILTER_SUCCESS,
   MAP_SET_COORDS,
   RECORD_SET_TO_EXCEL_FAILURE,
   RECORD_SET_TO_EXCEL_REQUEST,
@@ -48,7 +46,6 @@ interface MapState {
   accuracyToggle: boolean;
   activitiesGeoJSON: any;
   activitiesGeoJSONDict: object;
-  activityPageMapExtentToggle: boolean;
   activity_center: [number, number];
   activity_zoom: number;
   clientBoundaries: any[];
@@ -58,7 +55,6 @@ interface MapState {
   drawingCustomLayerName: string;
   error: boolean;
   initialized: boolean;
-  labelBoundsPolygon: any;
   layers: any[];
   linkToCSV: string | null;
   map_center: [number, number];
@@ -129,7 +125,6 @@ const initialState: MapState = {
 
   activitiesGeoJSON: undefined,
   activitiesGeoJSONDict: {},
-  activityPageMapExtentToggle: false,
 
   clientBoundaries: [],
   currentOpenSet: null,
@@ -138,7 +133,6 @@ const initialState: MapState = {
   drawingCustomLayerName: '',
   error: false,
   initialized: false,
-  labelBoundsPolygon: undefined,
   layers: [],
   linkToCSV: '',
   panned: false,
@@ -601,18 +595,9 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.layers[index].tableFiltersHash = tableFiltersHash;
       } else {
         switch (action.type) {
-          case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
-            draftState.activityPageMapExtentToggle = !state.activityPageMapExtentToggle;
-            break;
-          }
           case CSV_LINK_CLICKED: {
             draftState.linkToCSV = null;
             draftState.recordSetForCSV = null;
-            break;
-          }
-
-          case MAP_LABEL_EXTENT_FILTER_SUCCESS: {
-            draftState.labelBoundsPolygon = action.payload.bounds;
             break;
           }
           case MAP_SET_COORDS: {
