@@ -18,7 +18,6 @@ import {
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
-import { ACTIVITY_ON_FORM_CHANGE_SUCCESS } from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
@@ -35,7 +34,7 @@ import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import Prompt from 'state/actions/prompts/Prompt';
 import UserSettings from 'state/actions/userSettings/UserSettings';
-import Activity, { IActivityFormChangeRequest, INewActivity } from 'state/actions/activity/Activity';
+import Activity, { INewActivity } from 'state/actions/activity/Activity';
 import UploadedPhoto from 'interfaces/UploadedPhoto';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import UserRecord from 'interfaces/UserRecord';
@@ -318,12 +317,12 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
   }
 }
 
-export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<IActivityFormChangeRequest>) {
+export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<UserRecord>) {
   try {
     const beforeState = yield select(selectActivity);
     const beforeActivity = beforeState.activity;
 
-    let updatedFormData = action.payload.eventFormData;
+    let updatedFormData = action.payload;
     if (
       beforeActivity.activity_type === ActivityType.Biocontrol ||
       beforeActivity.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant ||
@@ -343,13 +342,7 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<IA
     updatedActivity = populateJurisdictionArray({ ...updatedActivity });
     updatedActivity = { ...updatedActivity, map_symbol: updatedActivity.species_positive.join(', ') };
 
-    yield put({
-      type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-      payload: {
-        activity: updatedActivity,
-        lastField: action.payload.lastField
-      }
-    });
+    yield put(Activity.OnFormChangeRequestSuccess(updatedActivity));
 
     // try to reduce calls to copy geometry
     const linked_id = updatedFormData.activity_type_data?.linked_id;
@@ -599,7 +592,7 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(
   eventFormData: PayloadAction<Record<PropertyKey, any>>
 ) {
   try {
-    yield put(Activity.onFormChangeRequest({ eventFormData: eventFormData.payload }));
+    yield put(Activity.onFormChangeRequest(eventFormData.payload));
   } catch (e) {
     console.error(e);
   }
