@@ -91,7 +91,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       const result = await fetch(fetchRequest);
       if (result.ok) {
         return {
-          data: await result.bytes()
+          data: (await result?.bytes?.()) ?? (await result?.arrayBuffer?.()) ?? undefined
         };
       }
       return {
@@ -112,7 +112,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         const result = await fetch(fetchRequest);
         if (result.ok) {
           return {
-            data: await result.bytes()
+            data: (await result?.bytes?.()) ?? (await result?.arrayBuffer?.()) ?? undefined
           };
         }
         return {
@@ -126,7 +126,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         const result = await fetch(fetchRequest);
         if (result.ok) {
           return {
-            data: await result.bytes()
+            data: (await result?.bytes?.()) ?? (await result?.arrayBuffer?.()) ?? undefined
           };
         }
         return {
