@@ -50,14 +50,16 @@ export const ActivityForm = () => {
    */
   const manualUTMEntry = () => {
     const utmCallback = (input: UtmInputObj) => {
+      const [lng, lat] = input.results;
       const geo: Feature = {
         type: 'Feature',
         geometry: {
           type: GeoShapes.Point,
-          coordinates: [input.results[0], input.results[1]]
+          coordinates: [lng, lat]
         },
         properties: {}
       };
+      dispatch(MapActions.centerMap({ lat, lng, zoom: 16 }));
       dispatch(DrawToolActions.updateGeo([geo]));
     };
 
