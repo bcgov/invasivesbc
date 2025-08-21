@@ -38,7 +38,7 @@
     "axios": "^1.9.0",
     "body-parser": "^2.2.0",
     "celery-node": "^0.5.9",
-    "compression": "^1.8.0",
+    "compression": "^1.8.1",
     "csv-parser": "^3.2.0",
     "date-fns": "^4.1.0",
     "express": "^5.1.0",
