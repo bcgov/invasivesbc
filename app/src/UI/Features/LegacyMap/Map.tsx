@@ -90,9 +90,18 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       fetchRequest.headers.set('Authorization', await getCurrentJWT());
       const result = await fetch(fetchRequest);
       if (result.ok) {
-        return {
-          data: (await result?.bytes?.()) ?? (await result?.arrayBuffer?.()) ?? undefined
-        };
+        if (result.bytes) {
+          return {
+            data: await result.bytes()
+          };
+        } else if (result.arrayBuffer) {
+          return {
+            data: await result.arrayBuffer()
+          };
+        } else {
+          console.error('Unable to load response. Response object unreadable.');
+          return { data: undefined };
+        }
       }
       return {
         data: undefined
@@ -111,9 +120,18 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
         const result = await fetch(fetchRequest);
         if (result.ok) {
-          return {
-            data: (await result?.bytes?.()) ?? (await result?.arrayBuffer?.()) ?? undefined
-          };
+          if (result.bytes) {
+            return {
+              data: await result.bytes()
+            };
+          } else if (result.arrayBuffer) {
+            return {
+              data: await result.arrayBuffer()
+            };
+          } else {
+            console.error('Unable to load response. Response object unreadable.');
+            return { data: undefined };
+          }
         }
         return {
           data: undefined
@@ -125,9 +143,18 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
         const result = await fetch(fetchRequest);
         if (result.ok) {
-          return {
-            data: (await result?.bytes?.()) ?? (await result?.arrayBuffer?.()) ?? undefined
-          };
+          if (result.bytes) {
+            return {
+              data: await result.bytes()
+            };
+          } else if (result.arrayBuffer) {
+            return {
+              data: await result.arrayBuffer()
+            };
+          } else {
+            console.error('Unable to load response. Response object unreadable.');
+            return { data: undefined };
+          }
         }
         return {
           data: undefined
