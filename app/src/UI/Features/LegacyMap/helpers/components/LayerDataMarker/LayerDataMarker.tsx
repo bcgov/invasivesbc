@@ -13,10 +13,11 @@ const LayerDataMarker = () => {
   const history = useHistory();
 
   const whatsHereEnabled = useSelector((state) => state.Map.whatsHere.toggle);
+  const connected = useSelector((state) => state.Network.connected);
 
-  const drawToolsActive = useRef<boolean>(false); //
+  const drawToolsActive = useRef<boolean>(false);
   const popupRef = useRef<Popup>();
-  const timeOfTouchStart = useRef<number>(0); //
+  const timeOfTouchStart = useRef<number>(0);
 
   const recordsetLayers = useMemo(() => {
     if (!map) return [];
@@ -45,7 +46,7 @@ const LayerDataMarker = () => {
   //
   const queryFeaturesAtTarget = useCallback(
     (e: MapMouseEvent | MapTouchEvent) => {
-      if (!map || drawToolsActive.current || map.getZoom() < MINIMUM_ZOOM || whatsHereEnabled) return;
+      if (!map || !connected || drawToolsActive.current || whatsHereEnabled || map.getZoom() < MINIMUM_ZOOM) return;
 
       const uniqueFormattedFeaturesAtClickTarget = Array.from(
         new Map(
@@ -90,7 +91,7 @@ const LayerDataMarker = () => {
       const root = ReactDOM.createRoot(el);
       root.render(<LayerDataMarkerContent history={history} features={uniqueFormattedFeaturesAtClickTarget} />);
     },
-    [map, recordsetLayers, popupRef, whatsHereEnabled]
+    [map, recordsetLayers, popupRef, whatsHereEnabled, connected]
   );
   /**
    * @desc Sets time touch event started at
@@ -131,7 +132,7 @@ const LayerDataMarker = () => {
       map.off('touchend', handleTouchEnd);
       popupRef?.current?.remove();
     };
-  }, [map?.isStyleLoaded(), whatsHereEnabled, recordsetLayers]);
+  }, [map?.isStyleLoaded(), whatsHereEnabled, recordsetLayers, connected]);
 
   return null;
 };
