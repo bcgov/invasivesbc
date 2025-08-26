@@ -46,9 +46,6 @@
       thead tr {
         height: 35px;
       }
-      tbody tr {
-        height: 40px;
-      }
       /* Apply padding to first cell in each row */
       th:first-of-type,
       td:first-of-type {
@@ -79,8 +76,9 @@
         text-align: right;
       }
 
-      /* Alternate Background colours */
       tbody tr {
+        height: 40px;
+        /* Alternate Background colours */
         background-color: var(--even-list-item-bg-color);
         &:nth-of-type(even) {
           background-color: var(--odd-list-item-bg-color);
