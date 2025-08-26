@@ -34,4 +34,60 @@ function convertBytesToReadableString(bytes: number) {
   return `${bytes.toFixed(1)} ${units[i]}`;
 }
 
-export { base64toBuffer, lat2tile, long2tile, convertBytesToReadableString };
+type Bounds = {
+  minLatitude: number;
+  maxLatitude: number;
+  minLongitude: number;
+  maxLongitude: number;
+};
+
+function boundsToPolygon(b: Bounds) {
+  const { minLatitude: minLat, maxLatitude: maxLat, minLongitude: minLng, maxLongitude: maxLng } = b;
+
+  //basic sanity
+  if (minLat > maxLat) throw new Error('minLat > maxLat');
+  const wrap = (lng: number) => ((((lng + 180) % 360) + 360) % 360) - 180;
+  const wMin = wrap(minLng);
+  const wMax = wrap(maxLng);
+
+  if (wMax < wMin) {
+    return {
+      type: 'MultiPolygon',
+      coordinates: [
+        [
+          [
+            [wMin, minLat],
+            [180, minLat],
+            [180, maxLat],
+            [wMin, maxLat],
+            [wMin, minLat]
+          ]
+        ],
+        [
+          [
+            [-180, minLat],
+            [wMax, minLat],
+            [wMax, maxLat],
+            [-180, maxLat],
+            [-180, minLat]
+          ]
+        ]
+      ]
+    } as const;
+  }
+
+  return {
+    type: 'Polygon',
+    coordinates: [
+      [
+        [wMin, minLat],
+        [wMax, minLat],
+        [wMax, maxLat],
+        [wMin, maxLat],
+        [wMin, minLat]
+      ]
+    ]
+  } as const;
+}
+
+export { base64toBuffer, lat2tile, long2tile, convertBytesToReadableString, boundsToPolygon };

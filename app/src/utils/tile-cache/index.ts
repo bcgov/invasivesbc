@@ -1,6 +1,6 @@
 import BaseCacheService from 'utils/base-classes/BaseCacheService';
-import { base64toBuffer, lat2tile, long2tile } from 'utils/tile-cache/helpers';
-
+import { base64toBuffer, boundsToPolygon, lat2tile, long2tile } from 'utils/tile-cache/helpers';
+import { getCurrentJWT } from 'state/sagas/auth/auth';
 // base64-encoded blank tile image 256x256 (opaque, light blue)
 const FALLBACK_IMAGE =
   'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABmvDolAAAAA1BMVEW10NBjBBbqAAAAH0lEQVRoge3BAQ0AAADCoPdPbQ43oAAAAAAAAAAAvg0hAAABmmDh1QAAAABJRU5ErkJggg==';
@@ -139,6 +139,9 @@ abstract class TileCacheService extends BaseCacheService<
     let lastProgressCallbackTimestamp: number | null = null;
     const tileUrls: TilePromise[] = [];
     const executing = new Set<Promise<void>>();
+    console.log('===>', spec.bounds);
+    const aoiGeoJSON = boundsToPolygon(spec.bounds);
+    console.log('===>', aoiGeoJSON);
 
     try {
       const repositoryDoesExist = !!(await this.getRepository(spec.id));
@@ -160,19 +163,33 @@ abstract class TileCacheService extends BaseCacheService<
         bounds: spec.bounds,
         description: spec.description
       });
-
-      for (let z = 0; z <= spec.maxZoom && !abort; z++) {
-        const startTileLat = lat2tile(spec.bounds.minLatitude, z);
-        const startTileLng = long2tile(spec.bounds.minLongitude, z);
-        const endTileLat = lat2tile(spec.bounds.maxLatitude, z);
-        const endTileLng = long2tile(spec.bounds.maxLongitude, z);
-
-        for (let x = Math.min(startTileLng, endTileLng); x <= Math.max(startTileLng, endTileLng) && !abort; x++) {
-          for (let y = Math.min(startTileLat, endTileLat); y <= Math.max(startTileLat, endTileLat) && !abort; y++) {
-            tileUrls.push({ id: spec.id, url: spec.tileURL(x, y, z), x, y, z });
-          }
-        }
+      console.log('===>', spec.maxZoom, spec.bounds);
+      // const serverTiles = await fetchTilesSelectedAndLower(spec.bounds, spec.maxZoom);
+      // const url = `http://localhost:3002/api/tile-cover`;
+      const rez = await fetch(`http://localhost:3002/api/tile-cover`, {
+        method: 'POST',
+        headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bounds: spec.bounds, maxZoom: spec.maxZoom })
+      });
+      const data = await rez.json();
+      console.log('==from sql==', data.result);
+      for (const { z, x, y } of data.result) {
+        tileUrls.push({ id: spec.id, url: spec.tileURL(x, y, z), x, y, z });
       }
+      // const response = await InvasivesAPI_Call('POST', `/api/tile-cover/`, {bounds:spec.bounds, maxZoom: spec.maxZoom});
+      // if (response?.ok) {}
+      // for (let z = 0; z <= spec.maxZoom && !abort; z++) {
+      //   const startTileLat = lat2tile(spec.bounds.minLatitude, z);
+      //   const startTileLng = long2tile(spec.bounds.minLongitude, z);
+      //   const endTileLat = lat2tile(spec.bounds.maxLatitude, z);
+      //   const endTileLng = long2tile(spec.bounds.maxLongitude, z);
+
+      //   for (let x = Math.min(startTileLng, endTileLng); x <= Math.max(startTileLng, endTileLng) && !abort; x++) {
+      //     for (let y = Math.min(startTileLat, endTileLat); y <= Math.max(startTileLat, endTileLat) && !abort; y++) {
+      //       tileUrls.push({ id: spec.id, url: spec.tileURL(x, y, z), x, y, z });
+      //     }
+      //   }
+      // }
       const promises = tileUrls.map((config) => () => this.downloadTile(config));
 
       for (let i = currentTilesForRepo; i < promises.length && !abort; i++) {
@@ -243,6 +260,7 @@ abstract class TileCacheService extends BaseCacheService<
 
   private async downloadTile(tileDetails: TilePromise): Promise<void> {
     const { id, url, x, y, z } = tileDetails;
+
     const responseData = await fetch(url).then(async (r) => await r.arrayBuffer());
     await this.setTile(id, z, x, y, new Uint8Array(responseData));
   }

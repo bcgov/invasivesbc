@@ -1,4 +1,5 @@
 import { RequestHandler } from 'express';
+import { PoolClient } from 'pg';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
 import { buildMailer } from 'utils/mailer';
@@ -18,7 +19,6 @@ import {
 import { getLogger } from 'utils/logger';
 import { getEmailTemplatesFromDB } from 'paths/email-templates';
 import isAdminFromAuthContext from 'utils/isAdminFromAuthContext';
-import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('update-request');
 
