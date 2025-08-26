@@ -29,8 +29,8 @@ export const getAreaOfInterestTileCoordinates = (bounds: any, maxZoom: number): 
       
     ),
     touching as (
-      select s.gid::text as sheet_id, '250k'::text as scale
-      from invasivesbc.nts_250k_grid s, aoi
+      select s.gid::text as sheet_id, '50k'::text as scale
+      from invasivesbc.nts_50k_grid s, aoi
       where st_intersects(s.geom_3857, aoi.g)
     ),
     want_z as (
