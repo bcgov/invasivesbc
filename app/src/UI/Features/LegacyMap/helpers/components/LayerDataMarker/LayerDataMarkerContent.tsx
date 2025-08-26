@@ -1,8 +1,7 @@
 import LaunchIcon from '@mui/icons-material/Launch';
 import { IconButton } from '@mui/material';
 import './layerDataMarkerContent.css';
-import { Fragment } from 'react/jsx-runtime';
-import { ArrowCircleLeftOutlined, ArrowCircleRightOutlined, ArrowCircleRightRounded } from '@mui/icons-material';
+import { ArrowCircleLeftOutlined, ArrowCircleRightOutlined } from '@mui/icons-material';
 import { useState } from 'react';
 import { History } from 'history';
 
@@ -17,7 +16,7 @@ type PropTypes = {
 };
 
 const LayerDataMarkerContent = ({ features, history }: PropTypes) => {
-  const STEP = 4;
+  const STEP = 3;
   const handleGoTo = (url: string) => history.push(url);
   const inc = () => setFirstPos((oldPos) => Math.min(oldPos + STEP, features.length));
   const dec = () => setFirstPos((oldPos) => Math.max(oldPos - STEP, 0));
@@ -33,9 +32,6 @@ const LayerDataMarkerContent = ({ features, history }: PropTypes) => {
               <th>Type</th>
               <th>Record ID</th>
               <th colSpan={2}>Map Symbol</th>
-              <th>
-                <Fragment />
-              </th>
             </tr>
           </thead>
           <tbody>
