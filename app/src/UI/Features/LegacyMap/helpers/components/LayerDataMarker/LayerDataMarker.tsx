@@ -4,12 +4,20 @@ import { MapMouseEvent, MapTouchEvent, Popup } from 'maplibre-gl';
 import ReactDOM from 'react-dom/client';
 import LayerDataMarkerContent from './LayerDataMarkerContent';
 import { useHistory } from 'react-router';
+import { useSelector } from 'utils/use_selector';
 
 const LayerDataMarker = () => {
+  const MINIMUM_ZOOM = 12;
+
   const map = useContext(MapContext);
-  const popupRef = useRef<Popup>(); // Hold ref to prevent multiple appearing at once on Mobile
-  const touchTime = useRef<number>(0);
   const history = useHistory();
+
+  const whatsHereEnabled = useSelector((state) => state.Map.whatsHere.toggle);
+
+  const drawToolsActive = useRef<boolean>(false); //
+  const popupRef = useRef<Popup>();
+  const timeOfTouchStart = useRef<number>(0); //
+
   const recordsetLayers = useMemo(() => {
     if (!map) return [];
     return map
@@ -17,9 +25,27 @@ const LayerDataMarker = () => {
       .filter((layer) => layer.includes('recordset-layer-') || layer.includes('offline-activity'));
   }, [map?.getLayersOrder()]);
 
-  const queryFeaturesAtEpicenter = useCallback(
+  const createPopupDiv = (numFeatures: number): HTMLDivElement => {
+    /* 
+      Maplibre needs a static element for its popup so it can calculate the anchor position. Because we're injecting React in it can't calculate the size.
+      To make the anchoring work as expected, provide defaults based on its smallest size, else maplibre will calculate HxW at 0, and will frequently render outside the viewport
+    */
+    const BASE_CONTAINER_SIZE = 125; //in px
+    const SIZE_OF_ROW = 35; //in px
+    const BASE_CONTAINER_WIDTH = 210; //in px, Approximate width of smallest container size
+    const estPixelHeightOfPopover = BASE_CONTAINER_SIZE + Math.min(numFeatures, 3) * SIZE_OF_ROW;
+
+    const el = document.createElement('div');
+    el.style.minHeight = `${estPixelHeightOfPopover}px`;
+    el.style.minWidth = `${BASE_CONTAINER_WIDTH}px`;
+    el.className = 'map-features-root';
+    return el;
+  };
+
+  //
+  const queryFeaturesAtTarget = useCallback(
     (e: MapMouseEvent | MapTouchEvent) => {
-      if (!map) return;
+      if (!map || drawToolsActive.current || map.getZoom() < MINIMUM_ZOOM || whatsHereEnabled) return;
 
       const uniqueFormattedFeaturesAtClickTarget = Array.from(
         new Map(
@@ -47,14 +73,7 @@ const LayerDataMarker = () => {
 
       if (!uniqueFormattedFeaturesAtClickTarget?.length) return;
 
-      // Maplibre needs a static element for its markers. Because we're injecting React in. Estimate the size of the rendered container
-      // So the anchoring works as expected, else maplibre will calculate 0 for both, forcing items to render off screen.
-      const el = document.createElement('div');
-      const estPixelHeightOfPopover = 125 + Math.min(uniqueFormattedFeaturesAtClickTarget.length, 4) * 35;
-      el.style.minHeight = `${estPixelHeightOfPopover}px`;
-      el.style.minWidth = '220px';
-      el.style.backgroundColor = 'transparent';
-      el.className = 'map-features-root';
+      const el = createPopupDiv(uniqueFormattedFeaturesAtClickTarget.length);
 
       popupRef?.current?.remove(); // enforce singleton behaviour
       popupRef.current = new Popup({
@@ -70,40 +89,49 @@ const LayerDataMarker = () => {
       // Inject React into the new static container
       const root = ReactDOM.createRoot(el);
       root.render(<LayerDataMarkerContent history={history} features={uniqueFormattedFeaturesAtClickTarget} />);
-      popupRef.current.setDOMContent(el);
     },
-    [map, recordsetLayers, popupRef] // dependencies
+    [map, recordsetLayers, popupRef, whatsHereEnabled]
   );
   /**
    * @desc Sets time touch event started at
    */
   const handleTouchStart = useCallback((e: MapTouchEvent) => {
-    touchTime.current = e.originalEvent.timeStamp;
+    timeOfTouchStart.current = e.originalEvent.timeStamp;
   }, []);
 
   const handleTouchEnd = useCallback(
     (e: MapTouchEvent) => {
       const MAXIMUM_TOUCH_TIME = 125; // ms
-      if (e.originalEvent.timeStamp - touchTime.current < MAXIMUM_TOUCH_TIME) {
-        queryFeaturesAtEpicenter(e);
+      if (e.originalEvent.timeStamp - timeOfTouchStart.current < MAXIMUM_TOUCH_TIME) {
+        queryFeaturesAtTarget(e);
       }
     },
-    [queryFeaturesAtEpicenter]
+    [queryFeaturesAtTarget]
   );
+
+  /**
+   * @desc Updates with state of draw tools to prevent opening popup while user is attempting to draw.
+   *       uses Timeout to so event doesn't occur in the same tick as 'queryFeaturesAtEpicenter'
+   */
+  const handleDrawModeChanged = (e) => {
+    setTimeout(() => (drawToolsActive.current = e.mode !== 'simple_select'), 0);
+  };
 
   // Setup/teardown of react hooks. remove lingering popupRef if applicable.
   useEffect(() => {
     if (!map) return;
-    map.on('click', queryFeaturesAtEpicenter);
+    map.on('draw.modechange', handleDrawModeChanged);
+    map.on('click', queryFeaturesAtTarget);
     map.on('touchstart', handleTouchStart);
     map.on('touchend', handleTouchEnd);
     return () => {
-      map.off('click', queryFeaturesAtEpicenter);
+      map.off('draw.modechange', handleDrawModeChanged);
+      map.off('click', queryFeaturesAtTarget);
       map.off('touchstart', handleTouchStart);
       map.off('touchend', handleTouchEnd);
       popupRef?.current?.remove();
     };
-  }, [map?.isStyleLoaded()]);
+  }, [map?.isStyleLoaded(), whatsHereEnabled, recordsetLayers]);
 
   return null;
 };
