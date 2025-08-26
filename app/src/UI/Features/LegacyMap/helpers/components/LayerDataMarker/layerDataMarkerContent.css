@@ -1,14 +1,5 @@
 .map-features-at-point {
-  .map-features-root {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 100%;
-  }
-  /* max-width: 400px !important; */
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  z-index: 3; /* Position over map buttons and under overlay pane*/
   .maplibregl-popup-close-button {
     color: white;
     font-size: 14pt;
@@ -17,7 +8,7 @@
     }
   }
   .maplibregl-popup-tip {
-    display: none;
+    display: none; /* Don't display popup tail. */
   }
 
   /* override default popup content settings */
@@ -46,15 +37,11 @@
   }
 
   .content {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    width: 100%;
-
     table {
-      min-width: 245px;
-      font-size: 1rem;
-
+      box-sizing: border-box;
+      width: 100%;
+      max-width: 375px; /* Set max-size so large sets of map-Symbols will be forced to collapse */
+      border-bottom: 1pt solid #dedede;
       border-collapse: collapse;
       thead tr {
         height: 35px;
@@ -66,6 +53,11 @@
       th:first-of-type,
       td:first-of-type {
         padding-left: 8px;
+      }
+      /* And to last header cell */
+      thead tr th:last-child {
+        padding-right: 8pt;
+        box-sizing: border-box;
       }
 
       /* Align all Cells text to left */
@@ -83,19 +75,19 @@
       }
 
       /* Align IconButtons to Right, maximize space */
-      thead tr th:last-child,
       tbody tr td:last-child {
         text-align: right;
       }
+
       /* Alternate Background colours */
       tbody tr {
         background-color: var(--even-list-item-bg-color);
-      }
-      tbody tr:nth-of-type(even) {
-        background-color: var(--odd-list-item-bg-color);
-      }
-      tbody tr:hover {
-        background-color: var(--hovered-list-item-bg-color);
+        &:nth-of-type(even) {
+          background-color: var(--odd-list-item-bg-color);
+        }
+        &:hover {
+          background-color: var(--hovered-list-item-bg-color);
+        }
       }
     }
   }
