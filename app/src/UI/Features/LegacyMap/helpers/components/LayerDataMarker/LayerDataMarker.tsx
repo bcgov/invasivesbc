@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
 import { MapContext } from '../MapContext';
-import { MapMouseEvent, MapTouchEvent, Popup } from 'maplibre-gl';
+import { MapMouseEvent, MapTouchEvent, Point, PointLike, Popup } from 'maplibre-gl';
 import ReactDOM from 'react-dom/client';
 import LayerDataMarkerContent from './LayerDataMarkerContent';
 import { useHistory } from 'react-router';
@@ -8,6 +8,7 @@ import { useSelector } from 'utils/use_selector';
 
 const LayerDataMarker = () => {
   const MINIMUM_ZOOM = 12;
+  const BUFFER_IN_PX = 5;
 
   const map = useContext(MapContext);
   const history = useHistory();
@@ -47,11 +48,15 @@ const LayerDataMarker = () => {
   const queryFeaturesAtTarget = useCallback(
     (e: MapMouseEvent | MapTouchEvent) => {
       if (!map || !connected || drawToolsActive.current || whatsHereEnabled || map.getZoom() < MINIMUM_ZOOM) return;
-
+      // Buffer target to avoid needing pinpoint accuracy
+      const bbox: [PointLike, PointLike] = [
+        new Point(e.point.x - BUFFER_IN_PX, e.point.y - BUFFER_IN_PX),
+        new Point(e.point.x + BUFFER_IN_PX, e.point.y + BUFFER_IN_PX)
+      ];
       const uniqueFormattedFeaturesAtClickTarget = Array.from(
         new Map(
           map
-            .queryRenderedFeatures(e.point, { layers: recordsetLayers })
+            .queryRenderedFeatures(bbox, { layers: recordsetLayers })
             .map((feature) => {
               const isInvasivesRecord = 'short_id' in feature.properties;
               return isInvasivesRecord
