@@ -18,7 +18,9 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
   const working = useSelector((state) => state.OfflineActivity.working);
   const { authenticated, workingOffline } = useSelector((state) => state.Auth);
   const connected = useSelector((state) => state.Network.connected);
-  const [syncDisabled, setSyncDisabled] = useState(false);
+
+  const [syncDisabled, setSyncDisabled] = useState<boolean>(false);
+  const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
   const [contextRecord, setContextRecord] = useState<string>();
 
@@ -53,7 +55,12 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
   }
   const handleDelete = () => {
     if (!contextRecord) return;
-    dispatch(Activity.Offline.delete(contextRecord));
+    if (confirmDelete) {
+      dispatch(Activity.Offline.delete(contextRecord));
+      setConfirmDelete(false);
+    } else {
+      setConfirmDelete(true);
+    }
   };
   const handleLoad = () => {
     if (!contextRecord) return;
@@ -63,6 +70,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
   const handleOpenMenu = (evt: MouseEvent<any> | TouchEvent<any>, key: string) => {
     setAnchorEl(evt.currentTarget);
     setContextRecord(key);
+    setConfirmDelete(false);
   };
   return (
     <>
@@ -74,8 +82,8 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
               <Button variant="contained" disabled={!(workingOffline || authenticated)} onClick={handleLoad}>
                 Open
               </Button>
-              <Button variant="contained" onClick={handleDelete} color="primary">
-                Delete Locally
+              <Button variant="contained" onClick={handleDelete} color={confirmDelete ? 'error' : 'primary'}>
+                {confirmDelete ? 'Are you sure?' : 'Delete Locally'}
               </Button>
             </div>
           </CustomPopover>
