@@ -17,6 +17,8 @@ const LayerDataMarker = () => {
   const connected = useSelector((state) => state.Network.connected);
 
   const drawToolsActive = useRef<boolean>(false);
+  const editModeActive = useRef<boolean>(false);
+
   const popupRef = useRef<Popup>();
   const timeOfTouchStart = useRef<number>(0);
 
@@ -47,7 +49,8 @@ const LayerDataMarker = () => {
   //
   const queryFeaturesAtTarget = useCallback(
     (e: MapMouseEvent | MapTouchEvent) => {
-      if (!map || !connected || drawToolsActive.current || whatsHereEnabled || map.getZoom() < MINIMUM_ZOOM) return;
+      const isUserUtilizingDraw = drawToolsActive.current || whatsHereEnabled || editModeActive.current;
+      if (!map || !connected || isUserUtilizingDraw || map.getZoom() < MINIMUM_ZOOM) return;
       // Buffer target to avoid needing pinpoint accuracy
       const bbox: [PointLike, PointLike] = [
         new Point(e.point.x - BUFFER_IN_PX, e.point.y - BUFFER_IN_PX),
@@ -116,6 +119,11 @@ const LayerDataMarker = () => {
   );
 
   /**
+   * @desc Listen for custom 'draw.editshape' event to prevent displaying popover while user is actively editing
+   */
+  const handleEditShape = (e) => (editModeActive.current = e?.active);
+
+  /**
    * @desc Updates with state of draw tools to prevent opening popup while user is attempting to draw.
    *       uses Timeout to so event doesn't occur in the same tick as 'queryFeaturesAtEpicenter'
    */
@@ -126,11 +134,13 @@ const LayerDataMarker = () => {
   // Setup/teardown of react hooks. remove lingering popupRef if applicable.
   useEffect(() => {
     if (!map) return;
+    map.on('draw.editshape', handleEditShape);
     map.on('draw.modechange', handleDrawModeChanged);
     map.on('click', queryFeaturesAtTarget);
     map.on('touchstart', handleTouchStart);
     map.on('touchend', handleTouchEnd);
     return () => {
+      map.off('draw.editshape', handleEditShape);
       map.off('draw.modechange', handleDrawModeChanged);
       map.off('click', queryFeaturesAtTarget);
       map.off('touchstart', handleTouchStart);
