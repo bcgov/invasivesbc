@@ -42,6 +42,7 @@ import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerCo
 import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
 import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
 import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
+import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
 
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { tileService: tileCache } = useContext(StartupContext);
@@ -395,6 +396,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           ))}
 
           <PositionMarkers mapReady={mapReady} />
+          <LayerDataMarker />
           <CurrentActivityLayer mapReady={mapReady} />
           {loggedInOrWorkingOffline && (
             <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />

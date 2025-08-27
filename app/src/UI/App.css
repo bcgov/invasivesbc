@@ -96,8 +96,14 @@ body {
   --success-green: #357a38;
   --warning-orange: #ffc107;
   --bc-yellow: #fcba19;
-  --blue-primary: #2196f3;
+  --blue-primary: #1976d2;
   --eigengrau: #16161d;
+  --popover-list-bg-color: #1e5189;
+
+  /* List Item Colors */
+  --even-list-item-bg-color: #eceae8;
+  --odd-list-item-bg-color: #fff;
+  --hovered-list-item-bg-color: #d1cfcd;
 }
 
 /* Color Classes */
