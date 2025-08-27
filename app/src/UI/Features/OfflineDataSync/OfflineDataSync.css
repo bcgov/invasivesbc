@@ -1,12 +1,7 @@
 .offline-data-sync-dialog {
   .content {
-    padding: 1rem 10pt;
-  }
-
-  .content {
     .dialog-table {
       height: auto;
-      margin: 10pt;
       max-height: 375px;
       overflow: auto;
 
