@@ -20,6 +20,11 @@
     width: 100%;
     max-width: 100vw;
     box-sizing: border-box;
+
+    .map-features-root {
+      display: flex;
+      flex-direction: column;
+    }
   }
 
   .title {
@@ -37,6 +42,7 @@
   }
 
   .content {
+    display: flex;
     table {
       box-sizing: border-box;
       width: 100%;
