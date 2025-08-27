@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { Fragment, useEffect, useMemo, useState } from 'react';
 import { Button, IconButton, LinearProgress } from '@mui/material';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
@@ -17,11 +17,11 @@ export const OfflineDataSyncTable = () => {
   const connected = useSelector((state) => state.Network.connected);
   const [syncDisabled, setSyncDisabled] = useState(false);
 
-  const isThereUnsynchronizedRecords = useMemo(
+  const numUnsynchronizedRecords = useMemo(
     () =>
-      Object.keys(serializedActivities).some(
+      Object.keys(serializedActivities).filter(
         (key: PropertyKey) => serializedActivities[key]?.sync_state !== OfflineActivitySyncState.SYNCHRONIZED
-      ),
+      ).length,
     [serializedActivities]
   );
 
@@ -30,7 +30,7 @@ export const OfflineDataSyncTable = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!isThereUnsynchronizedRecords) {
+    if (numUnsynchronizedRecords === 0) {
       setSyncDisabled(true); // We have nothing to sync!
     } else if (working) {
       setSyncDisabled(true);
@@ -41,7 +41,7 @@ export const OfflineDataSyncTable = () => {
     } else {
       setSyncDisabled(false);
     }
-  }, [working, workingOffline, authenticated, connected, isThereUnsynchronizedRecords]);
+  }, [working, workingOffline, authenticated, connected, numUnsynchronizedRecords]);
 
   if (Object.values(serializedActivities).length === 0) {
     return <p>There are no locally-stored activities to synchronize.</p>;
@@ -95,13 +95,15 @@ export const OfflineDataSyncTable = () => {
                   </tr>
                   {(value as OfflineActivityRecord).sync_state == 'Error' && (
                     <tr>
-                      <td></td>
+                      <td>
+                        <Fragment />
+                      </td>
                       <td>
                         {(value as OfflineActivityRecord).error_detail
                           ? (value as OfflineActivityRecord).error_detail
                           : 'Error'}
                       </td>
-                      <td colSpan={3}>
+                      <td colSpan={4}>
                         <pre>
                           {(value as OfflineActivityRecord).error_object?.hasOwnProperty('message')
                             ? JSON.stringify((value as OfflineActivityRecord).error_object?.message)
@@ -116,10 +118,15 @@ export const OfflineDataSyncTable = () => {
           </tbody>
         </table>
       </div>
-      {syncDisabled && (
-        <span className="syncDisabledMessage">Synchronization requires that you be online and authenticated.</span>
-      )}
-      {working && <LinearProgress className={'progressBar'} />}
+      <div className="status-info">
+        {syncDisabled && numUnsynchronizedRecords > 0 && (
+          <p>Synchronization requires that you be online and authenticated.</p>
+        )}
+        <p>
+          Unsynced Records: <span>{numUnsynchronizedRecords}</span>
+        </p>
+        {working && <LinearProgress className={'progressBar'} />}
+      </div>
       <div className="control">
         <Button
           disabled={syncDisabled}
