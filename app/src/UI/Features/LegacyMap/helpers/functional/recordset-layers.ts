@@ -298,7 +298,9 @@ const createOfflineActivitiesLayer = async (
             ...parsedData.geometry[0],
             properties: {
               short_id: parsedData.short_id,
-              map_symbol: plantCodes
+              map_symbol: plantCodes,
+              activity_id: parsedData.activity_id,
+              type: parsedData.activity_type
             }
           };
         }
