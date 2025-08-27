@@ -76,13 +76,19 @@ const DrawControls = () => {
 
   const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
 
+  /**
+   * @desc Dispatch Custom event for when the Edit Button is used. Listened to by `LayerDataMarker.tsx`
+   */
+  const emitEdit = () => {
+    map?.fire('draw.editshape', { active: isEditing.current });
+  };
   const handleEdit = () => {
     const features = drawInstance.current?.getAll().features;
 
     if (!features || features.length === 0 || features[0].geometry.type === GeoShapes.Point) return;
 
     isEditing.current = true;
-    map?.fire('draw.editshape', { active: isEditing.current });
+    emitEdit();
     drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
     dispatch(Alerts.create(mappingAlertMessages.saveActivityShape));
 
@@ -97,7 +103,7 @@ const DrawControls = () => {
     drawInstance.current?.changeMode('simple_select');
 
     const updatedFeature = drawInstance.current?.getAll().features[0];
-    map?.fire('draw.editshape', { active: isEditing.current });
+    emitEdit();
     if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
     dispatch(DrawToolActions.updateShape(updatedFeature));
 
