@@ -18,7 +18,7 @@ interface OfflineActivityRecord {
   record_type: string;
   sync_state: OfflineActivitySyncState;
   error_detail?: string;
-  error_object?: unknown;
+  error_object?: Record<PropertyKey, unknown>;
 }
 
 interface OfflineActivityState {
