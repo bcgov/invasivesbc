@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, IconButton, LinearProgress } from '@mui/material';
-import { OfflineActivityRecord, selectOfflineActivity } from 'state/reducers/offlineActivity';
+import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
 import Delete from '@mui/icons-material/Delete';
@@ -17,12 +17,22 @@ export const OfflineDataSyncTable = () => {
   const connected = useSelector((state) => state.Network.connected);
   const [syncDisabled, setSyncDisabled] = useState(false);
 
+  const isThereUnsynchronizedRecords = useMemo(
+    () =>
+      Object.keys(serializedActivities).some(
+        (key: PropertyKey) => serializedActivities[key]?.sync_state !== OfflineActivitySyncState.SYNCHRONIZED
+      ),
+    [serializedActivities]
+  );
+
   const history = useHistory();
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (working) {
+    if (!isThereUnsynchronizedRecords) {
+      setSyncDisabled(true); // We have nothing to sync!
+    } else if (working) {
       setSyncDisabled(true);
     } else if (workingOffline || !authenticated) {
       setSyncDisabled(true);
@@ -31,7 +41,7 @@ export const OfflineDataSyncTable = () => {
     } else {
       setSyncDisabled(false);
     }
-  }, [working, workingOffline, authenticated, connected]);
+  }, [working, workingOffline, authenticated, connected, isThereUnsynchronizedRecords]);
 
   if (Object.values(serializedActivities).length === 0) {
     return <p>There are no locally-stored activities to synchronize.</p>;
