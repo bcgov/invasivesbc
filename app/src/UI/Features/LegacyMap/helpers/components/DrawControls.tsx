@@ -82,6 +82,7 @@ const DrawControls = () => {
     if (!features || features.length === 0 || features[0].geometry.type === GeoShapes.Point) return;
 
     isEditing.current = true;
+    map?.fire('draw.editshape', { active: isEditing.current });
     drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
     dispatch(Alerts.create(mappingAlertMessages.saveActivityShape));
 
@@ -96,6 +97,7 @@ const DrawControls = () => {
     drawInstance.current?.changeMode('simple_select');
 
     const updatedFeature = drawInstance.current?.getAll().features[0];
+    map?.fire('draw.editshape', { active: isEditing.current });
     if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
     dispatch(DrawToolActions.updateShape(updatedFeature));
 
