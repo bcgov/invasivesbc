@@ -1,8 +1,7 @@
 import { Fragment, MouseEvent, TouchEvent, useEffect, useMemo, useState } from 'react';
 import { Button, IconButton, LinearProgress } from '@mui/material';
-import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
-import { useSelector } from 'utils/use_selector';
-import { useDispatch } from 'react-redux';
+import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import 'UI/Features/OfflineDataSync/OfflineDataSync.css';
 import moment from 'moment';
 import { MoreVert } from '@mui/icons-material';
@@ -15,7 +14,8 @@ type PropTypes = {
   handleClose: () => void;
 };
 export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
-  const { working, serializedActivities } = useSelector(selectOfflineActivity);
+  const serializedActivities = useSelector((state) => state.OfflineActivity.serializedActivities);
+  const working = useSelector((state) => state.OfflineActivity.working);
   const { authenticated, workingOffline } = useSelector((state) => state.Auth);
   const connected = useSelector((state) => state.Network.connected);
   const [syncDisabled, setSyncDisabled] = useState(false);
@@ -98,9 +98,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
                       <td>{`${(value as OfflineActivityRecord).short_id}`}</td>
                       <td className="record-type">{`${ActivitySubtypeShortLabels[(value as OfflineActivityRecord).record_type] || 'Unknown'}`}</td>
                       <td className="modified-time">
-                        {`${moment((value as OfflineActivityRecord).saved_at)
-                          .startOf('hour')
-                          .fromNow()}`}
+                        {`${moment((value as OfflineActivityRecord).saved_at).fromNow()}`}
                       </td>
                       <td className="sync-status">{`${(value as OfflineActivityRecord).sync_state}`}</td>
                       <td>
