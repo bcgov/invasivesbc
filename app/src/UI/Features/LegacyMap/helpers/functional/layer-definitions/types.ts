@@ -22,6 +22,7 @@ type MapDefinitionEligibilityPredicates = {
   requiresAnonymous: boolean;
   requiresFeature?: keyof FeatureFlags;
   requiresPlatform?: Platform;
+  requiresDebug: boolean;
 };
 
 // fluent convenience object builder
@@ -33,7 +34,8 @@ class MapDefinitionEligibilityPredicatesBuilder {
     requiresNetwork: true,
     requiresOffline: false,
     requiresAuthentication: false,
-    requiresAnonymous: false
+    requiresAnonymous: false,
+    requiresDebug: false
   };
 
   directlySelectable(p?: boolean) {
@@ -100,6 +102,15 @@ class MapDefinitionEligibilityPredicatesBuilder {
       this.state.requiresAnonymous = p;
     } else {
       this.state.requiresAnonymous = true;
+    }
+    return this;
+  }
+
+  requiresDebug(p?: boolean) {
+    if (p !== undefined) {
+      this.state.requiresDebug = p;
+    } else {
+      this.state.requiresDebug = true;
     }
     return this;
   }

@@ -17,7 +17,6 @@ const Debug = () => {
   const [pluginRasters, setPluginRasters] = useState<OfflineMapRecord[]>([]);
   const [pluginVectors, setPluginVectors] = useState<OfflineMapRecord[]>([]);
 
-  const [location, setLocation] = useState<string | undefined>();
   const reportDownloadProgress: DownloadRequestCallback = useCallback((message) => {
     if (!message) {
       return;
@@ -25,10 +24,6 @@ const Debug = () => {
     mutLogs.current.push(JSON.stringify(message));
 
     setLog([...mutLogs.current]);
-
-    if (message?.status === 'saved') {
-      setLocation(message?.['location']);
-    }
   }, []);
 
   const refresh = async () => {
@@ -48,7 +43,6 @@ const Debug = () => {
     >
       <div>
         <h4>Offline Protomaps</h4>
-        {location && <a href={location}>{location}</a>}
         <Button
           variant="outlined"
           onClick={async () => {

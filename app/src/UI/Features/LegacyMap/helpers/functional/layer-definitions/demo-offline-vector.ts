@@ -33,6 +33,8 @@ const DEMO_LAYERS: InvasivesMapLayerDefinition[] = [
       .mobileOnly(true)
       .requiresNetwork(false)
       .requiresAuthentication(false)
+      .requiresFeature('OFFLINE_PROTOMAPS')
+      .requiresDebug(true)
       .directlySelectable(true)
       .build(),
     layers: [
