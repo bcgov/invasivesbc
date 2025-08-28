@@ -130,7 +130,7 @@
   "scripts": {
     "pre-commit": "lint-staged",
     "build:android": "cross-env CONFIGURATION_SOURCE=Provided VITE_DEBUG=TRUE VITE_MOBILE=TRUE VITE_TARGET_PLATFORM=android vite build --emptyOutDir",
-    "build:ios": "cross-env CONFIGURATION_SOURCE=Provided VITE_DEBUG=FALSE VITE_MOBILE=TRUE VITE_TARGET_PLATFORM=ios vite build --emptyOutDir",
+    "build:ios": "cross-env CONFIGURATION_SOURCE=Provided VITE_DEBUG=TRUE VITE_MOBILE=TRUE VITE_TARGET_PLATFORM=ios vite build --emptyOutDir",
     "test": "cross-env CONFIGURATION_SOURCE=Provided VITE_MOBILE=TRUE vitest --config vitest.config.ts",
     "component_test_coverage": "cross-env CONFIGURATION_SOURCE=Provided VITE_MOBILE=TRUE vitest run --coverage --coverage.include=UI/**/*.tsx --config vitest.config.ts",
     "state_test_coverage": "cross-env CONFIGURATION_SOURCE=Provided vitest run --coverage --coverage.include=state/**/*.ts --config vitest.config.ts",

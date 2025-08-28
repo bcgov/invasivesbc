@@ -1,5 +1,5 @@
 import 'maplibre-gl/dist/maplibre-gl.css';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { Suspense, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import './map.css';
 
 import { useSelector } from 'utils/use_selector';
@@ -42,6 +42,12 @@ import { LayerComponent } from 'UI/Features/LegacyMap/helpers/components/LayerCo
 import { SourceCleanupComponent } from 'UI/Features/LegacyMap/helpers/components/SourceCleanupComponent';
 import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/positioning-layers';
 import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
+import Spinner from 'UI/Reusable/Spinner/Spinner';
+import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
+
+const OfflineProtoMapsDebugModal = React.lazy(
+  () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
+);
 
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { tileService: tileCache } = useContext(StartupContext);
@@ -163,6 +169,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     });
 
     const pmtilesProtocol = new Protocol();
+
     maplibregl.addProtocol('pmtiles', (request) => {
       return new Promise((resolve, reject) => {
         const callback = (err, data) => {
@@ -182,6 +189,9 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
     // this is so we share one instance across the JS code and the map renderer
     pmtilesProtocol.add(p);
+
+    // eg:
+    pmtilesProtocol.add(new PMTiles(new OfflineMapsPluginPMTilesSource('vectors/protomaps-1756124377560.pmtiles')));
 
     if (configuration.features.CACHE_TILES.enabled) {
       if (!tileCache) {
@@ -379,6 +389,10 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
         <MapContext.Provider value={map}>
           <DisplayComposite />
           <DrawControls />
+
+          <Suspense fallback={<Spinner />}>
+            <OfflineProtoMapsDebugModal />
+          </Suspense>
 
           <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
 

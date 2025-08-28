@@ -12,10 +12,13 @@ import { Store } from 'redux';
 import { UnifiedConfig } from 'state/configuration/unified-config';
 import { LOAD_TILE_CACHES } from 'UI/StartupCoordinator/Tasks/TileCache';
 import { LOAD_RECORDSET_CACHES } from 'UI/StartupCoordinator/Tasks/RecordsetCache';
+import { OfflineProtomapsService } from 'utils/offline-protomaps';
+import { LOAD_OFFLINE_PROTOMAPS } from 'UI/StartupCoordinator/Tasks/OfflineProtomapsService';
 
 type StartupContext = {
   tileService?: TileCacheService;
   recordService?: RecordCacheService;
+  offlineProtomapsService?: OfflineProtomapsService;
 };
 
 const StartupContext = createContext<StartupContext>({});
@@ -36,7 +39,7 @@ async function StartupCoordinator() {
 
   const { store, persistor } = setupStore(unifiedConfig);
 
-  const tasks: StartupTask[] = [LOAD_TILE_CACHES, LOAD_RECORDSET_CACHES];
+  const tasks: StartupTask[] = [LOAD_TILE_CACHES, LOAD_RECORDSET_CACHES, LOAD_OFFLINE_PROTOMAPS];
 
   let providedContext: StartupContext = {};
 
@@ -47,6 +50,8 @@ async function StartupCoordinator() {
       providedContext = { ...providedContext, ...result };
     }
   }
+
+  console.dir(providedContext);
 
   const container = document.getElementById('root');
 

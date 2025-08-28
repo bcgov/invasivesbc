@@ -8,12 +8,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var currentAuthorizationFlow: OIDExternalUserAgentSession?
     var authBridgeInstance: AuthBridge?
 
-    
     var window: UIWindow?
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         return true
+    }
+  
+    func application(_ application: UIApplication, shouldSaveSecureApplicationState coder: NSCoder) -> Bool {
+       coder.encode(130, forKey: "InvasivesBCVersion")
+       return true
+    }
+        
+    func application(_ application: UIApplication,
+                shouldRestoreSecureApplicationState coder: NSCoder) -> Bool {
+       let version = coder.decodeInteger(forKey: "InvasivesBCVersion")
+       if version == 130 {
+          return true
+       }
+      
+       // skip state restoration on version mismatch
+       return false
     }
     
     func applicationWillResignActive(_ application: UIApplication) {
@@ -57,5 +72,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // tracking app url opens, make sure to keep this call
         return ApplicationDelegateProxy.shared.application(application, continue: userActivity, restorationHandler: restorationHandler)
     }
+  
+  func application(_ application: UIApplication,
+                   handleEventsForBackgroundURLSession identifier: String,
+                   completionHandler: @escaping () -> Void) {
+      // called when the app is launched in background due to download completion. it is required that the app call the passed completionHandler after handling the download
+      Task {
+          await BackgroundDownloadService.singleton.saveCompletionHandler(completionHandler)
+      }
+  }
     
 }
