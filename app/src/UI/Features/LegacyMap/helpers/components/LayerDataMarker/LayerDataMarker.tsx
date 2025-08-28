@@ -131,7 +131,7 @@ const LayerDataMarker = () => {
     setTimeout(() => (drawToolsActive.current = e.mode !== 'simple_select'), 0);
   };
 
-  // Setup/teardown of react hooks. remove lingering popupRef if applicable.
+  // Setup/teardown of react hooks.
   useEffect(() => {
     if (!map) return;
     map.on('draw.editshape', handleEditShape);
@@ -145,7 +145,6 @@ const LayerDataMarker = () => {
       map.off('click', queryFeaturesAtTarget);
       map.off('touchstart', handleTouchStart);
       map.off('touchend', handleTouchEnd);
-      popupRef?.current?.remove();
     };
   }, [map?.isStyleLoaded(), whatsHereEnabled, recordsetLayers, connected]);
 
