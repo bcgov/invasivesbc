@@ -8,14 +8,16 @@ import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 /**
  * This file demonstrates how to statically add a downloaded (via capacitor plugin) layer to the map.
  *
- * After downloading a file (via the debug pane), adjust the filename here and in the pmtilesProtocol setup code
- * in Map.tsx to see the layer appear
+ * After downloading a file (via the debug pane), adjust the filename here and rebuild to see it work
  */
+
+// EDIT this to match
+const DEMO_DOWNLOADED_FILENAME = 'vectors/protomaps-1756374660011.pmtiles';
 
 const DEMO_SOURCES: { [key: string]: SourceSpecification } = {
   'Saved-Vector': {
     type: 'vector',
-    url: 'pmtiles://vectors/protomaps-1756124377560.pmtiles'
+    url: `pmtiles://${DEMO_DOWNLOADED_FILENAME}`
   }
 };
 
@@ -117,4 +119,4 @@ const DEMO_LAYERS: InvasivesMapLayerDefinition[] = [
   }
 ];
 
-export { DEMO_SOURCES, DEMO_LAYERS };
+export { DEMO_SOURCES, DEMO_LAYERS, DEMO_DOWNLOADED_FILENAME };

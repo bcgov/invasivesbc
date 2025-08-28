@@ -44,6 +44,7 @@ import { POSITIONING_LAYERS } from 'UI/Features/LegacyMap/helpers/functional/lay
 import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
+import { DEMO_DOWNLOADED_FILENAME } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/demo-offline-vector';
 
 const OfflineProtoMapsDebugModal = React.lazy(
   () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
@@ -191,7 +192,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     pmtilesProtocol.add(p);
 
     // eg:
-    pmtilesProtocol.add(new PMTiles(new OfflineMapsPluginPMTilesSource('vectors/protomaps-1756124377560.pmtiles')));
+    pmtilesProtocol.add(new PMTiles(new OfflineMapsPluginPMTilesSource(DEMO_DOWNLOADED_FILENAME)));
 
     if (configuration.features.CACHE_TILES.enabled) {
       if (!tileCache) {
