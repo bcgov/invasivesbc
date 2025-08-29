@@ -51,8 +51,6 @@ async function StartupCoordinator() {
     }
   }
 
-  console.dir(providedContext);
-
   const container = document.getElementById('root');
 
   if (container) {
