@@ -1,0 +1,21 @@
+div.offline-protomaps-debug {
+  display: flex;
+  width: 90svw;
+  height: 90svh;
+  margin: auto;
+  background: white;
+  z-index: 100000;
+  border: 2px solid darkgray;
+
+  .messages {
+    max-height: 8rem;
+    overflow: scroll;
+    background: #ccc;
+    font-family: monospace;
+    font-size: 12pt;
+  }
+
+  td.json {
+    white-space: pre-wrap;
+  }
+}

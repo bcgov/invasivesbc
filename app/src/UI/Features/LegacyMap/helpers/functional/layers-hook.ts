@@ -42,6 +42,8 @@ const useInvasivesMapLayers = () => {
   const connected = useSelector((state) => state.Network.connected);
 
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
+  const DEBUG = useSelector((state) => state.Configuration.current.build.DEBUG);
+
   const platform = useSelector((state) => state.Configuration.current.build.PLATFORM);
   const features = useSelector((state) => state.Configuration.current.features);
 
@@ -65,6 +67,10 @@ const useInvasivesMapLayers = () => {
       }
 
       if (l.predicates.webOnly && MOBILE) {
+        pass = false;
+      }
+
+      if (l.predicates.requiresDebug && !DEBUG) {
         pass = false;
       }
 

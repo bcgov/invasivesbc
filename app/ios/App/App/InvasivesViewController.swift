@@ -17,6 +17,7 @@ class InvasivesViewController: CAPBridgeViewController   {
     
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(AuthBridge())
+        bridge?.registerPluginInstance(OfflineMaps())
     }
     
 }

@@ -1,6 +1,6 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { GeoJSON, Feature, Point, Polygon } from 'geojson';
+import { Feature, GeoJSON, Point, Polygon } from 'geojson';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -18,6 +18,7 @@ import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
 import ExportActions from 'state/actions/exports/exportActions';
+import { OfflineProtomapsActions } from 'state/actions/offlineProtomaps';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -32,6 +33,11 @@ interface IServerLayer {
   title: string;
   toggle?: boolean;
 }
+
+interface OfflineProtomaps {
+  debugPanelOpen: boolean;
+}
+
 interface MapState {
   [MIGRATION_VERSION_KEY]: number;
   CanTriggerCSV: boolean;
@@ -99,6 +105,7 @@ interface MapState {
     IAPPSortDirection: string;
   };
   planMyTripDrawMode: boolean;
+  offlineProtomaps: OfflineProtomaps;
 }
 
 const initialState: MapState = {
@@ -174,6 +181,9 @@ const initialState: MapState = {
     IAPPLimit: 5,
     IAPPSortField: 'earliest_survey',
     IAPPSortDirection: SortFilter.Desc
+  },
+  offlineProtomaps: {
+    debugPanelOpen: false
   }
 };
 
@@ -606,6 +616,10 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
       } else if (ExportActions.resetCsvUrl.match(action)) {
         draftState.linkToCSV = null;
         draftState.recordSetForCSV = null;
+      } else if (OfflineProtomapsActions.setDebugPanelState.match(action)) {
+        draftState.offlineProtomaps.debugPanelOpen = action.payload;
+      } else if (OfflineProtomapsActions.toggleDebugPanelState.match(action)) {
+        draftState.offlineProtomaps.debugPanelOpen = !state.offlineProtomaps.debugPanelOpen;
       }
     }) as unknown as MapState;
   };
