@@ -45,10 +45,12 @@ import { useInvasivesMapLayers } from 'UI/Features/LegacyMap/helpers/functional/
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
 import { DEMO_DOWNLOADED_FILENAME } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/demo-offline-vector';
+import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
 
 const OfflineProtoMapsDebugModal = React.lazy(
   () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
 );
+
 
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { tileService: tileCache } = useContext(StartupContext);
@@ -410,6 +412,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           ))}
 
           <PositionMarkers mapReady={mapReady} />
+          <LayerDataMarker />
           <CurrentActivityLayer mapReady={mapReady} />
           {loggedInOrWorkingOffline && (
             <LayerPicker layers={availableLayerDefinitions} setOverlayState={setOverlayState} />
