@@ -15,7 +15,7 @@ function boundsToWKTPolygon(b: Bounds) {
   }},${{ minLng }} ${{ minLat }}))`;
 }
 
-export const getAreaOfInterestTileCoordinates = (bounds: any, maxZoom: number): SQLStatement => {
+export const getAreaOfInterestTileCoordinates = (bounds: Bounds, maxZoom: number): SQLStatement => {
   if (!bounds || !maxZoom) return null;
   // const aoiWkt = boundsToWKTPolygon(bounds);
   const { minLatitude: minLat, maxLatitude: maxLat, minLongitude: minLng, maxLongitude: maxLng } = bounds;
@@ -55,4 +55,22 @@ export const getAreaOfInterestTileCoordinates = (bounds: any, maxZoom: number): 
     )
     select z, x, y from final order by z,x,y;
     `;
+};
+
+export const getTilesForCells = (bounds: Bounds, maxZoom: number): SQLStatement => {
+  if (!bounds || !maxZoom) return null;
+  const { minLatitude: minLat, maxLatitude: maxLat, minLongitude: minLng, maxLongitude: maxLng } = bounds;
+  return SQL`
+    with aoi as (
+      select st_transform( st_setsrid(st_geomfromtext(${`POLYGON((${minLng} ${minLat},${maxLng} ${minLat},${maxLng} ${maxLat},${minLng} ${maxLat},${minLng} ${minLat}))`}), 4326 
+          ), 
+        3857) as g 
+    )
+    select s.gid::text as sheet_id, '50k'::text as scale, m.url as pmtiles_url, m.minzoom, m.maxzoom
+      from invasivesbc.nts_50k_grid s 
+      join aoi on st_intersects(s.geom_3857, aoi.g) 
+      join invasivesbc.pmtiles_manifest m 
+      	on m.scale='50k'
+      	and m.sheet_id=s.gid::text
+     order by sheet_id;`;
 };

@@ -12,6 +12,8 @@ const SourceComponent = ({ mapReady, id, source }: SourceComponentProps) => {
   const map = useContext(MapContext);
 
   useEffect(() => {
+    console.log('Source image', id, source);
+
     if (!map || !mapReady) return;
     map.addSource(id, source);
   }, [map, mapReady]);

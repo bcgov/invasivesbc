@@ -125,8 +125,10 @@ abstract class TileCacheService extends BaseCacheService<
   }
 
   abstract getTile(repository: string, z: number, x: number, y: number): Promise<TileData>;
+  abstract getPmTile(repository: string, z: number, x: number, y: number): Promise<TileData>;
 
   abstract setTile(repository: string, z: number, x: number, y: number, tileData: Uint8Array): Promise<void>;
+  abstract setPmTile(id: string, tileData: Uint8Array): Promise<void>;
 
   async download(
     spec: RepositoryDownloadRequestSpec,
@@ -164,20 +166,30 @@ abstract class TileCacheService extends BaseCacheService<
         description: spec.description
       });
       console.log('===>', spec.maxZoom, spec.bounds);
-      // const serverTiles = await fetchTilesSelectedAndLower(spec.bounds, spec.maxZoom);
-      // const url = `http://localhost:3002/api/tile-cover`;
+
+      // pmtile
       const rez = await fetch(`http://localhost:3002/api/tile-cover`, {
         method: 'POST',
         headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
         body: JSON.stringify({ bounds: spec.bounds, maxZoom: spec.maxZoom })
       });
       const data = await rez.json();
-      console.log('==from sql==', data.result);
-      for (const { z, x, y } of data.result) {
-        tileUrls.push({ id: spec.id, url: spec.tileURL(x, y, z), x, y, z });
-      }
-      // const response = await InvasivesAPI_Call('POST', `/api/tile-cover/`, {bounds:spec.bounds, maxZoom: spec.maxZoom});
-      // if (response?.ok) {}
+      console.log('data--->', data);
+      const pmTilesDetails = data.result;
+
+      // works with bc-sheet-tile-index
+      // const rez = await fetch(`http://localhost:3002/api/tile-cover`, {
+      //   method: 'POST',
+      //   headers: { Authorization: await getCurrentJWT(), 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({ bounds: spec.bounds, maxZoom: spec.maxZoom })
+      // });
+      // const data = await rez.json();
+      // console.log('==from sql==', data.result);
+      // for (const { z, x, y } of data.result) {
+      //   tileUrls.push({ id: spec.id, url: spec.tileURL(x, y, z), x, y, z });
+      // }
+
+      // old
       // for (let z = 0; z <= spec.maxZoom && !abort; z++) {
       //   const startTileLat = lat2tile(spec.bounds.minLatitude, z);
       //   const startTileLng = long2tile(spec.bounds.minLongitude, z);
@@ -190,7 +202,9 @@ abstract class TileCacheService extends BaseCacheService<
       //     }
       //   }
       // }
-      const promises = tileUrls.map((config) => () => this.downloadTile(config));
+
+      const promises = pmTilesDetails.map((o) => () => this.downloadPmTilesFile(spec.id, o.pmtiles_url));
+      // const promises = tileUrls.map((config) => () => this.downloadTile(config));
 
       for (let i = currentTilesForRepo; i < promises.length && !abort; i++) {
         if (executing.size >= this.CONCURRENCY_LIMIT) {
@@ -263,6 +277,13 @@ abstract class TileCacheService extends BaseCacheService<
 
     const responseData = await fetch(url).then(async (r) => await r.arrayBuffer());
     await this.setTile(id, z, x, y, new Uint8Array(responseData));
+  }
+
+  private async downloadPmTilesFile(id: string, url: string): Promise<void> {
+    // TO DO: stream this; currently full buffer
+
+    const responseData = await fetch(url).then(async (r) => await r.arrayBuffer());
+    await this.setPmTile(id, new Uint8Array(responseData));
   }
 
   /**

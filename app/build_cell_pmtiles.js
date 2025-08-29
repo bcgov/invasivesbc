@@ -1,31 +1,29 @@
 #!/usr/bin/env node
-import * as sqlite3 from 'sqlite3';
+import sqlite3 from 'sqlite3';
 import fetch from 'node-fetch';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
-import * as fs from 'fs';
+import fs from 'node:fs';
 import * as path from 'path';
-import { Pool } from 'pg';
-
+import pkg from 'pg';
+const { Pool } = pkg;
 const execFileAsync = promisify(execFile);
+import sharp from 'sharp';
 
-type Tile = { z: number; x: number; y: number };
-
-const WORLD_IMG = (z: number, x: number, y: number) =>
+const WORLD_IMG = (z, x, y) =>
   `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
 
-async function queryTiles(pool: Pool, gid: string, zMin: number, zMax: number): Promise<Tile[]> {
+async function queryTiles(pool, gid, zMin, zMax) {
   const sql = `
     SELECT z,x,y
     FROM invasivesbc.bc_sheet_tiles
     WHERE sheet_id=$1 AND z BETWEEN $2 AND $3
     ORDER BY z,x,y`;
   const { rows } = await pool.query(sql, [gid, zMin, zMax]);
-  return rows as Tile[];
+  return rows;
 }
 
-function openMbTiles(outPath: string, name: string, format: 'jpg' | 'png' = 'jpg') {
-  // const db = new sqlite3.Database('./public/assets/databases/tile_store.db');
+function openMbTiles(outPath, name, format = 'jpg') {
   const db = new sqlite3.Database(outPath);
   //language=SQLite
   db.serialize(() => {
@@ -47,14 +45,14 @@ function openMbTiles(outPath: string, name: string, format: 'jpg' | 'png' = 'jpg
   });
 
   // function to insert many rows in one transaction
-  function insertMany(rows: [number, number, number, Buffer][], done: (err?: Error) => void) {
+  function insertMany(rows, done) {
     db.serialize(() => {
       db.run('BEGIN');
       const stmt = db.prepare(
         `INSERT OR REPLACE INTO tiles (zoom_level, tile_column,tile_row,tile_data) VALUES (?,?,?,?)`
       );
       for (const r of rows) {
-        stmt.run(r, (err: Error | null) => {
+        stmt.run(r, (err) => {
           if (err) console.error('insert error', err);
         });
       }
@@ -66,17 +64,22 @@ function openMbTiles(outPath: string, name: string, format: 'jpg' | 'png' = 'jpg
   return { db, insertMany };
 }
 
-async function fetchTile(t: Tile): Promise<Buffer | null> {
+async function fetchTile(t) {
   const url = WORLD_IMG(t.z, t.y, t.x);
   const r = await fetch(url, { timeout: 15000 });
   if (!r.ok) return null;
   const ab = await r.arrayBuffer();
   return Buffer.from(ab);
+
+  // const buf = Buffer.from(await r.arrayBuffer());
+  // return sharp(buf).webp({ quality: 80 }).toBuffer();
+
+  // return sharp(buf).webp({ lossless:True }).toBuffer();
 }
 
 export async function buildCell(
-  gid: string,
-  opts: { zMin: number; zMax: number; outDir: string; dbUrl: string; pmtilesBin?: string }
+  gid,
+  opts
 ) {
   const { zMin, zMax, outDir, dbUrl, pmtilesBin = 'pmtiles' } = opts;
   const pool = new Pool({ connectionString: dbUrl });
@@ -98,10 +101,9 @@ export async function buildCell(
   console.log(`[cell ${gid}] downloading ${tiles.length} tiles`);
   const CONC = 24;
   let i = 0;
-  let inserted = 0;
 
-  async function worker(batch: Tile[]) {
-    const rows: [number, number, number, Buffer][] = [];
+  async function worker(batch) {
+    const rows = [];
     for (const t of batch) {
       try {
         const buf = await fetchTile(t);
@@ -116,46 +118,49 @@ export async function buildCell(
       insertMany(rows, (err) => {
         if (err) console.error('batch insert finished', err);
       });
-      inserted += rows.length;
     }
   }
 
   const batchSize = 64;
-  const tasks: Promise<void>[] = [];
+  const tasks = [];
   while (i < tiles.length) {
     const batch = tiles.slice(i, i + batchSize);
     const w = worker(batch);
     tasks.push(w);
     while (tasks.length >= CONC) {
-      await Promise.race(tasks).catch(() => {});
+      await Promise.race(tasks).catch(() => { });
       for (let k = tasks.length - 1; k >= 0; k--) {
-        if ((tasks[k] as any).isFulfilled || (tasks[k] as any).isRejected) tasks.splice(k, 1);
+        if ((tasks[k]).isFulfilled || (tasks[k]).isRejected) tasks.splice(k, 1);
       }
     }
     i += batchSize;
   }
-  console.log(`[cell ${gid}] inserted ${inserted}`);
   await Promise.allSettled(tasks);
   db.close();
   await pool.end();
 
   console.log(`[cell ${gid}]convert MBTiles -> PMTiles`);
   await execFileAsync(pmtilesBin, ['convert', mbPath, pmPath]);
-
+  try {
+    fs.unlinkSync(mbPath);
+  } catch (err) {
+    console.warn("Could not delete");
+  }
   const stat = fs.statSync(pmPath);
   console.log(`[cell ${gid}] done, size=${stat.size} bytes, file=${pmPath}`);
   return { pmPath, bytes: stat.size, zMin, zMax };
 }
 
-// start here
-if (require.main === module) {
-  const [gid, zMin, zMax, outDir] = process.argv.slice(2);
-  if (!gid || !zMin || !zMax || !outDir) {
-    console.error('All arguments needed');
-    process.exit(1);
-  }
-  buildCell(gid, { zMin: +zMin, zMax: +zMax, outDir, dbUrl: process.env.DATABASE_URL! }).catch((e) => {
-    console.error('All arguments needed', e);
-    process.exit(1);
-  });
-}
+// CLI
+
+// const [gid, zMin, zMax, outDir] = process.argv.slice(2);
+// if (!gid || !zMin || !zMax || !outDir) {
+//   console.error('All arguments needed');
+//   process.exit(1);
+// }
+// console.log("-->", gid, zMin, zMax, outDir);
+
+// buildCell(gid, { zMin: +zMin, zMax: +zMax, outDir, dbUrl: process.env.DATABASE_URL }).catch((e) => {
+//   console.error('All arguments needed', e);
+//   process.exit(1);
+// });

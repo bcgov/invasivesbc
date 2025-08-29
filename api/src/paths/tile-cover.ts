@@ -7,7 +7,7 @@ import { InvasivesRequest } from 'utils/auth-utils';
 import { getDBConnection } from 'database/db';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 
-import { getAreaOfInterestTileCoordinates } from 'queries/area-of-interest-queries';
+import { getAreaOfInterestTileCoordinates, getTilesForCells } from 'queries/area-of-interest-queries';
 
 const NAMESPACE = 'tile-cover';
 const defaultLog = getLogger(NAMESPACE);
@@ -111,8 +111,9 @@ function getTiles(): RequestHandler {
     try {
       connection = await getDBConnection();
 
-      const sqlStatement: SQLStatement = getAreaOfInterestTileCoordinates(bounds, maxZoom);
-
+      // const sqlStatement: SQLStatement = getAreaOfInterestTileCoordinates(bounds, maxZoom); // to load the bc_sheet_tiles' z/x/y coordinates
+      const sqlStatement: SQLStatement = getTilesForCells(bounds, maxZoom); // pmtiles_manifest already has the min and max zoom defined, so maxzoom isnt used in the query atm
+      defaultLog.info({ message: '=====>1' });
       if (!sqlStatement) {
         return res.status(400).json({
           message: 'Invalid request',
@@ -122,6 +123,7 @@ function getTiles(): RequestHandler {
         });
       }
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      defaultLog.info({ message: '=====>2' + response.rows });
       if (response.rows.length > 0) {
         return res.status(200).json({
           message: 'Found tiles',
