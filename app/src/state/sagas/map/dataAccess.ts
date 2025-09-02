@@ -38,7 +38,10 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action: PayloadAction<I
         filterObject: filterObject,
         recordSetID: recordSetID,
         tableFiltersHash: tableFiltersHash,
-        recordSetType: recordset.recordSetType
+        recordSetType: recordset.recordSetType,
+        color: recordset.color,
+        mapToggle: recordset.mapToggle,
+        labelToggle: recordset.labelToggle
       })
     );
   } catch (e) {
