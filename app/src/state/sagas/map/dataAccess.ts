@@ -51,47 +51,6 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action: PayloadAction<I
   }
 }
 
-export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: PayloadAction<IGetIdsForRecordset>) {
-  const currentState = yield select((state) => state.UserSettings);
-  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-  const workingOffline = yield select((state) => state.Auth.workingOffline);
-  const connected = yield select((state) => state.Network.connected);
-  if (filterObject == null) {
-    return;
-  }
-  filterObject.limit = 200000;
-  filterObject.selectColumns = ['activity_id'];
-
-  try {
-    // offline activities
-    if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-      yield put(
-        Activity.Offline.getIdsForRecordset({
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        })
-      );
-      return;
-    }
-
-    // if mobile or web
-    if (connected && !workingOffline) {
-      yield put(
-        Activity.getIdsForRecordsetOnline({
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        })
-      );
-    } else {
-      yield getIdsForRecordsetFromCache(action.payload);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
 export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
   try {
     const service = yield RecordCacheServiceFactory.getPlatformInstance();
@@ -121,34 +80,6 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
     }
   } catch (ex) {
     console.error(ex);
-  }
-}
-
-export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
-  try {
-    const currentState = yield select((state) => state.UserSettings);
-    const workingOffline = yield select((state) => state.Auth.workingOffline);
-    const connected = yield select((state) => state.Network.connected);
-    const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-    if (filterObject == null) {
-      return;
-    }
-    filterObject.limit = 200000;
-    filterObject.selectColumns = ['site_id'];
-    if (connected && !workingOffline) {
-      // if mobile or web
-      yield put(
-        IappActions.getIdsForRecordsetOnline({
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        })
-      );
-    } else {
-      yield getIdsForRecordsetFromCache(action.payload);
-    }
-  } catch (e) {
-    console.error(e);
   }
 }
 
