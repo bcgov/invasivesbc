@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import './recordsetControl.css';
+import AppActions from 'state/actions/appActions/appActions';
 
 type PropTypes = {
   isDefaultRecordset: boolean;
@@ -41,18 +42,12 @@ const RecordSetControl = ({
   const hasLayerIndex = useSelector(
     (state) => !!state.Map.layers.find((layer) => layer?.recordSetID === RECORD_ID)?.layerState
   );
-  // if (!hasLayerIndex) {
-  //   const payload = {
-  //     recordSetID: RECORD_ID,
-  //     tableFiltersHash: recordset?.tableFiltersHash ?? ''
-  //   };
-  //   if (recordset.recordSetType === RecordSetType.IAPP) {
-  //     dispatch(IappActions.getIdsForRecordset(payload));
-  //   } else if (recordset.recordSetType === RecordSetType.Activity) {
-  //     dispatch(Activity.getIdsForRecordset(payload));
-  //   }
-  // }
   const [isProgressBar, setIsProgressBar] = useState(false);
+
+  if (!hasLayerIndex) {
+    console.log('Recordset missing matching Layer', RECORD_ID);
+    dispatch(AppActions.prepVectorFilters({ recordSetID: RECORD_ID, tableFiltersHash: 'init' }));
+  }
 
   const handleProgressStateChange = (state: boolean) => {
     setIsProgressBar(state);
