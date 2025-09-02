@@ -438,35 +438,60 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           draftState.recordTables[recordSetID] = { loading: false, limit, page, rows, tableFiltersHash };
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
-      } else if (Activity.Offline.getIdsForRecordsetSuccess.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-
+      } else if (AppActions.prepOfflineActivityLayer.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === RecordSetId.OfflineActivities);
         if (index === -1) {
-          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          draftState.layers.push({
+            recordSetID: RecordSetId.OfflineActivities,
+            type: RecordSetType.Activity,
+            layerState: { mapToggle: action.payload.mapToggle, labelToggle: action.payload.labelToggle }
+          });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === RecordSetId.OfflineActivities);
         }
-        draftState.layers[index] = {
-          ...draftState.layers[index]
-        };
         draftState.layers[index].loading = false;
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
-      } else if (Activity.getIdsForRecordset.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) {
-          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        }
-        draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-        draftState.layers[index].loading = true;
-        if (!draftState.layers[index].layerState) {
-          draftState.layers[index].layerState = {
-            color: RECORD_COLOURS[0],
-            drawOrder: 0,
-            mapToggle: false
-          };
-        }
-      } else if (Activity.getIdsForRecordsetSuccess.match(action)) {
+        // } else if (WhatsHere.getIdsForRecordset.match(action)) {
+
+        //   let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        //   if (!draftState.layers[index]) {
+        //     draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+        //     index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        //   }
+        //   draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
+        //   draftState.layers[index].loading = true;
+        //   if (!draftState.layers[index].layerState) {
+        //     draftState.layers[index].layerState = {
+        //       color: RECORD_COLOURS[0],
+        //       drawOrder: 0,
+        //       mapToggle: false
+        //     };
+        //   }
+        // } else if (Activity.getIdsForRecordsetSuccess.match(action)) {
+        //   let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        //   if (index === -1) {
+        //     draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
+        //     index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        //   }
+        //   if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
+
+        //   draftState.layers[index].loading = false;
+        // } else if (IappActions.getIdsForRecordset.match(action)) {
+        //   let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        //   if (!draftState.layers[index]) {
+        //     draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.IAPP });
+        //     index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        //   }
+        //   draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
+        //   draftState.layers[index].loading = true;
+        //   if (!draftState.layers[index].layerState) {
+        //     draftState.layers[index].layerState = {
+        //       color: RECORD_COLOURS[0],
+        //       drawOrder: 0,
+        //       mapToggle: false
+        //     };
+        //   }
+      } else if (WhatsHere.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         if (index === -1) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
@@ -475,21 +500,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
 
         draftState.layers[index].loading = false;
-      } else if (IappActions.getIdsForRecordset.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) {
-          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.IAPP });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        }
-        draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-        draftState.layers[index].loading = true;
-        if (!draftState.layers[index].layerState) {
-          draftState.layers[index].layerState = {
-            color: RECORD_COLOURS[0],
-            drawOrder: 0,
-            mapToggle: false
-          };
-        }
       } else if (IappActions.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         if (index === -1) {

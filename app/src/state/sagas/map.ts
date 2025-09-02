@@ -3,6 +3,7 @@ import { Feature } from 'geojson';
 import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import {
+  getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_ACTIVITIES_TABLE_GET_ROWS,
   handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -24,7 +25,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
-import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import WhatsHere, { IGetIdsForRecordset } from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -55,6 +56,7 @@ import { isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import getIdsForRecordset from 'utils/getIdsForRecordset';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -435,7 +437,10 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
   for (const { recordSetID, recordSetType } of uninitializedLayers) {
     const payload = { recordSetID, tableFiltersHash: INIT_TABLE_HASH };
 
-    if (recordSetID !== RecordSetId.OfflineActivities) {
+    if (recordSetID === RecordSetId.OfflineActivities) {
+      const { mapToggle, labelToggle } = recordSets[RecordSetId.OfflineActivities];
+      yield put(AppActions.prepOfflineActivityLayer({ mapToggle, labelToggle }));
+    } else {
       yield put(AppActions.prepVectorFilters(payload));
     }
     if (recordSetType === RecordSetType.Activity) {
@@ -632,7 +637,32 @@ function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
   if (action.payload.recordSetID === RecordSetId.OfflineActivities) yield put(Activity.getRowsOffline(action.payload));
   else yield put(Activity.getRowsOnline(action.payload));
 }
+function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
+  const currentState = yield select((state) => state.UserSettings);
+  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+  // const workingOffline = yield select((state) => state.Auth.workingOffline);
+  // const connected = yield select((state) => state.Network.connected);
 
+  if (filterObject == null) {
+    return;
+  }
+  if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+    yield put(
+      Activity.Offline.getIdsForRecordset({
+        filterObj: filterObject,
+        recordSetID: action.payload.recordSetID,
+        tableFiltersHash: action.payload.tableFiltersHash
+      })
+    );
+    return;
+  }
+
+  const ids = yield getIdsForRecordset({
+    recordSetType: currentState.recordSets[action.payload.recordSetID].recordSetType,
+    tableFilters: filterObject.tableFilters
+  });
+  yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
+}
 function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
@@ -661,6 +691,8 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
     takeEvery(AppActions.prepVectorFilters, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
+
+    takeEvery(WhatsHere.getIdsForRecordset, handle_GET_RECORDSET_IDS),
     takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IappActions.getIdsForRecordset, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
