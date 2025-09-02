@@ -533,24 +533,23 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         draftState.map_center = [lng, lat];
         draftState.panned = false;
       } else if (AppActions.vectorFiltersPrepped.match(action)) {
-        const { color, mapToggle, labelToggle, recordSetID, recordSetType, filterObject, tableFiltersHash } =
-          action.payload;
+        const ap = action.payload;
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         if (!draftState.layers[index]) {
           draftState.layers.push({
-            recordSetID: recordSetID,
-            type: recordSetType,
+            recordSetID: ap.recordSetID,
+            type: ap.recordSetType,
             layerState: {
-              color,
-              mapToggle,
-              labelToggle
+              color: ap.color,
+              mapToggle: ap.mapToggle,
+              labelToggle: ap.labelToggle,
+              cacheMetadataStatus: ap.cacheMetadataStatus
             }
           });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === ap.recordSetID);
         }
-        index = draftState.layers.findIndex((layer) => layer.recordSetID === recordSetID);
-
-        draftState.layers[index].filterObject = filterObject;
-        draftState.layers[index].tableFiltersHash = tableFiltersHash;
+        draftState.layers[index].filterObject = ap.filterObject;
+        draftState.layers[index].tableFiltersHash = ap.tableFiltersHash;
       } else if (ExportActions.requestExcel.pending.match(action)) {
         draftState.CanTriggerCSV = false;
       } else if (ExportActions.requestExcel.fulfilled.match(action)) {

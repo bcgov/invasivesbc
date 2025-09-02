@@ -41,7 +41,8 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action: PayloadAction<I
         recordSetType: recordset.recordSetType,
         color: recordset.color,
         mapToggle: recordset.mapToggle,
-        labelToggle: recordset.labelToggle
+        labelToggle: recordset.labelToggle,
+        cacheMetadataStatus: recordset.cacheMetadataStatus
       })
     );
   } catch (e) {
