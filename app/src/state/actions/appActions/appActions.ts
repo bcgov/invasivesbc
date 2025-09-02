@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import FilterObjects from 'interfaces/FilterObjects';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 
 interface IGlobalError {
   detail: {
@@ -20,6 +20,7 @@ interface IPreppedFilters {
   mapToggle: boolean;
   labelToggle: boolean;
   color: string;
+  cacheMetadataStatus: UserRecordCacheStatus;
 }
 interface IPreppedOfflineActivityLayer {
   mapToggle: boolean;
