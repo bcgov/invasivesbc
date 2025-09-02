@@ -46,6 +46,7 @@ import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
 import { DEMO_DOWNLOADED_FILENAME } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/demo-offline-vector';
 import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
+import { RecordSetId } from 'interfaces/UserRecordSet';
 
 const OfflineProtoMapsDebugModal = React.lazy(
   () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
@@ -66,7 +67,8 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const storeLayers = useSelector((state) => state.Map.layers);
 
   // Offline Activities layer
-  const { serializedActivities, mapToggle, labelToggle } = useSelector((state) => state.OfflineActivity);
+  const { serializedActivities } = useSelector((state) => state.OfflineActivity);
+  const offlineActivities = useSelector((state) => state.UserSettings.recordSets?.[RecordSetId.OfflineActivities]);
 
   //KML
   const serverBoundaries = useSelector((state) => state.Map.serverBoundaries);
@@ -292,8 +294,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   // Offline Activities Layer:
   useEffect(() => {
     if (!map || !mapReady || !configuration.build.MOBILE) return;
-
-    if (!mapToggle || !loggedInOrWorkingOffline) {
+    if (!offlineActivities?.mapToggle || !loggedInOrWorkingOffline) {
       removeOfflineActivitiesLayer(map);
     } else {
       const unsyncedOfflineActivities = Object.fromEntries(
@@ -303,20 +304,20 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       );
       refreshOfflineActivitiesLayer(
         map,
-        mapToggle,
-        labelToggle,
-        unsyncedOfflineActivities as Record<string, OfflineActivityRecord>
+        offlineActivities?.mapToggle,
+        offlineActivities?.labelToggle,
+        unsyncedOfflineActivities as Record<PropertyKey, OfflineActivityRecord>
       );
     }
-  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, mapToggle]);
+  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, offlineActivities?.mapToggle]);
 
   // Offline Activities Label:
   useEffect(() => {
     if (!map || !mapReady || !configuration.build.MOBILE) return;
     (async () => {
-      await toggleOfflineActivityLabels(map, labelToggle);
+      await toggleOfflineActivityLabels(map, offlineActivities?.labelToggle);
     })();
-  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, labelToggle]);
+  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, offlineActivities?.labelToggle]);
 
   useEffect(() => {
     if (!mapReady || !map) return;
