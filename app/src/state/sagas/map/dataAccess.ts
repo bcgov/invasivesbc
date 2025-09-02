@@ -70,16 +70,10 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
         limit: 1000000 // Override 50k limit of query tool since known size is small.
       };
       const ids = yield service.query(queryObj);
-      yield put(
-        Activity.getIdsForRecordsetSuccess({
-          recordSetID: action.recordSetID,
-          idList: ids.map((record) => record.id) ?? [],
-          tableFiltersHash: action.tableFiltersHash
-        })
-      );
+      yield put(WhatsHere.getIdsForRecordsetSuccess({ ...action, idList: ids.map((record) => record.id) ?? [] }));
     }
-  } catch (ex) {
-    console.error(ex);
+  } catch (e) {
+    console.error('[getIdsForRecordsetFromCache]', e);
   }
 }
 

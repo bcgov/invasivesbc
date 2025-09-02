@@ -626,9 +626,7 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
   const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
   const workingOffline = yield select((state) => state.Auth.workingOffline);
   const connected = yield select((state) => state.Network.connected);
-  if (filterObject == null) {
-    return;
-  }
+  if (!filterObject) return;
 
   try {
     if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
@@ -647,6 +645,7 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
         tableFilters: filterObject.tableFilters
       });
       yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
+      return;
     }
   } catch (e) {
     console.error('[handle_GET_RECORDSET_IDS]:', e);
