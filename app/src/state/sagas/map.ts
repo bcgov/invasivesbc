@@ -1,7 +1,8 @@
 import { buffer } from '@turf/turf';
 import { Feature } from 'geojson';
-import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { actionChannel, all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { buffers } from 'redux-saga';
 import {
   getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
@@ -357,20 +358,20 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
   };
   if (recordSetType === RecordSetType.Activity) {
     if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
-    yield put(
-      Activity.getIdsForRecordset({
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-      })
-    );
+    // yield put(
+    //   Activity.getIdsForRecordset({
+    //     recordSetID: action.payload.setID,
+    //     tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+    //   })
+    // );
   } else {
     if (currentSet === action.payload.setID) yield put(IappActions.getRows(actionArg));
-    yield put(
-      IappActions.getIdsForRecordset({
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-      })
-    );
+    // yield put(
+    //   IappActions.getIdsForRecordset({
+    //     recordSetID: action.payload.setID,
+    //     tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+    //   })
+    // );
   }
 }
 
@@ -443,11 +444,11 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
     } else {
       yield put(AppActions.prepVectorFilters(payload));
     }
-    if (recordSetType === RecordSetType.Activity) {
-      yield put(Activity.getIdsForRecordset(payload));
-    } else if (recordSetType === RecordSetType.IAPP) {
-      yield put(IappActions.getIdsForRecordset(payload));
-    }
+    // if (recordSetType === RecordSetType.Activity) {
+    //   yield put(Activity.getIdsForRecordset(payload));
+    // } else if (recordSetType === RecordSetType.IAPP) {
+    //   yield put(IappActions.getIdsForRecordset(payload));
+    // }
     yield put(WhatsHere.getIdsForRecordset(payload));
   }
 }
@@ -663,6 +664,14 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
   });
   yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
 }
+
+function* createQueueWorker(channel) {
+  while (true) {
+    const action = yield take(channel);
+    yield call(handle_GET_RECORDSET_IDS, action);
+  }
+}
+
 function* activitiesPageSaga() {
   yield all([
     fork(whatsHereSaga),
@@ -692,7 +701,7 @@ function* activitiesPageSaga() {
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
     takeEvery(AppActions.prepVectorFilters, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
 
-    takeEvery(WhatsHere.getIdsForRecordset, handle_GET_RECORDSET_IDS),
+    fork(createQueueWorker, yield actionChannel([WhatsHere.getIdsForRecordset], buffers.expanding())),
     takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
     takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
     takeEvery(IappActions.getIdsForRecordset, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
