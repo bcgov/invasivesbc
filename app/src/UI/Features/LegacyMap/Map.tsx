@@ -51,7 +51,6 @@ const OfflineProtoMapsDebugModal = React.lazy(
   () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
 );
 
-
 export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const { tileService: tileCache } = useContext(StartupContext);
 
@@ -266,7 +265,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     }
     let cacheStatusTuples = '';
     for (const layer of storeLayers) {
-      cacheStatusTuples += `${layer.recordSetID}-${layer.layerState.cacheMetadataStatus}`;
+      cacheStatusTuples += `${layer.recordSetID}-${layer.layerState?.cacheMetadataStatus}`;
     }
     sha1(cacheStatusTuples).then((hash) => {
       setCacheStatusHash(hash);
