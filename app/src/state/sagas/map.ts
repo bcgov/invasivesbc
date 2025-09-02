@@ -4,20 +4,14 @@ import { actionChannel, all, call, debounce, fork, put, select, take, takeEvery,
 import { PayloadAction } from '@reduxjs/toolkit';
 import { buffers } from 'redux-saga';
 import {
+  getIdsForRecordsetFromCache,
   getRecordFilterObjectFromStateForAPI,
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_ACTIVITIES_TABLE_GET_ROWS,
-  handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
   handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT
 } from './map/dataAccess';
-import {
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_IAPP_TABLE_ROWS_GET_ONLINE
-} from './map/online';
+import { handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE } from './map/online';
 import {
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
@@ -630,28 +624,36 @@ function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
 function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
   const currentState = yield select((state) => state.UserSettings);
   const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-  // const workingOffline = yield select((state) => state.Auth.workingOffline);
-  // const connected = yield select((state) => state.Network.connected);
-
+  const workingOffline = yield select((state) => state.Auth.workingOffline);
+  const connected = yield select((state) => state.Network.connected);
   if (filterObject == null) {
     return;
   }
-  if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-    yield put(
-      Activity.Offline.getIdsForRecordset({
-        filterObj: filterObject,
-        recordSetID: action.payload.recordSetID,
-        tableFiltersHash: action.payload.tableFiltersHash
-      })
-    );
-    return;
-  }
 
-  const ids = yield getIdsForRecordset({
-    recordSetType: currentState.recordSets[action.payload.recordSetID].recordSetType,
-    tableFilters: filterObject.tableFilters
-  });
-  yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
+  try {
+    if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+      yield put(
+        Activity.Offline.getIdsForRecordset({
+          filterObj: filterObject,
+          recordSetID: action.payload.recordSetID,
+          tableFiltersHash: action.payload.tableFiltersHash
+        })
+      );
+    }
+    const userIsOffline = workingOffline || !connected;
+    if (!userIsOffline) {
+      const ids = yield getIdsForRecordset({
+        recordSetType: currentState.recordSets[action.payload.recordSetID].recordSetType,
+        tableFilters: filterObject.tableFilters
+      });
+      yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
+    }
+  } catch (e) {
+    console.error('[handle_GET_RECORDSET_IDS]:', e);
+  }
+  if (buildTimeConfig.MOBILE) {
+    yield getIdsForRecordsetFromCache(action.payload);
+  }
 }
 
 function* createQueueWorker(channel) {
@@ -691,10 +693,6 @@ function* activitiesPageSaga() {
     takeEvery(AppActions.prepVectorFilters, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
 
     fork(createQueueWorker, yield actionChannel([WhatsHere.getIdsForRecordset], buffers.expanding())),
-    takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
-    takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeEvery(IappActions.getIdsForRecordset, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
-    takeEvery(IappActions.getIdsForRecordsetOnline, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
 
     takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_GET_ROWS),
     takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST),
