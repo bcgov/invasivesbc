@@ -356,23 +356,17 @@ function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateF
     page: 0,
     limit: 20
   };
-  if (recordSetType === RecordSetType.Activity) {
-    if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
-    // yield put(
-    //   Activity.getIdsForRecordset({
-    //     recordSetID: action.payload.setID,
-    //     tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-    //   })
-    // );
-  } else {
-    if (currentSet === action.payload.setID) yield put(IappActions.getRows(actionArg));
-    // yield put(
-    //   IappActions.getIdsForRecordset({
-    //     recordSetID: action.payload.setID,
-    //     tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-    //   })
-    // );
+
+  if (currentSet !== action.payload.setID) return;
+  switch (recordSetType) {
+    case RecordSetType.Activity:
+      yield put(Activity.getRows(actionArg));
+      break;
+    case RecordSetType.IAPP:
+      yield put(IappActions.getRows(actionArg));
+      break;
   }
+  yield put(WhatsHere.getIdsForRecordset(actionArg));
 }
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action: PayloadAction<ISetPageLimit>) {
@@ -435,7 +429,7 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
     .filter((l) => !Object.hasOwn(l, 'loading'))
     .forEach((l) => uninitializedLayers.push({ recordSetID: l.recordSetID, recordSetType: l.type }));
 
-  for (const { recordSetID, recordSetType } of uninitializedLayers) {
+  for (const { recordSetID } of uninitializedLayers) {
     const payload = { recordSetID, tableFiltersHash: INIT_TABLE_HASH };
 
     if (recordSetID === RecordSetId.OfflineActivities) {
@@ -444,11 +438,6 @@ function* handle_MAP_INIT_FOR_RECORDSETS() {
     } else {
       yield put(AppActions.prepVectorFilters(payload));
     }
-    // if (recordSetType === RecordSetType.Activity) {
-    //   yield put(Activity.getIdsForRecordset(payload));
-    // } else if (recordSetType === RecordSetType.IAPP) {
-    //   yield put(IappActions.getIdsForRecordset(payload));
-    // }
     yield put(WhatsHere.getIdsForRecordset(payload));
   }
 }
