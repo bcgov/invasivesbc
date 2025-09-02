@@ -2,12 +2,19 @@ import { createAction } from '@reduxjs/toolkit';
 import { SortFilter } from 'interfaces/filterParams';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 
+interface IGetIdsForRecordset {
+  recordSetID: PropertyKey;
+  tableFiltersHash: string;
+}
 class WhatsHere {
   private static readonly PREFIX = 'WhatsHere';
   static readonly activity_rows_online = createAction(`${this.PREFIX}/activity_rows_online`);
   static readonly activity_rows_offline = createAction(`${this.PREFIX}/activity_rows_offline`);
   static readonly activity_rows_request = createAction(`${this.PREFIX}/activity_rows_request`);
   static readonly activity_rows_success = createAction<Record<string, any>[]>(`${this.PREFIX}/activity_rows_success`);
+
+  static readonly getIdsForRecordset = createAction<IGetIdsForRecordset>(`${this.PREFIX}/getIdsForRecordset`);
+
   static readonly iapp_rows_request = createAction(`${this.PREFIX}/iapp_rows_request`);
   static readonly iapp_rows_success = createAction<Record<string, any>[]>(`${this.PREFIX}/iapp_rows_success`);
   static readonly iapp_rows_online = createAction(`${this.PREFIX}/iapp_rows_online`);
@@ -45,3 +52,4 @@ class WhatsHere {
 }
 
 export default WhatsHere;
+export type { IGetIdsForRecordset };
