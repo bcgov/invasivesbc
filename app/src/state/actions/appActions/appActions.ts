@@ -17,6 +17,9 @@ interface IPreppedFilters {
   recordSetID: string | number;
   tableFiltersHash: string;
   recordSetType: RecordSetType;
+  mapToggle: boolean;
+  labelToggle: boolean;
+  color: string;
 }
 interface IUserCoord {
   position: {
