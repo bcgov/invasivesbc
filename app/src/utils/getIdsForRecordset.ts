@@ -34,13 +34,10 @@ const getIdsForRecordset = async (options: Options): Promise<Array<string | numb
     body: JSON.stringify({ filterObjects: [filterObjects] })
   });
 
-  if (res?.ok) {
-    const data = await res.json();
-    const ids = data.result.map((id) => id[config.col]);
-    console.log(ids);
-    return ids;
-  }
-  return [];
+  if (!res?.ok) throw Error('Network Call Failed');
+  const data = await res.json();
+  const ids = data.result.map((id) => id[config.col]);
+  return ids;
 };
 
 export default getIdsForRecordset;
