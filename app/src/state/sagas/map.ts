@@ -416,51 +416,35 @@ function* handle_DOWNLOAD_NEW_TRIP_RECORDSET(action: PayloadAction<UserRecordSet
   );
   yield put(PlanMyTrip.Recordset.download(recordId));
 }
+
 function* handle_MAP_INIT_FOR_RECORDSETS() {
-  interface ActionType {
-    type: string;
-    payload: any;
+  const INIT_TABLE_HASH = 'init';
+  const uninitializedLayers: Array<{ recordSetID: string; recordSetType: RecordSetType }> = [];
+
+  const { recordSets } = yield select(selectUserSettings);
+  const { layers } = yield select(selectMap);
+  const layerIds: Array<string> = layers.map((l) => l?.recordSetID);
+  // Check for Layers not initialized
+  Object.keys(recordSets)
+    .filter((k) => !layerIds.includes(k))
+    .forEach((k) => uninitializedLayers.push({ recordSetID: k, recordSetType: recordSets[k].recordSetType }));
+  layers
+    .filter((l) => !Object.hasOwn(l, 'loading'))
+    .forEach((l) => uninitializedLayers.push({ recordSetID: l.recordSetID, recordSetType: l.type }));
+
+  for (const { recordSetID, recordSetType } of uninitializedLayers) {
+    const payload = { recordSetID, tableFiltersHash: INIT_TABLE_HASH };
+
+    if (recordSetID !== RecordSetId.OfflineActivities) {
+      yield put(AppActions.prepVectorFilters(payload));
+    }
+    if (recordSetType === RecordSetType.Activity) {
+      yield put(Activity.getIdsForRecordset(payload));
+    } else if (recordSetType === RecordSetType.IAPP) {
+      yield put(IappActions.getIdsForRecordset(payload));
+    }
+    yield put(WhatsHere.getIdsForRecordset(payload));
   }
-
-  const userSettingsState = yield select(selectUserSettings);
-  const recordSets = Object.keys(userSettingsState.recordSets);
-
-  // current layers
-  const mapState = yield select(selectMap);
-  const layers = mapState.layers;
-  const layerIDs = layers.map((layer) => layer.recordSetID);
-
-  const currentUninitializedLayers = layers
-    .filter((layer) => !Object.prototype.hasOwnProperty.call(layer, 'loading'))
-    .map((layer) => {
-      return { recordSetID: layer.recordSetID, recordSetType: layer.type };
-    });
-
-  // in record set but not in layers
-  const newLayerIDs = recordSets.filter((recordSet) => !layerIDs.includes(recordSet));
-  const newUninitializedLayers = newLayerIDs.map((layer) => {
-    return { recordSetID: layer, recordSetType: userSettingsState.recordSets[layer].recordSetType };
-  });
-  // combined:
-  const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
-
-  const actionsToPut: ActionType[] = [];
-  allUninitializedLayers.forEach((layer) => {
-    if (layer.recordSetID !== RecordSetId.OfflineActivities) {
-      actionsToPut.push(
-        AppActions.prepVectorFilters({
-          recordSetID: layer.recordSetID,
-          tableFiltersHash: 'init'
-        })
-      );
-    }
-    if (layer.recordSetType === RecordSetType.Activity) {
-      actionsToPut.push(Activity.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
-    } else if (layer.recordSetType === RecordSetType.IAPP) {
-      actionsToPut.push(IappActions.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
-    }
-  });
-  yield all(actionsToPut.map((action) => put(action)));
 }
 
 function* handle_REMOVE_CUSTOM_LAYER(action) {
