@@ -82,9 +82,6 @@ export function setupStore(configuration: UnifiedConfig) {
   sagaMiddleware.run(networkSaga);
   sagaMiddleware.run(planMyTripSaga);
 
-  store.dispatch(NetworkActions.checkInitConnection());
-  store.dispatch(AuthActions.initializeRequest());
-
   historySingleton.listen((location) => {
     store.dispatch(AppActions.urlChange(location.pathname));
   });
@@ -110,7 +107,14 @@ export function setupStore(configuration: UnifiedConfig) {
 
   window.addEventListener('resize', debouncedResize);
 
-  return { store, persistor: persistStore(store) };
+  return {
+    store,
+    persistor: persistStore(store, null, () => {
+      //Fire these actions once store is rehydrated
+      store.dispatch(NetworkActions.checkInitConnection());
+      store.dispatch(AuthActions.initializeRequest());
+    })
+  };
 }
 
 export { historySingleton };
