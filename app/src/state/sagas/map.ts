@@ -630,10 +630,11 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
     }
     const userIsOffline = workingOffline || !connected;
     if (!userIsOffline) {
-      const ids = yield getIdsForRecordset({
-        recordSetType: currentState.recordSets[action.payload.recordSetID].recordSetType,
-        tableFilters: filterObject.tableFilters
-      });
+      const ids = yield getIdsForRecordset(currentState.recordSets[action.payload.recordSetID]);
+      //   {
+      //   recordSetType: currentState.recordSets[action.payload.recordSetID].recordSetType,
+      //   tableFilters: filterObject.tableFilters
+      // });
       yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
       return;
     }

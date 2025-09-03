@@ -1,17 +1,12 @@
-import { RecordSetType } from 'interfaces/UserRecordSet';
-import { IFilter } from 'state/actions/userSettings/RecordSet';
+import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
 
-type Options = {
-  recordSetType: RecordSetType;
-  tableFilters: Array<IFilter>;
-};
 /**
  * @desc Get list of all IDs from a recordset using current filters.
  * @returns {Array<string | number>} Ids for all records matching params for a user with read permissions.
  */
-const getIdsForRecordset = async (options: Options): Promise<Array<string | number>> => {
-  const { recordSetType, tableFilters } = options;
+const getIdsForRecordset = async (record: UserRecordSet): Promise<Array<string | number>> => {
+  const { recordSetType, tableFilters } = record;
   const config = (() => {
     switch (recordSetType) {
       case RecordSetType.IAPP:
