@@ -1,10 +1,9 @@
 import { put, select } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
-import { getIappRowsFromCache, getIdsForRecordsetFromCache, getRowsFromCachedRecordset } from './dataAccess';
+import { getIappRowsFromCache, getRowsFromCachedRecordset } from './dataAccess';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import IappActions, { IappTableRowGetRequest } from 'state/actions/activity/Iapp';
-import Activity, { ActivityTableRowGetRequest, IGetIdsForRecordsetOnline } from 'state/actions/activity/Activity';
-import UserRecord from 'interfaces/UserRecord';
+import Activity, { ActivityTableRowGetRequest } from 'state/actions/activity/Activity';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 
 export function* handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE(action: PayloadAction<ActivityTableRowGetRequest>) {
