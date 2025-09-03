@@ -33,14 +33,6 @@ class IappActions {
   static readonly getRowsRequest = createAction<IappTableRowGetRequest>(`${this.PREFIX}/getRowsRequest`);
   static readonly getRowsSuccess = createAction<IappTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
   static readonly getRowsFailure = createAction<IappTableRowsGetFailure>(`${this.PREFIX}/getRowsFailure`);
-
-  static readonly getIdsForRecordset = createAction<IGetIdsForRecordset>(`${this.PREFIX}/getIdsForRecordset`);
-  static readonly getIdsForRecordsetOnline = createAction<IGetIdsForRecordsetOnline>(
-    `${this.PREFIX}/getIdsForRecordsetOnline`
-  );
-  static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
-    `${this.PREFIX}/getIdsForRecordsetSuccess`
-  );
 }
 
 export default IappActions;

@@ -390,21 +390,11 @@ function* handle_DOWNLOAD_NEW_TRIP_RECORDSET(action: PayloadAction<UserRecordSet
   const connected = yield select(selectNetworkConnected);
 
   if (!connected) return;
-  const recordType = action.payload.recordSetType;
-  const recordId = action.payload.id!;
-
-  const desiredAction = (() => {
-    if (recordType === RecordSetType.Activity) {
-      return Activity.getIdsForRecordsetSuccess.type;
-    } else if (recordType === RecordSetType.IAPP) {
-      return IappActions.getIdsForRecordsetSuccess.type;
-    }
-  })();
+  const recordId = action.payload.id;
+  const desiredAction = WhatsHere.getIdsForRecordsetSuccess.type;
 
   // Wait for Recordsets to have valid IDList
-  yield take(
-    (incomingAction) => incomingAction.type === desiredAction && incomingAction.payload.recordSetID === recordId
-  );
+  yield take((incAction) => incAction.type === desiredAction && incAction.payload.recordSetID === recordId);
   yield put(PlanMyTrip.Recordset.download(recordId));
 }
 

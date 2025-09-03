@@ -24,7 +24,7 @@ class Offline {
   static readonly save = createAction<ISaveOffline>(`${this.PREFIX}/save`);
   static readonly delete = createAction<string>(`${this.PREFIX}/delete`);
 
-  static readonly getIdsForRecordset = createAction<Record<PropertyKey, any>>(`${this.PREFIX}/getIdsForRecordset`);
+  static readonly getIdsForRecordset = createAction<Record<PropertyKey, unknown>>(`${this.PREFIX}/getIdsForRecordset`);
   static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
     `${this.PREFIX}/getIdsForRecordsetSuccess`
   );
