@@ -329,29 +329,30 @@ function* handle_URL_CHANGE(action: PayloadAction<string>) {
 }
 
 function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateFilter>) {
-  const recordSetsState = yield select(selectUserSettings);
+  const { setID } = action.payload;
+  const { recordSets } = yield select(selectUserSettings);
   const map = yield select(selectMap);
-  const currentSet = map?.currentOpenSet;
-  const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
 
-  if (
-    recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !==
-    recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash
-  )
+  const record = recordSets[setID];
+  const currentSet = map?.currentOpenSet;
+  const recordSetType = record?.recordSetType;
+
+  if (record?.tableFiltersHash !== record?.tableFiltersPreviousHash) {
     yield put(
       AppActions.prepVectorFilters({
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+        recordSetID: setID,
+        tableFiltersHash: record?.tableFiltersHash
       })
     );
+  }
   const actionArg = {
-    recordSetID: action.payload.setID,
-    tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
+    recordSetID: setID,
+    tableFiltersHash: record?.tableFiltersHash,
     page: 0,
     limit: 20
   };
 
-  if (currentSet !== action.payload.setID) return;
+  if (currentSet !== setID) return;
   switch (recordSetType) {
     case RecordSetType.Activity:
       yield put(Activity.getRows(actionArg));
@@ -647,6 +648,10 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
   }
 }
 
+/**
+ * @desc Channel to run handle_GET_RECORDSET_IDS requests synchronously.
+ *       Prevents spamming API and getting Out of Memory crashes on Mobile
+ */
 function* createQueueWorker(channel) {
   while (true) {
     const action = yield take(channel);
