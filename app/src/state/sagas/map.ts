@@ -629,6 +629,7 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
       recordSetID: action.payload.recordSetID,
       tableFiltersHash: action.payload.tableFiltersHash
     });
+    return;
   }
   // Attempt to retrieve Records from API
   try {
