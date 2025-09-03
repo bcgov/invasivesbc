@@ -13,6 +13,7 @@ import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 import { selectActivity } from 'state/reducers/activity';
 import { PLATFORM_SRC } from 'constants/misc';
 import { ISaveOffline } from 'state/actions/activity/Offline';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<ISaveOffline>) {
   yield put(
@@ -140,7 +141,8 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
             })
           );
         }
-        yield put(Activity.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
+
+        yield put(WhatsHere.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
       } else {
         yield put(
           Activity.Offline.updateSyncState({
