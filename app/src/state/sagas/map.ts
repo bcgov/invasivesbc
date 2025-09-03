@@ -608,8 +608,11 @@ function* handle_RECORDSET_SET_SORT(action: PayloadAction<ISetSort>) {
 }
 
 function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
-  if (action.payload.recordSetID === RecordSetId.OfflineActivities) yield put(Activity.getRowsOffline(action.payload));
-  else yield put(Activity.getRowsOnline(action.payload));
+  if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+    yield put(Activity.getRowsOffline(action.payload));
+  } else {
+    yield put(Activity.getRowsOnline(action.payload));
+  }
 }
 function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
   const currentState = yield select((state) => state.UserSettings);
