@@ -4,10 +4,9 @@ import { IconButton, Tooltip } from '@mui/material';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { ColorLens, Delete, Label, LabelOff, Layers, LayersClear } from '@mui/icons-material';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'utils/use_selector';
+import { useSelector } from 'utils/use_selector';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import './recordsetControl.css';
-import AppActions from 'state/actions/appActions/appActions';
 
 type PropTypes = {
   isDefaultRecordset: boolean;
@@ -36,18 +35,12 @@ const RecordSetControl = ({
     'Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration.';
 
   const RECORD_ID = recordset.id;
-  const dispatch = useDispatch();
   const { cycleRecordsetColour, toggleRecordsetLabel, toggleRecordsetLayer, deleteRecordSet } =
     useRecordSetControls(RECORD_ID);
   const hasLayerIndex = useSelector(
     (state) => !!state.Map.layers.find((layer) => layer?.recordSetID === RECORD_ID)?.layerState
   );
   const [isProgressBar, setIsProgressBar] = useState(false);
-
-  if (!hasLayerIndex) {
-    console.log('Recordset missing matching Layer', RECORD_ID);
-    dispatch(AppActions.prepVectorFilters({ recordSetID: RECORD_ID, tableFiltersHash: 'init' }));
-  }
 
   const handleProgressStateChange = (state: boolean) => {
     setIsProgressBar(state);
