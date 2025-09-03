@@ -571,8 +571,6 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     const created_by = action.payload.created_by;
     const createdByUser = userName === created_by;
 
-    const isViewing = !activityState.activeActivityPermissions.can_edit;
-
     // Don't fetch suggestions if the record doesn't belong to the user
     if (createdByUser) {
       yield put(Activity.Suggestions.persons());
@@ -582,7 +580,7 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
       }
     }
 
-    yield put(Activity.buildFormSchema(isViewing));
+    yield put(Activity.buildFormSchema(createdByUser));
   } catch (e) {
     console.error(e);
   }
