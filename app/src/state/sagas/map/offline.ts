@@ -13,9 +13,9 @@ export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action) {
       ) ?? [];
     yield put(
       Activity.Offline.getIdsForRecordsetSuccess({
-        recordSetID: action.payload.recordSetID,
+        recordSetID: action.recordSetID,
         idList: idList.map((id) => (id as any).short_id),
-        tableFiltersHash: action.payload.tableFiltersHash
+        tableFiltersHash: action.tableFiltersHash
       })
     );
   } catch (e) {
