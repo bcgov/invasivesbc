@@ -57,17 +57,17 @@ async function StartupCoordinator() {
     const root = createRoot(container);
     if (root) {
       root.render(
-        <PersistGate loading={null} persistor={persistor}>
-          <PersistorContext.Provider value={persistor}>
-            <Router history={historySingleton}>
-              <Provider store={store}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <PersistorContext.Provider value={persistor}>
+              <Router history={historySingleton}>
                 <StartupContext.Provider value={providedContext}>
                   <App />
                 </StartupContext.Provider>
-              </Provider>
-            </Router>
-          </PersistorContext.Provider>
-        </PersistGate>
+              </Router>
+            </PersistorContext.Provider>
+          </PersistGate>
+        </Provider>
       );
     }
   }
