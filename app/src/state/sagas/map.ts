@@ -613,34 +613,31 @@ function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
 }
 function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
   const currentState = yield select((state) => state.UserSettings);
-  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
   const workingOffline = yield select((state) => state.Auth.workingOffline);
   const connected = yield select((state) => state.Network.connected);
-  if (!filterObject) return;
+  const userIsOffline = workingOffline || !connected;
 
+  // Delegate errant Offline actions
+  if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+    const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+    if (!filterObject) return;
+    yield handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE({
+      filterObj: filterObject,
+      recordSetID: action.payload.recordSetID,
+      tableFiltersHash: action.payload.tableFiltersHash
+    });
+  }
+  // Attempt to retrieve Records from API
   try {
-    if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-      yield put(
-        Activity.Offline.getIdsForRecordset({
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        })
-      );
-    }
-    const userIsOffline = workingOffline || !connected;
     if (!userIsOffline) {
       const ids = yield getIdsForRecordset(currentState.recordSets[action.payload.recordSetID]);
-      //   {
-      //   recordSetType: currentState.recordSets[action.payload.recordSetID].recordSetType,
-      //   tableFilters: filterObject.tableFilters
-      // });
       yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
-      return;
+      return; // Exit out, we don't need to scan for Cached Records
     }
   } catch (e) {
     console.error('[handle_GET_RECORDSET_IDS]:', e);
   }
+  // If Online attempt fails, or user is currently offline, delegate to Cache
   if (buildTimeConfig.MOBILE) {
     yield getIdsForRecordsetFromCache(action.payload);
   }
