@@ -1,4 +1,5 @@
 import { ActivityStatus } from 'sharedAPI';
+import { RECORD_COLOURS } from './colors';
 import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
 import { EFilterType } from 'state/actions/userSettings/RecordSet';
@@ -21,6 +22,9 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
       }
     ],
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
+    mapToggle: false,
+    color: RECORD_COLOURS[0],
+    labelToggle: false,
     drawOrder: 1
   },
   [RecordSetId.Activity]: {
@@ -29,6 +33,9 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
     recordSetType: RecordSetType.Activity,
     recordSetName: 'All InvasivesBC Activities',
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
+    mapToggle: false,
+    labelToggle: false,
+    color: RECORD_COLOURS[0],
     drawOrder: 2
   },
   [RecordSetId.IAPP]: {
@@ -37,6 +44,8 @@ const defaultRecordSets: Record<PropertyKey, Partial<UserRecordSet>> = {
     idList: [],
     recordSetName: 'All IAPP Records',
     color: '#21f34f',
+    mapToggle: false,
+    labelToggle: false,
     drawOrder: 3,
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE
   }
@@ -50,7 +59,9 @@ if (buildTimeConfig.MOBILE) {
     recordSetName: 'All Unsynced Offline Activities',
     cacheMetadataStatus: UserRecordCacheStatus.NOT_ELIGIBLE,
     drawOrder: 4,
-    mapToggle: true // by default
+    mapToggle: true, // by default
+    color: RECORD_COLOURS[0],
+    labelToggle: false
   };
 }
 

@@ -3,7 +3,7 @@ import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -276,14 +276,13 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.activeIAPP = action.payload?.iapp?.site_id;
       } else if (
         Activity.Offline.getIdsForRecordsetSuccess.match(action) ||
-        Activity.getIdsForRecordsetSuccess.match(action) ||
-        IappActions.getIdsForRecordsetSuccess.match(action)
+        WhatsHere.getIdsForRecordsetSuccess.match(action)
       ) {
         const { recordSetID, idList } = action.payload;
         draftState.recordSets[recordSetID].idList = idList;
       } else if (UserSettings.RecordSet.addFilter.match(action)) {
         const { filterType, setID, field, operator, operator2, filter } = action.payload;
-        if (filterType === 'tableFilter') {
+        if (filterType === EFilterType.Table) {
           draftState.recordSets[setID].tableFilters ??= [];
           draftState.recordSets[setID]?.tableFilters.push({
             id: nanoid(),
@@ -295,12 +294,12 @@ function createUserSettingsReducer(_configuration: AppConfig) {
           });
         }
       } else if (UserSettings.RecordSet.clearFilters.match(action)) {
-        if (action.payload.setID === '1') {
+        if (action.payload.setID === RecordSetId.Drafts) {
           draftState.recordSets[action.payload.setID].tableFilters = [
             {
               id: '1',
               field: 'form_status',
-              filterType: 'tableFilter',
+              filterType: EFilterType.Table,
               filter: 'Draft',
               operator: 'CONTAINS',
               operator2: 'AND'

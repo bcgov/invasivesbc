@@ -1,6 +1,6 @@
 import { createAction } from '@reduxjs/toolkit';
 import FilterObjects from 'interfaces/FilterObjects';
-import { RecordSetType } from 'interfaces/UserRecordSet';
+import { RecordSetType, UserRecordCacheStatus } from 'interfaces/UserRecordSet';
 
 interface IGlobalError {
   detail: {
@@ -17,6 +17,14 @@ interface IPreppedFilters {
   recordSetID: string | number;
   tableFiltersHash: string;
   recordSetType: RecordSetType;
+  mapToggle: boolean;
+  labelToggle: boolean;
+  color: string;
+  cacheMetadataStatus: UserRecordCacheStatus;
+}
+interface IPreppedOfflineActivityLayer {
+  mapToggle: boolean;
+  labelToggle: boolean;
 }
 interface IUserCoord {
   position: {
@@ -37,6 +45,9 @@ class AppActions {
   static readonly prepVectorFilters = createAction<IPrepFilter>(`${this.PREFIX}/prepVectorFilters`);
   static readonly vectorFiltersPrepped = createAction<IPreppedFilters>(`${this.PREFIX}/vectorFiltersPrepped`);
   static readonly setUserCoords = createAction<IUserCoord>(`${this.PREFIX}/setUserCoords`);
+  static readonly prepOfflineActivityLayer = createAction<IPreppedOfflineActivityLayer>(
+    `${this.PREFIX}/prepOfflineActivityLayer`
+  );
 }
 
 export default AppActions;

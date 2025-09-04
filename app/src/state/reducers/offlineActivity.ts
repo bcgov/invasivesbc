@@ -29,8 +29,6 @@ interface OfflineActivityState {
   serializedActivities: {
     [id: string]: OfflineActivityRecord;
   };
-  mapToggle: boolean;
-  labelToggle: boolean;
 }
 
 const initialState: OfflineActivityState = {
@@ -38,9 +36,7 @@ const initialState: OfflineActivityState = {
   working: false,
   statusDialogOpen: false,
   serial: moment.now(),
-  serializedActivities: {},
-  mapToggle: true, // visibility "on" by default
-  labelToggle: false
+  serializedActivities: {}
 };
 
 function createOfflineActivityReducer(
@@ -58,10 +54,6 @@ function createOfflineActivityReducer(
           sync_state: OfflineActivitySyncState.LOCALLY_MODIFIED
         };
         draftState.serial = moment.now();
-      } else if (Activity.Offline.setAllShapeVisibility.match(action)) {
-        draftState.mapToggle = !draftState.mapToggle;
-      } else if (Activity.Offline.setLabelVisibility.match(action)) {
-        draftState.labelToggle = !draftState.labelToggle;
       } else if (Activity.Offline.save.match(action)) {
         draftState.serializedActivities[payload.id] = {
           data: JSON.stringify(payload.data, null, 2),

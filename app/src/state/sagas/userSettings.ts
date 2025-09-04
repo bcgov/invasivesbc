@@ -62,12 +62,9 @@ function* handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST(action) {
 }
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
-  if (!UserSettings.InitState.get.match(action)) {
-    return;
-  }
+  if (!UserSettings.InitState.get.match(action)) return;
 
   const { recordSets } = yield select(selectUserSettings);
-
   const [recordsetCacheEnabled, tileCacheEnabled] = yield all([
     yield select((state: RootState) => state.Configuration.current.features.CACHE_RECORDSETS.enabled),
     yield select((state: RootState) => state.Configuration.current.features.CACHE_TILES.enabled)

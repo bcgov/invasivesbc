@@ -1,21 +1,17 @@
 import { buffer } from '@turf/turf';
 import { Feature } from 'geojson';
-import { all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { actionChannel, all, call, debounce, fork, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
+import { buffers } from 'redux-saga';
 import {
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST,
+  getIdsForRecordsetFromCache,
+  getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_TABLE_GET_ROWS,
-  handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
   handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
   handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT
 } from './map/dataAccess';
-import {
-  handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE,
-  handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE,
-  handle_IAPP_TABLE_ROWS_GET_ONLINE
-} from './map/online';
+import { handle_ACTIVITIES_TABLE_ROWS_GET_ONLINE, handle_IAPP_TABLE_ROWS_GET_ONLINE } from './map/online';
 import {
   handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE,
   handle_ACTIVITIES_TABLE_ROWS_GET_OFFLINE
@@ -24,7 +20,7 @@ import { selectUserSettings } from 'state/reducers/userSettings';
 import { selectMap } from 'state/reducers/map';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { TRACKING_SAGA_HANDLERS } from 'state/sagas/map/tracking';
-import WhatsHere from 'state/actions/whatsHere/WhatsHere';
+import WhatsHere, { IGetIdsForRecordset } from 'state/actions/whatsHere/WhatsHere';
 import Prompt from 'state/actions/prompts/Prompt';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -55,6 +51,7 @@ import { isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import getIdsForRecordset from 'utils/getIdsForRecordset';
 
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS() {
   yield put(MapActions.initRequest());
@@ -332,44 +329,39 @@ function* handle_URL_CHANGE(action: PayloadAction<string>) {
 }
 
 function* handle_UserFilterChange(action: PayloadAction<IRemoveFilter | IUpdateFilter>) {
-  const recordSetsState = yield select(selectUserSettings);
+  const { setID } = action.payload;
+  const { recordSets } = yield select(selectUserSettings);
   const map = yield select(selectMap);
-  const currentSet = map?.currentOpenSet;
-  const recordSetType = recordSetsState.recordSets?.[action.payload.setID]?.recordSetType;
 
-  if (
-    recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash !==
-    recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersPreviousHash
-  )
+  const record = recordSets[setID];
+  const currentSet = map?.currentOpenSet;
+  const recordSetType = record?.recordSetType;
+
+  if (record?.tableFiltersHash !== record?.tableFiltersPreviousHash) {
     yield put(
       AppActions.prepVectorFilters({
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-      })
-    );
-  const actionArg = {
-    recordSetID: action.payload.setID,
-    tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash,
-    page: 0,
-    limit: 20
-  };
-  if (recordSetType === RecordSetType.Activity) {
-    if (currentSet === action.payload.setID) yield put(Activity.getRows(actionArg));
-    yield put(
-      Activity.getIdsForRecordset({
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
-      })
-    );
-  } else {
-    if (currentSet === action.payload.setID) yield put(IappActions.getRows(actionArg));
-    yield put(
-      IappActions.getIdsForRecordset({
-        recordSetID: action.payload.setID,
-        tableFiltersHash: recordSetsState.recordSets?.[action.payload.setID]?.tableFiltersHash
+        recordSetID: setID,
+        tableFiltersHash: record?.tableFiltersHash
       })
     );
   }
+  const actionArg = {
+    recordSetID: setID,
+    tableFiltersHash: record?.tableFiltersHash,
+    page: 0,
+    limit: 20
+  };
+
+  if (currentSet !== setID) return;
+  switch (recordSetType) {
+    case RecordSetType.Activity:
+      yield put(Activity.getRows(actionArg));
+      break;
+    case RecordSetType.IAPP:
+      yield put(IappActions.getRows(actionArg));
+      break;
+  }
+  yield put(WhatsHere.getIdsForRecordset(actionArg));
 }
 
 function* handle_PAGE_OR_LIMIT_UPDATE(action: PayloadAction<ISetPageLimit>) {
@@ -399,68 +391,40 @@ function* handle_DOWNLOAD_NEW_TRIP_RECORDSET(action: PayloadAction<UserRecordSet
   const connected = yield select(selectNetworkConnected);
 
   if (!connected) return;
-  const recordType = action.payload.recordSetType;
-  const recordId = action.payload.id!;
-
-  const desiredAction = (() => {
-    if (recordType === RecordSetType.Activity) {
-      return Activity.getIdsForRecordsetSuccess.type;
-    } else if (recordType === RecordSetType.IAPP) {
-      return IappActions.getIdsForRecordsetSuccess.type;
-    }
-  })();
+  const recordId = action.payload.id;
+  const desiredAction = WhatsHere.getIdsForRecordsetSuccess.type;
 
   // Wait for Recordsets to have valid IDList
-  yield take(
-    (incomingAction) => incomingAction.type === desiredAction && incomingAction.payload.recordSetID === recordId
-  );
+  yield take((incAction) => incAction.type === desiredAction && incAction.payload.recordSetID === recordId);
   yield put(PlanMyTrip.Recordset.download(recordId));
 }
+
 function* handle_MAP_INIT_FOR_RECORDSETS() {
-  interface ActionType {
-    type: string;
-    payload: any;
+  const INIT_TABLE_HASH = 'init';
+  const uninitializedLayers: Array<{ recordSetID: string; recordSetType: RecordSetType }> = [];
+
+  const { recordSets } = yield select(selectUserSettings);
+  const { layers } = yield select(selectMap);
+  const layerIds: Array<string> = layers.map((l) => l?.recordSetID);
+  // Check for Layers not initialized
+  Object.keys(recordSets)
+    .filter((k) => !layerIds.includes(k))
+    .forEach((k) => uninitializedLayers.push({ recordSetID: k, recordSetType: recordSets[k].recordSetType }));
+  layers
+    .filter((l) => !Object.hasOwn(l, 'loading'))
+    .forEach((l) => uninitializedLayers.push({ recordSetID: l.recordSetID, recordSetType: l.type }));
+
+  for (const { recordSetID } of uninitializedLayers) {
+    const payload = { recordSetID, tableFiltersHash: INIT_TABLE_HASH };
+
+    if (recordSetID === RecordSetId.OfflineActivities) {
+      const { mapToggle, labelToggle } = recordSets[RecordSetId.OfflineActivities];
+      yield put(AppActions.prepOfflineActivityLayer({ mapToggle, labelToggle }));
+    } else {
+      yield put(AppActions.prepVectorFilters(payload));
+    }
+    yield put(WhatsHere.getIdsForRecordset(payload));
   }
-
-  const userSettingsState = yield select(selectUserSettings);
-  const recordSets = Object.keys(userSettingsState.recordSets);
-
-  // current layers
-  const mapState = yield select(selectMap);
-  const layers = mapState.layers;
-  const layerIDs = layers.map((layer) => layer.recordSetID);
-
-  const currentUninitializedLayers = layers
-    .filter((layer) => !Object.prototype.hasOwnProperty.call(layer, 'loading'))
-    .map((layer) => {
-      return { recordSetID: layer.recordSetID, recordSetType: layer.type };
-    });
-
-  // in record set but not in layers
-  const newLayerIDs = recordSets.filter((recordSet) => !layerIDs.includes(recordSet));
-  const newUninitializedLayers = newLayerIDs.map((layer) => {
-    return { recordSetID: layer, recordSetType: userSettingsState.recordSets[layer].recordSetType };
-  });
-  // combined:
-  const allUninitializedLayers = [...currentUninitializedLayers, ...newUninitializedLayers];
-
-  const actionsToPut: ActionType[] = [];
-  allUninitializedLayers.forEach((layer) => {
-    if (layer.recordSetID !== RecordSetId.OfflineActivities) {
-      actionsToPut.push(
-        AppActions.prepVectorFilters({
-          recordSetID: layer.recordSetID,
-          tableFiltersHash: 'init'
-        })
-      );
-    }
-    if (layer.recordSetType === RecordSetType.Activity) {
-      actionsToPut.push(Activity.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
-    } else if (layer.recordSetType === RecordSetType.IAPP) {
-      actionsToPut.push(IappActions.getIdsForRecordset({ recordSetID: layer.recordSetID, tableFiltersHash: 'init' }));
-    }
-  });
-  yield all(actionsToPut.map((action) => put(action)));
 }
 
 function* handle_REMOVE_CUSTOM_LAYER(action) {
@@ -645,8 +609,54 @@ function* handle_RECORDSET_SET_SORT(action: PayloadAction<ISetSort>) {
 }
 
 function* handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST(action) {
-  if (action.payload.recordSetID === RecordSetId.OfflineActivities) yield put(Activity.getRowsOffline(action.payload));
-  else yield put(Activity.getRowsOnline(action.payload));
+  if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+    yield put(Activity.getRowsOffline(action.payload));
+  } else {
+    yield put(Activity.getRowsOnline(action.payload));
+  }
+}
+function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
+  const currentState = yield select((state) => state.UserSettings);
+  const workingOffline = yield select((state) => state.Auth.workingOffline);
+  const connected = yield select((state) => state.Network.connected);
+  const userIsOffline = workingOffline || !connected;
+
+  // Delegate errant Offline actions
+  if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
+    const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
+    if (!filterObject) return;
+    yield handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE({
+      filterObj: filterObject,
+      recordSetID: action.payload.recordSetID,
+      tableFiltersHash: action.payload.tableFiltersHash
+    });
+    return;
+  }
+  // Attempt to retrieve Records from API
+  try {
+    if (!userIsOffline) {
+      const ids = yield getIdsForRecordset(currentState.recordSets[action.payload.recordSetID]);
+      yield put(WhatsHere.getIdsForRecordsetSuccess({ idList: ids, ...action.payload }));
+      return; // Exit out, we don't need to scan for Cached Records
+    }
+  } catch (e) {
+    console.error('[handle_GET_RECORDSET_IDS]:', e);
+  }
+  // If Online attempt fails, or user is currently offline, delegate to Cache
+  if (buildTimeConfig.MOBILE) {
+    yield getIdsForRecordsetFromCache(action.payload);
+  }
+}
+
+/**
+ * @desc Channel to run handle_GET_RECORDSET_IDS requests synchronously.
+ *       Prevents spamming API and getting Out of Memory crashes on Mobile
+ */
+function* createQueueWorker(channel) {
+  while (true) {
+    const action = yield take(channel);
+    yield call(handle_GET_RECORDSET_IDS, action);
+  }
 }
 
 function* activitiesPageSaga() {
@@ -677,10 +687,8 @@ function* activitiesPageSaga() {
     takeEvery(UserSettings.InitState.getSuccess, handle_USER_SETTINGS_GET_INITIAL_STATE_SUCCESS),
     takeEvery(MapActions.initRequest, handle_MAP_INIT_REQUEST),
     takeEvery(AppActions.prepVectorFilters, handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT),
-    takeEvery(Activity.getIdsForRecordset, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST),
-    takeEvery(Activity.getIdsForRecordsetOnline, handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_ONLINE),
-    takeEvery(IappActions.getIdsForRecordset, handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST),
-    takeEvery(IappActions.getIdsForRecordsetOnline, handle_IAPP_GET_IDS_FOR_RECORDSET_ONLINE),
+
+    fork(createQueueWorker, yield actionChannel([WhatsHere.getIdsForRecordset], buffers.expanding())),
 
     takeLatest(Activity.getRows, handle_ACTIVITIES_TABLE_GET_ROWS),
     takeEvery(Activity.getRowsRequest, handle_ACTIVITIES_TABLE_GET_ROWS_REQUEST),
