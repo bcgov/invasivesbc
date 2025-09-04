@@ -1,4 +1,5 @@
 export enum AlertSubjects {
+  Global = 'global',
   Map = 'map',
   Form = 'form',
   Photo = 'photo',

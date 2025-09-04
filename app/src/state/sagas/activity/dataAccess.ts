@@ -13,6 +13,7 @@ import { kinks } from '@turf/turf';
 import { Feature, FeatureCollection } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
+import cloneDeep from 'lodash.clonedeep';
 import {
   autoFillNameByPAC,
   autoFillTotalBioAgentQuantity,
@@ -319,37 +320,50 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
 
 export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<UserRecord>) {
   try {
-    const beforeState = yield select(selectActivity);
-    const beforeActivity = beforeState.activity;
+    const previousState = yield select(selectActivity);
+    const previousActivityState = previousState.activity;
 
-    let updatedFormData = action.payload;
-    if (
-      beforeActivity.activity_type === ActivityType.Biocontrol ||
-      beforeActivity.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant ||
-      beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal ||
-      beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
-    ) {
-      // auto fills total release quantity (only on biocontrol release activity)
-      updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
-      // auto fills total bioagent quantity (only on biocontrol release monitoring activity)
-      updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
+    try {
+      let updatedFormData = cloneDeep(action.payload);
+      if (
+        previousActivityState.activity_type === ActivityType.Biocontrol ||
+        [
+          ActivitySubtype.Treatment_BiologicalPlant,
+          ActivitySubtype.Monitoring_BiologicalDispersal,
+          ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
+        ].includes(previousActivityState.activity_subtype)
+      ) {
+        // auto-fills total release quantity (only on biocontrol release activity)
+        updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
+        // auto-fills total bioagent quantity (only on biocontrol release monitoring activity)
+        updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
+      }
+
+      if (previousState.activity.activity_type === ActivityType.Treatment && previousState.suggestedPersons) {
+        updatedFormData = autoFillNameByPAC(updatedFormData, previousState.suggestedPersons);
+      }
+
+      let updatedActivity = populateSpeciesArrays({ ...cloneDeep(previousActivityState), form_data: updatedFormData });
+      updatedActivity = populateJurisdictionArray(updatedActivity);
+      updatedActivity = { ...updatedActivity, map_symbol: updatedActivity.species_positive.join(', ') };
+      yield put(Activity.OnFormChangeRequestSuccess(updatedActivity));
+    } catch (error) {
+      console.error(error);
+      yield put(
+        Alerts.create({
+          subject: AlertSubjects.Global,
+          severity: AlertSeverity.Error,
+          content: `An unexpected error occurred while updating form contents. ${error}`
+        })
+      );
     }
-
-    if (beforeState.activity.activity_type === ActivityType.Treatment && beforeState.suggestedPersons) {
-      updatedFormData = autoFillNameByPAC(updatedFormData, beforeState.suggestedPersons);
-    }
-    let updatedActivity = populateSpeciesArrays({ ...beforeActivity, form_data: updatedFormData });
-    updatedActivity = populateJurisdictionArray({ ...updatedActivity });
-    updatedActivity = { ...updatedActivity, map_symbol: updatedActivity.species_positive.join(', ') };
-
-    yield put(Activity.OnFormChangeRequestSuccess(updatedActivity));
 
     // try to reduce calls to copy geometry
-    const linked_id = updatedFormData.activity_type_data?.linked_id;
-    const oldLinkedId = beforeActivity.form_data.activity_type_data?.linked_id;
-    const oldCopyGeometry = beforeActivity.form_data.activity_type_data?.copy_geometry;
+    const linked_id = action.payload.activity_type_data?.linked_id;
+    const oldLinkedId = previousActivityState.form_data.activity_type_data?.linked_id;
+    const oldCopyGeometry = previousActivityState.form_data.activity_type_data?.copy_geometry;
     const requestGeometryFromExistingRecord =
-      updatedFormData.activity_type_data?.copy_geometry === 'Yes' &&
+      action.payload.activity_type_data?.copy_geometry === 'Yes' &&
       linked_id &&
       (oldLinkedId !== linked_id || oldCopyGeometry !== 'Yes');
 
@@ -371,8 +385,8 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<Us
       yield put(DrawToolActions.updateGeo(linked_geo));
       yield take(DrawToolActions.updateGeoSuccess.type);
     } else if (
-      beforeActivity.form_data.activity_type_data?.copy_geometry === 'Yes' &&
-      updatedFormData?.activity_type_data?.copy_geometry === 'No'
+      previousActivityState.form_data.activity_type_data?.copy_geometry === 'Yes' &&
+      action.payload?.activity_type_data?.copy_geometry === 'No'
     ) {
       yield put(DrawToolActions.updateGeo([]));
       yield take(DrawToolActions.updateGeoSuccess.type);
