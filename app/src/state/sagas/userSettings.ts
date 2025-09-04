@@ -117,7 +117,6 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
     yield put(UserSettings.Map.setCenterSuccess(action.payload));
   } catch (e) {
     console.error(e);
-    yield put(UserSettings.Map.setCenterFailure);
   }
 }
 

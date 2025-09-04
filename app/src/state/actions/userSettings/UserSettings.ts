@@ -102,7 +102,7 @@ class Map {
   }>(`${this.PREFIX}/togglePreferredOverlayLayer`);
   static readonly setCenter = createAction<number[]>(`${this.PREFIX}/setCenter`);
   static readonly setCenterSuccess = createAction<number[]>(`${this.PREFIX}/setCenterSuccess`);
-  static readonly setCenterFailure = createAction(`${this.PREFIX}/setCenterFailure`);
+
   static readonly setHoveredRecordset = createAction<IHoverRecordset>(`${this.PREFIX}/setHoveredRecordset`);
   static readonly markCoordinate = createAction<IMarkLocation>(`${this.PREFIX}/markCoordinate`);
 }

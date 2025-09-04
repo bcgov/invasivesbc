@@ -678,7 +678,6 @@ export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
     yield put(Activity.Photo.editSuccess(beforeActivityMedia));
   } catch (e) {
     console.error(e);
-    yield put(Activity.Photo.editFailure);
   }
 }
 
