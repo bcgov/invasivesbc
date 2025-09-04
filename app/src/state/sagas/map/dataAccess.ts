@@ -23,16 +23,6 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action: PayloadAction<I
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     }
 
-    // abort if already a stale hash
-    const mapState = yield select((state) => state.Map);
-    const tableHash = mapState?.layers?.filter((layer) => {
-      return layer?.recordSetID === recordSetID;
-    })?.[0]?.tableFiltersHash;
-
-    if (tableHash && tableHash !== tableFiltersHash) {
-      return;
-    }
-
     yield put(
       AppActions.vectorFiltersPrepped({
         filterObject: filterObject,
