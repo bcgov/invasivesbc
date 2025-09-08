@@ -36,6 +36,7 @@ import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacito
 import { DEMO_DOWNLOADED_FILENAME } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/demo-offline-vector';
 import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
+import OfflineRecordsetLayer from './helpers/components/OfflineRecordsetLayer';
 
 const OfflineProtoMapsDebugModal = React.lazy(
   () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
@@ -358,6 +359,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
           )}
           <MobileOnly>
             <CachedMapLayer mapReady={mapReady} />
+            <OfflineRecordsetLayer mapReady={mapReady} />
           </MobileOnly>
         </MapContext.Provider>
         {children}
