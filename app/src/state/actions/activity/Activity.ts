@@ -69,7 +69,7 @@ interface IActivityFormChangeRequest {
 }
 
 interface SwitchRecordSetPayload {
-  setId: number;
+  setId: string;
   type: 'Activity' | 'IAPP';
 }
 
