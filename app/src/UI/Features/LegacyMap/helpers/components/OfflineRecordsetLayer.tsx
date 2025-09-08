@@ -20,12 +20,12 @@ type PropTypes = {
 };
 const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
   const OFFLINE_RECORD_ID = RecordSetId.OfflineActivities;
+  const LAYER_COLOUR = 'blue';
+
   const [source, setSource] = useState<SourceSpecification>();
   const [layers, setLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
 
-  const { mapToggle, labelToggle } = useSelector(
-    (state) => state.UserSettings.recordSets[RecordSetId.OfflineActivities]
-  );
+  const { mapToggle, labelToggle } = useSelector((state) => state.UserSettings.recordSets[OFFLINE_RECORD_ID]);
   const serializedActivities = useSelector((state) => state.OfflineActivity.serializedActivities, shallowEqual);
 
   const buildSource = () => {
@@ -74,8 +74,8 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
           type: 'fill',
           source: OFFLINE_RECORD_ID,
           paint: {
-            'fill-color': 'blue',
-            'fill-outline-color': 'blue',
+            'fill-color': LAYER_COLOUR,
+            'fill-outline-color': LAYER_COLOUR,
             'fill-opacity': 0.5
           },
           minzoom: 0,
@@ -89,7 +89,7 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
           source: OFFLINE_RECORD_ID,
           type: 'line',
           paint: {
-            'line-color': 'blue',
+            'line-color': LAYER_COLOUR,
             'line-opacity': 1,
             'line-width': 3
           },
@@ -104,7 +104,7 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
           source: OFFLINE_RECORD_ID,
           type: 'circle',
           paint: {
-            'circle-color': 'blue',
+            'circle-color': LAYER_COLOUR,
             'circle-radius': 4
           },
           minzoom: 0,
