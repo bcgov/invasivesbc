@@ -54,8 +54,7 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
       [rec.id]: {
         type: 'vector',
         tiles: [`api:///api/vectors/${api_target}/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(filterObject))}`],
-        minzoom: 0,
-        maxzoom: 24
+        minzoom: 0
       }
     },
     definitions: [
@@ -81,7 +80,6 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
               'fill-outline-color': color,
               'fill-opacity': 0.5
             },
-            maxzoom: 24,
             minzoom: 0,
             layout: {
               visibility: 'visible'
@@ -97,7 +95,6 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
               'line-opacity': 1,
               'line-width': 3
             },
-            maxzoom: 24,
             minzoom: 0,
             layout: {
               visibility: 'visible'
@@ -112,7 +109,6 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
               'circle-color': color,
               'circle-radius': 4
             },
-            maxzoom: 24,
             minzoom: 0,
             layout: {
               visibility: 'visible'
@@ -147,8 +143,7 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
               'text-halo-width': 1,
               'text-halo-blur': 1
             },
-            minzoom: 12,
-            maxzoom: 24
+            minzoom: 12
           }
         ]
       }

@@ -78,7 +78,6 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
             'fill-outline-color': 'blue',
             'fill-opacity': 0.5
           },
-          maxzoom: 24,
           minzoom: 0,
           layout: {
             visibility: 'visible'
@@ -94,7 +93,6 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
             'line-opacity': 1,
             'line-width': 3
           },
-          maxzoom: 24,
           minzoom: 0,
           layout: {
             visibility: 'visible'
@@ -109,7 +107,6 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
             'circle-color': 'blue',
             'circle-radius': 4
           },
-          maxzoom: 24,
           minzoom: 0,
           layout: {
             visibility: 'visible'
@@ -142,7 +139,6 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
             'text-halo-blur': 1
           },
           minzoom: 12,
-          maxzoom: 24,
           stackLayer: LAYER_Z_FOREGROUND
         }
       );
