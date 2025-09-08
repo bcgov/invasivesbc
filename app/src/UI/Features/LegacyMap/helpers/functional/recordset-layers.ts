@@ -153,35 +153,16 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
 
 const getPaintBySchemeOrColor = (color: string): ColorSpecification | ExpressionSpecification => {
   if (color === white) {
+    const activitySubtypeColours = Object.entries(recordsetColourScheme).flatMap(([activity, colour]) => [
+      activity,
+      colour ?? FALLBACK_COLOR
+    ]);
     return [
       'match',
       ['get', 'activity_subtype'],
-      'Activity_Biocontrol_Collection',
-      recordsetColourScheme.Activity_Biocontrol_Collection ?? FALLBACK_COLOR,
-      'Activity_Biocontrol_Release',
-      recordsetColourScheme.Activity_Biocontrol_Release ?? FALLBACK_COLOR,
-      'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
-      recordsetColourScheme.Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant ?? FALLBACK_COLOR,
-      'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant',
-      recordsetColourScheme.Activity_Monitoring_BiocontrolRelease_TerrestrialPlant ?? FALLBACK_COLOR,
-      'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
-      recordsetColourScheme.Activity_Monitoring_ChemicalTerrestrialAquaticPlant ?? FALLBACK_COLOR,
-      'Activity_Monitoring_MechanicalTerrestrialAquaticPlant',
-      recordsetColourScheme.Activity_Monitoring_MechanicalTerrestrialAquaticPlant ?? FALLBACK_COLOR,
-      'Activity_Observation_PlantAquatic',
-      recordsetColourScheme.Activity_Observation_PlantAquatic ?? FALLBACK_COLOR,
-      'Activity_Observation_PlantTerrestrial',
-      recordsetColourScheme.Activity_Observation_PlantTerrestrial ?? FALLBACK_COLOR,
-      'Activity_Treatment_ChemicalPlantAquatic',
-      recordsetColourScheme.Activity_Treatment_ChemicalPlantAquatic ?? FALLBACK_COLOR,
-      'Activity_Treatment_ChemicalPlantTerrestrial',
-      recordsetColourScheme.Activity_Treatment_ChemicalPlantTerrestrial ?? FALLBACK_COLOR,
-      'Activity_Treatment_MechanicalPlantAquatic',
-      recordsetColourScheme.Activity_Treatment_MechanicalPlantAquatic ?? FALLBACK_COLOR,
-      'Activity_Treatment_MechanicalPlantTerrestrial',
-      recordsetColourScheme.Activity_Treatment_MechanicalPlantTerrestrial ?? FALLBACK_COLOR,
+      ...activitySubtypeColours,
       color ?? FALLBACK_COLOR
-    ];
+    ] as unknown as ExpressionSpecification;
   }
   return color ?? FALLBACK_COLOR;
 };
