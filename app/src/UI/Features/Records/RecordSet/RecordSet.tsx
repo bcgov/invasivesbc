@@ -76,7 +76,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
   }, [cacheFilters, recordSet?.tableFilters]);
 
   useEffect(() => {
-    dispatch(Activity.switchRecordSet({ type: 'Activity', setId: parseInt(setID) }));
+    dispatch(Activity.switchRecordSet({ type: 'Activity', setId: setID }));
   }, [setID]);
 
   const onlyFilterIsForDrafts =
