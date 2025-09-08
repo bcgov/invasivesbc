@@ -4,15 +4,6 @@ import './map.css';
 
 import { useSelector } from 'utils/use_selector';
 import { getCurrentJWT } from 'state/sagas/auth/auth';
-import {
-  rebuildLayersOnTableHashUpdate,
-  refreshColoursOnColourUpdate,
-  refreshOfflineActivitiesLayer,
-  refreshVisibilityOnToggleUpdate,
-  removeOfflineActivitiesLayer,
-  removeRecordsetLayersOnForcedRedraw,
-  toggleOfflineActivityLabels
-} from 'UI/Features/LegacyMap/helpers/functional/recordset-layers';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import { PositionMarkers } from 'UI/Features/LegacyMap/helpers/components/PositionMarkers';
@@ -21,9 +12,7 @@ import { PMTiles, Protocol } from 'pmtiles';
 import { TileCacheService } from 'utils/tile-cache';
 import { CurrentActivityLayer } from 'UI/Features/LegacyMap/helpers/components/CurrentActivityLayer';
 import { DrawControls } from 'UI/Features/LegacyMap/helpers/components/DrawControls';
-import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/offlineActivity';
 import DisplayComposite from './helpers/components/DisplayComposite/DisplayComposite';
-import { sha1 } from 'utils/sha1';
 import { StartupContext } from 'UI/StartupCoordinator/StartupCoordinator';
 import {
   addClientBoundariesIfNotExists,
@@ -46,7 +35,7 @@ import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { OfflineMapsPluginPMTilesSource } from 'utils/offline-protomaps/capacitor';
 import { DEMO_DOWNLOADED_FILENAME } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/demo-offline-vector';
 import LayerDataMarker from './helpers/components/LayerDataMarker/LayerDataMarker';
-import { RecordSetId } from 'interfaces/UserRecordSet';
+import { useRecordSetControls } from 'utils/useRecordSetControls';
 
 const OfflineProtoMapsDebugModal = React.lazy(
   () => import('UI/Features/LegacyMap/helpers/components/OfflineProtomaps/Debug')
@@ -59,15 +48,15 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   // Auth + Network
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
-  const connectedToNetwork = useSelector((state) => state.Network.connected);
+  // const connectedToNetwork = useSelector((state) => state.Network.connected);
   const configuration = useSelector((state) => state.Configuration.current);
 
   // RecordSet Layers
   const storeLayers = useSelector((state) => state.Map.layers);
 
   // Offline Activities layer
-  const { serializedActivities } = useSelector((state) => state.OfflineActivity);
-  const offlineActivities = useSelector((state) => state.UserSettings.recordSets?.[RecordSetId.OfflineActivities]);
+  // const { serializedActivities } = useSelector((state) => state.OfflineActivity);
+  // const offlineActivities = useSelector((state) => state.UserSettings.recordSets?.[RecordSetId.OfflineActivities]);
 
   //KML
   const serverBoundaries = useSelector((state) => state.Map.serverBoundaries);
@@ -79,7 +68,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const map_center = useSelector((state) => state.Map.map_center);
   const map_zoom = useSelector((state) => state.Map.map_zoom);
 
-  const [cacheStatusHash, setCacheStatusHash] = useState<string>('init');
   const [map, setMap] = useState<InvasivesMap>();
   const [mapLoaded, setMapLoaded] = useState<boolean>(false);
   const [mapReady, setMapReady] = useState<boolean>(false);
@@ -87,7 +75,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const API_BASE = useSelector((state) => state.Configuration.current.runtime.API_BASE);
 
   const { sources, layers, availableLayerDefinitions, setActiveBaseMap, setOverlayState } = useInvasivesMapLayers();
-
+  const { recordsetLayers, recordsetSources } = useRecordSetControls();
   useEffect(() => {
     if (!mapContainer.current) {
       console.error('Mapinit invoked with invalid reference');
@@ -268,55 +256,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
     for (const layer of storeLayers) {
       cacheStatusTuples += `${layer.recordSetID}-${layer.layerState?.cacheMetadataStatus}`;
     }
-    sha1(cacheStatusTuples).then((hash) => {
-      setCacheStatusHash(hash);
-    });
   }, [storeLayers]);
-
-  useEffect(() => {
-    if (!mapReady) return;
-    if (!map) return;
-    removeRecordsetLayersOnForcedRedraw(map);
-  }, [connectedToNetwork, cacheStatusHash]);
-
-  // RecordSet Layers:
-  useEffect(() => {
-    if (!mapReady) return;
-    if (!map) return;
-    (async () => {
-      await rebuildLayersOnTableHashUpdate(storeLayers, map, connectedToNetwork);
-      refreshColoursOnColourUpdate(storeLayers, map);
-      refreshVisibilityOnToggleUpdate(storeLayers, map);
-    })();
-  }, [storeLayers, map, mapReady, connectedToNetwork, loggedInOrWorkingOffline, cacheStatusHash]);
-
-  // Offline Activities Layer:
-  useEffect(() => {
-    if (!map || !mapReady || !configuration.build.MOBILE) return;
-    if (!offlineActivities?.mapToggle || !loggedInOrWorkingOffline) {
-      removeOfflineActivitiesLayer(map);
-    } else {
-      const unsyncedOfflineActivities = Object.fromEntries(
-        Object.entries(serializedActivities).filter(
-          ([, value]) => (value as OfflineActivityRecord).sync_state !== OfflineActivitySyncState.SYNCHRONIZED
-        )
-      );
-      refreshOfflineActivitiesLayer(
-        map,
-        offlineActivities?.mapToggle,
-        offlineActivities?.labelToggle,
-        unsyncedOfflineActivities as Record<PropertyKey, OfflineActivityRecord>
-      );
-    }
-  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, offlineActivities?.mapToggle]);
-
-  // Offline Activities Label:
-  useEffect(() => {
-    if (!map || !mapReady || !configuration.build.MOBILE) return;
-    (async () => {
-      await toggleOfflineActivityLabels(map, offlineActivities?.labelToggle);
-    })();
-  }, [serializedActivities, map, mapReady, loggedInOrWorkingOffline, offlineActivities?.labelToggle]);
 
   useEffect(() => {
     if (!mapReady || !map) return;
@@ -398,15 +338,15 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
           <ButtonContainer selectLayer={buttonContainerLayerSelect} layers={availableLayerDefinitions} />
 
-          {Object.entries(sources).map(([key, source]) => (
+          {[...Object.entries(recordsetSources), ...Object.entries(sources)].map(([key, source]) => (
             <SourceComponent mapReady={mapReady} key={key} id={key} source={source} />
           ))}
 
-          {layers.map((layer) => (
+          {[...layers, ...recordsetLayers].map((layer) => (
             <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
           ))}
 
-          {Object.keys(sources).map((key) => (
+          {[...Object.keys(sources), ...Object.keys(recordsetSources)].map((key) => (
             <SourceCleanupComponent mapReady={mapReady} key={key} id={key} />
           ))}
 
