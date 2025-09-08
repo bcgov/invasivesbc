@@ -23,6 +23,8 @@ const useRecordSetControls = (id?: string) => {
   const [recordsetLayers, setRecordsetLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
   const [recordsetSources, setRecordsetSources] = useState<{ [_: string]: SourceSpecification }>({});
   const recordsets = useSelector((state) => state.UserSettings.recordSets, shallowEqual);
+
+  // Predicate variables.
   const MOBILE = useSelector((state) => state.Configuration.current.build.MOBILE);
   const DEBUG = useSelector((state) => state.Configuration.current.build.DEBUG);
   const platform = useSelector((state) => state.Configuration.current.build.PLATFORM);
@@ -30,9 +32,12 @@ const useRecordSetControls = (id?: string) => {
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   const connected = useSelector((state) => state.Network.connected);
 
+  /**
+   * Rebuild Recordset layers when recordsets/auth/online status changes.
+   */
   useEffect(() => {
     const recordSetData = buildCompleteRecordsetMapSpecificationFromRecordsets(recordsets);
-    const filteredRecordDefinitions: InvasivesMapLayerDefinitionWithState[] = [];
+    const filteredRecordDefinitions: Array<InvasivesMapLayerDefinitionWithState> = [];
 
     for (const l of recordSetData.definitions) {
       const pass = (() => {
@@ -61,8 +66,7 @@ const useRecordSetControls = (id?: string) => {
       }
     }
     const newLayers: LayerSpecificationWithStackingOrder[] = [];
-
-    const requiredSources: (keyof typeof recordSetData.sources | string)[] = [];
+    const requiredSources: Array<keyof typeof recordSetData.sources | string> = [];
 
     filteredRecordDefinitions.forEach((l) => {
       if (l.active) {
@@ -77,6 +81,7 @@ const useRecordSetControls = (id?: string) => {
         }
       }
     });
+
     setRecordsetSources(recordSetData.sources);
     setRecordsetLayers(newLayers);
   }, [recordsets, connected, loggedInOrWorkingOffline]);
