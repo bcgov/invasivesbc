@@ -2,7 +2,7 @@ import { DynamicMapComponent } from 'UI/Layout/DynamicMapComponent/DynamicMapCom
 import 'UI/Layout/WideLayout/WideLayout.css';
 import { AppRoutes } from 'UI/Layout/Routes/AppRoutes';
 import { LayoutMode, usePrimaryNavigationLinks } from 'UI/Layout/Routes/PrimaryNavigation';
-import { Link, Outlet } from 'react-router';
+import { Link } from 'react-router';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import React, { useEffect, useState } from 'react';
 import NewRecordDialog from 'UI/Features/Records/NewRecordDialog';
@@ -20,6 +20,7 @@ import { OfflineUserMenu } from 'UI/Features/OfflineUserMenu/OfflineUserMenu';
 import DebugMenu from 'UI/Layout/DebugMenu/DebugMenu';
 import { NetworkStateControl } from 'UI/Reusable/NetworkStateControl';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import ContextualPopover from 'UI/Layout/ContextualPopover/ContextualPopover';
 
 const WideLayout = () => {
   const { filteredLinks } = usePrimaryNavigationLinks();
@@ -126,7 +127,7 @@ const WideLayout = () => {
           </div>
         )}
 
-        <Outlet />
+        <ContextualPopover />
 
         <AppRoutes />
       </div>

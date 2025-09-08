@@ -59,7 +59,7 @@ export const getDataFromDataBC: any = async (
 
   let URL = buildURLForDataBC(layerName, geoJSON, dataBCAcceptsGeometry);
 
-  let resp = await getSimplifiedJSON(encodeURI(URL), '0.02');
+  let resp = await getSimplifiedJSON(encodeURIComponent(URL), '0.02');
 
   const returnVal = resp;
   if (!pageSize && !startIndex) {
