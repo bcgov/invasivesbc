@@ -49,15 +49,7 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   // Auth + Network
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
-  // const connectedToNetwork = useSelector((state) => state.Network.connected);
   const configuration = useSelector((state) => state.Configuration.current);
-
-  // RecordSet Layers
-  const storeLayers = useSelector((state) => state.Map.layers);
-
-  // Offline Activities layer
-  // const { serializedActivities } = useSelector((state) => state.OfflineActivity);
-  // const offlineActivities = useSelector((state) => state.UserSettings.recordSets?.[RecordSetId.OfflineActivities]);
 
   //KML
   const serverBoundaries = useSelector((state) => state.Map.serverBoundaries);
@@ -247,17 +239,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
       setMapReady(true);
     }
   }, [map?.isStyleLoaded()]);
-
-  useEffect(() => {
-    // update cacheStatusHash when any recordset is added/removed or has a cache status change. this will force a redraw.
-    if (!configuration.build.MOBILE) {
-      return;
-    }
-    let cacheStatusTuples = '';
-    for (const layer of storeLayers) {
-      cacheStatusTuples += `${layer.recordSetID}-${layer.layerState?.cacheMetadataStatus}`;
-    }
-  }, [storeLayers]);
 
   useEffect(() => {
     if (!mapReady || !map) return;
