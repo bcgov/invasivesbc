@@ -164,7 +164,7 @@ const useInvasivesMapLayers = () => {
     setLayers(newLayers);
     setSources(newSources);
   }, [availableLayerDefinitions, tileCacheState]);
-  console.log('AvailableLayers', availableLayerDefinitions);
+
   const setActiveBaseMap = useMemo(
     () =>
       debounce(
