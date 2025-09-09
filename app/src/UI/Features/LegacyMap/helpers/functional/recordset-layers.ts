@@ -1,14 +1,17 @@
-import { ColorSpecification, ExpressionSpecification, SourceSpecification } from 'maplibre-gl';
+import { SourceSpecification } from 'maplibre-gl';
 import { Md5 } from 'ts-md5';
+import {
+  createBorderLayer,
+  createCircleLayer,
+  createFillLayer,
+  createLabelLayer,
+  getPaintBySchemeOrColor
+} from './layer-definitions/reusable-layer-specifications';
 import {
   InvasivesMapLayerDefinition,
   MapDefinitionEligibilityPredicatesBuilder
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
-import { FALLBACK_COLOR } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { RecordSetId, RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
-import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
-import { white } from 'constants/colors';
-import recordsetColourScheme from 'constants/recordsetColourScheme';
 
 function buildCompleteRecordsetMapSpecificationFromRecordsets(recordSets: Record<PropertyKey, UserRecordSet>) {
   return Object.values(recordSets)
@@ -45,15 +48,18 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
       return null;
     }
   })();
+  const stringifiedFilters = JSON.stringify(filterObject);
+  const SOURCE_ID = rec.id + rec.tableFiltersHash;
   // Forces Layers to refresh when filters/toggles/colours update
-  const layerID = Md5.hashStr(
-    rec.id + JSON.stringify(rec?.tableFilters) + rec.mapToggle + rec.labelToggle + JSON.stringify(color)
-  );
+  const layerID =
+    'recordset-layer-' +
+    Md5.hashStr(SOURCE_ID + stringifiedFilters + rec.mapToggle + rec.labelToggle + JSON.stringify(color));
+
   return {
     sources: {
-      [rec.id]: {
+      [SOURCE_ID]: {
         type: 'vector',
-        tiles: [`api:///api/vectors/${api_target}/{z}/{x}/{y}?filterObject=${encodeURI(JSON.stringify(filterObject))}`],
+        tiles: [`api:///api/vectors/${api_target}/{z}/{x}/{y}?filterObject=${encodeURI(stringifiedFilters)}`],
         minzoom: 0
       }
     },
@@ -70,101 +76,38 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
           .requiresNetwork(true)
           .build(),
         layers: [
-          {
-            id: 'fill-' + layerID,
-            type: 'fill',
-            source: rec.id,
+          createFillLayer({
+            layerId: layerID,
+            sourceId: SOURCE_ID,
             'source-layer': 'data',
-            paint: {
-              'fill-color': color,
-              'fill-outline-color': color,
-              'fill-opacity': 0.5
-            },
-            minzoom: 0,
-            layout: {
-              visibility: 'visible'
-            }
-          },
-          {
-            id: 'polygon-border-' + layerID,
-            source: rec.id,
+            color: color,
+            visibility: 'visible'
+          }),
+          createCircleLayer({
+            layerId: layerID,
+            sourceId: SOURCE_ID,
             'source-layer': 'data',
-            type: 'line',
-            paint: {
-              'line-color': color,
-              'line-opacity': 1,
-              'line-width': 3
-            },
-            minzoom: 0,
-            layout: {
-              visibility: 'visible'
-            }
-          },
-          {
-            id: 'polygon-circle-' + layerID,
-            source: rec.id,
+            color: color,
+            visibility: 'visible'
+          }),
+          createLabelLayer({
+            layerId: layerID,
+            sourceId: SOURCE_ID,
             'source-layer': 'data',
-            type: 'circle',
-            paint: {
-              'circle-color': color,
-              'circle-radius': 4
-            },
-            minzoom: 0,
-            layout: {
-              visibility: 'visible'
-            }
-          },
-          {
-            id: 'label-' + layerID,
-            source: rec.id,
-            'source-layer': 'data',
-            type: 'symbol',
-            layout: {
-              'text-field': [
-                'format',
-                ['get', 'short_id'],
-                { 'font-scale': 0.9 },
-                ['get', 'site_id'],
-                { 'font-scale': 0.9 },
-                '\n',
-                {},
-                ['get', 'map_symbol'],
-                { 'font-scale': 0.9 }
-              ],
-              // the actual font names that work are here https://github.com/openmaptiles/fonts/blob/gh-pages/fontstacks.json
-              'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
-              'text-offset': [0, 0.6],
-              'text-anchor': 'top',
-              visibility: rec.labelToggle ? 'visible' : 'none'
-            },
-            paint: {
-              'text-color': 'black',
-              'text-halo-color': 'white',
-              'text-halo-width': 1,
-              'text-halo-blur': 1
-            },
+            visibility: rec.labelToggle ? 'visible' : 'none',
             minzoom: 12
-          }
+          }),
+          createBorderLayer({
+            layerId: layerID,
+            sourceId: SOURCE_ID,
+            'source-layer': 'data',
+            color: color,
+            visibility: 'visible'
+          })
         ]
       }
     ]
   };
 }
 
-const getPaintBySchemeOrColor = (color: string): ColorSpecification | ExpressionSpecification => {
-  if (color === white) {
-    const activitySubtypeColours = Object.entries(recordsetColourScheme).flatMap(([activity, colour]) => [
-      activity,
-      colour ?? FALLBACK_COLOR
-    ]);
-    return [
-      'match',
-      ['get', 'activity_subtype'],
-      ...activitySubtypeColours,
-      color ?? FALLBACK_COLOR
-    ] as unknown as ExpressionSpecification;
-  }
-  return color ?? FALLBACK_COLOR;
-};
-
-export { getPaintBySchemeOrColor, buildCompleteRecordsetMapSpecificationFromRecordsets };
+export { buildCompleteRecordsetMapSpecificationFromRecordsets };
