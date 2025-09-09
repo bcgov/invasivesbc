@@ -77,6 +77,8 @@ const createLabelLayer = (options: LabelOptions): LayerSpecificationWithStacking
       'format',
       ['get', options.get_tag ?? 'short_id'],
       { 'font-scale': 0.9 },
+      ['get', options.get_tag ?? 'site_id'],
+      { 'font-scale': 0.9 },
       '\n',
       {},
       ['get', 'map_symbol'],
