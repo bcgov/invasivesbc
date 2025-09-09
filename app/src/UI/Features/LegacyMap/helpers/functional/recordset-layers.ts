@@ -80,15 +80,13 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
             layerId: layerID,
             sourceId: SOURCE_ID,
             'source-layer': 'data',
-            color: color,
-            visibility: 'visible'
+            color: color
           }),
           createCircleLayer({
             layerId: layerID,
             sourceId: SOURCE_ID,
             'source-layer': 'data',
-            color: color,
-            visibility: 'visible'
+            color: color
           }),
           createLabelLayer({
             layerId: layerID,
@@ -101,8 +99,7 @@ function buildRecordsetLayerDefinitionsFromRecordset(rec: UserRecordSet): {
             layerId: layerID,
             sourceId: SOURCE_ID,
             'source-layer': 'data',
-            color: color,
-            visibility: 'visible'
+            color: color
           })
         ]
       }

@@ -1,12 +1,7 @@
-import {
-  CircleLayerSpecification,
-  ColorSpecification,
-  ExpressionSpecification,
-  FillLayerSpecification,
-  LineLayerSpecification,
-  SymbolLayerSpecification
-} from 'maplibre-gl';
+import { ColorSpecification, ExpressionSpecification } from 'maplibre-gl';
 import { FALLBACK_COLOR } from '../constants';
+import { LayerSpecificationWithStackingOrder } from '../layers-hook';
+import { LAYER_Z_FOREGROUND } from './types';
 import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
 import recordsetColourScheme from 'constants/recordsetColourScheme';
 import { white } from 'constants/colors';
@@ -16,7 +11,6 @@ interface LayerOptions {
   sourceId: string;
   minzoom?: number;
   maxzoom?: number;
-  visibility: 'visible' | 'none';
   'source-layer'?: string | undefined;
 }
 
@@ -26,12 +20,13 @@ interface PaintLayerOptions extends LayerOptions {
 
 interface LabelOptions extends LayerOptions {
   get_tag?: string;
+  visibility: 'visible' | 'none';
 }
 
-const createFillLayer = (options: PaintLayerOptions): FillLayerSpecification => ({
+const createFillLayer = (options: PaintLayerOptions): LayerSpecificationWithStackingOrder => ({
   id: 'fill-' + options.layerId,
   source: options.sourceId,
-  'source-layer': options?.['source-layer'],
+  ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
   type: 'fill',
   paint: {
     'fill-color': options.color,
@@ -39,13 +34,14 @@ const createFillLayer = (options: PaintLayerOptions): FillLayerSpecification => 
     'fill-opacity': 0.5
   },
   minzoom: options?.minzoom ?? 0,
-  maxzoom: options?.maxzoom ?? 24
+  maxzoom: options?.maxzoom ?? 24,
+  stackLayer: LAYER_Z_FOREGROUND
 });
 
-const createBorderLayer = (options: PaintLayerOptions): LineLayerSpecification => ({
+const createBorderLayer = (options: PaintLayerOptions): LayerSpecificationWithStackingOrder => ({
   id: 'polygon-border-' + options.layerId,
   source: options.sourceId,
-  'source-layer': options?.['source-layer'],
+  ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
   type: 'line',
   paint: {
     'line-color': options.color,
@@ -53,26 +49,28 @@ const createBorderLayer = (options: PaintLayerOptions): LineLayerSpecification =
     'line-width': 3
   },
   minzoom: options?.minzoom ?? 0,
-  maxzoom: options?.maxzoom ?? 24
+  maxzoom: options?.maxzoom ?? 24,
+  stackLayer: LAYER_Z_FOREGROUND
 });
 
-const createCircleLayer = (options: PaintLayerOptions): CircleLayerSpecification => ({
+const createCircleLayer = (options: PaintLayerOptions): LayerSpecificationWithStackingOrder => ({
   id: 'polygon-circle-' + options.layerId,
   source: options.sourceId,
-  'source-layer': options?.['source-layer'],
+  ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
   type: 'circle',
   paint: {
     'circle-color': options.color,
     'circle-radius': 4
   },
   minzoom: options?.minzoom ?? 0,
-  maxzoom: options?.maxzoom ?? 24
+  maxzoom: options?.maxzoom ?? 24,
+  stackLayer: LAYER_Z_FOREGROUND
 });
 
-const createLabelLayer = (options: LabelOptions): SymbolLayerSpecification => ({
+const createLabelLayer = (options: LabelOptions): LayerSpecificationWithStackingOrder => ({
   id: 'label-' + options.layerId,
   source: options.sourceId,
-  'source-layer': options?.['source-layer'],
+  ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
   type: 'symbol',
   layout: {
     'text-field': [
@@ -97,7 +95,8 @@ const createLabelLayer = (options: LabelOptions): SymbolLayerSpecification => ({
     'text-halo-blur': 1
   },
   minzoom: options?.minzoom ?? 0,
-  maxzoom: options?.maxzoom ?? 24
+  maxzoom: options?.maxzoom ?? 24,
+  stackLayer: LAYER_Z_FOREGROUND
 });
 
 const getPaintBySchemeOrColor = (color: string): ColorSpecification | ExpressionSpecification => {
@@ -117,3 +116,4 @@ const getPaintBySchemeOrColor = (color: string): ColorSpecification | Expression
 };
 
 export { createLabelLayer, createCircleLayer, createBorderLayer, createFillLayer, getPaintBySchemeOrColor };
+export type { LayerOptions };
