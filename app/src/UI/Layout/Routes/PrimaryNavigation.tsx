@@ -5,6 +5,7 @@ import { FeatureFlags } from 'state/configuration/feature-flags';
 import { useSelector } from 'utils/use_selector';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import { selectAuth } from 'state/reducers/auth';
+import { matchPath, PathPattern, useLocation } from 'react-router';
 
 enum LayoutMode {
   MAP_FOCUSED = 'map_focused',
@@ -32,6 +33,7 @@ type PrimaryNavigationDescriptor = {
   path: string;
   label: string;
   predicate: TabPredicate;
+  activePaths: PathPattern<string>[];
   platform: PlatformPredicate;
   layout: LayoutMode;
   icon: ReactNode;
@@ -50,8 +52,6 @@ function usePrimaryNavigationLinks() {
 
   const authenticated = useSelector((state) => state.Auth.authenticated && state?.Auth.roles.length > 0);
 
-  const appModeURL = useSelector((state) => state.AppMode.url);
-
   const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
 
   const { workingOffline, loggedInOrWorkingOffline } = useSelector(selectAuth);
@@ -59,6 +59,7 @@ function usePrimaryNavigationLinks() {
   const { features } = useSelector((state) => state.Configuration.current);
   const roles = useSelector((state) => state.Auth.roles);
 
+  const location = useLocation();
   const [filteredLinks, setFilteredLinks] = React.useState<PrimaryNavigationLink[]>([]);
 
   useEffect(() => {
@@ -100,16 +101,17 @@ function usePrimaryNavigationLinks() {
       filtered.map((link) => {
         return {
           ...link,
-          active: link.path === appModeURL
+          active: link.activePaths.some((p) => matchPath(p, location.pathname) !== null)
         };
       })
     );
-  }, [loggedInOrWorkingOffline, authenticated]);
+  }, [loggedInOrWorkingOffline, authenticated, location.pathname]);
 
   const PRIMARY_NAVIGATION_LINKS: PrimaryNavigationDescriptor[] = [
     {
       id: 'landing',
       path: '/Landing',
+      activePaths: [{ path: '/Landing', caseSensitive: false }],
       predicate: TabPredicate.ALWAYS,
       platform: PlatformPredicate.BOTH,
       label: 'Home',
@@ -119,6 +121,10 @@ function usePrimaryNavigationLinks() {
     {
       id: 'records',
       path: '/Records',
+      activePaths: [
+        { path: '/Records', end: true },
+        { path: '/Records/List/*', caseSensitive: false, end: true }
+      ],
       label: 'Records',
       predicate: TabPredicate.AUTHENTICATED_ANY,
       platform: PlatformPredicate.BOTH,
@@ -128,6 +134,7 @@ function usePrimaryNavigationLinks() {
     {
       id: 'activity',
       path: `/Records/Activity/${activeActivity}/form`,
+      activePaths: [{ path: '/Records/Activity/:id/*', end: true }],
       label: isCellPhoneWidth ? 'Activity' : 'Current Activity',
       predicate: TabPredicate.AUTHENTICATED_ANY,
       platform: PlatformPredicate.BOTH,
@@ -137,6 +144,7 @@ function usePrimaryNavigationLinks() {
     {
       id: 'iapp',
       path: `/Records/IAPP/${activeIAPP}/summary`,
+      activePaths: [{ path: '/Records/IAPP/:id/*', end: true }],
       label: isCellPhoneWidth ? 'IAPP' : 'Current IAPP',
       predicate: TabPredicate.AUTHENTICATED_ANY,
       platform: PlatformPredicate.BOTH,
@@ -153,6 +161,10 @@ function usePrimaryNavigationLinks() {
     {
       id: 'list',
       path: '/Batch/list',
+      activePaths: [
+        { path: '/Batch', end: true },
+        { path: '/Batch/*', end: true }
+      ],
       label: 'Batch',
       requiresFeature: 'BATCH',
       predicate: TabPredicate.AUTHENTICATED_ONLINE,
@@ -163,6 +175,7 @@ function usePrimaryNavigationLinks() {
     {
       id: 'admin',
       path: '/Admin',
+      activePaths: [{ path: '/Admin' }],
       label: 'Admin',
       predicate: TabPredicate.ALWAYS,
       platform: PlatformPredicate.WEB,
@@ -173,6 +186,7 @@ function usePrimaryNavigationLinks() {
     {
       id: 'reports',
       path: '/Reports',
+      activePaths: [{ path: '/Reports' }],
       label: 'Reports',
       requiresFeature: 'EMBEDDED_REPORTS',
       predicate: TabPredicate.AUTHENTICATED_ONLINE,
@@ -183,6 +197,7 @@ function usePrimaryNavigationLinks() {
     {
       id: 'news',
       path: '/News',
+      activePaths: [{ path: '/News' }],
       label: 'News',
       predicate: TabPredicate.AUTHENTICATED_ONLINE,
       platform: PlatformPredicate.WEB,
@@ -192,6 +207,7 @@ function usePrimaryNavigationLinks() {
     {
       id: 'training',
       path: '/Training',
+      activePaths: [{ path: '/Training' }],
       label: 'Training',
       requiresFeature: 'TRAINING_PAGE',
       predicate: TabPredicate.ALWAYS,
@@ -202,6 +218,7 @@ function usePrimaryNavigationLinks() {
     {
       id: 'map',
       path: '/Map',
+      activePaths: [{ path: '/Map' }],
       label: 'Map',
       requiresFeature: 'MAP',
       predicate: TabPredicate.UNAUTHENTICATED,
