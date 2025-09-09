@@ -1,36 +1,96 @@
-.whatshere-container {
-  width: 100%;
-}
+#whats-here-page {
+  --back-button-height: 45px;
+  width: 100vw;
+  flex-direction: column;
+  box-sizing: border-box;
+  overflow-y: auto;
 
-.whatshere-margin {
-  margin: 5pt;
-}
+  /** Sticky Header with Back button */
+  .whats-here-back {
+    background-color: white;
+    box-sizing: border-box;
+    padding: 5px;
+    width: 100%;
+    top: var(--overlay-grip-height);
+    z-index: 1;
+    position: absolute;
+    align-items: center;
+    display: flex;
+    flex-flow: row wrap;
+    min-height: var(--back-button-height);
+    justify-content: flex-start;
+    border-bottom: 1px solid black;
 
-.whatshere-table {
-  width: 100%;
-  height: 100%;
-}
+    p {
+      margin: 0 0 0 1rem;
+      font-size: 20px;
+    }
+  }
+  /** Tab Content, Whats Here UTM Details */
+  .top-level {
+    margin-top: calc(var(--overlay-grip-height) + var(--back-button-height, 0));
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
 
-.whatshere-position {
-  height: 450px;
-}
+  /*Table Container for wrapping and overflowing */
+  .whats-here-table-container {
+    box-sizing: border-box;
+    overflow-x: auto;
+    max-height: 375px;
+    margin-top: 1rem;
+    table {
+      margin: auto;
+      width: max-content;
+      border-collapse: collapse;
+      text-align: left;
+      thead {
+        border-bottom: 1pt solid black;
+      }
+      td {
+        vertical-align: text-top;
+      }
+      tr {
+        height: 45px;
+        td,
+        th {
+          padding-left: 1rem;
+        }
+        td:last-child,
+        th:last-child {
+          padding-right: 1rem;
+        }
+      }
+      tbody tr {
+        background-color: var(--odd-list-item-bg-color);
+        &:nth-child(even) {
+          background-color: var(--even-list-item-bg-color);
+        }
+        &:hover {
+          background-color: var(--hovered-list-item-bg-color);
+        }
+      }
+      /* Specific Selectors when Display Activity Records */
+      &.Activity {
+        td:nth-child(3)::after {
+          content: 'm\00B2'; /* Set m^2 after "reported area" field */
+        }
+        tbody td:nth-child(5) {
+          font-size: 0.9rem;
+        }
+      }
+      &.IAPP {
+        td:nth-child(3) {
+          font-size: 0.9rem;
+        }
+      }
+    }
+  }
 
-.whatshere-margin {
-  width: 5pt;
-}
-
-.whatshere-table-container {
-  margin: 0 1rem;
-  padding-bottom: 3rem;
-}
-
-.whatshere_back_button {
-  margin: 8pt 0;
-  z-index: 1;
-  position: absolute;
-}
-
-.whatshere-header {
-  display: flex;
-  align-items: center;
+  .whats-here-pagination {
+    margin-bottom: calc(1rem + var(--footer-bar-height));
+  }
 }

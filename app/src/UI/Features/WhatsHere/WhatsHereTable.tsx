@@ -1,12 +1,9 @@
 import { ChangeEvent, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import center from '@turf/center';
-import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
+import { Button, Tab, Tabs } from '@mui/material';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
-import RenderTableActivity from 'UI/Features/WhatsHere/Subcomponents/RenderTableActivity';
-import RenderTablePOI from 'UI/Features/WhatsHere/Subcomponents/RenderTablePOI';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
 import { calc_utm } from 'utils/utm';
 import 'UI/Features/WhatsHere/WhatsHereTable.css';
 import { ArrowLeftIcon } from '@mui/x-date-pickers/icons';
@@ -16,6 +13,7 @@ import { RecordSetType } from 'interfaces/UserRecordSet';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
 import { useNavigate } from 'react-router';
+import TabularWhatsHereData from './Subcomponents/TabularWhatsHereData';
 
 export const WhatsHereTable = () => {
   const createDataUTM = (name: string, value: any) => ({ name, value });
@@ -50,7 +48,7 @@ export const WhatsHereTable = () => {
   ];
 
   return (
-    <div className="whatshere-container">
+    <div id="whats-here-page">
       <CustomPopover buttonOverrideOptions={{ anchorEl, setAnchorEl }}>
         <RecordTablePopoverContent
           recordDisplayId={recordDisplayId[recordTab]}
@@ -58,34 +56,26 @@ export const WhatsHereTable = () => {
           recordLookupId={recordLookupId[recordTab]}
         />
       </CustomPopover>
-      <div className="whatshere-table-container">
-        <div className="whatshere_back_button">
-          <Button onClick={() => navigate(-1)} color="info" variant="contained">
-            <ArrowLeftIcon />
-            Back
-          </Button>
+      <div className="whats-here-back">
+        <Button onClick={() => navigate(-1)} color="info" variant="contained">
+          <ArrowLeftIcon />
+          Back
+        </Button>
+        <p>Features in Area</p>
+      </div>
+      <div className="top-level">
+        <div className="utm-details">
+          What's Here: <br /> {`UTM: Z-${utmRows[0]?.value} E-${utmRows[1]?.value} N-${utmRows[2]?.value}`}
         </div>
-        <div id="whatsherepopup" className="whatshere-table">
-          <Grid className="whatshere-header" container justifyContent="center" sx={{ mb: 2 }}>
-            <div className="whatshere-title">
-              What's Here: <br /> {`UTM: Z-${utmRows[0]?.value} E-${utmRows[1]?.value} N-${utmRows[2]?.value}`}
-            </div>
-            <Tabs value={recordTab} onChange={handleChange} centered>
-              <Tab value={RecordSetType.Activity} label="InvasivesBC Records" icon={<FolderIcon />} />
-              <Tab value={RecordSetType.IAPP} label="IAPP Records" icon={<AdjustIcon />} />
-            </Tabs>
-          </Grid>
-          {loadingInProgress && <Spinner />}
-          <TableContainer className="whatshere-position">
-            {
-              {
-                [RecordSetType.Activity]: <RenderTableActivity setAnchorEl={setAnchorEl} />,
-                [RecordSetType.IAPP]: <RenderTablePOI setAnchorEl={setAnchorEl} />
-              }[recordTab]
-            }
-          </TableContainer>
+        <div>
+          <Tabs value={recordTab} onChange={handleChange} centered>
+            <Tab value={RecordSetType.Activity} label="InvasivesBC Records" icon={<FolderIcon />} />
+            <Tab value={RecordSetType.IAPP} label="IAPP Records" icon={<AdjustIcon />} />
+          </Tabs>
         </div>
       </div>
+      {loadingInProgress && <Spinner />}
+      <TabularWhatsHereData recordsetType={recordTab} setAnchorEl={setAnchorEl} />
     </div>
   );
 };
