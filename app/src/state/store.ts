@@ -78,9 +78,6 @@ export function setupStore(configuration: UnifiedConfig) {
   sagaMiddleware.run(networkSaga);
   sagaMiddleware.run(planMyTripSaga);
 
-  store.dispatch(NetworkActions.checkInitConnection());
-  store.dispatch(AuthActions.initializeRequest());
-
   storeRef.store = store;
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
