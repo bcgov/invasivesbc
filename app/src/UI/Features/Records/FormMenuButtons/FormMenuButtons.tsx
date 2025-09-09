@@ -5,11 +5,11 @@ import { useSelector } from 'utils/use_selector';
 import Activity from 'state/actions/activity/Activity';
 import 'UI/Features/Records/FormMenuButtons/FormMenuButtons.css';
 import { selectOfflineActivity } from 'state/reducers/offlineActivity';
-import { useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 
 const FormMenuButtons = () => {
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const activityErrors = useSelector((state) => state.ActivityPage?.activityErrors);
   const activity_id = useSelector((state) => state.ActivityPage?.activity?.activity_id);
@@ -49,7 +49,7 @@ const FormMenuButtons = () => {
     } else {
       dispatch(Activity.deleteReq());
     }
-    setTimeout(() => history.push('/Records'), 500);
+    setTimeout(() => navigate('/Records'), 500);
   };
 
   return (

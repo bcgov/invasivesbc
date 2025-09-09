@@ -4,7 +4,6 @@ import center from '@turf/center';
 import { Button, Grid, Tab, TableContainer, Tabs } from '@mui/material';
 import AdjustIcon from '@mui/icons-material/Adjust';
 import FolderIcon from '@mui/icons-material/Folder';
-import { useHistory } from 'react-router';
 import RenderTableActivity from 'UI/Features/WhatsHere/Subcomponents/RenderTableActivity';
 import RenderTablePOI from 'UI/Features/WhatsHere/Subcomponents/RenderTablePOI';
 import { useSelector } from 'utils/use_selector';
@@ -16,6 +15,7 @@ import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
+import { useNavigate } from 'react-router';
 
 export const WhatsHereTable = () => {
   const createDataUTM = (name: string, value: any) => ({ name, value });
@@ -25,7 +25,7 @@ export const WhatsHereTable = () => {
   };
 
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
   const whatsHere = useSelector((state) => state.Map?.whatsHere);
 
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -60,7 +60,7 @@ export const WhatsHereTable = () => {
       </CustomPopover>
       <div className="whatshere-table-container">
         <div className="whatshere_back_button">
-          <Button onClick={history.goBack} color="info" variant="contained">
+          <Button onClick={() => navigate(-1)} color="info" variant="contained">
             <ArrowLeftIcon />
             Back
           </Button>

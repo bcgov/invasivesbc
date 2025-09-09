@@ -1,9 +1,9 @@
+import { randomUUID } from 'node:crypto';
 import { Operation } from 'express-openapi';
 import { RequestHandler } from 'express';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { validIAPPSortColumns } from 'sharedAPI/src/misc/sortColumns';
 import { PoolClient } from 'pg';
-import { nanoid } from 'nanoid';
 import { getLogger } from 'utils/logger';
 import { streamIAPPResult } from 'utils/iapp-json-utils';
 import { getDBConnection } from 'database/db';
@@ -256,7 +256,7 @@ function sanitizeIAPPFilterObject(filterObject: any, req: InvasivesRequest) {
  * @return {RequestHandler}
  */
 function getIAPPSitesBySearchFilterCriteria(): RequestHandler {
-  const reqID = nanoid();
+  const reqID = randomUUID();
   return async (req: InvasivesRequest, res) => {
     if (req.authContext.roles.length === 0) {
       res.status(401).json({ message: 'No Role for user' });
@@ -679,7 +679,7 @@ function whereStatement(sqlStatement: SQLStatement, filterObject: any) {
   if (filterObject?.user_id) {
     where.append(
       `AND (
-        sites.protected = FALSE 
+        sites.protected = FALSE
         OR (
         SELECT BOOL_OR(can_read_sensitive_biocontrol)
         FROM get_user_permissions(${filterObject.user_id})

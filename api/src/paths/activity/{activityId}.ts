@@ -1,7 +1,8 @@
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
+import { PoolClient } from 'pg';
+import { GetObjectCommandOutput } from '@aws-sdk/client-s3';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getDBConnection } from 'database/db';
 import { getActivityHistorySQL, getActivitySqlWithPermissions } from 'queries/activity-queries';
@@ -9,7 +10,6 @@ import { getFileFromS3 } from 'utils/file-utils';
 import { getLogger } from 'utils/logger';
 import { getMediaItemsList } from 'paths/media';
 import { InvasivesRequest } from 'utils/auth-utils';
-import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('activity');
 
@@ -126,7 +126,7 @@ function getMedia(): RequestHandler {
       return next();
     }
 
-    const s3GetPromises: Promise<GetObjectOutput>[] = [];
+    const s3GetPromises: Promise<GetObjectCommandOutput>[] = [];
 
     try {
       activity['media_keys'].forEach((key: string) => {
@@ -138,7 +138,7 @@ function getMedia(): RequestHandler {
       // Add encoded media to activity
       req['activity'].media = getMediaItemsList(response, activity['media_keys']);
     } catch (e) {
-      defaultLog.error('error while retrieving media keys from s3');
+      defaultLog.error({ message: 'error while retrieving media keys from s3', error: e });
     }
     return next();
   };

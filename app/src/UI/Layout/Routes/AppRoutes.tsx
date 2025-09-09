@@ -1,4 +1,4 @@
-import { Redirect, Route } from 'react-router-dom';
+import { Navigate, Route, Routes, useParams } from 'react-router';
 import { LandingComponent } from 'UI/Features/Landing/Landing';
 import { Records } from 'UI/Features/Records/Records';
 import { Activity } from 'UI/Features/Records/Record';
@@ -9,6 +9,9 @@ import { RecordSet } from 'UI/Features/Records/RecordSet/RecordSet';
 import React, { Suspense } from 'react';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import { WhatsHereTable } from 'UI/Features/WhatsHere/WhatsHereTable';
+import FormMenuButtons from 'UI/Features/Records/FormMenuButtons/FormMenuButtons';
+import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
+import { useSelector } from 'utils/use_selector';
 
 const UserAccessPage = React.lazy(() => import('UI/Features/Admin/userAccess/UserAccessPage'));
 const EmbeddedReportsPage = React.lazy(() => import('UI/Features/Reports/EmbeddedReportsPage'));
@@ -25,75 +28,33 @@ const LegendsPopup = React.lazy(() => import('UI/Features/Legend/LegendsPopup'))
 const ManageTripsPage = React.lazy(() => import('UI/Features/ManageTripsPage/ManageTripsPage'));
 const UserGuide = React.lazy(() => import('UI/Features/UserGuide/UserGuide'));
 
-const BatchRoutes: React.FC = () => {
-  return (
-    <>
-      <Route
-        exact={true}
-        path="/Batch/list"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <BatchList />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/Batch/list/:id"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <BatchView />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/Batch/new"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <BatchCreateNew />
-          </Suspense>
-        )}
-      />
-      <Route
-        path="/Batch/templates"
-        render={() => (
-          <Suspense fallback={<Spinner />}>
-            <BatchTemplates />
-          </Suspense>
-        )}
-      />
-    </>
-  );
-};
-
 const AppRoutes = () => {
   return (
-    <>
-      <Route exact path="/">
-        <Redirect to="/Landing" />
-      </Route>
-      <Route path="/Map" render={() => <></>} />
-      <Route path="/Landing" render={() => <LandingComponent />} />
-      <Route exact={true} path="/Records" render={() => <Records />} />
-      <Route path="/Records/Activity:id" render={() => <Activity />} />
-      <Route path="/Records/IAPP/:id" render={() => <IAPPRecord />} />
+    <Routes>
+      <Route path="/" element={<Navigate to="/Landing" replace />} />
+      <Route path="/Map" Component={() => <></>} />
+      <Route path="/Landing" Component={() => <LandingComponent />} />
+      <Route path="/Records/Activity/:id/:mode" Component={() => <Activity />}></Route>
+
+      <Route path="/Records/IAPP/:id/:mode" Component={() => <IAPPRecord />} />
       <Route
-        exact={true}
-        path="/Records/List/Local:id"
-        render={(props) => (
-          <>
-            {props.match.params.id.split(':')[1] === RecordSetId.OfflineActivities ? (
-              <OfflineRecordSet setID={props.match.params.id.split(':')[1]} />
-            ) : (
-              <RecordSet setID={props.match.params.id.split(':')[1]} />
-            )}
-          </>
-        )}
+        path="/Records/List/Local/:id"
+        Component={() => {
+          const { id } = useParams<{ id: string }>();
+          if (id) {
+            return (
+              <>{id === RecordSetId.OfflineActivities ? <OfflineRecordSet setID={id} /> : <RecordSet setID={id} />}</>
+            );
+          }
+          return null;
+        }}
       />
 
-      <BatchRoutes />
+      <Route path="/Records" Component={() => <Records />} />
+
       <Route
         path="/Reports"
-        render={() => (
+        Component={() => (
           <Suspense fallback={<Spinner />}>
             <EmbeddedReportsPage />
           </Suspense>
@@ -102,7 +63,7 @@ const AppRoutes = () => {
 
       <Route
         path="/News"
-        render={() => (
+        Component={() => (
           <Suspense fallback={<Spinner />}>
             <NewsPage />
           </Suspense>
@@ -111,7 +72,7 @@ const AppRoutes = () => {
 
       <Route
         path="/Training"
-        render={() => (
+        Component={() => (
           <Suspense fallback={<Spinner />}>
             <TrainingPage />
           </Suspense>
@@ -120,7 +81,7 @@ const AppRoutes = () => {
 
       <Route
         path="/Legend"
-        render={() => (
+        Component={() => (
           <Suspense fallback={<Spinner />}>
             <LegendsPopup />
           </Suspense>
@@ -129,7 +90,7 @@ const AppRoutes = () => {
 
       <Route
         path="/AccessRequest"
-        render={() => (
+        Component={() => (
           <Suspense fallback={<Spinner />}>
             <AccessRequestPage />
           </Suspense>
@@ -138,7 +99,7 @@ const AppRoutes = () => {
 
       <Route
         path="/Admin"
-        render={() => (
+        Component={() => (
           <Suspense fallback={<Spinner />}>
             <UserAccessPage />
           </Suspense>
@@ -147,7 +108,7 @@ const AppRoutes = () => {
 
       <Route
         path="/ManageTrips"
-        render={() => (
+        Component={() => (
           <Suspense fallback={<Spinner />}>
             <ManageTripsPage />
           </Suspense>
@@ -155,14 +116,46 @@ const AppRoutes = () => {
       />
       <Route
         path="/Guide"
-        render={() => (
+        Component={() => (
           <Suspense fallback={<Spinner />}>
             <UserGuide />
           </Suspense>
         )}
       />
-      <Route path="/WhatsHere" render={() => <WhatsHereTable />} />
-    </>
+      <Route path="/WhatsHere" Component={() => <WhatsHereTable />} />
+      <Route
+        path="/Batch/list"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <BatchList />
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/Batch/list/:id"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <BatchView />
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/Batch/new"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <BatchCreateNew />
+          </Suspense>
+        )}
+      />
+      <Route
+        path="/Batch/templates"
+        Component={() => (
+          <Suspense fallback={<Spinner />}>
+            <BatchTemplates />
+          </Suspense>
+        )}
+      />
+    </Routes>
   );
 };
 

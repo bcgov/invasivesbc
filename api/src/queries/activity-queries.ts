@@ -56,7 +56,7 @@ const postActivitySQL = (activity: ActivityPostRequestBody, user_id: number, upd
   `;
 
   if (activity.geoJSONFeature && activity.geoJSONFeature.length) {
-    // Note: this is only saving the `geometry` part of the feature, and not any assocaited `properties`.
+    // Note: this is only saving the `geometry` part of the feature, and not any associated `properties`.
     const geometry = JSON.stringify(activity.geoJSONFeature[0].geometry);
 
     sqlStatement.append(SQL`

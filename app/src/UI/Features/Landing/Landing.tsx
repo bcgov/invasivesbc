@@ -5,7 +5,6 @@ import { selectAuth } from 'state/reducers/auth';
 import { selectUserInfo } from 'state/reducers/userInfo';
 import { useSelector } from 'utils/use_selector';
 import { useDispatch } from 'react-redux';
-import { useHistory } from 'react-router';
 import { INFORMATIONAL_LINKS } from 'constants/links';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { AuthActions } from 'state/actions/auth/Auth';
@@ -16,6 +15,7 @@ import { WebOnly } from 'UI/Reusable/Predicates/WebOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 import EventActions from 'state/actions/events/EventActions';
 import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
+import { useNavigate } from 'react-router';
 
 const InformationalLinkBox = () => {
   return (
@@ -42,13 +42,13 @@ export const LandingComponent = () => {
     if (connected && !authenticated) {
       dispatch(AuthActions.signinRequest({}));
     } else {
-      history.push('/AccessRequest');
+      navigate('/AccessRequest');
       dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
     }
   };
 
   const dispatch = useDispatch();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const connected = useSelector(selectNetworkConnected);
   const { authenticated, loggedInOrWorkingOffline, workingOffline, username, displayName, email, roles } =

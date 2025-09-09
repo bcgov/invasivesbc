@@ -51,13 +51,13 @@ export function deleteMedia(): RequestHandler {
       // No media keys found, skipping delete media step
       return next();
     }
-
-    const result = await deleteFileFromS3(req.params.key);
+    
+    await deleteFileFromS3(req.params.key);
 
     return res.status(200).json({
       message: 'Delete file',
       request: req.body,
-      result: result,
+      result: 'ok',
       code: 200
     });
   };

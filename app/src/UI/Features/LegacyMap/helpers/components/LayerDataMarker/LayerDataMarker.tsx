@@ -3,15 +3,15 @@ import { MapContext } from '../MapContext';
 import { MapMouseEvent, MapTouchEvent, Point, PointLike, Popup } from 'maplibre-gl';
 import ReactDOM from 'react-dom/client';
 import LayerDataMarkerContent from './LayerDataMarkerContent';
-import { useHistory } from 'react-router';
 import { useSelector } from 'utils/use_selector';
+import { useNavigate } from 'react-router';
 
 const LayerDataMarker = () => {
   const MINIMUM_ZOOM = 12;
   const BUFFER_IN_PX = 5;
 
   const map = useContext(MapContext);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const whatsHereEnabled = useSelector((state) => state.Map.whatsHere.toggle);
   const connected = useSelector((state) => state.Network.connected);
@@ -30,7 +30,7 @@ const LayerDataMarker = () => {
   }, [map?.getLayersOrder()]);
 
   const createPopupDiv = (numFeatures: number): HTMLDivElement => {
-    /* 
+    /*
       Maplibre needs a static element for its popup so it can calculate the anchor position. Because we're injecting React in it can't calculate the size.
       To make the anchoring work as expected, provide defaults based on its smallest size, else maplibre will calculate HxW at 0, and will frequently render outside the viewport
     */
@@ -67,7 +67,7 @@ const LayerDataMarker = () => {
                     label: feature.properties.type,
                     value: feature.properties.short_id,
                     map_symbol: feature.properties.map_symbol,
-                    url: '/Records/Activity:' + feature.properties.activity_id + '/form'
+                    url: '/Records/Activity/' + feature.properties.activity_id + '/form'
                   }
                 : {
                     label: 'Site ID',
@@ -97,7 +97,7 @@ const LayerDataMarker = () => {
 
       // Inject React into the new static container
       const root = ReactDOM.createRoot(el);
-      root.render(<LayerDataMarkerContent history={history} features={uniqueFormattedFeaturesAtClickTarget} />);
+      root.render(<LayerDataMarkerContent navigate={navigate} features={uniqueFormattedFeaturesAtClickTarget} />);
     },
     [map, recordsetLayers, popupRef, whatsHereEnabled, connected]
   );

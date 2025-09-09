@@ -4,15 +4,14 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { useHistory } from 'react-router-dom';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
 import { IControl } from 'maplibre-gl';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
 import {
-  GeoTrackingMode,
   convertLineToPolygon,
+  GeoTrackingMode,
   updateGPSCoordinate
 } from 'UI/Features/LegacyMap/helpers/functional/geo-tracking-mode';
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
@@ -29,6 +28,7 @@ import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import { useLocation, useNavigate } from 'react-router';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -61,7 +61,8 @@ const DrawControls = () => {
   const url = useSelector((state) => state.AppMode.url);
 
   const dispatch = useDispatch();
-  const uHistory = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
@@ -322,8 +323,8 @@ const DrawControls = () => {
     switch (currentMode) {
       case TargetMode.WHATS_HERE: {
         dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
-        if (uHistory.location.pathname !== '/WhatsHere') {
-          uHistory.push('/WhatsHere');
+        if (location.pathname !== '/WhatsHere') {
+          navigate('/WhatsHere');
         }
         break;
       }

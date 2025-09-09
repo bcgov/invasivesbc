@@ -399,7 +399,7 @@ const purgeRecordsetLayersNotInStore = (
   recordSetLayersNotInStore.forEach((staleLayer) => {
     try {
       map.removeLayer(staleLayer);
-    } catch (e) {
+    } catch (_e) {
       console.error('error removing layer' + staleLayer);
     }
   });

@@ -1,12 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
-import { createBrowserHistory } from 'history';
 import { persistStore } from 'redux-persist';
 import { Store } from 'redux';
 import debounce from 'lodash.debounce';
 import { createRootReducer } from './reducers/rootReducer';
-import AppActions from './actions/appActions/appActions';
 import activityPageSaga from './sagas/activity';
 import planMyTripSaga from './sagas/planMyTrip';
 import authenticationSaga from './sagas/auth/auth';
@@ -22,8 +20,6 @@ import NetworkActions from './actions/network/NetworkActions';
 import { AuthActions } from 'state/actions/auth/Auth';
 import EventActions from 'state/actions/events/EventActions';
 import { UnifiedConfig } from 'state/configuration/unified-config';
-
-const historySingleton = createBrowserHistory();
 
 export function setupStore(configuration: UnifiedConfig) {
   const storeRef: { store: Store | null } = {
@@ -82,10 +78,6 @@ export function setupStore(configuration: UnifiedConfig) {
   sagaMiddleware.run(networkSaga);
   sagaMiddleware.run(planMyTripSaga);
 
-  historySingleton.listen((location) => {
-    store.dispatch(AppActions.urlChange(location.pathname));
-  });
-
   storeRef.store = store;
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
@@ -116,7 +108,5 @@ export function setupStore(configuration: UnifiedConfig) {
     })
   };
 }
-
-export { historySingleton };
 
 export default setupStore;

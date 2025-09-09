@@ -6,9 +6,9 @@ import 'UI/Features/OfflineDataSync/OfflineDataSync.css';
 import moment from 'moment';
 import { MoreVert } from '@mui/icons-material';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
-import { useHistory } from 'react-router-dom';
 import Activity from 'state/actions/activity/Activity';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
+import { useNavigate } from 'react-router';
 
 type PropTypes = {
   handleClose: () => void;
@@ -32,7 +32,7 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
     [serializedActivities]
   );
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -64,10 +64,10 @@ export const OfflineDataSyncTable = ({ handleClose }: PropTypes) => {
   };
   const handleLoad = () => {
     if (!contextRecord) return;
-    history.push(`/Records/Activity:${contextRecord}/form`);
+    navigate(`/Records/Activity/${contextRecord}/form`);
     dispatch(Activity.Offline.setSyncDialogueWindow({ open: false }));
   };
-  const handleOpenMenu = (evt: MouseEvent<any> | TouchEvent<any>, key: string) => {
+  const handleOpenMenu = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, key: string) => {
     setAnchorEl(evt.currentTarget);
     setContextRecord(key);
     setConfirmDelete(false);

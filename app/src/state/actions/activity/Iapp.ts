@@ -1,5 +1,4 @@
 import { createAction } from '@reduxjs/toolkit';
-import { IGetIdsForRecordset, IGetIdsForRecordsetOnline, IGetIdsForRecordsetSuccess } from './Activity';
 import IappRecord from 'interfaces/IappRecord';
 
 interface IappTableRowRequest {

@@ -1,6 +1,5 @@
 import { Feature } from 'geojson';
 import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
 import {
   ActivityStatus,
   ActivitySubtype,
@@ -44,7 +43,7 @@ export function generateActivityPayload(
   activitySubtype: ActivitySubtype,
   docType?: DocType
 ): IActivity {
-  const id = uuidv4();
+  const id = crypto.randomUUID();
   const short_id: string | undefined = getShortActivityID({
     activity_subtype: activitySubtype,
     activity_id: id,
@@ -77,7 +76,7 @@ export function generateActivityPayload(
 */
 
 export function cloneDBRecord(dbRecord) {
-  const id = uuidv4();
+  const id = crypto.randomUUID();
   const time = moment(new Date()).format();
   const clonedRecord = {
     ...dbRecord,
@@ -111,7 +110,7 @@ export async function addNewActivityToDB(
 }
 
 export async function cloneActivity(clonedRecord: any) {
-  const id = uuidv4();
+  const id = crypto.randomUUID();
 
   // Used to avoid pouch DB conflict
   delete clonedRecord._rev;

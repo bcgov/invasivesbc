@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import 'UI/Features/IAPP/IAPPRecords.css';
-import { Route, useHistory, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useDispatch } from 'react-redux';
 import { Button } from '@mui/material';
 import { Summary } from 'UI/Features/IAPP/Summary';
@@ -10,15 +10,37 @@ import IappActions from 'state/actions/activity/Iapp';
 import { useSelector } from 'utils/use_selector';
 import MapActions from 'state/actions/map';
 
+const RenderIAPPPhotos = () => {
+  const IAPPState = useSelector((state) => state.IAPPSitePage);
+
+  if (IAPPState?.site) return <Photos media={IAPPState.site?.point_of_interest_payload?.importedMedia || []}></Photos>;
+  else return <div>loading</div>;
+};
+const RenderIAPPSummary = () => {
+  const navigate = useNavigate();
+
+  const IAPPState = useSelector((state) => state.IAPPSitePage);
+
+  if (IAPPState?.failCode === 404) {
+    setTimeout(() => {
+      navigate('/Records');
+    }, 3000);
+    return <div>Activity does not exist, redirecting...</div>;
+  }
+  if ((IAPPState?.site as any)?.site_id && !IAPPState.loading) {
+    return <Summary record={IAPPState?.site} />;
+  } else {
+    return <div>loading</div>;
+  }
+};
+
 export const IAPPRecord = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const isCellPhoneWidth = useSelector((state) => state.AppMode.constraints.tinyScreen);
 
-  const { id } = useParams<{ id: string }>();
-
-  const IAPPState = useSelector((state) => state.IAPPSitePage);
+  const { id, mode } = useParams<{ id: string; mode: string }>();
 
   useEffect(() => {
     if (id && id !== 'undefined') {
@@ -33,14 +55,14 @@ export const IAPPRecord = () => {
           <Button
             variant="contained"
             className="records__activity__photos_button"
-            onClick={() => history.push(`/Records/IAPP/${id}/photos`)}
+            onClick={() => navigate(`/Records/IAPP/${id}/photos`)}
           >
             Photos
           </Button>
           <Button
             variant="contained"
             className="records__activity__form_button"
-            onClick={() => history.push(`/Records/IAPP/${id}/summary`)}
+            onClick={() => navigate(`/Records/IAPP/${id}/summary`)}
           >
             Summary
           </Button>
@@ -49,7 +71,7 @@ export const IAPPRecord = () => {
             className="records__activity__map_button"
             onClick={() => {
               dispatch(MapActions.panToIAPP());
-              history.push(`/Records/IAPP/${id}/summary`);
+              navigate(`/Records/IAPP/${id}/summary`);
             }}
           >
             {isCellPhoneWidth ? 'Center' : `Re-center Map`}
@@ -57,34 +79,13 @@ export const IAPPRecord = () => {
         </div>
       </div>
       <div className="control">
-        <Button variant="contained" color="primary" onClick={() => history.goBack()}>
+        <Button variant="contained" color="primary" onClick={() => navigate(-1)}>
           {'< Back'}
         </Button>
       </div>
-      <Route
-        path="/Records/IAPP/:id/summary"
-        render={() => {
-          if (IAPPState?.failCode === 404) {
-            setTimeout(() => {
-              history.push('/Records');
-            }, 3000);
-            return <div>Activity does not exist, redirecting...</div>;
-          }
-          if ((IAPPState?.site as any)?.site_id && !IAPPState.loading) {
-            return <Summary record={IAPPState?.site} />;
-          } else {
-            return <div>loading</div>;
-          }
-        }}
-      />
-      <Route
-        path="/Records/IAPP/:id/photos"
-        render={() => {
-          if (IAPPState?.site)
-            return <Photos media={IAPPState.site?.point_of_interest_payload?.importedMedia || []}></Photos>;
-          else return <div>loading</div>;
-        }}
-      />
+
+      {mode === 'photos' && <RenderIAPPPhotos />}
+      {mode === 'summary' && <RenderIAPPSummary />}
     </div>
   );
 };

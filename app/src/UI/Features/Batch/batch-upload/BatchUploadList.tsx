@@ -2,7 +2,7 @@ import { Box, Paper, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Error } from '@mui/icons-material';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { useSelector } from 'utils/use_selector';
 import { selectBatch } from 'state/reducers/batch';

@@ -1,6 +1,5 @@
 import { useDispatch } from 'react-redux';
 import 'UI/Features/Records/RecordSet/RecordSet.css';
-import { useHistory } from 'react-router';
 import { Button } from '@mui/material';
 
 import RecordSetFooter from 'UI/Features/Records/RecordSet/RecordSetFooter';
@@ -16,6 +15,7 @@ import { MouseEvent, TouchEvent, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
 import { Point, Polygon } from 'geojson';
+import { useNavigate } from 'react-router';
 
 type PropTypes = { setID: string };
 
@@ -35,7 +35,7 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const [recordLookupId, setRecordLookupId] = useState<string>('');
   const [geom, setGeom] = useState<Point | Polygon>();
 
-  const handlePopoverOpen = (evt: MouseEvent<any> | TouchEvent<any>, row: UserRecord) => {
+  const handlePopoverOpen = (evt: MouseEvent<HTMLElement> | TouchEvent<HTMLElement>, row: UserRecord) => {
     setGeom(row.geometry?.[0]);
     setRecordDisplayId((row.short_id as string) ?? '');
     setRecordLookupId((row.activity_id as string) ?? '');
@@ -45,11 +45,11 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   const offlineDocs = useSelector((state) => state.UserSettings.offlineDocs);
   const listOptions = offlineDocs[0]?.apiDocsWithViewOptions;
 
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const onClickBackButton = () => {
-    history.push('/Records');
+    navigate('/Records');
   };
 
   const recordSet = useSelector((state) => state.UserSettings?.recordSets?.[setID]);

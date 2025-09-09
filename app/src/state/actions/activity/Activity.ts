@@ -67,6 +67,12 @@ interface IGetSuccess {
 interface IActivityFormChangeRequest {
   eventFormData: UserRecord;
 }
+
+interface SwitchRecordSetPayload {
+  setId: string;
+  type: 'Activity' | 'IAPP';
+}
+
 class Activity {
   private static readonly PREFIX = 'Activity';
   static readonly Offline = Offline;
@@ -115,6 +121,9 @@ class Activity {
   );
   static readonly onFormChangeRequest = createAction<UserRecord>(`${this.PREFIX}/onFormChangeRequest`);
   static readonly OnFormChangeRequestSuccess = createAction<UserRecord>(`${this.PREFIX}/onFormChangeRequestSuccess`);
+
+  static readonly loadActivityIfRequired = createAction<string>(`${this.PREFIX}/loadActivity`);
+  static readonly switchRecordSet = createAction<SwitchRecordSetPayload>(`${this.PREFIX}/switchRecordSet`);
 }
 
 export default Activity;
@@ -128,5 +137,6 @@ export type {
   ActivityTableRowsGetSuccess,
   ActivityTableRowGetRequest,
   IActivityError,
-  ActivityTableRowRequest
+  ActivityTableRowRequest,
+  SwitchRecordSetPayload
 };

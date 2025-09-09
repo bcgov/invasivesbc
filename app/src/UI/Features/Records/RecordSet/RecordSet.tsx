@@ -1,7 +1,6 @@
 import { useDispatch } from 'react-redux';
 import './RecordSet.css';
 import Button from '@mui/material/Button';
-import { useHistory } from 'react-router';
 import { Tooltip } from '@mui/material';
 import { RecordTable } from './RecordTable';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -15,9 +14,11 @@ import { useSelector } from 'utils/use_selector';
 import { useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
-import { IFilter } from 'state/actions/userSettings/RecordSet';
+import { EFilterType, IFilter } from 'state/actions/userSettings/RecordSet';
 import { RecordCacheServiceFactory } from 'utils/record-cache/context';
 import { RecordSetCacheButtons } from '../RecordSetCacheButtons';
+import { useNavigate } from 'react-router';
+import Activity from 'state/actions/activity/Activity';
 
 type PropTypes = { setID: string };
 
@@ -27,11 +28,11 @@ interface ExtendedFilter extends IFilter {
 
 export const RecordSet = ({ setID }: PropTypes) => {
   const viewFilters = useSelector((state) => state.Map.viewFilters);
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const onClickBackButton = () => {
-    history.push('/Records');
+    navigate('/Records');
   };
 
   const { MOBILE } = useSelector((state) => state.Configuration.current.build);
@@ -73,6 +74,10 @@ export const RecordSet = ({ setID }: PropTypes) => {
     });
     setFilters(disabledFilters);
   }, [cacheFilters, recordSet?.tableFilters]);
+
+  useEffect(() => {
+    dispatch(Activity.switchRecordSet({ type: 'Activity', setId: setID }));
+  }, [setID]);
 
   const onlyFilterIsForDrafts =
     recordSet?.tableFilters?.length === 1 && recordSet?.tableFilters[0]?.field === 'form_status';
@@ -156,7 +161,7 @@ export const RecordSet = ({ setID }: PropTypes) => {
                     dispatch(
                       UserSettings.RecordSet.addFilter({
                         field: tableType === RecordSetType.Activity ? 'short_id' : 'site_id',
-                        filterType: 'tableFilter',
+                        filterType: EFilterType.Table,
                         operator: 'CONTAINS',
                         operator2: 'AND',
                         setID: setID

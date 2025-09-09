@@ -6,7 +6,6 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import { AppDispatch, useDispatch, useSelector } from 'utils/use_selector';
 import { useEffect, useState } from 'react';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
-import { useHistory } from 'react-router-dom';
 import Alerts from 'state/actions/alerts/Alerts';
 import { AuthActions } from 'state/actions/auth/Auth';
 import MapActions from 'state/actions/map';
@@ -18,6 +17,7 @@ import { LayoutMode } from 'UI/Layout/Routes/PrimaryNavigation';
 import EventActions from 'state/actions/events/EventActions';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
+import { useNavigate } from 'react-router';
 
 const LogoutButton = () => {
   const dispatch = useDispatch();
@@ -60,7 +60,7 @@ const HeaderPopover = () => {
     dispatch(Alerts.deleteAll());
   };
   const navToUpdateRequest = () => {
-    history.push({ pathname: '/AccessRequest' });
+    navigate('/AccessRequest');
     dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
   };
 
@@ -68,11 +68,11 @@ const HeaderPopover = () => {
     if (!authenticated) {
       dispatch(AuthActions.signinRequest({}));
     } else {
-      history.push('/AccessRequest');
+      navigate('/AccessRequest');
       dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));
     }
   };
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const activated = useSelector((state) => state.UserInfo.activated);
@@ -113,7 +113,7 @@ const HeaderPopover = () => {
             {loggedInOrWorkingOffline && (
               <>
                 <li>
-                  <button onClick={() => history.push('/News')}>
+                  <button onClick={() => navigate('/News')}>
                     <Newspaper />
                     What's New
                   </button>
@@ -121,7 +121,7 @@ const HeaderPopover = () => {
                 <MobileOnly>
                   <FeatureGated requires={'USER_GUIDE'}>
                     <li>
-                      <button onClick={() => history.push('/Guide')}>
+                      <button onClick={() => navigate('/Guide')}>
                         <HelpCenter />
                         User Guide
                       </button>
@@ -129,7 +129,7 @@ const HeaderPopover = () => {
                   </FeatureGated>
                   <FeatureGated requires={'PLAN_MY_TRIP'}>
                     <li>
-                      <button onClick={() => history.push('/ManageTrips')}>
+                      <button onClick={() => navigate('/ManageTrips')}>
                         <Luggage />
                         Manage My Trips
                       </button>

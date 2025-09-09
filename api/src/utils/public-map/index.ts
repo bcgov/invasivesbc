@@ -4,7 +4,8 @@ import { exec } from 'child_process';
 
 import * as Path from 'path';
 import * as fs from 'fs';
-import AWS from 'aws-sdk';
+import * as process from 'node:process';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getLogger } from 'utils/logger';
 import { S3ACLRole } from 'constants/misc';
 import { PUBLIC_ACTIVITY_SQL, PUBLIC_IAPP_SQL } from 'queries/public-map';
@@ -13,14 +14,16 @@ const defaultLog = getLogger('tile_processor');
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
 
-const S3 = new AWS.S3({
-  endpoint: AWS_ENDPOINT.href,
-  accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
-  secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID,
-  signatureVersion: 'v4',
-  s3ForcePathStyle: true
+const S3 = new S3Client({
+  endpoint: `https://${OBJECT_STORE_URL}`,
+  credentials: async () => {
+    return {
+      accessKeyId: process.env.OBJECT_STORE_ACCESS_KEY_ID,
+      secretAccessKey: process.env.OBJECT_STORE_SECRET_KEY_ID
+    };
+  },
+  forcePathStyle: true
 });
 
 async function dumpGeoJSONToFile(connection, filename, query) {
@@ -87,13 +90,15 @@ export async function buildPublicMapExport(connection) {
   defaultLog.info({ message: `processing complete, starting upload of ${s3key}` });
 
   try {
-    await S3.upload({
-      Bucket: OBJECT_STORE_BUCKET_NAME,
-      Body: fs.readFileSync(`${filePrefix}.pmtiles`),
-      Key: s3key,
-      ACL: S3ACLRole.PUBLIC_READ,
-      Metadata: {}
-    }).promise();
+    await S3.send(
+      new PutObjectCommand({
+        Bucket: OBJECT_STORE_BUCKET_NAME,
+        Body: fs.readFileSync(`${filePrefix}.pmtiles`),
+        Key: s3key,
+        ACL: S3ACLRole.PUBLIC_READ,
+        Metadata: {}
+      })
+    );
   } finally {
     fs.unlinkSync(`${filePrefix}.pmtiles`);
   }

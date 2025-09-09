@@ -1,11 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SQLStatement } from 'sql-template-strings';
+import { PoolClient } from 'pg';
+import { getIAPPSQLv2, sanitizeIAPPFilterObject } from '../iapp';
 import { ALL_ROLES, SECURITY_ON } from 'constants/misc';
 import { getLogger } from 'utils/logger';
 import { getDBConnection } from 'database/db';
-import { getIAPPSQLv2, sanitizeIAPPFilterObject } from '../iapp';
-import { PoolClient } from 'pg';
+import { InvasivesRequest } from 'utils/auth-utils';
 
 const NAMESPACE = 'IAPP-bbox';
 
@@ -59,7 +60,7 @@ POST.apiDoc = {
  * @desc Create Bounding box based on the filter properties for a given recordset
  */
 function postHandler(): RequestHandler {
-  return async (req, res) => {
+  return async (req: InvasivesRequest, res) => {
     let connection: PoolClient | undefined;
     try {
       connection = await getDBConnection();
