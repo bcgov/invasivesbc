@@ -9,26 +9,33 @@ import { OfflineActivityRecord, OfflineActivitySyncState } from 'state/reducers/
 import { FeatureCollection } from 'geojson';
 import { SourceSpecification } from 'maplibre-gl';
 import { GeoJSON } from 'geojson';
-import { LayerSpecificationWithStackingOrder } from '../functional/layers-hook';
-import VECTOR_MAP_FONT_FACE from 'constants/vectorMapFontFace';
-import { shallowEqual } from 'react-redux';
-import { LAYER_Z_FOREGROUND } from '../functional/layer-definitions/types';
 import { Md5 } from 'ts-md5';
+import {
+  createBorderLayer,
+  createCircleLayer,
+  createFillLayer,
+  createLabelLayer
+} from '../functional/layer-definitions/reusable-layer-specifications';
+import { LayerSpecificationWithStackingOrder } from '../functional/layers-hook';
 
 type PropTypes = {
   mapReady: boolean;
+};
+
+type SourceSpecificationType = {
+  layers: LayerSpecificationWithStackingOrder[];
+  sources: { [_: string]: SourceSpecification };
 };
 const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
   const OFFLINE_RECORD_ID = RecordSetId.OfflineActivities;
   const LAYER_COLOUR = 'blue';
 
-  const [source, setSource] = useState<SourceSpecification>();
-  const [layers, setLayers] = useState<LayerSpecificationWithStackingOrder[]>([]);
+  const [definition, setDefinition] = useState<SourceSpecificationType>();
 
   const { mapToggle, labelToggle } = useSelector((state) => state.UserSettings.recordSets[OFFLINE_RECORD_ID]);
-  const serializedActivities = useSelector((state) => state.OfflineActivity.serializedActivities, shallowEqual);
+  const serializedActivities = useSelector((state) => state.OfflineActivity.serializedActivities);
 
-  const buildSource = () => {
+  useEffect(() => {
     const geometryList: Array<GeoJSON> = [];
     const locallyStoredActivities = Object.fromEntries(
       Object.entries(serializedActivities).filter(
@@ -58,109 +65,54 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
       }
     });
 
-    setSource({
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features: geometryList } as FeatureCollection
-    });
-  };
+    //Define Hashed IDs to updates rerender only when needed.
+    const SOURCE_ID = OFFLINE_RECORD_ID + Md5.hashStr(JSON.stringify(geometryList));
+    const LAYER_ID = 'offline-activity-' + Md5.hashStr(SOURCE_ID + mapToggle + labelToggle);
 
-  const buildLayers = () => {
-    const layers: LayerSpecificationWithStackingOrder[] = [];
-    const LAYER_ID = Md5.hashStr(OFFLINE_RECORD_ID + mapToggle + labelToggle);
-    if (mapToggle) {
-      layers.push(
-        {
-          id: 'fill-' + LAYER_ID,
-          type: 'fill',
-          source: OFFLINE_RECORD_ID,
-          paint: {
-            'fill-color': LAYER_COLOUR,
-            'fill-outline-color': LAYER_COLOUR,
-            'fill-opacity': 0.5
-          },
-          minzoom: 0,
-          layout: {
-            visibility: 'visible'
-          },
-          stackLayer: LAYER_Z_FOREGROUND
-        },
-        {
-          id: 'polygon-border-' + LAYER_ID,
-          source: OFFLINE_RECORD_ID,
-          type: 'line',
-          paint: {
-            'line-color': LAYER_COLOUR,
-            'line-opacity': 1,
-            'line-width': 3
-          },
-          minzoom: 0,
-          layout: {
-            visibility: 'visible'
-          },
-          stackLayer: LAYER_Z_FOREGROUND
-        },
-        {
-          id: 'polygon-circle-' + LAYER_ID,
-          source: OFFLINE_RECORD_ID,
-          type: 'circle',
-          paint: {
-            'circle-color': LAYER_COLOUR,
-            'circle-radius': 4
-          },
-          minzoom: 0,
-          layout: {
-            visibility: 'visible'
-          },
-          stackLayer: LAYER_Z_FOREGROUND
-        },
-        {
-          id: 'label-' + LAYER_ID,
-          source: OFFLINE_RECORD_ID,
-          type: 'symbol',
-          layout: {
-            'text-field': [
-              'format',
-              ['get', 'short_id'],
-              { 'font-scale': 0.9 },
-              '\n',
-              {},
-              ['get', 'map_symbol'],
-              { 'font-scale': 0.9 }
-            ],
-            'text-font': ['literal', [VECTOR_MAP_FONT_FACE]],
-            'text-offset': [0, 0.6],
-            'text-anchor': 'top',
-            visibility: labelToggle ? 'visible' : 'none'
-          },
-          paint: {
-            'text-color': 'black',
-            'text-halo-color': 'white',
-            'text-halo-width': 1,
-            'text-halo-blur': 1
-          },
-          minzoom: 12,
-          stackLayer: LAYER_Z_FOREGROUND
+    setDefinition({
+      sources: {
+        [SOURCE_ID]: {
+          type: 'geojson',
+          data: { type: 'FeatureCollection', features: geometryList } as FeatureCollection
         }
-      );
-    }
-    setLayers(layers);
-  };
-
-  useEffect(() => {
-    buildSource();
-  }, [serializedActivities]);
-
-  useEffect(() => {
-    buildLayers();
-  }, [mapToggle, labelToggle]);
+      },
+      layers: [
+        createFillLayer({
+          layerId: LAYER_ID,
+          sourceId: SOURCE_ID,
+          color: LAYER_COLOUR
+        }),
+        createBorderLayer({
+          layerId: LAYER_ID,
+          sourceId: SOURCE_ID,
+          color: LAYER_COLOUR
+        }),
+        createCircleLayer({
+          layerId: LAYER_ID,
+          sourceId: SOURCE_ID,
+          color: LAYER_COLOUR
+        }),
+        createLabelLayer({
+          layerId: LAYER_ID,
+          sourceId: SOURCE_ID,
+          visibility: labelToggle ? 'visible' : 'none'
+        })
+      ]
+    });
+  }, [labelToggle, mapToggle, serializedActivities]);
 
   return (
     <>
-      {source && <SourceComponent mapReady={mapReady} id={OFFLINE_RECORD_ID} source={source} />}
-      {layers?.map((layer) => (
-        <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
-      ))}
-      {source && <SourceCleanupComponent mapReady={mapReady} id={OFFLINE_RECORD_ID} />}
+      {definition &&
+        Object.entries(definition.sources).map(([id, value]) => (
+          <SourceComponent mapReady={mapReady} key={id} id={id} source={value} />
+        ))}
+      {mapToggle &&
+        definition?.layers?.map((layer) => (
+          <LayerComponent mapReady={mapReady} key={layer.id} id={layer.id} layer={layer} />
+        ))}
+      {definition &&
+        Object.keys(definition.sources).map((id) => <SourceCleanupComponent mapReady={mapReady} key={id} id={id} />)}
     </>
   );
 };
