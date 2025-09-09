@@ -56,10 +56,7 @@ class RecordCache {
 
       const service = await RecordCacheServiceFactory.getPlatformInstance();
       const recordSet = JSON.parse(JSON.stringify(state.UserSettings.recordSets[spec.setId]));
-      const idsMatchingFilterSet = await getIdsForRecordset({
-        recordSetType: recordSet.recordSetType,
-        tableFilters: recordSet.tableFilters
-      });
+      const idsMatchingFilterSet = await getIdsForRecordset(recordSet);
       const idsToCache = idsMatchingFilterSet.map((id) => id.toString());
 
       recordSet.tableFilters = getRecordFilterObjectFromStateForAPI(spec.setId, state.UserSettings);

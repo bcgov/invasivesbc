@@ -108,16 +108,10 @@ class Activity {
   static readonly getRowsOnline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOnline`);
   static readonly getRowsOffline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOffline`);
   static readonly getRowsSuccess = createAction<ActivityTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
-  static readonly getIdsForRecordset = createAction<IGetIdsForRecordset>(`${this.PREFIX}/getIdsForRecordset`);
-  static readonly getIdsForRecordsetOnline = createAction<IGetIdsForRecordsetOnline>(
-    `${this.PREFIX}/getIdsForRecordsetOnline`
-  );
-  static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
-    `${this.PREFIX}/getIdsForRecordsetSuccess`
-  );
+
   static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);
-  static readonly buildFormSchema = createAction(`${this.PREFIX}/buildFormSchema`, (isViewing: boolean) => ({
-    payload: { isViewing }
+  static readonly buildFormSchema = createAction(`${this.PREFIX}/buildFormSchema`, (formCreatedByUser: boolean) => ({
+    payload: { formCreatedByUser }
   }));
   static readonly buildFormSchemaSuccess = createAction(
     `${this.PREFIX}/buildFormSchemaSuccess`,

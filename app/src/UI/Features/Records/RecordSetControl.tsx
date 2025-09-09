@@ -1,12 +1,10 @@
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
 import { RecordSetCacheButtons } from 'UI/Features/Records/RecordSetCacheButtons';
 import { IconButton, Tooltip } from '@mui/material';
-import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
+import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { ColorLens, Delete, Label, LabelOff, Layers, LayersClear } from '@mui/icons-material';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'utils/use_selector';
-import Activity from 'state/actions/activity/Activity';
-import IappActions from 'state/actions/activity/Iapp';
+import { useSelector } from 'utils/use_selector';
 import { useRecordSetControls } from 'utils/useRecordSetControls';
 import './recordsetControl.css';
 
@@ -37,24 +35,11 @@ const RecordSetControl = ({
     'Delete this layer/list of records.  Does NOT delete the actual records, just the set of filters / layer configuration.';
 
   const RECORD_ID = recordset.id;
-  const dispatch = useDispatch();
   const { cycleRecordsetColour, toggleRecordsetLabel, toggleRecordsetLayer, deleteRecordSet } =
     useRecordSetControls(RECORD_ID);
   const hasLayerIndex = useSelector(
     (state) => !!state.Map.layers.find((layer) => layer?.recordSetID === RECORD_ID)?.layerState
   );
-
-  if (!hasLayerIndex) {
-    const payload = {
-      recordSetID: RECORD_ID,
-      tableFiltersHash: recordset?.tableFiltersHash ?? ''
-    };
-    if (recordset.recordSetType === RecordSetType.IAPP) {
-      dispatch(IappActions.getIdsForRecordset(payload));
-    } else if (recordset.recordSetType === RecordSetType.Activity) {
-      dispatch(Activity.getIdsForRecordset(payload));
-    }
-  }
   const [isProgressBar, setIsProgressBar] = useState(false);
 
   const handleProgressStateChange = (state: boolean) => {

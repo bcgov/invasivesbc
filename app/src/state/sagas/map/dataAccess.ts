@@ -23,68 +23,21 @@ export function* handle_PREP_FILTERS_FOR_VECTOR_ENDPOINT(action: PayloadAction<I
       console.warn('filterObject returned by getRecordFilterObjectFromStateForAPI is null, probable data error');
     }
 
-    // abort if already a stale hash
-    const mapState = yield select((state) => state.Map);
-    const tableHash = mapState?.layers?.filter((layer) => {
-      return layer?.recordSetID === recordSetID;
-    })?.[0]?.tableFiltersHash;
-
-    if (tableHash && tableHash !== tableFiltersHash) {
-      return;
-    }
-
     yield put(
       AppActions.vectorFiltersPrepped({
         filterObject: filterObject,
         recordSetID: recordSetID,
         tableFiltersHash: tableFiltersHash,
-        recordSetType: recordset.recordSetType
+        recordSetType: recordset.recordSetType,
+        color: recordset.color,
+        mapToggle: recordset.mapToggle,
+        labelToggle: recordset.labelToggle,
+        cacheMetadataStatus: recordset.cacheMetadataStatus
       })
     );
   } catch (e) {
     console.error(e);
     throw e;
-  }
-}
-
-export function* handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_REQUEST(action: PayloadAction<IGetIdsForRecordset>) {
-  const currentState = yield select((state) => state.UserSettings);
-  const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-  const workingOffline = yield select((state) => state.Auth.workingOffline);
-  const connected = yield select((state) => state.Network.connected);
-  if (filterObject == null) {
-    return;
-  }
-  filterObject.limit = 200000;
-  filterObject.selectColumns = ['activity_id'];
-
-  try {
-    // offline activities
-    if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-      yield put(
-        Activity.Offline.getIdsForRecordset({
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        })
-      );
-      return;
-    }
-
-    // if mobile or web
-    if (connected && !workingOffline) {
-      yield put(
-        Activity.getIdsForRecordsetOnline({
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        })
-      );
-    } else {
-      yield getIdsForRecordsetFromCache(action.payload);
-    }
-  } catch (e) {
-    console.error(e);
   }
 }
 
@@ -107,44 +60,10 @@ export function* getIdsForRecordsetFromCache(action: IGetIdsForRecordset) {
         limit: 1000000 // Override 50k limit of query tool since known size is small.
       };
       const ids = yield service.query(queryObj);
-      yield put(
-        Activity.getIdsForRecordsetSuccess({
-          recordSetID: action.recordSetID,
-          idList: ids.map((record) => record.id) ?? [],
-          tableFiltersHash: action.tableFiltersHash
-        })
-      );
-    }
-  } catch (ex) {
-    console.error(ex);
-  }
-}
-
-export function* handle_IAPP_GET_IDS_FOR_RECORDSET_REQUEST(action) {
-  try {
-    const currentState = yield select((state) => state.UserSettings);
-    const workingOffline = yield select((state) => state.Auth.workingOffline);
-    const connected = yield select((state) => state.Network.connected);
-    const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-    if (filterObject == null) {
-      return;
-    }
-    filterObject.limit = 200000;
-    filterObject.selectColumns = ['site_id'];
-    if (connected && !workingOffline) {
-      // if mobile or web
-      yield put(
-        IappActions.getIdsForRecordsetOnline({
-          filterObj: filterObject,
-          recordSetID: action.payload.recordSetID,
-          tableFiltersHash: action.payload.tableFiltersHash
-        })
-      );
-    } else {
-      yield getIdsForRecordsetFromCache(action.payload);
+      yield put(WhatsHere.getIdsForRecordsetSuccess({ ...action, idList: ids.map((record) => record.id) ?? [] }));
     }
   } catch (e) {
-    console.error(e);
+    console.error('[getIdsForRecordsetFromCache]', e);
   }
 }
 

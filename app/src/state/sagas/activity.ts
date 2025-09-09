@@ -91,8 +91,8 @@ function* handle_ACTIVITY_DELETE_FAILURE() {
   );
 }
 
-function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action: PayloadAction<{ isViewing: boolean }>) {
-  const { isViewing } = action.payload;
+function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action: PayloadAction<{ formCreatedByUser: boolean }>) {
+  const { formCreatedByUser } = action.payload;
   const activityState = yield select(selectActivity);
   const activity_subtype = activityState?.activity?.activity_subtype;
   const uiSchema = RootUISchemas[activity_subtype];
@@ -106,11 +106,18 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action: PayloadAction<{ 
     userSettings = yield select(selectUserSettings);
   }
 
-  if (isViewing || isAdmin) {
-    // Admins get all codes as they fill out data on behalf of other users
-    apiSpec = userSettings.apiDocsWithViewOptions;
-  } else {
+  /**
+   * If a user creates a form, they should be restricted in agency/employer options (apiDocsWithselectOptions).
+   * The exception to this rule is administrative users.
+   * Admins need access to all codes because their responsibilities include creating forms on behalf of other users.
+   */
+  if (formCreatedByUser && !isAdmin) {
+    // Contains Codes specific to the users account (Agencies/employers). These were entered from their `Request access` request.
+    // If a regular user creates or accesses their own form, they should ALWAYS see their own applicable codes, not all of them.
     apiSpec = userSettings.apiDocsWithSelectOptions;
+  } else {
+    // Contains All Codes (Needed to render other peoples forms properly) Contains all the employer/agency codes so that forms render as expected.
+    apiSpec = userSettings.apiDocsWithViewOptions;
   }
 
   const components = apiSpec.components;

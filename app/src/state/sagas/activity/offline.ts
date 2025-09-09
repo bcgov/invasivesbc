@@ -13,24 +13,31 @@ import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 import { selectActivity } from 'state/reducers/activity';
 import { PLATFORM_SRC } from 'constants/misc';
 import { ISaveOffline } from 'state/actions/activity/Offline';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
 function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<ISaveOffline>) {
-  yield put(
-    Alerts.create({
-      content: 'Saved locally',
-      severity: AlertSeverity.Info,
-      subject: AlertSubjects.Form
-    })
-  );
+  const connected = yield select(selectNetworkConnected);
   // reload the activity in case the reducer modified it (create time, etc.)
   yield put(Activity.get(action.payload.id));
-
-  // trigger a sync if we're online
-  const connected = yield select(selectNetworkConnected);
-
   if (connected) {
+    // trigger a sync if we're online
+    yield put(
+      Alerts.create({
+        content: 'Synchronizing records with server.',
+        severity: AlertSeverity.Info,
+        subject: AlertSubjects.Form
+      })
+    );
     yield delay(500);
-    yield put(Activity.Offline.syncRun);
+    yield put(Activity.Offline.syncRun());
+  } else {
+    yield put(
+      Alerts.create({
+        content: 'Saved locally',
+        severity: AlertSeverity.Info,
+        subject: AlertSubjects.Form
+      })
+    );
   }
 }
 
@@ -140,7 +147,8 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
             })
           );
         }
-        yield put(Activity.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
+        // Refetch Draft Records now that we're synced
+        yield put(WhatsHere.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
       } else {
         yield put(
           Activity.Offline.updateSyncState({

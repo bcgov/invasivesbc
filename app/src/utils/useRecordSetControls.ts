@@ -1,7 +1,5 @@
 import { MouseEvent } from 'react';
 import { useDispatch } from './use_selector';
-import { RecordSetId } from 'interfaces/UserRecordSet';
-import Activity from 'state/actions/activity/Activity';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Prompt from 'state/actions/prompts/Prompt';
 
@@ -14,17 +12,11 @@ const useRecordSetControls = (id: string) => {
 
   const toggleRecordsetLabel = (e?: MouseEvent<HTMLButtonElement>) => {
     e?.stopPropagation();
-    if (id === RecordSetId.OfflineActivities) {
-      dispatch(Activity.Offline.setLabelVisibility());
-    }
     dispatch(UserSettings.RecordSet.toggleLabelVisibility(id));
   };
 
   const toggleRecordsetLayer = (e?: MouseEvent<HTMLButtonElement>) => {
     e?.stopPropagation();
-    if (id === RecordSetId.OfflineActivities) {
-      dispatch(Activity.Offline.setAllShapeVisibility());
-    }
     dispatch(UserSettings.RecordSet.toggleVisibility(id));
   };
   const deleteRecordSet = (e?: MouseEvent<HTMLButtonElement>) => {

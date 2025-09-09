@@ -5,7 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>InvasivesBC</string>
+  <string>InvasivesBC</string>
+  <key>BGTaskSchedulerPermittedIdentifiers</key>
+  <array>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+  </array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>

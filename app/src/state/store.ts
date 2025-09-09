@@ -5,7 +5,6 @@ import { persistStore } from 'redux-persist';
 import { Store } from 'redux';
 import debounce from 'lodash.debounce';
 import { createRootReducer } from './reducers/rootReducer';
-import AppActions from './actions/appActions/appActions';
 import activityPageSaga from './sagas/activity';
 import planMyTripSaga from './sagas/planMyTrip';
 import authenticationSaga from './sagas/auth/auth';
@@ -103,7 +102,14 @@ export function setupStore(configuration: UnifiedConfig) {
 
   window.addEventListener('resize', debouncedResize);
 
-  return { store, persistor: persistStore(store) };
+  return {
+    store,
+    persistor: persistStore(store, null, () => {
+      //Fire these actions once store is rehydrated
+      store.dispatch(NetworkActions.checkInitConnection());
+      store.dispatch(AuthActions.initializeRequest());
+    })
+  };
 }
 
 export default setupStore;

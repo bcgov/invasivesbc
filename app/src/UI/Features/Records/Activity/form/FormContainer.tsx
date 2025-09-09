@@ -33,6 +33,9 @@ const FormContainer = () => {
 
   const dispatch = useDispatch();
 
+  const FORM_UPDATE_THROTTLE_DELAY = 250; //ms
+  const FORM_UPDATE_MAX_DELAY = 3000; //ms
+
   const formDataState = useSelector(
     (state) => state.ActivityPage.activity.form_data,
     (a, b) => {
@@ -65,9 +68,13 @@ const FormContainer = () => {
   const theme = useRef<Theme>(createTheme(rjsfTheme as ThemeOptions));
 
   const debouncedFormChange = useCallback(
-    debounce((event) => {
-      dispatch(Activity.onFormChangeRequest(event.formData));
-    }, 1000),
+    debounce(
+      (event) => {
+        dispatch(Activity.onFormChangeRequest(event.formData));
+      },
+      FORM_UPDATE_THROTTLE_DELAY,
+      { maxWait: FORM_UPDATE_MAX_DELAY, leading: false, trailing: true }
+    ),
     []
   );
 
