@@ -321,11 +321,11 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     if (!mapReady || !map) return;
-    if (authenticated && loggedInOrWorkingOffline) {
+    if (loggedInOrWorkingOffline) {
       addServerBoundariesIfNotExists(serverBoundaries, map);
       refreshServerBoundariesOnToggle(serverBoundaries, map);
     }
-  }, [serverBoundaries, authenticated, map, mapReady]);
+  }, [serverBoundaries, loggedInOrWorkingOffline, map, mapReady]);
 
   // Custom Layers:
   useEffect(() => {
