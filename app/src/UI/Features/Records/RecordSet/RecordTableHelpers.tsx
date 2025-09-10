@@ -144,5 +144,6 @@ export const offlineActivityColumnsToDisplay = [
   { key: 'jurisdiction_display', name: 'Jurisdiction', hide: false },
   { key: 'invasive_plant', name: 'Invasive Plant', hide: false },
   { key: 'created_by', name: 'Created By', hide: false },
-  { key: 'agency', name: 'Agency', hide: false }
+  { key: 'agency', name: 'Agency', hide: false },
+  { key: 'form_status', name: 'Status', hide: false }
 ];
