@@ -38,8 +38,8 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
     }
   };
   return (
-    <div key={'pagination'} className={'whatsHere-pagination'}>
-      <div key={'paginationControls'}>
+    <div className="whats-here-pagination">
+      <div>
         <IconButton
           disabled={pageNumber <= 0}
           onClick={(e) => {
@@ -71,7 +71,7 @@ const WhatsHerePagination = ({ type }: PropTypes) => {
           <ArrowRightIcon />
         </IconButton>
       </div>
-      <div key={'paginationRecords'}>
+      <div>
         Showing records {pageLimit * (pageNumber + 1) - pageLimit + 1} -{' '}
         {setLength < pageLimit * (pageNumber + 1) ? setLength : pageLimit * (pageNumber + 1)} out of {setLength}
       </div>
