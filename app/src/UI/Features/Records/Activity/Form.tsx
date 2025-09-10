@@ -6,7 +6,6 @@ import 'UI/Features/Records/Activity/Form.css';
 import { ActivitySubtypeShortLabels } from 'sharedAPI';
 import { RENDER_DEBUG } from 'UI/App';
 import { Button } from '@mui/material';
-import { ACTIVITY_UPDATE_GEO_REQUEST } from 'state/actions';
 import GeoShapes from 'constants/geoShapes';
 import { UtmInputObj } from 'interfaces/prompt-interfaces';
 import GeoTracking from 'state/actions/geotracking/GeoTracking';
@@ -15,6 +14,8 @@ import RecordHistory from 'UI/Features/Records/RecordHistory/RecordHistory';
 import { useSelector } from 'utils/use_selector';
 import { isTracking } from 'utils/geoTrackingHelpers';
 import MapActions from 'state/actions/map';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import { Feature } from 'geojson';
 
 export const ActivityForm = () => {
   const ref = useRef(0);
@@ -49,15 +50,17 @@ export const ActivityForm = () => {
    */
   const manualUTMEntry = () => {
     const utmCallback = (input: UtmInputObj) => {
-      const geo = {
+      const [lng, lat] = input.results;
+      const geo: Feature = {
         type: 'Feature',
         geometry: {
           type: GeoShapes.Point,
-          coordinates: [input.results[0], input.results[1]]
+          coordinates: [lng, lat]
         },
         properties: {}
       };
-      dispatch({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [geo] } });
+      dispatch(MapActions.centerMap({ lat, lng, zoom: 16 }));
+      dispatch(DrawToolActions.updateGeo([geo]));
     };
 
     dispatch(

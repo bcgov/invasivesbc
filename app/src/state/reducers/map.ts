@@ -1,27 +1,6 @@
 import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import { Feature, Point, Polygon } from 'geojson';
-import {
-  ACTIVITY_PAGE_MAP_EXTENT_TOGGLE,
-  CSV_LINK_CLICKED,
-  FILTERS_PREPPED_FOR_VECTOR_ENDPOINT,
-  IAPP_EXTENT_FILTER_SUCCESS,
-  IAPP_PAN_AND_ZOOM,
-  INIT_SERVER_BOUNDARIES_GET,
-  MAIN_MAP_MOVE,
-  MAP_DELETE_LAYER_AND_TABLE,
-  MAP_LABEL_EXTENT_FILTER_SUCCESS,
-  MAP_SET_COORDS,
-  PAGE_OR_LIMIT_UPDATE,
-  PAN_AND_ZOOM_TO_ACTIVITY,
-  RECORD_SET_TO_EXCEL_FAILURE,
-  RECORD_SET_TO_EXCEL_REQUEST,
-  RECORD_SET_TO_EXCEL_SUCCESS,
-  SET_CURRENT_OPEN_SET,
-  SET_TOO_MANY_LABELS_DIALOG,
-  TOGGLE_CUSTOMIZE_LAYERS,
-  URL_CHANGE
-} from 'state/actions';
+import { Feature, GeoJSON, Point, Polygon } from 'geojson';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -32,11 +11,13 @@ import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import IappActions from 'state/actions/activity/Iapp';
 import Activity from 'state/actions/activity/Activity';
 import RecordCache from 'state/actions/cache/RecordCache';
-import { RECORD_COLOURS } from 'constants/colors';
 import IRecordTable from 'interfaces/recordTable';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import MapActions from 'state/actions/map';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
+import AppActions from 'state/actions/appActions/appActions';
+import ExportActions from 'state/actions/exports/exportActions';
+import { OfflineProtomapsActions } from 'state/actions/offlineProtomaps';
 
 enum LeafletWhosEditingEnum {
   ACTIVITY = 'ACTIVITY',
@@ -45,16 +26,25 @@ enum LeafletWhosEditingEnum {
   NONE = 'NONE'
 }
 
+interface IServerLayer {
+  id: number | string;
+  geojson: GeoJSON;
+  title: string;
+  toggle?: boolean;
+}
+
+interface OfflineProtomaps {
+  debugPanelOpen: boolean;
+}
+
 interface MapState {
   [MIGRATION_VERSION_KEY]: number;
   CanTriggerCSV: boolean;
-  IAPPBoundsPolygon: any;
   IAPPGeoJSON: any;
   IAPPGeoJSONDict: object;
   accuracyToggle: boolean;
   activitiesGeoJSON: any;
   activitiesGeoJSONDict: object;
-  activityPageMapExtentToggle: boolean;
   activity_center: [number, number];
   activity_zoom: number;
   clientBoundaries: any[];
@@ -64,7 +54,6 @@ interface MapState {
   drawingCustomLayerName: string;
   error: boolean;
   initialized: boolean;
-  labelBoundsPolygon: any;
   layers: any[];
   linkToCSV: string | null;
   map_center: [number, number];
@@ -78,10 +67,10 @@ interface MapState {
   };
   quickPanToRecord: boolean;
   readableIdentifier?: string;
-  recordSetForCSV: number | null;
+  recordSetForCSV: string | null;
   recordTables: Record<PropertyKey, IRecordTable>;
-  serverBoundaries: any[];
-  tooManyLabelsDialog: any;
+  serverBoundaries: IServerLayer[];
+
   userCoords: any;
   userRecordOnHoverRecordID?: string | number;
   userRecordOnHoverRecordGeometry?: Feature | Polygon | Point;
@@ -115,6 +104,7 @@ interface MapState {
     IAPPSortDirection: string;
   };
   planMyTripDrawMode: boolean;
+  offlineProtomaps: OfflineProtomaps;
 }
 
 const initialState: MapState = {
@@ -130,13 +120,11 @@ const initialState: MapState = {
 
   accuracyToggle: false,
 
-  IAPPBoundsPolygon: undefined,
   IAPPGeoJSON: undefined,
   IAPPGeoJSONDict: {},
 
   activitiesGeoJSON: undefined,
   activitiesGeoJSONDict: {},
-  activityPageMapExtentToggle: false,
 
   clientBoundaries: [],
   currentOpenSet: null,
@@ -145,7 +133,6 @@ const initialState: MapState = {
   drawingCustomLayerName: '',
   error: false,
   initialized: false,
-  labelBoundsPolygon: undefined,
   layers: [],
   linkToCSV: '',
   panned: false,
@@ -156,11 +143,10 @@ const initialState: MapState = {
     isEditingShape: false
   },
   quickPanToRecord: false,
-  recordSetForCSV: 0,
+  recordSetForCSV: null,
   recordTables: {},
 
   serverBoundaries: [],
-  tooManyLabelsDialog: null,
 
   planMyTripDrawMode: false,
 
@@ -194,6 +180,9 @@ const initialState: MapState = {
     IAPPLimit: 5,
     IAPPSortField: 'earliest_survey',
     IAPPSortDirection: SortFilter.Desc
+  },
+  offlineProtomaps: {
+    debugPanelOpen: false
   }
 };
 
@@ -231,18 +220,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
       } else if (UserSettings.KML.deleteSuccess.match(action)) {
         const index = draftState.serverBoundaries.findIndex((sb) => sb.id === action.payload);
         draftState.serverBoundaries.splice(index, 1);
-      } else if (UserSettings.InitState.getSuccess.match(action)) {
-        Object.keys(action.payload.recordSets).forEach((setID) => {
-          if (setID !== RecordSetId.OfflineActivities) {
-            let layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-            if (layerIndex === -1) {
-              draftState.layers.push({ recordSetID: setID, type: action.payload.recordSets[setID].recordSetType });
-              layerIndex = draftState.layers.findIndex((layer) => layer.recordSetID === setID);
-            }
-            draftState.layers[layerIndex].layerState ??= {};
-            Object.assign(draftState.layers[layerIndex].layerState, action.payload.recordSets[setID]);
-          }
-        });
       } else if (WhatsHere.map_init_get_poi_ids_fetched.match(action)) {
         Object.assign(draftState.whatsHere, {
           IAPPIDs: action.payload ?? [],
@@ -448,35 +425,20 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
           draftState.recordTables[recordSetID] = { loading: false, limit, page, rows, tableFiltersHash };
         } // set defaults
         draftState.recordTables[action.payload.recordSetID].loading = false;
-      } else if (Activity.Offline.getIdsForRecordsetSuccess.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-
+      } else if (AppActions.prepOfflineActivityLayer.match(action)) {
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === RecordSetId.OfflineActivities);
         if (index === -1) {
-          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+          draftState.layers.push({
+            recordSetID: RecordSetId.OfflineActivities,
+            type: RecordSetType.Activity,
+            layerState: { mapToggle: action.payload.mapToggle, labelToggle: action.payload.labelToggle }
+          });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === RecordSetId.OfflineActivities);
         }
-        draftState.layers[index] = {
-          ...draftState.layers[index]
-        };
         draftState.layers[index].loading = false;
       } else if (UserSettings.RecordSet.hideFilters.match(action)) {
         draftState.viewFilters = !draftState.viewFilters;
-      } else if (Activity.getIdsForRecordset.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) {
-          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        }
-        draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-        draftState.layers[index].loading = true;
-        if (!draftState.layers[index].layerState) {
-          draftState.layers[index].layerState = {
-            color: RECORD_COLOURS[0],
-            drawOrder: 0,
-            mapToggle: false
-          };
-        }
-      } else if (Activity.getIdsForRecordsetSuccess.match(action)) {
+      } else if (WhatsHere.getIdsForRecordsetSuccess.match(action)) {
         let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
         if (index === -1) {
           draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.Activity });
@@ -484,30 +446,6 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         }
         if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
 
-        draftState.layers[index].loading = false;
-      } else if (IappActions.getIdsForRecordset.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (!draftState.layers[index]) {
-          draftState.layers.push({ recordSetID: action.payload.recordSetID, type: RecordSetType.IAPP });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        }
-        draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-        draftState.layers[index].loading = true;
-        if (!draftState.layers[index].layerState) {
-          draftState.layers[index].layerState = {
-            color: RECORD_COLOURS[0],
-            drawOrder: 0,
-            mapToggle: false
-          };
-        }
-      } else if (IappActions.getIdsForRecordsetSuccess.match(action)) {
-        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        if (index === -1) {
-          draftState.layers.push({ recordSetID: action.payload.recordSetID });
-          index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-        }
-
-        if (action.payload.tableFiltersHash !== draftState.layers[index]?.tableFiltersHash) return;
         draftState.layers[index].loading = false;
       } else if (UserSettings.Map.setHoveredRecordset.match(action)) {
         draftState.userRecordOnHoverRecordType = action.payload.recordType;
@@ -565,126 +503,76 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
         } else {
           draftState.clientBoundaries[index].toggle = !draftState.clientBoundaries[index]?.toggle;
         }
-      } else {
-        switch (action.type) {
-          case FILTERS_PREPPED_FOR_VECTOR_ENDPOINT: {
-            let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            if (!draftState.layers[index]) {
-              draftState.layers.push({
-                recordSetID: action.payload.recordSetID,
-                type: action.payload.recordSetType
-              });
-            }
-            index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-
-            draftState.layers[index].filterObject = action.payload.filterObject;
-            draftState.layers[index].tableFiltersHash = action.payload.tableFiltersHash;
-            break;
-          }
-          case ACTIVITY_PAGE_MAP_EXTENT_TOGGLE: {
-            draftState.activityPageMapExtentToggle = !state.activityPageMapExtentToggle;
-            break;
-          }
-          case CSV_LINK_CLICKED: {
-            draftState.linkToCSV = null;
-            draftState.recordSetForCSV = null;
-            break;
-          }
-
-          case IAPP_EXTENT_FILTER_SUCCESS: {
-            draftState.IAPPBoundsPolygon = action.payload.bounds;
-            break;
-          }
-          case INIT_SERVER_BOUNDARIES_GET: {
-            draftState.serverBoundaries =
-              action.payload.data?.map((incomingItem) => {
-                const returnVal = { ...incomingItem };
-                const existingToggleVal = draftState.serverBoundaries.find(
-                  (oldItem) => oldItem.id === incomingItem
-                )?.toggle;
-                returnVal.toggle =
-                  existingToggleVal !== null && existingToggleVal !== undefined ? existingToggleVal : false;
-                return returnVal;
-              }) ?? [];
-            break;
-          }
-
-          case MAIN_MAP_MOVE: {
-            draftState.map_zoom = action.payload.zoom;
-            draftState.map_center = action.payload.center;
-            draftState.panned = false;
-            break;
-          }
-          case MAP_DELETE_LAYER_AND_TABLE: {
-            const index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
-            delete draftState.layers[index];
-            delete draftState.recordTables[action.payload.recordSetID];
-            break;
-          }
-          case MAP_LABEL_EXTENT_FILTER_SUCCESS: {
-            draftState.labelBoundsPolygon = action.payload.bounds;
-            break;
-          }
-          case MAP_SET_COORDS: {
-            const userCoords = { ...action?.payload?.position?.coords };
-            draftState.userCoords = {
-              lat: userCoords.latitude,
-              long: userCoords.longitude,
-              accuracy: userCoords.accuracy,
-              heading: userCoords.heading
-            };
-            break;
-          }
-          case IAPP_PAN_AND_ZOOM:
-          case PAN_AND_ZOOM_TO_ACTIVITY: {
-            draftState.positionTracking = false;
-            break;
-          }
-          case PAGE_OR_LIMIT_UPDATE: {
-            draftState.recordTables[action.payload.setID].page = action.payload.page;
-            draftState.recordTables[action.payload.setID].limit = action.payload.limit;
-            break;
-          }
-          case RECORD_SET_TO_EXCEL_FAILURE: {
-            draftState.CanTriggerCSV = true;
-            break;
-          }
-          case RECORD_SET_TO_EXCEL_REQUEST: {
-            draftState.CanTriggerCSV = false;
-            break;
-          }
-          case RECORD_SET_TO_EXCEL_SUCCESS: {
-            draftState.CanTriggerCSV = true;
-            draftState.linkToCSV = action.payload.link;
-            draftState.recordSetForCSV = action.payload.id;
-            break;
-          }
-
-          case SET_CURRENT_OPEN_SET: {
-            draftState.currentOpenSet = action.payload.set;
-            break;
-          }
-          case SET_TOO_MANY_LABELS_DIALOG: {
-            draftState.tooManyLabelsDialog = action.payload.dialog;
-            break;
-          }
-          case TOGGLE_CUSTOMIZE_LAYERS: {
-            draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
-            break;
-          }
-          case URL_CHANGE: {
-            if (action.payload?.pathname === '/') {
-              // draftState.panelOpen = false;
-            }
-            if (!action?.payload?.url?.includes('WhatsHere')) {
-              draftState.whatsHere.toggle = false;
-              draftState.whatsHere.feature = null;
-            }
-            break;
-          }
-          default:
-            break;
+      } else if (AppActions.urlChange.match(action)) {
+        if (!action?.payload?.includes('/WhatsHere')) {
+          draftState.whatsHere.toggle = false;
+          draftState.whatsHere.feature = null;
         }
+      } else if (MapActions.setCurrentOpenSet.match(action)) {
+        draftState.currentOpenSet = action.payload;
+      } else if (MapActions.initServerBoundaries.match(action)) {
+        draftState.serverBoundaries =
+          action.payload?.map((incomingItem) => {
+            const returnVal = { ...incomingItem };
+            const existingToggleVal = draftState.serverBoundaries.find(
+              (oldItem) => oldItem.id === incomingItem.id
+            )?.toggle;
+            returnVal.toggle = !!existingToggleVal;
+            return returnVal;
+          }) ?? [];
+      } else if (UserSettings.RecordSet.setPageLimit.match(action)) {
+        draftState.recordTables[action.payload.setID].page = action.payload.page;
+        draftState.recordTables[action.payload.setID].limit = action.payload.limit;
+      } else if (MapActions.panToActivity.match(action) || MapActions.panToIAPP.match(action)) {
+        draftState.positionTracking = false;
+      } else if (AppActions.toggleCustomLayersModal.match(action)) {
+        draftState.customizeLayersToggle = !draftState.customizeLayersToggle;
+      } else if (MapActions.centerMap.match(action)) {
+        const { lat, lng, zoom } = action.payload;
+        draftState.map_zoom = zoom;
+        draftState.map_center = [lng, lat];
+        draftState.panned = false;
+      } else if (AppActions.vectorFiltersPrepped.match(action)) {
+        const ap = action.payload;
+        let index = draftState.layers.findIndex((layer) => layer.recordSetID === action.payload.recordSetID);
+        if (!draftState.layers[index]) {
+          draftState.layers.push({
+            recordSetID: ap.recordSetID,
+            type: ap.recordSetType,
+            layerState: {
+              color: ap.color,
+              mapToggle: ap.mapToggle,
+              labelToggle: ap.labelToggle,
+              cacheMetadataStatus: ap.cacheMetadataStatus
+            }
+          });
+          index = draftState.layers.findIndex((layer) => layer.recordSetID === ap.recordSetID);
+        }
+        draftState.layers[index].filterObject = ap.filterObject;
+        draftState.layers[index].tableFiltersHash = ap.tableFiltersHash;
+      } else if (ExportActions.requestExcel.pending.match(action)) {
+        draftState.CanTriggerCSV = false;
+      } else if (ExportActions.requestExcel.fulfilled.match(action)) {
+        draftState.CanTriggerCSV = true;
+        draftState.linkToCSV = action.payload.link;
+        draftState.recordSetForCSV = action.payload.setId;
+      } else if (ExportActions.requestExcel.rejected.match(action)) {
+        draftState.CanTriggerCSV = true;
+      } else if (AppActions.setUserCoords.match(action)) {
+        const userCoords = action.payload.position.coords;
+        draftState.userCoords = {
+          lat: userCoords.latitude,
+          long: userCoords.longitude,
+          accuracy: userCoords.accuracy,
+          heading: userCoords.heading
+        };
+      } else if (ExportActions.resetCsvUrl.match(action)) {
+        draftState.linkToCSV = null;
+        draftState.recordSetForCSV = null;
+      } else if (OfflineProtomapsActions.setDebugPanelState.match(action)) {
+        draftState.offlineProtomaps.debugPanelOpen = action.payload;
+      } else if (OfflineProtomapsActions.toggleDebugPanelState.match(action)) {
+        draftState.offlineProtomaps.debugPanelOpen = !state.offlineProtomaps.debugPanelOpen;
       }
     }) as unknown as MapState;
   };
@@ -692,4 +580,4 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 
 const selectMap: (state) => MapState = (state) => state.Map;
 export { createMapReducer, selectMap };
-export type { LeafletWhosEditingEnum, MapState };
+export type { LeafletWhosEditingEnum, MapState, IServerLayer };

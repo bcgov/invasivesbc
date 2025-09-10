@@ -36,7 +36,7 @@ function* handle_USER_SETTINGS_ADD_BOUNDARY_TO_SET_REQUEST(action) {
     const current = sets[action.payload.setName];
 
     const boundary = JSON.parse(action.payload?.searchedBoundary);
-    current.searchBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...boundary?.geos] };
+    current.searchBoundary = { ...boundary, geos: boundary?.server_id ? [] : [...(boundary?.geos || [])] };
 
     yield put(UserSettings.Boundaries.addToSetSuccess(sets));
   } catch (e) {
@@ -61,29 +61,10 @@ function* handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST(action) {
   yield put(UserSettings.Boundaries.deleteSuccess(action.payload));
 }
 
-function* handle_USER_SETTINGS_DELETE_KML_REQUEST(action) {
-  try {
-    // needs offline handling
-    const networkReturn = yield InvasivesAPI_Call('DELETE', `/api/admin-defined-shapes/`, {
-      server_id: action.payload
-    });
-
-    if (networkReturn?.ok) {
-      yield put(UserSettings.KML.deleteSuccess(action.payload));
-    }
-  } catch (e) {
-    console.error(e);
-    yield put(UserSettings.KML.deleteFailure(action.payload));
-  }
-}
-
 function* handle_USER_SETTINGS_GET_INITIAL_STATE_REQUEST(action) {
-  if (!UserSettings.InitState.get.match(action)) {
-    return;
-  }
+  if (!UserSettings.InitState.get.match(action)) return;
 
   const { recordSets } = yield select(selectUserSettings);
-
   const [recordsetCacheEnabled, tileCacheEnabled] = yield all([
     yield select((state: RootState) => state.Configuration.current.features.CACHE_RECORDSETS.enabled),
     yield select((state: RootState) => state.Configuration.current.features.CACHE_TILES.enabled)
@@ -136,7 +117,6 @@ function* handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST(action) {
     yield put(UserSettings.Map.setCenterSuccess(action.payload));
   } catch (e) {
     console.error(e);
-    yield put(UserSettings.Map.setCenterFailure);
   }
 }
 
@@ -177,7 +157,6 @@ function* userSettingsSaga() {
     takeEvery(UserSettings.Boundaries.removeFromSet, handle_USER_SETTINGS_REMOVE_BOUNDARY_FROM_SET_REQUEST),
     takeEvery(UserSettings.Boundaries.set, handle_USER_SETTINGS_SET_BOUNDARIES_REQUEST),
     takeEvery(UserSettings.Boundaries.delete, handle_USER_SETTINGS_DELETE_BOUNDARY_REQUEST),
-    takeEvery(UserSettings.KML.delete, handle_USER_SETTINGS_DELETE_KML_REQUEST),
     takeEvery(UserSettings.toggleRecordExpand, handle_USER_SETTINGS_TOGGLE_RECORDS_EXPANDED_REQUEST),
     takeEvery(UserSettings.Map.setCenter, handle_USER_SETTINGS_SET_MAP_CENTER_REQUEST)
   ]);

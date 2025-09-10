@@ -1,24 +1,25 @@
 import { Draft } from 'immer';
 import { Action, createNextState } from '@reduxjs/toolkit';
+import { ActivitySubtype } from 'sharedAPI';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import { AuthActions } from 'state/actions/auth/Auth';
-import { ActivitySubtype } from 'sharedAPI';
 
+interface IUserExtendedInfo {
+  user_id: number | null;
+  account_status: number | null;
+  activation_status: number | null;
+  work_phone_number: string | null;
+  funding_agencies: any[];
+  employer: string | null;
+  pac_number: string | null;
+  pac_service_number_1: string | null;
+  pac_service_number_2: string | null;
+}
 interface OfflineUserState {
   roles: { role_id: number; role_name: string }[];
   writePrivilege: Array<ActivitySubtype>;
-  extendedInfo: {
-    user_id: number | null;
-    account_status: number | null;
-    activation_status: number | null;
-    work_phone_number: string | null;
-    funding_agencies: any[];
-    employer: string | null;
-    pac_number: string | null;
-    pac_service_number_1: string | null;
-    pac_service_number_2: string | null;
-  };
+  extendedInfo: IUserExtendedInfo;
 
   email: string | null;
   displayName: string | null;
@@ -342,4 +343,4 @@ function createAuthReducer(_configuration: AppConfig) {
 const selectAuth: (state) => AuthState = (state) => state.Auth;
 
 export { createAuthReducer, selectAuth };
-export type { AuthState };
+export type { AuthState, IUserExtendedInfo };

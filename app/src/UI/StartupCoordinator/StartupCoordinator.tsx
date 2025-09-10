@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { PersistGate } from 'redux-persist/integration/react';
-import { Router } from 'react-router-dom';
-import setupStore, { historySingleton } from 'state/store';
+import { BrowserRouter } from 'react-router';
+import setupStore from 'state/store';
 import { Provider } from 'react-redux';
 import App from 'UI/App';
 import { TileCacheService } from 'utils/tile-cache';
@@ -12,10 +12,13 @@ import { Store } from 'redux';
 import { UnifiedConfig } from 'state/configuration/unified-config';
 import { LOAD_TILE_CACHES } from 'UI/StartupCoordinator/Tasks/TileCache';
 import { LOAD_RECORDSET_CACHES } from 'UI/StartupCoordinator/Tasks/RecordsetCache';
+import { OfflineProtomapsService } from 'utils/offline-protomaps';
+import { LOAD_OFFLINE_PROTOMAPS } from 'UI/StartupCoordinator/Tasks/OfflineProtomapsService';
 
 type StartupContext = {
   tileService?: TileCacheService;
   recordService?: RecordCacheService;
+  offlineProtomapsService?: OfflineProtomapsService;
 };
 
 const StartupContext = createContext<StartupContext>({});
@@ -36,7 +39,7 @@ async function StartupCoordinator() {
 
   const { store, persistor } = setupStore(unifiedConfig);
 
-  const tasks: StartupTask[] = [LOAD_TILE_CACHES, LOAD_RECORDSET_CACHES];
+  const tasks: StartupTask[] = [LOAD_TILE_CACHES, LOAD_RECORDSET_CACHES, LOAD_OFFLINE_PROTOMAPS];
 
   let providedContext: StartupContext = {};
 
@@ -54,17 +57,17 @@ async function StartupCoordinator() {
     const root = createRoot(container);
     if (root) {
       root.render(
-        <PersistGate loading={null} persistor={persistor}>
-          <PersistorContext.Provider value={persistor}>
-            <Router history={historySingleton}>
-              <Provider store={store}>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <PersistorContext.Provider value={persistor}>
+              <BrowserRouter>
                 <StartupContext.Provider value={providedContext}>
                   <App />
                 </StartupContext.Provider>
-              </Provider>
-            </Router>
-          </PersistorContext.Provider>
-        </PersistGate>
+              </BrowserRouter>
+            </PersistorContext.Provider>
+          </PersistGate>
+        </Provider>
       );
     }
   }

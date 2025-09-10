@@ -1,11 +1,11 @@
 import { Button } from '@mui/material';
-import { useHistory } from 'react-router';
 import './RecordTablePopoverContent.css';
 import { RecordSetType } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { Point, Polygon } from 'geojson';
 import { MobileOnly } from 'UI/Reusable/Predicates/MobileOnly';
+import { useNavigate } from 'react-router';
 
 /**
  * @property { string } recordDisplayId Short ID / Site ID for a Record, displayed in the Popover
@@ -22,9 +22,9 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
   const handleOpenRecord = () => {
     const url =
       recordType === RecordSetType.Activity
-        ? '/Records/Activity:' + recordLookupId + '/form'
+        ? '/Records/Activity/' + recordLookupId + '/form'
         : '/Records/IAPP/' + recordLookupId + '/summary';
-    history.push(url);
+    navigate(url);
   };
 
   const handleMarkGeometryOnMap = (quickPan: boolean) => {
@@ -38,7 +38,7 @@ const RecordTablePopoverContent = ({ recordDisplayId: id, recordLookupId, record
       })
     );
   };
-  const history = useHistory();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const label = (() => {

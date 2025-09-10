@@ -23,6 +23,7 @@ type PropTypes = {
   children: ReactNode;
   horizontal?: number | 'left' | 'center' | 'right';
   vertical?: number | 'top' | 'center' | 'bottom';
+  disablePortal?: boolean;
 };
 
 /**
@@ -35,7 +36,8 @@ const CustomPopover = ({
   children,
   closeAfterPress = false,
   horizontal = 'center',
-  vertical = 'center'
+  vertical = 'center',
+  disablePortal = false
 }: PropTypes) => {
   const handleClick = (event: MouseEvent<HTMLButtonElement> | TouchEvent<HTMLButtonElement>) => {
     if (!buttonOverrideOptions) {
@@ -76,6 +78,7 @@ const CustomPopover = ({
         anchorOrigin={{ vertical, horizontal }}
         onClick={handleCloseAfterClick}
         onClose={handleClose}
+        disablePortal={disablePortal}
       >
         {children}
       </Popover>

@@ -36,6 +36,8 @@ const BASELINE_FEATURES = {
   MAP_RESTRICT_TILE_CACHE_SIZE: new FeatureFlag('MAP_RESTRICT_TILE_CACHE_SIZE', false),
   MAP_PUBLIC_VECTOR_LAYER: new FeatureFlag('MAP_PUBLIC_VECTOR_LAYER', true),
 
+  OFFLINE_PROTOMAPS: new FeatureFlag('OFFLINE_PROTOMAPS', true),
+
   CACHE_TILES: new FeatureFlag('CACHE_TILES', true),
   CACHE_RECORDSETS: new FeatureFlag('CACHE_RECORDSETS', true),
   CACHE_WELLS: new FeatureFlag('CACHE_WELLS', true),

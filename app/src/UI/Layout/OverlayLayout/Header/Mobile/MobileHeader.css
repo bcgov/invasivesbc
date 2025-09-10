@@ -1,5 +1,4 @@
 :root:has(#app.overlay-layout) {
-
   #nav-header {
     align-items: center;
     box-sizing: border-box;
@@ -12,7 +11,6 @@
     left: 0;
     top: 0;
     right: 0;
-
 
     .invasives-bc-logo {
       height: calc(var(--header-bar-height) - 5pt);
@@ -105,11 +103,11 @@
       }
 
       li:nth-child(even) {
-        background-color: #eceae8;
+        background-color: var(--even-list-item-bg-color);
       }
 
       li:nth-child(odd) {
-        background-color: #fff;
+        background-color: var(--odd-list-item-bg-color);
       }
 
       li > button {
@@ -134,7 +132,7 @@
 
         &:hover {
           cursor: pointer;
-          background-color: #d1cfcd;
+          background-color: var(--hovered-list-item-bg-color);
         }
       }
 
@@ -150,5 +148,4 @@
       font-size: 1rem;
     }
   }
-
 }

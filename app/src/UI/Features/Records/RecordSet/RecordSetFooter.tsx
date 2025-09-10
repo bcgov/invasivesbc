@@ -1,7 +1,7 @@
 import { ArrowLeftIcon, ArrowRightIcon } from '@mui/x-date-pickers/icons';
 import { UserRecordSet } from 'interfaces/UserRecordSet';
 import { useDispatch } from 'react-redux';
-import { PAGE_OR_LIMIT_UPDATE } from 'state/actions';
+import UserSettings from 'state/actions/userSettings/UserSettings';
 import { useSelector } from 'utils/use_selector';
 
 type PropTypes = {
@@ -9,14 +9,13 @@ type PropTypes = {
 };
 const RecordSetFooter = ({ recordSet }: PropTypes) => {
   const handleUpdatePage = (change: number) => {
-    dispatch({
-      type: PAGE_OR_LIMIT_UPDATE,
-      payload: {
+    dispatch(
+      UserSettings.RecordSet.setPageLimit({
         setID: recordSet.id,
-        page: recordTable?.page + change,
-        limit: recordTable?.limit
-      }
-    });
+        page: recordTable.page + change,
+        limit: recordTable.limit
+      })
+    );
   };
 
   const dispatch = useDispatch();

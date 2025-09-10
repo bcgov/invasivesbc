@@ -1,7 +1,6 @@
 import { StrictMode, useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import './Records.css';
-import { useHistory } from 'react-router-dom';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import { RecordSetId, RecordSetType } from 'interfaces/UserRecordSet';
@@ -10,6 +9,7 @@ import RecordSetControl from './RecordSetControl';
 import filterRecordsetsByNetworkState from 'utils/filterRecordsetsByNetworkState';
 import UploadSiteList from '../SiteLists/UploadSiteList/UploadSiteList';
 import debounce from 'lodash.debounce';
+import { useNavigate } from 'react-router';
 
 export const Records = () => {
   const { MOBILE } = useSelector((state) => state.Configuration.current.build);
@@ -22,7 +22,7 @@ export const Records = () => {
   const highlightSet = debounce((set: string) => setHighlightedSet(set), 100, { leading: true });
   const unHighlightSet = debounce(() => setHighlightedSet(null), 100, { leading: true });
 
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const recordSets = useSelector((state) => state.UserSettings.recordSets);
   const connected = useSelector((state) => state.Network.connected);
@@ -62,7 +62,7 @@ export const Records = () => {
               recordSets?.[set] && (
                 <li
                   key={set}
-                  onClick={() => history.push('/Records/List/Local:' + set)}
+                  onClick={() => navigate('/Records/List/Local/' + set)}
                   onMouseOver={() => {
                     highlightSet(set);
                   }}

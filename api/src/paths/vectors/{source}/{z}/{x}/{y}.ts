@@ -40,6 +40,8 @@ function tile(): RequestHandler {
     //@todo validate source, tile bounds
     const tileData = await PostgresTileService.tile(source, filterObj);
     res.setHeader('content-type', 'application/vnd.mapbox-vector-tile');
-    res.status(200).send(tileData);
+    res.status(200);
+    res.write(tileData);
+    res.end();
   };
 }

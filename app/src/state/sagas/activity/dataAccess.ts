@@ -10,24 +10,15 @@ import {
   populateSpeciesArrays
 } from 'sharedAPI';
 import { kinks } from '@turf/turf';
-import { FeatureCollection } from 'geojson';
+import { Feature, FeatureCollection } from 'geojson';
 
 import { PayloadAction } from '@reduxjs/toolkit';
+import cloneDeep from 'lodash.clonedeep';
 import {
   autoFillNameByPAC,
   autoFillTotalBioAgentQuantity,
   autoFillTotalReleaseQuantity
 } from 'rjsf/business-rules/populateCalculatedFields';
-import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-  ACTIVITY_GET_INITIAL_STATE_FAILURE,
-  ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_SAVE_OFFLINE,
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAIN_MAP_MOVE
-} from 'state/actions';
 import { selectActivity } from 'state/reducers/activity';
 import { selectAuth } from 'state/reducers/auth';
 import { isLinkedTreatmentSubtype, populateJurisdictionArray } from 'utils/addActivity';
@@ -38,7 +29,6 @@ import { calculateGeometryArea, calculateLatLng } from 'utils/geometryHelpers';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
 import { selectNetworkConnected, selectNetworkState } from 'state/reducers/network';
 import GeoShapes from 'constants/geoShapes';
-import GeoTracking from 'state/actions/geotracking/GeoTracking';
 import geomWithinBC from 'utils/geomWithinBC';
 import mappingAlertMessages from 'constants/alerts/mappingAlerts';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
@@ -53,7 +43,7 @@ import MapActions from 'state/actions/map';
 import { TreatmentIdsRequestOnline } from 'state/actions/activity/Suggestions';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import { buildTimeConfig } from 'state/configuration/build-time-config';
-import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
+import DrawToolActions, { IUpdateShapeSuccess } from 'state/actions/drawtool/drawToolActions';
 
 function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
   try {
@@ -64,7 +54,6 @@ function* handle_ACTIVITY_GET_REQUEST(action: PayloadAction<string>) {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -109,13 +98,13 @@ const fixMisLabledMultiPolygon = (input) => {
   }
 };
 
-export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>) {
+export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: PayloadAction<Feature[]>) {
   const activityState = yield select(selectActivity);
   try {
-    const modifiedPayload = JSON.parse(JSON.stringify(action.payload.geometry));
+    const modifiedPayload = JSON.parse(JSON.stringify(action.payload));
     const { latitude, longitude } = calculateLatLng(modifiedPayload) || {};
 
-    let utm;
+    let utm: [number, number, number] | null = null;
     if (latitude && longitude) {
       utm = calc_utm(longitude, latitude);
     }
@@ -132,12 +121,7 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
             callback: (userEnteredArea: number) => {
               const radiusBasedOnArea = Math.sqrt(userEnteredArea / Math.PI);
               modifiedPayload[0].properties.radius = radiusBasedOnArea;
-              return [
-                {
-                  type: ACTIVITY_UPDATE_GEO_REQUEST,
-                  payload: { geometry: modifiedPayload }
-                }
-              ];
+              return [DrawToolActions.updateGeo(modifiedPayload)];
             }
           })
         );
@@ -148,17 +132,16 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
     let reported_area = calculateGeometryArea(modifiedPayload.geometry);
 
     if (modifiedPayload.length === 0) {
-      yield put({
-        type: ACTIVITY_UPDATE_GEO_SUCCESS,
-        payload: {
-          geometry: modifiedPayload.geometry,
-          utm: utm,
-          lat: latitude,
-          long: longitude,
-          reported_area: reported_area,
-          Well_Information: []
-        }
-      });
+      const payload: IUpdateShapeSuccess = {
+        geometry: modifiedPayload.geometry,
+        lat: latitude,
+        long: longitude,
+        reported_area: reported_area,
+        Well_Information: []
+      };
+      if (utm) payload.utm = utm;
+
+      yield put(DrawToolActions.updateGeoSuccess(payload));
       return;
     }
 
@@ -181,7 +164,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       sanitizedGeo.properties = { error: 'false' };
     }
 
-    const wellInformationArr: Record<PropertyKey, any>[] = [];
+    const wellInformationArr: Array<{
+      well_id: string;
+      well_proximity: string;
+    }> = [];
 
     let wellsAreWithinRecordArea = false;
 
@@ -189,12 +175,10 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       const nearestWells = yield getClosestWells(sanitizedGeo);
       wellsAreWithinRecordArea = nearestWells.areWellsInside;
       if (nearestWells?.well_objects.length === 0) {
-        wellInformationArr.push([
-          {
-            well_id: 'No wells found',
-            well_proximity: 'No wells found'
-          }
-        ]);
+        wellInformationArr.push({
+          well_id: 'No wells found',
+          well_proximity: 'No wells found'
+        });
       } else {
         nearestWells.well_objects.forEach((well) => {
           if (well.proximity || well.inside) {
@@ -229,21 +213,19 @@ export function* handle_ACTIVITY_UPDATE_GEO_REQUEST(action: Record<string, any>)
       yield put(Alerts.create(mappingAlertMessages.notWithinBC));
       return;
     }
-    const payload = {
-      geometry: [JSON.parse(JSON.stringify(sanitizedGeo))],
-      utm,
+    const payload: IUpdateShapeSuccess = {
+      geometry: [JSON.parse(JSON.stringify(sanitizedGeo))] as Feature[],
       lat: latitude,
       long: longitude,
       reported_area,
       Well_Information: wellInformationArr
     };
-    yield put({
-      type: ACTIVITY_UPDATE_GEO_SUCCESS,
-      payload
-    });
+    if (utm) {
+      payload.utm = utm;
+    }
+    yield put(DrawToolActions.updateGeoSuccess(payload));
   } catch (e) {
     console.error('ERROR', e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -270,10 +252,12 @@ export function* handle_ACTIVITY_SAVE_REQUEST(action) {
   const activityState = yield select(selectActivity);
 
   if (buildTimeConfig.MOBILE) {
-    yield put({
-      type: ACTIVITY_SAVE_OFFLINE,
-      payload: { id: activityState?.activity?.activity_id, data: activityState?.activity }
-    });
+    yield put(
+      Activity.Offline.save({
+        id: activityState?.activity?.activity_id,
+        data: activityState?.activity
+      })
+    );
   } else {
     try {
       yield put(
@@ -301,7 +285,8 @@ export function* handle_ACTIVITY_CREATE_REQUEST(action: PayloadAction<INewActivi
       action.payload.subType,
       username,
       displayName,
-      authState.extendedInfo.pac_number
+      authState.extendedInfo.pac_number,
+      buildTimeConfig.PLATFORM
     );
 
     if (buildTimeConfig.MOBILE) {
@@ -334,46 +319,52 @@ export function* handle_ACTIVITY_CREATE_SUCCESS(action: PayloadAction<string>) {
   }
 }
 
-export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
+export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action: PayloadAction<UserRecord>) {
   try {
-    const beforeState = yield select(selectActivity);
-    const beforeActivity = beforeState.activity;
+    const previousState = yield select(selectActivity);
+    const previousActivityState = previousState.activity;
 
-    let updatedFormData = action.payload.eventFormData;
-    if (
-      beforeActivity.activity_type === ActivityType.Biocontrol ||
-      beforeActivity.activity_subtype === ActivitySubtype.Treatment_BiologicalPlant ||
-      beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalDispersal ||
-      beforeActivity.activity_subtype === ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
-    ) {
-      // auto fills total release quantity (only on biocontrol release activity)
-      updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
-      // auto fills total bioagent quantity (only on biocontrol release monitoring activity)
-      updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
-    }
-
-    if (beforeState.activity.activity_type === ActivityType.Treatment && beforeState.suggestedPersons) {
-      updatedFormData = autoFillNameByPAC(updatedFormData, beforeState.suggestedPersons);
-    }
-    let updatedActivity = populateSpeciesArrays({ ...beforeActivity, form_data: updatedFormData });
-    updatedActivity = populateJurisdictionArray({ ...updatedActivity });
-    updatedActivity = { ...updatedActivity, map_symbol: updatedActivity.species_positive.join(', ') };
-
-    yield put({
-      type: ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-      payload: {
-        activity: updatedActivity,
-        lastField: action.payload.lastField,
-        unsavedDelay: action.payload.unsavedDelay
+    try {
+      let updatedFormData = cloneDeep(action.payload);
+      if (
+        previousActivityState.activity_type === ActivityType.Biocontrol ||
+        [
+          ActivitySubtype.Treatment_BiologicalPlant,
+          ActivitySubtype.Monitoring_BiologicalDispersal,
+          ActivitySubtype.Monitoring_BiologicalTerrestrialPlant
+        ].includes(previousActivityState.activity_subtype)
+      ) {
+        // auto-fills total release quantity (only on biocontrol release activity)
+        updatedFormData = autoFillTotalReleaseQuantity(updatedFormData);
+        // auto-fills total bioagent quantity (only on biocontrol release monitoring activity)
+        updatedFormData = autoFillTotalBioAgentQuantity(updatedFormData);
       }
-    });
+
+      if (previousState.activity.activity_type === ActivityType.Treatment && previousState.suggestedPersons) {
+        updatedFormData = autoFillNameByPAC(updatedFormData, previousState.suggestedPersons);
+      }
+
+      let updatedActivity = populateSpeciesArrays({ ...cloneDeep(previousActivityState), form_data: updatedFormData });
+      updatedActivity = populateJurisdictionArray(updatedActivity);
+      updatedActivity = { ...updatedActivity, map_symbol: updatedActivity.species_positive.join(', ') };
+      yield put(Activity.OnFormChangeRequestSuccess(updatedActivity));
+    } catch (error) {
+      console.error(error);
+      yield put(
+        Alerts.create({
+          subject: AlertSubjects.Global,
+          severity: AlertSeverity.Error,
+          content: `An unexpected error occurred while updating form contents. ${error}`
+        })
+      );
+    }
 
     // try to reduce calls to copy geometry
-    const linked_id = updatedFormData.activity_type_data?.linked_id;
-    const oldLinkedId = beforeActivity.form_data.activity_type_data?.linked_id;
-    const oldCopyGeometry = beforeActivity.form_data.activity_type_data?.copy_geometry;
+    const linked_id = action.payload.activity_type_data?.linked_id;
+    const oldLinkedId = previousActivityState.form_data.activity_type_data?.linked_id;
+    const oldCopyGeometry = previousActivityState.form_data.activity_type_data?.copy_geometry;
     const requestGeometryFromExistingRecord =
-      updatedFormData.activity_type_data?.copy_geometry === 'Yes' &&
+      action.payload.activity_type_data?.copy_geometry === 'Yes' &&
       linked_id &&
       (oldLinkedId !== linked_id || oldCopyGeometry !== 'Yes');
 
@@ -392,14 +383,14 @@ export function* handle_ACTIVITY_ON_FORM_CHANGE_REQUEST(action) {
         const record = yield service.loadActivity(linked_id);
         linked_geo = record.geometry;
       }
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: linked_geo } });
-      yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
+      yield put(DrawToolActions.updateGeo(linked_geo));
+      yield take(DrawToolActions.updateGeoSuccess.type);
     } else if (
-      beforeActivity.form_data.activity_type_data?.copy_geometry === 'Yes' &&
-      updatedFormData.activity_type_data.copy_geometry === 'No'
+      previousActivityState.form_data.activity_type_data?.copy_geometry === 'Yes' &&
+      action.payload?.activity_type_data?.copy_geometry === 'No'
     ) {
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } });
-      yield take(ACTIVITY_UPDATE_GEO_SUCCESS);
+      yield put(DrawToolActions.updateGeo([]));
+      yield take(DrawToolActions.updateGeoSuccess.type);
     }
 
     //call autofill events
@@ -413,13 +404,12 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST() {
   if (activityState?.activity?.geometry?.properties?.error == 'true') return;
 
   if (buildTimeConfig.MOBILE) {
-    yield put({
-      type: ACTIVITY_SAVE_OFFLINE,
-      payload: {
+    yield put(
+      Activity.Offline.save({
         id: activityState?.activity?.activity_id,
         data: { ...activityState.activity, form_status: ActivityStatus.SUBMITTED }
-      }
-    });
+      })
+    );
   } else {
     try {
       yield put(
@@ -427,7 +417,6 @@ export function* handle_ACTIVITY_SUBMIT_REQUEST() {
       );
     } catch (e) {
       console.error(e);
-      yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
     }
   }
 }
@@ -463,7 +452,6 @@ export function* handle_ACTIVITY_UPDATE_GEO_SUCCESS() {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -476,7 +464,6 @@ export function* handle_GET_SUGGESTED_JURISDICTIONS_REQUEST(action) {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -489,7 +476,6 @@ export function* handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST() {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -532,7 +518,6 @@ export function* handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST(action) {
     }
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -569,11 +554,13 @@ export function* handle_PAN_AND_ZOOM_TO_ACTIVITY() {
 
       target = acentroid.geometry;
     }
-
-    yield put({
-      type: MAIN_MAP_MOVE,
-      payload: { center: { lat: target.coordinates[1], lng: target.coordinates[0] }, zoom: 16 }
-    });
+    yield put(
+      MapActions.centerMap({
+        lat: target.coordinates[1],
+        lng: target.coordinates[0],
+        zoom: 16
+      })
+    );
   }
 }
 
@@ -599,8 +586,6 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
     const created_by = action.payload.created_by;
     const createdByUser = userName === created_by;
 
-    const isViewing = !activityState.activeActivityPermissions.can_edit;
-
     // Don't fetch suggestions if the record doesn't belong to the user
     if (createdByUser) {
       yield put(Activity.Suggestions.persons());
@@ -610,13 +595,9 @@ export function* handle_ACTIVITY_GET_SUCCESS(action: PayloadAction<Record<string
       }
     }
 
-    yield put({
-      type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-      payload: { isViewing }
-    });
+    yield put(Activity.buildFormSchema(createdByUser));
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -624,13 +605,9 @@ export function* handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST(
   eventFormData: PayloadAction<Record<PropertyKey, any>>
 ) {
   try {
-    yield put({
-      type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-      payload: { eventFormData: eventFormData.payload }
-    });
+    yield put(Activity.onFormChangeRequest(eventFormData.payload));
   } catch (e) {
     console.error(e);
-    yield put({ type: ACTIVITY_GET_INITIAL_STATE_FAILURE });
   }
 }
 
@@ -702,7 +679,6 @@ export function* handle_ACTIVITY_EDIT_PHOTO_REQUEST(action) {
     yield put(Activity.Photo.editSuccess(beforeActivityMedia));
   } catch (e) {
     console.error(e);
-    yield put(Activity.Photo.editFailure);
   }
 }
 

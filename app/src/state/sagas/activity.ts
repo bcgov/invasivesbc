@@ -1,5 +1,7 @@
-import { all, call, delay, put, select, take, takeEvery, takeLatest } from 'redux-saga/effects';
+import { all, call, put, select, take, takeEvery } from 'redux-saga/effects';
 import { buffer, distance, kinks, lineToPolygon } from '@turf/turf';
+import { PayloadAction } from '@reduxjs/toolkit';
+import { Feature } from 'geojson';
 import {
   handle_ACTIVITY_ADD_PHOTO_REQUEST,
   handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST,
@@ -31,21 +33,7 @@ import {
   handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST_ONLINE,
   handle_ACTIVITY_SAVE_NETWORK_REQUEST
 } from './activity/online';
-import { handle_ACTIVITY_RESTORE_OFFLINE, OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
-import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST,
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
-  ACTIVITY_ON_FORM_CHANGE_REQUEST,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_RESTORE_OFFLINE,
-  ACTIVITY_SET_CURRENT_HASH_FAILURE,
-  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_UPDATE_GEO_REQUEST,
-  ACTIVITY_UPDATE_GEO_SUCCESS,
-  MAP_SET_COORDS,
-  PAN_AND_ZOOM_TO_ACTIVITY,
-  URL_CHANGE
-} from 'state/actions';
+import { OFFLINE_ACTIVITY_SAGA_HANDLERS } from './activity/offline';
 import { selectActivity } from 'state/reducers/activity';
 import { selectUserSettings } from 'state/reducers/userSettings';
 import RootUISchemas from 'rjsf/uiSchema/RootUISchemas';
@@ -71,6 +59,8 @@ import { selectAuth } from 'state/reducers/auth';
 import { Role } from 'constants/roles';
 import { GEO_TRACKING_FEATURE } from 'UI/Features/LegacyMap/helpers/functional/constants';
 import { isDrawing } from 'utils/geoTrackingHelpers';
+import AppActions from 'state/actions/appActions/appActions';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 
 function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(UserSettings.RecordSet.setSelected(null));
@@ -84,53 +74,11 @@ function* handle_ACTIVITY_DELETE_SUCCESS() {
   yield put(MapActions.initRequest());
 }
 
-function* handle_ACTIVITY_SET_SAVED_HASH_REQUEST() {
-  try {
-    const activityState = yield select(selectActivity);
-    yield put(Activity.setSavedHashSuccess(activityState?.current_activity_hash));
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function* handle_ACTIVITY_SET_CURRENT_HASH_REQUEST(action) {
-  yield delay(2000);
-  try {
-    if (action.type === ACTIVITY_ON_FORM_CHANGE_SUCCESS && !action.payload.unsavedDelay) return;
-
-    const activityState = yield select(selectActivity);
-    const activitySerialized = JSON.stringify(activityState?.activity);
-    let currentHash = 5381;
-
-    for (let i = 0; i < activitySerialized.length; i++) {
-      currentHash = (currentHash * 33) ^ activitySerialized.charCodeAt(i);
-    }
-
-    yield put({
-      type: ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-      payload: {
-        current: currentHash
-      }
-    });
-  } catch (e) {
-    console.error(e);
-    yield put({
-      type: ACTIVITY_SET_CURRENT_HASH_FAILURE
-    });
-  }
-}
-
-function* handle_URL_CHANGE(action) {
+function* handle_LOAD_ACTIVITY_IF_REQUIRED(action: PayloadAction<string>) {
+  // this replaces an urlChange handler with more specific handling
+  const id = action.payload;
   const activityPageState = yield select(selectActivity);
-  const isActivityURL = action.payload.url.includes('/Records/Activity:');
-  if (isActivityURL) {
-    const afterColon = action.payload.url.split(':')?.[1];
-    let id;
-    if (afterColon) {
-      id = afterColon.includes('/') ? afterColon.split('/')[0] : afterColon;
-    }
-    if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(Activity.get(id));
-  }
+  if (id && id.length === 36 && activityPageState?.activity?.activity_id !== id) yield put(Activity.get(id));
 }
 
 function* handle_ACTIVITY_DELETE_FAILURE() {
@@ -143,8 +91,8 @@ function* handle_ACTIVITY_DELETE_FAILURE() {
   );
 }
 
-function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
-  const isViewing = action.payload.isViewing;
+function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action: PayloadAction<{ formCreatedByUser: boolean }>) {
+  const { formCreatedByUser } = action.payload;
   const activityState = yield select(selectActivity);
   const activity_subtype = activityState?.activity?.activity_subtype;
   const uiSchema = RootUISchemas[activity_subtype];
@@ -158,17 +106,23 @@ function* handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST(action) {
     userSettings = yield select(selectUserSettings);
   }
 
-  if (isViewing || isAdmin) {
-    // Admins get all codes as they fill out data on behalf of other users
-    apiSpec = userSettings.apiDocsWithViewOptions;
-  } else {
+  /**
+   * If a user creates a form, they should be restricted in agency/employer options (apiDocsWithselectOptions).
+   * The exception to this rule is administrative users.
+   * Admins need access to all codes because their responsibilities include creating forms on behalf of other users.
+   */
+  if (formCreatedByUser && !isAdmin) {
+    // Contains Codes specific to the users account (Agencies/employers). These were entered from their `Request access` request.
+    // If a regular user creates or accesses their own form, they should ALWAYS see their own applicable codes, not all of them.
     apiSpec = userSettings.apiDocsWithSelectOptions;
+  } else {
+    // Contains All Codes (Needed to render other peoples forms properly) Contains all the employer/agency codes so that forms render as expected.
+    apiSpec = userSettings.apiDocsWithViewOptions;
   }
 
   const components = apiSpec.components;
   const subtypeSchema = components?.schemas?.[activity_subtype];
-
-  yield put({ type: ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS, payload: { schema: subtypeSchema, uiSchema: uiSchema } });
+  yield put(Activity.buildFormSchemaSuccess({ schema: subtypeSchema, uiSchema: uiSchema }));
 }
 
 /**
@@ -188,10 +142,10 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
         return mappingAlertMessages.trackingStarted;
     }
   })();
-  const userHasTrackingEnabled = coords?.hasOwnProperty('long');
+  const userHasTrackingEnabled = 'long' in coords;
 
   if (userHasTrackingEnabled) {
-    const initGeo = {
+    const initGeo: Feature = {
       id: GEO_TRACKING_FEATURE,
       type: 'Feature',
       properties: {},
@@ -200,7 +154,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START() {
         coordinates: [[coords.long, coords.lat]]
       }
     };
-    yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [initGeo] } });
+    yield put(DrawToolActions.updateGeo([initGeo]));
     yield put(Alerts.create(message));
     yield put(Alerts.create(mappingAlertMessages.geoTrackingModeLocked));
   } else {
@@ -276,7 +230,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
         return [
           Alerts.deleteAll(),
           GeoTracking.exit(),
-          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
+          DrawToolActions.updateGeo([]),
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
       }
@@ -303,9 +257,9 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
   if (validationErrors.length === 0) {
     if (shape === GeoShapes.LineString) {
       const lineStringCallback = (width: number) => {
-        const bufferedLine = buffer(newGeo, width / 10000);
+        const bufferedLine = buffer(newGeo, width / 10000) as Feature;
         return [
-          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [bufferedLine] } },
+          DrawToolActions.updateGeo([bufferedLine]),
           GeoTracking.end(),
           Alerts.create(mappingAlertMessages.trackingStoppedSuccess)
         ];
@@ -322,7 +276,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
         })
       );
     } else {
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+      yield put(DrawToolActions.updateGeo([newGeo]));
       yield put(GeoTracking.end());
       yield put(Alerts.create(mappingAlertMessages.trackingStoppedSuccess));
     }
@@ -336,7 +290,7 @@ function* handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP() {
         return [
           Alerts.deleteAll(),
           GeoTracking.exit(),
-          { type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [] } },
+          DrawToolActions.updateGeo([]),
           Alerts.create(mappingAlertMessages.trackMyPathStoppedEarly)
         ];
       }
@@ -399,7 +353,7 @@ function* handle_MAP_SET_COORDS(action) {
           return;
         }
       }
-      const newGeo = {
+      const newGeo: Feature = {
         type: 'Feature',
         properties: {},
         geometry: {
@@ -408,7 +362,7 @@ function* handle_MAP_SET_COORDS(action) {
         }
       };
       //append to linestring
-      yield put({ type: ACTIVITY_UPDATE_GEO_REQUEST, payload: { geometry: [newGeo] } });
+      yield put(DrawToolActions.updateGeo([newGeo]));
     }
   } catch (err) {
     console.error(err);
@@ -447,19 +401,16 @@ function* handle_UPDATE_CACHED_RECORDS() {
 function* activityPageSaga() {
   yield all([
     takeEvery(UserSettings.InitState.get, handle_UPDATE_CACHED_RECORDS),
-    takeEvery(URL_CHANGE, handle_URL_CHANGE),
-    takeEvery(ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
+    takeEvery(Activity.loadActivityIfRequired, handle_LOAD_ACTIVITY_IF_REQUIRED),
+    takeEvery(Activity.buildFormSchema, handle_ACTIVITY_BUILD_SCHEMA_FOR_FORM_REQUEST),
     takeEvery(Activity.get, handle_ACTIVITY_GET_REQUEST),
     takeEvery(Activity.copy, handle_ACTIVITY_COPY_REQUEST),
     takeEvery(Activity.getNetworkRequest, handle_ACTIVITY_GET_NETWORK_REQUEST),
-    takeEvery(MAP_SET_COORDS, handle_MAP_SET_COORDS),
-    takeEvery(ACTIVITY_UPDATE_GEO_REQUEST, handle_ACTIVITY_UPDATE_GEO_REQUEST),
-    takeEvery(ACTIVITY_UPDATE_GEO_SUCCESS, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
+    takeEvery(AppActions.setUserCoords, handle_MAP_SET_COORDS),
+    takeEvery(DrawToolActions.updateGeo, handle_ACTIVITY_UPDATE_GEO_REQUEST),
+    takeEvery(DrawToolActions.updateGeoSuccess, handle_ACTIVITY_UPDATE_GEO_SUCCESS),
     takeEvery(Activity.Suggestions.jurisdictions, handle_GET_SUGGESTED_JURISDICTIONS_REQUEST),
     takeEvery(Activity.Suggestions.jurisdictionsOnline, handle_ACTIVITY_GET_SUGGESTED_JURISDICTIONS_REQUEST_ONLINE),
-    takeLatest(Activity.Suggestions.jurisdictionsSuccess, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
-    takeLatest(ACTIVITY_ON_FORM_CHANGE_SUCCESS, handle_ACTIVITY_SET_CURRENT_HASH_REQUEST),
-    takeEvery(Activity.saveSuccess, handle_ACTIVITY_SET_SAVED_HASH_REQUEST),
     takeEvery(Activity.Suggestions.persons, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST),
     takeEvery(Activity.Suggestions.personsOnline, handle_ACTIVITY_GET_SUGGESTED_PERSONS_REQUEST_ONLINE),
     takeEvery(Activity.Suggestions.treatmentIdsRequest, handle_ACTIVITY_GET_SUGGESTED_TREATMENT_IDS_REQUEST),
@@ -471,7 +422,6 @@ function* activityPageSaga() {
     takeEvery(Activity.save, handle_ACTIVITY_SAVE_REQUEST),
     takeEvery(Activity.saveSuccess, handle_ACTIVITY_SAVE_SUCCESS),
     takeEvery(Activity.saveNetworkRequest, handle_ACTIVITY_SAVE_NETWORK_REQUEST),
-    takeEvery(ACTIVITY_RESTORE_OFFLINE, handle_ACTIVITY_RESTORE_OFFLINE),
     takeEvery(Activity.createReq, handle_ACTIVITY_CREATE_REQUEST),
     takeEvery(Activity.createNetwork, handle_ACTIVITY_CREATE_NETWORK),
     takeEvery(Activity.createSuccess, handle_ACTIVITY_CREATE_SUCCESS),
@@ -482,14 +432,14 @@ function* activityPageSaga() {
     takeEvery(Activity.Photo.edit, handle_ACTIVITY_EDIT_PHOTO_REQUEST),
     takeEvery(Activity.deleteSuccess, handle_ACTIVITY_DELETE_SUCCESS),
     takeEvery(Activity.deleteFailure, handle_ACTIVITY_DELETE_FAILURE),
-    takeEvery(ACTIVITY_ON_FORM_CHANGE_REQUEST, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
+    takeEvery(Activity.onFormChangeRequest, handle_ACTIVITY_ON_FORM_CHANGE_REQUEST),
     takeEvery(
       Activity.ChemicalTreatments.onChemicalTreatmentsUpdate,
       handle_ACTIVITY_CHEM_TREATMENT_DETAILS_FORM_ON_CHANGE_REQUEST
     ),
     takeEvery(Activity.deleteReq, handle_ACTIVITY_DELETE_REQUEST),
     takeEvery(Activity.deleteNetwork, handle_ACTIVITY_DELETE_NETWORK_REQUEST),
-    takeEvery(PAN_AND_ZOOM_TO_ACTIVITY, handle_PAN_AND_ZOOM_TO_ACTIVITY),
+    takeEvery(MapActions.panToActivity, handle_PAN_AND_ZOOM_TO_ACTIVITY),
     takeEvery(GeoTracking.start, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_START),
     takeEvery(GeoTracking.stop, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_STOP),
     takeEvery(GeoTracking.pause, handle_MAP_TOGGLE_TRACK_ME_DRAW_GEO_PAUSE),

@@ -11,6 +11,8 @@ import Overlay from 'UI/Layout/OverlayLayout/Overlay';
 import SafeInsets from 'utils/android-safe-area/safeArea';
 import { PluginListenerHandle } from '@capacitor/core';
 import { Platform, buildTimeConfig } from 'state/configuration/build-time-config';
+import LocationChangeListener from './LocationChangeListener';
+
 export const RENDER_DEBUG = false;
 
 export type LayoutComponent = 'overlay-layout' | 'wide-layout';
@@ -86,6 +88,7 @@ const App = () => {
 
   return (
     <div id="app" className={`${platformClasses} ${selectedLayout}`}>
+      <LocationChangeListener />
       <div id="safe-inset">
         <Suspense fallback={<div>Loading...</div>}>
           <LazyLoadedLayout />

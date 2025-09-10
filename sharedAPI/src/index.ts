@@ -1,14 +1,6 @@
-import { Feature } from 'geojson';
 import moment from 'moment';
-import { v4 as uuidv4 } from 'uuid';
-import {
-  ActivityLetter,
-  ActivityStatus,
-  ActivitySubtype,
-  ActivitySyncStatus,
-  ActivityType,
-  PLATFORM_SRC
-} from './constants';
+import { Feature } from 'geojson';
+import { ActivityLetter, ActivityStatus, ActivitySubtype, ActivitySyncStatus, ActivityType } from './constants';
 import { performCalculation } from './validation/herbicideCalculator';
 import { mapFormDataToLegacy } from './validation/chemTreatmentValidation';
 
@@ -26,7 +18,7 @@ export { api_doc };
 export { BC_AREA };
 
 //export const autofillChemFields = (activity, codesForFiled) => {
-export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalMethodCodes) => {
+export const autofillChemFields = (activity, chemicalMethodSprayCodes, _UNUSED_chemicalMethodCodes) => {
   try {
     const newActivity = JSON.parse(JSON.stringify(activity));
     const area = newActivity?.form_data?.activity_data?.reported_area ?? 0;
@@ -34,7 +26,6 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
       activity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method;
     newActivity.form_data.activity_subtype_data.chemical_treatment_details.chemical_application_method_type =
       chemicalMethodSprayCodes?.includes(chemicalApplicationMethod) ? 'spray' : 'direct';
-    const businessCodes = {};
 
     const tank_mix = activity.form_data.activity_subtype_data.chemical_treatment_details.tank_mix;
     const invasive_plants = activity.form_data.activity_subtype_data.chemical_treatment_details?.invasive_plants ?? [];
@@ -109,7 +100,7 @@ export const autofillChemFields = (activity, chemicalMethodSprayCodes, chemicalM
     }
 
     const formData = mapFormDataToLegacy(newActivity?.form_data ?? {});
-    const calculationResults = performCalculation(area, formData, businessCodes);
+    const calculationResults = performCalculation(area, formData);
     newActivity.form_data.activity_subtype_data.chemical_treatment_details.calculation_results = calculationResults;
 
     return newActivity;
@@ -124,9 +115,10 @@ export const activity_create_function = (
   subType: string,
   username: string,
   displayName: string,
-  pac_number?: string
+  pac_number?: string,
+  platform?: string
 ) => {
-  const activityV1 = generateDBActivityPayload({}, null, type, subType);
+  const activityV1 = generateDBActivityPayload({}, null, type, subType, platform);
   const activityV2 = populateSpeciesArrays(activityV1);
   activityV2.created_by = username;
 
@@ -146,9 +138,10 @@ export function generateDBActivityPayload(
   formData: any,
   geometry: Feature[] | null,
   activityType: string,
-  activitySubtype: string
+  activitySubtype: string,
+  platform?: string
 ) {
-  const id = uuidv4();
+  const id = crypto.randomUUID();
   const time = moment(new Date()).format();
   const short_id: string | undefined = getShortActivityID({
     activity_subtype: activitySubtype,
@@ -182,7 +175,7 @@ export function generateDBActivityPayload(
     review_status: 'Not Reviewed',
     reviewed_by: undefined,
     reviewed_at: undefined,
-    platform_src: PLATFORM_SRC
+    platform_src: platform
   };
   if (returnVal.activity_subtype === ActivitySubtype.Treatment_ChemicalPlant) {
     returnVal.form_data.activity_subtype_data.chemical_treatment_details = {

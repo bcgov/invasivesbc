@@ -3,7 +3,6 @@ import { buildTimeConfig, Platform } from 'state/configuration/build-time-config
 import { selectConfiguration } from 'state/reducers/configuration';
 import { keycloakAuthEffects, keycloakInstance } from 'state/sagas/auth/keycloak';
 import { nativeAuthEffects } from 'state/sagas/auth/native';
-import { USERINFO_LOAD_COMPLETE } from 'state/actions';
 import AuthBridge from 'utils/auth/authBridge';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import NetworkActions from 'state/actions/network/NetworkActions';
@@ -66,14 +65,7 @@ function* refreshRoles() {
         v2BetaAccess: userData.result.v2BetaAccess
       })
     );
-
-    yield put({
-      type: USERINFO_LOAD_COMPLETE,
-      payload: {
-        userInfo: userData.result.extendedInfo
-      }
-    });
-
+    yield put(AuthActions.loadUserInfo(userData.result.extendedInfo));
     yield put(AuthActions.saveCurrentToOffline());
   } catch (_e) {
     yield put(AuthActions.refreshRolesError());

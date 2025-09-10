@@ -12,7 +12,6 @@ import {
 } from '@mui/material';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { REMOVE_SERVER_BOUNDARY, TOGGLE_CUSTOMIZE_LAYERS, TOGGLE_LAYER_PICKER_OPEN } from 'state/actions';
 import 'UI/Features/LegacyMap/Controls/CustomizeLayerDialog.css';
 
 import KMLShapesUpload from 'UI/Features/LegacyMap/Controls/KMLShapesUpload';
@@ -20,6 +19,7 @@ import { useSelector } from 'utils/use_selector';
 import { AlertSeverity, AlertSubjects } from 'constants/alertEnums';
 import Alerts from 'state/actions/alerts/Alerts';
 import UserSettings from 'state/actions/userSettings/UserSettings';
+import AppActions from 'state/actions/appActions/appActions';
 
 const CustomizeLayerMenu = () => {
   enum MenuState {
@@ -55,13 +55,14 @@ const CustomizeLayerMenu = () => {
 
   const customLayers = [...clientBoundaries, ...serverBoundaries];
 
+  const toggleModal = () => dispatch(AppActions.toggleCustomLayersModal());
+
   const handleCreateLayer = () => {
     switch (optionVal) {
       case LayerOptions.UploadKml:
         setSubMenuType(MenuState.Upload);
         break;
       case LayerOptions.Draw:
-        dispatch({ type: TOGGLE_LAYER_PICKER_OPEN });
         dispatch(UserSettings.Boundaries.drawCustomLayerRequest(newLayerName ?? ''));
         dispatch(
           Alerts.create({
@@ -70,7 +71,7 @@ const CustomizeLayerMenu = () => {
             severity: AlertSeverity.Info
           })
         );
-        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+        toggleModal();
         cleanup();
         break;
       default:
@@ -83,22 +84,19 @@ const CustomizeLayerMenu = () => {
     switch (type) {
       case 'Client':
         dispatch(UserSettings.Boundaries.removeCustomLayer(layerToDelete!));
-        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-        cleanup();
         break;
       case 'Server':
-        dispatch({ type: REMOVE_SERVER_BOUNDARY, payload: { id: layerToDelete } });
-        dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-        cleanup();
+        dispatch(UserSettings.KML.delete(layerToDelete!));
         break;
     }
+    toggleModal();
+    cleanup();
+  };
+  const handleExit = () => {
+    toggleModal();
     cleanup();
   };
 
-  const handleExit = () => {
-    dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
-    cleanup();
-  };
   // Reset states to default
   const cleanup = () => {
     setSubMenuType(MenuState.Init);
@@ -108,7 +106,7 @@ const CustomizeLayerMenu = () => {
   };
 
   const onKMLDone = () => {
-    dispatch({ type: TOGGLE_CUSTOMIZE_LAYERS });
+    toggleModal();
     cleanup();
   };
 

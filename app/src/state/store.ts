@@ -1,12 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import createSagaMiddleware from 'redux-saga';
 import { createLogger } from 'redux-logger';
-import { createBrowserHistory } from 'history';
 import { persistStore } from 'redux-persist';
 import { Store } from 'redux';
 import debounce from 'lodash.debounce';
 import { createRootReducer } from './reducers/rootReducer';
-import { URL_CHANGE } from './actions';
 import activityPageSaga from './sagas/activity';
 import planMyTripSaga from './sagas/planMyTrip';
 import authenticationSaga from './sagas/auth/auth';
@@ -16,15 +14,12 @@ import emailTemplatesSaga from './sagas/email-setup/emailTemplates';
 import iappPageSaga from './sagas/iappsite';
 import activitiesPageSaga from './sagas/map';
 import networkSaga from './sagas/network';
-import trainingVideosSaga from './sagas/training_videos';
 import userSettingsSaga from './sagas/userSettings';
 import { createSagaCrashHandler } from './sagas/error_handler';
 import NetworkActions from './actions/network/NetworkActions';
 import { AuthActions } from 'state/actions/auth/Auth';
 import EventActions from 'state/actions/events/EventActions';
 import { UnifiedConfig } from 'state/configuration/unified-config';
-
-const historySingleton = createBrowserHistory();
 
 export function setupStore(configuration: UnifiedConfig) {
   const storeRef: { store: Store | null } = {
@@ -78,23 +73,10 @@ export function setupStore(configuration: UnifiedConfig) {
   sagaMiddleware.run(activitiesPageSaga);
   sagaMiddleware.run(userSettingsSaga);
   sagaMiddleware.run(batchSaga);
-  sagaMiddleware.run(trainingVideosSaga);
   sagaMiddleware.run(emailSettingsSaga);
   sagaMiddleware.run(emailTemplatesSaga);
   sagaMiddleware.run(networkSaga);
   sagaMiddleware.run(planMyTripSaga);
-
-  store.dispatch(NetworkActions.checkInitConnection());
-  store.dispatch(AuthActions.initializeRequest());
-
-  historySingleton.listen((location) => {
-    store.dispatch({
-      type: URL_CHANGE,
-      payload: {
-        url: location.pathname
-      }
-    });
-  });
 
   storeRef.store = store;
   document.addEventListener('visibilitychange', () => {
@@ -117,9 +99,14 @@ export function setupStore(configuration: UnifiedConfig) {
 
   window.addEventListener('resize', debouncedResize);
 
-  return { store, persistor: persistStore(store) };
+  return {
+    store,
+    persistor: persistStore(store, null, () => {
+      //Fire these actions once store is rehydrated
+      store.dispatch(NetworkActions.checkInitConnection());
+      store.dispatch(AuthActions.initializeRequest());
+    })
+  };
 }
-
-export { historySingleton };
 
 export default setupStore;

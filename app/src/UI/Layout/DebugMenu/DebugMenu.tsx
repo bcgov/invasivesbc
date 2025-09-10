@@ -11,6 +11,8 @@ import { AndroidMemoryReport } from 'UI/Layout/DebugMenu/AndroidMemoryReport';
 import { PlatformGated } from 'UI/Reusable/Predicates/PlatformGated';
 import ClearAppCache from './ClearAppCache';
 import PlotClientBoundary from './PlotClientBoundary';
+import OfflineProtomaps from 'UI/Layout/DebugMenu/OfflineProtomaps';
+import { FeatureGated } from 'UI/Reusable/Predicates/FeatureGated';
 
 const DebugMenu = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -29,6 +31,9 @@ const DebugMenu = () => {
           </PlatformGated>
           <ClearAppCache />
           <PlotClientBoundary />
+          <FeatureGated requires="OFFLINE_PROTOMAPS">
+            <OfflineProtomaps />
+          </FeatureGated>
         </div>
       </CustomPopover>
     </Debug>

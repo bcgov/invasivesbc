@@ -2,18 +2,16 @@ import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from 'UI/Features/LegacyMap/helpers/components/MapContext';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { useDispatch, useSelector } from 'utils/use_selector';
-import { ACTIVITY_UPDATE_GEO_SUCCESS, MAP_ON_SHAPE_CREATE, MAP_ON_SHAPE_UPDATE } from 'state/actions';
 import TileCache from 'state/actions/cache/TileCache';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
-import { useHistory } from 'react-router-dom';
 import { DoNothing } from 'UI/Features/LegacyMap/helpers/functional/do-nothing-mode';
 import { IControl } from 'maplibre-gl';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import { InvasivesMap } from 'UI/Features/LegacyMap/InvasivesMap';
 import Prompt from 'state/actions/prompts/Prompt';
 import {
-  GeoTrackingMode,
   convertLineToPolygon,
+  GeoTrackingMode,
   updateGPSCoordinate
 } from 'UI/Features/LegacyMap/helpers/functional/geo-tracking-mode';
 import { WhatsHereBoxMode } from 'UI/Features/LegacyMap/helpers/functional/whats-here-box-mode';
@@ -29,6 +27,8 @@ import { isDrawing, isPaused, isTracking } from 'utils/geoTrackingHelpers';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
 import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
+import { useLocation, useNavigate } from 'react-router';
 
 // @ts-expect-error mapboxdraw compatibility with maplibre-gl issue
 MapboxDraw.constants.classes.CONTROL_BASE = 'maplibregl-ctrl';
@@ -61,7 +61,8 @@ const DrawControls = () => {
   const url = useSelector((state) => state.AppMode.url);
 
   const dispatch = useDispatch();
-  const uHistory = useHistory();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const drawInstance = useRef<MapboxDraw>();
   const drawModeDisplay = useRef<DrawModeDisplay>();
@@ -76,12 +77,19 @@ const DrawControls = () => {
 
   const isEditDisabled = ![TargetMode.ACTIVITY].includes(mode);
 
+  /**
+   * @desc Dispatch Custom event for when the Edit Button is used. Listened to by `LayerDataMarker.tsx`
+   */
+  const emitEdit = () => {
+    map?.fire('draw.editshape', { active: isEditing.current });
+  };
   const handleEdit = () => {
     const features = drawInstance.current?.getAll().features;
 
     if (!features || features.length === 0 || features[0].geometry.type === GeoShapes.Point) return;
 
     isEditing.current = true;
+    emitEdit();
     drawInstance?.current?.changeMode('direct_select', { featureId: features[0].id });
     dispatch(Alerts.create(mappingAlertMessages.saveActivityShape));
 
@@ -96,9 +104,9 @@ const DrawControls = () => {
     drawInstance.current?.changeMode('simple_select');
 
     const updatedFeature = drawInstance.current?.getAll().features[0];
+    emitEdit();
     if (!updatedFeature || updatedFeature.geometry.type === GeoShapes.Point) return;
-
-    dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: updatedFeature });
+    dispatch(DrawToolActions.updateShape(updatedFeature));
 
     if (prevMode.current === TargetMode.ACTIVITY_GEO_TRACK) {
       dispatch(GeoTracking.edit(false));
@@ -263,17 +271,7 @@ const DrawControls = () => {
     const callback = (confirmation: boolean) => {
       if (confirmation) {
         drawInstance.current?.deleteAll();
-        dispatch({
-          type: ACTIVITY_UPDATE_GEO_SUCCESS,
-          payload: {
-            geometry: undefined,
-            utm: undefined,
-            lat: undefined,
-            long: undefined,
-            reported_area: undefined,
-            Well_Information: undefined
-          }
-        });
+        dispatch(DrawToolActions.deleteGeo());
         updateEditControlState();
       }
     };
@@ -325,13 +323,13 @@ const DrawControls = () => {
     switch (currentMode) {
       case TargetMode.WHATS_HERE: {
         dispatch(WhatsHere.map_feature({ type: 'Feature', geometry: feature.geometry }));
-        if (uHistory.location.pathname !== '/WhatsHere') {
-          uHistory.push('/WhatsHere');
+        if (location.pathname !== '/WhatsHere') {
+          navigate('/WhatsHere');
         }
         break;
       }
       case TargetMode.ACTIVITY: {
-        dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
+        dispatch(DrawToolActions.createShape(feature));
         break;
       }
 
@@ -340,7 +338,7 @@ const DrawControls = () => {
         break;
       }
       case TargetMode.CUSTOM_LAYER:
-        dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: feature });
+        dispatch(DrawToolActions.updateShape(feature));
         break;
       case TargetMode.TRIP_PLANNING: {
         dispatch(TileCache.setTileCacheShape({ geometry: feature.geometry }));
@@ -352,7 +350,7 @@ const DrawControls = () => {
         break;
       }
       default: {
-        dispatch({ type: MAP_ON_SHAPE_CREATE, payload: feature });
+        dispatch(DrawToolActions.createShape(feature));
         break;
       }
     }
@@ -419,7 +417,7 @@ const DrawControls = () => {
 
     const editedGeo = drawInstance.current.getAll().features[0];
     if (editedGeo?.id !== featureId) {
-      dispatch({ type: MAP_ON_SHAPE_UPDATE, payload: editedGeo });
+      dispatch(DrawToolActions.updateShape(editedGeo));
     }
   }, []);
 

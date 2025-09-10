@@ -2,9 +2,8 @@ import { createNextState, nanoid } from '@reduxjs/toolkit';
 import { Md5 } from 'ts-md5';
 import { Draft } from 'immer';
 import { AppConfig } from 'state/configuration/runtime-config';
-import { RECORDSET_SET_SORT } from 'state/actions';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
-import { RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
+import { RecordSetId, RecordSetType, UserRecordCacheStatus, UserRecordSet } from 'interfaces/UserRecordSet';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import Boundary from 'interfaces/Boundary';
 import WhatsHere from 'state/actions/whatsHere/WhatsHere';
@@ -277,14 +276,13 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.activeIAPP = action.payload?.iapp?.site_id;
       } else if (
         Activity.Offline.getIdsForRecordsetSuccess.match(action) ||
-        Activity.getIdsForRecordsetSuccess.match(action) ||
-        IappActions.getIdsForRecordsetSuccess.match(action)
+        WhatsHere.getIdsForRecordsetSuccess.match(action)
       ) {
         const { recordSetID, idList } = action.payload;
         draftState.recordSets[recordSetID].idList = idList;
       } else if (UserSettings.RecordSet.addFilter.match(action)) {
         const { filterType, setID, field, operator, operator2, filter } = action.payload;
-        if (filterType === 'tableFilter') {
+        if (filterType === EFilterType.Table) {
           draftState.recordSets[setID].tableFilters ??= [];
           draftState.recordSets[setID]?.tableFilters.push({
             id: nanoid(),
@@ -296,12 +294,12 @@ function createUserSettingsReducer(_configuration: AppConfig) {
           });
         }
       } else if (UserSettings.RecordSet.clearFilters.match(action)) {
-        if (action.payload.setID === '1') {
+        if (action.payload.setID === RecordSetId.Drafts) {
           draftState.recordSets[action.payload.setID].tableFilters = [
             {
               id: '1',
               field: 'form_status',
-              filterType: 'tableFilter',
+              filterType: EFilterType.Table,
               filter: 'Draft',
               operator: 'CONTAINS',
               operator2: 'AND'
@@ -350,39 +348,22 @@ function createUserSettingsReducer(_configuration: AppConfig) {
         draftState.newRecordDialogueState = { open: true, viewLayout: 'new' };
       } else if (UserSettings.closeNewRecordDialogue.match(action)) {
         draftState.newRecordDialogueState.open = false;
-      } else {
-        switch (action.type) {
-          case RECORDSET_SET_SORT: {
-            //if the sort column is the same as the current sort column, toggle the sort order
-            // if its already desc, remove the sort column and order
+      } else if (UserSettings.RecordSet.setSort.match(action)) {
+        // if the sort column is the same as the current sort column, toggle the sort order
+        // if its already desc, remove the sort column and order
+        const currRecordset = draftState.recordSets?.[action.payload.setID];
 
-            // handle no sort order:
-            if (
-              !draftState.recordSets[action.payload.setID].sortOrder ||
-              draftState.recordSets[action.payload.setID].sortColumn !== action.payload.sortColumn
-            ) {
-              draftState.recordSets[action.payload.setID].sortOrder = 'ASC';
-              draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
-            }
-
-            // handle toggle to desc:
-            else if (
-              draftState.recordSets[action.payload.setID].sortOrder === 'ASC' &&
-              draftState.recordSets[action.payload.setID].sortColumn === action.payload.sortColumn
-            ) {
-              draftState.recordSets[action.payload.setID].sortOrder = 'DESC';
-            }
-
-            // handle toggle off:
-            else {
-              delete draftState.recordSets[action.payload.setID].sortOrder;
-              delete draftState.recordSets[action.payload.setID].sortColumn;
-            }
-
-            break;
-          }
-          default:
-            break;
+        if (!currRecordset?.sortOrder || currRecordset?.sortColumn !== action.payload.sortColumn) {
+          // handle no sort order:
+          draftState.recordSets[action.payload.setID].sortOrder = 'ASC';
+          draftState.recordSets[action.payload.setID].sortColumn = action.payload.sortColumn;
+        } else if (currRecordset?.sortOrder === 'ASC' && currRecordset?.sortColumn === action.payload.sortColumn) {
+          // handle toggle to desc:
+          draftState.recordSets[action.payload.setID].sortOrder = 'DESC';
+        } else {
+          // handle toggle off:
+          delete draftState.recordSets[action.payload.setID].sortOrder;
+          delete draftState.recordSets[action.payload.setID].sortColumn;
         }
       }
     }) as unknown as UserSettingsState;

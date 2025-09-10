@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link } from 'react-router';
 import 'UI/Features/LegacyMap/LayerPicker/LpOfflineMaps/LpOfflineMaps.css';
 import LpOfflineMapsOptions from 'UI/Features/LegacyMap/LayerPicker/LpOfflineMaps/LpOfflineMapsOption';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';

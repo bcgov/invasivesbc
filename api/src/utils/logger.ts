@@ -24,13 +24,22 @@ class LoggerWithContext {
                 case 'object':
                   try {
                     formattedMessage = YAML.dump(message);
-                  } catch (e) {
+                  } catch (_e) {
                     formattedMessage = JSON.stringify(message, null, 2);
                   }
 
                   break;
+                case 'string':
+                case 'number':
+                case 'boolean':
+                case 'bigint':
+                  formattedMessage = `${message}`;
+                  break;
+                case 'undefined':
+                  formattedMessage = 'undefined';
+                  break;
                 default:
-                  formattedMessage = message;
+                  formattedMessage = 'Unknown message';
                   break;
               }
               const additionalContext = {

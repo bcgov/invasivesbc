@@ -1,12 +1,6 @@
 import { Draft } from 'immer';
 import { createNextState } from '@reduxjs/toolkit';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
-import {
-  ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS,
-  ACTIVITY_ON_FORM_CHANGE_SUCCESS,
-  ACTIVITY_SET_CURRENT_HASH_SUCCESS,
-  ACTIVITY_UPDATE_GEO_SUCCESS
-} from 'state/actions';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
 import GeoShapes from 'constants/geoShapes';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -15,6 +9,7 @@ import Activity from 'state/actions/activity/Activity';
 import SuggestedTreatmentId from 'interfaces/SuggestedTreatmentId';
 import IActivityPermissions from 'interfaces/IActivityPermissions';
 import { GeoTrackingStatus } from 'constants/geoTrackingStatus';
+import DrawToolActions from 'state/actions/drawtool/drawToolActions';
 
 interface ActivityState {
   [MIGRATION_VERSION_KEY]: number;
@@ -22,13 +17,11 @@ interface ActivityState {
   activeActivity: string | null;
   activeActivityPermissions?: IActivityPermissions;
   activityErrors: any[];
-  current_activity_hash: string | null;
   error: boolean;
   pasteCount: number;
   failCode: number | null;
   initialized: boolean;
   loading: boolean;
-  saved_activity_hash: string | null;
   suggestedJurisdictions: Record<string, any>[];
   biocontrol: {
     plantToAgentMap: Record<string, any>[];
@@ -50,7 +43,6 @@ const initialState: ActivityState = {
   activity: null,
   activeActivity: null,
   activityErrors: [],
-  current_activity_hash: null,
   error: false,
   pasteCount: 0,
   failCode: null,
@@ -61,7 +53,6 @@ const initialState: ActivityState = {
     shapeType: null,
     isEditingShape: false
   },
-  saved_activity_hash: null,
   biocontrol: {
     plantToAgentMap: []
   },
@@ -135,13 +126,11 @@ function createActivityReducer() {
         const activity_copy_buffer = JSON.parse(JSON.stringify(draftState.activity_copy_buffer));
         Object.assign(draftState, {
           activity: null,
-          current_activity_hash: null,
           error: false,
           pasteCount: 0,
           failCode: null,
           initialized: false,
           loading: false,
-          saved_activity_hash: null,
           biocontrol: {
             plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
           },
@@ -152,22 +141,16 @@ function createActivityReducer() {
         });
       } else if (Activity.saveSuccess.match(action)) {
         draftState.activity = { ...action.payload };
-      } else if (Activity.setSavedHashSuccess.match(action)) {
-        draftState.saved_activity_hash = action.payload;
       } else if (Activity.createSuccess.match(action)) {
         draftState.activeActivity = action.payload;
-        draftState.current_activity_hash = null;
-        draftState.saved_activity_hash = null;
       } else if (Activity.deleteSuccess.match(action)) {
         Object.assign(draftState, {
           activity: null,
-          current_activity_hash: null,
           error: false,
           pasteCount: 0,
           failCode: null,
           initialized: false,
           loading: false,
-          saved_activity_hash: null,
           biocontrol: {
             plantToAgentMap: draftState.biocontrol.plantToAgentMap ?? []
           },
@@ -223,44 +206,26 @@ function createActivityReducer() {
         draftState.activity.form_data.activity_data.utm_easting = undefined;
         draftState.activity.form_data.activity_data.utm_northing = undefined;
         draftState.activity.form_data.activity_data.reported_area = undefined;
-      } else {
-        switch (action.type) {
-          case ACTIVITY_BUILD_SCHEMA_FOR_FORM_SUCCESS: {
-            draftState.uiSchema = action.payload.uiSchema;
-            draftState.schema = action.payload.schema;
-            break;
-          }
-          case ACTIVITY_UPDATE_GEO_SUCCESS: {
-            draftState.activity.geometry = action.payload.geometry;
-            draftState.activity.form_data.activity_data.latitude = action.payload.lat ? action.payload.lat : null;
-            draftState.activity.form_data.activity_data.longitude = action.payload.long ? action.payload.long : null;
-            draftState.activity.form_data.activity_data.utm_zone = action.payload.utm ? action.payload.utm[0] : null;
-            draftState.activity.form_data.activity_data.utm_easting = action.payload.utm ? action.payload.utm[1] : null;
-            draftState.activity.form_data.activity_data.utm_northing = action.payload.utm
-              ? action.payload.utm[2]
-              : null;
-            draftState.activity.form_data.activity_data.reported_area = action.payload.reported_area
-              ? action.payload.reported_area
-              : null;
-            draftState.activity.form_data.activity_subtype_data.Well_Information = action.payload.Well_Information;
-            break;
-          }
-          case ACTIVITY_ON_FORM_CHANGE_SUCCESS: {
-            draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.activity.form_data));
-            draftState.activity.species_positive = action.payload.activity.species_positive;
-            draftState.activity.species_negative = action.payload.activity.species_negative;
-            draftState.activity.species_treated = action.payload.activity.species_treated;
-            draftState.activity.map_symbol = action.payload.activity.map_symbol;
-            draftState.activity.jurisdiction = action.payload.activity.jurisdiction;
-            break;
-          }
-          case ACTIVITY_SET_CURRENT_HASH_SUCCESS: {
-            draftState.current_activity_hash = action.payload.current;
-            break;
-          }
-          default:
-            break;
-        }
+      } else if (Activity.buildFormSchemaSuccess.match(action)) {
+        draftState.uiSchema = action.payload.uiSchema;
+        draftState.schema = action.payload.schema;
+      } else if (DrawToolActions.updateGeoSuccess.match(action)) {
+        const { geometry, lat, long, utm, reported_area, Well_Information } = action.payload;
+        draftState.activity.geometry = geometry;
+        draftState.activity.form_data.activity_data.latitude = lat;
+        draftState.activity.form_data.activity_data.longitude = long;
+        draftState.activity.form_data.activity_data.utm_zone = utm?.[0].toString(); // RJSF expects this value to be a string
+        draftState.activity.form_data.activity_data.utm_easting = utm?.[1];
+        draftState.activity.form_data.activity_data.utm_northing = utm?.[2];
+        draftState.activity.form_data.activity_data.reported_area = reported_area;
+        draftState.activity.form_data.activity_subtype_data.Well_Information = Well_Information;
+      } else if (Activity.OnFormChangeRequestSuccess.match(action)) {
+        draftState.activity.form_data = JSON.parse(JSON.stringify(action.payload.form_data));
+        draftState.activity.species_positive = action.payload?.species_positive;
+        draftState.activity.species_negative = action.payload?.species_negative;
+        draftState.activity.species_treated = action.payload?.species_treated;
+        draftState.activity.map_symbol = action.payload?.map_symbol;
+        draftState.activity.jurisdiction = action.payload?.jurisdiction;
       }
     });
   };

@@ -1,24 +1,24 @@
 import { useInvasivesApi } from 'hooks/useInvasivesApi';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import {
   Button,
   Chip,
+  FormControl,
   FormControlLabel,
+  FormHelperText,
+  FormLabel,
+  MenuItem,
   Radio,
   RadioGroup,
-  TextField,
-  FormControl,
-  MenuItem,
   Select,
-  FormLabel,
-  FormHelperText
+  SelectChangeEvent,
+  TextField
 } from '@mui/material';
-import { SelectChangeEvent } from '@mui/material';
 import { selectAuth } from 'state/reducers/auth';
 import { useSelector } from 'utils/use_selector';
 import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import 'UI/Features/AccessRequest/AccessRequestPage.css';
+import { useNavigate } from 'react-router';
 
 const AccessRequestPage = () => {
   enum AuthOptions {
@@ -64,7 +64,7 @@ const AccessRequestPage = () => {
 
   const api = useInvasivesApi();
   const authState = useSelector(selectAuth);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [accountType, setAccountType] = useState<AuthOptions>(AuthOptions.IDIR);
   const [bceid, setBceid] = useState<string>(authState?.username ?? '');
@@ -273,7 +273,7 @@ const AccessRequestPage = () => {
             color="primary"
             variant="outlined"
             onClick={() => {
-              history.push('/');
+              navigate('/');
             }}
           >
             Go Back
@@ -542,7 +542,7 @@ const AccessRequestPage = () => {
             color="primary"
             variant="outlined"
             onClick={() => {
-              history.push('/');
+              navigate('/');
             }}
           >
             Go Back

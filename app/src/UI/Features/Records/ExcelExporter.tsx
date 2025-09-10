@@ -1,13 +1,12 @@
 import { Accordion, Button, MenuItem, Select, Tooltip } from '@mui/material';
-import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { CSV_LINK_CLICKED, RECORD_SET_TO_EXCEL_REQUEST } from 'state/actions';
+import { useState } from 'react';
 import DownloadIcon from '@mui/icons-material/Download';
 import Spinner from 'UI/Reusable/Spinner/Spinner';
 import 'UI/Features/Records/ExcelExporter.css';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
-import { useSelector } from 'utils/use_selector';
+import { useDispatch, useSelector } from 'utils/use_selector';
+import ExportActions from 'state/actions/exports/exportActions';
 
 const ExcelExporter = (props) => {
   const dispatch = useDispatch();
@@ -60,11 +59,7 @@ const ExcelExporter = (props) => {
             {linkToCSV && props.setName === recordSetForCSV ? (
               <a href={linkToCSV} download>
                 <Button
-                  onClick={() =>
-                    dispatch({
-                      type: CSV_LINK_CLICKED
-                    })
-                  }
+                  onClick={() => dispatch(ExportActions.resetCsvUrl())}
                   disabled={linkToCSV.length < 1}
                   sx={{ mr: 1, ml: 'auto' }}
                   size={'small'}
@@ -80,13 +75,12 @@ const ExcelExporter = (props) => {
                   <Button
                     disabled={!CanTriggerCSV}
                     onClick={() =>
-                      dispatch({
-                        type: RECORD_SET_TO_EXCEL_REQUEST,
-                        payload: {
-                          id: props.setName,
-                          CSVType: selection
-                        }
-                      })
+                      dispatch(
+                        ExportActions.requestExcel({
+                          setId: props.setName,
+                          csvType: selection
+                        })
+                      )
                     }
                     sx={{ mr: 1, ml: 'auto' }}
                     size={'small'}

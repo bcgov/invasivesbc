@@ -63,6 +63,16 @@ interface IGetSuccess {
   activity: UserRecord;
   permissions: IActivityPermissions;
 }
+
+interface IActivityFormChangeRequest {
+  eventFormData: UserRecord;
+}
+
+interface SwitchRecordSetPayload {
+  setId: string;
+  type: 'Activity' | 'IAPP';
+}
+
 class Activity {
   private static readonly PREFIX = 'Activity';
   static readonly Offline = Offline;
@@ -77,7 +87,6 @@ class Activity {
   static readonly getNetworkRequest = createAction<string>(`${this.PREFIX}/getNetworkRequest`);
   static readonly save = createAction(`${this.PREFIX}/save`);
   static readonly saveSuccess = createAction<Record<string, any>>(`${this.PREFIX}/saveSuccess`);
-  static readonly setSavedHashSuccess = createAction<string>(`${this.PREFIX}/setSavedHashSuccess`);
   static readonly createLocal = createAction<ICreateLocal>(`${this.PREFIX}/createLocal`);
   static readonly createSuccess = createAction<string>(`${this.PREFIX}/createSuccess`);
   static readonly deleteReq = createAction(`${this.PREFIX}/deleteReq`);
@@ -99,18 +108,27 @@ class Activity {
   static readonly getRowsOnline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOnline`);
   static readonly getRowsOffline = createAction<ActivityTableRowGetRequest>(`${this.PREFIX}/getRowsOffline`);
   static readonly getRowsSuccess = createAction<ActivityTableRowsGetSuccess>(`${this.PREFIX}/getRowsSuccess`);
-  static readonly getIdsForRecordset = createAction<IGetIdsForRecordset>(`${this.PREFIX}/getIdsForRecordset`);
-  static readonly getIdsForRecordsetOnline = createAction<IGetIdsForRecordsetOnline>(
-    `${this.PREFIX}/getIdsForRecordsetOnline`
-  );
-  static readonly getIdsForRecordsetSuccess = createAction<IGetIdsForRecordsetSuccess>(
-    `${this.PREFIX}/getIdsForRecordsetSuccess`
-  );
+
   static readonly setErrors = createAction<IActivityError[]>(`${this.PREFIX}/setErrors`);
+  static readonly buildFormSchema = createAction(`${this.PREFIX}/buildFormSchema`, (formCreatedByUser: boolean) => ({
+    payload: { formCreatedByUser }
+  }));
+  static readonly buildFormSchemaSuccess = createAction(
+    `${this.PREFIX}/buildFormSchemaSuccess`,
+    ({ schema, uiSchema }) => ({
+      payload: { schema, uiSchema }
+    })
+  );
+  static readonly onFormChangeRequest = createAction<UserRecord>(`${this.PREFIX}/onFormChangeRequest`);
+  static readonly OnFormChangeRequestSuccess = createAction<UserRecord>(`${this.PREFIX}/onFormChangeRequestSuccess`);
+
+  static readonly loadActivityIfRequired = createAction<string>(`${this.PREFIX}/loadActivity`);
+  static readonly switchRecordSet = createAction<SwitchRecordSetPayload>(`${this.PREFIX}/switchRecordSet`);
 }
 
 export default Activity;
 export type {
+  IActivityFormChangeRequest,
   INewActivity,
   ICreateLocal,
   IGetIdsForRecordsetSuccess,
@@ -119,5 +137,6 @@ export type {
   ActivityTableRowsGetSuccess,
   ActivityTableRowGetRequest,
   IActivityError,
-  ActivityTableRowRequest
+  ActivityTableRowRequest,
+  SwitchRecordSetPayload
 };

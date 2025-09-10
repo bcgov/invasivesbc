@@ -1,11 +1,6 @@
 import { createNextState } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
-import {
-  EMAIL_SETTINGS_RETRIEVE_REQUEST,
-  EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS,
-  EMAIL_SETTINGS_UPDATE_FAILURE,
-  EMAIL_SETTINGS_UPDATE_SUCCESS
-} from 'state/actions';
+import { EmailActions } from 'state/actions/email/emailActions';
 
 interface EmailSettings {
   message: string | null;
@@ -38,28 +33,21 @@ function createEmailSettingsReducer() {
 
   return (state = initialState, action) => {
     return createNextState(state, (draftState: Draft<EmailSettings>) => {
-      switch (action.type) {
-        case EMAIL_SETTINGS_RETRIEVE_REQUEST:
-          draftState.working = true;
-          draftState.error = false;
-          draftState.message = null;
-          draftState.emailSettings = null;
-          break;
-        case EMAIL_SETTINGS_RETRIEVE_REQUEST_SUCCESS:
-        case EMAIL_SETTINGS_UPDATE_SUCCESS:
-          draftState.working = false;
-          draftState.error = false;
-          draftState.message = action.payload.message || null;
-          draftState.emailSettings = action.payload.emailSettings || null;
-          break;
-        case EMAIL_SETTINGS_UPDATE_FAILURE:
-          draftState.working = false;
-          draftState.error = true;
-          draftState.message = action.payload.message || null;
-          draftState.emailSettings = action.payload.emailSettings || null;
-          break;
-        default:
-          break;
+      if (EmailActions.retrieveReq.match(action)) {
+        draftState.working = true;
+        draftState.error = false;
+        draftState.message = null;
+        draftState.emailSettings = null;
+      } else if (EmailActions.retrieveReqSuccess.match(action) || EmailActions.updateSettingsSuccess.match(action)) {
+        draftState.working = false;
+        draftState.error = false;
+        draftState.message = action.payload.message || null;
+        draftState.emailSettings = action.payload.emailSettings || null;
+      } else if (EmailActions.updateSettingsFailure.match(action)) {
+        draftState.working = false;
+        draftState.error = true;
+        draftState.message = action.payload.message || null;
+        draftState.emailSettings = action.payload.emailSettings || null;
       }
     });
   };

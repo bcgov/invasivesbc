@@ -12,7 +12,6 @@ import rjsfTheme from 'UI/Features/Records/Activity/form/rjsfTheme';
 import ChemicalTreatmentDetailsForm from 'UI/Features/Records/Activity/form/ChemicalTreatmentDetailsForm/ChemicalTreatmentDetailsForm';
 import { useSelector } from 'utils/use_selector';
 import { shallowEqual, useDispatch } from 'react-redux';
-import { ACTIVITY_ON_FORM_CHANGE_REQUEST } from 'state/actions';
 import validator from '@rjsf/validator-ajv8';
 import 'UI/Features/Records/Activity/form/aditionalFormStyles.css';
 import { getCustomErrorTransformer } from 'rjsf/business-rules/customErrorTransformer';
@@ -33,6 +32,9 @@ const FormContainer = () => {
   }
 
   const dispatch = useDispatch();
+
+  const FORM_UPDATE_THROTTLE_DELAY = 250; //ms
+  const FORM_UPDATE_MAX_DELAY = 3000; //ms
 
   const formDataState = useSelector(
     (state) => state.ActivityPage.activity.form_data,
@@ -66,12 +68,13 @@ const FormContainer = () => {
   const theme = useRef<Theme>(createTheme(rjsfTheme as ThemeOptions));
 
   const debouncedFormChange = useCallback(
-    debounce((event, _, lastField) => {
-      dispatch({
-        type: ACTIVITY_ON_FORM_CHANGE_REQUEST,
-        payload: { eventFormData: event.formData, lastField: lastField, unsavedDelay: null }
-      });
-    }, 1000),
+    debounce(
+      (event) => {
+        dispatch(Activity.onFormChangeRequest(event.formData));
+      },
+      FORM_UPDATE_THROTTLE_DELAY,
+      { maxWait: FORM_UPDATE_MAX_DELAY, leading: false, trailing: true }
+    ),
     []
   );
 
@@ -134,7 +137,7 @@ const FormContainer = () => {
             transformErrors={getCustomErrorTransformer()}
             autoComplete="off"
             ref={formRef}
-            onChange={(event) => debouncedFormChange(event, formRef, null)}
+            onChange={(event) => debouncedFormChange(event)}
           >
             {/* This seemingly useless Fragment prevents a generic submit button from rendering through RJSF */}
             <Fragment />

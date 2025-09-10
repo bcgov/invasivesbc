@@ -1,13 +1,6 @@
 import { delay, put, select, takeEvery, takeLeading } from 'redux-saga/effects';
 import { ActivityStatus, ActivitySyncStatus } from 'sharedAPI';
 import { PayloadAction } from '@reduxjs/toolkit';
-import {
-  ACTIVITY_OFFLINE_DELETE_ITEM,
-  ACTIVITY_RUN_OFFLINE_SYNC,
-  ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE,
-  ACTIVITY_SAVE_OFFLINE,
-  ACTIVITY_UPDATE_SYNC_STATE
-} from 'state/actions';
 import { OfflineActivityRecord, OfflineActivitySyncState, selectOfflineActivity } from 'state/reducers/offlineActivity';
 import { selectNetworkConnected } from 'state/reducers/network';
 import { InvasivesAPI_Call } from 'hooks/useInvasivesApi';
@@ -19,24 +12,32 @@ import { RecordSetId } from 'interfaces/UserRecordSet';
 import parseActivityForPermissions from 'utils/parseActivityForPermissions';
 import { selectActivity } from 'state/reducers/activity';
 import { PLATFORM_SRC } from 'constants/misc';
+import { ISaveOffline } from 'state/actions/activity/Offline';
+import WhatsHere from 'state/actions/whatsHere/WhatsHere';
 
-function* handle_ACTIVITY_SAVE_OFFLINE(action) {
-  yield put(
-    Alerts.create({
-      content: 'Saved locally',
-      severity: AlertSeverity.Info,
-      subject: AlertSubjects.Form
-    })
-  );
+function* handle_ACTIVITY_SAVE_OFFLINE(action: PayloadAction<ISaveOffline>) {
+  const connected = yield select(selectNetworkConnected);
   // reload the activity in case the reducer modified it (create time, etc.)
   yield put(Activity.get(action.payload.id));
-
-  // trigger a sync if we're online
-  const connected = yield select(selectNetworkConnected);
-
   if (connected) {
+    // trigger a sync if we're online
+    yield put(
+      Alerts.create({
+        content: 'Synchronizing records with server.',
+        severity: AlertSeverity.Info,
+        subject: AlertSubjects.Form
+      })
+    );
     yield delay(500);
-    yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC });
+    yield put(Activity.Offline.syncRun());
+  } else {
+    yield put(
+      Alerts.create({
+        content: 'Saved locally',
+        severity: AlertSeverity.Info,
+        subject: AlertSubjects.Form
+      })
+    );
   }
 }
 
@@ -124,17 +125,16 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
               sync_status: sync_status
             });
       if (networkReturn?.ok) {
-        yield put({
-          type: ACTIVITY_UPDATE_SYNC_STATE,
-          payload: {
+        yield put(
+          Activity.Offline.updateSyncState({
             id: hydrated.activity_id,
             data: {
               ...hydrated,
               sync_status: sync_status
             },
             sync_state: OfflineActivitySyncState.SYNCHRONIZED
-          }
-        });
+          })
+        );
 
         if (hydrated.activity_id === activeActivity) {
           yield put(
@@ -147,11 +147,11 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
             })
           );
         }
-        yield put(Activity.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
+        // Refetch Draft Records now that we're synced
+        yield put(WhatsHere.getIdsForRecordset({ recordSetID: RecordSetId.Drafts, tableFiltersHash: 'init' }));
       } else {
-        yield put({
-          type: ACTIVITY_UPDATE_SYNC_STATE,
-          payload: {
+        yield put(
+          Activity.Offline.updateSyncState({
             id: hydrated.activity_id,
             data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_FAILED },
             sync_state: OfflineActivitySyncState.ERROR,
@@ -160,29 +160,27 @@ function* handle_ACTIVITY_RUN_OFFLINE_SYNC() {
               networkReturn.status < 500
                 ? networkReturn.data
                 : 'There was an internal error. Please try again in a few moments.'
-          }
-        });
+          })
+        );
       }
     } catch (e) {
-      yield put({
-        type: ACTIVITY_UPDATE_SYNC_STATE,
-        payload: {
+      yield put(
+        Activity.Offline.updateSyncState({
           id: hydrated.activity_id,
           data: { ...hydrated, sync_status: ActivitySyncStatus.SAVE_FAILED },
           sync_state: OfflineActivitySyncState.ERROR,
           error_detail: 'Caught error when synchronizing',
           error_object: e
-        }
-      });
+        })
+      );
     }
   }
-
-  yield put({ type: ACTIVITY_RUN_OFFLINE_SYNC_COMPLETE });
+  yield put(Activity.Offline.syncRunComplete());
 }
 
-function* handle_ACTIVITY_OFFLINE_DELETE_ITEM(action: PayloadAction<{ id: string }>) {
+function* handle_ACTIVITY_OFFLINE_DELETE_ITEM(action: PayloadAction<string>) {
   const { serializedActivities } = yield select(selectOfflineActivity);
-  if (!serializedActivities[action.payload.id]) {
+  if (!serializedActivities[action.payload]) {
     yield put(
       Alerts.create({
         content: 'Offline activity deleted from device',
@@ -203,20 +201,17 @@ function* handle_ACTIVITY_OFFLINE_DELETE_ITEM(action: PayloadAction<{ id: string
   }
 }
 
-function* handle_ACTIVITY_RESTORE_OFFLINE() {}
-
 export const OFFLINE_ACTIVITY_SAGA_HANDLERS = [
-  takeEvery(ACTIVITY_OFFLINE_DELETE_ITEM, handle_ACTIVITY_OFFLINE_DELETE_ITEM),
+  takeEvery(Activity.Offline.delete, handle_ACTIVITY_OFFLINE_DELETE_ITEM),
   takeEvery(Activity.getLocal, handle_ACTIVITY_GET_LOCAL_REQUEST),
-  takeEvery(ACTIVITY_SAVE_OFFLINE, handle_ACTIVITY_SAVE_OFFLINE),
+  takeEvery(Activity.Offline.save, handle_ACTIVITY_SAVE_OFFLINE),
   takeEvery(Activity.createLocal, handle_ACTIVITY_CREATE_LOCAL),
-  takeLeading(ACTIVITY_RUN_OFFLINE_SYNC, handle_ACTIVITY_RUN_OFFLINE_SYNC)
+  takeLeading(Activity.Offline.syncRun, handle_ACTIVITY_RUN_OFFLINE_SYNC)
 ];
 
 export {
   handle_ACTIVITY_SAVE_OFFLINE,
   handle_ACTIVITY_GET_LOCAL_REQUEST,
   handle_ACTIVITY_RUN_OFFLINE_SYNC,
-  handle_ACTIVITY_RESTORE_OFFLINE,
   handle_ACTIVITY_CREATE_LOCAL
 };

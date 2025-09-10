@@ -5,7 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>InvasivesBC</string>
+  <string>InvasivesBC</string>
+  <key>BGTaskSchedulerPermittedIdentifiers</key>
+  <array>
+    <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+  </array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -50,7 +54,10 @@
 	<key>SSO_CLIENT_ID</key>
 	<string>${SSO_CLIENT_ID}</string>
 	<key>UIBackgroundModes</key>
-	<array/>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

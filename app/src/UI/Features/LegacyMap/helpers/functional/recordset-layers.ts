@@ -298,7 +298,9 @@ const createOfflineActivitiesLayer = async (
             ...parsedData.geometry[0],
             properties: {
               short_id: parsedData.short_id,
-              map_symbol: plantCodes
+              map_symbol: plantCodes,
+              activity_id: parsedData.activity_id,
+              type: parsedData.activity_type
             }
           };
         }
@@ -357,11 +359,9 @@ const refreshOfflineActivitiesLayer = async (
   labelVisibility: boolean,
   locallyStoredActivities: Record<PropertyKey, OfflineActivityRecord>
 ) => {
-  if (!map || !visibility) return;
+  if (!map) return;
   await removeOfflineActivitiesLayer(map);
-
-  if (Object.keys(locallyStoredActivities).length === 0) return;
-
+  if (!visibility || Object.keys(locallyStoredActivities).length === 0) return;
   await createOfflineActivitiesLayer(map, locallyStoredActivities, labelVisibility);
 };
 
@@ -399,7 +399,7 @@ const purgeRecordsetLayersNotInStore = (
   recordSetLayersNotInStore.forEach((staleLayer) => {
     try {
       map.removeLayer(staleLayer);
-    } catch (e) {
+    } catch (_e) {
       console.error('error removing layer' + staleLayer);
     }
   });

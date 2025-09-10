@@ -2,9 +2,10 @@ import { parse, stringify } from 'wkt';
 import * as turf from '@turf/helpers';
 import booleanOverlap from '@turf/boolean-overlap';
 import booleanWithin from '@turf/boolean-within';
+import { PoolClient } from 'pg';
+import { Polygon } from 'geojson';
 import { getDBConnection } from 'database/db';
 import { getLogger } from 'utils/logger';
-import { PoolClient } from 'pg';
 
 const defaultLog = getLogger('batch');
 
@@ -64,10 +65,10 @@ export const getRecordFromShort = async (shortId: string): Promise<Record<string
     const res = await connection.query({
       text: `
         SELECT *,
-        st_asgeojson(geog) AS sample
+               st_asgeojson(geog) AS sample
         FROM activity_incoming_data
-        WHERE short_id = $1 
-        AND iscurrent = True
+        WHERE short_id = $1
+          AND iscurrent = True
         LIMIT 1
       `,
       values: [shortId]
@@ -99,8 +100,8 @@ export const getLongIDFromShort = async (shortId: string): Promise<string> => {
       text: `
         SELECT activity_id
         FROM activity_incoming_data
-        WHERE short_id = $1 
-        AND iscurrent = True
+        WHERE short_id = $1
+          AND iscurrent = True
         LIMIT 1
       `,
       values: [shortId]
@@ -131,8 +132,8 @@ export const getRecordTypeFromShort = async (shortId: string): Promise<string> =
       text: `
         SELECT activity_id
         FROM activity_incoming_data
-        WHERE short_id = $1 
-        AND iscurrent = True
+        WHERE short_id = $1
+          AND iscurrent = True
         LIMIT 1
       `,
       values: [shortId]
@@ -156,8 +157,8 @@ export const getGeometryAsGeoJSONFromShort = async (shortId: string): Promise<st
     connection = await getDBConnection();
     const res = await connection.query({
       text: `select geog
-               from activity_incoming_data
-               where short_id = $1`,
+             from activity_incoming_data
+             where short_id = $1`,
       values: [shortId]
     });
     return res.rows[0]['geog'];
@@ -205,7 +206,7 @@ export const autofillFromPostGIS = async (input: string, inputArea?: number): Pr
   }
 };
 
-const getOverlappedIndexes = (polygons: Array<turf.Polygon>, index: number) => {
+const getOverlappedIndexes = (polygons: Array<Polygon>, index: number) => {
   const overlappedIndexes = [];
   for (let i = 0; i < polygons.length; i++) {
     if (i !== index) {
@@ -221,7 +222,7 @@ const getOverlappedIndexes = (polygons: Array<turf.Polygon>, index: number) => {
   return overlappedIndexes;
 };
 
-const checkPolygonsConnected = (polygons: Array<turf.Polygon>) => {
+const checkPolygonsConnected = (polygons: Array<Polygon>) => {
   const visited = new Array(polygons.length).fill(false);
 
   const dfs = (index) => {

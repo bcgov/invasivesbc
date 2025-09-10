@@ -31,7 +31,8 @@ export function _mapToDBObject(row, status, type, subtype, userInfo): _MappedFor
     subtype,
     userInfo?.preferred_username,
     userInfo?.friendlyUsername,
-    userInfo?.pac_number
+    userInfo?.pac_number,
+    'Batch'
   );
 
   mapped = mapTemplateFields(mapped, row);

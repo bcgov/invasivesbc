@@ -100,21 +100,6 @@ describe('LpLayers.tsx', () => {
     expect(getByText('BC Major Watersheds')).toBeDefined();
   });
 
-  it('DataBC Layers should be togglable', async () => {
-    const testStore = store(true);
-    const dispatchSpy = vi.spyOn(testStore, 'dispatch');
-    const { getAllByTestId } = render(
-      <Provider store={testStore}>
-        <TestComponent />
-      </Provider>
-    );
-    const firstWMSOption = getAllByTestId('lp-layers-option-button')[0];
-    await userEvent.click(firstWMSOption);
-    const calledExpectedEvent = dispatchSpy.mock.calls.every(([action]) => (action.type = 'TOGGLE_WMS_LAYER'));
-    expect(dispatchSpy).toHaveBeenCalledOnce();
-    expect(calledExpectedEvent).toBe(true);
-  });
-
   it('Should fire dispatch for Custom Layers Toggle', async () => {
     const testStore = store(false);
     const dispatchSpy = vi.spyOn(testStore, 'dispatch');

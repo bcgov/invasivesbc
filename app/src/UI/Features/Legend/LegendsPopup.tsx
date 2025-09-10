@@ -1,17 +1,18 @@
-import { useHistory } from 'react-router';
 import Accordion from 'UI/Reusable/Accordion/Accordion';
 import InvasivePlantTable from 'UI/Features/Legend/InvasivePlantTable';
 import LayerSourcesTable from 'UI/Features/Legend/LayerSourcesTable';
 import invbclogo from '/assets/InvasivesBC_Icon.svg';
 import 'UI/Features/Legend/LegendsPopup.css';
+import { useNavigate } from 'react-router';
 
 const LegendsPopup = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
+
   return (
     <div id="map-legends">
       <div className="content">
         <div className="control">
-          <button onClick={() => history.goBack()}>Go Back</button>
+          <button onClick={() => navigate(-1)}>Go Back</button>
         </div>
         <div className="intro">
           <img src={invbclogo} alt="InvasivesBC Logo" />

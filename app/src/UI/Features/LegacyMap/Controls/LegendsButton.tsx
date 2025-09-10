@@ -1,15 +1,15 @@
 import { IconButton, Tooltip } from '@mui/material';
 import 'UI/Global.css';
 import InfoIcon from '@mui/icons-material/Info';
-import { useHistory } from 'react-router-dom';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
 export const LegendsButton = () => {
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const [show, setShow] = useState(false);
 
-  const toggleLegend = () => history.push('/Legend');
+  const toggleLegend = () => navigate('/Legend');
 
   return (
     <div className={'map-btn'}>

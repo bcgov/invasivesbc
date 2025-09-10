@@ -1,9 +1,8 @@
 import { call, cancelled, delay, fork, put, select, takeLatest } from 'redux-saga/effects';
 import Keycloak, { KeycloakLogoutOptions } from 'keycloak-js';
+import { useNavigate } from 'react-router';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { selectConfiguration } from 'state/reducers/configuration';
-import { historySingleton } from 'state/store';
-import { USERINFO_CLEAR_REQUEST } from 'state/actions';
 import { selectAuth } from 'state/reducers/auth';
 import { AuthActions } from 'state/actions/auth/Auth';
 
@@ -52,7 +51,7 @@ function* handleSignoutRequest() {
     };
     yield call(keycloakInstance.logout, logoutOptions);
     yield put(AuthActions.signoutComplete());
-    yield put({ type: USERINFO_CLEAR_REQUEST });
+    yield put(AuthActions.clearUserInfo());
   } catch (e) {
     console.error(e);
     yield put(AuthActions.requestError());
@@ -139,7 +138,7 @@ function* reinitAuth() {
       '_invasivesbc_auth_target',
       JSON.stringify({
         at: Date.now(),
-        destination: historySingleton?.location?.pathname || '/'
+        destination: window.location.pathname || '/'
       })
     );
   }
@@ -180,7 +179,7 @@ function* reinitAuth() {
     yield put(AuthActions.refreshRolesRequest());
     if (postAuthNavigate) {
       sessionStorage.removeItem('_invasivesbc_auth_target');
-      historySingleton.push(postAuthNavigate);
+      //navigate(postAuthNavigate);
     }
   } else {
     yield put(AuthActions.requestError());
