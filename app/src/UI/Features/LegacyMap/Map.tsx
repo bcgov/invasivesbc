@@ -58,7 +58,6 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
   const mapContainer: React.MutableRefObject<HTMLDivElement | null> = useRef<HTMLDivElement>(null);
 
   // Auth + Network
-  const authenticated = useSelector((state) => state.Auth.authenticated);
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   const connectedToNetwork = useSelector((state) => state.Network.connected);
   const configuration = useSelector((state) => state.Configuration.current);
@@ -321,11 +320,11 @@ export const Map: React.FC<React.PropsWithChildren> = ({ children }) => {
 
   useEffect(() => {
     if (!mapReady || !map) return;
-    if (authenticated && loggedInOrWorkingOffline) {
+    if (loggedInOrWorkingOffline) {
       addServerBoundariesIfNotExists(serverBoundaries, map);
       refreshServerBoundariesOnToggle(serverBoundaries, map);
     }
-  }, [serverBoundaries, authenticated, map, mapReady]);
+  }, [serverBoundaries, loggedInOrWorkingOffline, map, mapReady]);
 
   // Custom Layers:
   useEffect(() => {
