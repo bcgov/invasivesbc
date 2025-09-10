@@ -11,11 +11,12 @@ import UserRecord from 'interfaces/UserRecord';
 import { transformOfflineActivitiesForRecordTable } from 'utils/addActivity';
 import CustomPopover from 'UI/Reusable/CustomPopover/CustomPopover';
 import RecordTablePopoverContent from 'UI/Features/Records/RecordSet/RecordTablePopoverContent/RecordTablePopoverContent';
-import { MouseEvent, TouchEvent, useState } from 'react';
+import { MouseEvent, TouchEvent, useEffect, useState } from 'react';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import IOfflineActivityRow from 'interfaces/TableRows/IOfflineActivityRow';
 import { Point, Polygon } from 'geojson';
 import { useNavigate } from 'react-router';
+import Activity from 'state/actions/activity/Activity';
 
 type PropTypes = { setID: string };
 
@@ -73,6 +74,10 @@ export const OfflineRecordSet = ({ setID }: PropTypes) => {
   } catch (error) {
     console.error(error);
   }
+
+  useEffect(() => {
+    dispatch(Activity.switchRecordSet({ type: RecordSetType.Activity, setId: setID }));
+  }, [setID]);
 
   return (
     <>
