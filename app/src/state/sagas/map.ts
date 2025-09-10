@@ -5,7 +5,6 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { buffers } from 'redux-saga';
 import {
   getIdsForRecordsetFromCache,
-  getRecordFilterObjectFromStateForAPI,
   handle_ACTIVITIES_TABLE_GET_ROWS,
   handle_IAPP_TABLE_ROWS_GET_REQUEST,
   handle_MAP_WHATS_HERE_INIT_GET_ACTIVITY,
@@ -623,13 +622,7 @@ function* handle_GET_RECORDSET_IDS(action: PayloadAction<IGetIdsForRecordset>) {
 
   // Delegate errant Offline actions
   if (action.payload.recordSetID === RecordSetId.OfflineActivities) {
-    const filterObject = getRecordFilterObjectFromStateForAPI(action.payload.recordSetID, currentState);
-    if (!filterObject) return;
-    yield handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE({
-      filterObj: filterObject,
-      recordSetID: action.payload.recordSetID,
-      tableFiltersHash: action.payload.tableFiltersHash
-    });
+    yield handle_ACTIVITIES_GET_IDS_FOR_RECORDSET_OFFLINE(action);
     return;
   }
   // Attempt to retrieve Records from API
