@@ -14,7 +14,8 @@ import {
   createBorderLayer,
   createCircleLayer,
   createFillLayer,
-  createLabelLayer
+  createLabelLayer,
+  getPaintBySchemeOrColor
 } from '../functional/layer-definitions/reusable-layer-specifications';
 import { LayerSpecificationWithStackingOrder } from '../functional/layers-hook';
 
@@ -28,7 +29,7 @@ type SourceSpecificationType = {
 };
 const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
   const OFFLINE_RECORD_ID = RecordSetId.OfflineActivities;
-  const LAYER_COLOUR = 'blue';
+  const LAYER_COLOUR = getPaintBySchemeOrColor('blue');
 
   const [definition, setDefinition] = useState<SourceSpecificationType>();
 
@@ -55,6 +56,7 @@ const OfflineRecordsetLayer = ({ mapReady }: PropTypes) => {
             properties: {
               short_id: parsedData.short_id,
               map_symbol: plantCodes,
+              activity_subtype: parsedData.activity_subtype,
               activity_id: parsedData.activity_id,
               type: parsedData.activity_type
             }
