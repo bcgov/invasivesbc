@@ -8,21 +8,12 @@
   position: absolute;
   padding: 0;
   margin: 0;
-  right: 5pt;
-  top: 5pt;
-  border-radius: 50%;
-  height: 40pt;
-  width: 40pt;
-  border: 1pt solid var(--eigengrau);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: black;
-
-  svg {
-    height: 20pt;
-    width: 20pt;
-  }
+  right: 8px;
+  top: 8px;
+  height: 35px;
+  width: 35px;
+  background-color: white;
+  color: var(--bc-blue);
 
   &:hover {
     cursor: pointer;
@@ -50,7 +41,7 @@ ul > hr {
   top: 0;
   right: 0;
   width: 100%;
-  max-width: 400px;
+  max-width: 350px;
   height: 100%;
   z-index: 500;
   box-sizing: border-box;
@@ -76,7 +67,7 @@ ul > hr {
   margin: 0 5pt;
   box-sizing: border-box;
   background-color: var(--list-option);
-  border-radius: 18pt;
+  border-radius: 10pt;
   overflow: hidden;
 }
 
