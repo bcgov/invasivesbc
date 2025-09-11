@@ -5,6 +5,7 @@ import TooltipWithIcon from 'UI/Reusable/TooltipWithIcon/TooltipWithIcon';
 import { useDispatch, useSelector } from 'utils/use_selector';
 import UserSettings from 'state/actions/userSettings/UserSettings';
 import './lpGlobalFilters.css';
+import { Fragment } from 'react';
 
 const LpGlobalFilters = () => {
   const MAP_FILTER_TOOLTIP_TEXT = 'Show or hide the record layers on the map. This setting applies to all record sets.';
@@ -22,17 +23,16 @@ const LpGlobalFilters = () => {
       </h3>
       <ul>
         {Object.entries(globalMapFilters).map(([key, value], index) => (
-          <>
+          <Fragment key={key}>
             {index !== 0 && <hr />}
             <li
-              key={key}
               onClick={() => handleToggleGlobalMapFilter(key as MapRecordsetLayerFilterCategory)}
               className="lp-global-map-filter-option"
             >
               <IconButton>{value ? <FilterAlt /> : <FilterAltOff />}</IconButton>
               {key}
             </li>
-          </>
+          </Fragment>
         ))}
       </ul>
     </div>
