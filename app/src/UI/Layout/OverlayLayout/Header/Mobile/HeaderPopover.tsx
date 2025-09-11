@@ -66,7 +66,7 @@ const HeaderPopover = () => {
 
   const requestAccess = async () => {
     if (!authenticated) {
-      dispatch(AuthActions.signinRequest({}));
+      dispatch(AuthActions.signinRequest({ extendedRedirectUri: '/AccessRequest' }));
     } else {
       navigate('/AccessRequest');
       dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));

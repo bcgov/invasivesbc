@@ -40,7 +40,7 @@ const InformationalLinkBox = () => {
 export const LandingComponent = () => {
   const requestAccess = async () => {
     if (connected && !authenticated) {
-      dispatch(AuthActions.signinRequest({}));
+      dispatch(AuthActions.signinRequest({ extendedRedirectUri: '/AccessRequest' }));
     } else {
       navigate('/AccessRequest');
       dispatch(EventActions.setLayoutParameters({ viewLayout: LayoutMode.MAP_HIDDEN }));

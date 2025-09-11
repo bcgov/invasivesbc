@@ -103,7 +103,7 @@ const LoginOrOutMemo = React.memo(() => {
 
   const requestAccess = async () => {
     if (!authenticated) {
-      dispatch(AuthActions.signinRequest({}));
+      dispatch(AuthActions.signinRequest({ extendedRedirectUri: '/AccessRequest' }));
     } else {
       navigate('/AccessRequest');
     }

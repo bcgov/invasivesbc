@@ -1,6 +1,5 @@
 import { call, cancelled, delay, fork, put, select, takeLatest } from 'redux-saga/effects';
 import Keycloak, { KeycloakLogoutOptions } from 'keycloak-js';
-import { useNavigate } from 'react-router';
 import { AppConfig } from 'state/configuration/runtime-config';
 import { selectConfiguration } from 'state/reducers/configuration';
 import { selectAuth } from 'state/reducers/auth';
@@ -23,7 +22,7 @@ function* handleSigninRequest(action) {
 
   try {
     yield call(keycloakInstance.login, {
-      redirectUri: config.REDIRECT_URI,
+      redirectUri: config.REDIRECT_URI + (action.payload?.extendedRedirectUri || ''),
       ...action.payload
     });
 
