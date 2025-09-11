@@ -94,6 +94,7 @@ ul > hr {
 
       & > svg {
         margin-right: 1rem;
+        color: var(--eigengrau);
       }
     }
 
@@ -108,7 +109,7 @@ ul > hr {
 }
 
 #layer-picker-container > div:first-child {
-  height: 50pt;
+  height: 50px;
   display: flex;
   justify-content: flex-end;
   align-items: center;
@@ -120,7 +121,7 @@ ul > hr {
 
   & > div:first-child {
     margin-right: auto;
-    font-size: 20pt;
+    font-size: 24px;
     display: flex;
     align-items: center;
   }
