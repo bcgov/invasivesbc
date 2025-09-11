@@ -1,0 +1,48 @@
+#lp-global-map-filters {
+  h3 {
+    text-align: left;
+    margin: 1rem 8pt;
+  }
+  ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    background-color: var(--list-option);
+    border-radius: 8pt;
+    overflow-y: auto;
+    scrollbar-width: none;
+    &:hover,
+    *:hover {
+      scrollbar-width: thin;
+    }
+    .lp-global-map-filter-option {
+      display: flex;
+      align-items: center;
+      height: 48px;
+      box-sizing: border-box;
+      background-color: white;
+      button {
+        background-color: transparent;
+        border: none;
+        height: 100%;
+        padding: 10px;
+
+        &:not(:disabled) {
+          color: var(--bc-blue);
+        }
+      }
+      button:hover {
+        cursor: pointer;
+      }
+      div {
+        display: flex;
+        flex-direction: row;
+      }
+      p {
+        margin: 0;
+        word-wrap: wrap;
+      }
+    }
+  }
+}
