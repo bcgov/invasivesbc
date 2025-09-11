@@ -29,7 +29,7 @@
         padding: 10px;
 
         &:not(:disabled) {
-          color: var(--bc-blue);
+          color: var(--eigengrau);
         }
       }
       button:hover {
