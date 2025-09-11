@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useRef } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { MapContext } from '../MapContext';
 import { MapMouseEvent, MapTouchEvent, Point, PointLike, Popup } from 'maplibre-gl';
 import ReactDOM from 'react-dom/client';
@@ -16,19 +16,21 @@ const LayerDataMarker = () => {
   const whatsHereEnabled = useSelector((state) => state.Map.whatsHere.toggle);
   const connected = useSelector((state) => state.Network.connected);
   const globalMapFilters = useSelector((state) => state.Map.globalMapFilters);
-
   const drawToolsActive = useRef<boolean>(false);
   const editModeActive = useRef<boolean>(false);
 
   const popupRef = useRef<Popup>();
   const timeOfTouchStart = useRef<number>(0);
 
-  const recordsetLayers = useMemo(() => {
+  const [recordsetLayers, setRecordsetLayers] = useState<string[]>([]);
+
+  const updateLayers = () => {
     if (!map) return [];
-    return map
+    const newLayers = map
       .getLayersOrder()
       .filter((layer) => layer.includes('recordset-layer-') || layer.includes('offline-activity'));
-  }, [map?.getLayersOrder(), globalMapFilters]);
+    setRecordsetLayers(newLayers);
+  };
 
   const createPopupDiv = (numFeatures: number): HTMLDivElement => {
     /*
@@ -47,7 +49,6 @@ const LayerDataMarker = () => {
     return el;
   };
 
-  //
   const queryFeaturesAtTarget = useCallback(
     (e: MapMouseEvent | MapTouchEvent) => {
       const isUserUtilizingDraw = drawToolsActive.current || whatsHereEnabled || editModeActive.current;
@@ -140,14 +141,16 @@ const LayerDataMarker = () => {
     map.on('click', queryFeaturesAtTarget);
     map.on('touchstart', handleTouchStart);
     map.on('touchend', handleTouchEnd);
+    map.on('styledata', updateLayers);
     return () => {
       map.off('draw.editshape', handleEditShape);
       map.off('draw.modechange', handleDrawModeChanged);
       map.off('click', queryFeaturesAtTarget);
       map.off('touchstart', handleTouchStart);
       map.off('touchend', handleTouchEnd);
+      map.off('styledata', updateLayers);
     };
-  }, [map?.isStyleLoaded(), whatsHereEnabled, recordsetLayers, connected]);
+  }, [map, whatsHereEnabled, recordsetLayers, connected]);
 
   return null;
 };
