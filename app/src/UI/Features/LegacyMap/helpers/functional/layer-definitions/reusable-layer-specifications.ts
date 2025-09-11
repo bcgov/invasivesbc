@@ -1,4 +1,4 @@
-import { ColorSpecification, ExpressionSpecification } from 'maplibre-gl';
+import { ColorSpecification, ExpressionSpecification, FilterSpecification } from 'maplibre-gl';
 import { FALLBACK_COLOR } from '../constants';
 import { LayerSpecificationWithStackingOrder } from '../layers-hook';
 import { LAYER_Z_FOREGROUND } from './types';
@@ -12,6 +12,7 @@ interface LayerOptions {
   minzoom?: number;
   maxzoom?: number;
   'source-layer'?: string | undefined;
+  filters?: FilterSpecification;
 }
 
 interface PaintLayerOptions extends LayerOptions {
@@ -23,10 +24,26 @@ interface LabelOptions extends LayerOptions {
   visibility: 'visible' | 'none';
 }
 
+/**
+ * Filter Categories, Each of these represents a globally applied filter a user is able to select on the map.
+ * These will render in the LayerPicker as options
+ */
+enum MapRecordsetLayerFilterCategory {
+  Observations = 'Observations',
+  Treatments = 'Treatments',
+  Monitoring = 'Monitoring',
+  Biocontrol = 'Biocontrol'
+}
+
+type MapRecordsetLayerFilters = {
+  [key in MapRecordsetLayerFilterCategory]: boolean;
+};
+
 const createFillLayer = (options: PaintLayerOptions): LayerSpecificationWithStackingOrder => ({
   id: 'fill-' + options.layerId,
   source: options.sourceId,
   ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
+  ...(options?.filters ? { filter: options.filters } : {}),
   type: 'fill',
   paint: {
     'fill-color': options.color,
@@ -42,6 +59,7 @@ const createBorderLayer = (options: PaintLayerOptions): LayerSpecificationWithSt
   id: 'polygon-border-' + options.layerId,
   source: options.sourceId,
   ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
+  ...(options?.filters ? { filter: options.filters } : {}),
   type: 'line',
   paint: {
     'line-color': options.color,
@@ -53,24 +71,33 @@ const createBorderLayer = (options: PaintLayerOptions): LayerSpecificationWithSt
   stackLayer: LAYER_Z_FOREGROUND
 });
 
-const createCircleLayer = (options: PaintLayerOptions): LayerSpecificationWithStackingOrder => ({
-  id: 'polygon-circle-' + options.layerId,
-  source: options.sourceId,
-  ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
-  type: 'circle',
-  paint: {
-    'circle-color': options.color,
-    'circle-radius': 4
-  },
-  minzoom: options?.minzoom ?? 0,
-  maxzoom: options?.maxzoom ?? 24,
-  stackLayer: LAYER_Z_FOREGROUND
-});
+const createCircleLayer = (options: PaintLayerOptions): LayerSpecificationWithStackingOrder => {
+  // Block Drawing Vertices on Polygons in addition to global filters. Points still render as normal.
+  const filter: FilterSpecification = options?.filters
+    ? (['all', ['!=', '$type', 'Polygon'], options.filters] as FilterSpecification)
+    : ['all', ['!=', '$type', 'Polygon']];
+
+  return {
+    id: 'polygon-circle-' + options.layerId,
+    source: options.sourceId,
+    ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
+    filter: filter,
+    type: 'circle',
+    paint: {
+      'circle-color': options.color,
+      'circle-radius': 4
+    },
+    minzoom: options?.minzoom ?? 0,
+    maxzoom: options?.maxzoom ?? 24,
+    stackLayer: LAYER_Z_FOREGROUND
+  };
+};
 
 const createLabelLayer = (options: LabelOptions): LayerSpecificationWithStackingOrder => ({
   id: 'label-' + options.layerId,
   source: options.sourceId,
   ...(options['source-layer'] ? { 'source-layer': options['source-layer'] } : {}), // If not exist, don't have the key at all
+  ...(options?.filters ? { filter: options.filters } : {}),
   type: 'symbol',
   layout: {
     'text-field': [
@@ -117,5 +144,12 @@ const getPaintBySchemeOrColor = (color: string): ColorSpecification | Expression
   return color ?? FALLBACK_COLOR;
 };
 
-export { createLabelLayer, createCircleLayer, createBorderLayer, createFillLayer, getPaintBySchemeOrColor };
-export type { LayerOptions };
+export {
+  createLabelLayer,
+  createCircleLayer,
+  createBorderLayer,
+  createFillLayer,
+  getPaintBySchemeOrColor,
+  MapRecordsetLayerFilterCategory
+};
+export type { LayerOptions, MapRecordsetLayerFilters };
