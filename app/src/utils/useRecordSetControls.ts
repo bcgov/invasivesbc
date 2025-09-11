@@ -10,6 +10,7 @@ import {
 } from 'UI/Features/LegacyMap/helpers/functional/layers-hook';
 import { buildCompleteRecordsetMapSpecificationFromRecordsets } from 'UI/Features/LegacyMap/helpers/functional/recordset-layers';
 import { LAYER_Z_FOREGROUND } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/types';
+import { selectGlobalRecordsetFilters } from 'state/reducers/map';
 
 /**
  * @desc Custom Hook for getting Recordset Control actions in one unified location.
@@ -31,12 +32,13 @@ const useRecordSetControls = (id?: string) => {
   const features = useSelector((state) => state.Configuration.current.features);
   const loggedInOrWorkingOffline = useSelector((state) => state.Auth.loggedInOrWorkingOffline);
   const connected = useSelector((state) => state.Network.connected);
+  const globalMapFilters = useSelector(selectGlobalRecordsetFilters);
 
   /**
    * Rebuild Recordset layers when recordsets/auth/online status changes.
    */
   useEffect(() => {
-    const recordSetData = buildCompleteRecordsetMapSpecificationFromRecordsets(recordsets);
+    const recordSetData = buildCompleteRecordsetMapSpecificationFromRecordsets(recordsets, globalMapFilters);
     const filteredRecordDefinitions: Array<InvasivesMapLayerDefinitionWithState> = [];
 
     for (const l of recordSetData.definitions) {
@@ -84,7 +86,7 @@ const useRecordSetControls = (id?: string) => {
 
     setRecordsetSources(recordSetData.sources);
     setRecordsetLayers(newLayers);
-  }, [recordsets, connected, loggedInOrWorkingOffline]);
+  }, [recordsets, connected, loggedInOrWorkingOffline, globalMapFilters]);
 
   const toggleRecordsetLabel = (e?: MouseEvent<HTMLButtonElement>) => {
     e?.stopPropagation();
