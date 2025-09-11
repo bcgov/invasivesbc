@@ -1,6 +1,7 @@
 import { createNextState, createSelector, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { Feature, GeoJSON, Point, Polygon } from 'geojson';
+import { FilterSpecification } from 'maplibre-gl';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
 import GeoShapes from 'constants/geoShapes';
 import UserSettings from 'state/actions/userSettings/UserSettings';
@@ -18,11 +19,21 @@ import PlanMyTrip from 'state/actions/planMyTrip/PlanMyTrip';
 import AppActions from 'state/actions/appActions/appActions';
 import ExportActions from 'state/actions/exports/exportActions';
 import { OfflineProtomapsActions } from 'state/actions/offlineProtomaps';
-import {
-  MapRecordsetLayerFilterCategory,
-  MapRecordsetLayerFilters
-} from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/reusable-layer-specifications';
-import { FilterSpecification } from 'maplibre-gl';
+
+/**
+ * Filter Categories, Each of these represents a globally applied filter a user is able to select on the map.
+ * These will render in the LayerPicker as options
+ */
+enum MapRecordsetLayerFilterCategory {
+  Observations = 'Observations',
+  Treatments = 'Treatments',
+  Monitoring = 'Monitoring',
+  Biocontrol = 'Biocontrol'
+}
+
+type MapRecordsetLayerFilters = {
+  [key in MapRecordsetLayerFilterCategory]: boolean;
+};
 
 interface IServerLayer {
   id: number | string;
@@ -631,5 +642,5 @@ const selectGlobalRecordsetFilters = createSelector(selectMap, (mapState): Filte
   return ['!in', 'activity_subtype', ...filteredOutSubtypes];
 });
 
-export { createMapReducer, selectMap, selectGlobalRecordsetFilters };
-export type { MapState, IServerLayer };
+export { createMapReducer, selectMap, selectGlobalRecordsetFilters, MapRecordsetLayerFilterCategory };
+export type { MapState, IServerLayer, MapRecordsetLayerFilters };

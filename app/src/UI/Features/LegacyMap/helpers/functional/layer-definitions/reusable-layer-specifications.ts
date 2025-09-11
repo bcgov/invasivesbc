@@ -24,21 +24,6 @@ interface LabelOptions extends LayerOptions {
   visibility: 'visible' | 'none';
 }
 
-/**
- * Filter Categories, Each of these represents a globally applied filter a user is able to select on the map.
- * These will render in the LayerPicker as options
- */
-enum MapRecordsetLayerFilterCategory {
-  Observations = 'Observations',
-  Treatments = 'Treatments',
-  Monitoring = 'Monitoring',
-  Biocontrol = 'Biocontrol'
-}
-
-type MapRecordsetLayerFilters = {
-  [key in MapRecordsetLayerFilterCategory]: boolean;
-};
-
 const createFillLayer = (options: PaintLayerOptions): LayerSpecificationWithStackingOrder => ({
   id: 'fill-' + options.layerId,
   source: options.sourceId,
@@ -144,12 +129,5 @@ const getPaintBySchemeOrColor = (color: string): ColorSpecification | Expression
   return color ?? FALLBACK_COLOR;
 };
 
-export {
-  createLabelLayer,
-  createCircleLayer,
-  createBorderLayer,
-  createFillLayer,
-  getPaintBySchemeOrColor,
-  MapRecordsetLayerFilterCategory
-};
-export type { LayerOptions, MapRecordsetLayerFilters };
+export { createLabelLayer, createCircleLayer, createBorderLayer, createFillLayer, getPaintBySchemeOrColor };
+export type { LayerOptions };

@@ -3,7 +3,7 @@ import { Feature, Point, Polygon } from 'geojson';
 import RecordSet from './RecordSet';
 import Boundary from 'interfaces/Boundary';
 import { RecordSetType, UserRecordSet } from 'interfaces/UserRecordSet';
-import { MapRecordsetLayerFilterCategory } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/reusable-layer-specifications';
+import { MapRecordsetLayerFilterCategory } from 'state/reducers/map';
 
 interface IHoverRecordset {
   recordType: RecordSetType;

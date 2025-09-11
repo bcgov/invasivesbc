@@ -86,6 +86,7 @@ const useRecordSetControls = (id?: string) => {
 
     setRecordsetSources(recordSetData.sources);
     setRecordsetLayers(newLayers);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [recordsets, connected, loggedInOrWorkingOffline, globalMapFilters]);
 
   const toggleRecordsetLabel = (e?: MouseEvent<HTMLButtonElement>) => {
