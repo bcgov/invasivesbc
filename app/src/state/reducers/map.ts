@@ -1,4 +1,4 @@
-import { createNextState, nanoid } from '@reduxjs/toolkit';
+import { createNextState, createSelector, nanoid } from '@reduxjs/toolkit';
 import { Draft } from 'immer';
 import { Feature, GeoJSON, Point, Polygon } from 'geojson';
 import { CURRENT_MIGRATION_VERSION, MIGRATION_VERSION_KEY } from 'constants/offline_state_version';
@@ -22,6 +22,7 @@ import {
   MapRecordsetLayerFilterCategory,
   MapRecordsetLayerFilters
 } from 'UI/Features/LegacyMap/helpers/functional/layer-definitions/reusable-layer-specifications';
+import { FilterSpecification } from 'maplibre-gl';
 
 interface IServerLayer {
   id: number | string;
@@ -585,5 +586,50 @@ function createMapReducer(): (MapState, AnyAction) => MapState {
 }
 
 const selectMap: (state) => MapState = (state) => state.Map;
-export { createMapReducer, selectMap };
+
+/**
+ * @desc Calculates the Activity subtypes to be filtered out from the Map Layers based on the current state of 'globalMapFilters'
+ */
+const selectGlobalRecordsetFilters = createSelector(selectMap, (mapState): FilterSpecification | undefined => {
+  const MAP_RECORDSET_BUCKETS = {
+    [MapRecordsetLayerFilterCategory.Observations]: [
+      'Activity_Observation_PlantAquatic',
+      'Activity_Observation_PlantTerrestrial'
+    ],
+
+    [MapRecordsetLayerFilterCategory.Treatments]: [
+      'Activity_Treatment_ChemicalPlantAquatic',
+      'Activity_Treatment_ChemicalPlantTerrestrial',
+      'Activity_Treatment_MechanicalPlantAquatic',
+      'Activity_Treatment_MechanicalPlantTerrestrial'
+    ],
+
+    [MapRecordsetLayerFilterCategory.Monitoring]: [
+      'Activity_Monitoring_ChemicalTerrestrialAquaticPlant',
+      'Activity_Monitoring_MechanicalTerrestrialAquaticPlant'
+    ],
+
+    [MapRecordsetLayerFilterCategory.Biocontrol]: [
+      'Activity_Biocontrol_Collection',
+      'Activity_Biocontrol_Release',
+      'Activity_Monitoring_BiocontrolDispersal_TerrestrialPlant',
+      'Activity_Monitoring_BiocontrolRelease_TerrestrialPlant'
+    ]
+  };
+  const keys = Object.entries(mapState.globalMapFilters)
+    .filter(([_, value]) => !value)
+    .map(([key]) => key);
+
+  const filteredOutSubtypes: Array<string | number> = Array.from(
+    new Set(keys.flatMap((key) => MAP_RECORDSET_BUCKETS?.[key] ?? []))
+  );
+
+  if (filteredOutSubtypes.length === 0) {
+    return undefined; // no filter applied
+  }
+
+  return ['!in', 'activity_subtype', ...filteredOutSubtypes];
+});
+
+export { createMapReducer, selectMap, selectGlobalRecordsetFilters };
 export type { MapState, IServerLayer };
