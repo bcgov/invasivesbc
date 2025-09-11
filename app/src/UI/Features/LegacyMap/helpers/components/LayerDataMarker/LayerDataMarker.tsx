@@ -15,6 +15,7 @@ const LayerDataMarker = () => {
 
   const whatsHereEnabled = useSelector((state) => state.Map.whatsHere.toggle);
   const connected = useSelector((state) => state.Network.connected);
+  const globalMapFilters = useSelector((state) => state.Map.globalMapFilters);
 
   const drawToolsActive = useRef<boolean>(false);
   const editModeActive = useRef<boolean>(false);
@@ -27,7 +28,7 @@ const LayerDataMarker = () => {
     return map
       .getLayersOrder()
       .filter((layer) => layer.includes('recordset-layer-') || layer.includes('offline-activity'));
-  }, [map?.getLayersOrder()]);
+  }, [map?.getLayersOrder(), globalMapFilters]);
 
   const createPopupDiv = (numFeatures: number): HTMLDivElement => {
     /*
@@ -99,7 +100,7 @@ const LayerDataMarker = () => {
       const root = ReactDOM.createRoot(el);
       root.render(<LayerDataMarkerContent navigate={navigate} features={uniqueFormattedFeaturesAtClickTarget} />);
     },
-    [map, recordsetLayers, popupRef, whatsHereEnabled, connected]
+    [map, recordsetLayers, popupRef, whatsHereEnabled, connected, globalMapFilters]
   );
   /**
    * @desc Sets time touch event started at
